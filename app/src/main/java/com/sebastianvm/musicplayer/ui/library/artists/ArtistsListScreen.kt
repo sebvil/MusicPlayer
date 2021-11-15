@@ -18,13 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
@@ -71,8 +71,8 @@ fun ArtistsListLayout(
                 }
                 .fillMaxWidth()
                 .padding(
-                    vertical = 8.dp,
-                    horizontal = 32.dp
+                    vertical = AppDimensions.spacing.mediumSmall,
+                    horizontal = AppDimensions.spacing.large
                 )
             )
         }
@@ -107,7 +107,7 @@ fun ArtistRow(
                     contentDescription = stringResource(id = R.string.placeholder_artist_image),
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(8.dp)
+                        .padding(AppDimensions.spacing.mediumSmall)
                         .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 )
             }
@@ -118,8 +118,8 @@ fun ArtistRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .padding(start = 12.dp)
+                    .padding(vertical = AppDimensions.spacing.mediumSmall)
+                    .padding(start = AppDimensions.spacing.medium)
             )
         }
     }

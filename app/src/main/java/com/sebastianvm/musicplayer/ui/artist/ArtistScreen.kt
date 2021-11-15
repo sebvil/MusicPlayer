@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -61,7 +61,7 @@ fun ArtistLayout(
                         state = s,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
+                            .padding(vertical = AppDimensions.spacing.mediumLarge),
                     )
                 },
                 { i ->
@@ -97,7 +97,7 @@ fun ArtistScreenRow(
         is ArtistScreenItem.SectionHeaderItem -> {
             Text(
                 text = stringResource(id = item.sectionName),
-                modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 8.dp),
+                modifier = Modifier.padding(start = AppDimensions.spacing.large, end = AppDimensions.spacing.large, bottom = AppDimensions.spacing.mediumSmall),
                 style = MaterialTheme.typography.headlineMedium,
             )
         }
@@ -111,7 +111,7 @@ fun ArtistScreenRow(
                             item.state.albumName
                         )
                     }
-                    .padding(horizontal = 32.dp, vertical = 8.dp)
+                    .padding(horizontal = AppDimensions.spacing.large, vertical = AppDimensions.spacing.mediumSmall)
             )
         }
     }

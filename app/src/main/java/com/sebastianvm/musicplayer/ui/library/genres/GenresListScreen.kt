@@ -11,13 +11,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
@@ -26,7 +26,7 @@ fun GenresListScreen(
     navigateToGenre: (String) -> Unit = {}
 ) {
     val state = viewModel.state.observeAsState(viewModel.state.value)
-    GenresListLayout(state = state.value,  object : GenresListScreenDelegate {
+    GenresListLayout(state = state.value, object : GenresListScreenDelegate {
         override fun onGenreClicked(genreName: String) {
             navigateToGenre(genreName)
         }
@@ -67,7 +67,10 @@ fun GenresListLayout(
                         delegate.onGenreClicked(item.genreName)
                     }
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 8.dp),
+                    .padding(
+                        horizontal = AppDimensions.spacing.large,
+                        vertical = AppDimensions.spacing.mediumSmall
+                    ),
                 text = item.genreName,
                 style = MaterialTheme.typography.titleLarge,
             )

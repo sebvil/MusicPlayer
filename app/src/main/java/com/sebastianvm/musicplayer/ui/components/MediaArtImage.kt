@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,10 +14,10 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -34,7 +33,7 @@ fun MediaArtImagePreview() {
                 backupResource = R.drawable.ic_song,
                 backupContentDescription = DisplayableString.StringValue("Album art placeholder")
             ),
-            iconPadding = PaddingValues(all = 2.dp)
+            iconPadding = PaddingValues(all = AppDimensions.spacing.extraSmall)
         )
     }
 }
@@ -69,7 +68,6 @@ fun MediaArtImage(
                 painter = painterResource(id = image.backupResource),
                 contentDescription = image.backupContentDescription.getString(),
                 modifier = Modifier.padding(iconPadding),
-                tint = LocalContentColor.current
             )
 
         }

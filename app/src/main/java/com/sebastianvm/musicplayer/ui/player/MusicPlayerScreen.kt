@@ -1,10 +1,12 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.content.res.Configuration
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -16,10 +18,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -63,12 +65,12 @@ fun MusicPlayerLayout(
             MediaArtImage(
                 image = state.trackArt,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                    .padding(32.dp)
-                    .background(MaterialTheme.colors.onBackground),
+                    .aspectRatio(1f)
+                    .padding(all = AppDimensions.spacing.large),
+                iconPadding = PaddingValues(all = AppDimensions.spacing.large),
                 contentScale = ContentScale.FillHeight
             )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -93,9 +95,9 @@ fun MusicPlayerLayout(
             MediaArtImage(
                 image = state.trackArt,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f, matchHeightConstraintsFirst = false)
-                    .padding(32.dp),
+                    .aspectRatio(1f)
+                    .padding(all = AppDimensions.spacing.large),
+                iconPadding = PaddingValues(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
             TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
@@ -116,22 +118,19 @@ data class TrackInfoState(val trackName: String, val artists: String)
 @Preview
 @Composable
 fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) state: TrackInfoState) {
-    Log.i("COMPOSING", "track info")
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = AppDimensions.spacing.large)
     ) {
         Text(
             text = state.trackName,
-            style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.onBackground
+            style = MaterialTheme.typography.titleLarge,
         )
         Text(
             text = state.artists,
-            modifier = Modifier.alpha(0.5f),
-            style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.onBackground,
+            modifier = Modifier.alpha(0.6f),
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
@@ -163,12 +162,12 @@ fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::
 
         val currentDuration = MinutesSecondsTime.fromMs(currentPlaybackTimeMs ?: 0)
         val trackDuration = MinutesSecondsTime.fromMs(trackLengthMs ?: 0)
-        Column(modifier = Modifier.padding(all = 16.dp)) {
+        Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 4.dp)
+                    .padding(bottom = AppDimensions.spacing.small)
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -176,13 +175,11 @@ fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::
             ) {
                 Text(
                     text = "%02d:%02d".format(currentDuration.minutes, currentDuration.seconds),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onBackground
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     text = "%02d:%02d".format(trackDuration.minutes, trackDuration.seconds),
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.onBackground
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -208,7 +205,6 @@ fun MediaButtons(
             Icon(
                 painter = painterResource(id = R.drawable.ic_prev),
                 contentDescription = stringResource(R.string.previous),
-                tint = MaterialTheme.colors.onBackground
             )
         }
         val playPauseIcon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
@@ -216,14 +212,12 @@ fun MediaButtons(
             Icon(
                 painter = painterResource(id = playPauseIcon),
                 contentDescription = stringResource(R.string.previous),
-                tint = MaterialTheme.colors.onBackground
             )
         }
         IconButton(onClick = { delegate.nextClicked() }) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_next),
                 contentDescription = stringResource(R.string.previous),
-                tint = MaterialTheme.colors.onBackground
             )
         }
     }

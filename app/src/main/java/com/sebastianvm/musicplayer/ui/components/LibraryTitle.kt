@@ -10,9 +10,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -34,7 +34,11 @@ fun LibraryTitle(title: DisplayableString) {
     Text(
         text = title.getString(),
         style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Medium),
-        modifier = Modifier.padding(start = 32.dp, top = 32.dp, bottom = 16.dp)
+        modifier = Modifier.padding(
+            start = AppDimensions.spacing.large,
+            top = AppDimensions.spacing.large,
+            bottom = AppDimensions.spacing.mediumLarge
+        )
     )
 }
 

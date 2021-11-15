@@ -17,9 +17,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -44,7 +44,7 @@ fun TextWithIcon(
     modifier: Modifier = Modifier,
 ) {
     val lineHeight = with(LocalDensity.current) {
-        MaterialTheme.typography.headlineMedium.fontSize.toDp().plus(4.dp)
+        MaterialTheme.typography.headlineMedium.fontSize.toDp().plus(AppDimensions.spacing.small)
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -59,7 +59,7 @@ fun TextWithIcon(
         Text(
             text = state.text.getString(),
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.padding(start = AppDimensions.spacing.mediumLarge),
         )
     }
 }

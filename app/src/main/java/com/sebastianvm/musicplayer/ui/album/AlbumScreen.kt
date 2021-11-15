@@ -9,11 +9,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
@@ -60,7 +60,7 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                         state = s,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
+                            .padding(vertical = AppDimensions.spacing.mediumLarge),
                     )
                 },
                 { i ->
@@ -69,7 +69,10 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { delegate.trackRowClicked(i.trackGid) }
-                            .padding(vertical = 8.dp, horizontal = 32.dp)
+                            .padding(
+                                vertical = AppDimensions.spacing.mediumSmall,
+                                horizontal = AppDimensions.spacing.large
+                            )
                     )
                 }
             )

@@ -12,10 +12,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -47,9 +47,9 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                 MediaArtImage(
                     image = state.image,
                     modifier = Modifier
-                        .padding(end = 8.dp)
+                        .padding(end = AppDimensions.spacing.mediumSmall)
                         .aspectRatio(1f, matchHeightConstraintsFirst = true),
-                    iconPadding = PaddingValues(all = 4.dp),
+                    iconPadding = PaddingValues(all = AppDimensions.spacing.small),
                     contentScale = ContentScale.FillHeight
                 )
 
@@ -60,7 +60,7 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(all = 4.dp)
+                        modifier = Modifier.padding(all = AppDimensions.spacing.small)
                     )
                     Row {
                         if (year != 0L) {
@@ -69,7 +69,7 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(all = 4.dp)
+                                modifier = Modifier.padding(all = AppDimensions.spacing.small)
                             )
                         }
                         Text(
@@ -77,7 +77,7 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                             style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(all = 4.dp)
+                            modifier = Modifier.padding(all = AppDimensions.spacing.small)
                         )
                     }
                 }

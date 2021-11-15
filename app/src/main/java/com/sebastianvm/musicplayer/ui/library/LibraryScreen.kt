@@ -26,6 +26,7 @@ import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.*
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.*
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface LibraryScreenActivityDelegate {
@@ -123,7 +124,7 @@ fun RequestDialog(delegate: RequestDialogDelegate) {
         confirmButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = AppDimensions.spacing.small),
                 onClick = delegate::onContinueClicked
             ) {
                 Text(text = stringResource(R.string.continue_string))
@@ -132,7 +133,7 @@ fun RequestDialog(delegate: RequestDialogDelegate) {
         dismissButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = AppDimensions.spacing.small),
                 onClick = delegate::onRequestDialogDismissRequest
             ) {
                 Text(text = stringResource(id = R.string.dismiss))
@@ -158,7 +159,7 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
         },
         dismissButton = {
             Button(
-                modifier = Modifier.padding(horizontal = 4.dp),
+                modifier = Modifier.padding(horizontal = AppDimensions.spacing.small),
                 onClick = delegate::onPermissionDeniedDialogDismissRequest
             ) {
                 Text(text = stringResource(R.string.dismiss))
@@ -166,7 +167,7 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
         },
         confirmButton = {
             Button(
-                modifier = Modifier.padding(horizontal = 4.dp),
+                modifier = Modifier.padding(horizontal = AppDimensions.spacing.small),
                 onClick = delegate::onPermissionDeniedConfirmButtonClicked
             ) {
                 Text(text = stringResource(id = R.string.go_to_settings))
@@ -233,7 +234,7 @@ fun ScanFab(onClick: () -> Unit = {}) {
             Text(
                 text = stringResource(id = R.string.scan),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier.padding(start = AppDimensions.spacing.mediumLarge),
             )
         },
         onClick = onClick,
@@ -262,7 +263,7 @@ fun LibraryList(
             LibraryRow(item, modifier = Modifier
                 .fillMaxWidth()
                 .clickable { delegate.onRowClicked(item.rowId) }
-                .padding(horizontal = 32.dp, vertical = 16.dp))
+                .padding(horizontal = 32.dp, vertical = AppDimensions.spacing.mediumLarge))
         }
     )
     ListWithHeader(state = listState)

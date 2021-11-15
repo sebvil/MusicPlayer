@@ -9,12 +9,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
@@ -68,7 +68,10 @@ fun TracksListLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { delegate.onTrackClicked(i.trackGid) }
-                        .padding(vertical = 8.dp, horizontal = 32.dp)
+                        .padding(
+                            vertical = AppDimensions.spacing.mediumSmall,
+                            horizontal = AppDimensions.spacing.large
+                        )
                 )
             }
         )
