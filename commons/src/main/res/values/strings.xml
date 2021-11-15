@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="artist_or_album_image">Artist or album image</string>
+    <string name="no_artist">No artist</string>
+    <string name="album_art_placeholder">album art placeholder</string>
+    <string name="albums">Albums</string>
+    <string name="singles">Singles</string>
+    <string name="appears_on">Appears On</string>
+    <string name="library">Library</string>
+    <string name="player">Player</string>
+    <string name="artists">Artists</string>
+    <string name="all_songs">All songs</string>
+    <string name="song">Song</string>
+    <string name="genres">Genres</string>
+    <string name="playlists">Playlists</string>
+    <string name="artist_count">artist_count</string>
+    <string name="music_library_values">music_library_values</string>
+    <string name="track_count">track_count</string>
+    <string name="album_count">album_count</string>
+    <string name="previous_song_button">previous song</string>
+    <string name="next_song_button">next song</string>
+    <string name="play_button">Play</string>
+
+    <string name="scan">Scan</string>
+    <string name="previous">Previous</string>
+    <!--    Cannot name "continue" as this is reserved by Kotlin-->
+    <string name="continue_string">Continue</string>
+
+    <string name="album_art_for_album">Album art for %1$s</string>
+    <string name="album_art_for_unknown_album">Album art for unknown album</string>
+    <string name="album_art_for_unknown_track">Album art for unknown track</string>
+    <string name="placeholder_album_art">Placeholder album art</string>
+    <string name="placeholder_artist_image">Placeholder artist image</string>
+
+    <string name="storage_permission_needed">Storage Permission Needed</string>
+    <string name="grant_storage_permissions">In order to read your music library, please grant storage permission.</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="go_to_settings">Go to settings </string>
+
+    <string name="unknown_album">Unknown album</string>
+    <string name="unknown_artist">Unknown artist</string>
+
+    <plurals name="number_of_tracks">
+        <item quantity="one">%1$d tracks</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
+
+    <plurals name="number_of_artists">
+        <item quantity="one">%1$d artists</item>
+        <item quantity="other">%1$d artists</item>
+    </plurals>
+
+    <plurals name="number_of_albums">
+        <item quantity="one">%1$d albums</item>
+        <item quantity="other">%1$d albums</item>
+    </plurals>
+
+    <plurals name="number_of_genres">
+        <item quantity="one">%1$d genres</item>
+        <item quantity="other">%1$d genres</item>
+    </plurals>
+
+    <plurals name="number_of_playlists">
+        <item quantity="one">%1$d playlists</item>
+        <item quantity="other">%1$d playlists</item>
+    </plurals>
+
+    <plurals name="number_of_folders">
+        <item quantity="one">%1$d folder</item>
+        <item quantity="other">%1$d folders</item>
+    </plurals>
+</resources>
