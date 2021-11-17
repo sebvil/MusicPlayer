@@ -36,7 +36,7 @@ class AlbumRepository @Inject constructor(
         )
     }
 
-    suspend fun getAlbumsCount(): Long {
+    fun getAlbumsCount(): LiveData<Long> {
         return albumDao.getAlbumsCount()
     }
 

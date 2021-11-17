@@ -18,7 +18,7 @@ interface AlbumDao {
 
 
     @Query("SELECT COUNT(*) FROM Album")
-    suspend fun getAlbumsCount(): Long
+    fun getAlbumsCount(): LiveData<Long>
 
     @Transaction
     @Query("SELECT * from Album WHERE Album.albumGid = :albumGid")

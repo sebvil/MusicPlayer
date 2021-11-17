@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.sebastianvm.musicplayer.MainActivity
@@ -84,9 +85,14 @@ class LibraryScanService : Service() {
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
         CoroutineScope(Dispatchers.IO).launch {
-            musicRepository.getMusic(MessageCallback(startId = startId))
-        }
+            try {
+                musicRepository.getMusic(MessageCallback(startId = startId))
+            } catch (e: Exception) {
+                Log.e("Scan", "$e")
 
+            }
+        }
+        Log.i("SCAN","after cor")
         return START_STICKY
     }
 

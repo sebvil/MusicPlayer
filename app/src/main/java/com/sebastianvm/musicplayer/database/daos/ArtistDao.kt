@@ -24,7 +24,7 @@ interface ArtistDao {
     fun getArtists(): LiveData<List<ArtistWithAlbums>>
 
     @Query("SELECT COUNT(*) FROM Artist")
-    suspend fun getArtistsCount(): Long
+    fun getArtistsCount(): LiveData<Long>
 
     @Query("SELECT * FROM Artist WHERE artistGid = :artistGid")
     fun getArtist(artistGid: String): LiveData<Artist>

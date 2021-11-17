@@ -5,7 +5,6 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
@@ -21,7 +20,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,10 +82,7 @@ class LibraryViewModel @Inject constructor(
                         isLoading = true
                     )
                 }
-                viewModelScope.launch {
-//                    musicRepository.getMusic()
-                    musicRepository.updateCounts()
-                }
+
             }
             is ShowPermissionDeniedDialog -> {
                 setState {

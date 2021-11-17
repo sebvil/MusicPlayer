@@ -27,7 +27,7 @@ class TrackRepository @Inject constructor(
         trackDao.insertTrack(track, artistTrackCrossRefs, genreTrackCrossRefs)
     }
 
-    suspend fun getTracksCount(): Long {
+    fun getTracksCount(): LiveData<Long> {
         return trackDao.getTracksCount()
     }
 

@@ -14,7 +14,7 @@ interface GenreDao {
     suspend fun insertGenres(genres: List<Genre>): List<Long>
 
     @Query("SELECT COUNT(*) FROM Genre")
-    suspend fun getGenresCount(): Long
+    fun getGenresCount(): LiveData<Long>
 
     @Transaction
     @Query("SELECT * FROM Genre")

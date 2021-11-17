@@ -4,17 +4,14 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.ui.util.mvvm.NonNullMediatorLiveData
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -88,27 +85,29 @@ class MusicRepository @Inject constructor(
     )
 
     fun getCounts(): LiveData<CountHolder> {
-        val counts: Flow<CountHolder> = preferencesUtil.dataStore.data
-            .map { preferences ->
-                val trackCounts = preferences[PreferencesUtil.TRACK_COUNT] ?: -1
-                val artistCounts = preferences[PreferencesUtil.ARTIST_COUNT] ?: -1
-                val albumCounts = preferences[PreferencesUtil.ALBUM_COUNT] ?: -1
-                val genreCounts = preferences[PreferencesUtil.GENRE_COUNT] ?: -1
-                if (trackCounts == -1L || artistCounts == -1L || albumCounts == -1L || genreCounts == -1L) {
-                    updateCounts()
-                }
-                CountHolder(trackCounts, artistCounts, albumCounts, genreCounts)
-            }
-        return counts.asLiveData()
-    }
+        val countsMediatorLiveData = NonNullMediatorLiveData(CountHolder(0, 0, 0, 0))
 
-    suspend fun updateCounts() {
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.TRACK_COUNT] = trackRepository.getTracksCount()
-            settings[PreferencesUtil.ARTIST_COUNT] = artistRepository.getArtistsCount()
-            settings[PreferencesUtil.ALBUM_COUNT] = albumRepository.getAlbumsCount()
-            settings[PreferencesUtil.GENRE_COUNT] = genreRepository.getGenresCount()
+        countsMediatorLiveData.addSource(trackRepository.getTracksCount()) {
+            val value = countsMediatorLiveData.value.copy(tracks = it)
+            countsMediatorLiveData.value = value
         }
+
+        countsMediatorLiveData.addSource(artistRepository.getArtistsCount()) {
+            val value = countsMediatorLiveData.value.copy(artists = it)
+            countsMediatorLiveData.value = value
+        }
+
+        countsMediatorLiveData.addSource(albumRepository.getAlbumsCount()) {
+            val value = countsMediatorLiveData.value.copy(albums = it)
+            countsMediatorLiveData.value = value
+        }
+
+        countsMediatorLiveData.addSource(genreRepository.getGenresCount()) {
+            val value = countsMediatorLiveData.value.copy(genres = it)
+            countsMediatorLiveData.value = value
+        }
+
+        return countsMediatorLiveData
     }
 
 
@@ -119,7 +118,6 @@ class MusicRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             musicDatabase.clearAllTables()
         }
-
 
         context.let {
             val musicResolver = context.contentResolver
@@ -149,47 +147,52 @@ class MusicRepository @Inject constructor(
                 val numTracks = musicCursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
                 val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                 val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-                val relativePathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
+                val relativePathColumn =
+                    musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
                 val fileNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
                 //add songs to list
                 var count = 0
                 do {
-                    val thisId = musicCursor.getString(idColumn)
-                    val thisTitle = musicCursor.getString(titleColumn)
-                    val thisArtist = musicCursor.getString(artistColumn)
-                    val thisAlbum = musicCursor.getString(albumColumn)
-                    val thisAlbumArtists = musicCursor.getString(albumArtistColumn) ?: ""
-                    val thisYear = musicCursor.getLong(year)
-                    val thisGenre = musicCursor.getString(genres)
-                    val thisTrackNumber = musicCursor.getLong(trackNumber)
-                    val thisNumTracks = musicCursor.getLong(numTracks)
-                    val thisDuration = musicCursor.getLong(duration)
-                    val albumId = musicCursor.getString(albumIdColumn)
-                    val relativePath = musicCursor.getString(relativePathColumn)
-                    val fileName = musicCursor.getString(fileNameColumn)
+                        val thisId = musicCursor.getLong(idColumn)
+                        val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
+                        val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
+                        val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
+                        val thisAlbumArtists = musicCursor.getString(albumArtistColumn) ?: "No album artists"
+                        val thisYear = musicCursor.getLong(year)
+                        val thisGenre = musicCursor.getString(genres) ?: "No genre"
+                        val thisTrackNumber = musicCursor.getLong(trackNumber)
+                        val thisNumTracks = musicCursor.getLong(numTracks)
+                        val thisDuration = musicCursor.getLong(duration)
+                        val albumId = musicCursor.getLong(albumIdColumn)
+                        val relativePath = musicCursor.getString(relativePathColumn)
+                        val fileName = musicCursor.getString(fileNameColumn)
 
-                    count++
-                    messageCallback.updateProgress(musicCursor.count, count, relativePath+fileName)
+                        count++
+                        messageCallback.updateProgress(
+                            musicCursor.count,
+                            count,
+                            relativePath + fileName
+                        )
 
-                    insertTrack(
-                        thisId,
-                        thisTitle,
-                        thisArtist,
-                        thisGenre,
-                        thisAlbum,
-                        thisAlbumArtists,
-                        thisYear,
-                        "",
-                        thisTrackNumber,
-                        thisNumTracks,
-                        thisDuration,
-                        albumId
-                    )
+                        insertTrack(
+                            thisId.toString(),
+                            thisTitle,
+                            thisArtist,
+                            thisGenre,
+                            thisAlbum,
+                            thisAlbumArtists,
+                            thisYear,
+                            "",
+                            thisTrackNumber,
+                            thisNumTracks,
+                            thisDuration,
+                            albumId.toString()
+                        )
+
                 } while (musicCursor.moveToNext())
             }
             musicCursor?.close()
         }
-        updateCounts()
         messageCallback.onFinished()
     }
 

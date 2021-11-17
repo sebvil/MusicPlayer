@@ -17,7 +17,7 @@ interface TrackDao {
     )
 
     @Query("SELECT COUNT(*) FROM Track")
-    suspend fun getTracksCount(): Long
+    fun getTracksCount(): LiveData<Long>
 
     @Transaction
     @Query("SELECT * FROM Track")

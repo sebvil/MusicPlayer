@@ -26,7 +26,7 @@ class ArtistRepository @Inject constructor(
         )
     }
 
-    suspend fun getArtistsCount(): Long {
+    fun getArtistsCount(): LiveData<Long> {
         return artistDao.getArtistsCount()
     }
 

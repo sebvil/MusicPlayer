@@ -23,7 +23,7 @@ class GenreRepository @Inject constructor(
         )
     }
 
-    suspend fun getGenresCount(): Long {
+    fun getGenresCount(): LiveData<Long> {
         return genreDao.getGenresCount()
     }
 
