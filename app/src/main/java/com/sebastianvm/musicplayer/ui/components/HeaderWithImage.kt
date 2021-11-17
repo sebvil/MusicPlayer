@@ -53,6 +53,7 @@ fun HeaderWithImage(
         )
         Text(
             text = state.title.getString(),
+            modifier = Modifier.padding(horizontal = AppDimensions.spacing.large),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,

@@ -89,10 +89,8 @@ class LibraryScanService : Service() {
                 musicRepository.getMusic(MessageCallback(startId = startId))
             } catch (e: Exception) {
                 Log.e("Scan", "$e")
-
             }
         }
-        Log.i("SCAN","after cor")
         return START_STICKY
     }
 
