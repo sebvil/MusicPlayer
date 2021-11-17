@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library
 
 import android.Manifest
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,11 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.*
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.*
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -64,13 +67,17 @@ fun LibraryScreen(
     )
 
 
-    // TODO create service for loading large library
+    val context = LocalContext.current
     LibraryLayout(
         state = state.value,
         object : LibraryScreenDelegate {
             override fun onFabClicked() {
                 when (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    PERMISSION_GRANTED -> screenViewModel.handle(LibraryUserAction.GetMusic)
+                    PERMISSION_GRANTED -> {
+                        Intent(context, LibraryScanService::class.java).also { intent ->
+                            startForegroundService(context, intent)
+                        }
+                    }
                     SHOULD_SHOW_EXPLANATION -> screenViewModel.handle(LibraryUserAction.ShowPermissionExplanationDialog)
                     SHOULD_REQUEST_PERMISSION -> requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }

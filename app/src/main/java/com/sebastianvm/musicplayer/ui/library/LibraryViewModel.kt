@@ -85,7 +85,7 @@ class LibraryViewModel @Inject constructor(
                     )
                 }
                 viewModelScope.launch {
-                    musicRepository.getMusic()
+//                    musicRepository.getMusic()
                     musicRepository.updateCounts()
                 }
             }

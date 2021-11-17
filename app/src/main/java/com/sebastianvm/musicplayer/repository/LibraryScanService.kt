@@ -1,0 +1,102 @@
+package com.sebastianvm.musicplayer.repository
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.Service
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.IBinder
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import com.sebastianvm.musicplayer.MainActivity
+import com.sebastianvm.musicplayer.R
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class LibraryScanService : Service() {
+
+    private var isRunning = false
+
+    private lateinit var notificationManager: NotificationManager
+    private lateinit var notificationBuilder: NotificationCompat.Builder
+
+    @Inject
+    lateinit var musicRepository: MusicRepository
+
+    inner class MessageCallback(private val startId: Int) {
+        fun updateProgress(progressMax: Int, currentProgress: Int, filePath: String) {
+            notificationBuilder.setProgress(progressMax, currentProgress, false)
+            notificationBuilder.setContentText("$currentProgress/$progressMax: $filePath")
+            notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        }
+
+        fun onFinished() {
+            isRunning = false
+            stopSelf(startId)
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        if (isRunning) {
+            stopSelf(startId)
+            return START_NOT_STICKY
+        } else {
+            isRunning = true
+        }
+
+
+        val pendingIntent: PendingIntent =
+            Intent(this, MainActivity::class.java).let { notificationIntent ->
+                PendingIntent.getActivity(this, 0, notificationIntent, FLAG_IMMUTABLE)
+            }
+
+        notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Scanning library")
+            .setSmallIcon(R.drawable.ic_song)
+            .setContentIntent(pendingIntent)
+            .setTicker("Library scan progress")
+            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+
+        notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Library scan progress"
+            val descriptionText = "Shows progress when scanning the library"
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
+        CoroutineScope(Dispatchers.IO).launch {
+            musicRepository.getMusic(MessageCallback(startId = startId))
+        }
+
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent): IBinder? {
+        // We don't provide binding, so return null
+        return null
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "com.sebastianvm.musicplayer.repository.SCAN"
+        private const val NOTIFICATION_ID = 0x1998
+    }
+}

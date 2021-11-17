@@ -114,7 +114,7 @@ class MusicRepository @Inject constructor(
 
     // TODO makes this work for API 29
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun getMusic() {
+    suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
 
         withContext(Dispatchers.IO) {
             musicDatabase.clearAllTables()
@@ -149,7 +149,10 @@ class MusicRepository @Inject constructor(
                 val numTracks = musicCursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
                 val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                 val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+                val relativePathColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
+                val fileNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
                 //add songs to list
+                var count = 0
                 do {
                     val thisId = musicCursor.getString(idColumn)
                     val thisTitle = musicCursor.getString(titleColumn)
@@ -161,8 +164,13 @@ class MusicRepository @Inject constructor(
                     val thisTrackNumber = musicCursor.getLong(trackNumber)
                     val thisNumTracks = musicCursor.getLong(numTracks)
                     val thisDuration = musicCursor.getLong(duration)
-
                     val albumId = musicCursor.getString(albumIdColumn)
+                    val relativePath = musicCursor.getString(relativePathColumn)
+                    val fileName = musicCursor.getString(fileNameColumn)
+
+                    count++
+                    messageCallback.updateProgress(musicCursor.count, count, relativePath+fileName)
+
                     insertTrack(
                         thisId,
                         thisTitle,
@@ -182,6 +190,7 @@ class MusicRepository @Inject constructor(
             musicCursor?.close()
         }
         updateCounts()
+        messageCallback.onFinished()
     }
 
 }
