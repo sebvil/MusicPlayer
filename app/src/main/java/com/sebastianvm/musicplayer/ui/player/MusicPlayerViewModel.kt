@@ -1,11 +1,10 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.os.SystemClock
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerUserAction.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -33,7 +32,6 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         observe(musicServiceConnection.nowPlaying) {
-            Log.i("PLAYER", "new status")
             val trackGid = if (it.id.isNullOrEmpty()) null else it.id
             val albumGid = if (it.albumId.isNullOrEmpty()) null else it.albumId
             setState {

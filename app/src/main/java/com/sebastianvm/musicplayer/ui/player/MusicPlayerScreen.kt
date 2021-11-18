@@ -16,11 +16,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
@@ -121,21 +121,16 @@ data class TrackInfoState(val trackName: String, val artists: String)
 fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) state: TrackInfoState) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppDimensions.spacing.large)
+            .fillMaxWidth().padding(horizontal = AppDimensions.spacing.large)
     ) {
-        Text(
+        AnimatedTextOverflow(
             text = state.trackName,
             style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
-        Text(
+        AnimatedTextOverflow(
             text = state.artists,
             modifier = Modifier.alpha(0.6f),
             style = MaterialTheme.typography.titleLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
     }
 }
