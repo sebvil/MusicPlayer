@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerUserAction.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.extensions.*
@@ -28,7 +29,7 @@ class MusicPlayerViewModel @Inject constructor(
     initialState: MusicPlayerState,
     private val musicServiceConnection: MusicServiceConnection
 ) :
-    BaseViewModel<MusicPlayerUserAction, MusicPlayerState>(initialState) {
+    BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
         observe(musicServiceConnection.nowPlaying) {
@@ -159,4 +160,6 @@ sealed class MusicPlayerUserAction : UserAction {
     object NextTapped : MusicPlayerUserAction()
     object PreviousTapped : MusicPlayerUserAction()
 }
+
+sealed class MusicPlayerUiEvent : UiEvent
 

@@ -2,9 +2,9 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 
 class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsListState> {
     override val values = sequenceOf(

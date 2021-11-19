@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.ui.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
 
 
 class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicPlayerState> {

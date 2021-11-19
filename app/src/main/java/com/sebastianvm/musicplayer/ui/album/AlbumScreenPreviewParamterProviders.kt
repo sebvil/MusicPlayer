@@ -2,10 +2,10 @@ package com.sebastianvm.musicplayer.ui.album
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
+import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.commons.util.MediaArt
-import com.sebastianvm.commons.util.DisplayableString
 
 class AlbumStatePreviewParameterProvider :
     PreviewParameterProvider<AlbumState> {

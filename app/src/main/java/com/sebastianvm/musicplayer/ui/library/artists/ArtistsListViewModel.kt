@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.artist
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class ArtistsListViewModel @Inject constructor(
     musicServiceConnection: MusicServiceConnection,
     initialState: ArtistsListState
-) : BaseViewModel<ArtistsListUserAction, ArtistsListState>(initialState) {
+) : BaseViewModel<ArtistsListUserAction, ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {
         musicServiceConnection.subscribe(
@@ -72,5 +73,5 @@ object InitialArtistsListStateModule {
     }
 }
 
-sealed class ArtistsListUserAction : UserAction
-
+sealed class ArtistsListUserAction : UserAction 
+sealed class ArtistsListUiEvent : UiEvent

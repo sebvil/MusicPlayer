@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.commons.util.ListItem
+import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 
 sealed class ArtistScreenItem : ListItem {

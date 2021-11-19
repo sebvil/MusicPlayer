@@ -5,13 +5,14 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
+import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.extensions.*
@@ -27,7 +28,7 @@ import javax.inject.Inject
 class AlbumViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     initialState: AlbumState
-) : BaseViewModel<AlbumUserAction, AlbumState>(
+) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(
     initialState
 ) {
 
@@ -119,3 +120,4 @@ sealed class AlbumUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : AlbumUserAction()
 }
 
+sealed class AlbumUiEvent : UiEvent

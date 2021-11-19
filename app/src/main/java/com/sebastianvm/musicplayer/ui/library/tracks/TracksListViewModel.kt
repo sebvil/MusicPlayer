@@ -5,13 +5,14 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.artist
@@ -30,7 +31,7 @@ import javax.inject.Inject
 class TracksListViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     initialState: TracksListState
-) : BaseViewModel<TracksListUserAction, TracksListState>(initialState) {
+) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(initialState) {
     init {
         when (val title = state.value.tracksListTitle) {
             is DisplayableString.StringValue -> {
@@ -135,5 +136,7 @@ object InitialTracksListStateModule {
 sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
 }
+
+sealed class TracksListUiEvent : UiEvent
 
 

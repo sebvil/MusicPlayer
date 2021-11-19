@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.repository.MusicRepository
 import com.sebastianvm.musicplayer.ui.library.LibraryUserAction.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.extensions.*
 import dagger.Module
@@ -27,7 +28,7 @@ class LibraryViewModel @Inject constructor(
     private val musicRepository: MusicRepository,
     musicServiceConnection: MusicServiceConnection,
     initialState: LibraryState
-) : BaseViewModel<LibraryUserAction, LibraryState>(initialState) {
+) : BaseViewModel<LibraryUserAction, LibraryUiEvent, LibraryState>(initialState) {
 
 
     init {
@@ -155,3 +156,5 @@ sealed class LibraryUserAction : UserAction {
     object DismissPermissionExplanationDialog : LibraryUserAction()
     object DismissProgressDialog : LibraryUserAction()
 }
+
+sealed class LibraryUiEvent : UiEvent

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.commons.util.ListItem
+import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 
 class AlbumsListItem(
     val albumGid: String,

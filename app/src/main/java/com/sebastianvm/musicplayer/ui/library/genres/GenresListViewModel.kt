@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.genre
@@ -23,7 +24,7 @@ class GenresListViewModel @Inject constructor(
     musicServiceConnection: MusicServiceConnection,
     initialState: GenresListState
 ) :
-    BaseViewModel<GenresListUserAction, GenresListState>(initialState) {
+    BaseViewModel<GenresListUserAction, GenresListUiEvent, GenresListState>(initialState) {
 
     init {
         musicServiceConnection.subscribe(BrowseTree.GENRES_ROOT,
@@ -51,7 +52,13 @@ class GenresListViewModel @Inject constructor(
         return GenresListItem(genre)
     }
 
-    override fun handle(action: GenresListUserAction) = Unit
+    override fun handle(action: GenresListUserAction) {
+        when (action) {
+            is GenresListUserAction.GenreClicked -> {
+                addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
+            }
+        }
+    }
 }
 
 data class GenresListState(
@@ -68,4 +75,10 @@ object InitialGenresListStateModule {
     fun initialGenresListStateProvider() = GenresListState(genresList = listOf())
 }
 
-sealed class GenresListUserAction : UserAction
+sealed class GenresListUserAction : UserAction {
+    data class GenreClicked(val genreName: String) : GenresListUserAction()
+}
+
+sealed class GenresListUiEvent : UiEvent {
+    data class NavigateToGenre(val genreName: String) : GenresListUiEvent()
+}

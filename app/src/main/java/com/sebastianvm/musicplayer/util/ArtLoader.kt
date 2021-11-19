@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.util
 import android.content.ContentUris
 import android.provider.MediaStore
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
 
 class ArtLoader {
 

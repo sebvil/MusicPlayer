@@ -3,11 +3,12 @@ package com.sebastianvm.musicplayer.ui.library.albums
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.extensions.*
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class AlbumsListViewModel @Inject constructor(
     musicServiceConnection: MusicServiceConnection,
     initialState: AlbumsListState
-) : BaseViewModel<AlbumsListUserAction, AlbumsListState>(initialState) {
+) : BaseViewModel<AlbumsListUserAction, AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
         musicServiceConnection.subscribe(
@@ -87,5 +88,5 @@ object InitialAlbumsListStateModule {
     }
 }
 
-sealed class AlbumsListUserAction : UserAction
-
+sealed class AlbumsListUserAction : UserAction 
+sealed class AlbumsListUiEvent : UiEvent

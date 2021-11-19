@@ -4,15 +4,16 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
+import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
-import com.sebastianvm.commons.util.MediaArt
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.ArtLoader
@@ -30,7 +31,7 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     initialState: ArtistState
-) : BaseViewModel<ArtistUserAction, ArtistState>(
+) : BaseViewModel<ArtistUserAction, ArtistUiEvent, ArtistState>(
     initialState
 ) {
 
@@ -157,6 +158,6 @@ object InitialArtistState {
     }
 }
 
-sealed class ArtistUserAction : UserAction
-
+sealed class ArtistUserAction : UserAction 
+sealed class ArtistUiEvent : UiEvent
 

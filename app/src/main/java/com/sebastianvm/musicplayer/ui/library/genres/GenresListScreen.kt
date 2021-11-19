@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,6 +20,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun GenresListScreen(
@@ -26,9 +28,22 @@ fun GenresListScreen(
     navigateToGenre: (String) -> Unit = {}
 ) {
     val state = viewModel.state.observeAsState(viewModel.state.value)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    HandleEvents(
+        lifecycleOwner = lifecycleOwner,
+        eventsFlow = viewModel.eventsFlow,
+    ) {  event ->
+        when (event) {
+            is GenresListUiEvent.NavigateToGenre -> {
+                navigateToGenre(event.genreName)
+            }
+        }
+    }
+
     GenresListLayout(state = state.value, object : GenresListScreenDelegate {
         override fun onGenreClicked(genreName: String) {
-            navigateToGenre(genreName)
+            viewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
         }
     })
 }

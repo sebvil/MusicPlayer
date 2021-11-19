@@ -49,7 +49,6 @@ fun AppNavHost(
             MusicPlayerScreen(screenViewModel)
         }
 
-
     }
 
 }
