@@ -3,6 +3,8 @@ package com.sebastianvm.musicplayer.ui.library
 import android.Manifest
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -16,6 +18,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,87 +28,113 @@ import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.ResUtil
-import com.sebastianvm.musicplayer.*
+import com.sebastianvm.musicplayer.PERMISSION_GRANTED
+import com.sebastianvm.musicplayer.PermissionStatus
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.*
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 interface LibraryScreenActivityDelegate {
     @PermissionStatus
     fun getPermissionStatus(permission: String): String
-    fun openAppSettings()
     fun navigateToLibraryScreen(route: String)
 }
 
 interface LibraryScreenDelegate : LibraryListDelegate, PermissionDeniedDialogDelegate,
     RequestDialogDelegate {
     fun onFabClicked()
-    fun onDismissProgressDialog()
 }
 
 
 @Composable
 fun LibraryScreen(
-    screenViewModel: LibraryViewModel = viewModel(),
+    viewModel: LibraryViewModel = viewModel(),
     delegate: LibraryScreenActivityDelegate
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
+    val state = viewModel.state.observeAsState(viewModel.state.value)
     val requestStoragePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                screenViewModel.handle(LibraryUserAction.GetMusic)
+                viewModel.handle(LibraryUserAction.PermissionGranted)
             } else {
-                when (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    SHOULD_SHOW_EXPLANATION -> screenViewModel.handle(LibraryUserAction.ShowPermissionExplanationDialog)
-                    else -> screenViewModel.handle(LibraryUserAction.ShowPermissionDeniedDialog)
-                }
+                viewModel.handle(
+                    LibraryUserAction.PermissionDenied(
+                        delegate.getPermissionStatus(
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        )
+                    )
+                )
+            }
+        }
+    )
+    val navigateToSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+
+            if (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
+                viewModel.handle(LibraryUserAction.PermissionGranted)
+                viewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
             }
         }
     )
 
-
+    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+
+
+    HandleEvents(lifecycleOwner = lifecycleOwner, eventsFlow = viewModel.eventsFlow) { event ->
+        when (event) {
+            is LibraryUiEvent.StartGetMusicService -> {
+                Intent(context, LibraryScanService::class.java).also { intent ->
+                    startForegroundService(context, intent)
+                }
+            }
+            is LibraryUiEvent.NavigateToScreen -> {
+                delegate.navigateToLibraryScreen(event.rowGid)
+            }
+            is LibraryUiEvent.RequestPermission -> {
+                requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            is LibraryUiEvent.OpenAppSettings -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:${context.packageName}")
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    navigateToSettingsLauncher.launch(intent)
+                }
+            }
+        }
+    }
+
     LibraryLayout(
         state = state.value,
         object : LibraryScreenDelegate {
             override fun onFabClicked() {
-                when (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    PERMISSION_GRANTED -> {
-                        Intent(context, LibraryScanService::class.java).also { intent ->
-                            startForegroundService(context, intent)
-                        }
-                    }
-                    SHOULD_SHOW_EXPLANATION -> screenViewModel.handle(LibraryUserAction.ShowPermissionExplanationDialog)
-                    SHOULD_REQUEST_PERMISSION -> requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
+                viewModel.handle(LibraryUserAction.FabClicked(delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)))
             }
 
             override fun onRowClicked(rowGid: String) {
-                delegate.navigateToLibraryScreen(route = rowGid)
+                viewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
             }
 
             override fun onPermissionDeniedDialogDismissRequest() {
-                screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                viewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
             }
 
             override fun onPermissionDeniedConfirmButtonClicked() {
-                delegate.openAppSettings()
+                viewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
             }
 
             override fun onRequestDialogDismissRequest() {
-                screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
+                viewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
             }
 
-            override fun onDismissProgressDialog() {
-                screenViewModel.handle(LibraryUserAction.DismissProgressDialog)
-            }
 
             override fun onContinueClicked() {
-                screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
-                requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                viewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
             }
 
         }
@@ -191,8 +220,6 @@ fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryS
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {
             override fun onFabClicked() = Unit
 
-            override fun onDismissProgressDialog() = Unit
-
             override fun onRowClicked(rowGid: String) = Unit
 
             override fun onPermissionDeniedDialogDismissRequest() = Unit
@@ -213,10 +240,6 @@ fun LibraryLayout(
     state: LibraryState,
     delegate: LibraryScreenDelegate
 ) {
-    if (state.isLoading) {
-        ProgressDialog { delegate.onDismissProgressDialog() }
-    }
-
     if (state.showPermissionDeniedDialog) {
         PermissionDeniedDialog(delegate = delegate)
     }

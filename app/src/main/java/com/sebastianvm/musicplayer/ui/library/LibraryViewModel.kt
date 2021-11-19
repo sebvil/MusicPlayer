@@ -5,11 +5,9 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.*
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.MusicRepository
-import com.sebastianvm.musicplayer.ui.library.LibraryUserAction.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -25,7 +23,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
-    private val musicRepository: MusicRepository,
     musicServiceConnection: MusicServiceConnection,
     initialState: LibraryState
 ) : BaseViewModel<LibraryUserAction, LibraryUiEvent, LibraryState>(initialState) {
@@ -45,7 +42,6 @@ class LibraryViewModel @Inject constructor(
                             libraryItems = children.mapNotNull { child ->
                                 child.description.toLibraryItem()
                             },
-                            isLoading = false
                         )
                     }
 
@@ -77,48 +73,71 @@ class LibraryViewModel @Inject constructor(
 
     override fun handle(action: LibraryUserAction) {
         when (action) {
-            is GetMusic -> {
-                setState {
-                    copy(
-                        isLoading = true
-                    )
+            is LibraryUserAction.FabClicked -> {
+                when (action.permissionStatus) {
+                    PERMISSION_GRANTED -> {
+                        addUiEvent(LibraryUiEvent.StartGetMusicService)
+                    }
+                    SHOULD_SHOW_EXPLANATION -> {
+                        setState {
+                            copy(
+                                showPermissionExplanationDialog = true
+                            )
+                        }
+                    }
+                    SHOULD_REQUEST_PERMISSION -> {
+                        addUiEvent(LibraryUiEvent.RequestPermission)
+                    }
                 }
-
             }
-            is ShowPermissionDeniedDialog -> {
-                setState {
-                    copy(
-                        showPermissionDeniedDialog = true
-                    )
+            is LibraryUserAction.RowClicked -> {
+                addBlockingEvent(LibraryUiEvent.NavigateToScreen(action.rowGid))
+            }
+            is LibraryUserAction.PermissionGranted -> {
+                addUiEvent(LibraryUiEvent.StartGetMusicService)
+            }
+            is LibraryUserAction.PermissionDenied -> {
+                when (action.permissionStatus) {
+                    SHOULD_SHOW_EXPLANATION -> {
+                        setState {
+                            copy(
+                                showPermissionExplanationDialog = true
+                            )
+                        }
+                    }
+                    else -> {
+                        setState {
+                            copy(
+                                showPermissionDeniedDialog = true
+                            )
+                        }
+                    }
                 }
             }
-            is DismissPermissionDeniedDialog -> {
+            is LibraryUserAction.DismissPermissionDeniedDialog -> {
                 setState {
                     copy(
                         showPermissionDeniedDialog = false
                     )
                 }
             }
-            is ShowPermissionExplanationDialog -> {
-                setState {
-                    copy(
-                        showPermissionExplanationDialog = true
-                    )
-                }
+            is LibraryUserAction.PermissionDeniedConfirmButtonClicked -> {
+                addUiEvent(LibraryUiEvent.OpenAppSettings)
             }
-            is DismissPermissionExplanationDialog -> {
+            is LibraryUserAction.DismissPermissionExplanationDialog -> {
                 setState {
                     copy(
                         showPermissionExplanationDialog = false
                     )
                 }
             }
-            is DismissProgressDialog -> {
+            is LibraryUserAction.PermissionExplanationDialogContinueClicked -> {
                 setState {
                     copy(
-                        isLoading = false
+                        showPermissionExplanationDialog = false
                     )
                 }
+                addUiEvent(LibraryUiEvent.RequestPermission)
             }
         }
     }
@@ -149,12 +168,21 @@ object InitialLibraryStateModule {
 }
 
 sealed class LibraryUserAction : UserAction {
-    object GetMusic : LibraryUserAction()
-    object ShowPermissionDeniedDialog : LibraryUserAction()
+    data class FabClicked(@PermissionStatus val permissionStatus: String) : LibraryUserAction()
+    data class RowClicked(val rowGid: String) : LibraryUserAction()
+    object PermissionGranted : LibraryUserAction()
+    data class PermissionDenied(@PermissionStatus val permissionStatus: String) :
+        LibraryUserAction()
+
     object DismissPermissionDeniedDialog : LibraryUserAction()
-    object ShowPermissionExplanationDialog : LibraryUserAction()
+    object PermissionDeniedConfirmButtonClicked : LibraryUserAction()
     object DismissPermissionExplanationDialog : LibraryUserAction()
-    object DismissProgressDialog : LibraryUserAction()
+    object PermissionExplanationDialogContinueClicked : LibraryUserAction()
 }
 
-sealed class LibraryUiEvent : UiEvent
+sealed class LibraryUiEvent : UiEvent {
+    object StartGetMusicService : LibraryUiEvent()
+    object RequestPermission : LibraryUiEvent()
+    data class NavigateToScreen(val rowGid: String) : LibraryUiEvent()
+    object OpenAppSettings : LibraryUiEvent()
+}

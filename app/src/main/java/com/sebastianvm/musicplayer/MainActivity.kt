@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     modifier = Modifier.padding(contentPadding),
                     requestPermission = ::requestPermission,
-                    openAppSettings = ::openAppSettings
                 )
             }
         }

@@ -30,7 +30,6 @@ fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier,
     requestPermission: (String) -> String,
-    openAppSettings: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -41,7 +40,6 @@ fun AppNavHost(
         libraryGraph(
             navController = navController,
             requestPermission = requestPermission,
-            openAppSettings = openAppSettings
         )
 
         composable(NavRoutes.PLAYER) {
@@ -56,21 +54,16 @@ fun AppNavHost(
 fun NavGraphBuilder.libraryGraph(
     navController: NavHostController,
     requestPermission: (String) -> String,
-    openAppSettings: () -> Unit
 ) {
 
     navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
         composable(NavRoutes.LIBRARY_ROOT) {
             val screenViewModel = hiltViewModel<LibraryViewModel>()
             LibraryScreen(
-                screenViewModel = screenViewModel,
+                viewModel = screenViewModel,
                 delegate = object : LibraryScreenActivityDelegate {
                     override fun getPermissionStatus(permission: String): String {
                         return requestPermission(permission)
-                    }
-
-                    override fun openAppSettings() {
-                        openAppSettings()
                     }
 
                     override fun navigateToLibraryScreen(route: String) {
