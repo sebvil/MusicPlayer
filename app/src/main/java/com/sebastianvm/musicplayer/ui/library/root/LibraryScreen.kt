@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library
+package com.sebastianvm.musicplayer.ui.library.root
 
 import android.Manifest
 import android.content.Intent
@@ -18,7 +18,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,20 +47,19 @@ interface LibraryScreenDelegate : LibraryListDelegate, PermissionDeniedDialogDel
     fun onFabClicked()
 }
 
-
 @Composable
 fun LibraryScreen(
-    viewModel: LibraryViewModel = viewModel(),
+    screenViewModel: LibraryViewModel = viewModel(),
     delegate: LibraryScreenActivityDelegate
 ) {
-    val state = viewModel.state.observeAsState(viewModel.state.value)
+    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
     val requestStoragePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                viewModel.handle(LibraryUserAction.PermissionGranted)
+                screenViewModel.handle(LibraryUserAction.PermissionGranted)
             } else {
-                viewModel.handle(
+                screenViewModel.handle(
                     LibraryUserAction.PermissionDenied(
                         delegate.getPermissionStatus(
                             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -74,19 +72,15 @@ fun LibraryScreen(
     val navigateToSettingsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
-
             if (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-                viewModel.handle(LibraryUserAction.PermissionGranted)
-                viewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                screenViewModel.handle(LibraryUserAction.PermissionGranted)
+                screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
             }
         }
     )
 
-    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-
-
-    HandleEvents(lifecycleOwner = lifecycleOwner, eventsFlow = viewModel.eventsFlow) { event ->
+    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
         when (event) {
             is LibraryUiEvent.StartGetMusicService -> {
                 Intent(context, LibraryScanService::class.java).also { intent ->
@@ -113,28 +107,28 @@ fun LibraryScreen(
         state = state.value,
         object : LibraryScreenDelegate {
             override fun onFabClicked() {
-                viewModel.handle(LibraryUserAction.FabClicked(delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)))
+                screenViewModel.handle(LibraryUserAction.FabClicked(delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)))
             }
 
             override fun onRowClicked(rowGid: String) {
-                viewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
+                screenViewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
             }
 
             override fun onPermissionDeniedDialogDismissRequest() {
-                viewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
             }
 
             override fun onPermissionDeniedConfirmButtonClicked() {
-                viewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
+                screenViewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
             }
 
             override fun onRequestDialogDismissRequest() {
-                viewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
+                screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
             }
 
 
             override fun onContinueClicked() {
-                viewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
+                screenViewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
             }
 
         }
@@ -145,7 +139,6 @@ interface RequestDialogDelegate {
     fun onRequestDialogDismissRequest()
     fun onContinueClicked()
 }
-
 
 @Composable
 fun RequestDialog(delegate: RequestDialogDelegate) {

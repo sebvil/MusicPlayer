@@ -15,16 +15,23 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
-fun AlbumScreen(viewModel: AlbumViewModel, navigateToPlayer: () -> Unit) {
-    val state = viewModel.state.observeAsState(viewModel.state.value)
+fun AlbumScreen(screenVieModel: AlbumViewModel, navigateToPlayer: () -> Unit) {
+    val state = screenVieModel.state.observeAsState(screenVieModel.state.value)
+    HandleEvents(eventsFlow = screenVieModel.eventsFlow) { event ->
+        when (event) {
+            is AlbumUiEvent.NavigateToPlayer -> {
+                navigateToPlayer()
+            }
+        }
+    }
     AlbumLayout(
         state = state.value,
         delegate = object : AlbumScreenDelegate {
             override fun trackRowClicked(trackGid: String) {
-                viewModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
-                navigateToPlayer()
+                screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
             }
         }
     )

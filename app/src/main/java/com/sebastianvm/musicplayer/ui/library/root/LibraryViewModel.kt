@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library
+package com.sebastianvm.musicplayer.ui.library.root
 
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat

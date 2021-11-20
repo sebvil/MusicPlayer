@@ -11,15 +11,15 @@ import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
-import com.sebastianvm.musicplayer.ui.library.LibraryScreen
-import com.sebastianvm.musicplayer.ui.library.LibraryScreenActivityDelegate
-import com.sebastianvm.musicplayer.ui.library.LibraryViewModel
+import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListScreen
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListViewModel
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListScreen
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListViewModel
 import com.sebastianvm.musicplayer.ui.library.genres.GenresListScreen
 import com.sebastianvm.musicplayer.ui.library.genres.GenresListViewModel
+import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
+import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
@@ -60,7 +60,7 @@ fun NavGraphBuilder.libraryGraph(
         composable(NavRoutes.LIBRARY_ROOT) {
             val screenViewModel = hiltViewModel<LibraryViewModel>()
             LibraryScreen(
-                viewModel = screenViewModel,
+                screenViewModel = screenViewModel,
                 delegate = object : LibraryScreenActivityDelegate {
                     override fun getPermissionStatus(permission: String): String {
                         return requestPermission(permission)

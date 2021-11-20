@@ -19,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun ArtistScreen(
@@ -26,9 +27,21 @@ fun ArtistScreen(
     navigateToAlbum: (String, String) -> Unit
 ) {
     val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
+    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
+        when (event) {
+            is ArtistUiEvent.NavigateToAlbum -> {
+                navigateToAlbum(event.albumGid, event.albumName)
+            }
+        }
+    }
     ArtistLayout(state = state.value, delegate = object : ArtistScreenDelegate {
         override fun albumRowClicked(albumGid: String, albumName: String) {
-            navigateToAlbum(albumGid, albumName)
+            screenViewModel.handle(
+                ArtistUserAction.AlbumClicked(
+                    albumGid = albumGid,
+                    albumName = albumName
+                )
+            )
         }
     })
 }
@@ -97,7 +110,11 @@ fun ArtistScreenRow(
         is ArtistScreenItem.SectionHeaderItem -> {
             Text(
                 text = stringResource(id = item.sectionName),
-                modifier = Modifier.padding(start = AppDimensions.spacing.large, end = AppDimensions.spacing.large, bottom = AppDimensions.spacing.mediumSmall),
+                modifier = Modifier.padding(
+                    start = AppDimensions.spacing.large,
+                    end = AppDimensions.spacing.large,
+                    bottom = AppDimensions.spacing.mediumSmall
+                ),
                 style = MaterialTheme.typography.headlineMedium,
             )
         }
@@ -111,7 +128,10 @@ fun ArtistScreenRow(
                             item.state.albumName
                         )
                     }
-                    .padding(horizontal = AppDimensions.spacing.large, vertical = AppDimensions.spacing.mediumSmall)
+                    .padding(
+                        horizontal = AppDimensions.spacing.large,
+                        vertical = AppDimensions.spacing.mediumSmall
+                    )
             )
         }
     }

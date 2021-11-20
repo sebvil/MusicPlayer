@@ -79,6 +79,7 @@ class AlbumViewModel @Inject constructor(
                 }
 
                 transportControls.playFromMediaId(action.trackGid, extras)
+                addBlockingEvent(AlbumUiEvent.NavigateToPlayer)
             }
         }
     }
@@ -120,4 +121,6 @@ sealed class AlbumUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : AlbumUserAction()
 }
 
-sealed class AlbumUiEvent : UiEvent
+sealed class AlbumUiEvent : UiEvent {
+    object NavigateToPlayer : AlbumUiEvent()
+}

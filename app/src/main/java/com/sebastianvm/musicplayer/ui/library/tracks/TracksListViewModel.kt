@@ -106,6 +106,7 @@ class TracksListViewModel @Inject constructor(
                     )
                 }
                 transportControls.playFromMediaId(action.trackGid, extras)
+                addBlockingEvent(TracksListUiEvent.NavigateToPlayer)
             }
         }
     }
@@ -137,6 +138,8 @@ sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
 }
 
-sealed class TracksListUiEvent : UiEvent
+sealed class TracksListUiEvent : UiEvent {
+    object NavigateToPlayer : TracksListUiEvent()
+}
 
 

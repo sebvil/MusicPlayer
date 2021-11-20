@@ -116,7 +116,13 @@ class ArtistViewModel @Inject constructor(
         )
     }
 
-    override fun handle(action: ArtistUserAction) = Unit
+    override fun handle(action: ArtistUserAction) {
+        when (action) {
+            is ArtistUserAction.AlbumClicked -> {
+                addBlockingEvent(ArtistUiEvent.NavigateToAlbum(action.albumGid, action.albumName))
+            }
+        }
+    }
 
     companion object {
         const val ALBUMS = "ALBUMS"
@@ -158,6 +164,11 @@ object InitialArtistState {
     }
 }
 
-sealed class ArtistUserAction : UserAction 
-sealed class ArtistUiEvent : UiEvent
+sealed class ArtistUserAction : UserAction {
+    data class AlbumClicked(val albumGid: String, val albumName: String) : ArtistUserAction()
+}
+
+sealed class ArtistUiEvent : UiEvent {
+    data class NavigateToAlbum(val albumGid: String, val albumName: String) : ArtistUiEvent()
+}
 

@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,15 +23,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun GenresListScreen(
-    viewModel: GenresListViewModel = viewModel(),
+    screenViewModel: GenresListViewModel = viewModel(),
     navigateToGenre: (String) -> Unit = {}
 ) {
-    val state = viewModel.state.observeAsState(viewModel.state.value)
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
 
     HandleEvents(
-        lifecycleOwner = lifecycleOwner,
-        eventsFlow = viewModel.eventsFlow,
+        eventsFlow = screenViewModel.eventsFlow,
     ) {  event ->
         when (event) {
             is GenresListUiEvent.NavigateToGenre -> {
@@ -43,7 +40,7 @@ fun GenresListScreen(
 
     GenresListLayout(state = state.value, object : GenresListScreenDelegate {
         override fun onGenreClicked(genreName: String) {
-            viewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
+            screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
         }
     })
 }

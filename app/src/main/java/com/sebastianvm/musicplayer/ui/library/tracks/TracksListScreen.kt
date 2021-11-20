@@ -16,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun TracksListScreen(
@@ -23,6 +24,16 @@ fun TracksListScreen(
     navigateToPlayer: () -> Unit,
 ) {
     val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
+    HandleEvents(
+        eventsFlow = screenViewModel.eventsFlow
+    ) { event ->
+        when (event) {
+            is TracksListUiEvent.NavigateToPlayer -> {
+                navigateToPlayer()
+            }
+        }
+    }
+
     TracksListLayout(state = state.value, delegate = object : TracksListScreenDelegate {
         override fun onTrackClicked(trackGid: String) {
             screenViewModel.handle(
@@ -30,7 +41,6 @@ fun TracksListScreen(
                     trackGid
                 )
             )
-            navigateToPlayer()
         }
     })
 }

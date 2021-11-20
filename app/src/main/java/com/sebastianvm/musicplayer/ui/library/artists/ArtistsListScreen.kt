@@ -26,6 +26,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun ArtistsListScreen(
@@ -33,9 +34,23 @@ fun ArtistsListScreen(
     navigateToArtist: (String, String) -> Unit
 ) {
     val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
+
+    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
+        when (event) {
+            is ArtistsListUiEvent.NavigateToArtist -> {
+                navigateToArtist(event.artistGid, event.artistName)
+            }
+        }
+
+    }
     ArtistsListLayout(state = state.value, delegate = object : ArtistsListScreenDelegate {
         override fun onArtistRowClicked(artistGid: String, artistName: String) {
-            navigateToArtist(artistGid, artistName)
+            screenViewModel.handle(
+                ArtistsListUserAction.ArtistClicked(
+                    artistGid = artistGid,
+                    artistName = artistName
+                )
+            )
         }
     })
 }
@@ -111,7 +126,6 @@ fun ArtistRow(
                         .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 )
             }
-
             Text(
                 text = artistItem.artistName,
                 style = MaterialTheme.typography.titleLarge,

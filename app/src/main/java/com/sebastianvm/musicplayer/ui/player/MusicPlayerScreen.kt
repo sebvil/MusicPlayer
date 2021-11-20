@@ -71,7 +71,6 @@ fun MusicPlayerLayout(
                 iconPadding = PaddingValues(all = AppDimensions.spacing.large),
                 contentScale = ContentScale.FillHeight
             )
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,

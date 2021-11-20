@@ -39,8 +39,8 @@ class ArtistsListViewModel @Inject constructor(
                     setState {
                         copy(
                             artistsList = children.mapNotNull { child ->
-                                    child.description.toArtistRowItem()
-                                }.sortedBy { item -> item.artistName },
+                                child.description.toArtistRowItem()
+                            }.sortedBy { item -> item.artistName },
                         )
                     }
                 }
@@ -55,7 +55,19 @@ class ArtistsListViewModel @Inject constructor(
         val artist = meta.artist ?: return null
         return ArtistsListItem(id, artist)
     }
-    override fun handle(action: ArtistsListUserAction) = Unit
+
+    override fun handle(action: ArtistsListUserAction) {
+        when (action) {
+            is ArtistsListUserAction.ArtistClicked -> {
+                addBlockingEvent(
+                    ArtistsListUiEvent.NavigateToArtist(
+                        action.artistGid,
+                        action.artistName
+                    )
+                )
+            }
+        }
+    }
 }
 
 data class ArtistsListState(
@@ -69,9 +81,17 @@ object InitialArtistsListStateModule {
     @ViewModelScoped
     fun initialArtistsListStateProvider(): ArtistsListState {
         return ArtistsListState(
-            artistsList = listOf())
+            artistsList = listOf()
+        )
     }
 }
 
-sealed class ArtistsListUserAction : UserAction 
-sealed class ArtistsListUiEvent : UiEvent
+sealed class ArtistsListUserAction : UserAction {
+    data class ArtistClicked(val artistGid: String, val artistName: String) :
+        ArtistsListUserAction()
+}
+
+sealed class ArtistsListUiEvent : UiEvent {
+    data class NavigateToArtist(val artistGid: String, val artistName: String) :
+        ArtistsListUiEvent()
+}

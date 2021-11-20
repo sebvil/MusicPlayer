@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.util.mvvm.events
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -15,8 +16,8 @@ fun interface EventHandler<E : UiEvent> {
 
 @Composable
 fun <E : UiEvent> HandleEvents(
-    lifecycleOwner: LifecycleOwner,
     eventsFlow: Flow<E>,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
     LaunchedEffect(key1 = eventsFlow) {

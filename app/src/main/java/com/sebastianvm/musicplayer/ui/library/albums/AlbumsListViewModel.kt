@@ -69,7 +69,18 @@ class AlbumsListViewModel @Inject constructor(
         )
     }
 
-    override fun handle(action: AlbumsListUserAction) = Unit
+    override fun handle(action: AlbumsListUserAction) {
+        when (action) {
+            is AlbumsListUserAction.AlbumClicked -> {
+                addBlockingEvent(
+                    AlbumsListUiEvent.NavigateToAlbum(
+                        action.albumGid,
+                        action.albumName
+                    )
+                )
+            }
+        }
+    }
 }
 
 data class AlbumsListState(
@@ -88,5 +99,9 @@ object InitialAlbumsListStateModule {
     }
 }
 
-sealed class AlbumsListUserAction : UserAction 
-sealed class AlbumsListUiEvent : UiEvent
+sealed class AlbumsListUserAction : UserAction {
+    data class AlbumClicked(val albumGid: String, val albumName: String) : AlbumsListUserAction()
+}
+sealed class AlbumsListUiEvent : UiEvent {
+    data class NavigateToAlbum(val albumGid: String, val albumName: String) : AlbumsListUiEvent()
+}

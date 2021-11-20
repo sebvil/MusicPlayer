@@ -17,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun AlbumsListScreen(
@@ -24,9 +25,17 @@ fun AlbumsListScreen(
     navigateToAlbum: (String, String) -> Unit
 ) {
     val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
+
+    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
+        when (event) {
+            is AlbumsListUiEvent.NavigateToAlbum -> {
+                navigateToAlbum(event.albumGid, event.albumName)
+            }
+        }
+    }
     AlbumsListLayout(state = state.value, object : AlbumsListScreenDelegate {
         override fun onAlbumClicked(albumGid: String, albumName: String) {
-            navigateToAlbum(albumGid, albumName)
+            screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid, albumName))
         }
     })
 }
