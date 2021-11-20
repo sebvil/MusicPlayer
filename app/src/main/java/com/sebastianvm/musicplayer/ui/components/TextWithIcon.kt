@@ -2,24 +2,22 @@ package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -43,25 +41,44 @@ fun TextWithIcon(
     @PreviewParameter(TextWithIconStateProvider::class) state: TextWithIconState,
     modifier: Modifier = Modifier,
 ) {
-    val lineHeight = with(LocalDensity.current) {
-        MaterialTheme.typography.headlineMedium.fontSize.toDp().plus(AppDimensions.spacing.small)
+    val fontStyle = MaterialTheme.typography.headlineMedium
+    val iconInlineContentId = "iconInlineContent"
+    val text = buildAnnotatedString {
+        // Append a placeholder string "[myBox]" and attach an annotation "inlineContent" on it.
+        appendInlineContent(iconInlineContentId, "[icon]")
+        append(" ")
+        append(state.text.getString())
     }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .height(IntrinsicSize.Min)
-    ) {
-        Icon(
-            painter = painterResource(id = state.icon),
-            contentDescription = state.iconContentDescription.getString(),
-            modifier = Modifier.height(lineHeight),
+    val inlineContent = mapOf(
+        Pair(
+            // This tells the [BasicText] to replace the placeholder string "[myBox]" by
+            // the composable given in the [InlineTextContent] object.
+            iconInlineContentId,
+            InlineTextContent(
+                // Placeholder tells text layout the expected size and vertical alignment of
+                // children composable.
+                Placeholder(
+                    width = fontStyle.fontSize,
+                    height = fontStyle.fontSize,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                )
+            ) {
+                // This [Box] will fill maximum size, which is specified by the [Placeholder]
+                // above. Notice the width and height in [Placeholder] are specified in TextUnit,
+                // and are converted into pixel by text layout.
+                Icon(
+                    painter = painterResource(id = state.icon),
+                    contentDescription = state.iconContentDescription.getString(),
+                )
+            }
         )
-        Text(
-            text = state.text.getString(),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(start = AppDimensions.spacing.mediumLarge),
-        )
-    }
+    )
+    Text(
+        text = text,
+        style = fontStyle,
+        modifier = modifier,
+        inlineContent = inlineContent
+    )
 }
 
 class TextWithIconStateProvider : PreviewParameterProvider<TextWithIconState> {
