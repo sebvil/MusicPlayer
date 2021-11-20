@@ -22,6 +22,7 @@
     <string name="play_button">Play</string>
 
     <string name="scan">Scan</string>
+    <string name="stop_scanning">Stop scanning</string>
     <string name="previous">Previous</string>
     <!--    Cannot name "continue" as this is reserved by Kotlin-->
     <string name="continue_string">Continue</string>

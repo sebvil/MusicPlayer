@@ -26,6 +26,12 @@
         <service android:name=".repository.LibraryScanService"
             android:exported="false">
         </service>
+        <receiver android:name=".repository.LibraryBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:exported="true">

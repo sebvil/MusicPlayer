@@ -12,11 +12,14 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
+import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.MainActivity
 import com.sebastianvm.musicplayer.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +33,8 @@ class LibraryScanService : Service() {
 
     @Inject
     lateinit var musicRepository: MusicRepository
+
+    var job: Job? = null
 
     inner class MessageCallback(private val startId: Int) {
         fun updateProgress(progressMax: Int, currentProgress: Int, filePath: String) {
@@ -60,6 +65,14 @@ class LibraryScanService : Service() {
                 PendingIntent.getActivity(this, 0, notificationIntent, FLAG_IMMUTABLE)
             }
 
+        val stopServiceIntent = Intent(this, LibraryBroadcastReceiver::class.java).apply {
+            action = STOP_SCAN_SERVICE
+            putExtra(EXTRA_NOTIFICATION_ID, NOTIFICATION_ID)
+
+        }
+        val stopServicePendingIntent: PendingIntent =
+            PendingIntent.getBroadcast(this, 0, stopServiceIntent, FLAG_IMMUTABLE)
+
         notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Scanning library")
             .setSmallIcon(R.drawable.ic_song)
@@ -67,6 +80,11 @@ class LibraryScanService : Service() {
             .setTicker("Library scan progress")
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .addAction(
+                R.drawable.ic_close,
+                ResUtil.getString(this, R.string.stop_scanning),
+                stopServicePendingIntent
+            )
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
         notificationManager =
@@ -84,7 +102,7 @@ class LibraryScanService : Service() {
         }
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
-        CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO).launch {
             try {
                 musicRepository.getMusic(MessageCallback(startId = startId))
             } catch (e: Exception) {
@@ -99,8 +117,13 @@ class LibraryScanService : Service() {
         return null
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        job?.cancel()
+    }
     companion object {
         private const val CHANNEL_ID = "com.sebastianvm.musicplayer.repository.SCAN"
+        const val STOP_SCAN_SERVICE = "com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE"
         private const val NOTIFICATION_ID = 0x1998
     }
 }
