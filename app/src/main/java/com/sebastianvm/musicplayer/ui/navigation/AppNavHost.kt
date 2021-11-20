@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
-import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListScreen
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListViewModel
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListScreen
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.library.genres.GenresListScreen
 import com.sebastianvm.musicplayer.ui.library.genres.GenresListViewModel
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
+import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
