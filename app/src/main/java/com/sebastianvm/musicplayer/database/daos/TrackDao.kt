@@ -2,19 +2,10 @@ package com.sebastianvm.musicplayer.database.daos
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
-import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.*
 
 @Dao
 interface TrackDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTrack(
-        track: Track,
-        artistTrackCrossRefs: List<ArtistTrackCrossRef>,
-        genreTrackCrossRef: List<GenreTrackCrossRef>
-    )
 
     @Query("SELECT COUNT(*) FROM Track")
     fun getTracksCount(): LiveData<Long>
@@ -38,5 +29,17 @@ interface TrackDao {
     )
     fun getTracksForGenre(genreName: String): LiveData<List<FullTrackInfo>>
 
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun newInsertTrack(
+        track: Track,
+        artistTrackCrossRefs: List<ArtistTrackCrossRef>,
+        genreTrackCrossRef: List<GenreTrackCrossRef>,
+        artists: List<Artist>,
+        genres: List<Genre>,
+        album: Album,
+        albumForArtists: List<AlbumsForArtist>,
+        appearsOnForArtist: List<AppearsOnForArtist>
+    )
 
 }

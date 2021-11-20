@@ -4,15 +4,13 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.MusicDatabase
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.NonNullMediatorLiveData
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,35 +38,40 @@ class MusicRepository @Inject constructor(
         duration: Long,
         albumGid: String
     ) {
-        val trackArtists = parseTag(artists)
-        artistRepository.insertArtists(trackArtists, trackArtists)
-        val trackGenres = parseTag(genres)
-        genreRepository.insertGenres(trackGenres)
-        albumRepository.insertAlbum(Album(albumGid, albumName, year, albumArtPath, numTracks))
-        trackRepository.insertTrack(
-            Track(
-                id,
-                title,
-                trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
-                duration,
-                albumGid
-            ),
-            trackArtists,
-            trackGenres,
+        val track = Track(
+            id,
+            title,
+            trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
+            duration,
+            albumGid
         )
-        val albumArtistsList = parseTag(albumArtists)
-        artistRepository.insertArtists(albumArtistsList, albumArtistsList)
-        val albumForArtists = mutableListOf<String>()
-        val appearsOnForArtists = mutableListOf<String>()
+        val trackArtists = parseTag(artists)
+        val artistTrackCrossRefs = trackArtists.map { ArtistTrackCrossRef(it, id) }
+        val trackArtistsList = trackArtists.map { Artist(it, it) }
+        val trackGenres = parseTag(genres).map { Genre(it) }
+        val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
+        val albumArtistsList = parseTag(albumArtists).map { Artist(it, it) }
+        val album = Album(albumGid, albumName, year, albumArtPath, numTracks)
+        val albumForArtists = mutableListOf<AlbumsForArtist>()
+        val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->
-            if (artistName in albumArtistsList) {
-                albumForArtists.add(artistName)
+            if (artistName in albumArtistsList.map { it.artistGid }) {
+                albumForArtists.add(AlbumsForArtist(albumGid, artistName))
             } else {
-                appearsOnForArtists.add(artistName)
+                appearsOnForArtists.add(AppearsOnForArtist(albumGid, artistName))
             }
         }
-        albumRepository.insertAlbumForArtists(albumGid, albumForArtists)
-        albumRepository.insertAppearsOnForArtists(albumGid, appearsOnForArtists)
+
+        trackRepository.newInsertTrack(
+            track = track,
+            artistTrackCrossRefs = artistTrackCrossRefs,
+            genreTrackCrossRef = genreTrackCrossRef,
+            artists = trackArtistsList.plus(albumArtistsList),
+            genres = trackGenres,
+            album = album,
+            albumForArtists = albumForArtists,
+            appearsOnForArtist = appearsOnForArtists,
+        )
     }
 
     private fun parseTag(tag: String): List<String> {
@@ -112,12 +115,12 @@ class MusicRepository @Inject constructor(
 
 
     // TODO makes this work for API 29
+    @WorkerThread
     @RequiresApi(Build.VERSION_CODES.R)
     suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
 
-        withContext(Dispatchers.IO) {
-            musicDatabase.clearAllTables()
-        }
+        musicDatabase.clearAllTables()
+
 
         context.let {
             val musicResolver = context.contentResolver
@@ -153,41 +156,42 @@ class MusicRepository @Inject constructor(
                 //add songs to list
                 var count = 0
                 do {
-                        val thisId = musicCursor.getLong(idColumn)
-                        val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
-                        val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
-                        val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
-                        val thisAlbumArtists = musicCursor.getString(albumArtistColumn) ?: "No album artists"
-                        val thisYear = musicCursor.getLong(year)
-                        val thisGenre = musicCursor.getString(genres) ?: "No genre"
-                        val thisTrackNumber = musicCursor.getLong(trackNumber)
-                        val thisNumTracks = musicCursor.getLong(numTracks)
-                        val thisDuration = musicCursor.getLong(duration)
-                        val albumId = musicCursor.getLong(albumIdColumn)
-                        val relativePath = musicCursor.getString(relativePathColumn)
-                        val fileName = musicCursor.getString(fileNameColumn)
+                    val thisId = musicCursor.getLong(idColumn)
+                    val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
+                    val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
+                    val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
+                    val thisAlbumArtists =
+                        musicCursor.getString(albumArtistColumn) ?: "No album artists"
+                    val thisYear = musicCursor.getLong(year)
+                    val thisGenre = musicCursor.getString(genres) ?: "No genre"
+                    val thisTrackNumber = musicCursor.getLong(trackNumber)
+                    val thisNumTracks = musicCursor.getLong(numTracks)
+                    val thisDuration = musicCursor.getLong(duration)
+                    val albumId = musicCursor.getLong(albumIdColumn)
+                    val relativePath = musicCursor.getString(relativePathColumn)
+                    val fileName = musicCursor.getString(fileNameColumn)
 
-                        count++
-                        messageCallback.updateProgress(
-                            musicCursor.count,
-                            count,
-                            relativePath + fileName
-                        )
+                    count++
+                    messageCallback.updateProgress(
+                        musicCursor.count,
+                        count,
+                        relativePath + fileName
+                    )
 
-                        insertTrack(
-                            thisId.toString(),
-                            thisTitle,
-                            thisArtist,
-                            thisGenre,
-                            thisAlbum,
-                            thisAlbumArtists,
-                            thisYear,
-                            "",
-                            thisTrackNumber,
-                            thisNumTracks,
-                            thisDuration,
-                            albumId.toString()
-                        )
+                    insertTrack(
+                        thisId.toString(),
+                        thisTitle,
+                        thisArtist,
+                        thisGenre,
+                        thisAlbum,
+                        thisAlbumArtists,
+                        thisYear,
+                        "",
+                        thisTrackNumber,
+                        thisNumTracks,
+                        thisDuration,
+                        albumId.toString()
+                    )
 
                 } while (musicCursor.moveToNext())
             }

@@ -3,10 +3,7 @@ package com.sebastianvm.musicplayer.repository
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.daos.TrackDao
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
-import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,16 +13,6 @@ class TrackRepository @Inject constructor(
     @ApplicationContext val context: Context,
     private val trackDao: TrackDao
 ) {
-
-    suspend fun insertTrack(
-        track: Track,
-        artistGids: List<String>,
-        genreNames: List<String>,
-    ) {
-        val artistTrackCrossRefs = artistGids.map { ArtistTrackCrossRef(it, track.trackGid) }
-        val genreTrackCrossRefs = genreNames.map { GenreTrackCrossRef(it, track.trackGid) }
-        trackDao.insertTrack(track, artistTrackCrossRefs, genreTrackCrossRefs)
-    }
 
     fun getTracksCount(): LiveData<Long> {
         return trackDao.getTracksCount()
@@ -37,5 +24,27 @@ class TrackRepository @Inject constructor(
 
     fun getTracks(tracksGids: List<String>): LiveData<List<FullTrackInfo>> {
         return trackDao.getTracks(tracksGids)
+    }
+
+    suspend fun newInsertTrack(
+        track: Track,
+        artistTrackCrossRefs: List<ArtistTrackCrossRef>,
+        genreTrackCrossRef: List<GenreTrackCrossRef>,
+        artists: List<Artist>,
+        genres: List<Genre>,
+        album: Album,
+        albumForArtists: List<AlbumsForArtist>,
+        appearsOnForArtist: List<AppearsOnForArtist>
+    ) {
+        trackDao.newInsertTrack(
+            track = track,
+            artistTrackCrossRefs = artistTrackCrossRefs,
+            genreTrackCrossRef = genreTrackCrossRef,
+            artists = artists,
+            genres = genres,
+            album = album,
+            albumForArtists = albumForArtists,
+            appearsOnForArtist = appearsOnForArtist,
+        )
     }
 }

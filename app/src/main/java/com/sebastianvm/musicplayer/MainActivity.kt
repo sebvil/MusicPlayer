@@ -1,10 +1,7 @@
 package com.sebastianvm.musicplayer
 
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringDef
@@ -60,16 +57,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
-        }
-    }
-
-
 }
 
 @StringDef(
