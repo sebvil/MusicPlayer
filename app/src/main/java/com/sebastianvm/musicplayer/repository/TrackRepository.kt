@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.*
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,15 +14,15 @@ class TrackRepository @Inject constructor(
     private val trackDao: TrackDao
 ) {
 
-    fun getTracksCount(): LiveData<Long> {
+    fun getTracksCount(): Flow<Long> {
         return trackDao.getTracksCount()
     }
 
-    fun getAllTracks(): LiveData<List<FullTrackInfo>> {
+    fun getAllTracks(): Flow<List<FullTrackInfo>> {
         return trackDao.getAllTracks()
     }
 
-    fun getTracks(tracksGids: List<String>): LiveData<List<FullTrackInfo>> {
+    fun getTracks(tracksGids: List<String>): Flow<List<FullTrackInfo>> {
         return trackDao.getTracks(tracksGids)
     }
 

@@ -6,8 +6,8 @@ import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.*
-import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent

@@ -1,10 +1,11 @@
 package com.sebastianvm.musicplayer.repository
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
-import com.sebastianvm.musicplayer.database.entities.*
+import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
+import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,45 +15,15 @@ class AlbumRepository @Inject constructor(
     private val albumDao: AlbumDao
 ) {
 
-    suspend fun insertAlbum(
-        album: Album
-    ): Long {
-        return albumDao.insertAlbum(album)
-    }
-
-    suspend fun insertAlbumForArtists(albumGid: String, artistGids: List<String>) {
-        return albumDao.insertAlbumForArtists(
-            artistGids.map {
-                AlbumsForArtist(albumGid, it)
-            }
-        )
-    }
-
-    suspend fun insertAppearsOnForArtists(albumGid: String, artistGids: List<String>) {
-        return albumDao.insertAppearsOnForArtists(
-            artistGids.map {
-                AppearsOnForArtist(albumGid, it)
-            }
-        )
-    }
-
-    fun getAlbumsCount(): LiveData<Long> {
+    fun getAlbumsCount(): Flow<Long> {
         return albumDao.getAlbumsCount()
     }
 
-    fun getAlbums(): LiveData<List<FullAlbumInfo>> {
+    fun getAlbums(): Flow<List<FullAlbumInfo>> {
         return albumDao.getAlbums()
     }
 
-    fun getAlbums(albumGids: List<String>): LiveData<List<AlbumWithArtists>> {
+    fun getAlbums(albumGids: List<String>): Flow<List<AlbumWithArtists>> {
         return albumDao.getAlbums(albumGids = albumGids)
-    }
-
-    fun getAlbumsForArtist(artistGid: String): LiveData<List<AlbumWithArtists>> {
-        return albumDao.getAlbumsForArtist(artistGid)
-    }
-
-    fun getAppearsOnForArtist(artistGid: String): LiveData<List<AlbumWithArtists>> {
-        return albumDao.getAppearsOnForArtist(artistGid)
     }
 }

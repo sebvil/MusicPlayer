@@ -1,22 +1,17 @@
 package com.sebastianvm.musicplayer.database.daos
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
-import com.sebastianvm.musicplayer.database.entities.Genre
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.GenreWithTracks
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GenreDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertGenre(genre: Genre): Long
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertGenres(genres: List<Genre>): List<Long>
-
     @Query("SELECT COUNT(*) FROM Genre")
-    fun getGenresCount(): LiveData<Long>
+    fun getGenresCount(): Flow<Long>
 
     @Transaction
     @Query("SELECT * FROM Genre")
-    fun getGenres(): LiveData<List<GenreWithTracks>>
+    fun getGenres(): Flow<List<GenreWithTracks>>
 }

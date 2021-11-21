@@ -1,34 +1,22 @@
 package com.sebastianvm.musicplayer.database.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.sebastianvm.musicplayer.database.entities.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackDao {
 
     @Query("SELECT COUNT(*) FROM Track")
-    fun getTracksCount(): LiveData<Long>
+    fun getTracksCount(): Flow<Long>
 
     @Transaction
     @Query("SELECT * FROM Track")
-    fun getAllTracks(): LiveData<List<FullTrackInfo>>
+    fun getAllTracks(): Flow<List<FullTrackInfo>>
 
     @Transaction
     @Query("SELECT * FROM Track WHERE trackGid in (:trackGids)")
-    fun getTracks(trackGids: List<String>): LiveData<List<FullTrackInfo>>
-
-    @Transaction
-    @Query(
-        """
-        SELECT Track.*
-        FROM Track INNER JOIN GenreTrackCrossRef 
-        ON Track.trackGid = GenreTrackCrossRef.trackGid 
-        WHERE GenreTrackCrossRef.genreName = :genreName
-        """
-    )
-    fun getTracksForGenre(genreName: String): LiveData<List<FullTrackInfo>>
-
+    fun getTracks(trackGids: List<String>): Flow<List<FullTrackInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

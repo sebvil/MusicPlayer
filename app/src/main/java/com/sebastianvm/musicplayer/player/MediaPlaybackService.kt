@@ -10,8 +10,8 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -24,6 +24,11 @@ import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -84,7 +89,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             newPlayer = exoPlayer
         )
         notificationManager.showNotificationForPlayer(currentPlayer)
-
     }
 
     override fun onGetRoot(
@@ -92,32 +96,41 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot {
+        Log.i("PLAYER", "Getting root, ${Thread.currentThread()}")
+
         return BrowserRoot(BrowseTree.MEDIA_ROOT, null)
     }
 
-    private val observers: MutableMap<String, Observer<MediaBrowseTree>> = mutableMapOf()
+//    private val observers: MutableMap<String, Observer<MediaBrowseTree>> = mutableMapOf()
 
     private fun addObserver(parentId: String) {
-        if (parentId !in observers) {
-            val treeObserver = Observer<MediaBrowseTree> {
-                notifyChildrenChanged(parentId)
-            }
-            browseTree.observeForever(treeObserver)
-            observers[parentId] = treeObserver
-        }
+//        if (parentId !in observers) {
+//            val treeObserver = Observer<MediaBrowseTree> {
+//                notifyChildrenChanged(parentId)
+//            }
+//            browseTree.observeForever(treeObserver)
+//            observers[parentId] = treeObserver
+//        }
+
     }
 
     override fun onLoadChildren(
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
-        addObserver(parentId)
-        result.sendResult(browseTree[parentId]?.map {
-            MediaBrowserCompat.MediaItem(
-                it.descriptionFromMetadata(),
-                it.flags
-            )
-        }?.toMutableList() ?: mutableListOf())
+        CoroutineScope(Dispatchers.IO).launch {
+            browseTree[parentId]?.collect { metadata ->
+                result.sendResult(metadata.map {
+                    MediaBrowserCompat.MediaItem(
+                        it.descriptionFromMetadata(),
+                        it.flags
+                    )
+                }.toMutableList() ?: mutableListOf())
+            }
+        }
+
+        result.detach()
+
 
     }
 
@@ -216,14 +229,25 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         ) {
             val parentId = extras?.getString("PARENT_ID")
             val sortBy = extras?.getString("SORT_BY")
-            var itemsToPlay = parentId?.let { browseTree[it] } ?: browseTree[mediaId] ?: listOf()
-            itemsToPlay = sortBy?.let {
-                itemsToPlay.sortedBy { track ->
-                    track.getString(sortBy)
+            CoroutineScope(Dispatchers.IO).launch {
+                browseTree[parentId ?: mediaId]?.collect { itemsToPlay ->
+                    val itemToPlay =
+                        parentId?.let { itemsToPlay.find { item -> item.id == mediaId } }
+
+                    withContext(Dispatchers.Main)
+                    {
+                        preparePlaylist(
+                            itemToPlay,
+                            itemsToPlay.toList().sortedBy { track ->
+                                track.getString(sortBy)
+                            },
+                            playWhenReady,
+                            0
+                        )
+                    }
                 }
-            } ?: itemsToPlay
-            val itemToPlay = parentId?.let { browseTree[it]?.find { item -> item.id == mediaId } }
-            preparePlaylist(itemToPlay, itemsToPlay.toList(), playWhenReady, 0)
+            }
+
         }
 
         /**

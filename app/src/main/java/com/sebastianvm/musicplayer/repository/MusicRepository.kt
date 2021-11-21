@@ -5,11 +5,11 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.*
-import com.sebastianvm.musicplayer.ui.util.mvvm.NonNullMediatorLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,7 +24,7 @@ class MusicRepository @Inject constructor(
 ) {
 
     private val trackSet = mutableSetOf<Track>()
-    private val artistTrackCrossRefsSet  = mutableSetOf<ArtistTrackCrossRef>()
+    private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
     private val genreTrackCrossRefsSet = mutableSetOf<GenreTrackCrossRef>()
     private val artistsSet = mutableSetOf<Artist>()
     private val albumSet = mutableSetOf<Album>()
@@ -93,30 +93,15 @@ class MusicRepository @Inject constructor(
         val genres: Long,
     )
 
-    fun getCounts(): LiveData<CountHolder> {
-        val countsMediatorLiveData = NonNullMediatorLiveData(CountHolder(0, 0, 0, 0))
-
-        countsMediatorLiveData.addSource(trackRepository.getTracksCount()) {
-            val value = countsMediatorLiveData.value.copy(tracks = it)
-            countsMediatorLiveData.value = value
+    fun getCounts(): Flow<CountHolder> {
+        return combine(
+            trackRepository.getTracksCount(),
+            artistRepository.getArtistsCount(),
+            albumRepository.getAlbumsCount(),
+            genreRepository.getGenresCount()
+        ) { tracksCount, artistsCount, albumCounts, genreCounts ->
+            CountHolder(tracksCount, artistsCount, albumCounts, genreCounts)
         }
-
-        countsMediatorLiveData.addSource(artistRepository.getArtistsCount()) {
-            val value = countsMediatorLiveData.value.copy(artists = it)
-            countsMediatorLiveData.value = value
-        }
-
-        countsMediatorLiveData.addSource(albumRepository.getAlbumsCount()) {
-            val value = countsMediatorLiveData.value.copy(albums = it)
-            countsMediatorLiveData.value = value
-        }
-
-        countsMediatorLiveData.addSource(genreRepository.getGenresCount()) {
-            val value = countsMediatorLiveData.value.copy(genres = it)
-            countsMediatorLiveData.value = value
-        }
-
-        return countsMediatorLiveData
     }
 
 
