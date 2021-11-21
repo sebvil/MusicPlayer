@@ -31,15 +31,15 @@ interface TrackDao {
 
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun newInsertTrack(
-        track: Track,
-        artistTrackCrossRefs: List<ArtistTrackCrossRef>,
-        genreTrackCrossRef: List<GenreTrackCrossRef>,
-        artists: List<Artist>,
-        genres: List<Genre>,
-        album: Album,
-        albumForArtists: List<AlbumsForArtist>,
-        appearsOnForArtist: List<AppearsOnForArtist>
+    suspend fun insertAllTracks(
+        tracks: Set<Track>,
+        artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
+        genreTrackCrossRefs: Set<GenreTrackCrossRef>,
+        artists: Set<Artist>,
+        genres: Set<Genre>,
+        albums: Set<Album>,
+        albumsForArtists: Set<AlbumsForArtist>,
+        appearsOnForArtists: Set<AppearsOnForArtist>
     )
 
 }

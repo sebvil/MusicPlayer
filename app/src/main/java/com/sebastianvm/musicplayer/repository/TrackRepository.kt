@@ -26,25 +26,25 @@ class TrackRepository @Inject constructor(
         return trackDao.getTracks(tracksGids)
     }
 
-    suspend fun newInsertTrack(
-        track: Track,
-        artistTrackCrossRefs: List<ArtistTrackCrossRef>,
-        genreTrackCrossRef: List<GenreTrackCrossRef>,
-        artists: List<Artist>,
-        genres: List<Genre>,
-        album: Album,
-        albumForArtists: List<AlbumsForArtist>,
-        appearsOnForArtist: List<AppearsOnForArtist>
+    suspend fun insertAllTracks(
+        tracks: Set<Track>,
+        artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
+        genreTrackCrossRefs: Set<GenreTrackCrossRef>,
+        artists: Set<Artist>,
+        genres: Set<Genre>,
+        albums: Set<Album>,
+        albumsForArtists: Set<AlbumsForArtist>,
+        appearsOnForArtists: Set<AppearsOnForArtist>
     ) {
-        trackDao.newInsertTrack(
-            track = track,
+        trackDao.insertAllTracks(
+            tracks = tracks,
             artistTrackCrossRefs = artistTrackCrossRefs,
-            genreTrackCrossRef = genreTrackCrossRef,
+            genreTrackCrossRefs = genreTrackCrossRefs,
             artists = artists,
             genres = genres,
-            album = album,
-            albumForArtists = albumForArtists,
-            appearsOnForArtist = appearsOnForArtist,
+            albums = albums,
+            albumsForArtists = albumsForArtists,
+            appearsOnForArtists = appearsOnForArtists,
         )
     }
 }

@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.*
 import com.sebastianvm.musicplayer.ui.util.mvvm.NonNullMediatorLiveData
-import com.sebastianvm.musicplayer.util.PreferencesUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,13 +17,22 @@ import javax.inject.Singleton
 class MusicRepository @Inject constructor(
     @ApplicationContext val context: Context,
     private val musicDatabase: MusicDatabase,
-    private val preferencesUtil: PreferencesUtil,
     private val trackRepository: TrackRepository,
     private val artistRepository: ArtistRepository,
     private val genreRepository: GenreRepository,
     private val albumRepository: AlbumRepository,
 ) {
-    private suspend fun insertTrack(
+
+    private val trackSet = mutableSetOf<Track>()
+    private val artistTrackCrossRefsSet  = mutableSetOf<ArtistTrackCrossRef>()
+    private val genreTrackCrossRefsSet = mutableSetOf<GenreTrackCrossRef>()
+    private val artistsSet = mutableSetOf<Artist>()
+    private val albumSet = mutableSetOf<Album>()
+    private val genresSet = mutableSetOf<Genre>()
+    private val albumForArtistsSet = mutableSetOf<AlbumsForArtist>()
+    private val appearsOnForArtistSet = mutableSetOf<AppearsOnForArtist>()
+
+    private fun insertTrack(
         id: String,
         title: String,
         artists: String,
@@ -32,7 +40,6 @@ class MusicRepository @Inject constructor(
         albumName: String,
         albumArtists: String,
         year: Long,
-        albumArtPath: String,
         trackNumber: Long,
         numTracks: Long,
         duration: Long,
@@ -51,7 +58,7 @@ class MusicRepository @Inject constructor(
         val trackGenres = parseTag(genres).map { Genre(it) }
         val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
         val albumArtistsList = parseTag(albumArtists).map { Artist(it, it) }
-        val album = Album(albumGid, albumName, year, albumArtPath, numTracks)
+        val album = Album(albumGid, albumName, year, "", numTracks)
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->
@@ -62,16 +69,15 @@ class MusicRepository @Inject constructor(
             }
         }
 
-        trackRepository.newInsertTrack(
-            track = track,
-            artistTrackCrossRefs = artistTrackCrossRefs,
-            genreTrackCrossRef = genreTrackCrossRef,
-            artists = trackArtistsList.plus(albumArtistsList),
-            genres = trackGenres,
-            album = album,
-            albumForArtists = albumForArtists,
-            appearsOnForArtist = appearsOnForArtists,
-        )
+        trackSet.add(track)
+        artistTrackCrossRefsSet.addAll(artistTrackCrossRefs)
+        genreTrackCrossRefsSet.addAll(genreTrackCrossRef)
+        artistsSet.addAll(trackArtistsList.plus(albumArtistsList))
+        genresSet.addAll(trackGenres)
+        albumSet.add(album)
+        albumForArtistsSet.addAll(albumForArtists)
+        appearsOnForArtistSet.addAll(appearsOnForArtists)
+
     }
 
     private fun parseTag(tag: String): List<String> {
@@ -186,7 +192,6 @@ class MusicRepository @Inject constructor(
                         thisAlbum,
                         thisAlbumArtists,
                         thisYear,
-                        "",
                         thisTrackNumber,
                         thisNumTracks,
                         thisDuration,
@@ -196,6 +201,16 @@ class MusicRepository @Inject constructor(
                 } while (musicCursor.moveToNext())
             }
             musicCursor?.close()
+            trackRepository.insertAllTracks(
+                tracks = trackSet,
+                artistTrackCrossRefs = artistTrackCrossRefsSet,
+                genreTrackCrossRefs = genreTrackCrossRefsSet,
+                artists = artistsSet,
+                genres = genresSet,
+                albums = albumSet,
+                albumsForArtists = albumForArtistsSet,
+                appearsOnForArtists = appearsOnForArtistSet,
+            )
         }
         messageCallback.onFinished()
     }
