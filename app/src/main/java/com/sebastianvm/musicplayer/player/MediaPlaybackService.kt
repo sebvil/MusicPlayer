@@ -10,7 +10,6 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
@@ -96,22 +95,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot {
-        Log.i("PLAYER", "Getting root, ${Thread.currentThread()}")
-
         return BrowserRoot(BrowseTree.MEDIA_ROOT, null)
-    }
-
-//    private val observers: MutableMap<String, Observer<MediaBrowseTree>> = mutableMapOf()
-
-    private fun addObserver(parentId: String) {
-//        if (parentId !in observers) {
-//            val treeObserver = Observer<MediaBrowseTree> {
-//                notifyChildrenChanged(parentId)
-//            }
-//            browseTree.observeForever(treeObserver)
-//            observers[parentId] = treeObserver
-//        }
-
     }
 
     override fun onLoadChildren(
@@ -202,6 +186,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlayer(newPlayer)
         previousPlayer?.stop()
         previousPlayer?.clearMediaItems()
+    }
+
+    override fun onSearch(
+        query: String,
+        extras: Bundle?,
+        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
+    ) {
+
+        result.detach()
     }
 
     private inner class PlaybackPreparer : MediaSessionConnector.PlaybackPreparer {
