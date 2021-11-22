@@ -68,7 +68,7 @@ class ArtistViewModel @Inject constructor(
                                                     ALBUMS,
                                                     R.string.albums
                                                 )
-                                            ).plus(it)
+                                            ).plus(it.sortedByDescending { albumItem -> albumItem.state.year })
                                         }
                                     },
                                 appearsOnForArtistItems = albumRowItems.filter { it.albumType == AlbumType.APPEARS_ON }
@@ -81,7 +81,7 @@ class ArtistViewModel @Inject constructor(
                                                     APPEARS_ON,
                                                     R.string.appears_on
                                                 )
-                                            ).plus(it)
+                                            ).plus(it.sortedByDescending { albumItem -> albumItem.state.year })
                                         }
                                     },
                             )
