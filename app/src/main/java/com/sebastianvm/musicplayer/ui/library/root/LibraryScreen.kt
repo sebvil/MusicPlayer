@@ -256,8 +256,6 @@ fun ScanFab(onClick: () -> Unit = {}) {
         text = {
             Text(
                 text = stringResource(id = R.string.scan),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = AppDimensions.spacing.mediumLarge),
             )
         },
         onClick = onClick,

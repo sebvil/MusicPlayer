@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.Icon
@@ -9,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -63,12 +65,13 @@ fun TextWithIcon(
                     placeholderVerticalAlign = PlaceholderVerticalAlign.Center
                 )
             ) {
-                // This [Box] will fill maximum size, which is specified by the [Placeholder]
-                // above. Notice the width and height in [Placeholder] are specified in TextUnit,
-                // and are converted into pixel by text layout.
+                val dimension = with(LocalDensity.current) {
+                    fontStyle.fontSize.toDp()
+                }
                 Icon(
                     painter = painterResource(id = state.icon),
                     contentDescription = state.iconContentDescription.getString(),
+                    modifier = Modifier.size(dimension)
                 )
             }
         )
