@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,10 +13,10 @@ class ArtistRepository @Inject constructor(
 ) {
 
     fun getArtistsCount(): Flow<Long> {
-        return artistDao.getArtistsCount()
+        return artistDao.getArtistsCount().distinctUntilChanged()
     }
 
     fun getArtists(): Flow<List<ArtistWithAlbums>> {
-        return artistDao.getArtists()
+        return artistDao.getArtists().distinctUntilChanged()
     }
 }

@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.player
 
 import android.media.browse.MediaBrowser
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.*
 import com.sebastianvm.musicplayer.util.AlbumType

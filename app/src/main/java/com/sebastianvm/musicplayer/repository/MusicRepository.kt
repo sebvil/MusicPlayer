@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.database.entities.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -101,7 +102,7 @@ class MusicRepository @Inject constructor(
             genreRepository.getGenresCount()
         ) { tracksCount, artistsCount, albumCounts, genreCounts ->
             CountHolder(tracksCount, artistsCount, albumCounts, genreCounts)
-        }
+        }.distinctUntilChanged()
     }
 
 

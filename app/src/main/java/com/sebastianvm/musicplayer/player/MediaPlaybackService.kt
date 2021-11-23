@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -98,18 +99,28 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         return BrowserRoot(BrowseTree.MEDIA_ROOT, null)
     }
 
+    private val queriedParentIds = mutableSetOf<String>()
+
     override fun onLoadChildren(
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
+
         CoroutineScope(Dispatchers.IO).launch {
-            browseTree[parentId]?.collect { metadata ->
+            if (parentId !in queriedParentIds) {
+                browseTree[parentId]?.collect {
+                    queriedParentIds.add(parentId)
+                    notifyChildrenChanged(parentId)
+                }
+            }
+            browseTree[parentId]?.first { metadata ->
                 result.sendResult(metadata.map {
                     MediaBrowserCompat.MediaItem(
                         it.descriptionFromMetadata(),
                         it.flags
                     )
-                }.toMutableList() ?: mutableListOf())
+                }.toMutableList())
+                true
             }
         }
 

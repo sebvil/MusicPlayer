@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
@@ -41,7 +40,6 @@ class SearchViewModel @Inject constructor(initialState: SearchState, private val
                                 searchResults = it
                             )
                         }
-                        Log.i("SEARCH", "${action.newText}: $it")
                     }
                 }
             }

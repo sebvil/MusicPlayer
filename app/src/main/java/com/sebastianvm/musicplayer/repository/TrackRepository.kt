@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,15 +13,15 @@ class TrackRepository @Inject constructor(
 ) {
 
     fun getTracksCount(): Flow<Long> {
-        return trackDao.getTracksCount()
+        return trackDao.getTracksCount().distinctUntilChanged()
     }
 
     fun getAllTracks(): Flow<List<FullTrackInfo>> {
-        return trackDao.getAllTracks()
+        return trackDao.getAllTracks().distinctUntilChanged()
     }
 
     fun getTracks(tracksGids: List<String>): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracks(tracksGids)
+        return trackDao.getTracks(tracksGids).distinctUntilChanged()
     }
 
     suspend fun insertAllTracks(

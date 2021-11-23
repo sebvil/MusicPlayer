@@ -11,7 +11,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.sebastianvm.musicplayer.player.MusicServiceConnection.MediaBrowserConnectionCallback
@@ -45,9 +44,6 @@ class MusicServiceConnection @Inject constructor(
     @ApplicationContext context: Context,
     serviceComponent: ComponentName
 ) {
-    init {
-        Log.i("PLAYER", "init service connection")
-    }
     val isConnected = MutableLiveData<Boolean>().apply { postValue(false) }
 
     val playbackState = NonNullMutableLiveData<PlaybackStateCompat>(EMPTY_PLAYBACK_STATE)

@@ -90,12 +90,6 @@ fun AnimatedTextOverflow(
             maxLines = 1,
             overflow = TextOverflow.Visible,
             onTextLayout = {
-//                Log.i(
-//                    "SCROLL1",
-//                    "${it.multiParagraph.maxIntrinsicWidth}, ${it.size.width}, ${it.getLineRight(0)}"
-//                )
-                val tempWidth = it.getHorizontalPosition(it.getLineEnd(0, true), usePrimaryDirection = true)
-//                Log.i("SCROOL", "TempWidth: $tempWidth")
                 if (it.multiParagraph.didExceedMaxLines) {
                     width = (it.multiParagraph.maxIntrinsicWidth).toInt()
                     shouldScroll = true
