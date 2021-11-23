@@ -2,10 +2,7 @@ package com.sebastianvm.musicplayer.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.sebastianvm.musicplayer.database.daos.AlbumDao
-import com.sebastianvm.musicplayer.database.daos.ArtistDao
-import com.sebastianvm.musicplayer.database.daos.GenreDao
-import com.sebastianvm.musicplayer.database.daos.TrackDao
+import com.sebastianvm.musicplayer.database.daos.*
 import com.sebastianvm.musicplayer.database.entities.*
 
 @Database(
@@ -18,8 +15,9 @@ import com.sebastianvm.musicplayer.database.entities.*
         GenreTrackCrossRef::class,
         AlbumsForArtist::class,
         AppearsOnForArtist::class,
+    TrackFts::class,
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {
@@ -27,5 +25,5 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract val artistDao: ArtistDao
     abstract val albumDao: AlbumDao
     abstract val genreDao: GenreDao
-
+    abstract val trackFtsDao: TrackFtsDao
 }

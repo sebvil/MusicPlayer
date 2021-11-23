@@ -1,16 +1,13 @@
 package com.sebastianvm.musicplayer.repository
 
-import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.*
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TrackRepository @Inject constructor(
-    @ApplicationContext val context: Context,
     private val trackDao: TrackDao
 ) {
 

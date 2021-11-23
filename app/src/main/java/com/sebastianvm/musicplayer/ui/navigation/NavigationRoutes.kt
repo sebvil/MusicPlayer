@@ -13,6 +13,7 @@ object NavRoutes {
     const val ALBUM = "ALBUM"
     const val ARTIST = "ARTIST"
     const val PLAYER = "PLAYER"
+    const val SEARCH = "SEARCH"
 }
 
 object NavArgs {

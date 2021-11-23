@@ -188,15 +188,6 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         previousPlayer?.clearMediaItems()
     }
 
-    override fun onSearch(
-        query: String,
-        extras: Bundle?,
-        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
-    ) {
-
-        result.detach()
-    }
-
     private inner class PlaybackPreparer : MediaSessionConnector.PlaybackPreparer {
         override fun onCommand(
             player: Player,

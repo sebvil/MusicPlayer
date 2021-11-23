@@ -24,6 +24,8 @@ import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
+import com.sebastianvm.musicplayer.ui.search.SearchScreen
+import com.sebastianvm.musicplayer.ui.search.SearchViewModel
 
 @Composable
 fun AppNavHost(
@@ -45,6 +47,11 @@ fun AppNavHost(
         composable(NavRoutes.PLAYER) {
             val screenViewModel = hiltViewModel<MusicPlayerViewModel>()
             MusicPlayerScreen(screenViewModel)
+        }
+
+        composable(NavRoutes.SEARCH) {
+            val screenViewModel = hiltViewModel<SearchViewModel>()
+            SearchScreen(screenViewModel)
         }
 
     }
