@@ -10,6 +10,6 @@ import javax.inject.Singleton
 @Singleton
 class FullTextSearchRepository @Inject constructor(private val trackFtsDao: TrackFtsDao) {
     fun searchTracks(text: String): Flow<List<Track>> {
-        return trackFtsDao.tracksWithText(text = "{*$text*}")
+        return trackFtsDao.tracksWithText(text = "{\"*$text*\"}")
     }
 }
