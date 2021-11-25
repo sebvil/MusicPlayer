@@ -1,4 +1,6 @@
 # MusicPlayer
 Android Music player app
 
-making test changes
+# Writing PRs
+
+Make sure you link the relevant Asana Task.
