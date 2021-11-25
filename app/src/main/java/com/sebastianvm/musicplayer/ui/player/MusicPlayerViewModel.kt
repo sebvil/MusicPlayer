@@ -32,7 +32,8 @@ class MusicPlayerViewModel @Inject constructor(
     BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
-        observe(musicServiceConnection.nowPlaying) {
+
+        collect(musicServiceConnection.nowPlaying) {
             val trackGid = if (it.id.isNullOrEmpty()) null else it.id
             val albumGid = if (it.albumId.isNullOrEmpty()) null else it.albumId
             setState {
@@ -50,7 +51,7 @@ class MusicPlayerViewModel @Inject constructor(
                 )
             }
         }
-        observe(musicServiceConnection.playbackState) {
+        collect(musicServiceConnection.playbackState) {
             setState {
                 copy(
                     isPlaying = it.isPlaying,

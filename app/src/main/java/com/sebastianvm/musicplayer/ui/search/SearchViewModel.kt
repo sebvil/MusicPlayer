@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -58,7 +57,7 @@ data class SearchState(
 object InitialSearchStateModule {
     @Provides
     @ViewModelScoped
-    fun initialSearchStateProvider(savedStateHandle: SavedStateHandle): SearchState {
+    fun initialSearchStateProvider(): SearchState {
         return SearchState(
             searchTerm = "",
             searchResults = listOf()

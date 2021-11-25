@@ -14,13 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 
@@ -28,12 +28,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-    SearchLayout(state = state.value, object : SearchScreenDelegate {
-        override fun onTextChanged(newText: String) {
-            screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))
-        }
-    })
+    Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
+        SearchLayout(state = state, object : SearchScreenDelegate {
+            override fun onTextChanged(newText: String) {
+                screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))
+            }
+        })
+    }
 }
 
 @Preview(showSystemUi = true)

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.util.mvvm
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -8,6 +7,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.StateStore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -16,7 +17,7 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
     ViewModel() {
 
     private val stateStore = StateStore(initialState)
-    val state = stateStore.stateLiveData
+    val state = stateStore.stateFlow
 
     private val _nonBlockingEvents = Channel<E>(Channel.BUFFERED)
     private val _blockingEvents = Channel<E>(0)
@@ -44,8 +45,12 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
         }
     }
 
-    fun <T : Any> observe(data: LiveData<T>, onChanged: (T) -> Unit) {
-        stateStore.observe(data, onChanged)
+    fun <T> collect(flow: Flow<T>, onChanged: (T) -> Unit) {
+        viewModelScope.launch {
+            flow.collect {
+                onChanged(it)
+            }
+        }
     }
 
     abstract fun handle(action: A)

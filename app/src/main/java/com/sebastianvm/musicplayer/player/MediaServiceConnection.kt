@@ -14,8 +14,8 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.sebastianvm.musicplayer.player.MusicServiceConnection.MediaBrowserConnectionCallback
-import com.sebastianvm.musicplayer.ui.util.mvvm.NonNullMutableLiveData
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,10 +46,9 @@ class MusicServiceConnection @Inject constructor(
 ) {
     val isConnected = MutableLiveData<Boolean>().apply { postValue(false) }
 
-    val playbackState = NonNullMutableLiveData<PlaybackStateCompat>(EMPTY_PLAYBACK_STATE)
+    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
 
-    val nowPlaying = MutableLiveData<MediaMetadataCompat>()
-        .apply { postValue(NOTHING_PLAYING) }
+    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(
@@ -115,7 +114,7 @@ class MusicServiceConnection @Inject constructor(
     private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            playbackState.postValue(state ?: EMPTY_PLAYBACK_STATE)
+            playbackState.value = state ?: EMPTY_PLAYBACK_STATE
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
@@ -123,13 +122,13 @@ class MusicServiceConnection @Inject constructor(
             // metadata object which has been instantiated with default values. The default value
             // for media ID is null so we assume that if this value is null we are not playing
             // anything.
-            nowPlaying.postValue(
+            nowPlaying.value =
                 if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == null) {
                     NOTHING_PLAYING
                 } else {
                     metadata
                 }
-            )
+
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {

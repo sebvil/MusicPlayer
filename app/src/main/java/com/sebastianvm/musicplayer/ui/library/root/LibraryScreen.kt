@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,8 +32,8 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.*
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 interface LibraryScreenActivityDelegate {
     @PermissionStatus
@@ -43,16 +42,13 @@ interface LibraryScreenActivityDelegate {
 }
 
 interface LibraryScreenDelegate : LibraryListDelegate, PermissionDeniedDialogDelegate,
-    RequestDialogDelegate {
-    fun onFabClicked()
-}
+    RequestDialogDelegate
 
 @Composable
 fun LibraryScreen(
     screenViewModel: LibraryViewModel = viewModel(),
     delegate: LibraryScreenActivityDelegate
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
     val requestStoragePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
@@ -80,59 +76,68 @@ fun LibraryScreen(
     )
 
     val context = LocalContext.current
-    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
-        when (event) {
-            is LibraryUiEvent.StartGetMusicService -> {
-                Intent(context, LibraryScanService::class.java).also { intent ->
-                    startForegroundService(context, intent)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is LibraryUiEvent.StartGetMusicService -> {
+                    Intent(context, LibraryScanService::class.java).also { intent ->
+                        startForegroundService(context, intent)
+                    }
+                }
+                is LibraryUiEvent.NavigateToScreen -> {
+                    delegate.navigateToLibraryScreen(event.rowGid)
+                }
+                is LibraryUiEvent.RequestPermission -> {
+                    requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                is LibraryUiEvent.OpenAppSettings -> {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.data = Uri.parse("package:${context.packageName}")
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        navigateToSettingsLauncher.launch(intent)
+                    }
                 }
             }
-            is LibraryUiEvent.NavigateToScreen -> {
-                delegate.navigateToLibraryScreen(event.rowGid)
-            }
-            is LibraryUiEvent.RequestPermission -> {
-                requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-            is LibraryUiEvent.OpenAppSettings -> {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:${context.packageName}")
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    navigateToSettingsLauncher.launch(intent)
+        },
+        fab = {
+            ScanFab(onClick = {
+                screenViewModel.handle(
+                    LibraryUserAction.FabClicked(
+                        delegate.getPermissionStatus(
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        )
+                    )
+                )
+            })
+
+        }) { state ->
+        LibraryLayout(
+            state = state,
+            object : LibraryScreenDelegate {
+                override fun onRowClicked(rowGid: String) {
+                    screenViewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
+                }
+
+                override fun onPermissionDeniedDialogDismissRequest() {
+                    screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                }
+
+                override fun onPermissionDeniedConfirmButtonClicked() {
+                    screenViewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
+                }
+
+                override fun onRequestDialogDismissRequest() {
+                    screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
+                }
+
+
+                override fun onContinueClicked() {
+                    screenViewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
                 }
             }
-        }
+        )
     }
-
-    LibraryLayout(
-        state = state.value,
-        object : LibraryScreenDelegate {
-            override fun onFabClicked() {
-                screenViewModel.handle(LibraryUserAction.FabClicked(delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE)))
-            }
-
-            override fun onRowClicked(rowGid: String) {
-                screenViewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
-            }
-
-            override fun onPermissionDeniedDialogDismissRequest() {
-                screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
-            }
-
-            override fun onPermissionDeniedConfirmButtonClicked() {
-                screenViewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
-            }
-
-            override fun onRequestDialogDismissRequest() {
-                screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
-            }
-
-
-            override fun onContinueClicked() {
-                screenViewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
-            }
-
-        }
-    )
 }
 
 interface RequestDialogDelegate {
@@ -211,8 +216,6 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
 fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
     ScreenPreview {
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {
-            override fun onFabClicked() = Unit
-
             override fun onRowClicked(rowGid: String) = Unit
 
             override fun onPermissionDeniedDialogDismissRequest() = Unit
@@ -240,13 +243,7 @@ fun LibraryLayout(
     if (state.showPermissionExplanationDialog) {
         RequestDialog(delegate = delegate)
     }
-
-    Scaffold(floatingActionButton = {
-        ScanFab(onClick = delegate::onFabClicked)
-    }) {
-        LibraryList(libraryItems = state.libraryItems, delegate = delegate)
-    }
-
+    LibraryList(libraryItems = state.libraryItems, delegate = delegate)
 }
 
 @Preview

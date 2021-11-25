@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,33 +16,36 @@ import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
     navigateToAlbum: (String, String) -> Unit
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
-        when (event) {
-            is ArtistUiEvent.NavigateToAlbum -> {
-                navigateToAlbum(event.albumGid, event.albumName)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is ArtistUiEvent.NavigateToAlbum -> {
+                    navigateToAlbum(event.albumGid, event.albumName)
+                }
             }
         }
-    }
-    ArtistLayout(state = state.value, delegate = object : ArtistScreenDelegate {
-        override fun albumRowClicked(albumGid: String, albumName: String) {
-            screenViewModel.handle(
-                ArtistUserAction.AlbumClicked(
-                    albumGid = albumGid,
-                    albumName = albumName
+    ) { state ->
+        ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
+            override fun albumRowClicked(albumGid: String, albumName: String) {
+                screenViewModel.handle(
+                    ArtistUserAction.AlbumClicked(
+                        albumGid = albumGid,
+                        albumName = albumName
+                    )
                 )
-            )
-        }
-    })
+            }
+        })
+    }
 }
 
 interface ArtistScreenDelegate : ArtistScreenRowDelegate
