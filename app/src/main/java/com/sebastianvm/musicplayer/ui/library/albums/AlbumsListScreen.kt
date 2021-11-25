@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -16,28 +15,29 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun AlbumsListScreen(
     screenViewModel: AlbumsListViewModel = viewModel(),
     navigateToAlbum: (String, String) -> Unit
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-
-    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
-        when (event) {
-            is AlbumsListUiEvent.NavigateToAlbum -> {
-                navigateToAlbum(event.albumGid, event.albumName)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is AlbumsListUiEvent.NavigateToAlbum -> {
+                    navigateToAlbum(event.albumGid, event.albumName)
+                }
             }
-        }
+        }) { state ->
+        AlbumsListLayout(state = state, object : AlbumsListScreenDelegate {
+            override fun onAlbumClicked(albumGid: String, albumName: String) {
+                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid, albumName))
+            }
+        })
     }
-    AlbumsListLayout(state = state.value, object : AlbumsListScreenDelegate {
-        override fun onAlbumClicked(albumGid: String, albumName: String) {
-            screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid, albumName))
-        }
-    })
 }
 
 interface AlbumsListScreenDelegate {

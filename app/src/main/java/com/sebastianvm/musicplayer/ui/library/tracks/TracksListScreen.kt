@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -15,34 +14,32 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun TracksListScreen(
     screenViewModel: TracksListViewModel = viewModel(),
     navigateToPlayer: () -> Unit,
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-    HandleEvents(
-        eventsFlow = screenViewModel.eventsFlow
-    ) { event ->
+    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
         when (event) {
             is TracksListUiEvent.NavigateToPlayer -> {
                 navigateToPlayer()
             }
         }
+    }) { state ->
+        TracksListLayout(state = state, delegate = object : TracksListScreenDelegate {
+            override fun onTrackClicked(trackGid: String) {
+                screenViewModel.handle(
+                    TracksListUserAction.TrackClicked(
+                        trackGid
+                    )
+                )
+            }
+        })
     }
 
-    TracksListLayout(state = state.value, delegate = object : TracksListScreenDelegate {
-        override fun onTrackClicked(trackGid: String) {
-            screenViewModel.handle(
-                TracksListUserAction.TrackClicked(
-                    trackGid
-                )
-            )
-        }
-    })
 }
 
 interface TracksListScreenDelegate {

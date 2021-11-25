@@ -1,9 +1,12 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.EventHandler
@@ -25,8 +28,10 @@ fun <A: UserAction, E: UiEvent, S: State> Screen(
     Scaffold(
         topBar = { topBar(state.value) },
         floatingActionButton = { fab(state.value) }
-    ) {
-        content(state.value)
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            content(state.value)
+        }
     }
 
 }

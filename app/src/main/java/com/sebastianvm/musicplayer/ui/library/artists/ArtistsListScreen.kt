@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,34 +24,34 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun ArtistsListScreen(
     screenViewModel: ArtistsListViewModel = viewModel(),
     navigateToArtist: (String, String) -> Unit
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
 
-    HandleEvents(eventsFlow = screenViewModel.eventsFlow) { event ->
+    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
         when (event) {
             is ArtistsListUiEvent.NavigateToArtist -> {
                 navigateToArtist(event.artistGid, event.artistName)
             }
         }
 
-    }
-    ArtistsListLayout(state = state.value, delegate = object : ArtistsListScreenDelegate {
-        override fun onArtistRowClicked(artistGid: String, artistName: String) {
-            screenViewModel.handle(
-                ArtistsListUserAction.ArtistClicked(
-                    artistGid = artistGid,
-                    artistName = artistName
+    }) { state ->
+        ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
+            override fun onArtistRowClicked(artistGid: String, artistName: String) {
+                screenViewModel.handle(
+                    ArtistsListUserAction.ArtistClicked(
+                        artistGid = artistGid,
+                        artistName = artistName
+                    )
                 )
-            )
-        }
-    })
+            }
+        })
+    }
 }
 
 interface ArtistsListScreenDelegate {

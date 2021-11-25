@@ -8,7 +8,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,6 +23,7 @@ import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 
@@ -31,20 +31,21 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun MusicPlayerScreen(
     screenViewModel: MusicPlayerViewModel = viewModel(),
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-    MusicPlayerLayout(state = state.value, mediaButtonsDelegate = object : MediaButtonsDelegate() {
-        override fun togglePlay() {
-            screenViewModel.handle(MusicPlayerUserAction.TogglePlay)
-        }
+    Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
+        MusicPlayerLayout(state = state, mediaButtonsDelegate = object : MediaButtonsDelegate() {
+            override fun togglePlay() {
+                screenViewModel.handle(MusicPlayerUserAction.TogglePlay)
+            }
 
-        override fun nextClicked() {
-            screenViewModel.handle(MusicPlayerUserAction.NextTapped)
-        }
+            override fun nextClicked() {
+                screenViewModel.handle(MusicPlayerUserAction.NextTapped)
+            }
 
-        override fun previousClicked() {
-            screenViewModel.handle(MusicPlayerUserAction.PreviousTapped)
-        }
-    })
+            override fun previousClicked() {
+                screenViewModel.handle(MusicPlayerUserAction.PreviousTapped)
+            }
+        })
+    }
 }
 
 @Preview(showSystemUi = true)
@@ -120,7 +121,8 @@ data class TrackInfoState(val trackName: String, val artists: String)
 fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) state: TrackInfoState) {
     Column(
         modifier = Modifier
-            .fillMaxWidth().padding(horizontal = AppDimensions.spacing.large)
+            .fillMaxWidth()
+            .padding(horizontal = AppDimensions.spacing.large)
     ) {
         AnimatedTextOverflow(
             text = state.trackName,

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -18,31 +17,27 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun GenresListScreen(
     screenViewModel: GenresListViewModel = viewModel(),
     navigateToGenre: (String) -> Unit = {}
 ) {
-    val state = screenViewModel.state.observeAsState(screenViewModel.state.value)
-
-    HandleEvents(
-        eventsFlow = screenViewModel.eventsFlow,
-    ) {  event ->
+    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
         when (event) {
             is GenresListUiEvent.NavigateToGenre -> {
                 navigateToGenre(event.genreName)
             }
         }
+    }) { state ->
+        GenresListLayout(state = state, object : GenresListScreenDelegate {
+            override fun onGenreClicked(genreName: String) {
+                screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
+            }
+        })
     }
-
-    GenresListLayout(state = state.value, object : GenresListScreenDelegate {
-        override fun onGenreClicked(genreName: String) {
-            screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
-        }
-    })
 }
 
 interface GenresListScreenDelegate {
