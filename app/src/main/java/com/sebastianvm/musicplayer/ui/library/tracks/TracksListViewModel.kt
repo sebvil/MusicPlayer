@@ -7,8 +7,10 @@ import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.BrowseTree
+import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.player.PARENT_ID
+import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -97,11 +99,11 @@ class TracksListViewModel @Inject constructor(
                 }
                 val extras = Bundle().apply {
                     putString(
-                        MusicServiceConnection.PARENT_ID,
+                        PARENT_ID,
                         parentId
                     )
                     putString(
-                        MusicServiceConnection.SORT_BY,
+                        SORT_BY,
                         MediaMetadataCompat.METADATA_KEY_TITLE
                     )
                 }

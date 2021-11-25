@@ -150,18 +150,15 @@ class MusicServiceConnection @Inject constructor(
 
         }
     }
-
-    companion object {
-        private val EMPTY_PLAYBACK_STATE = PlaybackStateCompat.Builder()
-            .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
-            .build()
-        private val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
-            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-            .build()
-
-        const val PARENT_ID = "PARENT_ID"
-        const val SORT_BY = "SORT_BY"
-
-    }
 }
+
+private val EMPTY_PLAYBACK_STATE = PlaybackStateCompat.Builder()
+    .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
+    .build()
+private val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
+    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
+    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
+    .build()
+
+const val PARENT_ID = "PARENT_ID"
+const val SORT_BY = "SORT_BY"
