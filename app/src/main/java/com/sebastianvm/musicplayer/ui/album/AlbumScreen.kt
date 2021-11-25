@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -14,32 +13,27 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 
 @Composable
 fun AlbumScreen(screenVieModel: AlbumViewModel, navigateToPlayer: () -> Unit) {
-    val state = screenVieModel.state.observeAsState(screenVieModel.state.value)
-    HandleEvents(eventsFlow = screenVieModel.eventsFlow) { event ->
-        when (event) {
-            is AlbumUiEvent.NavigateToPlayer -> {
-                navigateToPlayer()
+    Screen(
+        screenViewModel = screenVieModel,
+        eventHandler = { event ->
+            when (event) {
+                is AlbumUiEvent.NavigateToPlayer -> {
+                    navigateToPlayer()
+                }
             }
+        }) { state ->
+        AlbumLayout(state = state) { trackGid ->
+            screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
         }
     }
-    AlbumLayout(
-        state = state.value,
-        delegate = object : AlbumScreenDelegate {
-            override fun trackRowClicked(trackGid: String) {
-                screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
-            }
-        }
-    )
 }
 
-interface AlbumScreenDelegate {
-    fun trackRowClicked(trackGid: String)
-}
+typealias OnTrackRowClicked = (trackGid: String) -> Unit
 
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -48,15 +42,13 @@ fun AlbumScreenPreview(
     @PreviewParameter(AlbumStatePreviewParameterProvider::class) state: AlbumState
 ) {
     ScreenPreview {
-        AlbumLayout(state = state, object : AlbumScreenDelegate {
-            override fun trackRowClicked(trackGid: String) = Unit
-        })
+        AlbumLayout(state = state) {}
     }
 }
 
 
 @Composable
-fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
+fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
     with(state) {
         val listWithHeaderState =
             ListWithHeaderState(
@@ -75,7 +67,7 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                         state = i,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { delegate.trackRowClicked(i.trackGid) }
+                            .clickable { onTrackRowClicked(i.trackGid) }
                             .padding(
                                 vertical = AppDimensions.spacing.mediumSmall,
                                 horizontal = AppDimensions.spacing.large
