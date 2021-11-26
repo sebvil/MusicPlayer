@@ -5,29 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.StateStore
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialState: S) :
     ViewModel() {
 
     private val stateStore = StateStore(initialState)
-    val state = stateStore.stateFlow
+    val state = stateStore.stateFlow.asStateFlow()
 
-    private val _nonBlockingEvents = Channel<E>(Channel.BUFFERED)
-    private val _blockingEvents = Channel<E>(0)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val eventsFlow = merge(_nonBlockingEvents.receiveAsFlow(), _blockingEvents.receiveAsFlow())
-
-    // This is an event that will block any other events from being sent until said event has been collected.
-    // This is useful for nav events, for example. We do not want to accept any more nav events after we
-    // have triggered one.
+    private val _eventsFlow = MutableSharedFlow<E>(replay = 0)
+    val eventsFlow: SharedFlow<E> = _eventsFlow
 
     fun setState(func: S.() -> S) {
         stateStore.setState(func)
@@ -35,15 +23,10 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
 
     fun addUiEvent(event: E) {
         viewModelScope.launch {
-            _nonBlockingEvents.trySend(event)
+            _eventsFlow.emit(event)
         }
     }
 
-    fun addBlockingEvent(event: E) {
-        viewModelScope.launch {
-            _blockingEvents.trySend(event)
-        }
-    }
 
     fun <T> collect(flow: Flow<T>, onChanged: (T) -> Unit) {
         viewModelScope.launch {

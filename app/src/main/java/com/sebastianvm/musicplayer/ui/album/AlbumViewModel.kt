@@ -7,6 +7,8 @@ import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.player.PARENT_ID
+import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -69,17 +71,17 @@ class AlbumViewModel @Inject constructor(
                 val transportControls = musicServiceConnection.transportControls
                 val extras = Bundle().apply {
                     putString(
-                        MusicServiceConnection.PARENT_ID,
+                        PARENT_ID,
                         "album-${state.value.albumGid}"
                     )
                     putString(
-                        MusicServiceConnection.SORT_BY,
+                        SORT_BY,
                         MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER
                     )
                 }
 
                 transportControls.playFromMediaId(action.trackGid, extras)
-                addBlockingEvent(AlbumUiEvent.NavigateToPlayer)
+                addUiEvent(AlbumUiEvent.NavigateToPlayer)
             }
         }
     }

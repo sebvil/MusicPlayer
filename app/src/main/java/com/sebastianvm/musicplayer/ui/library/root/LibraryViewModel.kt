@@ -76,7 +76,7 @@ class LibraryViewModel @Inject constructor(
             is LibraryUserAction.FabClicked -> {
                 when (action.permissionStatus) {
                     PERMISSION_GRANTED -> {
-                        addUiEvent(LibraryUiEvent.StartGetMusicService)
+                        this.addUiEvent(LibraryUiEvent.StartGetMusicService)
                     }
                     SHOULD_SHOW_EXPLANATION -> {
                         setState {
@@ -86,15 +86,15 @@ class LibraryViewModel @Inject constructor(
                         }
                     }
                     SHOULD_REQUEST_PERMISSION -> {
-                        addUiEvent(LibraryUiEvent.RequestPermission)
+                        this.addUiEvent(LibraryUiEvent.RequestPermission)
                     }
                 }
             }
             is LibraryUserAction.RowClicked -> {
-                addBlockingEvent(LibraryUiEvent.NavigateToScreen(action.rowGid))
+                addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowGid))
             }
             is LibraryUserAction.PermissionGranted -> {
-                addUiEvent(LibraryUiEvent.StartGetMusicService)
+                this.addUiEvent(LibraryUiEvent.StartGetMusicService)
             }
             is LibraryUserAction.PermissionDenied -> {
                 when (action.permissionStatus) {
@@ -122,7 +122,7 @@ class LibraryViewModel @Inject constructor(
                 }
             }
             is LibraryUserAction.PermissionDeniedConfirmButtonClicked -> {
-                addUiEvent(LibraryUiEvent.OpenAppSettings)
+                this.addUiEvent(LibraryUiEvent.OpenAppSettings)
             }
             is LibraryUserAction.DismissPermissionExplanationDialog -> {
                 setState {
@@ -137,7 +137,7 @@ class LibraryViewModel @Inject constructor(
                         showPermissionExplanationDialog = false
                     )
                 }
-                addUiEvent(LibraryUiEvent.RequestPermission)
+                this.addUiEvent(LibraryUiEvent.RequestPermission)
             }
         }
     }

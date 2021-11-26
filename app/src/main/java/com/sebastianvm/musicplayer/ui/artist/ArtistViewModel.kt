@@ -119,7 +119,7 @@ class ArtistViewModel @Inject constructor(
     override fun handle(action: ArtistUserAction) {
         when (action) {
             is ArtistUserAction.AlbumClicked -> {
-                addBlockingEvent(ArtistUiEvent.NavigateToAlbum(action.albumGid, action.albumName))
+                addUiEvent(ArtistUiEvent.NavigateToAlbum(action.albumGid, action.albumName))
             }
         }
     }
