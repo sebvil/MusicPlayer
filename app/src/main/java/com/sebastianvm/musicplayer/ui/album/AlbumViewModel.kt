@@ -81,7 +81,7 @@ class AlbumViewModel @Inject constructor(
                 }
 
                 transportControls.playFromMediaId(action.trackGid, extras)
-                addBlockingEvent(AlbumUiEvent.NavigateToPlayer)
+                addUiEvent(AlbumUiEvent.NavigateToPlayer)
             }
         }
     }

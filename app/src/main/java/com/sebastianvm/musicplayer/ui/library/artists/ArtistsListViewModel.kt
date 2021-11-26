@@ -59,7 +59,7 @@ class ArtistsListViewModel @Inject constructor(
     override fun handle(action: ArtistsListUserAction) {
         when (action) {
             is ArtistsListUserAction.ArtistClicked -> {
-                addBlockingEvent(
+                addUiEvent(
                     ArtistsListUiEvent.NavigateToArtist(
                         action.artistGid,
                         action.artistName

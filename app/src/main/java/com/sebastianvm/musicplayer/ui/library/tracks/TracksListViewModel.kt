@@ -108,7 +108,7 @@ class TracksListViewModel @Inject constructor(
                     )
                 }
                 transportControls.playFromMediaId(action.trackGid, extras)
-                addBlockingEvent(TracksListUiEvent.NavigateToPlayer)
+                addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
         }
     }

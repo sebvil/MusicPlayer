@@ -55,7 +55,7 @@ class GenresListViewModel @Inject constructor(
     override fun handle(action: GenresListUserAction) {
         when (action) {
             is GenresListUserAction.GenreClicked -> {
-                addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
+                this.addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
             }
         }
     }
