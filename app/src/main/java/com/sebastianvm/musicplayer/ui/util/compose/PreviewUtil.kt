@@ -1,8 +1,9 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,10 +29,19 @@ fun ThemedPreview(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenPreview(screen: @Composable () -> Unit) {
+fun ScreenPreview(
+    topBar: @Composable () -> Unit = {},
+    fab: @Composable () -> Unit = {},
+    screen: @Composable () -> Unit
+) {
     AppScreen { _, contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
+        Scaffold(
+            modifier = Modifier.padding(contentPadding),
+            topBar = topBar,
+            floatingActionButton = fab
+        ) {
             screen()
         }
     }

@@ -3,10 +3,14 @@ package com.sebastianvm.musicplayer.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
@@ -21,6 +25,7 @@ import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
 import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
+import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreenNavigationDelegate
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
@@ -87,18 +92,24 @@ fun NavGraphBuilder.libraryGraph(
             })
         ) {
             val screenViewModel = hiltViewModel<TracksListViewModel>()
-            TracksListScreen(screenViewModel) {
-                navController.navigate(NavRoutes.PLAYER) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+            TracksListScreen(screenViewModel, object : TracksListScreenNavigationDelegate {
+                override fun navigateToPlayer() {
+                    navController.navigate(NavRoutes.PLAYER) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
                     }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
                 }
-            }
+
+                override fun navigateUp() {
+                    navController.navigateUp()
+                }
+            })
         }
 
         composable(NavRoutes.ARTISTS_ROOT) {

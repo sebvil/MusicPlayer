@@ -41,6 +41,8 @@
 
     <string name="unknown_album">Unknown album</string>
     <string name="unknown_artist">Unknown artist</string>
+    <string name="back">Back</string>
+    <string name="sort_by">Sort by</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>
