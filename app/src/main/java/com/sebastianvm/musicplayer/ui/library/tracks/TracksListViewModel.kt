@@ -110,15 +110,22 @@ class TracksListViewModel @Inject constructor(
                 transportControls.playFromMediaId(action.trackGid, extras)
                 addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
+            is TracksListUserAction.SortByClicked -> {
+                setState {
+                    copy(
+                        isSortMenuOpen = !isSortMenuOpen
+                    )
+                }
+            }
         }
     }
 }
 
 
-
 data class TracksListState(
     val tracksListTitle: DisplayableString,
-    val tracksList: List<TrackRowState>
+    val tracksList: List<TrackRowState>,
+    val isSortMenuOpen: Boolean,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -131,13 +138,15 @@ object InitialTracksListStateModule {
         return TracksListState(
             tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
                 ?: DisplayableString.ResourceValue(R.string.all_songs),
-            tracksList = listOf()
+            tracksList = listOf(),
+            isSortMenuOpen = false
         )
     }
 }
 
 sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
+    object SortByClicked : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
