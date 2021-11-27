@@ -39,7 +39,6 @@ class LibraryStateProvider : PreviewParameterProvider<LibraryState> {
             ),
             showPermissionDeniedDialog = false,
             showPermissionExplanationDialog = false,
-            isLoading = false
         )
     )
 }

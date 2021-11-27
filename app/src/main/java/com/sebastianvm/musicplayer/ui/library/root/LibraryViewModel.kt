@@ -149,7 +149,6 @@ data class LibraryState(
     val libraryItems: List<LibraryItem>,
     val showPermissionDeniedDialog: Boolean,
     val showPermissionExplanationDialog: Boolean,
-    val isLoading: Boolean
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -162,7 +161,6 @@ object InitialLibraryStateModule {
         libraryItems = listOf(),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
-        isLoading = true
     )
 
 }

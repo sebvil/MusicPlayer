@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.util
 
+import androidx.annotation.CallSuper
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.*
@@ -16,12 +17,14 @@ open class BaseViewModelTest {
     protected val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    @CallSuper
     @Before
     fun setUp() {
         Dispatchers.setMain(mainThreadSurrogate)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    @CallSuper
     @After
     fun tearDown() {
         Dispatchers.resetMain() // reset the main dispatcher to the original Main dispatcher
@@ -31,7 +34,7 @@ open class BaseViewModelTest {
 
     suspend inline fun <reified F : UiEvent> BaseViewModel<*,*,*>.expectedUiEvent(
         externalScope: CoroutineScope,
-        crossinline checks: (F) -> Unit = {}
+        crossinline checks: F.() -> Unit = {}
     ) {
         externalScope.launch {
             val event = eventsFlow.first()

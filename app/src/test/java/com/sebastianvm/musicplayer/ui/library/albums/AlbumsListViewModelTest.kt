@@ -19,8 +19,8 @@ class AlbumsListViewModelTest : BaseViewModelTest() {
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
             expectedUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_GID, it.albumGid)
-                assertEquals(ALBUM_NAME, it.albumName)
+                assertEquals(ALBUM_GID, albumGid)
+                assertEquals(ALBUM_NAME, albumName)
             }
             handle(AlbumsListUserAction.AlbumClicked(ALBUM_GID, ALBUM_NAME))
         }
