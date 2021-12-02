@@ -10,7 +10,12 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -42,9 +47,9 @@ fun AnimatedTextOverflow(
     style: TextStyle = LocalTextStyle.current
 ) {
     var shouldScroll by remember { mutableStateOf(false) }
-    var displayText by remember { mutableStateOf(text)  }
     var width by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
+    LaunchedEffect(key1 = scrollState.maxValue) { shouldScroll = false }
     LaunchedEffect(key1 = width, key2 = scrollState.maxValue) {
         scrollState.scrollTo(0)
         if (scrollState.maxValue != Int.MAX_VALUE) {
@@ -52,18 +57,13 @@ fun AnimatedTextOverflow(
                 width,
                 animationSpec = infiniteRepeatable(
                     animation = tween(
-                        durationMillis = 1 + scrollState.maxValue * 10,
+                        durationMillis = width * 10,
                         easing = LinearEasing,
                         delayMillis = 2000
                     )
                 )
             )
         }
-    }
-
-    if (displayText != text) {
-        displayText = text
-        shouldScroll = false
     }
 
     if (shouldScroll) {
@@ -91,7 +91,7 @@ fun AnimatedTextOverflow(
             overflow = TextOverflow.Visible,
             onTextLayout = {
                 if (it.multiParagraph.didExceedMaxLines) {
-                    width = (it.multiParagraph.maxIntrinsicWidth).toInt()
+                    width = it.multiParagraph.maxIntrinsicWidth.toInt()
                     shouldScroll = true
                 }
             },

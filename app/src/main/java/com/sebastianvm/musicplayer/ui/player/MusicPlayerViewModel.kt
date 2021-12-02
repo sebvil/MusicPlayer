@@ -6,21 +6,29 @@ import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.player.MusicPlayerUserAction.*
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerUserAction.NextTapped
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
-import com.sebastianvm.musicplayer.util.extensions.*
+import com.sebastianvm.musicplayer.util.extensions.albumId
+import com.sebastianvm.musicplayer.util.extensions.artist
+import com.sebastianvm.musicplayer.util.extensions.duration
+import com.sebastianvm.musicplayer.util.extensions.id
+import com.sebastianvm.musicplayer.util.extensions.isPlayEnabled
+import com.sebastianvm.musicplayer.util.extensions.isPlaying
+import com.sebastianvm.musicplayer.util.extensions.title
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -32,7 +40,6 @@ class MusicPlayerViewModel @Inject constructor(
     BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
-
         collect(musicServiceConnection.nowPlaying) {
             val trackGid = if (it.id.isNullOrEmpty()) null else it.id
             val albumGid = if (it.albumId.isNullOrEmpty()) null else it.albumId
@@ -60,9 +67,11 @@ class MusicPlayerViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            while (true) {
-                delay(100)
-                updateProgress()
+            withContext(Dispatchers.Main) {
+                while (true) {
+                    delay(1)
+                    updateProgress()
+                }
             }
         }
     }
@@ -70,7 +79,7 @@ class MusicPlayerViewModel @Inject constructor(
     override fun handle(action: MusicPlayerUserAction) {
         val transportControls = musicServiceConnection.transportControls
         when (action) {
-            is TogglePlay -> {
+            is MusicPlayerUserAction.TogglePlay -> {
                 musicServiceConnection.playbackState.value.let { playbackState ->
                     when {
                         playbackState.isPlaying -> {
@@ -82,7 +91,7 @@ class MusicPlayerViewModel @Inject constructor(
                     }
                 }
             }
-            is PreviousTapped -> {
+            is MusicPlayerUserAction.PreviousTapped -> {
                 transportControls.skipToPrevious()
             }
             is NextTapped -> {
@@ -110,7 +119,7 @@ class MusicPlayerViewModel @Inject constructor(
             // on MediaControllerCompat.
             val timeDelta: Long = SystemClock.elapsedRealtime() -
                     playbackState.lastPositionUpdateTime
-            currentPosition += (timeDelta.toInt() * playbackState.playbackSpeed).toLong()
+            currentPosition += (timeDelta * playbackState.playbackSpeed).toLong()
         }
 
         setState {
@@ -118,6 +127,8 @@ class MusicPlayerViewModel @Inject constructor(
                 currentPlaybackTimeMs = currentPosition
             )
         }
+
+
     }
 }
 
