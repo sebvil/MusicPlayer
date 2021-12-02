@@ -14,7 +14,7 @@ class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksL
                 TrackRowState("2", "La Promesa", "Melendi"),
                 TrackRowState("3", "La Promesa", "Melendi")
             ),
-            false
+            SortOption.TRACK_NAME
         )
     )
 }

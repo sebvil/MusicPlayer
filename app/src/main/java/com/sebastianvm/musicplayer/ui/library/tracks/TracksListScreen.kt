@@ -2,28 +2,35 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -72,11 +79,22 @@ fun TracksListScreen(
                 }
             })
         },
-        bottomNavBar = bottomNavBar
+        bottomNavBar = bottomNavBar,
+        bottomSheet = { state, content ->
+            TracksListBottomSheetMenu(
+                sheetState = bottomSheetState,
+                currentSort = state.currentSort,
+                onSortSelected = { newSortOption ->
+                    screenViewModel.handle(
+                        TracksListUserAction.SortOptionClicked(newSortOption)
+                    )
+                }) {
+                content()
+            }
+        }
     ) { state ->
         TracksListLayout(
             state = state,
-            bottomSheetState = bottomSheetState,
             delegate = object : TracksListScreenDelegate {
                 override fun onTrackClicked(trackGid: String) {
                     screenViewModel.handle(
@@ -150,57 +168,70 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
 @Composable
 fun TracksListLayout(
     state: TracksListState,
-    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
     delegate: TracksListScreenDelegate
 ) {
-    if (state.isSortMenuOpen) {
-        SortBottomSheetMenu(sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)) {
-            LazyColumn {
-                items(state.tracksList) { item ->
-                    TrackRow(
-                        state = item,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { delegate.onTrackClicked(item.trackGid) }
-                            .padding(
-                                vertical = AppDimensions.spacing.mediumSmall,
-                                horizontal = AppDimensions.spacing.large
-                            )
+
+    LazyColumn {
+        items(state.tracksList) { item ->
+            TrackRow(
+                state = item,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { delegate.onTrackClicked(item.trackGid) }
+                    .padding(
+                        vertical = AppDimensions.spacing.mediumSmall,
+                        horizontal = AppDimensions.spacing.large
                     )
-                }
-            }
+            )
         }
-    } else {
-        LazyColumn {
-            items(state.tracksList) { item ->
-                TrackRow(
-                    state = item,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { delegate.onTrackClicked(item.trackGid) }
-                        .padding(
-                            vertical = AppDimensions.spacing.mediumSmall,
-                            horizontal = AppDimensions.spacing.large
-                        )
-                )
-            }
-        }
+
     }
-
-
 }
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SortBottomSheetMenu(sheetState: ModalBottomSheetState, content: @Composable () -> Unit) {
-    ModalBottomSheetLayout(
-        sheetContent = {
-            Text(text = "Track name")
-            Text(text = "Artist name")
-        },
+fun TracksListBottomSheetMenu(
+    sheetState: ModalBottomSheetState,
+    currentSort: SortOption,
+    onSortSelected: (SortOption) -> Unit,
+    content: @Composable () -> Unit
+) {
+    M3ModalBottomSheetLayout(
+        sheetContent = { SortBottomSheetLayout(currentSort, onSortSelected) },
         sheetState = sheetState
     ) {
         content()
     }
+}
+
+@Composable
+fun SortBottomSheetLayout(currentSort: SortOption, onSortSelected: (SortOption) -> Unit) {
+    val rowModifier = Modifier
+        .fillMaxWidth()
+        .height(56.dp)
+        .padding(start = 16.dp)
+    val listItems = SortOption.values()
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(id = R.string.sort_by),
+            modifier = rowModifier.paddingFromBaseline(top = 36.dp)
+        )
+        LazyColumn {
+            items(listItems, key = { it }) { row ->
+                Row(
+                    modifier = Modifier
+                        .clickable { onSortSelected(row) }
+                        .then(rowModifier),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = currentSort == row,
+                        onClick = { onSortSelected(row) })
+                    Text(text = stringResource(id = row.id))
+                }
+            }
+        }
+    }
+
 }
