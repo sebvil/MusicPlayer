@@ -1,7 +1,14 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,8 +37,9 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun MusicPlayerScreen(
     screenViewModel: MusicPlayerViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
+    Screen(screenViewModel = screenViewModel, eventHandler = {}, bottomNavBar = bottomNavBar) { state ->
         MusicPlayerLayout(state = state, mediaButtonsDelegate = object : MediaButtonsDelegate() {
             override fun togglePlay() {
                 screenViewModel.handle(MusicPlayerUserAction.TogglePlay)

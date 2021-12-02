@@ -41,6 +41,7 @@ interface TracksListScreenNavigationDelegate {
 @Composable
 fun TracksListScreen(
     screenViewModel: TracksListViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
     delegate: TracksListScreenNavigationDelegate
 ) {
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
@@ -70,7 +71,9 @@ fun TracksListScreen(
                     screenViewModel.handle(TracksListUserAction.SortByClicked)
                 }
             })
-        }) { state ->
+        },
+        bottomNavBar = bottomNavBar
+    ) { state ->
         TracksListLayout(
             state = state,
             bottomSheetState = bottomSheetState,
@@ -150,7 +153,24 @@ fun TracksListLayout(
     bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
     delegate: TracksListScreenDelegate
 ) {
-    SortBottomSheetMenu(sheetState = bottomSheetState) {
+    if (state.isSortMenuOpen) {
+        SortBottomSheetMenu(sheetState = ModalBottomSheetState(ModalBottomSheetValue.Expanded)) {
+            LazyColumn {
+                items(state.tracksList) { item ->
+                    TrackRow(
+                        state = item,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { delegate.onTrackClicked(item.trackGid) }
+                            .padding(
+                                vertical = AppDimensions.spacing.mediumSmall,
+                                horizontal = AppDimensions.spacing.large
+                            )
+                    )
+                }
+            }
+        }
+    } else {
         LazyColumn {
             items(state.tracksList) { item ->
                 TrackRow(

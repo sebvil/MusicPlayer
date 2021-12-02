@@ -17,7 +17,11 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
-fun AlbumScreen(screenVieModel: AlbumViewModel, navigateToPlayer: () -> Unit) {
+fun AlbumScreen(
+    screenVieModel: AlbumViewModel,
+    bottomNavBar: @Composable () -> Unit,
+    navigateToPlayer: () -> Unit
+) {
     Screen(
         screenViewModel = screenVieModel,
         eventHandler = { event ->
@@ -26,7 +30,9 @@ fun AlbumScreen(screenVieModel: AlbumViewModel, navigateToPlayer: () -> Unit) {
                     navigateToPlayer()
                 }
             }
-        }) { state ->
+        },
+        bottomNavBar = bottomNavBar
+    ) { state ->
         AlbumLayout(state = state) { trackGid ->
             screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
         }

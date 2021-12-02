@@ -1,13 +1,12 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
@@ -36,10 +35,10 @@ fun ScreenPreview(
     fab: @Composable () -> Unit = {},
     screen: @Composable () -> Unit
 ) {
-    AppScreen { _, contentPadding ->
+    NavHostWrapper { navController ->
         Scaffold(
-            modifier = Modifier.padding(contentPadding),
             topBar = topBar,
+            bottomBar = { BottomNavBar(navController = navController) },
             floatingActionButton = fab
         ) {
             screen()

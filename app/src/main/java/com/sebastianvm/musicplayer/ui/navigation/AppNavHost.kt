@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -35,28 +34,28 @@ import com.sebastianvm.musicplayer.ui.search.SearchViewModel
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    modifier: Modifier,
     requestPermission: (String) -> String,
 ) {
+    val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
     NavHost(
         navController = navController,
-        modifier = modifier,
-        startDestination = NavRoutes.LIBRARY
+        startDestination = NavRoutes.LIBRARY,
     ) {
 
         libraryGraph(
             navController = navController,
+            bottomNavBar = bottomNavBar,
             requestPermission = requestPermission,
         )
 
         composable(NavRoutes.PLAYER) {
             val screenViewModel = hiltViewModel<MusicPlayerViewModel>()
-            MusicPlayerScreen(screenViewModel)
+            MusicPlayerScreen(screenViewModel, bottomNavBar)
         }
 
         composable(NavRoutes.SEARCH) {
             val screenViewModel = hiltViewModel<SearchViewModel>()
-            SearchScreen(screenViewModel)
+            SearchScreen(screenViewModel, bottomNavBar)
         }
 
     }
@@ -65,6 +64,7 @@ fun AppNavHost(
 
 fun NavGraphBuilder.libraryGraph(
     navController: NavHostController,
+    bottomNavBar: @Composable () -> Unit,
     requestPermission: (String) -> String,
 ) {
 
@@ -73,6 +73,7 @@ fun NavGraphBuilder.libraryGraph(
             val screenViewModel = hiltViewModel<LibraryViewModel>()
             LibraryScreen(
                 screenViewModel = screenViewModel,
+                bottomNavBar = bottomNavBar,
                 delegate = object : LibraryScreenActivityDelegate {
                     override fun getPermissionStatus(permission: String): String {
                         return requestPermission(permission)
@@ -92,29 +93,32 @@ fun NavGraphBuilder.libraryGraph(
             })
         ) {
             val screenViewModel = hiltViewModel<TracksListViewModel>()
-            TracksListScreen(screenViewModel, object : TracksListScreenNavigationDelegate {
-                override fun navigateToPlayer() {
-                    navController.navigate(NavRoutes.PLAYER) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+            TracksListScreen(
+                screenViewModel,
+                bottomNavBar,
+                object : TracksListScreenNavigationDelegate {
+                    override fun navigateToPlayer() {
+                        navController.navigate(NavRoutes.PLAYER) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            // Avoid multiple copies of the same destination when
+                            // reselecting the same item
+                            launchSingleTop = true
+                            // Restore state when reselecting a previously selected item
+                            restoreState = true
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
                     }
-                }
 
-                override fun navigateUp() {
-                    navController.navigateUp()
-                }
-            })
+                    override fun navigateUp() {
+                        navController.navigateUp()
+                    }
+                })
         }
 
         composable(NavRoutes.ARTISTS_ROOT) {
             val screenViewModel = hiltViewModel<ArtistsListViewModel>()
-            ArtistsListScreen(screenViewModel) { artistGid, artistName ->
+            ArtistsListScreen(screenViewModel, bottomNavBar) { artistGid, artistName ->
                 navController.navigateTo(
                     NavRoutes.ARTIST,
                     NavArgument(NavArgs.ARTIST_GID, artistGid),
@@ -125,7 +129,7 @@ fun NavGraphBuilder.libraryGraph(
 
         composable(NavRoutes.ALBUMS_ROOT) {
             val screenViewModel = hiltViewModel<AlbumsListViewModel>()
-            AlbumsListScreen(screenViewModel) { albumGid, albumName ->
+            AlbumsListScreen(screenViewModel, bottomNavBar) { albumGid, albumName ->
                 navController.navigateTo(
                     NavRoutes.ALBUM,
                     NavArgument(NavArgs.ALBUM_GID, albumGid),
@@ -136,7 +140,7 @@ fun NavGraphBuilder.libraryGraph(
 
         composable(NavRoutes.GENRES_ROOT) {
             val screenViewModel = hiltViewModel<GenresListViewModel>()
-            GenresListScreen(screenViewModel) { genre ->
+            GenresListScreen(screenViewModel, bottomNavBar) { genre ->
                 navController.navigateTo(
                     NavRoutes.TRACKS_ROOT,
                     NavArgument(NavArgs.GENRE_NAME, genre)
@@ -148,7 +152,7 @@ fun NavGraphBuilder.libraryGraph(
             createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID, NavArgs.ARTIST_NAME),
         ) {
             val screenViewModel = hiltViewModel<ArtistViewModel>()
-            ArtistScreen(screenViewModel) { albumGid, albumName ->
+            ArtistScreen(screenViewModel, bottomNavBar) { albumGid, albumName ->
                 navController.navigateTo(
                     NavRoutes.ALBUM,
                     NavArgument(NavArgs.ALBUM_GID, albumGid),
@@ -161,7 +165,7 @@ fun NavGraphBuilder.libraryGraph(
             createNavRoute(NavRoutes.ALBUM, NavArgs.ALBUM_GID, NavArgs.ALBUM_NAME),
         ) {
             val screenViewModel = hiltViewModel<AlbumViewModel>()
-            AlbumScreen(screenViewModel) {
+            AlbumScreen(screenViewModel, bottomNavBar) {
                 navController.navigate(NavRoutes.PLAYER) {
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
