@@ -21,6 +21,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun AlbumsListScreen(
     screenViewModel: AlbumsListViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
     navigateToAlbum: (String, String) -> Unit
 ) {
     Screen(
@@ -31,7 +32,9 @@ fun AlbumsListScreen(
                     navigateToAlbum(event.albumGid, event.albumName)
                 }
             }
-        }) { state ->
+        },
+        bottomNavBar = bottomNavBar
+    ) { state ->
         AlbumsListLayout(state = state, object : AlbumsListScreenDelegate {
             override fun onAlbumClicked(albumGid: String, albumName: String) {
                 screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid, albumName))

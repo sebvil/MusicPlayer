@@ -23,15 +23,20 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun GenresListScreen(
     screenViewModel: GenresListViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
     navigateToGenre: (String) -> Unit = {}
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
-        when (event) {
-            is GenresListUiEvent.NavigateToGenre -> {
-                navigateToGenre(event.genreName)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is GenresListUiEvent.NavigateToGenre -> {
+                    navigateToGenre(event.genreName)
+                }
             }
-        }
-    }) { state ->
+        },
+        bottomNavBar = bottomNavBar
+    ) { state ->
         GenresListLayout(state = state, object : GenresListScreenDelegate {
             override fun onGenreClicked(genreName: String) {
                 screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))

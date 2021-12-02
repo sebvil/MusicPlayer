@@ -2,7 +2,14 @@ package com.sebastianvm.musicplayer.ui.library.artists
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,17 +37,22 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun ArtistsListScreen(
     screenViewModel: ArtistsListViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
     navigateToArtist: (String, String) -> Unit
 ) {
 
-    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
-        when (event) {
-            is ArtistsListUiEvent.NavigateToArtist -> {
-                navigateToArtist(event.artistGid, event.artistName)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is ArtistsListUiEvent.NavigateToArtist -> {
+                    navigateToArtist(event.artistGid, event.artistName)
+                }
             }
-        }
 
-    }) { state ->
+        },
+        bottomNavBar = bottomNavBar
+    ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
             override fun onArtistRowClicked(artistGid: String, artistName: String) {
                 screenViewModel.handle(

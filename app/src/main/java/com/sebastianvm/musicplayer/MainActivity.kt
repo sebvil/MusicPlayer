@@ -10,7 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
-import com.sebastianvm.musicplayer.ui.util.compose.AppScreen
+import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -23,10 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppScreen { navController, contentPadding ->
+            NavHostWrapper { navController ->
                 AppNavHost(
                     navController = navController,
-                    modifier = Modifier.padding(contentPadding),
                     requestPermission = ::requestPermission,
                 )
             }

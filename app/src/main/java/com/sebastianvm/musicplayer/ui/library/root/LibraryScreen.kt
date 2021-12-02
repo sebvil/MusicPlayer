@@ -12,7 +12,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +36,11 @@ import com.sebastianvm.musicplayer.PERMISSION_GRANTED
 import com.sebastianvm.musicplayer.PermissionStatus
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
-import com.sebastianvm.musicplayer.ui.components.*
+import com.sebastianvm.musicplayer.ui.components.LibraryTitle
+import com.sebastianvm.musicplayer.ui.components.ListWithHeader
+import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.TextWithIcon
+import com.sebastianvm.musicplayer.ui.components.TextWithIconState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -47,6 +57,7 @@ interface LibraryScreenDelegate : LibraryListDelegate, PermissionDeniedDialogDel
 @Composable
 fun LibraryScreen(
     screenViewModel: LibraryViewModel = viewModel(),
+    bottomNavBar: @Composable () -> Unit,
     delegate: LibraryScreenActivityDelegate
 ) {
     val requestStoragePermissionLauncher = rememberLauncherForActivityResult(
@@ -100,6 +111,7 @@ fun LibraryScreen(
                 }
             }
         },
+        bottomNavBar = bottomNavBar,
         fab = {
             ScanFab(onClick = {
                 screenViewModel.handle(

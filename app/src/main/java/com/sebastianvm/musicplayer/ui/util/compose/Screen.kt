@@ -20,18 +20,37 @@ import kotlinx.coroutines.Dispatchers
 fun <A : UserAction, E : UiEvent, S : State> Screen(
     screenViewModel: BaseViewModel<A, E, S>,
     eventHandler: EventHandler<E>,
+    bottomSheet: (@Composable (S, content: @Composable () -> Unit) -> Unit)? = null,
     topBar: @Composable (S) -> Unit = {},
+    bottomNavBar: @Composable () -> Unit = {},
     fab: @Composable (S) -> Unit = {},
     content: @Composable (S) -> Unit
 ) {
     val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(eventsFlow = screenViewModel.eventsFlow, eventHandler = eventHandler)
-    Scaffold(
-        topBar = { topBar(state.value) },
-        floatingActionButton = { fab(state.value) }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            content(state.value)
+
+    if (bottomSheet != null) {
+        bottomSheet(state.value) {
+            Scaffold(
+                topBar = { topBar(state.value) },
+                bottomBar = bottomNavBar,
+                floatingActionButton = { fab(state.value) }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    content(state.value)
+                }
+            }
+        }
+    } else {
+        Scaffold(
+            topBar = { topBar(state.value) },
+            bottomBar = bottomNavBar,
+            floatingActionButton = { fab(state.value) }
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                content(state.value)
+            }
         }
     }
+
 }

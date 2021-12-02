@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
@@ -27,6 +28,13 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
+
+
+
+enum class SortOption(@StringRes val id: Int) {
+    TRACK_NAME(R.string.track_name),
+    ARTIST_NAME(R.string.artist_name)
+}
 
 
 @HiltViewModel
@@ -111,9 +119,18 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
             is TracksListUserAction.SortByClicked -> {
+                addUiEvent(TracksListUiEvent.ShowBottomSheet)
+            }
+            is TracksListUserAction.SortOptionClicked -> {
                 setState {
                     copy(
-                        isSortMenuOpen = !isSortMenuOpen
+                        currentSort = action.newSortOption,
+                        tracksList = tracksList.sortedBy { track ->
+                            when (action.newSortOption) {
+                                SortOption.TRACK_NAME -> track.trackName
+                                SortOption.ARTIST_NAME -> track.artists
+                            }
+                        }
                     )
                 }
             }
@@ -125,7 +142,7 @@ class TracksListViewModel @Inject constructor(
 data class TracksListState(
     val tracksListTitle: DisplayableString,
     val tracksList: List<TrackRowState>,
-    val isSortMenuOpen: Boolean,
+    val currentSort: SortOption
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -139,7 +156,7 @@ object InitialTracksListStateModule {
             tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
                 ?: DisplayableString.ResourceValue(R.string.all_songs),
             tracksList = listOf(),
-            isSortMenuOpen = false
+            currentSort = SortOption.TRACK_NAME,
         )
     }
 }
@@ -147,10 +164,12 @@ object InitialTracksListStateModule {
 sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
     object SortByClicked : TracksListUserAction()
+    data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
+    object ShowBottomSheet : TracksListUiEvent()
 }
 
 
