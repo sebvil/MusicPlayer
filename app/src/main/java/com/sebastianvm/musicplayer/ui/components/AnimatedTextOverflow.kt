@@ -49,6 +49,7 @@ fun AnimatedTextOverflow(
     var shouldScroll by remember { mutableStateOf(false) }
     var width by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
+    LaunchedEffect(key1 = scrollState.maxValue) { shouldScroll = false }
     LaunchedEffect(key1 = width, key2 = scrollState.maxValue) {
         scrollState.scrollTo(0)
         if (scrollState.maxValue != Int.MAX_VALUE) {
@@ -56,7 +57,7 @@ fun AnimatedTextOverflow(
                 width,
                 animationSpec = infiniteRepeatable(
                     animation = tween(
-                        durationMillis = 1 + scrollState.maxValue * 10,
+                        durationMillis = width * 10,
                         easing = LinearEasing,
                         delayMillis = 2000
                     )
@@ -90,7 +91,7 @@ fun AnimatedTextOverflow(
             overflow = TextOverflow.Visible,
             onTextLayout = {
                 if (it.multiParagraph.didExceedMaxLines) {
-                    width = (it.multiParagraph.maxIntrinsicWidth).toInt()
+                    width = it.multiParagraph.maxIntrinsicWidth.toInt()
                     shouldScroll = true
                 }
             },
