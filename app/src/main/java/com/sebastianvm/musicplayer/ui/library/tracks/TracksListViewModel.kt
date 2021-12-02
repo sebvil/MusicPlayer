@@ -111,11 +111,7 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
             is TracksListUserAction.SortByClicked -> {
-                setState {
-                    copy(
-                        isSortMenuOpen = !isSortMenuOpen
-                    )
-                }
+                addUiEvent(TracksListUiEvent.ShowBottomSheet)
             }
         }
     }
@@ -151,6 +147,7 @@ sealed class TracksListUserAction : UserAction {
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
+    object ShowBottomSheet : TracksListUiEvent()
 }
 
 

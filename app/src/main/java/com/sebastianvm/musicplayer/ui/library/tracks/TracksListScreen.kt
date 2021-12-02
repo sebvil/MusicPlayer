@@ -10,11 +10,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,6 +29,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import kotlinx.coroutines.launch
 
 
 interface TracksListScreenNavigationDelegate {
@@ -34,17 +37,26 @@ interface TracksListScreenNavigationDelegate {
     fun navigateUp()
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TracksListScreen(
     screenViewModel: TracksListViewModel = viewModel(),
     delegate: TracksListScreenNavigationDelegate
 ) {
+    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
+
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is TracksListUiEvent.NavigateToPlayer -> {
                     delegate.navigateToPlayer()
+                }
+                is TracksListUiEvent.ShowBottomSheet -> {
+                    scope.launch {
+                        bottomSheetState.show()
+                    }
                 }
             }
         },
@@ -59,15 +71,18 @@ fun TracksListScreen(
                 }
             })
         }) { state ->
-        TracksListLayout(state = state, delegate = object : TracksListScreenDelegate {
-            override fun onTrackClicked(trackGid: String) {
-                screenViewModel.handle(
-                    TracksListUserAction.TrackClicked(
-                        trackGid
+        TracksListLayout(
+            state = state,
+            bottomSheetState = bottomSheetState,
+            delegate = object : TracksListScreenDelegate {
+                override fun onTrackClicked(trackGid: String) {
+                    screenViewModel.handle(
+                        TracksListUserAction.TrackClicked(
+                            trackGid
+                        )
                     )
-                )
-            }
-        })
+                }
+            })
     }
 }
 
@@ -118,6 +133,7 @@ interface TracksListScreenDelegate {
 
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterProvider::class) state: TracksListState) {
     ScreenPreview(topBar = { TopBar(state = state, delegate = object : TopBarDelegate {}) }) {
@@ -131,12 +147,10 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
 @Composable
 fun TracksListLayout(
     state: TracksListState,
+    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
     delegate: TracksListScreenDelegate
 ) {
-    val sheetValue =
-        if (state.isSortMenuOpen) ModalBottomSheetValue.Expanded else ModalBottomSheetValue.Hidden
-
-    SortBottomSheetMenu(sheetState = ModalBottomSheetState(sheetValue)) {
+    SortBottomSheetMenu(sheetState = bottomSheetState) {
         LazyColumn {
             items(state.tracksList) { item ->
                 TrackRow(

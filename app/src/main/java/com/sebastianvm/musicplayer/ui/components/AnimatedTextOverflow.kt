@@ -10,7 +10,12 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -42,7 +47,6 @@ fun AnimatedTextOverflow(
     style: TextStyle = LocalTextStyle.current
 ) {
     var shouldScroll by remember { mutableStateOf(false) }
-    var displayText by remember { mutableStateOf(text)  }
     var width by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState()
     LaunchedEffect(key1 = width, key2 = scrollState.maxValue) {
@@ -59,11 +63,6 @@ fun AnimatedTextOverflow(
                 )
             )
         }
-    }
-
-    if (displayText != text) {
-        displayText = text
-        shouldScroll = false
     }
 
     if (shouldScroll) {
