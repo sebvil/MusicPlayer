@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +47,6 @@ fun HeaderWithImage(
         MediaArtImage(
             image = state.image,
             modifier = Modifier.aspectRatio(1f).padding(all = AppDimensions.spacing.large),
-            iconPadding = PaddingValues(all = AppDimensions.spacing.large),
             contentScale = ContentScale.FillHeight
         )
         Text(

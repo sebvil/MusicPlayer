@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.player
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -77,7 +76,6 @@ fun MusicPlayerLayout(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.large),
-                iconPadding = PaddingValues(all = AppDimensions.spacing.large),
                 contentScale = ContentScale.FillHeight
             )
             Column(
@@ -106,7 +104,6 @@ fun MusicPlayerLayout(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.large),
-                iconPadding = PaddingValues(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
             TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))

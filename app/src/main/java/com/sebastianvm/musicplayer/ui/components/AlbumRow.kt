@@ -1,7 +1,13 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +55,6 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .padding(end = AppDimensions.spacing.mediumSmall)
                         .aspectRatio(1f, matchHeightConstraintsFirst = true),
-                    iconPadding = PaddingValues(all = AppDimensions.spacing.small),
                     contentScale = ContentScale.FillHeight
                 )
 

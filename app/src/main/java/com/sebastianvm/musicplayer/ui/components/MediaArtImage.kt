@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -33,7 +30,6 @@ fun MediaArtImagePreview() {
                 backupResource = R.drawable.ic_song,
                 backupContentDescription = DisplayableString.StringValue("Album art placeholder")
             ),
-            iconPadding = PaddingValues(all = AppDimensions.spacing.extraSmall)
         )
     }
 }
@@ -45,7 +41,6 @@ fun MediaArtImagePreview() {
 fun MediaArtImage(
     image: MediaArt,
     modifier: Modifier = Modifier,
-    iconPadding: PaddingValues = PaddingValues(),
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -67,7 +62,6 @@ fun MediaArtImage(
             Icon(
                 painter = painterResource(id = image.backupResource),
                 contentDescription = image.backupContentDescription.getString(),
-                modifier = Modifier.padding(iconPadding),
             )
 
         }
