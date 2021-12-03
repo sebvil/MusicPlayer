@@ -30,7 +30,6 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 
-
 enum class SortOption(@StringRes val id: Int) {
     TRACK_NAME(R.string.track_name),
     ARTIST_NAME(R.string.artist_name)
@@ -112,7 +111,10 @@ class TracksListViewModel @Inject constructor(
                     )
                     putString(
                         SORT_BY,
-                        MediaMetadataCompat.METADATA_KEY_TITLE
+                        when (state.value.currentSort) {
+                            SortOption.TRACK_NAME -> MediaMetadataCompat.METADATA_KEY_TITLE
+                            SortOption.ARTIST_NAME -> MediaMetadataCompat.METADATA_KEY_ARTIST
+                        }
                     )
                 }
                 transportControls.playFromMediaId(action.trackGid, extras)
