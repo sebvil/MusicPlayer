@@ -10,6 +10,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -69,5 +71,93 @@ class LibraryViewModelTest : BaseViewModelTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `RowClicked adds nav NavigateToScreen event`() = runTest {
+        with(generateViewModel()) {
+            expectedUiEvent<LibraryUiEvent.NavigateToScreen>(this@runTest) {
+                assertEquals(ROW_ID, rowGid)
+            }
+            handle(LibraryUserAction.RowClicked(ROW_ID))
+        }
+    }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `PermissionGranted adds StartGetMusicService event`() = runTest {
+        with(generateViewModel()) {
+            expectedUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
+            handle(LibraryUserAction.PermissionGranted)
+        }
+    }
+
+    @Test
+    fun `PermissionDenied changes state when should show explanation`() {
+        with(generateViewModel()) {
+            handle(LibraryUserAction.PermissionDenied(SHOULD_SHOW_EXPLANATION))
+            assertTrue(state.value.showPermissionExplanationDialog)
+        }
+    }
+
+    @Test
+    fun `PermissionDenied changes state when should not show explanation`() {
+        with(generateViewModel()) {
+            handle(LibraryUserAction.PermissionDenied(SHOULD_REQUEST_PERMISSION))
+            assertTrue(state.value.showPermissionDeniedDialog)
+        }
+    }
+
+    @Test
+    fun `DismissPermissionDeniedDialog changes state`() {
+        with(generateViewModel()) {
+            setState {
+                copy(
+                    showPermissionDeniedDialog = true
+                )
+            }
+            handle(LibraryUserAction.DismissPermissionDeniedDialog)
+            assertFalse(state.value.showPermissionDeniedDialog)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `PermissionDeniedConfirmButtonClicked adds OpenAppSettings event`() = runTest {
+        with(generateViewModel()) {
+            expectedUiEvent<LibraryUiEvent.OpenAppSettings>(this@runTest)
+            handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
+        }
+    }
+
+    @Test
+    fun `DismissPermissionExplanationDialog changes state`() {
+        with(generateViewModel()) {
+            setState {
+                copy(
+                    showPermissionExplanationDialog = true
+                )
+            }
+            handle(LibraryUserAction.DismissPermissionExplanationDialog)
+            assertFalse(state.value.showPermissionExplanationDialog)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `PermissionExplanationDialogContinueClicked changes state, adds RequestPermission event`() = runTest {
+        with(generateViewModel()) {
+            setState {
+                copy(
+                    showPermissionExplanationDialog = true
+                )
+            }
+            expectedUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
+            handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
+            assertFalse(state.value.showPermissionExplanationDialog)
+        }
+    }
+
+    companion object {
+        private const val ROW_ID = "ROW_ID"
+    }
 }

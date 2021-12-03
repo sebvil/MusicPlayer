@@ -113,8 +113,10 @@ class TracksListViewModelTest : BaseViewModelTest() {
         )
         with(generateViewModel(tracksList = tracksList)) {
             handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
             assertEquals(tracksList.reversed(), state.value.tracksList)
             handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
+            assertEquals(SortOption.TRACK_NAME, state.value.currentSort)
             assertEquals(tracksList, state.value.tracksList)
 
         }

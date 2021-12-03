@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.artists
+package com.sebastianvm.musicplayer.ui.library.genres
 
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
@@ -12,39 +12,37 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class ArtistsListViewModelTest : BaseViewModelTest() {
+class GenresListViewModelTest : BaseViewModelTest() {
 
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistsListViewModel {
-        return ArtistsListViewModel(
+    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): GenresListViewModel {
+        return GenresListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = mock()
         )
     }
 
     @Test
-    fun `init connects to service for artists root`() {
+    fun `init connects to service for genres root`() {
         val musicServiceConnection: MusicServiceConnection = mock()
         generateViewModel(musicServiceConnection)
         verify(musicServiceConnection).subscribe(
-            eq(BrowseTree.ARTISTS_ROOT),
+            eq(BrowseTree.GENRES_ROOT),
             any()
         )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `ArtistClicked adds NavigateToArtist event`() = runTest {
+    fun `GenreClicked adds NavigateToGenre event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                Assert.assertEquals(ARTIST_GID, artistGid)
-                Assert.assertEquals(ARTIST_NAME, artistName)
+            expectedUiEvent<GenresListUiEvent.NavigateToGenre>(this@runTest) {
+                Assert.assertEquals(GENRE_NAME, genreName)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_GID, ARTIST_NAME))
+            handle(GenresListUserAction.GenreClicked(GENRE_NAME))
         }
     }
 
     companion object {
-        private const val ARTIST_GID = "ARTIST_GID"
-        private const val ARTIST_NAME = "ARTIST_NAME"
+        private const val GENRE_NAME = "GENRE_NAME"
     }
 }
