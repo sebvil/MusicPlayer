@@ -34,8 +34,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
+    private val musicServiceConnection: MusicServiceConnection,
     initialState: MusicPlayerState,
-    private val musicServiceConnection: MusicServiceConnection
 ) :
     BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
