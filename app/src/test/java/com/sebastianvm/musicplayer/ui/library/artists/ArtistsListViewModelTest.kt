@@ -1,51 +1,49 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.artists
 
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class AlbumsListViewModelTest : BaseViewModelTest() {
-
-
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): AlbumsListViewModel {
-        return AlbumsListViewModel(
+class ArtistsListViewModelTest : BaseViewModelTest() {
+    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistsListViewModel {
+        return ArtistsListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = mock()
         )
     }
 
     @Test
-    fun `init connects to service for album roots`() {
+    fun `init connects to service for artists root`() {
         val musicServiceConnection: MusicServiceConnection = mock()
         generateViewModel(musicServiceConnection)
         verify(musicServiceConnection).subscribe(
-            eq(BrowseTree.ALBUMS_ROOT),
+            eq(BrowseTree.ARTISTS_ROOT),
             any()
         )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
+    fun `ArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_GID, albumGid)
-                assertEquals(ALBUM_NAME, albumName)
+            expectedUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
+                Assert.assertEquals(ARTIST_GID, artistGid)
+                Assert.assertEquals(ARTIST_NAME, artistName)
             }
-            handle(AlbumsListUserAction.AlbumClicked(ALBUM_GID, ALBUM_NAME))
+            handle(ArtistsListUserAction.ArtistClicked(ARTIST_GID, ARTIST_NAME))
         }
     }
 
     companion object {
-        private const val ALBUM_GID = "ALBUM_GID"
-        private const val ALBUM_NAME = "ALBUM_NAME"
+        private const val ARTIST_GID = "ARTIST_GID"
+        private const val ARTIST_NAME = "ARTIST_NAME"
     }
 }
