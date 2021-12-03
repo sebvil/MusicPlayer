@@ -27,14 +27,15 @@ class TracksListViewModelTest  {
     private fun generateViewModel(
         musicServiceConnection: MusicServiceConnection = mock(),
         tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs),
-        tracksList: List<TrackRowState> = listOf()
+        tracksList: List<TrackRowState> = listOf(),
+        currentSort: SortOption = SortOption.TRACK_NAME
     ): TracksListViewModel {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
                 tracksListTitle = tracksListTitle,
                 tracksList = tracksList,
-                currentSort = SortOption.TRACK_NAME
+                currentSort = currentSort
             )
         )
     }
@@ -94,6 +95,25 @@ class TracksListViewModelTest  {
                 org.mockito.kotlin.check {
                     assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
                     assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
+                }
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() = runTest {
+        val musicServiceConnection: MusicServiceConnection = mock {
+            on { transportControls } doReturn mock()
+        }
+        with(generateViewModel(musicServiceConnection, DisplayableString.StringValue(GENRE_NAME), currentSort = SortOption.ARTIST_NAME)) {
+            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
+            handle(TracksListUserAction.TrackClicked(TRACK_GID))
+            verify(musicServiceConnection.transportControls).playFromMediaId(
+                eq(TRACK_GID),
+                org.mockito.kotlin.check {
+                    assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
+                    assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
                 }
             )
         }
