@@ -8,18 +8,21 @@ import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
 
-class TracksListViewModelTest : BaseViewModelTest() {
+@RunWith(RobolectricTestRunner::class)
+class TracksListViewModelTest  {
 
     private fun generateViewModel(
         musicServiceConnection: MusicServiceConnection = mock(),
@@ -64,7 +67,7 @@ class TracksListViewModelTest : BaseViewModelTest() {
         }
 
         with(generateViewModel(musicServiceConnection)) {
-            expectedUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
+            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
             handle(TracksListUserAction.TrackClicked(TRACK_GID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),
@@ -84,7 +87,7 @@ class TracksListViewModelTest : BaseViewModelTest() {
             on { transportControls } doReturn mock()
         }
         with(generateViewModel(musicServiceConnection, DisplayableString.StringValue(GENRE_NAME))) {
-            expectedUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
+            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
             handle(TracksListUserAction.TrackClicked(TRACK_GID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),
@@ -100,7 +103,7 @@ class TracksListViewModelTest : BaseViewModelTest() {
     @Test
     fun `SortByClicked changes state`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<TracksListUiEvent.ShowBottomSheet>(this@runTest)
+            expectUiEvent<TracksListUiEvent.ShowBottomSheet>(this@runTest)
             handle(TracksListUserAction.SortByClicked)
         }
     }

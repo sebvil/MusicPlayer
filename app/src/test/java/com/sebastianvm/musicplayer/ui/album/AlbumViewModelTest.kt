@@ -4,19 +4,22 @@ import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
 
-class AlbumViewModelTest : BaseViewModelTest() {
+@RunWith(RobolectricTestRunner::class)
+class AlbumViewModelTest {
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): AlbumViewModel {
         return AlbumViewModel(
@@ -47,7 +50,7 @@ class AlbumViewModelTest : BaseViewModelTest() {
         }
 
         with(generateViewModel(musicServiceConnection)) {
-            expectedUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
+            expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TRACK_GID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),

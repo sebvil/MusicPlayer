@@ -8,7 +8,7 @@ import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.EMPTY_PLAYBACK_STATE
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.NOTHING_PLAYING
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.extensions.albumId
 import com.sebastianvm.musicplayer.util.extensions.artist
 import com.sebastianvm.musicplayer.util.extensions.duration
@@ -23,18 +23,26 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
 
-class MusicPlayerViewModelTest : BaseViewModelTest() {
+@RunWith(RobolectricTestRunner::class)
+class MusicPlayerViewModelTest {
+
+    @get:Rule
+    val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private lateinit var musicServiceConnection: MusicServiceConnection
 
-    override fun setUp() {
-        super.setUp()
+    @Before
+    fun setUp() {
         musicServiceConnection = mock {
             on { playbackState } doReturn MutableStateFlow(EMPTY_PLAYBACK_STATE)
             on { nowPlaying } doReturn MutableStateFlow(NOTHING_PLAYING)

@@ -2,17 +2,22 @@ package com.sebastianvm.musicplayer.ui.library.genres
 
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class GenresListViewModelTest : BaseViewModelTest() {
+class GenresListViewModelTest {
+
+    @get:Rule
+    val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): GenresListViewModel {
         return GenresListViewModel(
@@ -35,7 +40,7 @@ class GenresListViewModelTest : BaseViewModelTest() {
     @Test
     fun `GenreClicked adds NavigateToGenre event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<GenresListUiEvent.NavigateToGenre>(this@runTest) {
+            expectUiEvent<GenresListUiEvent.NavigateToGenre>(this@runTest) {
                 Assert.assertEquals(GENRE_NAME, genreName)
             }
             handle(GenresListUserAction.GenreClicked(GENRE_NAME))

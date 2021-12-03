@@ -2,18 +2,22 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class AlbumsListViewModelTest : BaseViewModelTest() {
+class AlbumsListViewModelTest  {
 
+    @get:Rule
+    val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): AlbumsListViewModel {
         return AlbumsListViewModel(
@@ -36,7 +40,7 @@ class AlbumsListViewModelTest : BaseViewModelTest() {
     @Test
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
+            expectUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
                 assertEquals(ALBUM_GID, albumGid)
                 assertEquals(ALBUM_NAME, albumName)
             }

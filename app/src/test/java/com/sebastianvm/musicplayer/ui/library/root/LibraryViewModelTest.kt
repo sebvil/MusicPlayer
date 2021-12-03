@@ -5,7 +5,8 @@ import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
+import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -13,13 +14,16 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
-class LibraryViewModelTest : BaseViewModelTest() {
+class LibraryViewModelTest {
+    @get:Rule
+    val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): LibraryViewModel {
         return LibraryViewModel(
@@ -46,7 +50,7 @@ class LibraryViewModelTest : BaseViewModelTest() {
     @Test
     fun `FabClicked with permission granted starts music scan service`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
+            expectUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
             handle(LibraryUserAction.FabClicked(PERMISSION_GRANTED))
         }
     }
@@ -66,7 +70,7 @@ class LibraryViewModelTest : BaseViewModelTest() {
     @Test
     fun `FabClicked with should request permission adds request permission event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
+            expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
             handle(LibraryUserAction.FabClicked(SHOULD_REQUEST_PERMISSION))
         }
     }
@@ -75,7 +79,7 @@ class LibraryViewModelTest : BaseViewModelTest() {
     @Test
     fun `RowClicked adds nav NavigateToScreen event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<LibraryUiEvent.NavigateToScreen>(this@runTest) {
+            expectUiEvent<LibraryUiEvent.NavigateToScreen>(this@runTest) {
                 assertEquals(ROW_ID, rowGid)
             }
             handle(LibraryUserAction.RowClicked(ROW_ID))
@@ -86,7 +90,7 @@ class LibraryViewModelTest : BaseViewModelTest() {
     @Test
     fun `PermissionGranted adds StartGetMusicService event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
+            expectUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
             handle(LibraryUserAction.PermissionGranted)
         }
     }
@@ -124,7 +128,7 @@ class LibraryViewModelTest : BaseViewModelTest() {
     @Test
     fun `PermissionDeniedConfirmButtonClicked adds OpenAppSettings event`() = runTest {
         with(generateViewModel()) {
-            expectedUiEvent<LibraryUiEvent.OpenAppSettings>(this@runTest)
+            expectUiEvent<LibraryUiEvent.OpenAppSettings>(this@runTest)
             handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
         }
     }
@@ -151,11 +155,14 @@ class LibraryViewModelTest : BaseViewModelTest() {
                     showPermissionExplanationDialog = true
                 )
             }
-            expectedUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
+            expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
             handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
             assertFalse(state.value.showPermissionExplanationDialog)
         }
     }
+
+
+
 
     companion object {
         private const val ROW_ID = "ROW_ID"
