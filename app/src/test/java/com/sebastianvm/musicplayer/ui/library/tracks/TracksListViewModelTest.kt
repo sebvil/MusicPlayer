@@ -11,8 +11,6 @@ import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -31,7 +29,7 @@ class TracksListViewModelTest : BaseViewModelTest() {
             initialState = TracksListState(
                 tracksListTitle = tracksListTitle,
                 tracksList = listOf(),
-                isSortMenuOpen = false
+                currentSort = SortOption.TRACK_NAME
             )
         )
     }
@@ -96,16 +94,14 @@ class TracksListViewModelTest : BaseViewModelTest() {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `SortByClicked changes state`() {
+    fun `SortByClicked changes state`() = runTest {
         with(generateViewModel()) {
+            expectedUiEvent<TracksListUiEvent.ShowBottomSheet>(this@runTest)
             handle(TracksListUserAction.SortByClicked)
-            assertTrue(state.value.isSortMenuOpen)
-            handle(TracksListUserAction.SortByClicked)
-            assertFalse(state.value.isSortMenuOpen)
         }
     }
-
 
     companion object {
         private const val GENRE_NAME = "GENRE_NAME"
