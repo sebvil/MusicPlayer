@@ -41,11 +41,6 @@ android {
         compose true
     }
 
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
 
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
