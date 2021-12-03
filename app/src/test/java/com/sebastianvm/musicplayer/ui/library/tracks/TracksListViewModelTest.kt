@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
+import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.BaseViewModelTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -22,13 +23,14 @@ class TracksListViewModelTest : BaseViewModelTest() {
 
     private fun generateViewModel(
         musicServiceConnection: MusicServiceConnection = mock(),
-        tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs)
+        tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs),
+        tracksList: List<TrackRowState> = listOf()
     ): TracksListViewModel {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
                 tracksListTitle = tracksListTitle,
-                tracksList = listOf(),
+                tracksList = tracksList,
                 currentSort = SortOption.TRACK_NAME
             )
         )
@@ -100,6 +102,21 @@ class TracksListViewModelTest : BaseViewModelTest() {
         with(generateViewModel()) {
             expectedUiEvent<TracksListUiEvent.ShowBottomSheet>(this@runTest)
             handle(TracksListUserAction.SortByClicked)
+        }
+    }
+
+    @Test
+    fun `SortOptionClicked changes state`() {
+        val tracksList = listOf(
+            TrackRowState("1","A", "B"),
+            TrackRowState("1","B", "A")
+        )
+        with(generateViewModel(tracksList = tracksList)) {
+            handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            assertEquals(tracksList.reversed(), state.value.tracksList)
+            handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
+            assertEquals(tracksList, state.value.tracksList)
+
         }
     }
 
