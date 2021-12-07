@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and Unit tests.
+    name: Build project
     runs-on: ubuntu-latest
 
     steps:
@@ -23,4 +23,29 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew assemble
+
+  unit-test:
+    name: JVM Unit tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Run unit tests
+        run: ./gradlew test
+
+  instrumented-test:
+    name: Instrumented Unit tests
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        api-level: [ 29, 31 ]
+
+    steps:
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          target: 'google_apis'
+          api-level: ${{ matrix.api-level }}
+          arch: "x86_64"
+          script: ./gradlew connectedCheck
