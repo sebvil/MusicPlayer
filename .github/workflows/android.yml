@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build project
+    name: Build project and run JVM unit tests.
     runs-on: ubuntu-latest
 
     steps:
@@ -23,27 +23,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assemble
-
-  unit-test:
-    name: JVM Unit tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v2
-      - name: set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-          cache: gradle
-      - name: Run unit tests
-        run: ./gradlew test
+      run: ./gradlew build
 
   instrumented-test:
     name: Instrumented Unit tests
     runs-on: ubuntu-latest
-    needs: build
     strategy:
       matrix:
         api-level: [ 29, 31 ]
