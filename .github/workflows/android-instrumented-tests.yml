@@ -12,7 +12,7 @@ jobs:
     name: Android instrumented tests
     strategy:
       matrix:
-        api-level: [ 25, 29, 31 ]
+        api-level: [ 29, 31 ]
 
     steps:
     - uses: actions/checkout@v2
