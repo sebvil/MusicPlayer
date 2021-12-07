@@ -28,4 +28,5 @@ jobs:
       with:
         target: 'google_apis'
         api-level: ${{ matrix.api-level }}
+        arch: "x86_64"
         script: ./gradlew connectedCheck
