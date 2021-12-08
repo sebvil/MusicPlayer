@@ -161,3 +161,4 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
 
 const val PARENT_ID = "PARENT_ID"
 const val SORT_BY = "SORT_BY"
+const val SORT_ORDER = "SORT_ORDER"

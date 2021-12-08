@@ -18,10 +18,12 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
+import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
+import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -222,8 +224,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-            val parentId = extras?.getString("PARENT_ID")
-            val sortBy = extras?.getString("SORT_BY")
+            val parentId = extras?.getString(PARENT_ID)
+            val sortBy = extras?.getString(SORT_BY) ?: MediaMetadataCompat.METADATA_KEY_TITLE
+            val sortOrder =
+                SortOrder.valueOf(extras?.getString(SORT_ORDER) ?: SortOrder.ASCENDING.name)
             CoroutineScope(Dispatchers.IO).launch {
                 browseTree[parentId ?: mediaId]?.collect { itemsToPlay ->
                     val itemToPlay =
@@ -233,9 +237,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                     {
                         preparePlaylist(
                             itemToPlay,
-                            itemsToPlay.toList().sortedBy { track ->
-                                track.getString(sortBy)
-                            },
+                            itemsToPlay.toList().sortedWith(getTrackComparator(sortOrder, sortBy)),
                             playWhenReady,
                             0
                         )
@@ -243,6 +245,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 }
             }
 
+        }
+
+        private fun getTrackComparator(
+            sortOrder: SortOrder,
+            sortKey: String
+        ): Comparator<MediaMetadataCompat> {
+            return getStringComparator(sortOrder) { metaData ->
+                metaData.getString(sortKey)
+            }
         }
 
         /**

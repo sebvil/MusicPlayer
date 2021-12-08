@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -36,6 +37,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.util.SortOrder
 import kotlinx.coroutines.launch
 
 
@@ -84,6 +86,7 @@ fun TracksListScreen(
             TracksListBottomSheetMenu(
                 sheetState = bottomSheetState,
                 currentSort = state.currentSort,
+                sortOrder = state.sortOrder,
                 onSortSelected = { newSortOption ->
                     screenViewModel.handle(
                         TracksListUserAction.SortOptionClicked(newSortOption)
@@ -194,29 +197,37 @@ fun TracksListLayout(
 fun TracksListBottomSheetMenu(
     sheetState: ModalBottomSheetState,
     currentSort: SortOption,
+    sortOrder: SortOrder,
     onSortSelected: (SortOption) -> Unit,
     content: @Composable () -> Unit
 ) {
     M3ModalBottomSheetLayout(
-        sheetContent = { SortBottomSheetLayout(currentSort, onSortSelected) },
-        sheetState = sheetState
+        sheetContent = { SortBottomSheetLayout(currentSort, sortOrder, onSortSelected) },
+        sheetState = sheetState,
+        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         content()
     }
 }
 
 @Composable
-fun SortBottomSheetLayout(currentSort: SortOption, onSortSelected: (SortOption) -> Unit) {
+fun SortBottomSheetLayout(
+    currentSort: SortOption,
+    sortOrder: SortOrder,
+    onSortSelected: (SortOption) -> Unit
+) {
     val rowModifier = Modifier
         .fillMaxWidth()
-        .height(56.dp)
-        .padding(start = 16.dp)
+        .height(AppDimensions.bottomSheet.rowHeight)
+        .padding(start = AppDimensions.bottomSheet.startPadding)
     val listItems = SortOption.values()
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(id = R.string.sort_by),
-            modifier = rowModifier.paddingFromBaseline(top = 36.dp)
-        )
+        Row(modifier = rowModifier) {
+            Text(
+                text = stringResource(id = R.string.sort_by),
+                modifier = Modifier.paddingFromBaseline(top = 36.dp)
+            )
+        }
         LazyColumn {
             items(listItems, key = { it }) { row ->
                 Row(
@@ -228,10 +239,17 @@ fun SortBottomSheetLayout(currentSort: SortOption, onSortSelected: (SortOption) 
                     RadioButton(
                         selected = currentSort == row,
                         onClick = { onSortSelected(row) })
-                    Text(text = stringResource(id = row.id))
+                    Text(text = stringResource(id = row.id), modifier = Modifier.weight(1f))
+                    if (currentSort == row) {
+                        Icon(
+                            painter = painterResource(id = if (sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
+                            contentDescription = "temp",
+                            modifier = Modifier.padding(horizontal = AppDimensions.spacing.mediumLarge)
+                        )
+                    }
                 }
             }
         }
     }
-
 }
+
