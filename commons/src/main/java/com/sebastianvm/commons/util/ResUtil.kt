@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Size
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
@@ -78,7 +79,7 @@ sealed class DisplayableString {
 data class MediaArt(
     val uris: List<Uri>,
     val contentDescription: DisplayableString,
-    val backupResource: Int,
+    @DrawableRes val backupResource: Int,
     val backupContentDescription: DisplayableString
 ) {
     @Composable
