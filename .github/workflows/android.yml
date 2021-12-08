@@ -27,7 +27,7 @@ jobs:
 
   instrumented-test:
     name: Instrumented Unit tests
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         api-level: [ 29, 31 ]
