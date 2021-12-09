@@ -63,19 +63,17 @@ class TracksListViewModel @Inject constructor(
 
         viewModelScope.launch {
             preferencesRepository.getTrackSortOptions(genreName = genreName).collect { settings ->
-                settings?.also {
-                    setState {
-                        copy(
-                            currentSort = settings.sortOption,
-                            tracksList = tracksList.sortedWith(
-                                getComparator(
-                                    settings.sortOrder,
-                                    settings.sortOption
-                                )
-                            ),
-                            sortOrder = settings.sortOrder
-                        )
-                    }
+                setState {
+                    copy(
+                        currentSort = settings.sortOption,
+                        tracksList = tracksList.sortedWith(
+                            getComparator(
+                                settings.sortOrder,
+                                settings.sortOption
+                            )
+                        ),
+                        sortOrder = settings.sortOrder
+                    )
                 }
             }
 

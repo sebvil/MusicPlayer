@@ -28,7 +28,7 @@ class PreferencesRepository @Inject constructor(
     }
 
 
-    fun getTrackSortOptions(genreName: String?): Flow<TracksSortSettings?> {
+    fun getTrackSortOptions(genreName: String?): Flow<TracksSortSettings> {
         return preferencesUtil.dataStore.data.map { preferences ->
             genreName?.let {
                 val sortOptionKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
@@ -38,7 +38,7 @@ class PreferencesRepository @Inject constructor(
                 if (sortOption != null && sortOrder != null) {
                     TracksSortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
                 } else {
-                    null
+                    TracksSortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
                 }
             } ?: kotlin.run {
                 val sortOption = preferences[PreferencesUtil.TRACKS_SORT_OPTION]
@@ -46,7 +46,7 @@ class PreferencesRepository @Inject constructor(
                 if (sortOption != null && sortOrder != null) {
                     TracksSortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
                 } else {
-                    null
+                    TracksSortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
                 }
             }
         }
