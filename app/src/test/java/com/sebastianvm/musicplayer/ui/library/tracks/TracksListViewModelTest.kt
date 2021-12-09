@@ -7,8 +7,10 @@ import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
+import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.SortOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -22,21 +24,27 @@ import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class TracksListViewModelTest  {
+class TracksListViewModelTest {
 
     private fun generateViewModel(
         musicServiceConnection: MusicServiceConnection = mock(),
+        genreName: String? = null,
         tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs),
         tracksList: List<TrackRowState> = listOf(),
-        currentSort: SortOption = SortOption.TRACK_NAME
+        currentSort: SortOption = SortOption.TRACK_NAME,
+        sortOrder: SortOrder = SortOrder.ASCENDING,
+        preferencesRepository: PreferencesRepository = mock()
     ): TracksListViewModel {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
+                genreName = genreName,
                 tracksListTitle = tracksListTitle,
                 tracksList = tracksList,
-                currentSort = currentSort
-            )
+                currentSort = currentSort,
+                sortOrder = sortOrder
+            ),
+            preferencesRepository = preferencesRepository
         )
     }
 
@@ -53,7 +61,11 @@ class TracksListViewModelTest  {
     @Test
     fun `init connects to service for genre`() {
         val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection, DisplayableString.StringValue(GENRE_NAME))
+        generateViewModel(
+            musicServiceConnection = musicServiceConnection,
+            genreName = GENRE_NAME,
+            tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
+        )
         verify(musicServiceConnection).subscribe(
             eq("genre-$GENRE_NAME"),
             any()
@@ -87,7 +99,13 @@ class TracksListViewModelTest  {
         val musicServiceConnection: MusicServiceConnection = mock {
             on { transportControls } doReturn mock()
         }
-        with(generateViewModel(musicServiceConnection, DisplayableString.StringValue(GENRE_NAME))) {
+        with(
+            generateViewModel(
+                musicServiceConnection = musicServiceConnection,
+                genreName = GENRE_NAME,
+                tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
+            )
+        ) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
             handle(TracksListUserAction.TrackClicked(TRACK_GID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
@@ -102,22 +120,30 @@ class TracksListViewModelTest  {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mock {
-            on { transportControls } doReturn mock()
+    fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() =
+        runTest {
+            val musicServiceConnection: MusicServiceConnection = mock {
+                on { transportControls } doReturn mock()
+            }
+            with(
+                generateViewModel(
+                    musicServiceConnection = musicServiceConnection,
+                    genreName = GENRE_NAME,
+                    tracksListTitle = DisplayableString.StringValue(GENRE_NAME),
+                    currentSort = SortOption.ARTIST_NAME
+                )
+            ) {
+                expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
+                handle(TracksListUserAction.TrackClicked(TRACK_GID))
+                verify(musicServiceConnection.transportControls).playFromMediaId(
+                    eq(TRACK_GID),
+                    org.mockito.kotlin.check {
+                        assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
+                        assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
+                    }
+                )
+            }
         }
-        with(generateViewModel(musicServiceConnection, DisplayableString.StringValue(GENRE_NAME), currentSort = SortOption.ARTIST_NAME)) {
-            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_GID))
-            verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_GID),
-                org.mockito.kotlin.check {
-                    assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
-                    assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
-                }
-            )
-        }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -131,15 +157,28 @@ class TracksListViewModelTest  {
     @Test
     fun `SortOptionClicked changes state`() {
         val tracksList = listOf(
-            TrackRowState("1","A", "B"),
-            TrackRowState("1","B", "A")
+            TrackRowState("1", "A", "B"),
+            TrackRowState("1", "B", "A")
         )
         with(generateViewModel(tracksList = tracksList)) {
             handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
             assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList.reversed(), state.value.tracksList)
+
+            handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(tracksList, state.value.tracksList)
+
             handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
             assertEquals(SortOption.TRACK_NAME, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(tracksList.reversed(), state.value.tracksList)
+
+            handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
+            assertEquals(SortOption.TRACK_NAME, state.value.currentSort)
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
         }
