@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -10,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
@@ -23,13 +26,19 @@ import com.sebastianvm.musicplayer.ui.library.genres.GenresListViewModel
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
 import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
+import com.sebastianvm.musicplayer.ui.library.tracks.SortOption
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreenNavigationDelegate
+import com.sebastianvm.musicplayer.ui.library.tracks.TracksListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.search.SearchViewModel
+import com.sebastianvm.musicplayer.ui.sort.SortBottomSheet
+import com.sebastianvm.musicplayer.ui.sort.SortBottomSheetDelegate
+import com.sebastianvm.musicplayer.ui.sort.SortBottomSheetViewModel
+import com.sebastianvm.musicplayer.util.SortOrder
 
 @Composable
 fun AppNavHost(
@@ -62,6 +71,7 @@ fun AppNavHost(
 
 }
 
+@OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.libraryGraph(
     navController: NavHostController,
     bottomNavBar: @Composable () -> Unit,
@@ -86,13 +96,35 @@ fun NavGraphBuilder.libraryGraph(
                 })
         }
         composable(
-            createNavRoute(NavRoutes.TRACKS_ROOT, NavArgs.GENRE_NAME),
-            arguments = listOf(navArgument(NavArgs.GENRE_NAME) {
-                nullable = true
-                type = NavType.StringType
-            })
+            createNavRoute(
+                NavRoutes.TRACKS_ROOT,
+                NavArgs.GENRE_NAME,
+                NavArgs.SORT_OPTION,
+                NavArgs.SORT_ORDER
+            ),
+            arguments = listOf(
+                navArgument(NavArgs.GENRE_NAME) {
+                    nullable = true
+                    type = NavType.StringType
+                },
+                navArgument(NavArgs.SORT_OPTION) {
+                    nullable = true
+                    type = NavType.StringType
+                },
+            )
         ) {
             val screenViewModel = hiltViewModel<TracksListViewModel>()
+            val lifecycleOwner = LocalLifecycleOwner.current
+            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
+                ?.observe(lifecycleOwner) {
+                    screenViewModel.handle(
+                        TracksListUserAction.SortOptionClicked(
+                            SortOption.fromResId(
+                                it
+                            )
+                        )
+                    )
+                }
             TracksListScreen(
                 screenViewModel,
                 bottomNavBar,
@@ -112,6 +144,15 @@ fun NavGraphBuilder.libraryGraph(
 
                     override fun navigateUp() {
                         navController.navigateUp()
+                    }
+
+                    override fun openBottomSheet(sortOption: Int, sortOrder: SortOrder) {
+                        navController.navigateTo(
+                            NavRoutes.SORT,
+                            NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
+                            NavArgument(NavArgs.SORT_OPTION, sortOption),
+                            NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
+                        )
                     }
                 })
         }
@@ -177,6 +218,35 @@ fun NavGraphBuilder.libraryGraph(
                     restoreState = true
                 }
             }
+        }
+
+        bottomSheet(
+            route = createNavRoute(
+                NavRoutes.SORT,
+                NavArgs.SCREEN,
+                NavArgs.SORT_OPTION,
+                NavArgs.SORT_ORDER
+            ),
+            arguments = listOf(
+                navArgument(NavArgs.SCREEN) { type = NavType.StringType },
+                navArgument(NavArgs.SORT_OPTION) { type = NavType.ReferenceType },
+                navArgument(NavArgs.SORT_ORDER) {
+                    type = NavType.StringType
+                },
+            )
+        ) {
+            val sheetViewModel = hiltViewModel<SortBottomSheetViewModel>()
+            SortBottomSheet(
+                sheetViewModel = sheetViewModel,
+                delegate = object : SortBottomSheetDelegate {
+                    override fun popBackStack(sortOption: Int) {
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            NavArgs.SORT_OPTION,
+                            sortOption
+                        )
+                        navController.popBackStack()
+                    }
+                })
         }
     }
 }

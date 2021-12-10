@@ -16,6 +16,7 @@ import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.player.SORT_ORDER
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -39,7 +40,17 @@ import javax.inject.Inject
 
 enum class SortOption(@StringRes val id: Int) {
     TRACK_NAME(R.string.track_name),
-    ARTIST_NAME(R.string.artist_name)
+    ARTIST_NAME(R.string.artist_name);
+
+    companion object {
+        fun fromResId(@StringRes resId: Int): SortOption {
+            return when (resId) {
+                R.string.track_name -> TRACK_NAME
+                R.string.artist_name -> ARTIST_NAME
+                else -> throw IllegalStateException("Unknown sort option for tracks list")
+            }
+        }
+    }
 }
 
 data class TracksSortSettings(
@@ -167,7 +178,7 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
             is TracksListUserAction.SortByClicked -> {
-                addUiEvent(TracksListUiEvent.ShowBottomSheet)
+                addUiEvent(TracksListUiEvent.ShowBottomSheet(state.value.currentSort.id, state.value.sortOrder))
             }
             is TracksListUserAction.SortOptionClicked -> {
                 val sortOrder = if (action.newSortOption == state.value.currentSort) {
@@ -229,7 +240,7 @@ object InitialTracksListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val genreName = savedStateHandle.get<String?>("genreName")
+        val genreName = savedStateHandle.get<String?>(NavArgs.GENRE_NAME)
         return TracksListState(
             genreName = genreName,
             tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
@@ -249,7 +260,7 @@ sealed class TracksListUserAction : UserAction {
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
-    object ShowBottomSheet : TracksListUiEvent()
+    data class ShowBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) : TracksListUiEvent()
 }
 
 
