@@ -4,10 +4,18 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
 import androidx.compose.material.Shapes
 import androidx.compose.material.Typography
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlin.math.ln
 
 private val LightThemeColors = lightColorScheme(
 
@@ -124,10 +132,34 @@ fun M3AppTheme(
     } else {
         DarkThemeColors
     }
+    // Remember a SystemUiController
+    val systemUiController = rememberSystemUiController()
+
+    SideEffect {
+        // Update all of the system bar colors to be transparent, and use
+        // dark icons if we're in light theme
+        systemUiController.setStatusBarColor(
+            color = colors.background,
+            darkIcons = !useDarkTheme
+        )
+        systemUiController.setNavigationBarColor(
+            color = colors.surfaceColorAtElevation(3.dp)
+        )
+
+    }
 
     MaterialTheme(
         colorScheme = colors,
         typography = AppTypography,
         content = content
     )
+}
+
+// Copied from androidx.compose.material3.Surface.kt to get the color of the nav bar
+fun ColorScheme.surfaceColorAtElevation(
+    elevation: Dp,
+): Color {
+    if (elevation == 0.dp) return surface
+    val alpha = ((4.5f * ln(elevation.value + 1)) + 2f) / 100f
+    return primary.copy(alpha = alpha).compositeOver(surface)
 }

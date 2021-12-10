@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
@@ -228,6 +230,7 @@ fun SortBottomSheetLayout(
                 modifier = Modifier.paddingFromBaseline(top = 36.dp)
             )
         }
+        Divider(modifier = Modifier.fillMaxWidth(), color = LocalContentColor.current, thickness = 1.dp)
         LazyColumn {
             items(listItems, key = { it }) { row ->
                 Row(

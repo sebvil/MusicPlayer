@@ -139,7 +139,15 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
     implementation "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
+
+    // Kotlin reflect
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
+
+    // Accompanist
+    def accompanist_version = "0.21.4-beta"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
+
 
 
 }
