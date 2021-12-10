@@ -86,9 +86,10 @@ fun SortBottomSheet(
                         Icon(
                             painter = painterResource(id = if (state.value.sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
                             contentDescription = "temp",
-                            modifier = Modifier.padding(end = AppDimensions.spacing.large)
+                            modifier = Modifier.padding(end = AppDimensions.spacing.large),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Text(text = stringResource(id = row), modifier = Modifier.weight(1f))
+                        Text(text = stringResource(id = row), modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     } else {
                         Text(
                             text = stringResource(id = row),
