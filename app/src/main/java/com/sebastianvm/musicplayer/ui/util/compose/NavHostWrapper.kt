@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -10,7 +11,8 @@ import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
-@OptIn(ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalMaterial3Api::class,
     ExperimentalMaterialNavigationApi::class
 )
 @Composable
@@ -19,7 +21,13 @@ fun NavHostWrapper(navHost: @Composable (NavHostController) -> Unit) {
         M3AppTheme {
             val bottomSheetNavigator = rememberBottomSheetNavigator()
             val navController = rememberNavController(bottomSheetNavigator)
-            M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
+            M3ModalBottomSheetLayout(
+                bottomSheetNavigator = bottomSheetNavigator,
+                sheetShape = RoundedCornerShape(
+                    topStart = AppDimensions.bottomSheet.cornerRadius,
+                    topEnd = AppDimensions.bottomSheet.cornerRadius
+                )
+            ) {
                 navHost(navController)
             }
         }

@@ -17,7 +17,8 @@ data class Spacing(
 
 data class BottomSheet(
     val rowHeight: Dp = 56.dp,
-    val startPadding: Dp = 16.dp
+    val startPadding: Dp = 16.dp,
+    val cornerRadius: Dp = 16.dp
 )
 
 val LocalSpacing = staticCompositionLocalOf { Spacing() }

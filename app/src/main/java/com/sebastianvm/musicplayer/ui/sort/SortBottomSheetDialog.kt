@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.sort
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,8 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,11 +59,7 @@ fun SortBottomSheet(
                 modifier = Modifier.paddingFromBaseline(top = 36.dp)
             )
         }
-        Divider(
-            modifier = Modifier.fillMaxWidth(),
-            color = LocalContentColor.current,
-            thickness = 1.dp
-        )
+        Divider(modifier = Modifier.fillMaxWidth())
         LazyColumn {
             items(state.value.sortOptions, key = { it }) { row ->
                 Row(
@@ -74,27 +70,32 @@ fun SortBottomSheet(
                                     row
                                 )
                             )
+                        }.let {
+                            if (state.value.selectedSort == row) {
+                                it.background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                            } else {
+                                it
+                            }
                         }
                         .then(rowModifier),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButton(
-                        selected = state.value.selectedSort == row,
-                        onClick = {
-                            sheetViewModel.handle(
-                                SortBottomSheetUserAction.SortOptionSelected(
-                                    row
-                                )
-                            )
-                        })
-                    Text(text = stringResource(id = row), modifier = Modifier.weight(1f))
                     if (state.value.selectedSort == row) {
                         Icon(
                             painter = painterResource(id = if (state.value.sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
                             contentDescription = "temp",
-                            modifier = Modifier.padding(horizontal = AppDimensions.spacing.mediumLarge)
+                            modifier = Modifier.padding(end = AppDimensions.spacing.large)
+                        )
+                        Text(text = stringResource(id = row), modifier = Modifier.weight(1f))
+                    } else {
+                        Text(
+                            text = stringResource(id = row),
+                            modifier = Modifier.padding(start = 24.dp.plus(AppDimensions.spacing.large))
                         )
                     }
+
                 }
             }
         }
