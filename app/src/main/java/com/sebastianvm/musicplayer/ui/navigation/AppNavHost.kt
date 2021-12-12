@@ -1,6 +1,11 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
+import androidx.compose.animation.Animatable
+import androidx.compose.material.ModalBottomSheetDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -13,6 +18,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
@@ -125,6 +131,7 @@ fun NavGraphBuilder.libraryGraph(
                         )
                     )
                 }
+
             TracksListScreen(
                 screenViewModel,
                 bottomNavBar,

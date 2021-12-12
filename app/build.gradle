@@ -40,12 +40,11 @@ android {
     buildFeatures {
         compose true
     }
-
     packagingOptions {
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/LGPL2.1'
+        resources {
+            excludes += ['META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
-
 
 
     testOptions {
@@ -78,7 +77,7 @@ dependencies {
     // Optional -- Mockito framework
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation "junit:junit:4.13.2"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC2'
     testImplementation 'org.robolectric:robolectric:4.7.3'
 
     androidTestImplementation "io.mockk:mockk-android:1.12.1"
