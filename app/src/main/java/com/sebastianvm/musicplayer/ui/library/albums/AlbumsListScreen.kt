@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -74,11 +72,7 @@ fun AlbumsListLayout(
                 modifier = Modifier
                     .clickable {
                         delegate.onAlbumClicked(item.albumGid, item.albumRowState.albumName)
-                    }
-                    .padding(
-                        vertical = AppDimensions.spacing.mediumSmall,
-                        horizontal = AppDimensions.spacing.large
-                    ),
+                    },
             )
         }
     )

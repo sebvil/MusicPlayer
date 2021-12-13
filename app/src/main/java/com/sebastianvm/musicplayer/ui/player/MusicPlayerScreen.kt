@@ -75,7 +75,7 @@ fun MusicPlayerLayout(
                 image = state.trackArt,
                 modifier = Modifier
                     .aspectRatio(1f)
-                    .padding(all = AppDimensions.spacing.large),
+                    .padding(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
             Column(
@@ -103,7 +103,7 @@ fun MusicPlayerLayout(
                 image = state.trackArt,
                 modifier = Modifier
                     .aspectRatio(1f)
-                    .padding(all = AppDimensions.spacing.large),
+                    .padding(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
             TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
@@ -127,7 +127,7 @@ fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) s
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = AppDimensions.spacing.large)
+            .padding(horizontal = AppDimensions.spacing.mediumLarge)
     ) {
         AnimatedTextOverflow(
             text = state.trackName,
@@ -168,12 +168,12 @@ fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::
 
         val currentDuration = MinutesSecondsTime.fromMs(currentPlaybackTimeMs ?: 0)
         val trackDuration = MinutesSecondsTime.fromMs(trackLengthMs ?: 0)
-        Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {
+        Column(modifier = Modifier.padding(all = AppDimensions.spacing.medium)) {
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = AppDimensions.spacing.small)
+                    .padding(bottom = AppDimensions.spacing.xSmall)
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

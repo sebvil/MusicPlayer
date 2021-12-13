@@ -46,12 +46,12 @@ fun HeaderWithImage(
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         MediaArtImage(
             image = state.image,
-            modifier = Modifier.aspectRatio(1f).padding(all = AppDimensions.spacing.large),
+            modifier = Modifier.aspectRatio(1f).padding(all = AppDimensions.spacing.mediumLarge),
             contentScale = ContentScale.FillHeight
         )
         Text(
             text = state.title.getString(),
-            modifier = Modifier.padding(horizontal = AppDimensions.spacing.large),
+            modifier = Modifier.padding(horizontal = AppDimensions.spacing.mediumLarge),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,

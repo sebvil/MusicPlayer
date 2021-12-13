@@ -35,9 +35,9 @@ fun LibraryTitle(title: DisplayableString) {
         text = title.getString(),
         style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Medium),
         modifier = Modifier.padding(
-            start = AppDimensions.spacing.large,
-            top = AppDimensions.spacing.large,
-            bottom = AppDimensions.spacing.mediumLarge
+            start = AppDimensions.spacing.mediumLarge,
+            top = AppDimensions.spacing.mediumLarge,
+            bottom = AppDimensions.spacing.medium
         )
     )
 }

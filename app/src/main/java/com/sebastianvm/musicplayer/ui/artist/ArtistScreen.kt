@@ -78,7 +78,7 @@ fun ArtistLayout(
                         state = s,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = AppDimensions.spacing.mediumLarge),
+                            .padding(vertical = AppDimensions.spacing.medium),
                     )
                 },
                 { i ->
@@ -115,9 +115,9 @@ fun ArtistScreenRow(
             Text(
                 text = stringResource(id = item.sectionName),
                 modifier = Modifier.padding(
-                    start = AppDimensions.spacing.large,
-                    end = AppDimensions.spacing.large,
-                    bottom = AppDimensions.spacing.mediumSmall
+                    start = AppDimensions.spacing.mediumLarge,
+                    end = AppDimensions.spacing.mediumLarge,
+                    bottom = AppDimensions.spacing.small
                 ),
                 style = MaterialTheme.typography.headlineMedium,
             )
@@ -132,10 +132,6 @@ fun ArtistScreenRow(
                             item.state.albumName
                         )
                     }
-                    .padding(
-                        horizontal = AppDimensions.spacing.large,
-                        vertical = AppDimensions.spacing.mediumSmall
-                    )
             )
         }
     }

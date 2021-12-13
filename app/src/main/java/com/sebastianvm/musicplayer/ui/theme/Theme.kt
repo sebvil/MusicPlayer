@@ -124,7 +124,6 @@ fun M3AppTheme(
     } else {
         DarkThemeColors
     }
-
     MaterialTheme(
         colorScheme = colors,
         typography = AppTypography,

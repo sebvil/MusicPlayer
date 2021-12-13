@@ -1,34 +1,29 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import com.google.accompanist.navigation.material.BottomSheetNavigator
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 
 
+@ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun M3ModalBottomSheetLayout(
-    sheetContent: @Composable ColumnScope.() -> Unit,
+    bottomSheetNavigator: BottomSheetNavigator,
     modifier: Modifier = Modifier,
-    sheetState: ModalBottomSheetState =
-        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
     sheetShape: Shape = androidx.compose.material.MaterialTheme.shapes.large,
     sheetElevation: Dp = ModalBottomSheetDefaults.Elevation,
-    sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
-    sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
+    sheetBackgroundColor: Color = androidx.compose.material.MaterialTheme.colors.surface,
+    sheetContentColor: Color = androidx.compose.material.contentColorFor(sheetBackgroundColor),
     scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
     content: @Composable () -> Unit
 ) {
@@ -36,9 +31,8 @@ fun M3ModalBottomSheetLayout(
         LocalContentColor provides sheetContentColor
     ) {
         ModalBottomSheetLayout(
-            sheetContent = sheetContent,
+            bottomSheetNavigator = bottomSheetNavigator,
             modifier = modifier,
-            sheetState = sheetState,
             sheetShape = sheetShape,
             sheetElevation = sheetElevation,
             sheetBackgroundColor = sheetBackgroundColor,
