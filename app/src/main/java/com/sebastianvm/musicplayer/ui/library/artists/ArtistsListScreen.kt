@@ -97,8 +97,8 @@ fun ArtistsListLayout(
                 }
                 .fillMaxWidth()
                 .padding(
-                    vertical = AppDimensions.spacing.mediumSmall,
-                    horizontal = AppDimensions.spacing.large
+                    vertical = AppDimensions.spacing.small,
+                    horizontal = AppDimensions.spacing.mediumLarge
                 )
             )
         }
@@ -133,7 +133,7 @@ fun ArtistRow(
                     contentDescription = stringResource(id = R.string.placeholder_artist_image),
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(AppDimensions.spacing.mediumSmall)
+                        .padding(AppDimensions.spacing.small)
                         .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 )
             }
@@ -143,8 +143,8 @@ fun ArtistRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(vertical = AppDimensions.spacing.mediumSmall)
-                    .padding(start = AppDimensions.spacing.medium)
+                    .padding(vertical = AppDimensions.spacing.small)
+                    .padding(start = AppDimensions.spacing.mediumSmall)
             )
         }
     }

@@ -80,8 +80,8 @@ fun GenresListLayout(
                     }
                     .fillMaxWidth()
                     .padding(
-                        horizontal = AppDimensions.spacing.large,
-                        vertical = AppDimensions.spacing.mediumSmall
+                        horizontal = AppDimensions.spacing.mediumLarge,
+                        vertical = AppDimensions.spacing.small
                     ),
                 text = item.genreName,
                 style = MaterialTheme.typography.titleLarge,

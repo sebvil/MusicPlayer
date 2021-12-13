@@ -157,8 +157,8 @@ fun TracksListLayout(
                     .fillMaxWidth()
                     .clickable { delegate.onTrackClicked(item.trackGid) }
                     .padding(
-                        vertical = AppDimensions.spacing.mediumSmall,
-                        horizontal = AppDimensions.spacing.large
+                        vertical = AppDimensions.spacing.small,
+                        horizontal = AppDimensions.spacing.mediumLarge
                     )
             )
         }

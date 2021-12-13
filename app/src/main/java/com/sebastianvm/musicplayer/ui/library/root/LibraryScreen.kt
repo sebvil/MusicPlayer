@@ -170,7 +170,7 @@ fun RequestDialog(delegate: RequestDialogDelegate) {
         confirmButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = AppDimensions.spacing.small),
+                    .padding(horizontal = AppDimensions.spacing.xSmall),
                 onClick = delegate::onContinueClicked
             ) {
                 Text(text = stringResource(R.string.continue_string))
@@ -179,7 +179,7 @@ fun RequestDialog(delegate: RequestDialogDelegate) {
         dismissButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = AppDimensions.spacing.small),
+                    .padding(horizontal = AppDimensions.spacing.xSmall),
                 onClick = delegate::onRequestDialogDismissRequest
             ) {
                 Text(text = stringResource(id = R.string.dismiss))
@@ -205,7 +205,7 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
         },
         dismissButton = {
             Button(
-                modifier = Modifier.padding(horizontal = AppDimensions.spacing.small),
+                modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall),
                 onClick = delegate::onPermissionDeniedDialogDismissRequest
             ) {
                 Text(text = stringResource(R.string.dismiss))
@@ -213,7 +213,7 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
         },
         confirmButton = {
             Button(
-                modifier = Modifier.padding(horizontal = AppDimensions.spacing.small),
+                modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall),
                 onClick = delegate::onPermissionDeniedConfirmButtonClicked
             ) {
                 Text(text = stringResource(id = R.string.go_to_settings))
@@ -293,7 +293,7 @@ fun LibraryList(
             LibraryRow(item, modifier = Modifier
                 .fillMaxWidth()
                 .clickable { delegate.onRowClicked(item.rowId) }
-                .padding(horizontal = 32.dp, vertical = AppDimensions.spacing.mediumLarge))
+                .padding(horizontal = 32.dp, vertical = AppDimensions.spacing.medium))
         }
     )
     ListWithHeader(state = listState)

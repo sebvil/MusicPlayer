@@ -119,7 +119,7 @@ fun AnimatedTextOverflowPreviews() {
         Column {
 
 
-            Column(modifier = Modifier.padding(all = AppDimensions.spacing.large)) {
+            Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {
 //            AnimatedTextOverflow(text = "Short text")
                 AnimatedTextOverflow(
                     text = "Long text that I'm trying to animate, please work!",

@@ -65,7 +65,7 @@ fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
                         state = s,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = AppDimensions.spacing.mediumLarge),
+                            .padding(vertical = AppDimensions.spacing.medium),
                     )
                 },
                 { i ->
@@ -75,8 +75,8 @@ fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
                             .fillMaxWidth()
                             .clickable { onTrackRowClicked(i.trackGid) }
                             .padding(
-                                vertical = AppDimensions.spacing.mediumSmall,
-                                horizontal = AppDimensions.spacing.large
+                                vertical = AppDimensions.spacing.small,
+                                horizontal = AppDimensions.spacing.mediumLarge
                             )
                     )
                 }
