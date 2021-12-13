@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,8 +40,6 @@ fun TracksListScreen(
     bottomNavBar: @Composable () -> Unit,
     delegate: TracksListScreenNavigationDelegate
 ) {
-    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-    val scope = rememberCoroutineScope()
 
     Screen(
         screenViewModel = screenViewModel,
@@ -166,22 +161,4 @@ fun TracksListLayout(
     }
 }
 
-
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun TracksListBottomSheetMenu(
-//    sheetState: ModalBottomSheetState,
-//    currentSort: SortOption,
-//    sortOrder: SortOrder,
-//    onSortSelected: (SortOption) -> Unit,
-//    content: @Composable () -> Unit
-//) {
-//    M3ModalBottomSheetLayout(
-//        sheetContent = { SortBottomSheet(currentSort, sortOrder, onSortSelected) },
-//        sheetState = sheetState,
-//        sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-//    ) {
-//        content()
-//    }
-//}
 
