@@ -33,6 +33,7 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 @Composable
 fun ArtistsListScreen(
@@ -110,7 +111,9 @@ fun ArtistsListLayout(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ArtistRowPreview(@PreviewParameter(ArtistListItemProvider::class) artistItem: ArtistsListItem) {
-    ArtistRow(artistItem = artistItem)
+    ThemedPreview {
+        ArtistRow(artistItem = artistItem)
+    }
 }
 
 
