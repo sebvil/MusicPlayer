@@ -23,6 +23,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
+import com.sebastianvm.musicplayer.util.extensions.album
 import com.sebastianvm.musicplayer.util.extensions.artist
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.title
@@ -38,15 +39,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-enum class SortOption(@StringRes val id: Int) {
-    TRACK_NAME(R.string.track_name),
-    ARTIST_NAME(R.string.artist_name);
+enum class SortOption(@StringRes val id: Int, val metadataKey: String) {
+    TRACK_NAME(R.string.track_name, MediaMetadataCompat.METADATA_KEY_TITLE),
+    ARTIST_NAME(R.string.artist_name, MediaMetadataCompat.METADATA_KEY_ARTIST),
+    ALBUM_NAME(R.string.album_name, MediaMetadataCompat.METADATA_KEY_ALBUM);
 
     companion object {
         fun fromResId(@StringRes resId: Int): SortOption {
             return when (resId) {
                 R.string.track_name -> TRACK_NAME
                 R.string.artist_name -> ARTIST_NAME
+                R.string.album_name -> ALBUM_NAME
                 else -> throw IllegalStateException("Unknown sort option for tracks list")
             }
         }
@@ -149,7 +152,8 @@ class TracksListViewModel @Inject constructor(
         val id = meta.id ?: return null
         val trackName = meta.title ?: return null
         val artists = meta.artist ?: return null
-        return TrackRowState(id, trackName, artists)
+        val albumName = meta.album ?: return null
+        return TrackRowState(id, trackName, artists, albumName)
     }
 
     override fun handle(action: TracksListUserAction) {
@@ -167,10 +171,7 @@ class TracksListViewModel @Inject constructor(
                     )
                     putString(
                         SORT_BY,
-                        when (state.value.currentSort) {
-                            SortOption.TRACK_NAME -> MediaMetadataCompat.METADATA_KEY_TITLE
-                            SortOption.ARTIST_NAME -> MediaMetadataCompat.METADATA_KEY_ARTIST
-                        }
+                        state.value.currentSort.metadataKey
                     )
                     putString(SORT_ORDER, state.value.sortOrder.name)
                 }
@@ -218,6 +219,7 @@ class TracksListViewModel @Inject constructor(
             when (sortOption) {
                 SortOption.TRACK_NAME -> trackRowState.trackName
                 SortOption.ARTIST_NAME -> trackRowState.artists
+                SortOption.ALBUM_NAME -> trackRowState.albumName
             }
         }
     }

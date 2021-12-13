@@ -45,6 +45,7 @@
     <string name="sort_by">Sort by</string>
     <string name="track_name">Track name</string>
     <string name="artist_name">Artist name</string>
+    <string name="album_name">Album name</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

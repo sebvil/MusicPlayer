@@ -59,7 +59,7 @@ object InitialSortBottomSheetState {
 fun getSortOptionsForScreen(screen: String): List<Int> {
     return when (screen) {
         NavRoutes.TRACKS_ROOT -> {
-            listOf(R.string.track_name, R.string.artist_name)
+            listOf(R.string.track_name, R.string.artist_name, R.string.album_name)
         }
         else -> listOf()
     }

@@ -23,10 +23,10 @@ class AlbumStatePreviewParameterProvider :
                 ),
                 title = DisplayableString.StringValue("10:20:40")
             ), listOf(
-                TrackRowState("0", "La Promesa", "Melendi"),
-                TrackRowState("1", "La Promesa", "Melendi"),
-                TrackRowState("2", "La Promesa", "Melendi"),
-                TrackRowState("3", "La Promesa", "Melendi")
+                TrackRowState("0", "La Promesa", "Melendi","Un alumno mas"),
+                TrackRowState("1", "La Promesa", "Melendi", "Un alumno mas"),
+                TrackRowState("2", "La Promesa", "Melendi", "Un alumno mas"),
+                TrackRowState("3", "La Promesa", "Melendi", "Un alumno mas")
             )
         )
     )

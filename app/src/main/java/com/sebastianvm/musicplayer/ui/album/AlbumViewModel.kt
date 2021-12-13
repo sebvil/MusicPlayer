@@ -17,7 +17,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
-import com.sebastianvm.musicplayer.util.extensions.*
+import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
+import com.sebastianvm.musicplayer.util.extensions.album
+import com.sebastianvm.musicplayer.util.extensions.artist
+import com.sebastianvm.musicplayer.util.extensions.id
+import com.sebastianvm.musicplayer.util.extensions.title
+import com.sebastianvm.musicplayer.util.extensions.trackNumber
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,7 +67,8 @@ class AlbumViewModel @Inject constructor(
         val trackName = meta.title ?: return null
         val artists = meta.artist ?: return null
         val trackNumber = meta.trackNumber
-        return TrackRowState(trackGid, trackName, artists, trackNumber)
+        val albumName = meta.album ?: return null
+        return TrackRowState(trackGid, trackName, artists, albumName, trackNumber)
     }
 
     override fun handle(action: AlbumUserAction) {

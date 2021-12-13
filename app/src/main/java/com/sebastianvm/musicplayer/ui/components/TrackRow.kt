@@ -18,7 +18,8 @@ data class TrackRowState(
     val trackGid: String,
     val trackName: String,
     val artists: String,
-    val trackNumber: Long? = null
+    val albumName: String,
+    val trackNumber: Long? = null,
 ) : ListItem {
     override val gid = trackGid
 }
@@ -61,6 +62,6 @@ fun TrackRow(
 
 class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowState> {
     override val values = sequenceOf(
-        TrackRowState("0", "La Promesa", "Melendi"),
+        TrackRowState("0", "La Promesa", "Melendi", "Un alumno mas"),
     )
 }
