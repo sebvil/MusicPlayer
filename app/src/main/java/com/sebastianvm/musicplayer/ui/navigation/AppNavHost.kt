@@ -17,8 +17,7 @@ import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextBottomSheet
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuViewModel
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
@@ -259,16 +258,6 @@ fun NavGraphBuilder.libraryGraph(
                 })
         }
 
-        bottomSheet(
-            route = createNavRoute(NavRoutes.CONTEXT, NavArgs.SCREEN),
-            arguments = listOf(
-                navArgument(NavArgs.SCREEN) { type = NavType.StringType }
-            )
-        ) {
-            val sheetViewModel: ContextMenuViewModel = hiltViewModel()
-            ContextBottomSheet(
-                sheetViewModel = sheetViewModel
-            )
-        }
+      contextBottomSheet()
     }
 }

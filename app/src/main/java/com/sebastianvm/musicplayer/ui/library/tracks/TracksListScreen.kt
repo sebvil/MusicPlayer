@@ -2,27 +2,28 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -159,26 +160,44 @@ fun TracksListLayout(
     state: TracksListState,
     delegate: TracksListScreenDelegate
 ) {
-    val haptic = LocalHapticFeedback.current
-
-
     LazyColumn {
         items(state.tracksList) { item ->
-            TrackRow(
-                state = item,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        onLongClickLabel = "Open context menu",
-                        onLongClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            delegate.onTrackLongPressed(trackGid = item.trackGid) }
-                    ) { delegate.onTrackClicked(item.trackGid) }
-                    .padding(
-                        vertical = AppDimensions.spacing.small,
-                        horizontal = AppDimensions.spacing.mediumLarge
+            DoubleLineListItem(
+                afterListContent = { onClick ->
+                    IconButton(onClick = onClick, modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = DisplayableString.StringValue("More") // TODO extract resource
+                                .getString(),
+                        )
+                    }
+
+                },
+                delegate = object : ListItemDelegate {
+                    override fun onItemClicked() {
+                        delegate.onTrackClicked(item.trackGid)
+                    }
+
+                    override fun onSecondaryActionIconClicked() {
+                        delegate.onTrackLongPressed(item.trackGid)
+                    }
+                },
+                secondaryText = {
+                    Text(
+                        text = item.artists,
+                        modifier = Modifier.alpha(0.6f),
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-            )
+                }) {
+                Text(
+                    text = item.trackName,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
 
     }

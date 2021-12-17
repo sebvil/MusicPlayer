@@ -7,8 +7,6 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -18,11 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.content.ContextCompat.startForegroundService
@@ -36,8 +34,7 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
-import com.sebastianvm.musicplayer.ui.components.TextWithIcon
-import com.sebastianvm.musicplayer.ui.components.TextWithIconState
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -290,7 +287,6 @@ fun LibraryList(
         { header -> LibraryTitle(title = header) },
         { item ->
             SingleLineListItem(
-                text = DisplayableString.ResourceValue(item.rowName),
                 supportingImage =
                 { iconModifier ->
                     Icon(
@@ -301,67 +297,33 @@ fun LibraryList(
                     )
                 },
                 supportingImageType = SupportingImageType.AVATAR,
-                metadata = DisplayableString.PluralsResource(
-                    item.countString,
-                    item.count.toInt()
-                ),
-                onClick = { delegate.onRowClicked(item.rowId) }
-            )
+                afterListContent = {
+                    Text(
+                        text = ResUtil.getQuantityString(LocalContext.current, item.countString, item.count.toInt(), item.count),
+                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                delegate = object : ListItemDelegate {
+                    override fun onItemClicked() {
+                        delegate.onRowClicked(item.rowId)
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(id = item.rowName),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     )
     ListWithHeader(state = listState)
 
-}
-
-
-@Composable
-fun LibraryRow(
-    @PreviewParameter(LibraryItemProvider::class) libraryItem: LibraryItem,
-    modifier: Modifier = Modifier,
-) {
-    val sectionName = DisplayableString.ResourceValue(libraryItem.rowName)
-    val textWithIconState =
-        TextWithIconState(
-            icon = libraryItem.icon,
-            iconContentDescription = DisplayableString.ResourceValue(value = libraryItem.rowName),
-            text = sectionName
-        )
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        TextWithIcon(
-            state = textWithIconState,
-        )
-        Text(
-            text = ResUtil.getQuantityString(
-                LocalContext.current,
-                libraryItem.countString,
-                libraryItem.count.toInt(),
-                libraryItem.count
-            ), style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-
-    SingleLineListItem(
-        text = DisplayableString.ResourceValue(libraryItem.rowName),
-        supportingImage =
-        { iconModifier ->
-            Icon(
-                painter = painterResource(id = libraryItem.icon),
-                contentDescription = DisplayableString.ResourceValue(libraryItem.rowName)
-                    .getString(),
-                modifier = iconModifier,
-            )
-        },
-        supportingImageType = SupportingImageType.ICON,
-        metadata = DisplayableString.PluralsResource(
-            libraryItem.countString,
-            libraryItem.count.toInt()
-        ),
-    )
 }
 
 

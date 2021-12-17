@@ -1,13 +1,18 @@
 package com.sebastianvm.musicplayer.ui.components.lists
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 @Preview
@@ -15,10 +20,17 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 fun SingleLineListItemExamples() {
     ThemedPreview {
         Column {
-            SingleLineListItem(text = DisplayableString.StringValue("Simple Item"))
+            SingleLineListItem {
+                Text(
+                    text = "Simple Item",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Divider()
             SingleLineListItem(
-                text = DisplayableString.StringValue("Item with Icon and metadata"),
                 supportingImage = { modifier ->
                     Icon(
                         painter = painterResource(id = R.drawable.ic_album),
@@ -27,11 +39,26 @@ fun SingleLineListItemExamples() {
                     )
                 },
                 supportingImageType = SupportingImageType.ICON,
-                metadata = DisplayableString.StringValue("3")
-            )
+                afterListContent = {
+                    Text(
+                        text = "3",
+                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            ) {
+                Text(
+                    text = "Item with Icon and metadata",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Divider()
             SingleLineListItem(
-                text = DisplayableString.StringValue("Item with Icon"),
                 supportingImage = { modifier ->
                     Icon(
                         painter = painterResource(id = R.drawable.ic_album),
@@ -40,10 +67,17 @@ fun SingleLineListItemExamples() {
                     )
                 },
                 supportingImageType = SupportingImageType.ICON
-            )
+            ) {
+                Text(
+                    text = "Item with Icon",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Divider()
             SingleLineListItem(
-                text = DisplayableString.StringValue("Item with Avatar"),
                 supportingImage = { modifier ->
                     Icon(
                         painter = painterResource(id = R.drawable.ic_album),
@@ -52,10 +86,17 @@ fun SingleLineListItemExamples() {
                     )
                 },
                 supportingImageType = SupportingImageType.AVATAR
-            )
+            ) {
+                Text(
+                    text = "Item with Avatar",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Divider()
             SingleLineListItem(
-                text = DisplayableString.StringValue("Item with Large Image"),
                 supportingImage = { modifier ->
                     Icon(
                         painter = painterResource(id = R.drawable.ic_album),
@@ -64,10 +105,17 @@ fun SingleLineListItemExamples() {
                     )
                 },
                 supportingImageType = SupportingImageType.LARGE
-            )
+            ) {
+                Text(
+                    text = "Item with Large Image",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Divider()
             SingleLineListItem(
-                text = DisplayableString.StringValue("Item with Large Image and metadata"),
                 supportingImage = { modifier ->
                     Icon(
                         painter = painterResource(id = R.drawable.ic_album),
@@ -76,8 +124,23 @@ fun SingleLineListItemExamples() {
                     )
                 },
                 supportingImageType = SupportingImageType.LARGE,
-                metadata = DisplayableString.StringValue("4")
-            )
+                afterListContent = {
+                    Text(
+                        text = "3",
+                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }) {
+                Text(
+                    text = "Item with Large Image and metadata",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
