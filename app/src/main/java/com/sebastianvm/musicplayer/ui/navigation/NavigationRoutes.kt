@@ -16,6 +16,7 @@ object NavRoutes {
     const val PLAYER = "PLAYER"
     const val SEARCH = "SEARCH"
     const val SORT = "SORT"
+    const val CONTEXT = "CONTEXT"
 }
 
 object NavArgs {

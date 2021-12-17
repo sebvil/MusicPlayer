@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.sort
+package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle

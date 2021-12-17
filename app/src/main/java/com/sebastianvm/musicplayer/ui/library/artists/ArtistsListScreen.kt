@@ -1,27 +1,18 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,6 +21,8 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -92,15 +85,25 @@ fun ArtistsListLayout(
         state.artistsList,
         { header -> LibraryTitle(title = header) },
         { item ->
-            ArtistRow(artistItem = item, modifier = Modifier
-                .clickable {
-                    delegate.onArtistRowClicked(item.artistGid, item.artistName)
-                }
-                .fillMaxWidth()
-                .padding(
-                    vertical = AppDimensions.spacing.small,
-                    horizontal = AppDimensions.spacing.mediumLarge
-                )
+            SingleLineListItem(
+                text = DisplayableString.StringValue(item.artistName),
+                supportingImage = { modifier ->
+                    Surface(
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        modifier = modifier.clip(CircleShape)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_artist),
+                            contentDescription = stringResource(id = R.string.placeholder_artist_image),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(AppDimensions.spacing.xSmall)
+                                .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                        )
+                    }
+                },
+                supportingImageType = SupportingImageType.AVATAR,
+                onClick = { delegate.onArtistRowClicked(item.artistGid, item.artistName) }
             )
         }
     )
@@ -122,11 +125,10 @@ fun ArtistRow(
     artistItem: ArtistsListItem,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
-        Row(
-            modifier = Modifier.height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    SingleLineListItem(
+        text = DisplayableString.StringValue(artistItem.artistName),
+        modifier = modifier,
+        supportingImage = {
             Surface(
                 color = MaterialTheme.colorScheme.inverseSurface,
                 modifier = Modifier.clip(CircleShape)
@@ -140,15 +142,7 @@ fun ArtistRow(
                         .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 )
             }
-            Text(
-                text = artistItem.artistName,
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(vertical = AppDimensions.spacing.small)
-                    .padding(start = AppDimensions.spacing.mediumSmall)
-            )
-        }
-    }
+        },
+        supportingImageType = SupportingImageType.AVATAR
+    )
 }

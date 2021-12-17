@@ -162,7 +162,7 @@ class TracksListViewModel @Inject constructor(
                 val transportControls = musicServiceConnection.transportControls
                 val parentId = when (val title = state.value.tracksListTitle) {
                     is DisplayableString.StringValue -> "genre-${title.value}"
-                    is DisplayableString.ResourceValue -> BrowseTree.TRACKS_ROOT
+                    else -> BrowseTree.TRACKS_ROOT
                 }
                 val extras = Bundle().apply {
                     putString(
@@ -207,6 +207,11 @@ class TracksListViewModel @Inject constructor(
                         state.value.genreName
                     )
                 }
+            }
+            is TracksListUserAction.TrackLongPressed -> {
+                addUiEvent(
+                    TracksListUiEvent.OpenContextMenu(action.trackGid)
+                )
             }
         }
     }
@@ -258,11 +263,13 @@ sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
     object SortByClicked : TracksListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
+    data class TrackLongPressed(val trackGid: String) : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
     data class ShowBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) : TracksListUiEvent()
+    data class OpenContextMenu(val trackGid: String) : TracksListUiEvent()
 }
 
 

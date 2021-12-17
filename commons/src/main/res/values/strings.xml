@@ -21,6 +21,9 @@
     <string name="previous_song_button">previous song</string>
     <string name="next_song_button">next song</string>
     <string name="play_button">Play</string>
+    <string name="play">Play</string>
+    <string name="play_from_beginning">Play from beginning</string>
+    <string name="play_all_songs">Play all songs</string>
 
     <string name="scan">Scan</string>
     <string name="stop_scanning">Stop scanning</string>
@@ -46,6 +49,8 @@
     <string name="track_name">Track name</string>
     <string name="artist_name">Artist name</string>
     <string name="album_name">Album name</string>
+    <string name="view_artists">View artists</string>
+    <string name="view_album">View album</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

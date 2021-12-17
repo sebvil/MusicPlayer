@@ -1,11 +1,6 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import androidx.compose.animation.Animatable
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -18,11 +13,15 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sebastianvm.musicplayer.ui.album.AlbumScreen
 import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextBottomSheet
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuViewModel
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheet
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListScreen
 import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListViewModel
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListScreen
@@ -41,9 +40,6 @@ import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.search.SearchViewModel
-import com.sebastianvm.musicplayer.ui.sort.SortBottomSheet
-import com.sebastianvm.musicplayer.ui.sort.SortBottomSheetDelegate
-import com.sebastianvm.musicplayer.ui.sort.SortBottomSheetViewModel
 import com.sebastianvm.musicplayer.util.SortOrder
 
 @Composable
@@ -153,12 +149,19 @@ fun NavGraphBuilder.libraryGraph(
                         navController.navigateUp()
                     }
 
-                    override fun openBottomSheet(sortOption: Int, sortOrder: SortOrder) {
+                    override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
                         navController.navigateTo(
                             NavRoutes.SORT,
                             NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
                             NavArgument(NavArgs.SORT_OPTION, sortOption),
                             NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
+                        )
+                    }
+
+                    override fun openContextMenu() {
+                        navController.navigateTo(
+                            NavRoutes.CONTEXT,
+                            NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
                         )
                     }
                 })
@@ -254,6 +257,18 @@ fun NavGraphBuilder.libraryGraph(
                         navController.popBackStack()
                     }
                 })
+        }
+
+        bottomSheet(
+            route = createNavRoute(NavRoutes.CONTEXT, NavArgs.SCREEN),
+            arguments = listOf(
+                navArgument(NavArgs.SCREEN) { type = NavType.StringType }
+            )
+        ) {
+            val sheetViewModel: ContextMenuViewModel = hiltViewModel()
+            ContextBottomSheet(
+                sheetViewModel = sheetViewModel
+            )
         }
     }
 }

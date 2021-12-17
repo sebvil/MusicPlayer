@@ -1,7 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,8 @@ import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +33,8 @@ import com.sebastianvm.musicplayer.util.SortOrder
 interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
-    fun openBottomSheet(sortOption: Int, sortOrder: SortOrder)
+    fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
+    fun openContextMenu()
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,7 +53,10 @@ fun TracksListScreen(
                     delegate.navigateToPlayer()
                 }
                 is TracksListUiEvent.ShowBottomSheet -> {
-                    delegate.openBottomSheet(event.sortOption, event.sortOrder)
+                    delegate.openSortMenu(event.sortOption, event.sortOrder)
+                }
+                is TracksListUiEvent.OpenContextMenu -> {
+                    delegate.openContextMenu()
                 }
             }
         },
@@ -72,6 +79,14 @@ fun TracksListScreen(
                 override fun onTrackClicked(trackGid: String) {
                     screenViewModel.handle(
                         TracksListUserAction.TrackClicked(
+                            trackGid
+                        )
+                    )
+                }
+
+                override fun onTrackLongPressed(trackGid: String) {
+                    screenViewModel.handle(
+                        TracksListUserAction.TrackLongPressed(
                             trackGid
                         )
                     )
@@ -123,6 +138,7 @@ fun TopBarPreview(@PreviewParameter(TracksListStatePreviewParameterProvider::cla
 
 interface TracksListScreenDelegate {
     fun onTrackClicked(trackGid: String)
+    fun onTrackLongPressed(trackGid: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -137,12 +153,14 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun TracksListLayout(
     state: TracksListState,
     delegate: TracksListScreenDelegate
 ) {
+    val haptic = LocalHapticFeedback.current
+
 
     LazyColumn {
         items(state.tracksList) { item ->
@@ -150,7 +168,12 @@ fun TracksListLayout(
                 state = item,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { delegate.onTrackClicked(item.trackGid) }
+                    .combinedClickable(
+                        onLongClickLabel = "Open context menu",
+                        onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            delegate.onTrackLongPressed(trackGid = item.trackGid) }
+                    ) { delegate.onTrackClicked(item.trackGid) }
                     .padding(
                         vertical = AppDimensions.spacing.small,
                         horizontal = AppDimensions.spacing.mediumLarge

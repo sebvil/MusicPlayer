@@ -7,10 +7,8 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -27,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
@@ -41,6 +38,8 @@ import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TextWithIcon
 import com.sebastianvm.musicplayer.ui.components.TextWithIconState
+import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -283,17 +282,31 @@ interface LibraryListDelegate {
 @Composable
 fun LibraryList(
     @PreviewParameter(LibraryItemListProvider::class) libraryItems: List<LibraryItem>,
-    delegate: LibraryListDelegate,
+    delegate: LibraryListDelegate
 ) {
     val listState = ListWithHeaderState(
         DisplayableString.ResourceValue(R.string.library),
         libraryItems,
         { header -> LibraryTitle(title = header) },
         { item ->
-            LibraryRow(item, modifier = Modifier
-                .fillMaxWidth()
-                .clickable { delegate.onRowClicked(item.rowId) }
-                .padding(horizontal = 32.dp, vertical = AppDimensions.spacing.medium))
+            SingleLineListItem(
+                text = DisplayableString.ResourceValue(item.rowName),
+                supportingImage =
+                { iconModifier ->
+                    Icon(
+                        painter = painterResource(id = item.icon),
+                        contentDescription = DisplayableString.ResourceValue(item.rowName)
+                            .getString(),
+                        modifier = iconModifier,
+                    )
+                },
+                supportingImageType = SupportingImageType.AVATAR,
+                metadata = DisplayableString.PluralsResource(
+                    item.countString,
+                    item.count.toInt()
+                ),
+                onClick = { delegate.onRowClicked(item.rowId) }
+            )
         }
     )
     ListWithHeader(state = listState)
@@ -331,6 +344,24 @@ fun LibraryRow(
             color = MaterialTheme.colorScheme.onBackground
         )
     }
+
+    SingleLineListItem(
+        text = DisplayableString.ResourceValue(libraryItem.rowName),
+        supportingImage =
+        { iconModifier ->
+            Icon(
+                painter = painterResource(id = libraryItem.icon),
+                contentDescription = DisplayableString.ResourceValue(libraryItem.rowName)
+                    .getString(),
+                modifier = iconModifier,
+            )
+        },
+        supportingImageType = SupportingImageType.ICON,
+        metadata = DisplayableString.PluralsResource(
+            libraryItem.countString,
+            libraryItem.count.toInt()
+        ),
+    )
 }
 
 

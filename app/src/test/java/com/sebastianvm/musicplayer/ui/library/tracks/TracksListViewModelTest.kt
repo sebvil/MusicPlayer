@@ -157,8 +157,8 @@ class TracksListViewModelTest {
     @Test
     fun `SortOptionClicked changes state`() {
         val tracksList = listOf(
-            TrackRowState("1", "A", "B"),
-            TrackRowState("1", "B", "A")
+            TrackRowState("1", "A", "B", "Al"),
+            TrackRowState("1", "B", "A", "Bl")
         )
         with(generateViewModel(tracksList = tracksList)) {
             handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))

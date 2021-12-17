@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Size
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
@@ -43,7 +44,7 @@ class ResUtil {
 
 sealed class DisplayableString {
     data class ResourceValue(
-        @StringRes val value: Int,
+        @StringRes  val value: Int,
         val formatArgs: Array<out Any> = arrayOf()
     ) : DisplayableString() {
         override fun equals(other: Any?): Boolean {
@@ -65,6 +66,11 @@ sealed class DisplayableString {
         }
     }
 
+    data class PluralsResource(
+        @PluralsRes val value: Int,
+        val count: Int
+    ) : DisplayableString()
+
     data class StringValue(val value: String) : DisplayableString()
 
     @Composable
@@ -72,6 +78,9 @@ sealed class DisplayableString {
         return when (this) {
             is ResourceValue -> stringResource(id = this.value, formatArgs = formatArgs)
             is StringValue -> this.value
+            is PluralsResource -> {
+                LocalContext.current.resources.getQuantityString(this.value, this.count, this.count)
+            }
         }
     }
 }
