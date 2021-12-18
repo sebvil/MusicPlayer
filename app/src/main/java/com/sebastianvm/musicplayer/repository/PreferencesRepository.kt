@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.repository
 
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.sebastianvm.musicplayer.ui.library.tracks.SortOption
@@ -16,11 +17,13 @@ class PreferencesRepository @Inject constructor(
     suspend fun modifyTrackListSortOptions(sortOrder: SortOrder, sortOption: SortOption, genreName: String?) {
         preferencesUtil.dataStore.edit { settings ->
             genreName?.also {
+                Log.i("PREFS", "Modifying track genre prefs: $sortOption, $sortOrder, $genreName")
                 val sortOptionKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
                 val sortOrderKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
                 settings[sortOptionKey] = sortOption.name
                 settings[sortOrderKey] = sortOrder.name
             } ?: kotlin.run {
+                Log.i("PREFS", "Modifying track root prefs: $sortOption, $sortOrder")
                 settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortOption.name
                 settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortOrder.name
             }
@@ -43,6 +46,7 @@ class PreferencesRepository @Inject constructor(
             } ?: kotlin.run {
                 val sortOption = preferences[PreferencesUtil.TRACKS_SORT_OPTION]
                 val sortOrder = preferences[PreferencesUtil.TRACKS_SORT_ORDER]
+                Log.i("PREFS", "new track root prefs: $sortOption, $sortOrder")
                 if (sortOption != null && sortOrder != null) {
                     TracksSortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
                 } else {

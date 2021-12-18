@@ -42,9 +42,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
             ?.observe(lifecycleOwner) {
                 screenViewModel.handle(
                     TracksListUserAction.SortOptionClicked(
-                        SortOption.fromResId(
-                            it
-                        )
+                        SortOption.fromResId(it)
                     )
                 )
             }

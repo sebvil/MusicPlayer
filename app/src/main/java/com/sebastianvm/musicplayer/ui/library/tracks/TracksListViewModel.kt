@@ -160,23 +160,11 @@ class TracksListViewModel @Inject constructor(
                     state.value.sortOrder
                 }
 
-                setState {
-                    copy(
-                        currentSort = action.newSortOption,
-                        tracksList = tracksList.sortedWith(
-                            getComparator(
-                                sortOrder,
-                                action.newSortOption
-                            )
-                        ),
-                        sortOrder = sortOrder
-                    )
-                }
                 viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
                         sortOrder,
                         action.newSortOption,
-                        state.value.screen
+                        state.value.genreName
                     )
                 }
             }
