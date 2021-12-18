@@ -3,6 +3,8 @@ package com.sebastianvm.musicplayer.ui.library.albums
 import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 
+
+// TODO combine with albumRowItem
 class AlbumsListItem(
     val albumGid: String,
     val albumRowState: AlbumRowState,

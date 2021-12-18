@@ -12,15 +12,13 @@ import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
-import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
-import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListScreen
-import com.sebastianvm.musicplayer.ui.library.albums.AlbumsListViewModel
+import com.sebastianvm.musicplayer.ui.library.albums.albumsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListScreen
 import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListViewModel
 import com.sebastianvm.musicplayer.ui.library.genres.GenresListScreen
@@ -98,12 +96,7 @@ fun NavGraphBuilder.libraryGraph(
             }
         }
 
-        composable(NavRoutes.ALBUMS_ROOT) {
-            val screenViewModel = hiltViewModel<AlbumsListViewModel>()
-            AlbumsListScreen(screenViewModel, bottomNavBar) { albumGid ->
-                navController.navigateToAlbum(albumGid)
-            }
-        }
+        albumsListNavDestination(navController, bottomNavBar)
 
         composable(NavRoutes.GENRES_ROOT) {
             val screenViewModel = hiltViewModel<GenresListViewModel>()

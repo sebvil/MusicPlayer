@@ -32,8 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
-    private val albumRepository: AlbumRepository,
-    private val trackRepository: TrackRepository,
+    albumRepository: AlbumRepository,
+    trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 

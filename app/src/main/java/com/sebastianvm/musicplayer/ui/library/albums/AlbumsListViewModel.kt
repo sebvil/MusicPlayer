@@ -1,70 +1,56 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.musicplayer.player.BrowseTree
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
+import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
-import com.sebastianvm.musicplayer.util.extensions.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class AlbumsListViewModel @Inject constructor(
-    musicServiceConnection: MusicServiceConnection,
-    initialState: AlbumsListState
+    initialState: AlbumsListState,
+    albumRepository: AlbumRepository,
 ) : BaseViewModel<AlbumsListUserAction, AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
-        musicServiceConnection.subscribe(
-            BrowseTree.ALBUMS_ROOT,
-            object : MediaBrowserCompat.SubscriptionCallback() {
-                override fun onChildrenLoaded(
-                    parentId: String,
-                    children: MutableList<MediaBrowserCompat.MediaItem>
-                ) {
-                    super.onChildrenLoaded(parentId, children)
-                    setState {
-                        copy(
-                            albumsList = children.mapNotNull { child ->
-                                child.description.toAlbumsListItem()
-                            }.sortedBy { it.albumRowState.albumName },
-                        )
-                    }
-
+        viewModelScope.launch {
+            albumRepository.getAlbums().collect { albums ->
+                setState {
+                    copy(
+                        albumsList = albums.map { album ->
+                            album.toAlbumsListItem()
+                        }.sortedBy { it.albumRowState.albumName },
+                    )
                 }
             }
-        )
+        }
     }
 
-
-    fun MediaDescriptionCompat.toAlbumsListItem(): AlbumsListItem? {
-        val meta =
-            extras?.getParcelable<MediaMetadataCompat>(MEDIA_METADATA_COMPAT_KEY) ?: return null
-        val id = meta.id ?: return null
-        val albumName = meta.album ?: return null
-        val artists =
-            meta.albumArtists ?: return null
-        val year = meta.year
+    private fun FullAlbumInfo.toAlbumsListItem(): AlbumsListItem {
         return AlbumsListItem(
-            id,
+            albumGid = album.albumGid,
             AlbumRowState(
-                albumName = albumName,
-                image = ArtLoader.getAlbumArt(albumGid = id.toLong(), albumName = albumName),
-                artists = artists,
-                year = year
+                albumName = album.albumName,
+                image = ArtLoader.getAlbumArt(
+                    albumGid = album.albumGid.toLong(),
+                    albumName = album.albumName
+                ),
+                year = album.year,
+                artists = artists.joinToString(", ") { it.artistName }
             )
         )
     }
@@ -102,6 +88,7 @@ object InitialAlbumsListStateModule {
 sealed class AlbumsListUserAction : UserAction {
     data class AlbumClicked(val albumGid: String, val albumName: String) : AlbumsListUserAction()
 }
+
 sealed class AlbumsListUiEvent : UiEvent {
     data class NavigateToAlbum(val albumGid: String, val albumName: String) : AlbumsListUiEvent()
 }

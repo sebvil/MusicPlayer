@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
-    private val artistRepository: ArtistRepository,
+    artistRepository: ArtistRepository,
     private val albumRepository: AlbumRepository,
 ) : BaseViewModel<ArtistUserAction, ArtistUiEvent, ArtistState>(
     initialState
