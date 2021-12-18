@@ -8,6 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -68,12 +70,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                 }
 
                 override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
-                    navController.navigateTo(
-                        NavRoutes.SORT,
-                        NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
-                        NavArgument(NavArgs.SORT_OPTION, sortOption),
-                        NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
-                    )
+                    navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT, sortOption, sortOrder)
                 }
 
                 override fun openContextMenu(
@@ -82,12 +79,8 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     currentSort: String,
                     sortOrder: SortOrder
                 ) {
-                    navController.navigateTo(
-                        NavRoutes.CONTEXT,
-                        NavArgument(NavArgs.SCREEN, screen),
-                        NavArgument(NavArgs.MEDIA_ID, mediaId),
-                        NavArgument(NavArgs.SORT_OPTION, currentSort),
-                        NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
+                    navController.openContextMenu(
+                        screen, mediaId, currentSort, sortOrder
                     )
                 }
             })

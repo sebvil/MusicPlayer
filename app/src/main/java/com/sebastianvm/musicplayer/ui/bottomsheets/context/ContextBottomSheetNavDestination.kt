@@ -11,8 +11,11 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
+import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.util.SortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
@@ -58,4 +61,19 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             }
         )
     }
+}
+
+fun NavController.openContextMenu(
+    screen: String,
+    mediaId: String,
+    currentSort: String,
+    sortOrder: SortOrder
+) {
+    navigateTo(
+        NavRoutes.CONTEXT,
+        NavArgument(NavArgs.SCREEN, screen),
+        NavArgument(NavArgs.MEDIA_ID, mediaId),
+        NavArgument(NavArgs.SORT_OPTION, currentSort),
+        NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
+    )
 }

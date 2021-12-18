@@ -8,19 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheet
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.albums.albumsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.artists.artistsNavDestination
 import com.sebastianvm.musicplayer.ui.library.genres.genresListNavDestination
@@ -49,7 +44,6 @@ fun AppNavHost(
 
             libraryGraph(
                 navController = navController,
-                bottomNavBar = bottomNavBar,
                 requestPermission = requestPermission,
             )
 
@@ -69,7 +63,6 @@ fun AppNavHost(
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.libraryGraph(
     navController: NavHostController,
-    bottomNavBar: @Composable () -> Unit,
     requestPermission: (String) -> String,
 ) {
 
@@ -98,34 +91,7 @@ fun NavGraphBuilder.libraryGraph(
         artistNavDestination(navController)
         albumNavDestination(navController)
 
-        bottomSheet(
-            route = createNavRoute(
-                NavRoutes.SORT,
-                NavArgs.SCREEN,
-                NavArgs.SORT_OPTION,
-                NavArgs.SORT_ORDER
-            ),
-            arguments = listOf(
-                navArgument(NavArgs.SCREEN) { type = NavType.StringType },
-                navArgument(NavArgs.SORT_OPTION) { type = NavType.ReferenceType },
-                navArgument(NavArgs.SORT_ORDER) {
-                    type = NavType.StringType
-                },
-            )
-        ) {
-            val sheetViewModel = hiltViewModel<SortBottomSheetViewModel>()
-            SortBottomSheet(
-                sheetViewModel = sheetViewModel,
-                delegate = object : SortBottomSheetDelegate {
-                    override fun popBackStack(sortOption: Int) {
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            NavArgs.SORT_OPTION,
-                            sortOption
-                        )
-                        navController.popBackStack()
-                    }
-                })
-        }
+        sortBottomSheetNavDestination(navController)
         contextBottomSheet(navController)
     }
 }
