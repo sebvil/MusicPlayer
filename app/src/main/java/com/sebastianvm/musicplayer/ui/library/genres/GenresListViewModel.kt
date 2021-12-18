@@ -1,55 +1,39 @@
 package com.sebastianvm.musicplayer.ui.library.genres
 
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.BrowseTree
+import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
-import com.sebastianvm.musicplayer.util.extensions.genre
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class GenresListViewModel @Inject constructor(
-    musicServiceConnection: MusicServiceConnection,
-    initialState: GenresListState
+    initialState: GenresListState,
+    genreRepository: GenreRepository
 ) :
     BaseViewModel<GenresListUserAction, GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        musicServiceConnection.subscribe(BrowseTree.GENRES_ROOT,
-            object : MediaBrowserCompat.SubscriptionCallback() {
-                override fun onChildrenLoaded(
-                    parentId: String,
-                    children: MutableList<MediaBrowserCompat.MediaItem>
-                ) {
-                    super.onChildrenLoaded(parentId, children)
-                    setState {
-                        copy(
-                            genresList = children.mapNotNull { child ->
-                                child.description.toGenreListItem()
-                            }.sortedBy { item -> item.genreName },
-                        )
-                    }
+        viewModelScope.launch {
+            genreRepository.getGenres().collect { genres ->
+                setState {
+                    copy(
+                        genresList = genres.map { GenresListItem(it.genreName) }
+                            .sortedBy { it.genreName }
+                    )
                 }
-            })
-    }
-
-    fun MediaDescriptionCompat.toGenreListItem(): GenresListItem? {
-        val meta =
-            extras?.getParcelable<MediaMetadataCompat>(MEDIA_METADATA_COMPAT_KEY) ?: return null
-        val genre = meta.genre ?: return null
-        return GenresListItem(genre)
+            }
+        }
     }
 
     override fun handle(action: GenresListUserAction) {

@@ -29,7 +29,7 @@ class BrowseTree @Inject constructor(
     private val tracks = trackRepository.getAllTracks()
     private val artists = artistRepository.getArtistsWithAlbums()
     private val albums = albumRepository.getAlbums()
-    private val genres = genreRepository.getGenres()
+    private val genres = genreRepository.getGenresWithTracks()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {

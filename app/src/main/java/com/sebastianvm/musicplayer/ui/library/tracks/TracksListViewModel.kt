@@ -1,20 +1,21 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.player.SORT_ORDER
+import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -22,11 +23,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
-import com.sebastianvm.musicplayer.util.extensions.album
-import com.sebastianvm.musicplayer.util.extensions.artist
-import com.sebastianvm.musicplayer.util.extensions.id
-import com.sebastianvm.musicplayer.util.extensions.title
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.Module
 import dagger.Provides
@@ -64,16 +60,16 @@ data class TracksSortSettings(
 
 @HiltViewModel
 class TracksListViewModel @Inject constructor(
+    initialState: TracksListState,
+    trackRepository: TrackRepository,
+    genreRepository: GenreRepository,
     private val musicServiceConnection: MusicServiceConnection,
     private val preferencesRepository: PreferencesRepository,
-    initialState: TracksListState
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
     initialState
 ) {
 
     init {
-
-
         viewModelScope.launch {
             preferencesRepository.getTrackSortOptions(genreName = state.value.genreName)
                 .collect { settings ->
@@ -90,42 +86,44 @@ class TracksListViewModel @Inject constructor(
                         )
                     }
                 }
-
         }
-
-        musicServiceConnection.subscribe(
-            state.value.screen,
-            object : MediaBrowserCompat.SubscriptionCallback() {
-                override fun onChildrenLoaded(
-                    parentId: String,
-                    children: MutableList<MediaBrowserCompat.MediaItem>
-                ) {
-                    super.onChildrenLoaded(parentId, children)
+        viewModelScope.launch {
+            state.value.genreName?.also { genre ->
+                genreRepository.getGenreWithTracks(genre).collect { genreWithTracks ->
+                    trackRepository.getTracks(genreWithTracks.tracks.map { it.trackGid })
+                        .collect { tracks ->
+                            setState {
+                                copy(
+                                    tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
+                                        getComparator(sortOrder, currentSort)
+                                    )
+                                )
+                            }
+                        }
+                }
+            } ?: kotlin.run {
+                trackRepository.getAllTracks().collect { tracks ->
                     setState {
                         copy(
-                            tracksList = children.mapNotNull { child ->
-                                child.description.toTrackRowState()
-                            }.sortedWith(
-                                getComparator(
-                                    sortOrder,
-                                    currentSort
-                                )
+                            tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
+                                getComparator(sortOrder, currentSort)
                             )
                         )
                     }
                 }
             }
-        )
+        }
     }
 
-    fun MediaDescriptionCompat.toTrackRowState(): TrackRowState? {
-        val meta =
-            extras?.getParcelable<MediaMetadataCompat>(MEDIA_METADATA_COMPAT_KEY) ?: return null
-        val id = meta.id ?: return null
-        val trackName = meta.title ?: return null
-        val artists = meta.artist ?: return null
-        val albumName = meta.album ?: return null
-        return TrackRowState(id, trackName, artists, albumName)
+    // TODO move this out
+    private fun FullTrackInfo.toTrackRowState(): TrackRowState {
+        return TrackRowState(
+            trackGid = track.trackGid,
+            trackName = track.trackName,
+            artists = artists.joinToString(", ") { it.artistName },
+            albumName = album.albumName,
+            trackNumber = track.trackNumber
+        )
     }
 
     override fun handle(action: TracksListUserAction) {

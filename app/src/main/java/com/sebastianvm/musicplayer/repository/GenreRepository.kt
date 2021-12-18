@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.repository
 
 import com.sebastianvm.musicplayer.database.daos.GenreDao
+import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreWithTracks
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,7 +16,15 @@ class GenreRepository @Inject constructor(
         return genreDao.getGenresCount().distinctUntilChanged()
     }
 
-    fun getGenres(): Flow<List<GenreWithTracks>> {
-        return genreDao.getGenres().distinctUntilChanged()
+    fun getGenresWithTracks(): Flow<List<GenreWithTracks>> {
+        return genreDao.getGenresWithTracks().distinctUntilChanged()
+    }
+
+    fun getGenreWithTracks(genreName: String): Flow<GenreWithTracks> {
+        return genreDao.getGenreWithTracks(genreName).distinctUntilChanged()
+    }
+
+    fun getGenres(): Flow<List<Genre>> {
+        return genreDao.getGenres()
     }
 }

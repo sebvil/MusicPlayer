@@ -23,8 +23,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
 import com.sebastianvm.musicplayer.ui.library.albums.albumsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.artists.artistsNavDestination
-import com.sebastianvm.musicplayer.ui.library.genres.GenresListScreen
-import com.sebastianvm.musicplayer.ui.library.genres.GenresListViewModel
+import com.sebastianvm.musicplayer.ui.library.genres.genresListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
 import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
@@ -94,16 +93,7 @@ fun NavGraphBuilder.libraryGraph(
         tracksListNavDestination(navController)
         artistsNavDestination(navController)
         albumsListNavDestination(navController)
-
-        composable(NavRoutes.GENRES_ROOT) {
-            val screenViewModel = hiltViewModel<GenresListViewModel>()
-            GenresListScreen(screenViewModel, bottomNavBar) { genre ->
-                navController.navigateTo(
-                    NavRoutes.TRACKS_ROOT,
-                    NavArgument(NavArgs.GENRE_NAME, genre)
-                )
-            }
-        }
+        genresListNavDestination(navController)
 
         artistNavDestination(navController)
         albumNavDestination(navController)

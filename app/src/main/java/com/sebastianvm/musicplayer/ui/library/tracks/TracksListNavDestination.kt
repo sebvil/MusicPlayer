@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -93,4 +92,8 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                 }
             })
     }
+}
+
+fun NavController.navigateToGenre(genreName: String) {
+    navigateTo(NavRoutes.TRACKS_ROOT, NavArgument(NavArgs.GENRE_NAME, genreName))
 }

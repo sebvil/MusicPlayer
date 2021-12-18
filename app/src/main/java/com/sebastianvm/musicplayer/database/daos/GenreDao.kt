@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.database.daos
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
+import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreWithTracks
 import kotlinx.coroutines.flow.Flow
 
@@ -13,5 +14,12 @@ interface GenreDao {
 
     @Transaction
     @Query("SELECT * FROM Genre")
-    fun getGenres(): Flow<List<GenreWithTracks>>
+    fun getGenresWithTracks(): Flow<List<GenreWithTracks>>
+
+    @Transaction
+    @Query("SELECT * FROM Genre WHERE Genre.genreName=:genreName")
+    fun getGenreWithTracks(genreName: String): Flow<GenreWithTracks>
+
+    @Query("SELECT * FROM Genre")
+    fun getGenres(): Flow<List<Genre>>
 }

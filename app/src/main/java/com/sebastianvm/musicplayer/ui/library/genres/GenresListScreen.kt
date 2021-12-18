@@ -23,8 +23,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun GenresListScreen(
     screenViewModel: GenresListViewModel = viewModel(),
-    bottomNavBar: @Composable () -> Unit,
-    navigateToGenre: (String) -> Unit = {}
+    navigateToGenre: (genreName: String) -> Unit = {}
 ) {
     Screen(
         screenViewModel = screenViewModel,
