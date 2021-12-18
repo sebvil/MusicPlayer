@@ -13,8 +13,8 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
-import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
-import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
+import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
+import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetDelegate
@@ -93,12 +93,8 @@ fun NavGraphBuilder.libraryGraph(
 
         composable(NavRoutes.ARTISTS_ROOT) {
             val screenViewModel = hiltViewModel<ArtistsListViewModel>()
-            ArtistsListScreen(screenViewModel, bottomNavBar) { artistGid, artistName ->
-                navController.navigateTo(
-                    NavRoutes.ARTIST,
-                    NavArgument(NavArgs.ARTIST_GID, artistGid),
-                    NavArgument(NavArgs.ARTIST_NAME, artistName)
-                )
+            ArtistsListScreen(screenViewModel, bottomNavBar) { artistGid ->
+                navController.navigateToArtist(artistGid)
             }
         }
 
@@ -119,19 +115,7 @@ fun NavGraphBuilder.libraryGraph(
             }
         }
 
-        composable(
-            createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID, NavArgs.ARTIST_NAME),
-        ) {
-            val screenViewModel = hiltViewModel<ArtistViewModel>()
-            ArtistScreen(screenViewModel, bottomNavBar) { albumGid, albumName ->
-                navController.navigateTo(
-                    NavRoutes.ALBUM,
-                    NavArgument(NavArgs.ALBUM_GID, albumGid),
-                    NavArgument(NavArgs.ALBUM_NAME, albumName)
-                )
-            }
-        }
-
+        artistNavDestination(navController, bottomNavBar)
         albumNavDestination(navController, bottomNavBar)
 
         bottomSheet(

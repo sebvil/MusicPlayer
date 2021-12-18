@@ -30,7 +30,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
             ).plus(
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
-                        "0", AlbumType.ALBUM,
+                        "0",
                         AlbumRowState(
                             albumName = "Ahora",
                             image = MediaArt(
@@ -44,7 +44,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         ),
                     ),
                     ArtistScreenItem.AlbumRowItem(
-                        "1", AlbumType.ALBUM,
+                        "1",
                         AlbumRowState(
                             albumName = "Ahora",
                             image = MediaArt(
@@ -67,7 +67,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
             ).plus(
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
-                        "2", AlbumType.APPEARS_ON,
+                        "2",
                         AlbumRowState(
                             albumName = "Ahora",
                             image = MediaArt(
@@ -81,7 +81,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         ),
                     ),
                     ArtistScreenItem.AlbumRowItem(
-                        "3", AlbumType.APPEARS_ON,
+                        "3",
                         AlbumRowState(
                             albumName = "Ahora",
                             image = MediaArt(
@@ -107,8 +107,9 @@ class SectionHeaderItemProvider : PreviewParameterProvider<ArtistScreenItem.Sect
 
 class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {
     override val values = sequenceOf(
-        ArtistScreenItem.SectionHeaderItem("ALBUMS", R.string.albums), ArtistScreenItem.AlbumRowItem(
-            "0", AlbumType.ALBUM,
+        ArtistScreenItem.SectionHeaderItem("ALBUMS", R.string.albums),
+        ArtistScreenItem.AlbumRowItem(
+            "0",
             AlbumRowState(
                 albumName = "Ahora",
                 image = MediaArt(

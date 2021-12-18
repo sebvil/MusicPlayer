@@ -34,7 +34,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun ArtistsListScreen(
     screenViewModel: ArtistsListViewModel = viewModel(),
     bottomNavBar: @Composable () -> Unit,
-    navigateToArtist: (String, String) -> Unit
+    navigateToArtist: (String) -> Unit
 ) {
 
     Screen(
@@ -42,7 +42,7 @@ fun ArtistsListScreen(
         eventHandler = { event ->
             when (event) {
                 is ArtistsListUiEvent.NavigateToArtist -> {
-                    navigateToArtist(event.artistGid, event.artistName)
+                    navigateToArtist(event.artistGid)
                 }
             }
 

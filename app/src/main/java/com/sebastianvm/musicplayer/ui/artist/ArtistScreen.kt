@@ -24,26 +24,23 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
     bottomNavBar: @Composable () -> Unit,
-    navigateToAlbum: (String, String) -> Unit
+    navigateToAlbum: (String) -> Unit
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is ArtistUiEvent.NavigateToAlbum -> {
-                    navigateToAlbum(event.albumGid, event.albumName)
+                    navigateToAlbum(event.albumGid)
                 }
             }
         },
         bottomNavBar = bottomNavBar,
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
-            override fun albumRowClicked(albumGid: String, albumName: String) {
+            override fun albumRowClicked(albumGid: String) {
                 screenViewModel.handle(
-                    ArtistUserAction.AlbumClicked(
-                        albumGid = albumGid,
-                        albumName = albumName
-                    )
+                    ArtistUserAction.AlbumClicked(albumGid = albumGid)
                 )
             }
         })
@@ -57,9 +54,7 @@ interface ArtistScreenDelegate : ArtistScreenRowDelegate
 @Composable
 fun ArtistScreenPreview(@PreviewParameter(ArtistStatePreviewParameterProvider::class) state: ArtistState) {
     ScreenPreview {
-        ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
-            override fun albumRowClicked(albumGid: String, albumName: String) = Unit
-        })
+        ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {})
     }
 }
 
@@ -90,7 +85,7 @@ fun ArtistLayout(
 }
 
 interface ArtistScreenRowDelegate {
-    fun albumRowClicked(albumGid: String, albumName: String)
+    fun albumRowClicked(albumGid: String) = Unit
 }
 
 @Preview(showBackground = true)
@@ -98,9 +93,7 @@ interface ArtistScreenRowDelegate {
 @Composable
 fun ArtistScreenRowPreview(@PreviewParameter(ArtistViewItemProvider::class) item: ArtistScreenItem) {
     ThemedPreview {
-        ArtistScreenRow(item = item, delegate = object : ArtistScreenRowDelegate {
-            override fun albumRowClicked(albumGid: String, albumName: String) = Unit
-        })
+        ArtistScreenRow(item = item, delegate = object : ArtistScreenRowDelegate {})
     }
 }
 
@@ -127,10 +120,7 @@ fun ArtistScreenRow(
                 state = item.state,
                 modifier = Modifier
                     .clickable {
-                        delegate.albumRowClicked(
-                            item.albumGid,
-                            item.state.albumName
-                        )
+                        delegate.albumRowClicked(item.albumGid)
                     }
             )
         }
