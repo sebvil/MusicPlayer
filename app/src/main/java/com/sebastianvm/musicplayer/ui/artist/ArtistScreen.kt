@@ -23,7 +23,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
-    bottomNavBar: @Composable () -> Unit,
     navigateToAlbum: (String) -> Unit
 ) {
     Screen(
@@ -35,7 +34,6 @@ fun ArtistScreen(
                 }
             }
         },
-        bottomNavBar = bottomNavBar,
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
             override fun albumRowClicked(albumGid: String) {

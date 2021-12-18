@@ -34,9 +34,7 @@ fun GenresListScreen(
                     navigateToGenre(event.genreName)
                 }
             }
-        },
-        bottomNavBar = bottomNavBar
-    ) { state ->
+        }) { state ->
         GenresListLayout(state = state, object : GenresListScreenDelegate {
             override fun onGenreClicked(genreName: String) {
                 screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))

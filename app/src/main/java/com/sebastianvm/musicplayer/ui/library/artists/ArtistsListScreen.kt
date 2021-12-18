@@ -33,7 +33,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun ArtistsListScreen(
     screenViewModel: ArtistsListViewModel = viewModel(),
-    bottomNavBar: @Composable () -> Unit,
     navigateToArtist: (String) -> Unit
 ) {
 
@@ -47,7 +46,6 @@ fun ArtistsListScreen(
             }
 
         },
-        bottomNavBar = bottomNavBar
     ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
             override fun onArtistRowClicked(artistGid: String, artistName: String) {

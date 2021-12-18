@@ -53,7 +53,6 @@ interface LibraryScreenDelegate : LibraryListDelegate, PermissionDeniedDialogDel
 @Composable
 fun LibraryScreen(
     screenViewModel: LibraryViewModel = viewModel(),
-    bottomNavBar: @Composable () -> Unit,
     delegate: LibraryScreenActivityDelegate
 ) {
     val requestStoragePermissionLauncher = rememberLauncherForActivityResult(
@@ -107,7 +106,6 @@ fun LibraryScreen(
                 }
             }
         },
-        bottomNavBar = bottomNavBar,
         fab = {
             ScanFab(onClick = {
                 screenViewModel.handle(

@@ -21,7 +21,6 @@ fun <A : UserAction, E : UiEvent, S : State> Screen(
     screenViewModel: BaseViewModel<A, E, S>,
     eventHandler: EventHandler<E>,
     topBar: @Composable (S) -> Unit = {},
-    bottomNavBar: @Composable () -> Unit = {},
     fab: @Composable (S) -> Unit = {},
     content: @Composable (S) -> Unit
 ) {
@@ -30,7 +29,6 @@ fun <A : UserAction, E : UiEvent, S : State> Screen(
 
     Scaffold(
         topBar = { topBar(state.value) },
-        bottomBar = bottomNavBar,
         floatingActionButton = { fab(state.value) }
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {

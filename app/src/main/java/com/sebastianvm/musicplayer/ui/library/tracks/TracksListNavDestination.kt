@@ -16,10 +16,7 @@ import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.util.SortOrder
 
-fun NavGraphBuilder.tracksListNavDestination(
-    navController: NavController,
-    bottomNavBar: @Composable () -> Unit
-) {
+fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     composable(
         createNavRoute(
             NavRoutes.TRACKS_ROOT,
@@ -53,7 +50,6 @@ fun NavGraphBuilder.tracksListNavDestination(
 
         TracksListScreen(
             screenViewModel,
-            bottomNavBar,
             object : TracksListScreenNavigationDelegate {
                 override fun navigateToPlayer() {
                     navController.navigate(NavRoutes.PLAYER) {

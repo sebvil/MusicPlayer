@@ -27,9 +27,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
-bottomNavBar: @Composable () -> Unit,
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = {}, bottomNavBar = bottomNavBar) { state ->
+    Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
         SearchLayout(state = state, object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))

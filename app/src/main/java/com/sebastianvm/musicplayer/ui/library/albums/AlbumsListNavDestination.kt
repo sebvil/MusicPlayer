@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -9,10 +8,10 @@ import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 
 
-fun NavGraphBuilder.albumsListNavDestination(navController: NavController, bottomNavBar: @Composable () -> Unit) {
+fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
     composable(NavRoutes.ALBUMS_ROOT) {
         val screenViewModel = hiltViewModel<AlbumsListViewModel>()
-        AlbumsListScreen(screenViewModel, bottomNavBar) { albumGid ->
+        AlbumsListScreen(screenViewModel) { albumGid ->
             navController.navigateToAlbum(albumGid)
         }
     }

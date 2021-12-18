@@ -1,6 +1,10 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -30,34 +34,37 @@ import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.search.SearchViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     requestPermission: (String) -> String,
 ) {
     val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
-    NavHost(
-        navController = navController,
-        startDestination = NavRoutes.LIBRARY,
-    ) {
-
-        libraryGraph(
+    Scaffold(bottomBar = bottomNavBar) { paddingValues ->
+        NavHost(
             navController = navController,
-            bottomNavBar = bottomNavBar,
-            requestPermission = requestPermission,
-        )
+            startDestination = NavRoutes.LIBRARY,
+            modifier = Modifier.padding(paddingValues)
+        ) {
 
-        composable(NavRoutes.PLAYER) {
-            val screenViewModel = hiltViewModel<MusicPlayerViewModel>()
-            MusicPlayerScreen(screenViewModel, bottomNavBar)
-        }
+            libraryGraph(
+                navController = navController,
+                bottomNavBar = bottomNavBar,
+                requestPermission = requestPermission,
+            )
 
-        composable(NavRoutes.SEARCH) {
-            val screenViewModel = hiltViewModel<SearchViewModel>()
-            SearchScreen(screenViewModel, bottomNavBar)
+            composable(NavRoutes.PLAYER) {
+                val screenViewModel = hiltViewModel<MusicPlayerViewModel>()
+                MusicPlayerScreen(screenViewModel)
+            }
+
+            composable(NavRoutes.SEARCH) {
+                val screenViewModel = hiltViewModel<SearchViewModel>()
+                SearchScreen(screenViewModel)
+            }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -72,7 +79,6 @@ fun NavGraphBuilder.libraryGraph(
             val screenViewModel = hiltViewModel<LibraryViewModel>()
             LibraryScreen(
                 screenViewModel = screenViewModel,
-                bottomNavBar = bottomNavBar,
                 delegate = object : LibraryScreenActivityDelegate {
                     override fun getPermissionStatus(permission: String): String {
                         return requestPermission(permission)
@@ -85,9 +91,9 @@ fun NavGraphBuilder.libraryGraph(
                 })
         }
 
-        tracksListNavDestination(navController, bottomNavBar)
-        artistsNavDestination(navController, bottomNavBar)
-        albumsListNavDestination(navController, bottomNavBar)
+        tracksListNavDestination(navController)
+        artistsNavDestination(navController)
+        albumsListNavDestination(navController)
 
         composable(NavRoutes.GENRES_ROOT) {
             val screenViewModel = hiltViewModel<GenresListViewModel>()
@@ -99,8 +105,8 @@ fun NavGraphBuilder.libraryGraph(
             }
         }
 
-        artistNavDestination(navController, bottomNavBar)
-        albumNavDestination(navController, bottomNavBar)
+        artistNavDestination(navController)
+        albumNavDestination(navController)
 
         bottomSheet(
             route = createNavRoute(

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -13,15 +12,12 @@ import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 
 
-fun NavGraphBuilder.artistNavDestination(
-    navController: NavController,
-    bottomNavBar: @Composable () -> Unit
-) {
+fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     composable(
         createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID, NavArgs.ARTIST_NAME),
     ) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
-        ArtistScreen(screenViewModel, bottomNavBar) { albumGid ->
+        ArtistScreen(screenViewModel) { albumGid ->
             navController.navigateToAlbum(albumGid)
         }
     }

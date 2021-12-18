@@ -47,7 +47,6 @@ interface TracksListScreenNavigationDelegate {
 @Composable
 fun TracksListScreen(
     screenViewModel: TracksListViewModel = viewModel(),
-    bottomNavBar: @Composable () -> Unit,
     delegate: TracksListScreenNavigationDelegate
 ) {
 
@@ -82,7 +81,6 @@ fun TracksListScreen(
                 }
             })
         },
-        bottomNavBar = bottomNavBar,
     ) { state ->
         TracksListLayout(
             state = state,
