@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,8 +11,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.sebastianvm.musicplayer.ui.album.AlbumScreen
-import com.sebastianvm.musicplayer.ui.album.AlbumViewModel
+import com.sebastianvm.musicplayer.ui.album.albumNavDestination
+import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.ArtistScreen
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
@@ -105,12 +104,8 @@ fun NavGraphBuilder.libraryGraph(
 
         composable(NavRoutes.ALBUMS_ROOT) {
             val screenViewModel = hiltViewModel<AlbumsListViewModel>()
-            AlbumsListScreen(screenViewModel, bottomNavBar) { albumGid, albumName ->
-                navController.navigateTo(
-                    NavRoutes.ALBUM,
-                    NavArgument(NavArgs.ALBUM_GID, albumGid),
-                    NavArgument(NavArgs.ALBUM_NAME, albumName)
-                )
+            AlbumsListScreen(screenViewModel, bottomNavBar) { albumGid ->
+                navController.navigateToAlbum(albumGid)
             }
         }
 
@@ -137,23 +132,7 @@ fun NavGraphBuilder.libraryGraph(
             }
         }
 
-        composable(
-            createNavRoute(NavRoutes.ALBUM, NavArgs.ALBUM_GID, NavArgs.ALBUM_NAME),
-        ) {
-            val screenViewModel = hiltViewModel<AlbumViewModel>()
-            AlbumScreen(screenViewModel, bottomNavBar) {
-                navController.navigate(NavRoutes.PLAYER) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    // Avoid multiple copies of the same destination when
-                    // reselecting the same item
-                    launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
-                    restoreState = true
-                }
-            }
-        }
+        albumNavDestination(navController, bottomNavBar)
 
         bottomSheet(
             route = createNavRoute(
@@ -183,6 +162,6 @@ fun NavGraphBuilder.libraryGraph(
                     }
                 })
         }
-      contextBottomSheet(navController)
+        contextBottomSheet(navController)
     }
 }

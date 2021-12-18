@@ -26,7 +26,7 @@ class AlbumViewModelTest {
             musicServiceConnection = musicServiceConnection,
             initialState = AlbumState(
                 albumGid = ALBUM_GID,
-                albumAdapterItems = listOf(),
+                tracksList = listOf(),
                 albumHeaderItem = mock()
             )
         )

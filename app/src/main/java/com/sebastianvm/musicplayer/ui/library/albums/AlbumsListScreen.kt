@@ -20,14 +20,14 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun AlbumsListScreen(
     screenViewModel: AlbumsListViewModel = viewModel(),
     bottomNavBar: @Composable () -> Unit,
-    navigateToAlbum: (String, String) -> Unit
+    navigateToAlbum: (albumId: String) -> Unit
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is AlbumsListUiEvent.NavigateToAlbum -> {
-                    navigateToAlbum(event.albumGid, event.albumName)
+                    navigateToAlbum(event.albumGid)
                 }
             }
         },

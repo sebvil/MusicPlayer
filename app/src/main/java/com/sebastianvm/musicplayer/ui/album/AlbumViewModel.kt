@@ -1,14 +1,16 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
+import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -17,58 +19,61 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
-import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
-import com.sebastianvm.musicplayer.util.extensions.album
-import com.sebastianvm.musicplayer.util.extensions.artist
-import com.sebastianvm.musicplayer.util.extensions.id
-import com.sebastianvm.musicplayer.util.extensions.title
-import com.sebastianvm.musicplayer.util.extensions.trackNumber
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
+    initialState: AlbumState,
+    private val albumRepository: AlbumRepository,
+    private val trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection,
-    initialState: AlbumState
-) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(
-    initialState
-) {
+) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-
-        musicServiceConnection.subscribe(
-            "album-${state.value.albumGid}",
-            object : MediaBrowserCompat.SubscriptionCallback() {
-                override fun onChildrenLoaded(
-                    parentId: String,
-                    children: MutableList<MediaBrowserCompat.MediaItem>
-                ) {
-                    super.onChildrenLoaded(parentId, children)
+        viewModelScope.launch {
+            albumRepository.getAlbums(state.value.albumGid).collect { albumInfo ->
+                setState {
+                    copy(
+                        albumHeaderItem = HeaderWithImageState(
+                            image = ArtLoader.getAlbumArt(
+                                albumGid = albumInfo.album.albumGid.toLong(),
+                                albumName = albumInfo.album.albumName
+                            ),
+                            title = albumInfo.album.albumName.let {
+                                if (it.isNotEmpty()) DisplayableString.StringValue(
+                                    it
+                                ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
+                            }
+                        ),
+                    )
+                }
+                trackRepository.getTracks(albumInfo.tracks.map { it.trackGid }).collect { tracks ->
                     setState {
                         copy(
-                            albumAdapterItems = children.mapNotNull { child -> child.description.toTrackRowState() }
-                                .sortedBy { it.trackNumber }
+                            tracksList = tracks.map { it.toTrackRowState() }
                         )
                     }
                 }
             }
-        )
+        }
     }
 
-    fun MediaDescriptionCompat.toTrackRowState(): TrackRowState? {
-        val meta =
-            extras?.getParcelable<MediaMetadataCompat>(MEDIA_METADATA_COMPAT_KEY) ?: return null
-        val trackGid = meta.id ?: return null
-        val trackName = meta.title ?: return null
-        val artists = meta.artist ?: return null
-        val trackNumber = meta.trackNumber
-        val albumName = meta.album ?: return null
-        return TrackRowState(trackGid, trackName, artists, albumName, trackNumber)
+    private fun FullTrackInfo.toTrackRowState(): TrackRowState {
+        return TrackRowState(
+            trackGid = track.trackGid,
+            trackName = track.trackName,
+            artists = artists.joinToString(", ") { it.artistName },
+            albumName = album.albumName,
+            trackNumber = track.trackNumber
+        )
     }
 
     override fun handle(action: AlbumUserAction) {
@@ -85,7 +90,6 @@ class AlbumViewModel @Inject constructor(
                         MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER
                     )
                 }
-
                 transportControls.playFromMediaId(action.trackGid, extras)
                 addUiEvent(AlbumUiEvent.NavigateToPlayer)
             }
@@ -97,7 +101,7 @@ class AlbumViewModel @Inject constructor(
 data class AlbumState(
     val albumGid: String,
     val albumHeaderItem: HeaderWithImageState,
-    val albumAdapterItems: List<TrackRowState>
+    val tracksList: List<TrackRowState>
 ) : State
 
 
@@ -108,19 +112,16 @@ object InitialAlbumStateModule {
     @ViewModelScoped
     fun provideInitialAlbumState(savedHandle: SavedStateHandle): AlbumState {
         val albumGid = savedHandle.get<String>(NavArgs.ALBUM_GID)!!
-        val albumName = savedHandle.get<String>(NavArgs.ALBUM_NAME)
-
         return AlbumState(
             albumGid = albumGid,
             albumHeaderItem = HeaderWithImageState(
                 image = ArtLoader.getAlbumArt(
                     albumGid = albumGid.toLong(),
-                    albumName = albumName ?: ""
+                    albumName = ""
                 ),
-                title = albumName?.let { DisplayableString.StringValue(it) }
-                    ?: DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
+                title = DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
             ),
-            albumAdapterItems = emptyList()
+            tracksList = emptyList()
         )
     }
 }

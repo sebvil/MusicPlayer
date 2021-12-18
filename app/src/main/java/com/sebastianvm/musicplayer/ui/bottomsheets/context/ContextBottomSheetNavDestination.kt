@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -48,12 +49,8 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                     }
                 }
 
-                override fun navigateToAlbum(albumGid: String, albumName: String) {
-                    navController.navigateTo(
-                        NavRoutes.ALBUM,
-                        NavArgument(NavArgs.ALBUM_GID, albumGid),
-                        NavArgument(NavArgs.ALBUM_NAME, albumName)
-                    )
+                override fun navigateToAlbum(albumGid: String) {
+                    navController.navigateToAlbum(albumGid)
                 }
 
                 override fun navigateToArtist(artistGid: String, artistName: String) {

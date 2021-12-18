@@ -58,10 +58,7 @@ class ContextMenuViewModel @Inject constructor(
                         viewModelScope.launch {
                             trackRepository.getTrack(state.value.mediaId).collect {
                                 addUiEvent(
-                                    ContextMenuUiEvent.NavigateToAlbum(
-                                        it.album.albumGid,
-                                        it.album.albumName
-                                    )
+                                    ContextMenuUiEvent.NavigateToAlbum(it.album.albumGid,)
                                 )
                             }
                         }
@@ -124,7 +121,7 @@ sealed class ContextMenuUserAction : UserAction {
 
 sealed class ContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : ContextMenuUiEvent()
-    data class NavigateToAlbum(val albumGid: String, val albumName: String) : ContextMenuUiEvent()
+    data class NavigateToAlbum(val albumGid: String) : ContextMenuUiEvent()
     data class NavigateToArtist(val artistGid: String, val artistName: String) : ContextMenuUiEvent()
 }
 

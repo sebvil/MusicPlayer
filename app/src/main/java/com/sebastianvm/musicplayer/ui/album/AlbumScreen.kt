@@ -59,7 +59,7 @@ fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
         val listWithHeaderState =
             ListWithHeaderState(
                 state.albumHeaderItem,
-                albumAdapterItems,
+                tracksList,
                 { s ->
                     HeaderWithImage(
                         state = s,
