@@ -55,6 +55,14 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                         NavArgument(NavArgs.ALBUM_NAME, albumName)
                     )
                 }
+
+                override fun navigateToArtist(artistGid: String, artistName: String) {
+                    navController.navigateTo(
+                        NavRoutes.ARTIST,
+                        NavArgument(NavArgs.ARTIST_GID, artistGid),
+                        NavArgument(NavArgs.ARTIST_NAME, artistName)
+                    )
+                }
             }
         )
     }

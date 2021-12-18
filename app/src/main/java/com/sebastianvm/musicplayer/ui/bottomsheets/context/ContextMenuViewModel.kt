@@ -68,7 +68,21 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     ContextMenuItem.PlayAllSongs -> TODO()
                     ContextMenuItem.PlayFromBeginning -> TODO()
-                    ContextMenuItem.ViewArtists -> TODO()
+                    ContextMenuItem.ViewArtists -> {
+                        viewModelScope.launch {
+                            trackRepository.getTrack(state.value.mediaId).collect {
+                                if (it.artists.size == 1) {
+                                    val artist = it.artists[0]
+                                    addUiEvent(
+                                        ContextMenuUiEvent.NavigateToArtist(
+                                            artist.artistGid,
+                                            artist.artistName
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -111,5 +125,6 @@ sealed class ContextMenuUserAction : UserAction {
 sealed class ContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : ContextMenuUiEvent()
     data class NavigateToAlbum(val albumGid: String, val albumName: String) : ContextMenuUiEvent()
+    data class NavigateToArtist(val artistGid: String, val artistName: String) : ContextMenuUiEvent()
 }
 

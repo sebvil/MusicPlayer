@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToPlayer() = Unit
     fun navigateToAlbum(albumGid: String, albumName: String) = Unit
+    fun navigateToArtist(artistGid: String, artistName: String) = Unit
 }
 
 @Composable
@@ -41,6 +42,7 @@ fun ContextBottomSheet(
                 delegate.navigateToPlayer()
             }
             is ContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumGid, event.albumName)
+            is ContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistGid, event.artistName)
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
