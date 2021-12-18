@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.player
 
 import android.media.browse.MediaBrowser
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.*
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -28,7 +27,7 @@ class BrowseTree @Inject constructor(
     private val tree = mutableMapOf<String, Flow<MutableSet<MediaMetadataCompat>>>()
     private val counts = musicRepository.getCounts()
     private val tracks = trackRepository.getAllTracks()
-    private val artists = artistRepository.getArtists()
+    private val artists = artistRepository.getArtistsWithAlbums()
     private val albums = albumRepository.getAlbums()
     private val genres = genreRepository.getGenres()
 
