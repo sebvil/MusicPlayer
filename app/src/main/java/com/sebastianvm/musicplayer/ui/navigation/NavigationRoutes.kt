@@ -28,6 +28,7 @@ object NavArgs {
     const val SCREEN = "screen"
     const val SORT_OPTION = "sortOption"
     const val SORT_ORDER = "sortOrder"
+    const val MEDIA_ID = "mediaId"
 }
 
 fun createNavRoute(route: String, vararg parameters: String): String {

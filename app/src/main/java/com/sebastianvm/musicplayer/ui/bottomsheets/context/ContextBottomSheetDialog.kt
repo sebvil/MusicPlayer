@@ -14,45 +14,63 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import kotlinx.coroutines.Dispatchers
+
+
+interface ContextBottomSheetDialogNavigationDelegate {
+    fun navigateToPlayer() = Unit
+    fun navigateToAlbum(albumGid: String, albumName: String) = Unit
+}
 
 @Composable
 fun ContextBottomSheet(
     sheetViewModel: ContextMenuViewModel = viewModel(),
+    delegate: ContextBottomSheetDialogNavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
-    ContextMenuLayout(state = state.value)
+    HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
+        when (event) {
+            is ContextMenuUiEvent.NavigateToPlayer -> {
+                delegate.navigateToPlayer()
+            }
+            is ContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumGid, event.albumName)
+        }
+    }
+    ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
+        override fun onRowClicked(contextMenuItem: ContextMenuItem) {
+            sheetViewModel.handle(ContextMenuUserAction.RowClicked(contextMenuItem))
+        }
+    })
 }
 
 /**
  * The Android Studio Preview cannot handle this, but it can be run in device for preview
  */
-@Preview(showSystemUi = true)
+@Preview
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: ContextMenuState) {
     BottomSheetPreview {
-        ContextMenuLayout(state = state)
+        ContextMenuLayout(state = state, object : ContextMenuDelegate {})
     }
 }
 
+interface ContextMenuDelegate {
+    fun onRowClicked(contextMenuItem: ContextMenuItem) = Unit
+}
+
+
 @Composable
 fun ContextMenuLayout(
-    state: ContextMenuState
+    state: ContextMenuState,
+    delegate: ContextMenuDelegate
 ) {
     with(state) {
         LazyColumn {
@@ -66,7 +84,12 @@ fun ContextMenuLayout(
                             modifier = iconModifier,
                         )
                     },
-                    supportingImageType = SupportingImageType.ICON
+                    supportingImageType = SupportingImageType.ICON,
+                    delegate = object : ListItemDelegate {
+                        override fun onItemClicked() {
+                            delegate.onRowClicked(it)
+                        }
+                    }
                 ) {
                     Text(
                         text = stringResource(id = it.text),
@@ -81,17 +104,3 @@ fun ContextMenuLayout(
     }
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.contextBottomSheet() {
-    bottomSheet(
-        route = createNavRoute(NavRoutes.CONTEXT, NavArgs.SCREEN),
-        arguments = listOf(
-            navArgument(NavArgs.SCREEN) { type = NavType.StringType }
-        )
-    ) {
-        val sheetViewModel: ContextMenuViewModel = hiltViewModel()
-        ContextBottomSheet(
-            sheetViewModel = sheetViewModel
-        )
-    }
-}

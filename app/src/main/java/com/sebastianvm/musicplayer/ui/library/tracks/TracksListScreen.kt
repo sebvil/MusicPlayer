@@ -35,7 +35,12 @@ interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
     fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
-    fun openContextMenu()
+    fun openContextMenu(
+        mediaId: String,
+        screen: String,
+        currentSort: String,
+        sortOrder: SortOrder
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -57,7 +62,12 @@ fun TracksListScreen(
                     delegate.openSortMenu(event.sortOption, event.sortOrder)
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu()
+                    delegate.openContextMenu(
+                        event.trackGid,
+                        event.screen,
+                        event.currentSort,
+                        event.sortOrder
+                    )
                 }
             }
         },
@@ -164,7 +174,10 @@ fun TracksListLayout(
         items(state.tracksList) { item ->
             DoubleLineListItem(
                 afterListContent = { onClick ->
-                    IconButton(onClick = onClick, modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall)) {
+                    IconButton(
+                        onClick = onClick,
+                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall)
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_overflow),
                             contentDescription = DisplayableString.StringValue("More") // TODO extract resource

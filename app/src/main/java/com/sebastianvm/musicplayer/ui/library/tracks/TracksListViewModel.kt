@@ -73,77 +73,49 @@ class TracksListViewModel @Inject constructor(
 
     init {
 
-        val genreName = state.value.genreName
 
         viewModelScope.launch {
-            preferencesRepository.getTrackSortOptions(genreName = genreName).collect { settings ->
-                setState {
-                    copy(
-                        currentSort = settings.sortOption,
-                        tracksList = tracksList.sortedWith(
-                            getComparator(
-                                settings.sortOrder,
-                                settings.sortOption
+            preferencesRepository.getTrackSortOptions(genreName = state.value.genreName)
+                .collect { settings ->
+                    setState {
+                        copy(
+                            currentSort = settings.sortOption,
+                            tracksList = tracksList.sortedWith(
+                                getComparator(
+                                    settings.sortOrder,
+                                    settings.sortOption
+                                )
+                            ),
+                            sortOrder = settings.sortOrder
+                        )
+                    }
+                }
+
+        }
+
+        musicServiceConnection.subscribe(
+            state.value.screen,
+            object : MediaBrowserCompat.SubscriptionCallback() {
+                override fun onChildrenLoaded(
+                    parentId: String,
+                    children: MutableList<MediaBrowserCompat.MediaItem>
+                ) {
+                    super.onChildrenLoaded(parentId, children)
+                    setState {
+                        copy(
+                            tracksList = children.mapNotNull { child ->
+                                child.description.toTrackRowState()
+                            }.sortedWith(
+                                getComparator(
+                                    sortOrder,
+                                    currentSort
+                                )
                             )
-                        ),
-                        sortOrder = settings.sortOrder
-                    )
+                        )
+                    }
                 }
             }
-
-        }
-
-
-        genreName?.also {
-            musicServiceConnection.subscribe(
-                "genre-$genreName",
-                object : MediaBrowserCompat.SubscriptionCallback() {
-                    override fun onChildrenLoaded(
-                        parentId: String,
-                        children: MutableList<MediaBrowserCompat.MediaItem>
-                    ) {
-                        super.onChildrenLoaded(parentId, children)
-                        setState {
-                            copy(
-                                tracksList = children.mapNotNull { child ->
-                                    child.description.toTrackRowState()
-                                }.sortedWith(
-                                    getComparator(
-                                        sortOrder,
-                                        currentSort
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
-            )
-        } ?: kotlin.run {
-
-            musicServiceConnection.subscribe(
-                BrowseTree.TRACKS_ROOT,
-                object : MediaBrowserCompat.SubscriptionCallback() {
-                    override fun onChildrenLoaded(
-                        parentId: String,
-                        children: MutableList<MediaBrowserCompat.MediaItem>
-                    ) {
-                        super.onChildrenLoaded(parentId, children)
-                        setState {
-                            copy(
-                                tracksList = children.mapNotNull { child ->
-                                    child.description.toTrackRowState()
-                                }.sortedWith(
-                                    getComparator(
-                                        sortOrder,
-                                        currentSort
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
-            )
-        }
+        )
     }
 
     fun MediaDescriptionCompat.toTrackRowState(): TrackRowState? {
@@ -160,10 +132,7 @@ class TracksListViewModel @Inject constructor(
         when (action) {
             is TracksListUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
-                val parentId = when (val title = state.value.tracksListTitle) {
-                    is DisplayableString.StringValue -> "genre-${title.value}"
-                    else -> BrowseTree.TRACKS_ROOT
-                }
+                val parentId = state.value.screen
                 val extras = Bundle().apply {
                     putString(
                         PARENT_ID,
@@ -179,7 +148,12 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(TracksListUiEvent.NavigateToPlayer)
             }
             is TracksListUserAction.SortByClicked -> {
-                addUiEvent(TracksListUiEvent.ShowBottomSheet(state.value.currentSort.id, state.value.sortOrder))
+                addUiEvent(
+                    TracksListUiEvent.ShowBottomSheet(
+                        state.value.currentSort.id,
+                        state.value.sortOrder
+                    )
+                )
             }
             is TracksListUserAction.SortOptionClicked -> {
                 val sortOrder = if (action.newSortOption == state.value.currentSort) {
@@ -204,13 +178,18 @@ class TracksListViewModel @Inject constructor(
                     preferencesRepository.modifyTrackListSortOptions(
                         sortOrder,
                         action.newSortOption,
-                        state.value.genreName
+                        state.value.screen
                     )
                 }
             }
             is TracksListUserAction.TrackLongPressed -> {
                 addUiEvent(
-                    TracksListUiEvent.OpenContextMenu(action.trackGid)
+                    TracksListUiEvent.OpenContextMenu(
+                        action.trackGid,
+                        state.value.screen,
+                        state.value.currentSort.metadataKey,
+                        state.value.sortOrder
+                    )
                 )
             }
         }
@@ -234,6 +213,7 @@ class TracksListViewModel @Inject constructor(
 
 
 data class TracksListState(
+    val screen: String,
     val genreName: String?,
     val tracksListTitle: DisplayableString,
     val tracksList: List<TrackRowState>,
@@ -249,6 +229,7 @@ object InitialTracksListStateModule {
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
         val genreName = savedStateHandle.get<String?>(NavArgs.GENRE_NAME)
         return TracksListState(
+            screen = genreName?.let { "genre-$genreName" } ?: BrowseTree.TRACKS_ROOT,
             genreName = genreName,
             tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
                 ?: DisplayableString.ResourceValue(R.string.all_songs),
@@ -268,8 +249,15 @@ sealed class TracksListUserAction : UserAction {
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
-    data class ShowBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) : TracksListUiEvent()
-    data class OpenContextMenu(val trackGid: String) : TracksListUiEvent()
+    data class ShowBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
+        TracksListUiEvent()
+
+    data class OpenContextMenu(
+        val trackGid: String,
+        val screen: String,
+        val currentSort: String,
+        val sortOrder: SortOrder
+    ) : TracksListUiEvent()
 }
 
 

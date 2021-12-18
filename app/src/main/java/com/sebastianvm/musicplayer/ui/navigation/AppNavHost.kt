@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -30,16 +29,11 @@ import com.sebastianvm.musicplayer.ui.library.genres.GenresListViewModel
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreen
 import com.sebastianvm.musicplayer.ui.library.root.LibraryScreenActivityDelegate
 import com.sebastianvm.musicplayer.ui.library.root.LibraryViewModel
-import com.sebastianvm.musicplayer.ui.library.tracks.SortOption
-import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreen
-import com.sebastianvm.musicplayer.ui.library.tracks.TracksListScreenNavigationDelegate
-import com.sebastianvm.musicplayer.ui.library.tracks.TracksListUserAction
-import com.sebastianvm.musicplayer.ui.library.tracks.TracksListViewModel
+import com.sebastianvm.musicplayer.ui.library.tracks.tracksListNavDestination
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerScreen
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewModel
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.search.SearchViewModel
-import com.sebastianvm.musicplayer.util.SortOrder
 
 @Composable
 fun AppNavHost(
@@ -67,7 +61,6 @@ fun AppNavHost(
             val screenViewModel = hiltViewModel<SearchViewModel>()
             SearchScreen(screenViewModel, bottomNavBar)
         }
-
     }
 
 }
@@ -96,75 +89,8 @@ fun NavGraphBuilder.libraryGraph(
 
                 })
         }
-        composable(
-            createNavRoute(
-                NavRoutes.TRACKS_ROOT,
-                NavArgs.GENRE_NAME,
-                NavArgs.SORT_OPTION,
-                NavArgs.SORT_ORDER
-            ),
-            arguments = listOf(
-                navArgument(NavArgs.GENRE_NAME) {
-                    nullable = true
-                    type = NavType.StringType
-                },
-                navArgument(NavArgs.SORT_OPTION) {
-                    nullable = true
-                    type = NavType.StringType
-                },
-            )
-        ) {
-            val screenViewModel = hiltViewModel<TracksListViewModel>()
-            val lifecycleOwner = LocalLifecycleOwner.current
-            navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
-                ?.observe(lifecycleOwner) {
-                    screenViewModel.handle(
-                        TracksListUserAction.SortOptionClicked(
-                            SortOption.fromResId(
-                                it
-                            )
-                        )
-                    )
-                }
 
-            TracksListScreen(
-                screenViewModel,
-                bottomNavBar,
-                object : TracksListScreenNavigationDelegate {
-                    override fun navigateToPlayer() {
-                        navController.navigate(NavRoutes.PLAYER) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        }
-                    }
-
-                    override fun navigateUp() {
-                        navController.navigateUp()
-                    }
-
-                    override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
-                        navController.navigateTo(
-                            NavRoutes.SORT,
-                            NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
-                            NavArgument(NavArgs.SORT_OPTION, sortOption),
-                            NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
-                        )
-                    }
-
-                    override fun openContextMenu() {
-                        navController.navigateTo(
-                            NavRoutes.CONTEXT,
-                            NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
-                        )
-                    }
-                })
-        }
+        tracksListNavDestination(navController, bottomNavBar)
 
         composable(NavRoutes.ARTISTS_ROOT) {
             val screenViewModel = hiltViewModel<ArtistsListViewModel>()
@@ -257,7 +183,6 @@ fun NavGraphBuilder.libraryGraph(
                     }
                 })
         }
-
-      contextBottomSheet()
+      contextBottomSheet(navController)
     }
 }

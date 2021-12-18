@@ -38,7 +38,7 @@ class TracksListViewModelTest {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
-                genreName = genreName,
+                screen = genreName,
                 tracksListTitle = tracksListTitle,
                 tracksList = tracksList,
                 currentSort = currentSort,

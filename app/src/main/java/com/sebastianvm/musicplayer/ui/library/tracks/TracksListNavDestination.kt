@@ -1,0 +1,100 @@
+package com.sebastianvm.musicplayer.ui.library.tracks
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.navigation.NavArgument
+import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
+import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.util.SortOrder
+
+fun NavGraphBuilder.tracksListNavDestination(
+    navController: NavController,
+    bottomNavBar: @Composable () -> Unit
+) {
+    composable(
+        createNavRoute(
+            NavRoutes.TRACKS_ROOT,
+            NavArgs.GENRE_NAME,
+            NavArgs.SORT_OPTION,
+            NavArgs.SORT_ORDER
+        ),
+        arguments = listOf(
+            navArgument(NavArgs.GENRE_NAME) {
+                nullable = true
+                type = NavType.StringType
+            },
+            navArgument(NavArgs.SORT_OPTION) {
+                nullable = true
+                type = NavType.StringType
+            },
+        )
+    ) {
+        val screenViewModel = hiltViewModel<TracksListViewModel>()
+        val lifecycleOwner = LocalLifecycleOwner.current
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
+            ?.observe(lifecycleOwner) {
+                screenViewModel.handle(
+                    TracksListUserAction.SortOptionClicked(
+                        SortOption.fromResId(
+                            it
+                        )
+                    )
+                )
+            }
+
+        TracksListScreen(
+            screenViewModel,
+            bottomNavBar,
+            object : TracksListScreenNavigationDelegate {
+                override fun navigateToPlayer() {
+                    navController.navigate(NavRoutes.PLAYER) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
+                }
+
+                override fun navigateUp() {
+                    navController.navigateUp()
+                }
+
+                override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
+                    navController.navigateTo(
+                        NavRoutes.SORT,
+                        NavArgument(NavArgs.SCREEN, NavRoutes.TRACKS_ROOT),
+                        NavArgument(NavArgs.SORT_OPTION, sortOption),
+                        NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
+                    )
+                }
+
+                override fun openContextMenu(
+                    mediaId: String,
+                    screen: String,
+                    currentSort: String,
+                    sortOrder: SortOrder
+                ) {
+                    navController.navigateTo(
+                        NavRoutes.CONTEXT,
+                        NavArgument(NavArgs.SCREEN, screen),
+                        NavArgument(NavArgs.MEDIA_ID, mediaId),
+                        NavArgument(NavArgs.SORT_OPTION, currentSort),
+                        NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
+                    )
+                }
+            })
+    }
+}
