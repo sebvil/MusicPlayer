@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
@@ -21,8 +20,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -55,25 +52,21 @@ class ContextMenuViewModel @Inject constructor(
                         addUiEvent(ContextMenuUiEvent.NavigateToPlayer)
                     }
                     is ContextMenuItem.ViewAlbum -> {
-                        viewModelScope.launch {
-                            trackRepository.getTrack(state.value.mediaId).collect {
-                                addUiEvent(
-                                    ContextMenuUiEvent.NavigateToAlbum(it.album.albumGid)
-                                )
-                            }
+                        collect(trackRepository.getTrack(state.value.mediaId)) {
+                            addUiEvent(
+                                ContextMenuUiEvent.NavigateToAlbum(it.album.albumGid)
+                            )
                         }
                     }
                     ContextMenuItem.PlayAllSongs -> TODO()
                     ContextMenuItem.PlayFromBeginning -> TODO()
                     ContextMenuItem.ViewArtists -> {
-                        viewModelScope.launch {
-                            trackRepository.getTrack(state.value.mediaId).collect {
-                                if (it.artists.size == 1) {
-                                    val artist = it.artists[0]
-                                    addUiEvent(
-                                        ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
-                                    )
-                                }
+                        collect(trackRepository.getTrack(state.value.mediaId)) {
+                            if (it.artists.size == 1) {
+                                val artist = it.artists[0]
+                                addUiEvent(
+                                    ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
+                                )
                             }
                         }
                     }

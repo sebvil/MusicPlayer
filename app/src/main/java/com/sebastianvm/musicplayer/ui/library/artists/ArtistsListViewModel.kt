@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -13,8 +12,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -25,15 +22,13 @@ class ArtistsListViewModel @Inject constructor(
 ) : BaseViewModel<ArtistsListUserAction, ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            artistRepository.getArtists().collect { artists ->
-                setState {
-                    copy(
-                        artistsList = artists.map { artist ->
-                            artist.toArtistListItem()
-                        }.sortedBy { item -> item.artistName },
-                    )
-                }
+        collect(artistRepository.getArtists()) { artists ->
+            setState {
+                copy(
+                    artistsList = artists.map { artist ->
+                        artist.toArtistListItem()
+                    }.sortedBy { item -> item.artistName },
+                )
             }
         }
     }

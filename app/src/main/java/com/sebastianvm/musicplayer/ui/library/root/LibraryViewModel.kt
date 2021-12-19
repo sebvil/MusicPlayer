@@ -1,18 +1,16 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import androidx.annotation.PluralsRes
-import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.*
-import com.sebastianvm.musicplayer.player.BrowseTree
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.PERMISSION_GRANTED
+import com.sebastianvm.musicplayer.PermissionStatus
+import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
+import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
+import com.sebastianvm.musicplayer.repository.MusicRepository
+import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.extensions.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,53 +21,30 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
-    musicServiceConnection: MusicServiceConnection,
+    musicRepository: MusicRepository,
     initialState: LibraryState
 ) : BaseViewModel<LibraryUserAction, LibraryUiEvent, LibraryState>(initialState) {
 
 
     init {
-        musicServiceConnection.subscribe(
-            BrowseTree.MEDIA_ROOT,
-            object : MediaBrowserCompat.SubscriptionCallback() {
-                override fun onChildrenLoaded(
-                    parentId: String,
-                    children: MutableList<MediaBrowserCompat.MediaItem>
-                ) {
-                    super.onChildrenLoaded(parentId, children)
-                    setState {
-                        copy(
-                            libraryItems = children.mapNotNull { child ->
-                                child.description.toLibraryItem()
-                            },
-                        )
+        collect(musicRepository.getCounts()) { counts ->
+            setState {
+                copy(
+                    libraryItems = libraryItems.map { item ->
+                        when (item.rowId) {
+                            NavRoutes.TRACKS_ROOT -> item.copy(count = counts.tracks)
+                            NavRoutes.ARTISTS_ROOT -> item.copy(count = counts.artists)
+                            NavRoutes.ALBUMS_ROOT -> item.copy(count = counts.albums)
+                            NavRoutes.GENRES_ROOT -> item.copy(count = counts.genres)
+                            else -> throw IllegalStateException("Illegal rowId ${item.rowId}")
+
+                        }
                     }
-
-                }
+                )
             }
-        )
-    }
-
-    fun MediaDescriptionCompat.toLibraryItem(): LibraryItem? {
-        val meta =
-            extras?.getParcelable<MediaMetadataCompat>(MEDIA_METADATA_COMPAT_KEY) ?: return null
-        val id = meta.id ?: return null
-        val rowName = meta.title?.toIntOrNull() ?: return null
-        val icon = meta.iconRes
-        val count = meta.counts
-        return LibraryItem(id, rowName, getCountStrings(rowName), icon, count)
-    }
-
-    @PluralsRes
-    fun getCountStrings(@StringRes rowName: Int): Int {
-        return when (rowName) {
-            R.string.all_songs -> R.plurals.number_of_tracks
-            R.string.artists -> R.plurals.number_of_artists
-            R.string.albums -> R.plurals.number_of_albums
-            R.string.genres -> R.plurals.number_of_genres
-            else -> -1
         }
     }
+
 
     override fun handle(action: LibraryUserAction) {
         when (action) {
@@ -158,7 +133,36 @@ object InitialLibraryStateModule {
     @Provides
     @ViewModelScoped
     fun initialLibraryStateProvider() = LibraryState(
-        libraryItems = listOf(),
+        libraryItems = listOf(
+            LibraryItem(
+                rowId = NavRoutes.TRACKS_ROOT,
+                rowName = R.string.all_songs,
+                icon = R.drawable.ic_song,
+                countString = R.plurals.number_of_tracks,
+                count = 0
+            ),
+            LibraryItem(
+                rowId = NavRoutes.ARTISTS_ROOT,
+                rowName = R.string.artists,
+                icon = R.drawable.ic_artist,
+                countString = R.plurals.number_of_artists,
+                count = 0
+            ),
+            LibraryItem(
+                rowId = NavRoutes.ALBUMS_ROOT,
+                rowName = R.string.albums,
+                icon = R.drawable.ic_album,
+                countString = R.plurals.number_of_albums,
+                count = 0
+            ),
+            LibraryItem(
+                rowId = NavRoutes.GENRES_ROOT,
+                rowName = R.string.genres,
+                icon = R.drawable.ic_genre,
+                countString = R.plurals.number_of_genres,
+                count = 0
+            ),
+        ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
     )

@@ -30,7 +30,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,39 +69,24 @@ class TracksListViewModel @Inject constructor(
 ) {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getTrackSortOptions(genreName = state.value.genreName)
-                .collect { settings ->
-                    setState {
-                        copy(
-                            currentSort = settings.sortOption,
-                            tracksList = tracksList.sortedWith(
-                                getComparator(
-                                    settings.sortOrder,
-                                    settings.sortOption
-                                )
-                            ),
-                            sortOrder = settings.sortOrder
+        collect(preferencesRepository.getTrackSortOptions(genreName = state.value.genreName)) { settings ->
+            setState {
+                copy(
+                    currentSort = settings.sortOption,
+                    tracksList = tracksList.sortedWith(
+                        getComparator(
+                            settings.sortOrder,
+                            settings.sortOption
                         )
-                    }
-                }
+                    ),
+                    sortOrder = settings.sortOrder
+                )
+            }
+
         }
-        viewModelScope.launch {
-            state.value.genreName?.also { genre ->
-                genreRepository.getGenreWithTracks(genre).collect { genreWithTracks ->
-                    trackRepository.getTracks(genreWithTracks.tracks.map { it.trackGid })
-                        .collect { tracks ->
-                            setState {
-                                copy(
-                                    tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
-                                        getComparator(sortOrder, currentSort)
-                                    )
-                                )
-                            }
-                        }
-                }
-            } ?: kotlin.run {
-                trackRepository.getAllTracks().collect { tracks ->
+        state.value.genreName?.also { genre ->
+            collect(genreRepository.getGenreWithTracks(genre)) { genreWithTracks ->
+                collect(trackRepository.getTracks(genreWithTracks.tracks.map { it.trackGid })) { tracks ->
                     setState {
                         copy(
                             tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
@@ -110,6 +94,16 @@ class TracksListViewModel @Inject constructor(
                             )
                         )
                     }
+                }
+            }
+        } ?: kotlin.run {
+            collect(trackRepository.getAllTracks()) { tracks ->
+                setState {
+                    copy(
+                        tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
+                            getComparator(sortOrder, currentSort)
+                        )
+                    )
                 }
             }
         }

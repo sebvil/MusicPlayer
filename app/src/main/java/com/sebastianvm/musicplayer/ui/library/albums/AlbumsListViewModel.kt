@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -15,8 +14,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -27,15 +24,13 @@ class AlbumsListViewModel @Inject constructor(
 ) : BaseViewModel<AlbumsListUserAction, AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            albumRepository.getAlbums().collect { albums ->
-                setState {
-                    copy(
-                        albumsList = albums.map { album ->
-                            album.toAlbumsListItem()
-                        }.sortedBy { it.albumRowState.albumName },
-                    )
-                }
+        collect(albumRepository.getAlbums()) { albums ->
+            setState {
+                copy(
+                    albumsList = albums.map { album ->
+                        album.toAlbumsListItem()
+                    }.sortedBy { it.albumRowState.albumName },
+                )
             }
         }
     }

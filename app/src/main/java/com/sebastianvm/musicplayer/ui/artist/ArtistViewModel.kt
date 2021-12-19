@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
@@ -22,8 +21,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -36,64 +33,60 @@ class ArtistViewModel @Inject constructor(
     initialState
 ) {
     init {
-        viewModelScope.launch {
-            artistRepository.getArtist(state.value.artistGid).collect { artistWithAlbums ->
+        collect(artistRepository.getArtist(state.value.artistGid)) { artistWithAlbums ->
+            setState {
+                copy(
+                    artistHeaderItem = HeaderWithImageState(
+                        MediaArt(
+                            uris = listOf(),
+                            contentDescription = DisplayableString.StringValue(""),
+                            backupResource = com.sebastianvm.commons.R.drawable.ic_artist,
+                            backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_artist_image)
+                        ),
+                        title = DisplayableString.StringValue(artistWithAlbums.artist.artistName)
+                    ),
+                )
+            }
+            artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }?.also { albums ->
+                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
+                    setState {
+                        copy(
+                            albumsForArtistItems = listOf(
+                                ArtistScreenItem.SectionHeaderItem(
+                                    ALBUMS,
+                                    R.string.albums
+                                )
+                            ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
+                                .map { it.toAlbumRowItem() })
+                        )
+                    }
+                }
+            } ?: kotlin.run {
                 setState {
                     copy(
-                        artistHeaderItem = HeaderWithImageState(
-                            MediaArt(
-                                uris = listOf(),
-                                contentDescription = DisplayableString.StringValue(""),
-                                backupResource = com.sebastianvm.commons.R.drawable.ic_artist,
-                                backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_artist_image)
-                            ),
-                            title = DisplayableString.StringValue(artistWithAlbums.artist.artistName)
-                        ),
+                        albumsForArtistItems = null
                     )
                 }
-                artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }?.also { albums ->
-                    albumRepository.getAlbums(albums.map { it.albumGid })
-                        .collect { albumsWithArtists ->
-                            setState {
-                                copy(
-                                    albumsForArtistItems = listOf(
-                                        ArtistScreenItem.SectionHeaderItem(
-                                            ALBUMS,
-                                            R.string.albums
-                                        )
-                                    ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
-                                        .map { it.toAlbumRowItem() })
-                                )
-                            }
-                        }
-                } ?: kotlin.run {
+            }
+            artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }?.also { albums ->
+                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
                     setState {
                         copy(
-                            albumsForArtistItems = null
+                            appearsOnForArtistItems = listOf(
+                                ArtistScreenItem.SectionHeaderItem(
+                                    APPEARS_ON,
+                                    R.string.appears_on
+                                )
+                            ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
+                                .map { it.toAlbumRowItem() })
                         )
                     }
                 }
-                artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }?.also { albums ->
-                    albumRepository.getAlbums(albums.map { it.albumGid })
-                        .collect { albumsWithArtists ->
-                            setState {
-                                copy(
-                                    appearsOnForArtistItems = listOf(
-                                        ArtistScreenItem.SectionHeaderItem(
-                                            APPEARS_ON,
-                                            R.string.appears_on
-                                        )
-                                    ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
-                                        .map { it.toAlbumRowItem() })
-                                )
-                            }
-                        }
-                } ?: kotlin.run {
-                    setState {
-                        copy(
-                            appearsOnForArtistItems = null
-                        )
-                    }
+            } ?: kotlin.run {
+                setState {
+                    copy(
+                        appearsOnForArtistItems = null
+                    )
                 }
             }
         }

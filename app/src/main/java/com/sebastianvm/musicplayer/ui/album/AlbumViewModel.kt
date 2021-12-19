@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.album
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
@@ -25,8 +24,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,29 +35,27 @@ class AlbumViewModel @Inject constructor(
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            albumRepository.getAlbums(state.value.albumGid).collect { albumInfo ->
+        collect(albumRepository.getAlbums(state.value.albumGid)) { albumInfo ->
+            setState {
+                copy(
+                    albumHeaderItem = HeaderWithImageState(
+                        image = ArtLoader.getAlbumArt(
+                            albumGid = albumInfo.album.albumGid.toLong(),
+                            albumName = albumInfo.album.albumName
+                        ),
+                        title = albumInfo.album.albumName.let {
+                            if (it.isNotEmpty()) DisplayableString.StringValue(
+                                it
+                            ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
+                        }
+                    ),
+                )
+            }
+            collect(trackRepository.getTracks(albumInfo.tracks.map { it.trackGid })) { tracks ->
                 setState {
                     copy(
-                        albumHeaderItem = HeaderWithImageState(
-                            image = ArtLoader.getAlbumArt(
-                                albumGid = albumInfo.album.albumGid.toLong(),
-                                albumName = albumInfo.album.albumName
-                            ),
-                            title = albumInfo.album.albumName.let {
-                                if (it.isNotEmpty()) DisplayableString.StringValue(
-                                    it
-                                ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
-                            }
-                        ),
+                        tracksList = tracks.map { it.toTrackRowState() }
                     )
-                }
-                trackRepository.getTracks(albumInfo.tracks.map { it.trackGid }).collect { tracks ->
-                    setState {
-                        copy(
-                            tracksList = tracks.map { it.toTrackRowState() }
-                        )
-                    }
                 }
             }
         }
