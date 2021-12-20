@@ -26,6 +26,7 @@ class PreferencesUtil @Inject constructor(val dataStore: DataStore<Preferences>)
         val ALBUMS_SORT_OPTION = stringPreferencesKey("ALBUMS_SORT_OPTION")
         val ALBUMS_SORT_ORDER = stringPreferencesKey("ALBUMS_SORT_ORDER")
         val ARTISTS_SORT_ORDER = stringPreferencesKey("ARTISTS_SORT_ORDER")
+        val GENRES_SORT_ORDER = stringPreferencesKey("GENRES_SORT_ORDER")
     }
 }
 

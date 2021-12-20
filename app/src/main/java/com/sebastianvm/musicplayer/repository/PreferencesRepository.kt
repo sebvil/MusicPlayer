@@ -92,4 +92,16 @@ class PreferencesRepository @Inject constructor(private val preferencesUtil: Pre
             preferences[PreferencesUtil.ARTISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) } ?: SortOrder.ASCENDING
         }
     }
+
+    suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
+        preferencesUtil.dataStore.edit { settings ->
+            settings[PreferencesUtil.GENRES_SORT_ORDER] = sortOrder.name
+        }
+    }
+
+    fun getGenresListSortOrder(): Flow<SortOrder> {
+        return preferencesUtil.dataStore.data.map { preferences ->
+            preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) } ?: SortOrder.ASCENDING
+        }
+    }
 }

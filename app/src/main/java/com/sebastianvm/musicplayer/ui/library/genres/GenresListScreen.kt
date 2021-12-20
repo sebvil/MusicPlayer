@@ -4,6 +4,8 @@ import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,26 +15,44 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.LibraryTitle
-import com.sebastianvm.musicplayer.ui.components.ListWithHeader
-import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
+import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+interface GenresListScreenNavigationDelegate {
+    fun navigateUp()
+    fun navigateToGenre(genreName: String)
+}
+
 @Composable
 fun GenresListScreen(
     screenViewModel: GenresListViewModel = viewModel(),
-    navigateToGenre: (genreName: String) -> Unit = {}
+    delegate: GenresListScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is GenresListUiEvent.NavigateToGenre -> {
-                    navigateToGenre(event.genreName)
+                    delegate.navigateToGenre(event.genreName)
                 }
+                GenresListUiEvent.NavigateUp -> delegate.navigateUp()
             }
+        },
+        topBar = {
+            LibraryTopBar(
+                title = DisplayableString.ResourceValue(R.string.genres),
+                delegate = object : LibraryTopBarDelegate {
+                    override fun sortByClicked() {
+                        screenViewModel.handle(GenresListUserAction.SortByClicked)
+                    }
+
+                    override fun upButtonClicked() {
+                        screenViewModel.handle(GenresListUserAction.UpButtonClicked)
+                    }
+                })
         }) { state ->
         GenresListLayout(state = state, object : GenresListScreenDelegate {
             override fun onGenreClicked(genreName: String) {
@@ -65,11 +85,8 @@ fun GenresListLayout(
     state: GenresListState,
     delegate: GenresListScreenDelegate
 ) {
-    val listState = ListWithHeaderState(
-        DisplayableString.ResourceValue(R.string.genres),
-        state.genresList,
-        { header -> LibraryTitle(title = header) },
-        { item ->
+    LazyColumn {
+        items(state.genresList) { item ->
             Text(
                 modifier = Modifier
                     .clickable {
@@ -84,7 +101,6 @@ fun GenresListLayout(
                 style = MaterialTheme.typography.titleLarge,
             )
         }
-    )
-    ListWithHeader(state = listState)
+    }
 }
 

@@ -10,8 +10,14 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
     composable(NavRoutes.GENRES_ROOT) {
         val screenViewModel = hiltViewModel<GenresListViewModel>()
-        GenresListScreen(screenViewModel) { genre ->
-            navController.navigateToGenre(genre)
-        }
+        GenresListScreen(screenViewModel, object : GenresListScreenNavigationDelegate {
+            override fun navigateToGenre(genreName: String) {
+                navController.navigateToGenre(genreName)
+            }
+
+            override fun navigateUp() {
+                navController.navigateUp()
+            }
+        })
     }
 }
