@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.player.MEDIA_GROUP
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
@@ -67,9 +69,12 @@ class AlbumViewModel @Inject constructor(
             is AlbumUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
                 val extras = Bundle().apply {
-                    putString(
-                        PARENT_ID,
-                        "album-${state.value.albumGid}"
+                    putParcelable(
+                        MEDIA_GROUP,
+                        MediaGroup(
+                            mediaType = MediaType.ALBUM,
+                            mediaId = state.value.albumGid
+                        )
                     )
                     putString(
                         SORT_BY,

@@ -159,6 +159,6 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
     .build()
 
-const val PARENT_ID = "PARENT_ID"
 const val SORT_BY = "SORT_BY"
+const val MEDIA_GROUP = "MEDIA_GROUP"
 const val SORT_ORDER = "SORT_ORDER"

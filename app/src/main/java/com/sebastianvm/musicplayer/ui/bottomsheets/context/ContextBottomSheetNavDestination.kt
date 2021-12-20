@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -22,14 +23,19 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
     bottomSheet(
         route = createNavRoute(
             NavRoutes.CONTEXT,
-            NavArgs.SCREEN,
             NavArgs.MEDIA_ID,
+            NavArgs.MEDIA_TYPE,
+            NavArgs.MEDIA_GROUP_TYPE,
+            NavArgs.MEDIA_GROUP_ID,
             NavArgs.SORT_OPTION,
-            NavArgs.SORT_ORDER
-        ),
+            NavArgs.SORT_ORDER,
+
+            ),
         arguments = listOf(
-            navArgument(NavArgs.SCREEN) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_TYPE) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_GROUP_TYPE) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_GROUP_ID) { type = NavType.StringType },
             navArgument(NavArgs.SORT_OPTION) { type = NavType.StringType },
             navArgument(NavArgs.SORT_ORDER) { type = NavType.StringType },
         )
@@ -40,6 +46,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             delegate = object : ContextBottomSheetDialogNavigationDelegate {
                 override fun navigateToPlayer() {
                     navController.navigate(NavRoutes.PLAYER) {
+                        navController.popBackStack()
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -64,15 +71,18 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
 }
 
 fun NavController.openContextMenu(
-    screen: String,
+    mediaType: String,
     mediaId: String,
+    mediaGroup: MediaGroup,
     currentSort: String,
     sortOrder: SortOrder
 ) {
     navigateTo(
         NavRoutes.CONTEXT,
-        NavArgument(NavArgs.SCREEN, screen),
         NavArgument(NavArgs.MEDIA_ID, mediaId),
+        NavArgument(NavArgs.MEDIA_TYPE, mediaType),
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaType),
+        NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
         NavArgument(NavArgs.SORT_OPTION, currentSort),
         NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
     )

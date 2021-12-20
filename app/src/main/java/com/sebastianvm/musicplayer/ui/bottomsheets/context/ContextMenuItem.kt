@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.player.MediaType
 
 sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: Int) {
     object ViewArtists : ContextMenuItem(R.drawable.ic_artist, R.string.view_artists)
@@ -14,17 +14,17 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 }
 
 
-fun contextMenuItemsForScreen(screen: String): List<ContextMenuItem> {
-    return when (screen) {
-        NavRoutes.TRACKS_ROOT -> {
+fun contextMenuItemsForMediaType(mediaType: MediaType): List<ContextMenuItem> {
+    return when (mediaType) {
+        MediaType.TRACK -> {
             listOf(
                 ContextMenuItem.Play,
                 ContextMenuItem.ViewArtists,
                 ContextMenuItem.ViewAlbum
             )
         }
-        else -> {
-            listOf()
-        }
+        MediaType.ARTIST -> TODO()
+        MediaType.ALBUM -> TODO()
+        MediaType.GENRE -> TODO()
     }
 }

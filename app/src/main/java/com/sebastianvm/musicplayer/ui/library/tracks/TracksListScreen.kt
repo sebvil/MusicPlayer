@@ -2,29 +2,24 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
@@ -37,7 +32,7 @@ interface TracksListScreenNavigationDelegate {
     fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
     fun openContextMenu(
         mediaId: String,
-        screen: String,
+        mediaGroup: MediaGroup,
         currentSort: String,
         sortOrder: SortOrder
     )
@@ -62,10 +57,11 @@ fun TracksListScreen(
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(
-                        event.trackGid,
-                        event.screen,
-                        event.currentSort,
-                        event.sortOrder
+                        mediaId = event.trackGid,
+                        mediaGroup = event.genreName?.let { MediaGroup(MediaType.GENRE, it) }
+                            ?: MediaGroup(MediaType.TRACK, event.trackGid),
+                        currentSort = event.currentSort,
+                        sortOrder = event.sortOrder
                     )
                 }
             }
@@ -170,20 +166,8 @@ fun TracksListLayout(
 ) {
     LazyColumn {
         items(state.tracksList) { item ->
-            DoubleLineListItem(
-                afterListContent = { onClick ->
-                    IconButton(
-                        onClick = onClick,
-                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.xSmall)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_overflow),
-                            contentDescription = DisplayableString.StringValue("More") // TODO extract resource
-                                .getString(),
-                        )
-                    }
-
-                },
+            TrackRow(
+                state = item,
                 delegate = object : ListItemDelegate {
                     override fun onItemClicked() {
                         delegate.onTrackClicked(item.trackGid)
@@ -192,25 +176,9 @@ fun TracksListLayout(
                     override fun onSecondaryActionIconClicked() {
                         delegate.onTrackLongPressed(item.trackGid)
                     }
-                },
-                secondaryText = {
-                    Text(
-                        text = item.artists,
-                        modifier = Modifier.alpha(0.6f),
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }) {
-                Text(
-                    text = item.trackName,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+                }
+            )
         }
-
     }
 }
 

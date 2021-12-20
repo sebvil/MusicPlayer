@@ -3,8 +3,10 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
+import com.sebastianvm.musicplayer.player.MEDIA_GROUP
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.player.SORT_ORDER
 import com.sebastianvm.musicplayer.repository.TrackRepository
@@ -29,7 +31,9 @@ class ContextMenuViewModel @Inject constructor(
     private val trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection
 ) :
-    BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
+    BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(
+        initialState
+    ) {
 
     override fun handle(action: ContextMenuUserAction) {
         when (action) {
@@ -38,10 +42,7 @@ class ContextMenuViewModel @Inject constructor(
                     is ContextMenuItem.Play -> {
                         val transportControls = musicServiceConnection.transportControls
                         val extras = Bundle().apply {
-                            putString(
-                                PARENT_ID,
-                                state.value.screen
-                            )
+                            putParcelable(MEDIA_GROUP, state.value.mediaGroup)
                             putString(
                                 SORT_BY,
                                 state.value.selectedSort
@@ -77,8 +78,8 @@ class ContextMenuViewModel @Inject constructor(
 }
 
 data class ContextMenuState(
-    val screen: String,
     val mediaId: String,
+    val mediaGroup: MediaGroup,
     val listItems: List<ContextMenuItem>,
     val selectedSort: String,
     val sortOrder: SortOrder
@@ -90,14 +91,16 @@ object InitialContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialContextMenuStateProvider(savedStateHandle: SavedStateHandle): ContextMenuState {
-        val screen = savedStateHandle.get<String>(NavArgs.SCREEN)!!
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
+        val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
+        val mediaGroupType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
+        val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
         val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
         val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
         return ContextMenuState(
-            screen = screen,
             mediaId = mediaId,
-            listItems = contextMenuItemsForScreen(screen),
+            mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
+            listItems = contextMenuItemsForMediaType(mediaType),
             selectedSort = selectedSort,
             sortOrder = SortOrder.valueOf(sortOrder)
         )

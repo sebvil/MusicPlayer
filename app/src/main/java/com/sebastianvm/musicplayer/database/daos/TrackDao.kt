@@ -34,6 +34,30 @@ interface TrackDao {
     @Query("SELECT * FROM Track WHERE trackGid=:trackGid")
     fun getTrack(trackGid: String): Flow<FullTrackInfo>
 
+    @Transaction
+    @Query("""
+        SELECT Track.* FROM Track 
+        INNER JOIN ArtistTrackCrossRef ON Track.trackGid = ArtistTrackCrossRef.trackGid
+        WHERE ArtistTrackCrossRef.artistGid=:artistId
+    """)
+    fun getTracksForArtist(artistId: String) : Flow<List<FullTrackInfo>>
+
+    @Transaction
+    @Query("""
+        SELECT * FROM Track 
+        WHERE Track.albumGid=:albumId
+    """)
+    fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>>
+
+    @Transaction
+    @Query("""
+        SELECT Track.* FROM Track 
+        INNER JOIN GenreTrackCrossRef ON Track.trackGid = GenreTrackCrossRef.trackGid
+        WHERE GenreTrackCrossRef.genreName=:genreName
+    """)
+    fun getTracksForGenre(genreName: String) : Flow<List<FullTrackInfo>>
+
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(
         tracks: Set<Track>,

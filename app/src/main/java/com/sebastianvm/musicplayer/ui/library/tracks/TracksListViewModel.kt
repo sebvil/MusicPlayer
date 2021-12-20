@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.BrowseTree
+import com.sebastianvm.musicplayer.player.MEDIA_GROUP
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.player.SORT_ORDER
 import com.sebastianvm.musicplayer.repository.GenreRepository
@@ -113,16 +115,16 @@ class TracksListViewModel @Inject constructor(
         when (action) {
             is TracksListUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
-                val parentId = state.value.screen
                 val extras = Bundle().apply {
-                    putString(
-                        PARENT_ID,
-                        parentId
+                    putParcelable(
+                        MEDIA_GROUP,
+                        MediaGroup(
+                            mediaType = state.value.genreName?.let { MediaType.GENRE }
+                                ?: MediaType.TRACK,
+                            mediaId = state.value.genreName ?: ""
+                        )
                     )
-                    putString(
-                        SORT_BY,
-                        state.value.currentSort.metadataKey
-                    )
+                    putString(SORT_BY, state.value.currentSort.metadataKey)
                     putString(SORT_ORDER, state.value.sortOrder.name)
                 }
                 transportControls.playFromMediaId(action.trackGid, extras)
@@ -155,11 +157,13 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackGid,
-                        state.value.screen,
+                        state.value.genreName,
                         state.value.currentSort.metadataKey,
                         state.value.sortOrder
                     )
                 )
+
+
             }
         }
     }
@@ -223,7 +227,7 @@ sealed class TracksListUiEvent : UiEvent {
 
     data class OpenContextMenu(
         val trackGid: String,
-        val screen: String,
+        val genreName: String?,
         val currentSort: String,
         val sortOrder: SortOrder
     ) : TracksListUiEvent()

@@ -8,6 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -73,15 +75,20 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
 
                 override fun openContextMenu(
                     mediaId: String,
-                    screen: String,
+                    mediaGroup: MediaGroup,
                     currentSort: String,
                     sortOrder: SortOrder
                 ) {
                     navController.openContextMenu(
-                        screen, mediaId, currentSort, sortOrder
+                        mediaType = MediaType.TRACK.name,
+                        mediaId = mediaId,
+                        mediaGroup = mediaGroup,
+                        currentSort = currentSort,
+                        sortOrder = sortOrder,
                     )
                 }
-            })
+            }
+        )
     }
 }
 

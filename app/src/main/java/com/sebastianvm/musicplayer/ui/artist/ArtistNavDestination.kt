@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 
 fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     composable(
-        createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID, NavArgs.ARTIST_NAME),
+        createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID),
     ) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
         ArtistScreen(screenViewModel) { albumGid ->

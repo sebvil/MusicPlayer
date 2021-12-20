@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -12,6 +11,7 @@ import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -68,13 +68,9 @@ fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
                 { i ->
                     TrackRow(
                         state = i,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onTrackRowClicked(i.trackGid) }
-                            .padding(
-                                vertical = AppDimensions.spacing.small,
-                                horizontal = AppDimensions.spacing.mediumLarge
-                            )
+                        delegate = object : ListItemDelegate {
+                            // TODO implement
+                        }
                     )
                 }
             )

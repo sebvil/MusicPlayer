@@ -22,13 +22,14 @@ object NavRoutes {
 object NavArgs {
     const val GENRE_NAME = "genreName"
     const val ALBUM_GID = "albumGid"
-    const val ALBUM_NAME = "albumName"
     const val ARTIST_GID = "artistGid"
-    const val ARTIST_NAME = "artistName"
     const val SCREEN = "screen"
     const val SORT_OPTION = "sortOption"
     const val SORT_ORDER = "sortOrder"
     const val MEDIA_ID = "mediaId"
+    const val MEDIA_TYPE = "mediaType"
+    const val MEDIA_GROUP_ID = "mediaGroupId"
+    const val MEDIA_GROUP_TYPE = "mediaGroupType"
 }
 
 fun createNavRoute(route: String, vararg parameters: String): String {

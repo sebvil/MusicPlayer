@@ -224,23 +224,23 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-            val parentId = extras?.getString(PARENT_ID)
+            val mediaGroup =
+                extras?.getParcelable<MediaGroup>(MEDIA_GROUP)
             val sortBy = extras?.getString(SORT_BY) ?: MediaMetadataCompat.METADATA_KEY_TITLE
             val sortOrder =
                 SortOrder.valueOf(extras?.getString(SORT_ORDER) ?: SortOrder.ASCENDING.name)
             CoroutineScope(Dispatchers.IO).launch {
-                browseTree[parentId ?: mediaId]?.collect { itemsToPlay ->
-                    val itemToPlay =
-                        parentId?.let { itemsToPlay.find { item -> item.id == mediaId } }
-
-                    withContext(Dispatchers.Main)
-                    {
-                        preparePlaylist(
-                            itemToPlay,
-                            itemsToPlay.toList().sortedWith(getTrackComparator(sortOrder, sortBy)),
-                            playWhenReady,
-                            0
-                        )
+                mediaGroup?.also {
+                    browseTree.getTracksList(it).first().also { tracks ->
+                        val itemToPlay = tracks.find { item -> item.id == mediaId }
+                        withContext(Dispatchers.Main) {
+                            preparePlaylist(
+                                itemToPlay,
+                                tracks.sortedWith(getTrackComparator(sortOrder, sortBy)),
+                                playWhenReady,
+                                0
+                            )
+                        }
                     }
                 }
             }

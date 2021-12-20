@@ -1,24 +1,46 @@
 package com.sebastianvm.musicplayer.player
 
 import android.media.browse.MediaBrowser
+import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.repository.*
+import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.repository.GenreRepository
+import com.sebastianvm.musicplayer.repository.MusicRepository
+import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.util.AlbumType
-import com.sebastianvm.musicplayer.util.extensions.*
+import com.sebastianvm.musicplayer.util.extensions.counts
+import com.sebastianvm.musicplayer.util.extensions.flags
+import com.sebastianvm.musicplayer.util.extensions.iconRes
+import com.sebastianvm.musicplayer.util.extensions.id
+import com.sebastianvm.musicplayer.util.extensions.title
+import com.sebastianvm.musicplayer.util.extensions.toMediaMetadataCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import javax.inject.Singleton
+
+@Parcelize
+enum class MediaType : Parcelable {
+    TRACK,
+    ARTIST,
+    ALBUM,
+    GENRE
+}
+
+@Parcelize
+data class MediaGroup(val mediaType: MediaType, val mediaId: String) : Parcelable
 
 @Singleton
 class BrowseTree @Inject constructor(
     musicRepository: MusicRepository,
-    trackRepository: TrackRepository,
+    private  val trackRepository: TrackRepository,
     artistRepository: ArtistRepository,
     genreRepository: GenreRepository,
     albumRepository: AlbumRepository,
@@ -120,6 +142,17 @@ class BrowseTree @Inject constructor(
     }
 
     operator fun get(mediaId: String) = tree[mediaId]
+
+    fun getTracksList(mediaGroup: MediaGroup) : Flow<List<MediaMetadataCompat>> {
+        return when (mediaGroup.mediaType) {
+            MediaType.TRACK ->  trackRepository.getAllTracks()
+            MediaType.ARTIST -> trackRepository.getTracksForArtist(mediaGroup.mediaId)
+            MediaType.ALBUM -> trackRepository.getTracksForAlbum(mediaGroup.mediaId)
+            MediaType.GENRE -> trackRepository.getTracksForGenre(mediaGroup.mediaId)
+        }.map { tracks ->
+            tracks.map { it.toMediaMetadataCompat() }
+        }
+    }
 
     companion object {
         const val MEDIA_ROOT = "MEDIA_ROOT"
