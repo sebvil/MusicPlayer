@@ -1,29 +1,30 @@
 package com.sebastianvm.musicplayer.repository
 
-import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.sebastianvm.musicplayer.ui.library.tracks.SortOption
-import com.sebastianvm.musicplayer.ui.library.tracks.TracksSortSettings
 import com.sebastianvm.musicplayer.util.PreferencesUtil
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PreferencesRepository @Inject constructor(
-    private val preferencesUtil: PreferencesUtil
-){
-    suspend fun modifyTrackListSortOptions(sortOrder: SortOrder, sortOption: SortOption, genreName: String?) {
+class PreferencesRepository @Inject constructor(private val preferencesUtil: PreferencesUtil) {
+    suspend fun modifyTrackListSortOptions(
+        sortOrder: SortOrder,
+        sortOption: SortOption,
+        genreName: String?
+    ) {
         preferencesUtil.dataStore.edit { settings ->
             genreName?.also {
-                Log.i("PREFS", "Modifying track genre prefs: $sortOption, $sortOrder, $genreName")
-                val sortOptionKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
-                val sortOrderKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
+                val sortOptionKey =
+                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
+                val sortOrderKey =
+                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
                 settings[sortOptionKey] = sortOption.name
                 settings[sortOrderKey] = sortOrder.name
             } ?: kotlin.run {
-                Log.i("PREFS", "Modifying track root prefs: $sortOption, $sortOrder")
                 settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortOption.name
                 settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortOrder.name
             }
@@ -31,29 +32,51 @@ class PreferencesRepository @Inject constructor(
     }
 
 
-    fun getTrackSortOptions(genreName: String?): Flow<TracksSortSettings> {
+    fun getTracksListSortOptions(genreName: String?): Flow<SortSettings> {
         return preferencesUtil.dataStore.data.map { preferences ->
             genreName?.let {
-                val sortOptionKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
-                val sortOrderKey = stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
+                val sortOptionKey =
+                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
+                val sortOrderKey =
+                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
                 val sortOption = preferences[sortOptionKey]
                 val sortOrder = preferences[sortOrderKey]
                 if (sortOption != null && sortOrder != null) {
-                    TracksSortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
+                    SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
                 } else {
-                    TracksSortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
+                    SortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
                 }
             } ?: kotlin.run {
                 val sortOption = preferences[PreferencesUtil.TRACKS_SORT_OPTION]
                 val sortOrder = preferences[PreferencesUtil.TRACKS_SORT_ORDER]
-                Log.i("PREFS", "new track root prefs: $sortOption, $sortOrder")
                 if (sortOption != null && sortOrder != null) {
-                    TracksSortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
+                    SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
                 } else {
-                    TracksSortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
+                    SortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
                 }
             }
         }
     }
 
+    suspend fun modifyAlbumsListSortOptions(
+        sortOrder: SortOrder,
+        sortOption: SortOption,
+    ) {
+        preferencesUtil.dataStore.edit { settings ->
+            settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortOption.name
+            settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortOrder.name
+        }
+    }
+
+    fun getAlbumsListSortOptions(): Flow<SortSettings> {
+        return preferencesUtil.dataStore.data.map { preferences ->
+            val sortOption = preferences[PreferencesUtil.ALBUMS_SORT_OPTION]
+            val sortOrder = preferences[PreferencesUtil.ALBUMS_SORT_ORDER]
+            if (sortOption != null && sortOrder != null) {
+                SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
+            } else {
+                SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING)
+            }
+        }
+    }
 }

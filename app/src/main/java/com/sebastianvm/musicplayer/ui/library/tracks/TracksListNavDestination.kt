@@ -17,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 
 fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
@@ -43,9 +44,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
             ?.observe(lifecycleOwner) {
                 screenViewModel.handle(
-                    TracksListUserAction.SortOptionClicked(
-                        SortOption.fromResId(it)
-                    )
+                    TracksListUserAction.SortOptionClicked(SortOption.fromResId(it))
                 )
             }
 

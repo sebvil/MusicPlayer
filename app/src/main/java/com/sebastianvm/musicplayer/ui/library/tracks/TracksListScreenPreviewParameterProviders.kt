@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 
 class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {

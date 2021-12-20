@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
 fun interface EventHandler<E : UiEvent> {
-    fun onEvent(event: E)
+    suspend fun onEvent(event: E)
 }
 
 @Composable

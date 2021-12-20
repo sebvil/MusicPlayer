@@ -1,18 +1,40 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
+import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 
 
 fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
     composable(NavRoutes.ALBUMS_ROOT) {
         val screenViewModel = hiltViewModel<AlbumsListViewModel>()
-        AlbumsListScreen(screenViewModel) { albumGid ->
-            navController.navigateToAlbum(albumGid)
-        }
+        val lifecycleOwner = LocalLifecycleOwner.current
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
+            ?.observe(lifecycleOwner) {
+                screenViewModel.handle(
+                    AlbumsListUserAction.SortOptionClicked(SortOption.fromResId(it))
+                )
+            }
+        AlbumsListScreen(screenViewModel, object : AlbumsListScreenNavigationDelegate {
+            override fun navigateUp() {
+                navController.navigateUp()
+            }
+
+            override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
+                navController.openSortBottomSheet(NavRoutes.ALBUMS_ROOT, sortOption, sortOrder)
+            }
+
+            override fun navigateToAlbum(albumId: String) {
+                navController.navigateToAlbum(albumId)
+            }
+        })
     }
 }

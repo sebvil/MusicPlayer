@@ -86,7 +86,7 @@ fun SortBottomSheet(
                     if (state.value.selectedSort == row) {
                         Icon(
                             painter = painterResource(id = if (state.value.sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
-                            contentDescription = "temp",
+                            contentDescription = "temp", // TODO change this
                             modifier = Modifier.padding(end = AppDimensions.spacing.mediumLarge),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

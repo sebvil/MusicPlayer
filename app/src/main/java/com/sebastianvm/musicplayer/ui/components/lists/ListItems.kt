@@ -98,13 +98,18 @@ fun DoubleLineListItem(
                     .size(supportingImageType.imageSize)
             )
         }
-        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .padding(end = AppDimensions.spacing.medium)
+        ) {
             primaryText()
             secondaryText()
         }
 
         if (afterListContent != null) {
-            afterListContent{ delegate.onSecondaryActionIconClicked() }
+            afterListContent { delegate.onSecondaryActionIconClicked() }
         }
     }
 }

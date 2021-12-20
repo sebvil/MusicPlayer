@@ -47,10 +47,10 @@ fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) 
     }
 }
 
-fun NavController.openSortBottomSheet(route: String, sortOption: Int, sortOrder: SortOrder) {
+fun NavController.openSortBottomSheet(screen: String, sortOption: Int, sortOrder: SortOrder) {
     navigateTo(
         NavRoutes.SORT,
-        NavArgument(NavArgs.SCREEN, route),
+        NavArgument(NavArgs.SCREEN, screen),
         NavArgument(NavArgs.SORT_OPTION, sortOption),
         NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
     )

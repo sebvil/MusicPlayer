@@ -1,11 +1,13 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.material.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +33,10 @@ interface ArtistsBottomSheetNavigationDelegate {
 }
 
 @Composable
-fun ArtistsBottomSheet(sheetViewModel: ArtistsBottomSheetViewModel, delegate: ArtistsBottomSheetNavigationDelegate) {
+fun ArtistsBottomSheet(
+    sheetViewModel: ArtistsBottomSheetViewModel,
+    delegate: ArtistsBottomSheetNavigationDelegate
+) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         when (event) {
@@ -74,17 +79,20 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
         DisplayableString.ResourceValue(R.string.artists),
         state.artistsList,
         {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(AppDimensions.bottomSheet.rowHeight)
-                    .padding(start = AppDimensions.bottomSheet.startPadding)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.artists),
-                    modifier = Modifier.paddingFromBaseline(top = 36.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppDimensions.bottomSheet.rowHeight)
+                        .padding(start = AppDimensions.bottomSheet.startPadding)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.artists),
+                        modifier = Modifier.paddingFromBaseline(top = 36.dp),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                Divider(modifier = Modifier.fillMaxWidth())
             }
         },
         { item ->

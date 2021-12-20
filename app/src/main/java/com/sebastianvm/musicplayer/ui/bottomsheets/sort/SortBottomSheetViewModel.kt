@@ -61,6 +61,9 @@ fun getSortOptionsForScreen(screen: String): List<Int> {
         NavRoutes.TRACKS_ROOT -> {
             listOf(R.string.track_name, R.string.artist_name, R.string.album_name)
         }
+        NavRoutes.ALBUMS_ROOT -> {
+            listOf(R.string.album_name, R.string.artist_name, R.string.year)
+        }
         else -> listOf()
     }
 }

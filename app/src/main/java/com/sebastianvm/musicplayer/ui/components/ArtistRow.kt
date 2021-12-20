@@ -1,30 +1,18 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.ListItem
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 class ArtistRowState(val artistGid: String, val artistName: String) : ListItem {
@@ -47,22 +35,22 @@ fun ArtistRowPreview(@PreviewParameter(ArtistRowStatePreviewParameterProvider::c
 @Composable
 fun ArtistRow(state: ArtistRowState, delegate: ListItemDelegate) {
     SingleLineListItem(
-        supportingImage = { modifier ->
-            Surface(
-                color = MaterialTheme.colorScheme.inverseSurface,
-                modifier = modifier.clip(CircleShape)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_artist),
-                    contentDescription = stringResource(id = R.string.placeholder_artist_image),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(AppDimensions.spacing.xSmall)
-                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                )
-            }
-        },
-        supportingImageType = SupportingImageType.AVATAR,
+//        supportingImage = { modifier ->
+//            Surface(
+//                color = MaterialTheme.colorScheme.inverseSurface,
+//                modifier = modifier.clip(CircleShape)
+//            ) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.ic_artist),
+//                    contentDescription = stringResource(id = R.string.placeholder_artist_image),
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                        .padding(AppDimensions.spacing.xSmall)
+//                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
+//                )
+//            }
+//        },
+//        supportingImageType = SupportingImageType.AVATAR,
         delegate = delegate
     ) {
         Text(

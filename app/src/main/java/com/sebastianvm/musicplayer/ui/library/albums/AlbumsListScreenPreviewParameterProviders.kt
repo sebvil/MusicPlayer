@@ -5,6 +5,8 @@ import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 
 class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsListState> {
     override val values = sequenceOf(
@@ -81,7 +83,9 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                         year = 2014
                     )
                 ),
-            )
+            ),
+            currentSort = SortOption.ALBUM_NAME,
+            sortOrder = SortOrder.ASCENDING
         )
     )
 }

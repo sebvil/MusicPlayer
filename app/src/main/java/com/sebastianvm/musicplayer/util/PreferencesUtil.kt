@@ -23,6 +23,8 @@ class PreferencesUtil @Inject constructor(val dataStore: DataStore<Preferences>)
     companion object {
         val TRACKS_SORT_OPTION = stringPreferencesKey("TRACKS_SORT_OPTION")
         val TRACKS_SORT_ORDER = stringPreferencesKey("TRACKS_SORT_ORDER")
+        val ALBUMS_SORT_OPTION = stringPreferencesKey("ALBUMS_SORT_OPTION")
+        val ALBUMS_SORT_ORDER = stringPreferencesKey("ALBUMS_SORT_ORDER")
     }
 }
 

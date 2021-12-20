@@ -9,17 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.DisplayableStringPreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun LibraryTitlePreview(@PreviewParameter(DisplayableStringProvider::class) title: DisplayableString) {
+fun LibraryTitlePreview(@PreviewParameter(DisplayableStringPreviewParameterProvider::class) title: DisplayableString) {
     ThemedPreview {
         LibraryTitle(title = title)
     }
@@ -40,20 +39,6 @@ fun LibraryTitle(title: DisplayableString) {
             bottom = AppDimensions.spacing.medium
         )
     )
-}
-
-
-class DisplayableStringProvider : PreviewParameterProvider<DisplayableString> {
-    override val values: Sequence<DisplayableString>
-        get() = sequenceOf(
-            DisplayableString.ResourceValue(R.string.library),
-            DisplayableString.ResourceValue(R.string.artists),
-            DisplayableString.ResourceValue(R.string.all_songs),
-            DisplayableString.ResourceValue(R.string.albums),
-            DisplayableString.ResourceValue(R.string.genres),
-            DisplayableString.StringValue("Tropipop")
-
-        )
 }
 
 

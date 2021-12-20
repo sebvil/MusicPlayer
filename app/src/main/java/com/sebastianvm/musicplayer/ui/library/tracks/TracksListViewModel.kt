@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.os.Bundle
-import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -22,6 +21,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.Module
@@ -32,29 +32,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-
-enum class SortOption(@StringRes val id: Int, val metadataKey: String) {
-    TRACK_NAME(R.string.track_name, MediaMetadataCompat.METADATA_KEY_TITLE),
-    ARTIST_NAME(R.string.artist_name, MediaMetadataCompat.METADATA_KEY_ARTIST),
-    ALBUM_NAME(R.string.album_name, MediaMetadataCompat.METADATA_KEY_ALBUM);
-
-    companion object {
-        fun fromResId(@StringRes resId: Int): SortOption {
-            return when (resId) {
-                R.string.track_name -> TRACK_NAME
-                R.string.artist_name -> ARTIST_NAME
-                R.string.album_name -> ALBUM_NAME
-                else -> throw IllegalStateException("Unknown sort option for tracks list")
-            }
-        }
-    }
-}
-
-data class TracksSortSettings(
-    val sortOption: SortOption,
-    val sortOrder: SortOrder
-)
 
 
 @HiltViewModel
@@ -68,7 +45,7 @@ class TracksListViewModel @Inject constructor(
 ) {
 
     init {
-        collect(preferencesRepository.getTrackSortOptions(genreName = state.value.genreName)) { settings ->
+        collect(preferencesRepository.getTracksListSortOptions(genreName = state.value.genreName)) { settings ->
             setState {
                 copy(
                     currentSort = settings.sortOption,
@@ -146,6 +123,7 @@ class TracksListViewModel @Inject constructor(
                         action.newSortOption,
                         state.value.genreName
                     )
+                    addUiEvent(TracksListUiEvent.ScrollToTop)
                 }
             }
             is TracksListUserAction.TrackContextMenuClicked -> {
@@ -157,9 +135,8 @@ class TracksListViewModel @Inject constructor(
                         state.value.sortOrder
                     )
                 )
-
-
             }
+            is TracksListUserAction.UpButtonClicked -> addUiEvent(TracksListUiEvent.NavigateUp)
         }
     }
 
@@ -172,6 +149,7 @@ class TracksListViewModel @Inject constructor(
                 SortOption.TRACK_NAME -> trackRowState.trackName
                 SortOption.ARTIST_NAME -> trackRowState.artists
                 SortOption.ALBUM_NAME -> trackRowState.albumName
+                else -> throw IllegalStateException("Unknown sort option for tracks list: $sortOption")
             }
         }
     }
@@ -211,6 +189,7 @@ sealed class TracksListUserAction : UserAction {
     object SortByClicked : TracksListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
     data class TrackContextMenuClicked(val trackGid: String) : TracksListUserAction()
+    object UpButtonClicked : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
@@ -218,12 +197,16 @@ sealed class TracksListUiEvent : UiEvent {
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
         TracksListUiEvent()
 
+    object NavigateUp : TracksListUiEvent()
+
     data class OpenContextMenu(
         val trackGid: String,
         val genreName: String?,
         val currentSort: String,
         val sortOrder: SortOrder
     ) : TracksListUiEvent()
+
+    object ScrollToTop : TracksListUiEvent()
 }
 
 
