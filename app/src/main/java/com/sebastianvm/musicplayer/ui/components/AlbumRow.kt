@@ -1,18 +1,12 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +15,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
+import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -37,38 +34,24 @@ data class AlbumRowState(
 @Composable
 fun AlbumRowPreview(@PreviewParameter(AlbumRowStateProvider::class) state: AlbumRowState) {
     ThemedPreview {
-        AlbumRow(state = state)
+        AlbumRow(state = state, delegate = object : ListItemDelegate {})
     }
 }
 
 @Composable
-fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
+fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, delegate: ListItemDelegate) {
     with(state) {
-        Row(
-            modifier = modifier
-                .height(AppDimensions.albumRowDimensions.height)
-                .padding(start = AppDimensions.spacing.medium),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            MediaArtImage(
-                image = state.image,
-                modifier = Modifier
-                    .size(AppDimensions.albumRowDimensions.imageSize),
-            )
-
-
-            Column(modifier = Modifier
-                .padding(start = AppDimensions.spacing.medium)
-                .fillMaxHeight()
-                .fillMaxWidth()) {
-                Text(
-                    text = albumName,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.xxLarge)
+        DoubleLineListItem(
+            modifier = modifier,
+            supportingImage = { modifier ->
+                MediaArtImage(
+                    image = state.image,
+                    modifier = modifier
                 )
+            },
+            supportingImageType = SupportingImageType.LARGE,
+            delegate = delegate,
+            secondaryText = {
                 Row {
                     if (year != 0L) {
                         Text(
@@ -89,10 +72,16 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier) {
                         modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.mediumLarge)
                     )
                 }
-            }
+            }) {
+            Text(
+                text = albumName,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.xxLarge)
+            )
         }
     }
-
 }
 
 

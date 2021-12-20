@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.ListItem
+import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 data class TrackRowState(
@@ -63,5 +64,15 @@ fun TrackRow(
 class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowState> {
     override val values = sequenceOf(
         TrackRowState("0", "La Promesa", "Melendi", "Un alumno mas"),
+    )
+}
+
+fun FullTrackInfo.toTrackRowState(): TrackRowState {
+    return TrackRowState(
+        trackGid = track.trackGid,
+        trackName = track.trackName,
+        artists = artists.joinToString(", ") { it.artistName },
+        albumName = album.albumName,
+        trackNumber = track.trackNumber
     )
 }

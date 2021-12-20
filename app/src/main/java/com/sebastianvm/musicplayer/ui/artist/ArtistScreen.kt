@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +14,7 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -116,10 +116,11 @@ fun ArtistScreenRow(
         is ArtistScreenItem.AlbumRowItem -> {
             AlbumRow(
                 state = item.state,
-                modifier = Modifier
-                    .clickable {
+                delegate = object : ListItemDelegate {
+                    override fun onItemClicked() {
                         delegate.albumRowClicked(item.albumGid)
                     }
+                }
             )
         }
     }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
@@ -12,6 +11,7 @@ import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -61,15 +61,6 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    private fun FullTrackInfo.toTrackRowState(): TrackRowState {
-        return TrackRowState(
-            trackGid = track.trackGid,
-            trackName = track.trackName,
-            artists = artists.joinToString(", ") { it.artistName },
-            albumName = album.albumName,
-            trackNumber = track.trackNumber
-        )
-    }
 
     override fun handle(action: AlbumUserAction) {
         when (action) {

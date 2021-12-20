@@ -1,9 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import android.content.res.Configuration
-import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -13,6 +11,7 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -31,15 +30,15 @@ fun AlbumsListScreen(
             }
         }) { state ->
         AlbumsListLayout(state = state, object : AlbumsListScreenDelegate {
-            override fun onAlbumClicked(albumGid: String, albumName: String) {
-                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid, albumName))
+            override fun onAlbumClicked(albumGid: String) {
+                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid))
             }
         })
     }
 }
 
 interface AlbumsListScreenDelegate {
-    fun onAlbumClicked(albumGid: String, albumName: String)
+    fun onAlbumClicked(albumGid: String)
 }
 
 
@@ -49,7 +48,7 @@ interface AlbumsListScreenDelegate {
 fun AlbumsListScreenPreview(@PreviewParameter(AlbumsListStatePreviewParameterProvider::class) state: AlbumsListState) {
     ScreenPreview {
         AlbumsListLayout(state = state, object : AlbumsListScreenDelegate {
-            override fun onAlbumClicked(albumGid: String, albumName: String) = Unit
+            override fun onAlbumClicked(albumGid: String) = Unit
         })
     }
 }
@@ -66,10 +65,11 @@ fun AlbumsListLayout(
         { item ->
             AlbumRow(
                 state = item.albumRowState,
-                modifier = Modifier
-                    .clickable {
-                        delegate.onAlbumClicked(item.albumGid, item.albumRowState.albumName)
-                    },
+                delegate = object : ListItemDelegate {
+                    override fun onItemClicked() {
+                        delegate.onAlbumClicked(item.albumGid)
+                    }
+                }
             )
         }
     )

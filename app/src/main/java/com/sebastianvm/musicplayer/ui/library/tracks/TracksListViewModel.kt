@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.PARENT_ID
@@ -17,6 +16,7 @@ import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -107,17 +107,6 @@ class TracksListViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    // TODO move this out
-    private fun FullTrackInfo.toTrackRowState(): TrackRowState {
-        return TrackRowState(
-            trackGid = track.trackGid,
-            trackName = track.trackName,
-            artists = artists.joinToString(", ") { it.artistName },
-            albumName = album.albumName,
-            trackNumber = track.trackNumber
-        )
     }
 
     override fun handle(action: TracksListUserAction) {

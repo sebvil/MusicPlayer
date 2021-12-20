@@ -54,10 +54,7 @@ class AlbumsListViewModel @Inject constructor(
         when (action) {
             is AlbumsListUserAction.AlbumClicked -> {
                 addUiEvent(
-                    AlbumsListUiEvent.NavigateToAlbum(
-                        action.albumGid,
-                        action.albumName
-                    )
+                    AlbumsListUiEvent.NavigateToAlbum(action.albumGid)
                 )
             }
         }
@@ -81,9 +78,9 @@ object InitialAlbumsListStateModule {
 }
 
 sealed class AlbumsListUserAction : UserAction {
-    data class AlbumClicked(val albumGid: String, val albumName: String) : AlbumsListUserAction()
+    data class AlbumClicked(val albumGid: String) : AlbumsListUserAction()
 }
 
 sealed class AlbumsListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumGid: String, val albumName: String) : AlbumsListUiEvent()
+    data class NavigateToAlbum(val albumGid: String) : AlbumsListUiEvent()
 }
