@@ -50,7 +50,7 @@ class BrowseTree @Inject constructor(
     private val counts = musicRepository.getCounts()
     private val tracks = trackRepository.getAllTracks()
     private val artists = artistRepository.getArtistsWithAlbums()
-    private val albums = albumRepository.getAlbums()
+    private val albums = albumRepository.getAlbum()
     private val genres = genreRepository.getGenresWithTracks()
 
     init {
@@ -103,8 +103,8 @@ class BrowseTree @Inject constructor(
             tree[ARTISTS_ROOT] = artists.map { artistWithAlbums ->
                 artistWithAlbums.forEach { artist ->
                     tree["artist-${artist.artist.artistGid}"] = combine(
-                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumGid }),
-                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumGid })
+                        albumRepository.getAlbum(artist.artistAlbums.map { album -> album.albumGid }),
+                        albumRepository.getAlbum(artist.artistAppearsOn.map { album -> album.albumGid })
                     ) { albums, appearsOn ->
 
                         albums.map { it.toMediaMetadataCompat(AlbumType.ALBUM) }

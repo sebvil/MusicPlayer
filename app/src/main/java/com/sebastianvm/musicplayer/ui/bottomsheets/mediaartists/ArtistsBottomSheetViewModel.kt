@@ -3,8 +3,10 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.library.artists.ArtistsBottomSheetListItem
-import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListItem
+import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.TrackRepository
+import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -20,19 +22,54 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class ArtistsBottomSheetViewModel @Inject constructor(initialState: ArtistsBottomSheetState) :
+class ArtistsBottomSheetViewModel @Inject constructor(
+    initialState: ArtistsBottomSheetState,
+    trackRepository: TrackRepository,
+    albumRepository: AlbumRepository
+) :
     BaseViewModel<ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
         initialState
     ) {
 
+    init {
+        with(state.value.mediaGroup) {
+            when (mediaType) {
+                MediaType.TRACK -> {
+                    collect(trackRepository.getTrack(mediaId)) { track ->
+                        setState {
+                            copy(
+                                artistsList = track.artists.map { it.toArtistRowState() }
+                            )
+                        }
+                    }
+                }
+                MediaType.ALBUM -> {
+                    collect(albumRepository.getAlbum(mediaId)) { album ->
+                        setState {
+                            copy(
+                                artistsList = album.artists.map { it.toArtistRowState() }
+                            )
+                        }
+                    }
+                }
+                else -> Unit
+            }
+        }
+
+    }
+
     override fun handle(action: ArtistsBottomSheetUserAction) {
-        TODO("Not yet implemented")
+        when (action) {
+            is ArtistsBottomSheetUserAction.ArtistClicked -> {
+                addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistId))
+            }
+        }
     }
 }
 
 data class ArtistsBottomSheetState(
     val mediaGroup: MediaGroup,
-    val artistsList: List<ArtistsListItem>
+    val artistsList: List<ArtistRowState>
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -42,11 +79,19 @@ object InitialArtistsBottomSheetStateModule {
     @ViewModelScoped
     fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
         val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
-        val mediaGroupType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
-        return ArtistsBottomSheetState()
+        val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
+        return ArtistsBottomSheetState(
+            mediaGroup = MediaGroup(mediaType = mediaType, mediaId = mediaId),
+            artistsList = listOf()
+        )
     }
 }
 
-sealed class ArtistsBottomSheetUserAction : UserAction
-sealed class ArtistsBottomSheetUiEvent : UiEvent
+sealed class ArtistsBottomSheetUserAction : UserAction {
+    data class ArtistClicked(val artistId: String) : ArtistsBottomSheetUserAction()
+}
+
+sealed class ArtistsBottomSheetUiEvent : UiEvent {
+    data class NavigateToArtist(val artistId: String) : ArtistsBottomSheetUiEvent()
+}
 

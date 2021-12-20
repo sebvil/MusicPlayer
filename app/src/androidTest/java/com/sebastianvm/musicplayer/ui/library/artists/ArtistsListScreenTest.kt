@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -20,9 +21,9 @@ class ArtistsListScreenTest {
         return mockk(relaxed = true) {
             every { state } returns MutableStateFlow(ArtistsListState(
                 listOf(
-                    ArtistsListItem("A", "A"),
-                    ArtistsListItem("B", "B"),
-                    ArtistsListItem("C", "C"),
+                    ArtistRowState("A", "A"),
+                    ArtistRowState("B", "B"),
+                    ArtistRowState("C", "C"),
                 )
             ))
         }
@@ -36,8 +37,7 @@ class ArtistsListScreenTest {
         composeTestRule.setContent {
             ArtistsListScreen(
                 screenViewModel = screenViewModel,
-                bottomNavBar = { },
-                navigateToArtist = { _, _ -> }
+                navigateToArtist = {}
             )
         }
 
@@ -54,13 +54,12 @@ class ArtistsListScreenTest {
         composeTestRule.setContent {
             ArtistsListScreen(
                 screenViewModel = screenViewModel,
-                bottomNavBar = { },
-                navigateToArtist = { _, _ -> }
+                navigateToArtist = {}
             )
         }
         composeTestRule.onNodeWithText("A").performClick()
         verify {
-            screenViewModel.handle(ArtistsListUserAction.ArtistClicked("A", "A"))
+            screenViewModel.handle(ArtistsListUserAction.ArtistClicked("A"))
         }
     }
 

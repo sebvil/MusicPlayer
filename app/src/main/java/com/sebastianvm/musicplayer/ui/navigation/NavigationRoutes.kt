@@ -17,6 +17,7 @@ object NavRoutes {
     const val SEARCH = "SEARCH"
     const val SORT = "SORT"
     const val CONTEXT = "CONTEXT"
+    const val MEDIA_ARTISTS = "MEDIA_ARTISTS"
 }
 
 object NavArgs {

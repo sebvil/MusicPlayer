@@ -5,7 +5,6 @@ import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -38,13 +37,16 @@ class TracksListViewModelTest {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
-                screen = genreName,
+                screen = "TODO",
+                genreName = genreName,
                 tracksListTitle = tracksListTitle,
                 tracksList = tracksList,
                 currentSort = currentSort,
                 sortOrder = sortOrder
             ),
-            preferencesRepository = preferencesRepository
+            preferencesRepository = preferencesRepository,
+            genreRepository = mock(),
+            trackRepository = mock()
         )
     }
 
@@ -85,7 +87,6 @@ class TracksListViewModelTest {
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),
                 org.mockito.kotlin.check {
-                    assertEquals(BrowseTree.TRACKS_ROOT, it.getString(PARENT_ID))
                     assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
                 }
             )
@@ -111,7 +112,6 @@ class TracksListViewModelTest {
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),
                 org.mockito.kotlin.check {
-                    assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
                     assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
                 }
             )
@@ -138,7 +138,6 @@ class TracksListViewModelTest {
                 verify(musicServiceConnection.transportControls).playFromMediaId(
                     eq(TRACK_GID),
                     org.mockito.kotlin.check {
-                        assertEquals("genre-$GENRE_NAME", it.getString(PARENT_ID))
                         assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
                     }
                 )

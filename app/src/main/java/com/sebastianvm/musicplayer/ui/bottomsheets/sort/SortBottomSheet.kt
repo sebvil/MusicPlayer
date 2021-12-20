@@ -56,7 +56,8 @@ fun SortBottomSheet(
         Row(modifier = rowModifier) {
             Text(
                 text = stringResource(id = R.string.sort_by),
-                modifier = Modifier.paddingFromBaseline(top = 36.dp)
+                modifier = Modifier.paddingFromBaseline(top = 36.dp),
+                style = MaterialTheme.typography.titleMedium
             )
         }
         Divider(modifier = Modifier.fillMaxWidth())

@@ -21,8 +21,8 @@ class ArtistsListViewModelTest  {
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistsListViewModel {
         return ArtistsListViewModel(
-            musicServiceConnection = musicServiceConnection,
-            initialState = mock()
+            initialState = mock(),
+            artistRepository = mock()
         )
     }
 
@@ -42,14 +42,12 @@ class ArtistsListViewModelTest  {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
                 Assert.assertEquals(ARTIST_GID, artistGid)
-                Assert.assertEquals(ARTIST_NAME, artistName)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_GID, ARTIST_NAME))
+            handle(ArtistsListUserAction.ArtistClicked(ARTIST_GID))
         }
     }
 
     companion object {
         private const val ARTIST_GID = "ARTIST_GID"
-        private const val ARTIST_NAME = "ARTIST_NAME"
     }
 }

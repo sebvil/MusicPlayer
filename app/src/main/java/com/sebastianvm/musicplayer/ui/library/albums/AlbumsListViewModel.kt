@@ -24,7 +24,7 @@ class AlbumsListViewModel @Inject constructor(
 ) : BaseViewModel<AlbumsListUserAction, AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
-        collect(albumRepository.getAlbums()) { albums ->
+        collect(albumRepository.getAlbum()) { albums ->
             setState {
                 copy(
                     albumsList = albums.map { album ->

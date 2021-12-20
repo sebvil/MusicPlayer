@@ -13,6 +13,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.albums.albumsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.artists.artistsNavDestination
@@ -67,5 +68,6 @@ fun NavGraphBuilder.libraryGraph(
 
         sortBottomSheetNavDestination(navController)
         contextBottomSheet(navController)
+        artistsBottomSheetNavDestination(navController)
     }
 }

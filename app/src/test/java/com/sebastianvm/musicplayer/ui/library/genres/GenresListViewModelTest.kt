@@ -21,8 +21,8 @@ class GenresListViewModelTest {
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): GenresListViewModel {
         return GenresListViewModel(
-            musicServiceConnection = musicServiceConnection,
-            initialState = mock()
+            initialState = mock(),
+            genreRepository = mock()
         )
     }
 

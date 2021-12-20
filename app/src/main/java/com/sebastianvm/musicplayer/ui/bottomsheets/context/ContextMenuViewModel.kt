@@ -30,10 +30,7 @@ class ContextMenuViewModel @Inject constructor(
     initialState: ContextMenuState,
     private val trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection
-) :
-    BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(
-        initialState
-    ) {
+) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
 
     override fun handle(action: ContextMenuUserAction) {
         when (action) {
@@ -62,13 +59,25 @@ class ContextMenuViewModel @Inject constructor(
                     ContextMenuItem.PlayAllSongs -> TODO()
                     ContextMenuItem.PlayFromBeginning -> TODO()
                     ContextMenuItem.ViewArtists -> {
-                        collect(trackRepository.getTrack(state.value.mediaId)) {
-                            if (it.artists.size == 1) {
-                                val artist = it.artists[0]
-                                addUiEvent(
-                                    ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
-                                )
+                        when (state.value.mediaType) {
+                            MediaType.TRACK -> {
+                                collect(trackRepository.getTrack(state.value.mediaId)) {
+                                    if (it.artists.size == 1) {
+                                        val artist = it.artists[0]
+                                        addUiEvent(
+                                            ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
+                                        )
+                                    } else {
+                                        addUiEvent(
+                                            ContextMenuUiEvent.NavigateToArtistsBottomSheet(
+                                                state.value.mediaId,
+                                                state.value.mediaType
+                                            )
+                                        )
+                                    }
+                                }
                             }
+                            else -> Unit
                         }
                     }
                 }
@@ -79,6 +88,7 @@ class ContextMenuViewModel @Inject constructor(
 
 data class ContextMenuState(
     val mediaId: String,
+    val mediaType: MediaType,
     val mediaGroup: MediaGroup,
     val listItems: List<ContextMenuItem>,
     val selectedSort: String,
@@ -93,12 +103,14 @@ object InitialContextMenuStateModule {
     fun initialContextMenuStateProvider(savedStateHandle: SavedStateHandle): ContextMenuState {
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
         val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
-        val mediaGroupType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
+        val mediaGroupType =
+            MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
         val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
         val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
         return ContextMenuState(
             mediaId = mediaId,
+            mediaType = mediaType,
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = contextMenuItemsForMediaType(mediaType),
             selectedSort = selectedSort,
@@ -116,5 +128,7 @@ sealed class ContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : ContextMenuUiEvent()
     data class NavigateToAlbum(val albumGid: String) : ContextMenuUiEvent()
     data class NavigateToArtist(val artistGid: String) : ContextMenuUiEvent()
+    data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
+        ContextMenuUiEvent()
 }
 

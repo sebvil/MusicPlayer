@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
@@ -28,6 +29,7 @@ interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToPlayer() = Unit
     fun navigateToAlbum(albumGid: String) = Unit
     fun navigateToArtist(artistGid: String) = Unit
+    fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
 }
 
 @Composable
@@ -43,6 +45,10 @@ fun ContextBottomSheet(
             }
             is ContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumGid)
             is ContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistGid)
+            is ContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
+                event.mediaId,
+                event.mediaType
+            )
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {

@@ -37,7 +37,7 @@ class AlbumViewModel @Inject constructor(
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        collect(albumRepository.getAlbums(state.value.albumGid)) { albumInfo ->
+        collect(albumRepository.getAlbum(state.value.albumGid)) { albumInfo ->
             setState {
                 copy(
                     albumHeaderItem = HeaderWithImageState(

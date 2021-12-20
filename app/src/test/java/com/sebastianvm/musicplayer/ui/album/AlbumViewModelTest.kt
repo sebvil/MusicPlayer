@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.PARENT_ID
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +27,9 @@ class AlbumViewModelTest {
                 albumGid = ALBUM_GID,
                 tracksList = listOf(),
                 albumHeaderItem = mock()
-            )
+            ),
+            albumRepository = mock(),
+            trackRepository = mock()
         )
     }
 
@@ -55,7 +56,6 @@ class AlbumViewModelTest {
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_GID),
                 check {
-                    assertEquals("album-$ALBUM_GID", it.getString(PARENT_ID))
                     assertEquals(
                         MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
                         it.getString(SORT_BY)

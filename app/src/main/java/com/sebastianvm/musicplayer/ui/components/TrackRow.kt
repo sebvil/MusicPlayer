@@ -62,7 +62,7 @@ fun TrackRow(state: TrackRowState, delegate: ListItemDelegate) {
         secondaryText = {
             Text(
                 text = state.artists,
-                modifier = Modifier.alpha(0.6f).paddingFromBaseline(top = AppDimensions.spacing.mediumLarge),
+                modifier = Modifier.alpha(0.8f).paddingFromBaseline(top = AppDimensions.spacing.mediumLarge),
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

@@ -1,7 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
-import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -26,25 +27,19 @@ class ArtistsListViewModel @Inject constructor(
             setState {
                 copy(
                     artistsList = artists.map { artist ->
-                        artist.toArtistListItem()
+                        artist.toArtistRowState()
                     }.sortedBy { item -> item.artistName },
                 )
             }
         }
     }
 
-    private fun Artist.toArtistListItem(): ArtistsListItem {
-        return ArtistsListItem(artistGid = artistGid, artistName = artistName)
-    }
 
     override fun handle(action: ArtistsListUserAction) {
         when (action) {
             is ArtistsListUserAction.ArtistClicked -> {
                 addUiEvent(
-                    ArtistsListUiEvent.NavigateToArtist(
-                        action.artistGid,
-                        action.artistName
-                    )
+                    ArtistsListUiEvent.NavigateToArtist(action.artistGid)
                 )
             }
         }
@@ -52,7 +47,7 @@ class ArtistsListViewModel @Inject constructor(
 }
 
 data class ArtistsListState(
-    val artistsList: List<ArtistsListItem>
+    val artistsList: List<ArtistRowState>
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -68,11 +63,9 @@ object InitialArtistsListStateModule {
 }
 
 sealed class ArtistsListUserAction : UserAction {
-    data class ArtistClicked(val artistGid: String, val artistName: String) :
-        ArtistsListUserAction()
+    data class ArtistClicked(val artistGid: String) : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistGid: String, val artistName: String) :
-        ArtistsListUiEvent()
+    data class NavigateToArtist(val artistGid: String) : ArtistsListUiEvent()
 }

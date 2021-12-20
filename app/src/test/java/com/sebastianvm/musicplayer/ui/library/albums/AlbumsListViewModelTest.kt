@@ -19,17 +19,17 @@ class AlbumsListViewModelTest  {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): AlbumsListViewModel {
+    private fun generateViewModel(): AlbumsListViewModel {
         return AlbumsListViewModel(
-            musicServiceConnection = musicServiceConnection,
-            initialState = mock()
+            initialState = mock(),
+            albumRepository = mock()
         )
     }
 
     @Test
     fun `init connects to service for album roots`() {
         val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection)
+        generateViewModel()
         verify(musicServiceConnection).subscribe(
             eq(BrowseTree.ALBUMS_ROOT),
             any()
@@ -42,9 +42,8 @@ class AlbumsListViewModelTest  {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
                 assertEquals(ALBUM_GID, albumGid)
-                assertEquals(ALBUM_NAME, albumName)
             }
-            handle(AlbumsListUserAction.AlbumClicked(ALBUM_GID, ALBUM_NAME))
+            handle(AlbumsListUserAction.AlbumClicked(ALBUM_GID))
         }
     }
 

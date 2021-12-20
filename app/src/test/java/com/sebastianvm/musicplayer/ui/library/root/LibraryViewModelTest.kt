@@ -27,12 +27,12 @@ class LibraryViewModelTest {
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): LibraryViewModel {
         return LibraryViewModel(
-            musicServiceConnection = musicServiceConnection,
-            LibraryState(
+            initialState = LibraryState(
                 libraryItems = listOf(),
                 showPermissionExplanationDialog = false,
                 showPermissionDeniedDialog = false,
-            )
+            ),
+            musicRepository = mock()
         )
     }
 

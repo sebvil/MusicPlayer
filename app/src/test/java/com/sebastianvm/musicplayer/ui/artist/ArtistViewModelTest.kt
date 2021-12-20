@@ -19,13 +19,14 @@ class ArtistViewModelTest  {
 
     private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistViewModel {
         return ArtistViewModel(
-            musicServiceConnection = musicServiceConnection,
             initialState = ArtistState(
                 artistHeaderItem = mock(),
                 artistGid = ARTIST_GID,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
-            )
+            ),
+            albumRepository = mock(),
+            artistRepository = mock()
         )
     }
 
@@ -45,9 +46,8 @@ class ArtistViewModelTest  {
         with(generateViewModel()) {
             expectUiEvent<ArtistUiEvent.NavigateToAlbum>(this@runTest) {
                 assertEquals(ALBUM_GID, albumGid)
-                assertEquals(ALBUM_NAME, albumName)
             }
-            handle(ArtistUserAction.AlbumClicked(ALBUM_GID, ALBUM_NAME))
+            handle(ArtistUserAction.AlbumClicked(ALBUM_GID))
         }
     }
 

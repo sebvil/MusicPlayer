@@ -9,8 +9,10 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -64,6 +66,11 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
 
                 override fun navigateToArtist(artistGid: String) {
                     navController.navigateToArtist(artistGid)
+                }
+
+                override fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) {
+                    navController.popBackStack()
+                    navController.navigateToArtistsBottomSheet(mediaId, mediaType)
                 }
             }
         )
