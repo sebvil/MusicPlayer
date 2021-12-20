@@ -1,6 +1,11 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.lifecycle.SavedStateHandle
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.ui.library.artists.ArtistsBottomSheetListItem
+import com.sebastianvm.musicplayer.ui.library.artists.ArtistsListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -15,26 +20,33 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class ArtistsViewModel @Inject constructor(initialState: ArtistsState) :
-    BaseViewModel<ArtistsUserAction, ArtistsUiEvent, ArtistsState>(initialState) {
+class ArtistsBottomSheetViewModel @Inject constructor(initialState: ArtistsBottomSheetState) :
+    BaseViewModel<ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
+        initialState
+    ) {
 
-    override fun handle(action: ArtistsUserAction) {
+    override fun handle(action: ArtistsBottomSheetUserAction) {
         TODO("Not yet implemented")
     }
 }
 
-data class ArtistsState() : State
+data class ArtistsBottomSheetState(
+    val mediaGroup: MediaGroup,
+    val artistsList: List<ArtistsListItem>
+) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialArtistsStateModule {
+object InitialArtistsBottomSheetStateModule {
     @Provides
     @ViewModelScoped
-    fun initialArtistsStateProvider(savedStateHandle: SavedStateHandle): ArtistsState {
-        return ArtistsState()
+    fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
+        val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
+        val mediaGroupType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
+        return ArtistsBottomSheetState()
     }
 }
 
-sealed class ArtistsUserAction : UserAction
-sealed class ArtistsUiEvent : UiEvent
+sealed class ArtistsBottomSheetUserAction : UserAction
+sealed class ArtistsBottomSheetUiEvent : UiEvent
 

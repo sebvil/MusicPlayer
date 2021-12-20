@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun ArtistsBottomSheetDialog(sheetViewModel: ArtistsViewModel) {
+fun ArtistsBottomSheetDialog(sheetViewModel: ArtistsBottomSheetViewModel) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         TODO("Not yet implemented")
@@ -25,12 +25,12 @@ fun ArtistsBottomSheetDialog(sheetViewModel: ArtistsViewModel) {
 @Preview
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ArtistsScreenPreview(@PreviewParameter(ArtistsStatePreviewParameterProvider::class) state: ArtistsState) {
+fun ArtistsScreenPreview(@PreviewParameter(ArtistsStatePreviewParameterProvider::class) state: ArtistsBottomSheetState) {
     BottomSheetPreview {
         ArtistsBottomSheetLayout(state = state)
     }
 }
 
 @Composable
-fun ArtistsBottomSheetLayout(state: ArtistsState) {
+fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState) {
 }
