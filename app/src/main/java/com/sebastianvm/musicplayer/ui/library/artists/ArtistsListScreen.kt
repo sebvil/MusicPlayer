@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
 import android.content.res.Configuration
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -8,29 +10,45 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
-import com.sebastianvm.musicplayer.ui.components.LibraryTitle
-import com.sebastianvm.musicplayer.ui.components.ListWithHeader
-import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
+import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
+import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+interface ArtistsListScreenNavigationDelegate {
+    fun navigateUp()
+    fun navigateToArtist(artistId: String)
+}
+
 @Composable
 fun ArtistsListScreen(
     screenViewModel: ArtistsListViewModel = viewModel(),
-    navigateToArtist: (String) -> Unit
+    delegate: ArtistsListScreenNavigationDelegate
 ) {
-
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is ArtistsListUiEvent.NavigateToArtist -> {
-                    navigateToArtist(event.artistGid)
+                    delegate.navigateToArtist(event.artistGid)
                 }
+                is ArtistsListUiEvent.NavigateUp -> delegate.navigateUp()
             }
-
         },
+        topBar = {
+            LibraryTopBar(
+                title = DisplayableString.ResourceValue(R.string.artists),
+                delegate = object : LibraryTopBarDelegate {
+                    override fun sortByClicked() {
+                        screenViewModel.handle(ArtistsListUserAction.SortByClicked)
+                    }
+
+                    override fun upButtonClicked() {
+                        screenViewModel.handle(ArtistsListUserAction.UpButtonClicked)
+                    }
+                })
+        }
     ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
             override fun onArtistRowClicked(artistGid: String) {
@@ -60,19 +78,15 @@ fun ArtistsListLayout(
     state: ArtistsListState,
     delegate: ArtistsListScreenDelegate
 ) {
-    val listState = ListWithHeaderState(
-        DisplayableString.ResourceValue(R.string.artists),
-        state.artistsList,
-        { header -> LibraryTitle(title = header) },
-        { item ->
+    LazyColumn {
+        items(state.artistsList) { item ->
             ArtistRow(state = item, delegate = object : ListItemDelegate {
                 override fun onItemClicked() {
                     delegate.onArtistRowClicked(item.artistGid)
                 }
             })
         }
-    )
-    ListWithHeader(state = listState)
+    }
 }
 
 

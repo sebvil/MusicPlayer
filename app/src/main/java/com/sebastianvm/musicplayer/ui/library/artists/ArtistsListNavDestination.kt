@@ -10,9 +10,15 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 fun NavGraphBuilder.artistsNavDestination(navController: NavController) {
     composable(NavRoutes.ARTISTS_ROOT) {
         val screenViewModel = hiltViewModel<ArtistsListViewModel>()
-        ArtistsListScreen(screenViewModel) { artistGid ->
-            navController.navigateToArtist(artistGid)
-        }
+        ArtistsListScreen(screenViewModel, object : ArtistsListScreenNavigationDelegate {
+            override fun navigateToArtist(artistId: String) {
+                navController.navigateToArtist(artistId)
+            }
+
+            override fun navigateUp() {
+                navController.navigateUp()
+            }
+        })
     }
 
 }

@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.artists
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.util.SortOrder
 
 class ArtistsListStatePreviewParameterProvider : PreviewParameterProvider<ArtistsListState> {
     override val values = sequenceOf(
@@ -11,7 +12,8 @@ class ArtistsListStatePreviewParameterProvider : PreviewParameterProvider<Artist
                 ArtistRowState("Carlos Vives", "Carlos Vives"),
                 ArtistRowState("Morat", "Morat"),
                 ArtistRowState("LongName".repeat(10), "LongName".repeat(10)),
-            )
+            ),
+            sortOrder = SortOrder.ASCENDING
         )
     )
 }
