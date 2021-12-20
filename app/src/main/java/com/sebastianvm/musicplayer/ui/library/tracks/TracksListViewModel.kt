@@ -7,14 +7,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.player.SORT_ORDER
-import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -63,7 +61,6 @@ data class TracksSortSettings(
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
-    genreRepository: GenreRepository,
     private val musicServiceConnection: MusicServiceConnection,
     private val preferencesRepository: PreferencesRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
@@ -87,15 +84,13 @@ class TracksListViewModel @Inject constructor(
 
         }
         state.value.genreName?.also { genre ->
-            collect(genreRepository.getGenreWithTracks(genre)) { genreWithTracks ->
-                collect(trackRepository.getTracks(genreWithTracks.tracks.map { it.trackGid })) { tracks ->
-                    setState {
-                        copy(
-                            tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
-                                getComparator(sortOrder, currentSort)
-                            )
+            collect(trackRepository.getTracksForGenre(genre)) { tracks ->
+                setState {
+                    copy(
+                        tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
+                            getComparator(sortOrder, currentSort)
                         )
-                    }
+                    )
                 }
             }
         } ?: kotlin.run {
@@ -132,7 +127,7 @@ class TracksListViewModel @Inject constructor(
             }
             is TracksListUserAction.SortByClicked -> {
                 addUiEvent(
-                    TracksListUiEvent.ShowBottomSheet(
+                    TracksListUiEvent.ShowSortBottomSheet(
                         state.value.currentSort.id,
                         state.value.sortOrder
                     )
@@ -153,7 +148,7 @@ class TracksListViewModel @Inject constructor(
                     )
                 }
             }
-            is TracksListUserAction.TrackLongPressed -> {
+            is TracksListUserAction.TrackContextMenuClicked -> {
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackGid,
@@ -186,7 +181,6 @@ class TracksListViewModel @Inject constructor(
 
 
 data class TracksListState(
-    val screen: String,
     val genreName: String?,
     val tracksListTitle: DisplayableString,
     val tracksList: List<TrackRowState>,
@@ -202,7 +196,6 @@ object InitialTracksListStateModule {
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
         val genreName = savedStateHandle.get<String?>(NavArgs.GENRE_NAME)
         return TracksListState(
-            screen = genreName?.let { "genre-$genreName" } ?: BrowseTree.TRACKS_ROOT,
             genreName = genreName,
             tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
                 ?: DisplayableString.ResourceValue(R.string.all_songs),
@@ -217,12 +210,12 @@ sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : TracksListUserAction()
     object SortByClicked : TracksListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
-    data class TrackLongPressed(val trackGid: String) : TracksListUserAction()
+    data class TrackContextMenuClicked(val trackGid: String) : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
-    data class ShowBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
+    data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
         TracksListUiEvent()
 
     data class OpenContextMenu(

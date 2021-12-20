@@ -148,7 +148,7 @@ class TracksListViewModelTest {
     @Test
     fun `SortByClicked changes state`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<TracksListUiEvent.ShowBottomSheet>(this@runTest)
+            expectUiEvent<TracksListUiEvent.ShowSortBottomSheet>(this@runTest)
             handle(TracksListUserAction.SortByClicked)
         }
     }

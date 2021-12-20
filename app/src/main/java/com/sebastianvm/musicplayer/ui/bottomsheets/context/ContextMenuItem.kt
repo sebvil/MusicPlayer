@@ -14,14 +14,21 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 }
 
 
-fun contextMenuItemsForMediaType(mediaType: MediaType): List<ContextMenuItem> {
+fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType): List<ContextMenuItem> {
     return when (mediaType) {
         MediaType.TRACK -> {
-            listOf(
-                ContextMenuItem.Play,
-                ContextMenuItem.ViewArtists,
-                ContextMenuItem.ViewAlbum
-            )
+            if (mediaGroupType == MediaType.ALBUM) {
+                listOf(
+                    ContextMenuItem.Play,
+                    ContextMenuItem.ViewArtists,
+                )
+            } else {
+                listOf(
+                    ContextMenuItem.Play,
+                    ContextMenuItem.ViewArtists,
+                    ContextMenuItem.ViewAlbum
+                )
+            }
         }
         MediaType.ARTIST -> TODO()
         MediaType.ALBUM -> TODO()

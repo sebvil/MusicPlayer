@@ -112,7 +112,7 @@ object InitialContextMenuStateModule {
             mediaId = mediaId,
             mediaType = mediaType,
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
-            listItems = contextMenuItemsForMediaType(mediaType),
+            listItems = contextMenuItemsForMedia(mediaType, mediaGroupType),
             selectedSort = selectedSort,
             sortOrder = SortOrder.valueOf(sortOrder)
         )

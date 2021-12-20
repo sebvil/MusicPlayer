@@ -53,12 +53,13 @@ class AlbumViewModel @Inject constructor(
                     ),
                 )
             }
-            collect(trackRepository.getTracks(albumInfo.tracks.map { it.trackGid })) { tracks ->
-                setState {
-                    copy(
-                        tracksList = tracks.map { it.toTrackRowState() }
-                    )
-                }
+        }
+
+        collect(trackRepository.getTracksForAlbum(state.value.albumGid)) { tracks ->
+            setState {
+                copy(
+                    tracksList = tracks.map { it.toTrackRowState() }
+                )
             }
         }
     }
@@ -83,6 +84,14 @@ class AlbumViewModel @Inject constructor(
                 }
                 transportControls.playFromMediaId(action.trackGid, extras)
                 addUiEvent(AlbumUiEvent.NavigateToPlayer)
+            }
+            is AlbumUserAction.TrackContextMenuClicked -> {
+                addUiEvent(
+                    AlbumUiEvent.OpenContextMenu(
+                        trackId = action.trackGid,
+                        albumId = state.value.albumGid
+                    )
+                )
             }
         }
     }
@@ -119,8 +128,11 @@ object InitialAlbumStateModule {
 
 sealed class AlbumUserAction : UserAction {
     data class TrackClicked(val trackGid: String) : AlbumUserAction()
+    data class TrackContextMenuClicked(val trackGid: String) : AlbumUserAction()
+
 }
 
 sealed class AlbumUiEvent : UiEvent {
     object NavigateToPlayer : AlbumUiEvent()
+    data class OpenContextMenu(val trackId: String, val albumId: String) : AlbumUiEvent()
 }

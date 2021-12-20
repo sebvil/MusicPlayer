@@ -16,27 +16,44 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+interface AlbumNavigationDelegate {
+    fun navigateToPlayer() = Unit
+    fun openContextMenu(trackId: String, albumId: String) = Unit
+}
+
 @Composable
 fun AlbumScreen(
     screenVieModel: AlbumViewModel,
-    navigateToPlayer: () -> Unit
+    delegate: AlbumNavigationDelegate
 ) {
     Screen(
         screenViewModel = screenVieModel,
         eventHandler = { event ->
             when (event) {
                 is AlbumUiEvent.NavigateToPlayer -> {
-                    navigateToPlayer()
+                    delegate.navigateToPlayer()
+                }
+                is AlbumUiEvent.OpenContextMenu -> {
+                    delegate.openContextMenu(trackId = event.trackId, albumId = event.albumId)
                 }
             }
         }) { state ->
-        AlbumLayout(state = state) { trackGid ->
-            screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackGid))
-        }
+        AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
+            override fun onTrackClicked(trackId: String) {
+                screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackId))
+            }
+
+            override fun onTrackContextMenuClicked(trackId: String) {
+                screenVieModel.handle(AlbumUserAction.TrackContextMenuClicked(trackGid = trackId))
+            }
+        })
     }
 }
 
-typealias OnTrackRowClicked = (trackGid: String) -> Unit
+interface AlbumScreenDelegate {
+    fun onTrackClicked(trackId: String) = Unit
+    fun onTrackContextMenuClicked(trackId: String) = Unit
+}
 
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -45,13 +62,13 @@ fun AlbumScreenPreview(
     @PreviewParameter(AlbumStatePreviewParameterProvider::class) state: AlbumState
 ) {
     ScreenPreview {
-        AlbumLayout(state = state) {}
+        AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {})
     }
 }
 
 
 @Composable
-fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
+fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
     with(state) {
         val listWithHeaderState =
             ListWithHeaderState(
@@ -69,7 +86,13 @@ fun AlbumLayout(state: AlbumState, onTrackRowClicked: OnTrackRowClicked) {
                     TrackRow(
                         state = i,
                         delegate = object : ListItemDelegate {
-                            // TODO implement
+                            override fun onItemClicked() {
+                                delegate.onTrackClicked(i.trackGid)
+                            }
+
+                            override fun onSecondaryActionIconClicked() {
+                                delegate.onTrackContextMenuClicked(i.trackGid)
+                            }
                         }
                     )
                 }

@@ -52,7 +52,7 @@ fun TracksListScreen(
                 is TracksListUiEvent.NavigateToPlayer -> {
                     delegate.navigateToPlayer()
                 }
-                is TracksListUiEvent.ShowBottomSheet -> {
+                is TracksListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu(event.sortOption, event.sortOrder)
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
@@ -91,7 +91,7 @@ fun TracksListScreen(
 
                 override fun onTrackLongPressed(trackGid: String) {
                     screenViewModel.handle(
-                        TracksListUserAction.TrackLongPressed(
+                        TracksListUserAction.TrackContextMenuClicked(
                             trackGid
                         )
                     )

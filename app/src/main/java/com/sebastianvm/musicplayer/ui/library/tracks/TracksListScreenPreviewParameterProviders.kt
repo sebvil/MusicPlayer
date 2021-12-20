@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.util.SortOrder
 class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {
     override val values = sequenceOf(
         TracksListState(
-            "genreName-Pop",
             "Pop",
             DisplayableString.StringValue("Pop"),
             listOf(
