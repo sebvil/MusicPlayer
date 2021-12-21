@@ -6,12 +6,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
-import com.sebastianvm.musicplayer.player.SORT_ORDER
+import com.sebastianvm.musicplayer.player.QUEUE_ID
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -40,6 +39,7 @@ class TracksListViewModel @Inject constructor(
     trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection,
     private val preferencesRepository: PreferencesRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
     initialState
 ) {
@@ -87,20 +87,24 @@ class TracksListViewModel @Inject constructor(
         when (action) {
             is TracksListUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
-                val extras = Bundle().apply {
-                    putParcelable(
-                        MEDIA_GROUP,
-                        MediaGroup(
+                viewModelScope.launch {
+                    val queueId = mediaQueueRepository.createQueue(
+                        mediaGroup = MediaGroup(
                             mediaType = state.value.genreName?.let { MediaType.GENRE }
                                 ?: MediaType.TRACK,
                             mediaId = state.value.genreName ?: ""
-                        )
+                        ),
+                        sortOrder = state.value.sortOrder,
+                        sortOption = state.value.currentSort
                     )
-                    putString(SORT_BY, state.value.currentSort.metadataKey)
-                    putString(SORT_ORDER, state.value.sortOrder.name)
+                    val extras = Bundle().apply {
+                        putLong(QUEUE_ID, queueId)
+                    }
+                    transportControls.playFromMediaId(action.trackId, extras)
+                    addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
-                transportControls.playFromMediaId(action.trackId, extras)
-                addUiEvent(TracksListUiEvent.NavigateToPlayer)
+
+
             }
             is TracksListUserAction.SortByClicked -> {
                 addUiEvent(

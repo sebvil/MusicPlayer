@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
+import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
 import com.sebastianvm.musicplayer.database.entities.Album
@@ -33,7 +34,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         MediaQueueTrackCrossRef::class,
         TrackFts::class,
     ],
-    version = 14,
+    version = 16,
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {
@@ -42,4 +43,5 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract val albumDao: AlbumDao
     abstract val genreDao: GenreDao
     abstract val trackFtsDao: TrackFtsDao
+    abstract val mediaQueueDao: MediaQueueDao
 }

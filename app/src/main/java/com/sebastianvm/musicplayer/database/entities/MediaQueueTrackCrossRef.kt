@@ -8,4 +8,5 @@ data class MediaQueueTrackCrossRef(
     val queueId: Long,
     @ColumnInfo(index = true)
     val trackId: String,
+    val trackIndex: Int
 )

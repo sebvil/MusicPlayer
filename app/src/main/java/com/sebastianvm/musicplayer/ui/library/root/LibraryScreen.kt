@@ -41,6 +41,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+
+// TODO investigate scan not starting after permission granted
 interface LibraryScreenActivityDelegate {
     @PermissionStatus
     fun getPermissionStatus(permission: String): String

@@ -48,6 +48,10 @@ class TrackRepository @Inject constructor(
         return trackDao.getTracksForGenre(genreName)
     }
 
+    fun getTracksForQueue(queueId: Long): Flow<List<FullTrackInfo>> {
+        return trackDao.getTracksForQueue(queueId)
+    }
+
     suspend fun insertAllTracks(
         tracks: Set<Track>,
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,

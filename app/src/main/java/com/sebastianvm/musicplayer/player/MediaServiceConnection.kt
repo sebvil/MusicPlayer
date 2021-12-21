@@ -162,3 +162,4 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
 const val SORT_BY = "SORT_BY"
 const val MEDIA_GROUP = "MEDIA_GROUP"
 const val SORT_ORDER = "SORT_ORDER"
+const val QUEUE_ID = "QUEUE_ID"

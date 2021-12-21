@@ -68,10 +68,10 @@ interface TrackDao {
         """
         SELECT Track.* FROM Track 
         INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
-        WHERE MediaQueueTrackCrossRef.queueId=:queueId
+        WHERE MediaQueueTrackCrossRef.queueId=:queueId ORDER BY MediaQueueTrackCrossRef.trackIndex ASC
     """
     )
-    fun getTracksForQueue(queueId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForQueue(queueId: Long): Flow<List<FullTrackInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.player
 import android.media.browse.MediaBrowser
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
@@ -41,7 +40,7 @@ data class MediaGroup(val mediaType: MediaType, val mediaId: String) : Parcelabl
 @Singleton
 class BrowseTree @Inject constructor(
     musicRepository: MusicRepository,
-    private  val trackRepository: TrackRepository,
+    private val trackRepository: TrackRepository,
     artistRepository: ArtistRepository,
     genreRepository: GenreRepository,
     albumRepository: AlbumRepository,
@@ -144,20 +143,14 @@ class BrowseTree @Inject constructor(
 
     operator fun get(mediaId: String) = tree[mediaId]
 
-    fun getTracksList(mediaGroup: MediaGroup) : Flow<List<MediaMetadataCompat>> {
-        return when (mediaGroup.mediaType) {
-            MediaType.TRACK ->  trackRepository.getAllTracks()
-            MediaType.ARTIST -> trackRepository.getTracksForArtist(mediaGroup.mediaId)
-            MediaType.ALBUM -> trackRepository.getTracksForAlbum(mediaGroup.mediaId)
-            MediaType.GENRE -> trackRepository.getTracksForGenre(mediaGroup.mediaId)
-        }.map { tracks ->
+    fun getTracksList(queueId: Long): Flow<List<MediaMetadataCompat>> {
+        return trackRepository.getTracksForQueue(queueId).map { tracks ->
             tracks.map {
-                Log.i("PLAYER", "${it.track.trackNumber}")
-                val metadata = it.toMediaMetadataCompat()
-                Log.i("PLAYER", "$metadata")
-                it.toMediaMetadataCompat() }
+                it.toMediaMetadataCompat()
+            }
         }
     }
+
 
     companion object {
         const val MEDIA_ROOT = "MEDIA_ROOT"
