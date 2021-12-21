@@ -9,10 +9,10 @@ import com.sebastianvm.commons.util.MediaArt
 class ArtLoader {
 
     companion object {
-        fun getAlbumArt(albumGid: Long, albumName: String): MediaArt {
+        fun getAlbumArt(albumId: Long, albumName: String): MediaArt {
             val uri =
                 ContentUris.withAppendedId(
-                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumGid
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId
                 )
             return MediaArt(
                 uris = listOf(uri),
@@ -29,12 +29,12 @@ class ArtLoader {
             )
         }
 
-        fun getTrackArt(trackGid: Long, albumGid: Long, trackName: String): MediaArt {
+        fun getTrackArt(trackId: Long, albumId: Long, trackName: String): MediaArt {
             val tracksUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val albumsUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
             val uris = listOf(
-                ContentUris.withAppendedId(tracksUri, trackGid),
-                ContentUris.withAppendedId(albumsUri, albumGid)
+                ContentUris.withAppendedId(tracksUri, trackId),
+                ContentUris.withAppendedId(albumsUri, albumId)
             )
             return MediaArt(
                 uris = uris,

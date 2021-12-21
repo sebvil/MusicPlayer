@@ -30,15 +30,15 @@ fun ArtistScreen(
         eventHandler = { event ->
             when (event) {
                 is ArtistUiEvent.NavigateToAlbum -> {
-                    navigateToAlbum(event.albumGid)
+                    navigateToAlbum(event.albumId)
                 }
             }
         },
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
-            override fun albumRowClicked(albumGid: String) {
+            override fun albumRowClicked(albumId: String) {
                 screenViewModel.handle(
-                    ArtistUserAction.AlbumClicked(albumGid = albumGid)
+                    ArtistUserAction.AlbumClicked(albumId = albumId)
                 )
             }
         })
@@ -83,7 +83,7 @@ fun ArtistLayout(
 }
 
 interface ArtistScreenRowDelegate {
-    fun albumRowClicked(albumGid: String) = Unit
+    fun albumRowClicked(albumId: String) = Unit
 }
 
 @Preview(showBackground = true)
@@ -118,7 +118,7 @@ fun ArtistScreenRow(
                 state = item.state,
                 delegate = object : ListItemDelegate {
                     override fun onItemClicked() {
-                        delegate.albumRowClicked(item.albumGid)
+                        delegate.albumRowClicked(item.albumId)
                     }
                 }
             )

@@ -23,7 +23,7 @@ fun <H, I : ListItem> ListWithHeader(
             item {
                 headerRenderer(header)
             }
-            items(listItems, key = { i -> i.gid }) { item ->
+            items(listItems, key = { i -> i.id }) { item ->
                 rowRenderer(item)
             }
         }

@@ -13,7 +13,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
         AlbumsListState(
             albumsList = listOf(
                 AlbumsListItem(
-                    albumGid = "0",
+                    albumId = "0",
                     albumRowState = AlbumRowState(
                         albumName = "Ahora",
                         image = MediaArt(
@@ -31,7 +31,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                     )
                 ),
                 AlbumsListItem(
-                    albumGid = "1",
+                    albumId = "1",
                     albumRowState = AlbumRowState(
                         albumName = "VIVES",
                         image = MediaArt(
@@ -49,7 +49,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                     )
                 ),
                 AlbumsListItem(
-                    albumGid = "2",
+                    albumId = "2",
                     albumRowState = AlbumRowState(
                         albumName = "Balas perdidas",
                         image = MediaArt(
@@ -67,7 +67,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                     )
                 ),
                 AlbumsListItem(
-                    albumGid = "3",
+                    albumId = "3",
                     albumRowState = AlbumRowState(
                         albumName = "LongName".repeat(10),
                         image = MediaArt(

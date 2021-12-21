@@ -41,13 +41,13 @@ class ArtistsListViewModelTest  {
     fun `ArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                Assert.assertEquals(ARTIST_GID, artistGid)
+                Assert.assertEquals(ARTIST_ID, artistId)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_GID))
+            handle(ArtistsListUserAction.ArtistClicked(ARTIST_ID))
         }
     }
 
     companion object {
-        private const val ARTIST_GID = "ARTIST_GID"
+        private const val ARTIST_ID = "ARTIST_ID"
     }
 }

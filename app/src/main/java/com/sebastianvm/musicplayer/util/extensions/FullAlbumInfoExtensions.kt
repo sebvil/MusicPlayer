@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 
 fun FullAlbumInfo.toMediaMetadataCompat() : MediaMetadataCompat {
     return MediaMetadataCompat.Builder().apply {
-        id = this@toMediaMetadataCompat.album.albumGid
+        id = this@toMediaMetadataCompat.album.albumId
         album = this@toMediaMetadataCompat.album.albumName
         albumArtists = this@toMediaMetadataCompat.artists.joinToString(", ") { it.artistName }
         year = this@toMediaMetadataCompat.album.year

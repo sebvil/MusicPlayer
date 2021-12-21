@@ -54,7 +54,7 @@ class ArtistsListViewModel @Inject constructor(
         when (action) {
             is ArtistsListUserAction.ArtistClicked -> {
                 addUiEvent(
-                    ArtistsListUiEvent.NavigateToArtist(action.artistGid)
+                    ArtistsListUiEvent.NavigateToArtist(action.artistId)
                 )
             }
             ArtistsListUserAction.SortByClicked -> {
@@ -86,12 +86,12 @@ object InitialArtistsListStateModule {
 }
 
 sealed class ArtistsListUserAction : UserAction {
-    data class ArtistClicked(val artistGid: String) : ArtistsListUserAction()
+    data class ArtistClicked(val artistId: String) : ArtistsListUserAction()
     object SortByClicked : ArtistsListUserAction()
     object UpButtonClicked : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistGid: String) : ArtistsListUiEvent()
+    data class NavigateToArtist(val artistId: String) : ArtistsListUiEvent()
     object NavigateUp : ArtistsListUiEvent()
 }

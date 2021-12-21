@@ -66,7 +66,7 @@ class LibraryViewModel @Inject constructor(
                 }
             }
             is LibraryUserAction.RowClicked -> {
-                addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowGid))
+                addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowId))
             }
             is LibraryUserAction.PermissionGranted -> {
                 this.addUiEvent(LibraryUiEvent.StartGetMusicService)
@@ -171,7 +171,7 @@ object InitialLibraryStateModule {
 
 sealed class LibraryUserAction : UserAction {
     data class FabClicked(@PermissionStatus val permissionStatus: String) : LibraryUserAction()
-    data class RowClicked(val rowGid: String) : LibraryUserAction()
+    data class RowClicked(val rowId: String) : LibraryUserAction()
     object PermissionGranted : LibraryUserAction()
     data class PermissionDenied(@PermissionStatus val permissionStatus: String) :
         LibraryUserAction()
@@ -185,6 +185,6 @@ sealed class LibraryUserAction : UserAction {
 sealed class LibraryUiEvent : UiEvent {
     object StartGetMusicService : LibraryUiEvent()
     object RequestPermission : LibraryUiEvent()
-    data class NavigateToScreen(val rowGid: String) : LibraryUiEvent()
+    data class NavigateToScreen(val rowId: String) : LibraryUiEvent()
     object OpenAppSettings : LibraryUiEvent()
 }

@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackFtsDao {
-    @Query("SELECT * FROM Track JOIN TrackFts ON Track.trackGid == TrackFts.trackGid WHERE TrackFts.trackName MATCH :text" )
+    @Query("SELECT * FROM Track JOIN TrackFts ON Track.trackId == TrackFts.trackId WHERE TrackFts.trackName MATCH :text" )
     fun tracksWithText(text: String): Flow<List<Track>>
 }

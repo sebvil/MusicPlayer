@@ -25,13 +25,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 data class TrackRowState(
-    val trackGid: String,
+    val trackId: String,
     val trackName: String,
     val artists: String,
     val albumName: String,
     val trackNumber: Long? = null,
 ) : ListItem {
-    override val gid = trackGid
+    override val id = trackId
 }
 
 
@@ -87,7 +87,7 @@ class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowS
 
 fun FullTrackInfo.toTrackRowState(): TrackRowState {
     return TrackRowState(
-        trackGid = track.trackGid,
+        trackId = track.trackId,
         trackName = track.trackName,
         artists = artists.joinToString(", ") { it.artistName },
         albumName = album.albumName,

@@ -12,6 +12,6 @@ data class LibraryItem(
     @PluralsRes val countString: Int,
     val count: Long
 ) : ListItem {
-    override val gid = rowId
+    override val id = rowId
 }
 

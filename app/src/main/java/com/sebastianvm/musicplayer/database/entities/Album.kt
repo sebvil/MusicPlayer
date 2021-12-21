@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Album(
     @PrimaryKey
-    val albumGid: String,
+    val albumId: String,
     val albumName: String,
     val year: Long,
     val albumArtPath: String, // Uri to track in album to load thumbnail

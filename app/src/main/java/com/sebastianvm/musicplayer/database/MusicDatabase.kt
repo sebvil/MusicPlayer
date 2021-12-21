@@ -2,8 +2,22 @@ package com.sebastianvm.musicplayer.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.sebastianvm.musicplayer.database.daos.*
-import com.sebastianvm.musicplayer.database.entities.*
+import com.sebastianvm.musicplayer.database.daos.AlbumDao
+import com.sebastianvm.musicplayer.database.daos.ArtistDao
+import com.sebastianvm.musicplayer.database.daos.GenreDao
+import com.sebastianvm.musicplayer.database.daos.TrackDao
+import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
+import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.MediaQueue
+import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackFts
 
 @Database(
     entities = [
@@ -11,13 +25,15 @@ import com.sebastianvm.musicplayer.database.entities.*
         Artist::class,
         Album::class,
         Genre::class,
+        MediaQueue::class,
         ArtistTrackCrossRef::class,
         GenreTrackCrossRef::class,
         AlbumsForArtist::class,
         AppearsOnForArtist::class,
-    TrackFts::class,
+        MediaQueueTrackCrossRef::class,
+        TrackFts::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {

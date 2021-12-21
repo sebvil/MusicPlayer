@@ -80,7 +80,7 @@ class ContextMenuViewModel @Inject constructor(
                             MediaType.TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) {
                                     addUiEvent(
-                                        ContextMenuUiEvent.NavigateToAlbum(it.album.albumGid)
+                                        ContextMenuUiEvent.NavigateToAlbum(it.album.albumId)
                                     )
                                 }
                             }
@@ -112,7 +112,7 @@ class ContextMenuViewModel @Inject constructor(
                                     if (it.artists.size == 1) {
                                         val artist = it.artists[0]
                                         addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
+                                            ContextMenuUiEvent.NavigateToArtist(artist.artistId)
                                         )
                                     } else {
                                         addUiEvent(
@@ -129,7 +129,7 @@ class ContextMenuViewModel @Inject constructor(
                                     if (album.artists.size == 1) {
                                         val artist = album.artists[0]
                                         addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtist(artist.artistGid)
+                                            ContextMenuUiEvent.NavigateToArtist(artist.artistId)
                                         )
                                     } else {
                                         addUiEvent(
@@ -192,8 +192,8 @@ sealed class ContextMenuUserAction : UserAction {
 
 sealed class ContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : ContextMenuUiEvent()
-    data class NavigateToAlbum(val albumGid: String) : ContextMenuUiEvent()
-    data class NavigateToArtist(val artistGid: String) : ContextMenuUiEvent()
+    data class NavigateToAlbum(val albumId: String) : ContextMenuUiEvent()
+    data class NavigateToArtist(val artistId: String) : ContextMenuUiEvent()
     data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
         ContextMenuUiEvent()
 }

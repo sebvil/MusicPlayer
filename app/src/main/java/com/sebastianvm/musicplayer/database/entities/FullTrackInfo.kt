@@ -8,20 +8,20 @@ data class FullTrackInfo(
     @Embedded
     val track: Track,
     @Relation(
-        parentColumn = "trackGid",
-        entityColumn = "artistGid",
+        parentColumn = "trackId",
+        entityColumn = "artistId",
         associateBy = Junction(ArtistTrackCrossRef::class)
     )
     val artists: List<Artist>,
     @Relation(
-        parentColumn = "trackGid",
+        parentColumn = "trackId",
         entityColumn = "genreName",
         associateBy = Junction(GenreTrackCrossRef::class)
     )
     val genres: List<Genre>,
     @Relation(
-        parentColumn = "albumGid",
-        entityColumn = "albumGid",
+        parentColumn = "albumId",
+        entityColumn = "albumId",
     )
     val album: Album
 

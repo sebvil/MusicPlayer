@@ -103,9 +103,9 @@ class BrowseTree @Inject constructor(
 
             tree[ARTISTS_ROOT] = artists.map { artistWithAlbums ->
                 artistWithAlbums.forEach { artist ->
-                    tree["artist-${artist.artist.artistGid}"] = combine(
-                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumGid }),
-                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumGid })
+                    tree["artist-${artist.artist.artistId}"] = combine(
+                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumId }),
+                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumId })
                     ) { albums, appearsOn ->
 
                         albums.map { it.toMediaMetadataCompat(AlbumType.ALBUM) }
@@ -119,8 +119,8 @@ class BrowseTree @Inject constructor(
             tree[ALBUMS_ROOT] = albums.map { fullAlbumInfoList ->
 
                 fullAlbumInfoList.forEach { album ->
-                    tree["album-${album.album.albumGid}"] =
-                        trackRepository.getTracks(album.tracks.map { it.trackGid }).map { tracks ->
+                    tree["album-${album.album.albumId}"] =
+                        trackRepository.getTracks(album.tracks.map { it.trackId }).map { tracks ->
                             tracks.map { it.toMediaMetadataCompat() }.toMutableSet()
                         }
                 }
@@ -132,7 +132,7 @@ class BrowseTree @Inject constructor(
 
                 genresList.forEach { genre ->
                     tree["genre-${genre.genre.genreName}"] =
-                        trackRepository.getTracks(genre.tracks.map { it.trackGid }).map { tracks ->
+                        trackRepository.getTracks(genre.tracks.map { it.trackId }).map { tracks ->
                             tracks.map { it.toMediaMetadataCompat() }.toMutableSet()
                         }
                 }

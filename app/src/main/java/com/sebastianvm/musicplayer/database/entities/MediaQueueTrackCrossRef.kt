@@ -6,21 +6,20 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
 
-@Entity(primaryKeys = ["genreName", "trackId"])
-data class GenreTrackCrossRef(
-    val genreName: String,
+@Entity(primaryKeys = ["queueId", "trackId"])
+data class MediaQueueTrackCrossRef(
+    val queueId: String,
     @ColumnInfo(index = true)
     val trackId: String,
 )
 
-data class GenreWithTracks(
+data class MediaQueueWithTracks(
     @Embedded
-    val genre: Genre,
+    val queue: MediaQueue,
     @Relation(
-        parentColumn = "genreName",
+        parentColumn = "queueId",
         entityColumn = "trackId",
-        associateBy = Junction(GenreTrackCrossRef::class)
+        associateBy = Junction(MediaQueueTrackCrossRef::class)
     )
     val tracks: List<Track>
 )
-

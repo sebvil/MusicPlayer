@@ -41,14 +41,14 @@ class AlbumsListViewModelTest  {
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_GID, albumGid)
+                assertEquals(ALBUM_ID, albumId)
             }
-            handle(AlbumsListUserAction.AlbumClicked(ALBUM_GID))
+            handle(AlbumsListUserAction.AlbumClicked(ALBUM_ID))
         }
     }
 
     companion object {
-        private const val ALBUM_GID = "ALBUM_GID"
+        private const val ALBUM_ID = "ALBUM_ID"
         private const val ALBUM_NAME = "ALBUM_NAME"
     }
 }

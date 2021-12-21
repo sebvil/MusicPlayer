@@ -59,8 +59,8 @@ class MusicPlayerViewModelTest {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackGid = null,
-                albumGid = null,
+                trackId = null,
+                albumId = null,
                 trackArt = MediaArt(
                     uris = listOf(),
                     contentDescription = DisplayableString.StringValue(""),
@@ -94,8 +94,8 @@ class MusicPlayerViewModelTest {
                     assertEquals(TRACK_TITLE, trackName)
                     assertEquals(ARTISTS, artists)
                     assertEquals(TRACK_LENGTH, trackLengthMs)
-                    assertEquals(TRACK_GID, trackGid)
-                    assertEquals(ALBUM_GID, albumGid)
+                    assertEquals(TRACK_ID, trackId)
+                    assertEquals(ALBUM_ID, albumId)
                 }
             }
             delay(1)
@@ -103,8 +103,8 @@ class MusicPlayerViewModelTest {
                 title = TRACK_TITLE
                 artist = ARTISTS
                 duration = TRACK_LENGTH
-                id = TRACK_GID
-                albumId = ALBUM_GID
+                id = TRACK_ID
+                albumId = ALBUM_ID
             }.build()
         }
     }
@@ -155,8 +155,8 @@ class MusicPlayerViewModelTest {
         private const val TRACK_TITLE = "TRACK_TITLE"
         private const val ARTISTS = "ARTISTS"
         private const val TRACK_LENGTH = 300000L
-        private const val TRACK_GID = "11111"
-        private const val ALBUM_GID = "22222"
+        private const val TRACK_ID = "11111"
+        private const val ALBUM_ID = "22222"
     }
 
 

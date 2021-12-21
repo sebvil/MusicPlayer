@@ -33,7 +33,7 @@ class ArtistViewModel @Inject constructor(
     initialState
 ) {
     init {
-        collect(artistRepository.getArtist(state.value.artistGid)) { artistWithAlbums ->
+        collect(artistRepository.getArtist(state.value.artistId)) { artistWithAlbums ->
             setState {
                 copy(
                     artistHeaderItem = HeaderWithImageState(
@@ -48,7 +48,7 @@ class ArtistViewModel @Inject constructor(
                 )
             }
             artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }?.also { albums ->
-                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
+                collect(albumRepository.getAlbums(albums.map { it.albumId })) { albumsWithArtists ->
                     setState {
                         copy(
                             albumsForArtistItems = listOf(
@@ -69,7 +69,7 @@ class ArtistViewModel @Inject constructor(
                 }
             }
             artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }?.also { albums ->
-                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
+                collect(albumRepository.getAlbums(albums.map { it.albumId })) { albumsWithArtists ->
                     setState {
                         copy(
                             appearsOnForArtistItems = listOf(
@@ -94,11 +94,11 @@ class ArtistViewModel @Inject constructor(
 
     private fun AlbumWithArtists.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
         return ArtistScreenItem.AlbumRowItem(
-            albumGid = album.albumGid,
+            albumId = album.albumId,
             AlbumRowState(
                 albumName = album.albumName,
                 image = ArtLoader.getAlbumArt(
-                    albumGid = album.albumGid.toLong(),
+                    albumId = album.albumId.toLong(),
                     albumName = album.albumName
                 ),
                 year = album.year,
@@ -110,7 +110,7 @@ class ArtistViewModel @Inject constructor(
     override fun handle(action: ArtistUserAction) {
         when (action) {
             is ArtistUserAction.AlbumClicked -> {
-                addUiEvent(ArtistUiEvent.NavigateToAlbum(action.albumGid))
+                addUiEvent(ArtistUiEvent.NavigateToAlbum(action.albumId))
             }
         }
     }
@@ -124,7 +124,7 @@ class ArtistViewModel @Inject constructor(
 
 data class ArtistState(
     val artistHeaderItem: HeaderWithImageState,
-    val artistGid: String,
+    val artistId: String,
     val albumsForArtistItems: List<ArtistScreenItem>? = null,
     val appearsOnForArtistItems: List<ArtistScreenItem>? = null,
 ) : State
@@ -136,8 +136,8 @@ object InitialArtistState {
     @Provides
     @ViewModelScoped
     fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        val artistGid =
-            savedStateHandle.get<String>(NavArgs.ARTIST_GID)!! // We should not get here without an id
+        val artistId =
+            savedStateHandle.get<String>(NavArgs.ARTIST_ID)!! // We should not get here without an id
         return ArtistState(
             artistHeaderItem = HeaderWithImageState(
                 MediaArt(
@@ -148,16 +148,16 @@ object InitialArtistState {
                 ),
                 title = DisplayableString.ResourceValue(R.string.unknown_artist)
             ),
-            artistGid = artistGid
+            artistId = artistId
         )
     }
 }
 
 sealed class ArtistUserAction : UserAction {
-    data class AlbumClicked(val albumGid: String) : ArtistUserAction()
+    data class AlbumClicked(val albumId: String) : ArtistUserAction()
 }
 
 sealed class ArtistUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumGid: String) : ArtistUiEvent()
+    data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()
 }
 

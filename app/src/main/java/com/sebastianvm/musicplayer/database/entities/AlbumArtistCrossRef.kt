@@ -2,31 +2,31 @@ package com.sebastianvm.musicplayer.database.entities
 
 import androidx.room.*
 
-@Entity(primaryKeys = ["albumGid", "artistGid"])
+@Entity(primaryKeys = ["albumId", "artistId"])
 data class AlbumsForArtist(
-    val albumGid: String,
+    val albumId: String,
     @ColumnInfo(index = true)
-    val artistGid: String,
+    val artistId: String,
 )
 
-@Entity(primaryKeys = ["albumGid", "artistGid"])
+@Entity(primaryKeys = ["albumId", "artistId"])
 data class AppearsOnForArtist(
-    val albumGid: String,
+    val albumId: String,
     @ColumnInfo(index = true)
-    val artistGid: String,
+    val artistId: String,
 )
 
 data class ArtistWithAlbums(
     @Embedded val artist: Artist,
     @Relation(
-        parentColumn = "artistGid",
-        entityColumn = "albumGid",
+        parentColumn = "artistId",
+        entityColumn = "albumId",
         associateBy = Junction(AlbumsForArtist::class),
     )
     val artistAlbums: List<Album>,
     @Relation(
-        parentColumn = "artistGid",
-        entityColumn = "albumGid",
+        parentColumn = "artistId",
+        entityColumn = "albumId",
         associateBy = Junction(AppearsOnForArtist::class),
     )
     val artistAppearsOn: List<Album>,
@@ -36,8 +36,8 @@ data class ArtistWithAlbums(
 data class AlbumWithArtists(
     @Embedded val album: Album,
     @Relation(
-        parentColumn = "albumGid",
-        entityColumn = "artistGid",
+        parentColumn = "albumId",
+        entityColumn = "artistId",
         associateBy = Junction(AlbumsForArtist::class),
     )
     val artists: List<Artist>

@@ -53,9 +53,9 @@ fun TracksListScreen(
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(
-                        mediaId = event.trackGid,
+                        mediaId = event.trackId,
                         mediaGroup = event.genreName?.let { MediaGroup(MediaType.GENRE, it) }
-                            ?: MediaGroup(MediaType.TRACK, event.trackGid),
+                            ?: MediaGroup(MediaType.TRACK, event.trackId),
                         currentSort = event.currentSort,
                         sortOrder = event.sortOrder
                     )
@@ -80,18 +80,18 @@ fun TracksListScreen(
             state = state,
             listState = listState,
             delegate = object : TracksListScreenDelegate {
-                override fun onTrackClicked(trackGid: String) {
+                override fun onTrackClicked(trackId: String) {
                     screenViewModel.handle(
                         TracksListUserAction.TrackClicked(
-                            trackGid
+                            trackId
                         )
                     )
                 }
 
-                override fun onTrackLongPressed(trackGid: String) {
+                override fun onTrackLongPressed(trackId: String) {
                     screenViewModel.handle(
                         TracksListUserAction.TrackContextMenuClicked(
-                            trackGid
+                            trackId
                         )
                     )
                 }
@@ -101,8 +101,8 @@ fun TracksListScreen(
 
 
 interface TracksListScreenDelegate {
-    fun onTrackClicked(trackGid: String)
-    fun onTrackLongPressed(trackGid: String) = Unit
+    fun onTrackClicked(trackId: String)
+    fun onTrackLongPressed(trackId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -118,7 +118,7 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
             state = state,
             listState = listState,
             delegate = object : TracksListScreenDelegate {
-                override fun onTrackClicked(trackGid: String) = Unit
+                override fun onTrackClicked(trackId: String) = Unit
             })
     }
 }
@@ -136,11 +136,11 @@ fun TracksListLayout(
                 state = item,
                 delegate = object : ListItemDelegate {
                     override fun onItemClicked() {
-                        delegate.onTrackClicked(item.trackGid)
+                        delegate.onTrackClicked(item.trackId)
                     }
 
                     override fun onSecondaryActionIconClicked() {
-                        delegate.onTrackLongPressed(item.trackGid)
+                        delegate.onTrackLongPressed(item.trackId)
                     }
                 }
             )

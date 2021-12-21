@@ -15,12 +15,12 @@ import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-class ArtistRowState(val artistGid: String, val artistName: String) : ListItem {
-    override val gid = artistGid
+class ArtistRowState(val artistId: String, val artistName: String) : ListItem {
+    override val id = artistId
 }
 
 fun Artist.toArtistRowState(): ArtistRowState {
-    return ArtistRowState(artistGid = artistGid, artistName = artistName)
+    return ArtistRowState(artistId = artistId, artistName = artistName)
 }
 
 @Preview(showBackground = true)

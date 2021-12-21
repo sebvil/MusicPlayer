@@ -7,14 +7,14 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 sealed class ArtistScreenItem : ListItem {
 
     data class AlbumRowItem(
-        val albumGid: String,
+        val albumId: String,
         val state: AlbumRowState,
     ) : ArtistScreenItem() {
-        override val gid = albumGid
+        override val id = albumId
     }
 
     data class SectionHeaderItem(val sectionType: String, @StringRes val sectionName: Int) :
         ArtistScreenItem() {
-        override val gid = sectionType
+        override val id = sectionType
     }
 }

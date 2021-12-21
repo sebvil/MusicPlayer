@@ -37,12 +37,12 @@ class AlbumViewModel @Inject constructor(
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        collect(albumRepository.getAlbum(state.value.albumGid)) { albumInfo ->
+        collect(albumRepository.getAlbum(state.value.albumId)) { albumInfo ->
             setState {
                 copy(
                     albumHeaderItem = HeaderWithImageState(
                         image = ArtLoader.getAlbumArt(
-                            albumGid = albumInfo.album.albumGid.toLong(),
+                            albumId = albumInfo.album.albumId.toLong(),
                             albumName = albumInfo.album.albumName
                         ),
                         title = albumInfo.album.albumName.let {
@@ -55,7 +55,7 @@ class AlbumViewModel @Inject constructor(
             }
         }
 
-        collect(trackRepository.getTracksForAlbum(state.value.albumGid)) { tracks ->
+        collect(trackRepository.getTracksForAlbum(state.value.albumId)) { tracks ->
             setState {
                 copy(
                     tracksList = tracks.map { it.toTrackRowState() }
@@ -74,7 +74,7 @@ class AlbumViewModel @Inject constructor(
                         MEDIA_GROUP,
                         MediaGroup(
                             mediaType = MediaType.ALBUM,
-                            mediaId = state.value.albumGid
+                            mediaId = state.value.albumId
                         )
                     )
                     putString(
@@ -82,14 +82,14 @@ class AlbumViewModel @Inject constructor(
                         MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER
                     )
                 }
-                transportControls.playFromMediaId(action.trackGid, extras)
+                transportControls.playFromMediaId(action.trackId, extras)
                 addUiEvent(AlbumUiEvent.NavigateToPlayer)
             }
             is AlbumUserAction.TrackContextMenuClicked -> {
                 addUiEvent(
                     AlbumUiEvent.OpenContextMenu(
-                        trackId = action.trackGid,
-                        albumId = state.value.albumGid
+                        trackId = action.trackId,
+                        albumId = state.value.albumId
                     )
                 )
             }
@@ -99,7 +99,7 @@ class AlbumViewModel @Inject constructor(
 }
 
 data class AlbumState(
-    val albumGid: String,
+    val albumId: String,
     val albumHeaderItem: HeaderWithImageState,
     val tracksList: List<TrackRowState>
 ) : State
@@ -111,12 +111,12 @@ object InitialAlbumStateModule {
     @Provides
     @ViewModelScoped
     fun provideInitialAlbumState(savedHandle: SavedStateHandle): AlbumState {
-        val albumGid = savedHandle.get<String>(NavArgs.ALBUM_GID)!!
+        val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
         return AlbumState(
-            albumGid = albumGid,
+            albumId = albumId,
             albumHeaderItem = HeaderWithImageState(
                 image = ArtLoader.getAlbumArt(
-                    albumGid = albumGid.toLong(),
+                    albumId = albumId.toLong(),
                     albumName = ""
                 ),
                 title = DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
@@ -127,8 +127,8 @@ object InitialAlbumStateModule {
 }
 
 sealed class AlbumUserAction : UserAction {
-    data class TrackClicked(val trackGid: String) : AlbumUserAction()
-    data class TrackContextMenuClicked(val trackGid: String) : AlbumUserAction()
+    data class TrackClicked(val trackId: String) : AlbumUserAction()
+    data class TrackContextMenuClicked(val trackId: String) : AlbumUserAction()
 
 }
 

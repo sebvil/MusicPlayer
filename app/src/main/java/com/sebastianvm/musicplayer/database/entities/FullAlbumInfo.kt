@@ -8,14 +8,14 @@ data class FullAlbumInfo(
     @Embedded
     val album: Album,
     @Relation(
-        parentColumn = "albumGid",
-        entityColumn = "artistGid",
+        parentColumn = "albumId",
+        entityColumn = "artistId",
         associateBy = Junction(AlbumsForArtist::class)
     )
     val artists: List<Artist>,
     @Relation(
-        parentColumn = "albumGid",
-        entityColumn = "albumGid",
+        parentColumn = "albumId",
+        entityColumn = "albumId",
     )
     val tracks: List<Track>,
 )

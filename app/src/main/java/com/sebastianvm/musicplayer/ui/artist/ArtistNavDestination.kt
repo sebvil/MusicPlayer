@@ -14,15 +14,15 @@ import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 
 fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     composable(
-        createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_GID),
+        createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_ID),
     ) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
-        ArtistScreen(screenViewModel) { albumGid ->
-            navController.navigateToAlbum(albumGid)
+        ArtistScreen(screenViewModel) { albumId ->
+            navController.navigateToAlbum(albumId)
         }
     }
 }
 
 fun NavController.navigateToArtist(artistId: String) {
-    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_GID, artistId))
+    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_ID, artistId))
 }

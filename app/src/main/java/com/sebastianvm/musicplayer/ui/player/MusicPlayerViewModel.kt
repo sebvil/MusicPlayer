@@ -41,18 +41,18 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         collect(musicServiceConnection.nowPlaying) {
-            val trackGid = if (it.id.isNullOrEmpty()) null else it.id
-            val albumGid = if (it.albumId.isNullOrEmpty()) null else it.albumId
+            val trackId = if (it.id.isNullOrEmpty()) null else it.id
+            val albumId = if (it.albumId.isNullOrEmpty()) null else it.albumId
             setState {
                 copy(
                     trackName = it.title,
                     artists = it.artist,
                     trackLengthMs = it.duration,
-                    trackGid = trackGid,
-                    albumGid = albumGid,
+                    trackId = trackId,
+                    albumId = albumId,
                     trackArt = ArtLoader.getTrackArt(
-                        trackGid?.toLong() ?: -1,
-                        albumGid?.toLong() ?: -1,
+                        trackId?.toLong() ?: -1,
+                        albumId?.toLong() ?: -1,
                         it.title ?: ""
                     )
                 )
@@ -138,8 +138,8 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackGid: String?,
-    val albumGid: String?,
+    val trackId: String?,
+    val albumId: String?,
     val trackArt: MediaArt
 ) : State
 
@@ -155,8 +155,8 @@ object InitialMusicPlayerStateModule {
             artists = null,
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackGid = null,
-            albumGid = null,
+            trackId = null,
+            albumId = null,
             trackArt = MediaArt(
                 uris = listOf(),
                 contentDescription = DisplayableString.StringValue(""),

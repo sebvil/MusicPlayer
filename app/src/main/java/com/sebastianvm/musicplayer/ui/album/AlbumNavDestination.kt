@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.util.SortOrder
 
 fun NavGraphBuilder.albumNavDestination(navController: NavController) {
     composable(
-        createNavRoute(NavRoutes.ALBUM, NavArgs.ALBUM_GID),
+        createNavRoute(NavRoutes.ALBUM, NavArgs.ALBUM_ID),
     ) {
         val screenViewModel = hiltViewModel<AlbumViewModel>()
         AlbumScreen(screenViewModel, object : AlbumNavigationDelegate {
@@ -50,5 +50,5 @@ fun NavGraphBuilder.albumNavDestination(navController: NavController) {
 }
 
 fun NavController.navigateToAlbum(albumId: String) {
-    navigateTo(NavRoutes.ALBUM, NavArgument(NavArgs.ALBUM_GID, albumId))
+    navigateTo(NavRoutes.ALBUM, NavArgument(NavArgs.ALBUM_ID, albumId))
 }
