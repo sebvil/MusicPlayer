@@ -35,36 +35,43 @@ interface TrackDao {
     fun getTrack(trackId: String): Flow<FullTrackInfo>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT Track.* FROM Track 
         INNER JOIN ArtistTrackCrossRef ON Track.trackId = ArtistTrackCrossRef.trackId
         WHERE ArtistTrackCrossRef.artistId=:artistId
-    """)
-    fun getTracksForArtist(artistId: String) : Flow<List<FullTrackInfo>>
+    """
+    )
+    fun getTracksForArtist(artistId: String): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM Track 
         WHERE Track.albumId=:albumId
-    """)
-    fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>>
+    """
+    )
+    fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT Track.* FROM Track 
         INNER JOIN GenreTrackCrossRef ON Track.trackId = GenreTrackCrossRef.trackId
         WHERE GenreTrackCrossRef.genreName=:genreName
-    """)
-    fun getTracksForGenre(genreName: String) : Flow<List<FullTrackInfo>>
+    """
+    )
+    fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT Track.* FROM Track 
         INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
         WHERE MediaQueueTrackCrossRef.queueId=:queueId
-    """)
-    fun getTracksForQueue(queueId: String) : Flow<List<FullTrackInfo>>
-
+    """
+    )
+    fun getTracksForQueue(queueId: String): Flow<List<FullTrackInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(
