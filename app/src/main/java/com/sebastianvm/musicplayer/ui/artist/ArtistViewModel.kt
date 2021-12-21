@@ -48,7 +48,7 @@ class ArtistViewModel @Inject constructor(
                 )
             }
             artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }?.also { albums ->
-                collect(albumRepository.getAlbum(albums.map { it.albumGid })) { albumsWithArtists ->
+                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
                     setState {
                         copy(
                             albumsForArtistItems = listOf(
@@ -69,7 +69,7 @@ class ArtistViewModel @Inject constructor(
                 }
             }
             artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }?.also { albums ->
-                collect(albumRepository.getAlbum(albums.map { it.albumGid })) { albumsWithArtists ->
+                collect(albumRepository.getAlbums(albums.map { it.albumGid })) { albumsWithArtists ->
                     setState {
                         copy(
                             appearsOnForArtistItems = listOf(

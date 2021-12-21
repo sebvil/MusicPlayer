@@ -10,6 +10,7 @@ class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<Contex
     override val values = sequenceOf(
         ContextMenuState(
             mediaId = "1",
+            menuTitle = "La Promesa",
             mediaType = MediaType.TRACK,
             mediaGroup = MediaGroup(MediaType.TRACK, ""),
             listItems = listOf(

@@ -251,8 +251,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             sortOrder: SortOrder,
             sortKey: String
         ): Comparator<MediaMetadataCompat> {
-            return getStringComparator(sortOrder) { metaData ->
-                metaData.getString(sortKey)
+            return when (sortKey) {
+                MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy<MediaMetadataCompat> {
+                    it.getLong(sortKey)
+                }
+                else -> getStringComparator(sortOrder) { metadata ->
+                    metadata.getString(sortKey)
+                }
             }
         }
 

@@ -20,11 +20,11 @@ class AlbumRepository @Inject constructor(
         return albumDao.getAlbumsCount().distinctUntilChanged()
     }
 
-    fun getAlbum(): Flow<List<FullAlbumInfo>> {
+    fun getAlbums(): Flow<List<FullAlbumInfo>> {
         return albumDao.getAlbums().distinctUntilChanged()
     }
 
-    fun getAlbum(albumGids: List<String>): Flow<List<AlbumWithArtists>> {
+    fun getAlbums(albumGids: List<String>): Flow<List<AlbumWithArtists>> {
         return albumDao.getAlbums(albumGids = albumGids).distinctUntilChanged()
     }
 

@@ -31,7 +31,13 @@ fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType): L
             }
         }
         MediaType.ARTIST -> TODO()
-        MediaType.ALBUM -> TODO()
+        MediaType.ALBUM -> {
+            listOf(
+                ContextMenuItem.PlayFromBeginning,
+                ContextMenuItem.ViewArtists,
+                ContextMenuItem.ViewAlbum
+            )
+        }
         MediaType.GENRE -> TODO()
     }
 }

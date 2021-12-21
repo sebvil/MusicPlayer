@@ -23,6 +23,7 @@ interface AlbumsListScreenNavigationDelegate {
     fun navigateToAlbum(albumId: String)
     fun navigateUp()
     fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
+    fun openContextMenu(albumId: String)
 }
 
 
@@ -48,6 +49,9 @@ fun AlbumsListScreen(
                 is AlbumsListUiEvent.ScrollToTop -> {
                     listState.scrollToItem(0)
                 }
+                is AlbumsListUiEvent.OpenContextMenu -> {
+                    delegate.openContextMenu(event.albumId)
+                }
             }
         },
         topBar = {
@@ -68,12 +72,17 @@ fun AlbumsListScreen(
             override fun onAlbumClicked(albumGid: String) {
                 screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid))
             }
+
+            override fun onAlbumContextButtonClicked(albumId: String) {
+                screenViewModel.handle(AlbumsListUserAction.AlbumContextButtonClicked(albumId = albumId))
+            }
         })
     }
 }
 
 interface AlbumsListScreenDelegate {
-    fun onAlbumClicked(albumGid: String)
+    fun onAlbumClicked(albumGid: String) = Unit
+    fun onAlbumContextButtonClicked(albumId: String) = Unit
 }
 
 
@@ -83,9 +92,7 @@ interface AlbumsListScreenDelegate {
 fun AlbumsListScreenPreview(@PreviewParameter(AlbumsListStatePreviewParameterProvider::class) state: AlbumsListState) {
     val lazyListState = rememberLazyListState()
     ScreenPreview {
-        AlbumsListLayout(state = state, listState = lazyListState, object : AlbumsListScreenDelegate {
-            override fun onAlbumClicked(albumGid: String) = Unit
-        })
+        AlbumsListLayout(state = state, listState = lazyListState, object : AlbumsListScreenDelegate {})
     }
 }
 
@@ -102,6 +109,10 @@ fun AlbumsListLayout(
                 delegate = object : ListItemDelegate {
                     override fun onItemClicked() {
                         delegate.onAlbumClicked(item.albumGid)
+                    }
+
+                    override fun onSecondaryActionIconClicked() {
+                        delegate.onAlbumContextButtonClicked(item.albumGid)
                     }
                 }
             )

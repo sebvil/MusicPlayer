@@ -47,7 +47,7 @@ class AlbumsListViewModel @Inject constructor(
             }
 
         }
-        collect(albumRepository.getAlbum()) { albums ->
+        collect(albumRepository.getAlbums()) { albums ->
             setState {
                 copy(
                     albumsList = albums.map { album ->
@@ -103,7 +103,9 @@ class AlbumsListViewModel @Inject constructor(
                     )
                     addUiEvent(AlbumsListUiEvent.ScrollToTop)
                 }
-
+            }
+            is AlbumsListUserAction.AlbumContextButtonClicked -> {
+                addUiEvent(AlbumsListUiEvent.OpenContextMenu(action.albumId))
             }
         }
     }
@@ -148,6 +150,7 @@ sealed class AlbumsListUserAction : UserAction {
     object UpButtonClicked : AlbumsListUserAction()
     object SortByClicked : AlbumsListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : AlbumsListUserAction()
+    data class AlbumContextButtonClicked(val albumId: String) : AlbumsListUserAction()
 }
 
 sealed class AlbumsListUiEvent : UiEvent {
@@ -156,4 +159,6 @@ sealed class AlbumsListUiEvent : UiEvent {
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
         AlbumsListUiEvent()
     object ScrollToTop : AlbumsListUiEvent()
+
+    data class OpenContextMenu(val albumId: String) : AlbumsListUiEvent()
 }

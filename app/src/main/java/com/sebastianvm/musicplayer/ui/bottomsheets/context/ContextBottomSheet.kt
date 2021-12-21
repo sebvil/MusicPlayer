@@ -1,8 +1,15 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,12 +21,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import kotlinx.coroutines.Dispatchers
@@ -81,31 +90,46 @@ fun ContextMenuLayout(
     delegate: ContextMenuDelegate
 ) {
     with(state) {
-        LazyColumn {
-            items(listItems, key = { it.text }) {
-                SingleLineListItem(
-                    supportingImage = { iconModifier ->
-                        Icon(
-                            painter = painterResource(id = it.icon),
-                            contentDescription = DisplayableString.ResourceValue(it.text)
-                                .getString(),
-                            modifier = iconModifier,
-                        )
-                    },
-                    supportingImageType = SupportingImageType.ICON,
-                    delegate = object : ListItemDelegate {
-                        override fun onItemClicked() {
-                            delegate.onRowClicked(it)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(AppDimensions.bottomSheet.rowHeight)
+                    .padding(start = AppDimensions.bottomSheet.startPadding)
+            ) {
+                Text(
+                    text = state.menuTitle,
+                    modifier = Modifier.paddingFromBaseline(top = 36.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+            Divider(modifier = Modifier.fillMaxWidth())
+            LazyColumn {
+                items(listItems, key = { it.text }) {
+                    SingleLineListItem(
+                        supportingImage = { iconModifier ->
+                            Icon(
+                                painter = painterResource(id = it.icon),
+                                contentDescription = DisplayableString.ResourceValue(it.text)
+                                    .getString(),
+                                modifier = iconModifier,
+                            )
+                        },
+                        supportingImageType = SupportingImageType.ICON,
+                        delegate = object : ListItemDelegate {
+                            override fun onItemClicked() {
+                                delegate.onRowClicked(it)
+                            }
                         }
+                    ) {
+                        Text(
+                            text = stringResource(id = it.text),
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
-                ) {
-                    Text(
-                        text = stringResource(id = it.text),
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.player
 import android.media.browse.MediaBrowser
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
@@ -50,7 +51,7 @@ class BrowseTree @Inject constructor(
     private val counts = musicRepository.getCounts()
     private val tracks = trackRepository.getAllTracks()
     private val artists = artistRepository.getArtistsWithAlbums()
-    private val albums = albumRepository.getAlbum()
+    private val albums = albumRepository.getAlbums()
     private val genres = genreRepository.getGenresWithTracks()
 
     init {
@@ -103,8 +104,8 @@ class BrowseTree @Inject constructor(
             tree[ARTISTS_ROOT] = artists.map { artistWithAlbums ->
                 artistWithAlbums.forEach { artist ->
                     tree["artist-${artist.artist.artistGid}"] = combine(
-                        albumRepository.getAlbum(artist.artistAlbums.map { album -> album.albumGid }),
-                        albumRepository.getAlbum(artist.artistAppearsOn.map { album -> album.albumGid })
+                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumGid }),
+                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumGid })
                     ) { albums, appearsOn ->
 
                         albums.map { it.toMediaMetadataCompat(AlbumType.ALBUM) }
@@ -150,7 +151,11 @@ class BrowseTree @Inject constructor(
             MediaType.ALBUM -> trackRepository.getTracksForAlbum(mediaGroup.mediaId)
             MediaType.GENRE -> trackRepository.getTracksForGenre(mediaGroup.mediaId)
         }.map { tracks ->
-            tracks.map { it.toMediaMetadataCompat() }
+            tracks.map {
+                Log.i("PLAYER", "${it.track.trackNumber}")
+                val metadata = it.toMediaMetadataCompat()
+                Log.i("PLAYER", "$metadata")
+                it.toMediaMetadataCompat() }
         }
     }
 
