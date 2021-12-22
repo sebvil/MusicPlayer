@@ -28,12 +28,14 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
     object Library : Screen(NavRoutes.LIBRARY, R.string.library, R.drawable.ic_song)
+    object Queue : Screen(NavRoutes.QUEUE, R.string.queue, R.drawable.ic_queue)
     object Player : Screen(NavRoutes.PLAYER, R.string.player, R.drawable.ic_play)
     object Search : Screen(NavRoutes.SEARCH, R.string.search, R.drawable.ic_search)
 }
 
 val items = listOf(
     Screen.Library,
+    Screen.Queue,
     Screen.Player,
     Screen.Search
 )

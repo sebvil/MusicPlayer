@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import androidx.lifecycle.SavedStateHandle
+import android.util.Log
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -19,18 +21,85 @@ import javax.inject.Inject
 @HiltViewModel
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
-    musicServiceConnection: MusicServiceConnection
-) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
+    tracksRepository: TrackRepository,
+    musicServiceConnection: MusicServiceConnection,
+
+    ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
-
+        collect(musicServiceConnection.currentQueueId) { queueId ->
+            setState {
+                copy(
+                    queueId = queueId
+                )
+            }
+            queueId?.also {
+                collect(tracksRepository.getTracksForQueue(it)) { tracks ->
+                    setState {
+                        copy(
+                            queueItems = tracks.map { track -> track.toTrackRowState() }
+                        )
+                    }
+                }
+            }
+        }
     }
 
-    override fun handle(action: QueueUserAction) = Unit
+    override fun handle(action: QueueUserAction) {
+        when (action) {
+            is QueueUserAction.ItemDragged -> {
+                val oldIndex = state.value.draggedItemIndex
+                if (oldIndex != action.newIndex) {
+                    if (action.newIndex !in state.value.queueItems.indices || action.oldIndex !in state.value.queueItems.indices) {
+                        return
+                    }
+                    Log.i("QUEUE", "${oldIndex}, ${action.newIndex}")
+                    val items = state.value.queueItems.toMutableList()
+                    val item = items.removeAt(oldIndex)
+                    items.add(action.newIndex, item)
+                    setState {
+                        copy(
+                            queueItems = items,
+                            draggedItemIndex = action.newIndex
+                        )
+                    }
+                }
+            }
+            is QueueUserAction.ItemSelectedForDrag -> {
+                val items = state.value.queueItems.toMutableList()
+                val itemToDrag = items[action.index]
+                items[action.index] = itemToDrag.copy(trackName = "", artists = "")
+                setState {
+                    copy(
+                        draggedItem = itemToDrag,
+                        draggedItemIndex = action.index,
+                        queueItems = items
+                    )
+                }
+            }
+            is QueueUserAction.DragEnded -> {
+                state.value.draggedItem?.also {
+                    val items = state.value.queueItems.toMutableList()
+                    items[state.value.draggedItemIndex] = it
+                    setState {
+                        copy(
+                            queueItems = items,
+                            draggedItemIndex = -1,
+                            draggedItem = null
+                        )
+                    }
+                }
+
+            }
+        }
+    }
 }
 
 data class QueueState(
-    val queueItems: List<TrackRowState>
+    val queueId: Long?,
+    val queueItems: List<TrackRowState>,
+    val draggedItem: TrackRowState?,
+    val draggedItemIndex: Int = -1,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -38,11 +107,16 @@ data class QueueState(
 object InitialQueueStateModule {
     @Provides
     @ViewModelScoped
-    fun initialQueueStateProvider(savedStateHandle: SavedStateHandle): QueueState {
-        return QueueState(queueItems = listOf())
+    fun initialQueueStateProvider(): QueueState {
+        return QueueState(queueId = null, queueItems = listOf(), draggedItem = null)
     }
 }
 
-sealed class QueueUserAction : UserAction
+sealed class QueueUserAction : UserAction {
+    data class ItemDragged(val oldIndex: Int, val newIndex: Int) : QueueUserAction()
+    data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
+    object DragEnded : QueueUserAction()
+}
+
 sealed class QueueUiEvent : UiEvent
 

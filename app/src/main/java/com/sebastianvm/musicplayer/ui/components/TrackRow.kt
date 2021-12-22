@@ -45,8 +45,9 @@ fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::cla
 }
 
 @Composable
-fun TrackRow(state: TrackRowState, delegate: ListItemDelegate) {
+fun TrackRow(state: TrackRowState, delegate: ListItemDelegate, modifier: Modifier = Modifier) {
     DoubleLineListItem(
+        modifier = modifier,
         afterListContent = { onClick ->
             IconButton(
                 onClick = onClick,

@@ -50,6 +50,8 @@ class MusicServiceConnection @Inject constructor(
 
     val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
+    val currentQueueId: MutableStateFlow<Long?> = MutableStateFlow(null)
+
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(
         context,
@@ -146,7 +148,10 @@ class MusicServiceConnection @Inject constructor(
          */
         override fun onSessionDestroyed() {
             mediaBrowserConnectionCallback.onConnectionSuspended()
+        }
 
+        override fun onExtrasChanged(extras: Bundle?) {
+            currentQueueId.value = extras?.getLong(QUEUE_ID)
         }
     }
 }
@@ -162,4 +167,4 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
 const val SORT_BY = "SORT_BY"
 const val MEDIA_GROUP = "MEDIA_GROUP"
 const val SORT_ORDER = "SORT_ORDER"
-const val QUEUE_ID = "QUEUE_ID"
+const val QUEUE_ID = "com.sebastianvm.musicplayer.player.QUEUE_ID"

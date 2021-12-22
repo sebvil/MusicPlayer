@@ -18,12 +18,10 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
-import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -238,21 +236,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             )
                         }
                     }
-                }
-            }
-
-        }
-
-        private fun getTrackComparator(
-            sortOrder: SortOrder,
-            sortKey: String
-        ): Comparator<MediaMetadataCompat> {
-            return when (sortKey) {
-                MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy<MediaMetadataCompat> {
-                    it.getLong(sortKey)
-                }
-                else -> getStringComparator(sortOrder) { metadata ->
-                    metadata.getString(sortKey)
+                    mediaSession.setExtras(Bundle().apply { putLong(QUEUE_ID, queueId) })
                 }
             }
         }
@@ -260,7 +244,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         /**
          * This method is used by the Google Assistant to respond to requests such as:
          */
-        override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) =
+        override fun onPrepareFromSearch(
+            query: String,
+            playWhenReady: Boolean,
+            extras: Bundle?
+        ) =
             Unit
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
@@ -269,7 +257,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private inner class QueueNavigator : TimelineQueueNavigator(mediaSession) {
-        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
+        override fun getMediaDescription(
+            player: Player,
+            windowIndex: Int
+        ): MediaDescriptionCompat {
             return currentPlaylistItems[windowIndex].description
         }
     }

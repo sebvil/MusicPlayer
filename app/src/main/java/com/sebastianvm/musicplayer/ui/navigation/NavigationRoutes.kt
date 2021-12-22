@@ -18,6 +18,7 @@ object NavRoutes {
     const val SORT = "SORT"
     const val CONTEXT = "CONTEXT"
     const val MEDIA_ARTISTS = "MEDIA_ARTISTS"
+    const val QUEUE = "QUEUE"
 }
 
 object NavArgs {

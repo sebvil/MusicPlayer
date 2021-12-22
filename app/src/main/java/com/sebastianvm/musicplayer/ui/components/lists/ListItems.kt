@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.ui.components.lists
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -26,8 +28,10 @@ enum class SupportingImageType(val imageSize: Dp, val paddingEnd: Dp) {
 interface ListItemDelegate {
     fun onItemClicked() = Unit
     fun onSecondaryActionIconClicked() = Unit
+    fun onItemLongPressed() = Unit
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SingleLineListItem(
     modifier: Modifier = Modifier,
@@ -46,7 +50,7 @@ fun SingleLineListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(rowHeight)
-            .clickable { delegate.onItemClicked() }
+            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
             .padding(start = AppDimensions.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -69,6 +73,7 @@ fun SingleLineListItem(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DoubleLineListItem(
     modifier: Modifier = Modifier,
@@ -84,7 +89,7 @@ fun DoubleLineListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(rowHeight)
-            .clickable { delegate.onItemClicked() }
+            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
             .padding(start = AppDimensions.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {

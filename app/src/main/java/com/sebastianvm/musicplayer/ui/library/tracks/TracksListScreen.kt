@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -131,7 +132,7 @@ fun TracksListLayout(
     delegate: TracksListScreenDelegate
 ) {
     LazyColumn(state = listState) {
-        items(state.tracksList) { item ->
+        items(state.tracksList, key = { it.trackId }) { item ->
             TrackRow(
                 state = item,
                 delegate = object : ListItemDelegate {
@@ -142,7 +143,8 @@ fun TracksListLayout(
                     override fun onSecondaryActionIconClicked() {
                         delegate.onTrackLongPressed(item.trackId)
                     }
-                }
+                },
+                modifier = Modifier.animateItemPlacement()
             )
         }
     }
