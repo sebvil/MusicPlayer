@@ -64,10 +64,9 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.ItemSelectedForDrag -> {
-                val index = state.value.queueItems.indexOf(action.index)
+                val index = state.value.queueItems.indexOf(action.item)
                 val items = state.value.queueItems.toMutableList()
                 val itemToDrag = items[index]
-                items[index] = itemToDrag.copy(trackName = "", artists = "")
                 setState {
                     copy(
                         draggedItem = itemToDrag,
@@ -112,8 +111,8 @@ object InitialQueueStateModule {
 }
 
 sealed class QueueUserAction : UserAction {
-    data class ItemDragged(val oldIndex: Int, val newIndex: Int) : QueueUserAction()
-    data class ItemSelectedForDrag(val index: TrackRowState) : QueueUserAction()
+    data class ItemDragged(val newIndex: Int) : QueueUserAction()
+    data class ItemSelectedForDrag(val item: TrackRowState) : QueueUserAction()
     object DragEnded : QueueUserAction()
 }
 
