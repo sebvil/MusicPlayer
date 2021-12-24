@@ -103,7 +103,8 @@ fun QueueLayout(
     Box(modifier = Modifier
         .onSizeChanged {
             boxHeight = it.height.toFloat()
-        }.fillMaxHeight()
+        }
+        .fillMaxHeight()
     ) {
         LazyColumn(state = listState) {
             items(state.queueItems, key = { item -> item.trackId }) { item ->
@@ -139,8 +140,10 @@ fun QueueLayout(
                 mutableStateOf(false)
             }
             LaunchedEffect(offsetY.value, listState.firstVisibleItemIndex) {
-                if (offsetY.value > boxHeight - 100f) {
-                    listState.scrollBy(offsetY.value - boxHeight + 100f)
+                if (offsetY.value > boxHeight - height) {
+                    listState.scrollBy(offsetY.value - boxHeight + height)
+                } else if (offsetY.value <= height) {
+                    listState.scrollBy(offsetY.value - height)
                 }
             }
             TrackRow(

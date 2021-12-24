@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import android.util.Log
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -66,7 +65,6 @@ class QueueViewModel @Inject constructor(
             }
             is QueueUserAction.ItemSelectedForDrag -> {
                 val index = state.value.queueItems.indexOf(action.index)
-                Log.i("QUEUE", "Item selected: ${action.index}, $index")
                 val items = state.value.queueItems.toMutableList()
                 val itemToDrag = items[index]
                 items[index] = itemToDrag.copy(trackName = "", artists = "")
