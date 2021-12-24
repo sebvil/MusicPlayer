@@ -89,7 +89,8 @@ fun DoubleLineListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(rowHeight)
-            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
+            .clickable {  delegate.onItemClicked() }
+//            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
             .padding(start = AppDimensions.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {

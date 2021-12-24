@@ -50,10 +50,9 @@ class QueueViewModel @Inject constructor(
             is QueueUserAction.ItemDragged -> {
                 val oldIndex = state.value.draggedItemIndex
                 if (oldIndex != action.newIndex) {
-                    if (action.newIndex !in state.value.queueItems.indices || action.oldIndex !in state.value.queueItems.indices) {
+                    if (action.newIndex !in state.value.queueItems.indices || oldIndex !in state.value.queueItems.indices) {
                         return
                     }
-                    Log.i("QUEUE", "${oldIndex}, ${action.newIndex}")
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
@@ -66,13 +65,15 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.ItemSelectedForDrag -> {
+                val index = state.value.queueItems.indexOf(action.index)
+                Log.i("QUEUE", "Item selected: ${action.index}, $index")
                 val items = state.value.queueItems.toMutableList()
-                val itemToDrag = items[action.index]
-                items[action.index] = itemToDrag.copy(trackName = "", artists = "")
+                val itemToDrag = items[index]
+                items[index] = itemToDrag.copy(trackName = "", artists = "")
                 setState {
                     copy(
                         draggedItem = itemToDrag,
-                        draggedItemIndex = action.index,
+                        draggedItemIndex = index,
                         queueItems = items
                     )
                 }
@@ -114,7 +115,7 @@ object InitialQueueStateModule {
 
 sealed class QueueUserAction : UserAction {
     data class ItemDragged(val oldIndex: Int, val newIndex: Int) : QueueUserAction()
-    data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
+    data class ItemSelectedForDrag(val index: TrackRowState) : QueueUserAction()
     object DragEnded : QueueUserAction()
 }
 
