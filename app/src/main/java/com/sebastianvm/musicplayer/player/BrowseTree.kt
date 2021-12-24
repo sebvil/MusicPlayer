@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.repository.GenreRepository
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.MusicRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -41,6 +42,7 @@ data class MediaGroup(val mediaType: MediaType, val mediaId: String) : Parcelabl
 class BrowseTree @Inject constructor(
     musicRepository: MusicRepository,
     private val trackRepository: TrackRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     artistRepository: ArtistRepository,
     genreRepository: GenreRepository,
     albumRepository: AlbumRepository,
@@ -143,8 +145,8 @@ class BrowseTree @Inject constructor(
 
     operator fun get(mediaId: String) = tree[mediaId]
 
-    fun getTracksList(queueId: Long): Flow<List<MediaMetadataCompat>> {
-        return trackRepository.getTracksForQueue(queueId).map { tracks ->
+    fun getTracksList(mediaGroup: MediaGroup): Flow<List<MediaMetadataCompat>> {
+        return trackRepository.getTracksForQueue(mediaGroup).map { tracks ->
             tracks.map {
                 it.toMediaMetadataCompat()
             }

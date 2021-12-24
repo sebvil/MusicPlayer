@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -48,8 +49,8 @@ class TrackRepository @Inject constructor(
         return trackDao.getTracksForGenre(genreName)
     }
 
-    fun getTracksForQueue(queueId: Long): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForQueue(queueId)
+    fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
+        return trackDao.getTracksForQueue(mediaGroup.mediaType, mediaGroup.mediaId)
     }
 
     suspend fun insertAllTracks(

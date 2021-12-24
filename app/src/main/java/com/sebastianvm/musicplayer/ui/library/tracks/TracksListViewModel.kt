@@ -88,17 +88,18 @@ class TracksListViewModel @Inject constructor(
             is TracksListUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
-                    val queueId = mediaQueueRepository.createQueue(
-                        mediaGroup = MediaGroup(
-                            mediaType = state.value.genreName?.let { MediaType.GENRE }
-                                ?: MediaType.TRACK,
-                            mediaId = state.value.genreName ?: ""
-                        ),
+                    val mediaGroup = MediaGroup(
+                        mediaType = state.value.genreName?.let { MediaType.GENRE }
+                            ?: MediaType.TRACK,
+                        mediaId = state.value.genreName ?: ""
+                    )
+                   mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
                         sortOrder = state.value.sortOrder,
                         sortOption = state.value.currentSort
                     )
                     val extras = Bundle().apply {
-                        putLong(QUEUE_ID, queueId)
+                        putParcelable(QUEUE_ID, mediaGroup)
                     }
                     transportControls.playFromMediaId(action.trackId, extras)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)

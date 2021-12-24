@@ -34,7 +34,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         MediaQueueTrackCrossRef::class,
         TrackFts::class,
     ],
-    version = 16,
+    version = 18,
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {

@@ -21,11 +21,17 @@ class MediaQueueRepository @Inject constructor(
     private val mediaQueueDao: MediaQueueDao,
     private val trackRepository: TrackRepository
 ) {
-    private suspend fun createQueue(trackIds: List<String>): Long {
-        val queueId = mediaQueueDao.insertQueue(MediaQueue(queueId = 0))
+    private suspend fun createQueue(mediaGroup: MediaGroup, trackIds: List<String>): Long {
+        val queueId = mediaQueueDao.insertQueue(
+            MediaQueue(
+                mediaType = mediaGroup.mediaType,
+                groupMediaId = mediaGroup.mediaId
+            )
+        )
         mediaQueueDao.insertMediaQueueTrackCrossRefs(trackIds.mapIndexed { index, trackId ->
             MediaQueueTrackCrossRef(
-                queueId = queueId,
+                mediaType = mediaGroup.mediaType,
+                groupMediaId = mediaGroup.mediaId,
                 trackId = trackId,
                 trackIndex = index
             )
@@ -33,7 +39,11 @@ class MediaQueueRepository @Inject constructor(
         return queueId
     }
 
-    suspend fun createQueue(mediaGroup: MediaGroup, sortOption: SortOption, sortOrder: SortOrder) : Long {
+    suspend fun createQueue(
+        mediaGroup: MediaGroup,
+        sortOption: SortOption,
+        sortOrder: SortOrder
+    ): Long {
         val trackIds = when (mediaGroup.mediaType) {
             MediaType.TRACK -> trackRepository.getAllTracks()
             MediaType.ARTIST -> trackRepository.getTracksForArtist(mediaGroup.mediaId)
@@ -45,7 +55,7 @@ class MediaQueueRepository @Inject constructor(
             }.sortedWith(getTrackComparator(sortOrder, sortOption.metadataKey)).mapNotNull { it.id }
         }.first()
 
-        return createQueue(trackIds)
+        return createQueue(mediaGroup, trackIds)
 
     }
 
@@ -62,4 +72,5 @@ class MediaQueueRepository @Inject constructor(
             }
         }
     }
+
 }

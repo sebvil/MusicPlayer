@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.queue
 
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -26,13 +27,13 @@ class QueueViewModel @Inject constructor(
     ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
-        collect(musicServiceConnection.currentQueueId) { queueId ->
+        collect(musicServiceConnection.currentQueueId) { mediaGroup ->
             setState {
                 copy(
-                    queueId = queueId
+                    mediaGroup = mediaGroup
                 )
             }
-            queueId?.also {
+            mediaGroup?.also {
                 collect(tracksRepository.getTracksForQueue(it)) { tracks ->
                     setState {
                         copy(
@@ -94,7 +95,7 @@ class QueueViewModel @Inject constructor(
 }
 
 data class QueueState(
-    val queueId: Long?,
+    val mediaGroup: MediaGroup?,
     val queueItems: List<TrackRowState>,
     val draggedItem: TrackRowState?,
     val draggedItemIndex: Int = -1,
@@ -106,7 +107,7 @@ object InitialQueueStateModule {
     @Provides
     @ViewModelScoped
     fun initialQueueStateProvider(): QueueState {
-        return QueueState(queueId = null, queueItems = listOf(), draggedItem = null)
+        return QueueState(mediaGroup = null, queueItems = listOf(), draggedItem = null)
     }
 }
 

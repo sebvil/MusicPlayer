@@ -222,7 +222,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-            val queueId = extras?.getLong(QUEUE_ID)
+            val queueId = extras?.getParcelable<MediaGroup>(QUEUE_ID)
             CoroutineScope(Dispatchers.IO).launch {
                 queueId?.also {
                     browseTree.getTracksList(it).first().also { tracks ->
@@ -236,7 +236,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             )
                         }
                     }
-                    mediaSession.setExtras(Bundle().apply { putLong(QUEUE_ID, queueId) })
+                    mediaSession.setExtras(Bundle().apply { putParcelable(QUEUE_ID, queueId) })
                 }
             }
         }

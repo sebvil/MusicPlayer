@@ -50,7 +50,7 @@ class MusicServiceConnection @Inject constructor(
 
     val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
-    val currentQueueId: MutableStateFlow<Long?> = MutableStateFlow(null)
+    val currentQueueId: MutableStateFlow<MediaGroup?> = MutableStateFlow(null)
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(
@@ -151,7 +151,7 @@ class MusicServiceConnection @Inject constructor(
         }
 
         override fun onExtrasChanged(extras: Bundle?) {
-            currentQueueId.value = extras?.getLong(QUEUE_ID)
+            currentQueueId.value = extras?.getParcelable(QUEUE_ID)
         }
     }
 }

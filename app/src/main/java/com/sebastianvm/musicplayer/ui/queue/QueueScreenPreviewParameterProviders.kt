@@ -4,6 +4,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class QueueStatePreviewParameterProvider : PreviewParameterProvider<QueueState> {
     override val values = sequenceOf(
-        QueueState(queueId = null, queueItems = listOf(), draggedItem = null)
+        QueueState(mediaGroup = null, queueItems = listOf(), draggedItem = null)
     )
 }
