@@ -28,7 +28,7 @@ class MediaQueueRepository @Inject constructor(
                 groupMediaId = mediaGroup.mediaId
             )
         )
-        mediaQueueDao.insertMediaQueueTrackCrossRefs(trackIds.mapIndexed { index, trackId ->
+        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(trackIds.mapIndexed { index, trackId ->
             MediaQueueTrackCrossRef(
                 mediaType = mediaGroup.mediaType,
                 groupMediaId = mediaGroup.mediaId,
@@ -56,9 +56,11 @@ class MediaQueueRepository @Inject constructor(
         }.first()
 
         return createQueue(mediaGroup, trackIds)
-
     }
 
+    suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) {
+        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
+    }
     private fun getTrackComparator(
         sortOrder: SortOrder,
         sortKey: String

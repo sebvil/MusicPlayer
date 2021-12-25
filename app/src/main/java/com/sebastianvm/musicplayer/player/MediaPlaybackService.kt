@@ -48,7 +48,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var currentPlayer: Player
-    private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
+    private var currentPlaylistItems: MutableList<MediaMetadataCompat> = mutableListOf()
 
     private var isForegroundService = false
 
@@ -84,6 +84,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlaybackPreparer(PlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(QueueNavigator())
         mediaSessionConnector.setMediaMetadataProvider(MetadataProvider())
+        mediaSessionConnector.registerCustomCommandReceiver(MediaCommandReceiver())
         switchToPlayer(
             previousPlayer = null,
             newPlayer = exoPlayer
@@ -155,7 +156,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         // on an album), find which window index to play first so that the song the
         // user actually wants to hear plays first.
         val initialWindowIndex = if (itemToPlay == null) 0 else metadataList.indexOf(itemToPlay)
-        currentPlaylistItems = metadataList
+        currentPlaylistItems = metadataList.toMutableList()
 
         currentPlayer.playWhenReady = playWhenReady
         currentPlayer.stop()
@@ -222,7 +223,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-            val queueId = extras?.getParcelable<MediaGroup>(QUEUE_ID)
+            val queueId = extras?.getParcelable<MediaGroup>(MEDIA_GROUP)
             CoroutineScope(Dispatchers.IO).launch {
                 queueId?.also {
                     browseTree.getTracksList(it).first().also { tracks ->
@@ -236,7 +237,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                             )
                         }
                     }
-                    mediaSession.setExtras(Bundle().apply { putParcelable(QUEUE_ID, queueId) })
+                    mediaSession.setExtras(Bundle().apply { putParcelable(MEDIA_GROUP, queueId) })
                 }
             }
         }
@@ -275,6 +276,26 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
+    private inner class MediaCommandReceiver : MediaSessionConnector.CommandReceiver {
+        override fun onCommand(
+            player: Player,
+            command: String,
+            extras: Bundle?,
+            cb: ResultReceiver?
+        ): Boolean {
+            return when (command) {
+                COMMAND_MOVE_ITEM -> {
+                    val fromIndex = extras?.getInt(EXTRA_FROM_INDEX) ?: return false
+                    val toIndex = extras.getInt(EXTRA_TO_INDEX)
+                    player.moveMediaItem(fromIndex, toIndex)
+                    val item = currentPlaylistItems[fromIndex]
+                    currentPlaylistItems.add(toIndex, item)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
 
     /**
      * Listen for notification events.

@@ -1,7 +1,14 @@
 package com.sebastianvm.musicplayer.ui.queue
 
+import androidx.core.os.bundleOf
+import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.player.COMMAND_MOVE_ITEM
+import com.sebastianvm.musicplayer.player.EXTRA_FROM_INDEX
+import com.sebastianvm.musicplayer.player.EXTRA_TO_INDEX
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -15,6 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -22,7 +30,8 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     tracksRepository: TrackRepository,
-    musicServiceConnection: MusicServiceConnection,
+    private val mediaQueueRepository: MediaQueueRepository,
+    private val musicServiceConnection: MusicServiceConnection,
 
     ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
@@ -56,6 +65,7 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
+                    musicServiceConnection.sendCommand(COMMAND_MOVE_ITEM, bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex))
                     setState {
                         copy(
                             queueItems = items,
@@ -77,17 +87,35 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.DragEnded -> {
-                state.value.draggedItem?.also {
-                    val items = state.value.queueItems.toMutableList()
-                    items[state.value.draggedItemIndex] = it
-                    setState {
-                        copy(
-                            queueItems = items,
-                            draggedItemIndex = -1,
-                            draggedItem = null
-                        )
+                with(state.value) {
+                    draggedItem?.also {
+                        val items = queueItems.toMutableList()
+                        items[draggedItemIndex] = it
+                        setState {
+                            copy(
+                                queueItems = items,
+                                draggedItemIndex = -1,
+                                draggedItem = null
+                            )
+                        }
+
+                        mediaGroup?.also { mediaGroup ->
+                            viewModelScope.launch {
+                                mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
+                                    queueItems.mapIndexed { index, trackRowState ->
+                                        MediaQueueTrackCrossRef(
+                                            mediaType = mediaGroup.mediaType,
+                                            groupMediaId = mediaGroup.mediaId,
+                                            trackId = trackRowState.trackId,
+                                            trackIndex = index
+                                        )
+                                    })
+                            }
+                        }
+
                     }
                 }
+
 
             }
         }

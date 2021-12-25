@@ -151,7 +151,7 @@ class MusicServiceConnection @Inject constructor(
         }
 
         override fun onExtrasChanged(extras: Bundle?) {
-            currentQueueId.value = extras?.getParcelable(QUEUE_ID)
+            currentQueueId.value = extras?.getParcelable(MEDIA_GROUP)
         }
     }
 }
@@ -165,6 +165,8 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
     .build()
 
 const val SORT_BY = "SORT_BY"
-const val MEDIA_GROUP = "MEDIA_GROUP"
 const val SORT_ORDER = "SORT_ORDER"
-const val QUEUE_ID = "com.sebastianvm.musicplayer.player.QUEUE_ID"
+const val MEDIA_GROUP = "com.sebastianvm.musicplayer.player.MEDIA_GROUP"
+const val COMMAND_MOVE_ITEM = "com.sebastianvm.player.COMMAND_MOVE_ITEM"
+const val EXTRA_FROM_INDEX = "com.sebastianvm.player.EXTRA_FROM_INDEX"
+const val EXTRA_TO_INDEX = "com.sebastianvm.player.EXTRA_TO_INDEX"

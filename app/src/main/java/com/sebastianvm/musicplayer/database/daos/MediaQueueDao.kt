@@ -11,6 +11,6 @@ interface MediaQueueDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertQueue(queue: MediaQueue) : Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)
 }

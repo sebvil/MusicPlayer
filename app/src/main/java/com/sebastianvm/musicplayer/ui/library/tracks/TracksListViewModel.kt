@@ -6,10 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.QUEUE_ID
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
@@ -99,7 +99,7 @@ class TracksListViewModel @Inject constructor(
                         sortOption = state.value.currentSort
                     )
                     val extras = Bundle().apply {
-                        putParcelable(QUEUE_ID, mediaGroup)
+                        putParcelable(MEDIA_GROUP, mediaGroup)
                     }
                     transportControls.playFromMediaId(action.trackId, extras)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)
