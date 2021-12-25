@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.Module
@@ -15,6 +16,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,12 +52,26 @@ class GenresListViewModel @Inject constructor(
             is GenresListUserAction.GenreClicked -> {
                 this.addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
             }
-            GenresListUserAction.SortByClicked -> {
+            is GenresListUserAction.SortByClicked -> {
                 viewModelScope.launch {
                     preferencesRepository.modifyGenresListSortOrder(!state.value.sortOrder)
                 }
             }
-            GenresListUserAction.UpButtonClicked -> addUiEvent(GenresListUiEvent.NavigateUp)
+            is GenresListUserAction.UpButtonClicked -> addUiEvent(GenresListUiEvent.NavigateUp)
+            is GenresListUserAction.OverflowMenuIconClicked -> {
+                viewModelScope.launch {
+                    val sortSettings =
+                        preferencesRepository.getTracksListSortOptions(action.genreName).first()
+                    addUiEvent(
+                        GenresListUiEvent.OpenContextMenu(
+                            action.genreName,
+                            sortSettings.sortOption,
+                            sortSettings.sortOrder
+                        )
+                    )
+
+                }
+            }
         }
     }
 }
@@ -80,9 +96,15 @@ sealed class GenresListUserAction : UserAction {
     data class GenreClicked(val genreName: String) : GenresListUserAction()
     object UpButtonClicked : GenresListUserAction()
     object SortByClicked : GenresListUserAction()
+    data class OverflowMenuIconClicked(val genreName: String) : GenresListUserAction()
 }
 
 sealed class GenresListUiEvent : UiEvent {
     data class NavigateToGenre(val genreName: String) : GenresListUiEvent()
     object NavigateUp : GenresListUiEvent()
+    data class OpenContextMenu(
+        val genreName: String,
+        val currentSort: SortOption,
+        val sortOrder: SortOrder
+    ) : GenresListUiEvent()
 }

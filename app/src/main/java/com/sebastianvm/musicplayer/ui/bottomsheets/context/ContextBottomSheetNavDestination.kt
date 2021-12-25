@@ -13,6 +13,7 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
+import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -73,13 +74,17 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                     navController.popBackStack()
                     navController.navigateToArtistsBottomSheet(mediaId, mediaType)
                 }
+
+                override fun navigateToGenre(genreName: String) {
+                    navController.navigateToGenre(genreName)
+                }
             }
         )
     }
 }
 
 fun NavController.openContextMenu(
-    mediaType: String,
+    mediaType: MediaType,
     mediaId: String,
     mediaGroup: MediaGroup,
     currentSort: SortOption,
@@ -88,7 +93,7 @@ fun NavController.openContextMenu(
     navigateTo(
         NavRoutes.CONTEXT,
         NavArgument(NavArgs.MEDIA_ID, mediaId),
-        NavArgument(NavArgs.MEDIA_TYPE, mediaType),
+        NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
         NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
         NavArgument(NavArgs.SORT_OPTION, currentSort.name),

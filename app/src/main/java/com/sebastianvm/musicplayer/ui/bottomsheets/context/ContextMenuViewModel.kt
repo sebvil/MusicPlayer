@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -33,6 +34,7 @@ class ContextMenuViewModel @Inject constructor(
     initialState: ContextMenuState,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository,
+    genreRepository: GenreRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection
 ) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
@@ -57,6 +59,13 @@ class ContextMenuViewModel @Inject constructor(
                     }
                 }
             }
+            MediaType.GENRE -> {
+                setState {
+                    copy(
+                        menuTitle = state.value.mediaId
+                    )
+                }
+            }
             else -> Unit
         }
     }
@@ -65,7 +74,7 @@ class ContextMenuViewModel @Inject constructor(
         when (action) {
             is ContextMenuUserAction.RowClicked -> {
                 when (action.row) {
-                    is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning -> {
+                    is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning, is ContextMenuItem.PlayAllSongs -> {
                         val transportControls = musicServiceConnection.transportControls
                         viewModelScope.launch {
                             val mediaGroup = state.value.mediaGroup
@@ -97,7 +106,6 @@ class ContextMenuViewModel @Inject constructor(
                         }
 
                     }
-                    is ContextMenuItem.PlayAllSongs -> TODO()
                     is ContextMenuItem.ViewArtists -> {
                         when (state.value.mediaType) {
                             MediaType.TRACK -> {
@@ -136,6 +144,9 @@ class ContextMenuViewModel @Inject constructor(
                             }
                             else -> throw UnsupportedOperationException("ViewArtists is not supported for media type ${state.value.mediaType}")
                         }
+                    }
+                    is ContextMenuItem.ViewGenre -> {
+                        addUiEvent(ContextMenuUiEvent.NavigateToGenre(genreName = state.value.mediaId))
                     }
                 }
             }
@@ -189,5 +200,7 @@ sealed class ContextMenuUiEvent : UiEvent {
     data class NavigateToArtist(val artistId: String) : ContextMenuUiEvent()
     data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
         ContextMenuUiEvent()
+
+    data class NavigateToGenre(val genreName: String) : ContextMenuUiEvent()
 }
 

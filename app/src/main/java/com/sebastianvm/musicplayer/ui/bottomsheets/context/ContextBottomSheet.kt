@@ -39,6 +39,7 @@ interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToAlbum(albumId: String) = Unit
     fun navigateToArtist(artistId: String) = Unit
     fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
+    fun navigateToGenre(genreName: String)
 }
 
 @Composable
@@ -58,6 +59,7 @@ fun ContextBottomSheet(
                 event.mediaId,
                 event.mediaType
             )
+            is ContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {

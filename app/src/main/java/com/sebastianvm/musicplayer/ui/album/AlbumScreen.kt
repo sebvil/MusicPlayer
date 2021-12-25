@@ -2,12 +2,21 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
@@ -69,6 +78,11 @@ fun AlbumScreenPreview(
 
 @Composable
 fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
+    val minWidth = remember {
+        mutableStateOf(0.dp)
+    }
+    val density = LocalDensity.current
+
     with(state) {
         val listWithHeaderState =
             ListWithHeaderState(
@@ -83,13 +97,29 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                     )
                 },
                 { i ->
-                    TrackRow(
-                        state = i,
-                        modifier = Modifier.clickable {
-                            delegate.onTrackClicked(trackId = i.trackId)
-                        },
-                        onOverflowMenuIconClicked = { delegate.onTrackContextMenuClicked(i.trackId) }
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = i.trackNumber?.toString() ?: "",
+                            modifier = Modifier
+                                .padding(start = AppDimensions.spacing.medium)
+                                .defaultMinSize(minWidth = minWidth.value)
+                                .onSizeChanged {
+                                    with(density) {
+                                        if (it.width > minWidth.value.toPx()) {
+                                            minWidth.value = it.width.toDp()
+                                        }
+                                    }
+                                }
+                        )
+                        TrackRow(
+                            state = i,
+                            modifier = Modifier.clickable {
+                                delegate.onTrackClicked(trackId = i.trackId)
+                            },
+                            onOverflowMenuIconClicked = { delegate.onTrackContextMenuClicked(i.trackId) }
+                        )
+                    }
+
                 }
             )
         ListWithHeader(state = listWithHeaderState)
