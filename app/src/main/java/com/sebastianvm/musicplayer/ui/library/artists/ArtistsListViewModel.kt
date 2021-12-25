@@ -41,7 +41,7 @@ class ArtistsListViewModel @Inject constructor(
             setState {
                 copy(
                     artistsList = artists.map { artist ->
-                        artist.toArtistRowState()
+                        artist.toArtistRowState(shouldShowContextMenu = true)
                     }
                         .sortedWith(getStringComparator(state.value.sortOrder) { item -> item.artistName }),
                 )
@@ -57,12 +57,15 @@ class ArtistsListViewModel @Inject constructor(
                     ArtistsListUiEvent.NavigateToArtist(action.artistId)
                 )
             }
-            ArtistsListUserAction.SortByClicked -> {
+            is ArtistsListUserAction.SortByClicked -> {
                 viewModelScope.launch {
                     preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
                 }
             }
-            ArtistsListUserAction.UpButtonClicked -> addUiEvent(ArtistsListUiEvent.NavigateUp)
+            is ArtistsListUserAction.UpButtonClicked -> addUiEvent(ArtistsListUiEvent.NavigateUp)
+            is ArtistsListUserAction.ContextMenuIconClicked -> {
+                addUiEvent(ArtistsListUiEvent.OpenContextMenu(action.artistId))
+            }
         }
     }
 }
@@ -89,9 +92,11 @@ sealed class ArtistsListUserAction : UserAction {
     data class ArtistClicked(val artistId: String) : ArtistsListUserAction()
     object SortByClicked : ArtistsListUserAction()
     object UpButtonClicked : ArtistsListUserAction()
+    data class ContextMenuIconClicked(val artistId: String) : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
     data class NavigateToArtist(val artistId: String) : ArtistsListUiEvent()
     object NavigateUp : ArtistsListUiEvent()
+    data class OpenContextMenu(val artistId: String) : ArtistsListUiEvent()
 }

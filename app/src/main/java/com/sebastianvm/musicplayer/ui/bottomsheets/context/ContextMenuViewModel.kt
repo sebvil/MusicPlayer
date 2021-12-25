@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.AlbumRepository
-import com.sebastianvm.musicplayer.repository.GenreRepository
+import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -34,7 +34,7 @@ class ContextMenuViewModel @Inject constructor(
     initialState: ContextMenuState,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository,
-    genreRepository: GenreRepository,
+    artistRepository: ArtistRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection
 ) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
@@ -45,7 +45,8 @@ class ContextMenuViewModel @Inject constructor(
                 collect(trackRepository.getTrack(state.value.mediaId)) {
                     setState {
                         copy(
-                            menuTitle = it.track.trackName
+                            menuTitle = it.track.trackName,
+                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType, it.artists.size)
                         )
                     }
                 }
@@ -54,7 +55,9 @@ class ContextMenuViewModel @Inject constructor(
                 collect(albumRepository.getAlbum(state.value.mediaId)) {
                     setState {
                         copy(
-                            menuTitle = it.album.albumName
+                            menuTitle = it.album.albumName,
+                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType, it.artists.size)
+
                         )
                     }
                 }
@@ -62,8 +65,19 @@ class ContextMenuViewModel @Inject constructor(
             MediaType.GENRE -> {
                 setState {
                     copy(
-                        menuTitle = state.value.mediaId
+                        menuTitle = state.value.mediaId,
+                        listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType)
                     )
+                }
+            }
+            MediaType.ARTIST -> {
+                collect(artistRepository.getArtist(state.value.mediaId)) {
+                    setState {
+                        copy(
+                            menuTitle = it.artist.artistName,
+                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType)
+                        )
+                    }
                 }
             }
             else -> Unit
@@ -109,38 +123,38 @@ class ContextMenuViewModel @Inject constructor(
                     is ContextMenuItem.ViewArtists -> {
                         when (state.value.mediaType) {
                             MediaType.TRACK -> {
-                                collect(trackRepository.getTrack(state.value.mediaId)) {
-                                    if (it.artists.size == 1) {
-                                        val artist = it.artists[0]
-                                        addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtist(artist.artistId)
-                                        )
-                                    } else {
-                                        addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                                                state.value.mediaId,
-                                                state.value.mediaType
-                                            )
-                                        )
-                                    }
+                                addUiEvent(
+                                    ContextMenuUiEvent.NavigateToArtistsBottomSheet(
+                                        state.value.mediaId,
+                                        state.value.mediaType
+                                    )
+                                )
+                            }
+                            MediaType.ALBUM -> {
+                                addUiEvent(
+                                    ContextMenuUiEvent.NavigateToArtistsBottomSheet(
+                                        state.value.mediaId,
+                                        state.value.mediaType
+                                    )
+                                )
+                            }
+                            else -> throw UnsupportedOperationException("ViewArtists is not supported for media type ${state.value.mediaType}")
+                        }
+                    }
+                    is ContextMenuItem.ViewArtist -> {
+                        when (state.value.mediaType) {
+                            MediaType.TRACK -> {
+                                collect(trackRepository.getTrack(state.value.mediaId)) { track ->
+                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(track.artists[0].artistId))
                                 }
                             }
                             MediaType.ALBUM -> {
                                 collect(albumRepository.getAlbum(state.value.mediaId)) { album ->
-                                    if (album.artists.size == 1) {
-                                        val artist = album.artists[0]
-                                        addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtist(artist.artistId)
-                                        )
-                                    } else {
-                                        addUiEvent(
-                                            ContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                                                state.value.mediaId,
-                                                state.value.mediaType
-                                            )
-                                        )
-                                    }
+                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(album.artists[0].artistId))
                                 }
+                            }
+                            MediaType.ARTIST -> {
+                                addUiEvent(ContextMenuUiEvent.NavigateToArtist(state.value.mediaId))
                             }
                             else -> throw UnsupportedOperationException("ViewArtists is not supported for media type ${state.value.mediaType}")
                         }
@@ -182,7 +196,7 @@ object InitialContextMenuStateModule {
             menuTitle = "",
             mediaType = mediaType,
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
-            listItems = contextMenuItemsForMedia(mediaType, mediaGroupType),
+            listItems = listOf(),
             selectedSort = selectedSort,
             sortOrder = SortOrder.valueOf(sortOrder)
         )

@@ -1,25 +1,32 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.ListItem
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-class ArtistRowState(val artistId: String, val artistName: String) : ListItem {
+class ArtistRowState(val artistId: String, val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
     override val id = artistId
 }
 
-fun Artist.toArtistRowState(): ArtistRowState {
-    return ArtistRowState(artistId = artistId, artistName = artistName)
+fun Artist.toArtistRowState(shouldShowContextMenu: Boolean = false): ArtistRowState {
+    return ArtistRowState(artistId = artistId, artistName = artistName, shouldShowContextMenu = shouldShowContextMenu)
 }
 
 @Preview(showBackground = true)
@@ -27,30 +34,31 @@ fun Artist.toArtistRowState(): ArtistRowState {
 @Composable
 fun ArtistRowPreview(@PreviewParameter(ArtistRowStatePreviewParameterProvider::class) state: ArtistRowState) {
     ThemedPreview {
-        ArtistRow(state = state)
+        ArtistRow(state = state) {}
     }
 }
 
 @Composable
-fun ArtistRow(state: ArtistRowState, modifier: Modifier = Modifier) {
+fun ArtistRow(
+    state: ArtistRowState,
+    modifier: Modifier = Modifier,
+    onOverflowMenuIconClicked: () -> Unit = {}
+) {
     SingleLineListItem(
-        modifier = modifier
-//        supportingImage = { modifier ->
-//            Surface(
-//                color = MaterialTheme.colorScheme.inverseSurface,
-//                modifier = modifier.clip(CircleShape)
-//            ) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_artist),
-//                    contentDescription = stringResource(id = R.string.placeholder_artist_image),
-//                    modifier = Modifier
-//                        .fillMaxHeight()
-//                        .padding(AppDimensions.spacing.xSmall)
-//                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
-//                )
-//            }
-//        },
-//        supportingImageType = SupportingImageType.AVATAR,
+        modifier = modifier,
+        afterListContent = {
+            if (state.shouldShowContextMenu) {
+                IconButton(
+                    onClick = onOverflowMenuIconClicked,
+                    modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_overflow),
+                        contentDescription = stringResource(R.string.more)
+                    )
+                }
+            }
+        }
     ) {
         Text(
             text = state.artistName,
@@ -65,6 +73,7 @@ fun ArtistRow(state: ArtistRowState, modifier: Modifier = Modifier) {
 class ArtistRowStatePreviewParameterProvider :
     PreviewParameterProvider<ArtistRowState> {
     override val values = sequenceOf(
-        ArtistRowState("Melendi", "Melendi")
+        ArtistRowState("Melendi", "Melendi", true),
+        ArtistRowState("Melendi", "Melendi", false)
     )
 }

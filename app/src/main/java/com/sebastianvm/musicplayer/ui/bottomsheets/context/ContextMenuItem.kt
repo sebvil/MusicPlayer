@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.MediaType
 
 sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: Int) {
     object ViewArtists : ContextMenuItem(R.drawable.ic_artist, R.string.view_artists)
+    object ViewArtist : ContextMenuItem(R.drawable.ic_artist, R.string.view_artist)
     object ViewAlbum : ContextMenuItem(R.drawable.ic_album, R.string.view_album)
     object ViewGenre : ContextMenuItem(R.drawable.ic_genre, R.string.view_genre)
     object Play : ContextMenuItem(R.drawable.ic_play, R.string.play)
@@ -15,27 +16,32 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 }
 
 
-fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType): List<ContextMenuItem> {
+fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, artistCount: Int = 0): List<ContextMenuItem> {
     return when (mediaType) {
         MediaType.TRACK -> {
             if (mediaGroupType == MediaType.ALBUM) {
                 listOf(
                     ContextMenuItem.Play,
-                    ContextMenuItem.ViewArtists,
+                    if (artistCount == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                 )
             } else {
                 listOf(
                     ContextMenuItem.Play,
-                    ContextMenuItem.ViewArtists,
+                    if (artistCount == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                     ContextMenuItem.ViewAlbum
                 )
             }
         }
-        MediaType.ARTIST -> TODO()
+        MediaType.ARTIST -> {
+            listOf(
+                ContextMenuItem.PlayAllSongs,
+                ContextMenuItem.ViewArtist
+            )
+        }
         MediaType.ALBUM -> {
             listOf(
                 ContextMenuItem.PlayFromBeginning,
-                ContextMenuItem.ViewArtists,
+                if (artistCount == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                 ContextMenuItem.ViewAlbum
             )
         }

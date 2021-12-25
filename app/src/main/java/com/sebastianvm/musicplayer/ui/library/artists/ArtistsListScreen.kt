@@ -20,6 +20,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 interface ArtistsListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToArtist(artistId: String)
+    fun openContextMenu(artistId: String)
 }
 
 @Composable
@@ -35,6 +36,7 @@ fun ArtistsListScreen(
                     delegate.navigateToArtist(event.artistId)
                 }
                 is ArtistsListUiEvent.NavigateUp -> delegate.navigateUp()
+                is ArtistsListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
             }
         },
         topBar = {
@@ -57,12 +59,17 @@ fun ArtistsListScreen(
                     ArtistsListUserAction.ArtistClicked(artistId = artistId)
                 )
             }
+
+            override fun onContextMenuIconClicked(artistId: String) {
+                screenViewModel.handle(ArtistsListUserAction.ContextMenuIconClicked(artistId))
+            }
         })
     }
 }
 
 interface ArtistsListScreenDelegate {
     fun onArtistRowClicked(artistId: String) = Unit
+    fun onContextMenuIconClicked(artistId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -81,9 +88,13 @@ fun ArtistsListLayout(
 ) {
     LazyColumn {
         items(state.artistsList) { item ->
-            ArtistRow(state = item, modifier = Modifier.clickable {
-                delegate.onArtistRowClicked(item.artistId)
-            })
+            ArtistRow(
+                state = item,
+                modifier = Modifier.clickable {
+                    delegate.onArtistRowClicked(item.artistId)
+                },
+                onOverflowMenuIconClicked = { delegate.onContextMenuIconClicked(item.artistId) }
+            )
         }
     }
 }

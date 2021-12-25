@@ -55,6 +55,7 @@
     <string name="year">Year</string>
     <string name="more">More</string>
     <string name="track_number">Track number</string>
+    <string name="view_artist">View artist</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>
