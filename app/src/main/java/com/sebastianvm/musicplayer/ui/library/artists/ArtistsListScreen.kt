@@ -1,9 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,7 +14,6 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -80,10 +81,8 @@ fun ArtistsListLayout(
 ) {
     LazyColumn {
         items(state.artistsList) { item ->
-            ArtistRow(state = item, delegate = object : ListItemDelegate {
-                override fun onItemClicked() {
-                    delegate.onArtistRowClicked(item.artistId)
-                }
+            ArtistRow(state = item, modifier = Modifier.clickable {
+                delegate.onArtistRowClicked(item.artistId)
             })
         }
     }

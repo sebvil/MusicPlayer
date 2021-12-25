@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -28,13 +27,14 @@ fun Artist.toArtistRowState(): ArtistRowState {
 @Composable
 fun ArtistRowPreview(@PreviewParameter(ArtistRowStatePreviewParameterProvider::class) state: ArtistRowState) {
     ThemedPreview {
-        ArtistRow(state = state, delegate = object : ListItemDelegate {})
+        ArtistRow(state = state)
     }
 }
 
 @Composable
-fun ArtistRow(state: ArtistRowState, delegate: ListItemDelegate) {
+fun ArtistRow(state: ArtistRowState, modifier: Modifier = Modifier) {
     SingleLineListItem(
+        modifier = modifier
 //        supportingImage = { modifier ->
 //            Surface(
 //                color = MaterialTheme.colorScheme.inverseSurface,
@@ -51,7 +51,6 @@ fun ArtistRow(state: ArtistRowState, delegate: ListItemDelegate) {
 //            }
 //        },
 //        supportingImageType = SupportingImageType.AVATAR,
-        delegate = delegate
     ) {
         Text(
             text = state.artistName,

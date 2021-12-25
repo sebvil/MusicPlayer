@@ -7,7 +7,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumn
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnState
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -56,6 +55,6 @@ fun QueueLayout(state: QueueState, delegate: DraggableListItemDelegate<TrackRowS
         key = { item -> item.trackId },
         delegate = delegate
     ) { item ->
-        TrackRow(state = item, delegate = object : ListItemDelegate {})
+        TrackRow(state = item, onOverflowMenuIconClicked = {})
     }
 }

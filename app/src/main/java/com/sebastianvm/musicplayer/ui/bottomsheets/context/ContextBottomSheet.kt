@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -107,6 +107,7 @@ fun ContextMenuLayout(
             LazyColumn {
                 items(listItems, key = { it.text }) {
                     SingleLineListItem(
+                        modifier = Modifier.clickable { delegate.onRowClicked(it) },
                         supportingImage = { iconModifier ->
                             Icon(
                                 painter = painterResource(id = it.icon),
@@ -116,11 +117,6 @@ fun ContextMenuLayout(
                             )
                         },
                         supportingImageType = SupportingImageType.ICON,
-                        delegate = object : ListItemDelegate {
-                            override fun onItemClicked() {
-                                delegate.onRowClicked(it)
-                            }
-                        }
                     ) {
                         Text(
                             text = stringResource(id = it.text),

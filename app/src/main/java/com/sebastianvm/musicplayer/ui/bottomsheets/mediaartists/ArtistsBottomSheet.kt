@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
@@ -93,10 +93,8 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
             Divider(modifier = Modifier.fillMaxWidth())
         }
         items(state.artistsList) { item ->
-            ArtistRow(state = item, delegate = object : ListItemDelegate {
-                override fun onItemClicked() {
-                    delegate.onArtistRowClicked(item.artistId)
-                }
+            ArtistRow(state = item, modifier = Modifier.clickable {
+                delegate.onArtistRowClicked(item.artistId)
             })
         }
     }

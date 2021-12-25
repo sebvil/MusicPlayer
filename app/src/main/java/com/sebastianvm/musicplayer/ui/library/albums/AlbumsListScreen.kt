@@ -1,11 +1,13 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,7 +16,6 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -92,7 +93,10 @@ interface AlbumsListScreenDelegate {
 fun AlbumsListScreenPreview(@PreviewParameter(AlbumsListStatePreviewParameterProvider::class) state: AlbumsListState) {
     val lazyListState = rememberLazyListState()
     ScreenPreview {
-        AlbumsListLayout(state = state, listState = lazyListState, object : AlbumsListScreenDelegate {})
+        AlbumsListLayout(
+            state = state,
+            listState = lazyListState,
+            object : AlbumsListScreenDelegate {})
     }
 }
 
@@ -106,15 +110,10 @@ fun AlbumsListLayout(
         items(state.albumsList) { item ->
             AlbumRow(
                 state = item.albumRowState,
-                delegate = object : ListItemDelegate {
-                    override fun onItemClicked() {
-                        delegate.onAlbumClicked(item.albumId)
-                    }
-
-                    override fun onSecondaryActionIconClicked() {
-                        delegate.onAlbumContextButtonClicked(item.albumId)
-                    }
-                }
+                modifier = Modifier.clickable {
+                    delegate.onAlbumClicked(item.albumId)
+                },
+                onOverflowMenuIconClicked = { delegate.onAlbumContextButtonClicked(item.albumId) }
             )
         }
     }

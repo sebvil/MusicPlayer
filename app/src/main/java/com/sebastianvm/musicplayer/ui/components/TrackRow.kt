@@ -20,7 +20,6 @@ import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -40,17 +39,17 @@ data class TrackRowState(
 @Composable
 fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::class) state: TrackRowState) {
     ThemedPreview {
-        TrackRow(state = state, delegate = object : ListItemDelegate {})
+        TrackRow(state = state) {}
     }
 }
 
 @Composable
-fun TrackRow(state: TrackRowState, delegate: ListItemDelegate, modifier: Modifier = Modifier) {
+fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, onOverflowMenuIconClicked: () -> Unit) {
     DoubleLineListItem(
         modifier = modifier,
-        afterListContent = { onClick ->
+        afterListContent = {
             IconButton(
-                onClick = onClick,
+                onClick = onOverflowMenuIconClicked,
                 modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
             ) {
                 Icon(
@@ -59,7 +58,6 @@ fun TrackRow(state: TrackRowState, delegate: ListItemDelegate, modifier: Modifie
                 )
             }
         },
-        delegate = delegate,
         secondaryText = {
             Text(
                 text = state.artists,

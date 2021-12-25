@@ -7,6 +7,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -34,7 +35,6 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.LibraryTitle
 import com.sebastianvm.musicplayer.ui.components.ListWithHeader
 import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -287,6 +287,9 @@ fun LibraryList(
         { header -> LibraryTitle(title = header) },
         { item ->
             SingleLineListItem(
+                modifier = Modifier.clickable {
+                    delegate.onRowClicked(item.rowId)
+                },
                 supportingImage =
                 { iconModifier ->
                     Icon(
@@ -299,18 +302,18 @@ fun LibraryList(
                 supportingImageType = SupportingImageType.AVATAR,
                 afterListContent = {
                     Text(
-                        text = ResUtil.getQuantityString(LocalContext.current, item.countString, item.count.toInt(), item.count),
+                        text = ResUtil.getQuantityString(
+                            LocalContext.current,
+                            item.countString,
+                            item.count.toInt(),
+                            item.count
+                        ),
                         modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
-                delegate = object : ListItemDelegate {
-                    override fun onItemClicked() {
-                        delegate.onRowClicked(item.rowId)
-                    }
-                }
             ) {
                 Text(
                     text = stringResource(id = item.rowName),

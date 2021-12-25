@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.ui.components.lists
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -25,20 +23,13 @@ enum class SupportingImageType(val imageSize: Dp, val paddingEnd: Dp) {
     LARGE(56.dp, 16.dp)
 }
 
-interface ListItemDelegate {
-    fun onItemClicked() = Unit
-    fun onSecondaryActionIconClicked() = Unit
-    fun onItemLongPressed() = Unit
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SingleLineListItem(
     modifier: Modifier = Modifier,
     supportingImage: (@Composable (Modifier) -> Unit)? = null,
     supportingImageType: SupportingImageType? = null,
-    afterListContent: (@Composable (Modifier) -> Unit)? = null,
-    delegate: ListItemDelegate = object : ListItemDelegate {},
+    afterListContent: (@Composable () -> Unit)? = null,
     text: @Composable RowScope.() -> Unit,
 ) {
     val rowHeight = when (supportingImageType) {
@@ -50,7 +41,6 @@ fun SingleLineListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(rowHeight)
-            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
             .padding(start = AppDimensions.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -68,7 +58,7 @@ fun SingleLineListItem(
         text()
 
         if (afterListContent != null) {
-            afterListContent(Modifier.clickable { delegate.onSecondaryActionIconClicked() })
+            afterListContent()
         }
     }
 }
@@ -79,8 +69,7 @@ fun DoubleLineListItem(
     modifier: Modifier = Modifier,
     supportingImage: (@Composable RowScope.(Modifier) -> Unit)? = null,
     supportingImageType: SupportingImageType? = null,
-    afterListContent: (@Composable RowScope.(onClick: () -> Unit) -> Unit)? = null,
-    delegate: ListItemDelegate = object : ListItemDelegate {},
+    afterListContent: (@Composable RowScope.() -> Unit)? = null,
     secondaryText: @Composable ColumnScope.() -> Unit,
     primaryText: @Composable ColumnScope.() -> Unit,
 ) {
@@ -89,8 +78,6 @@ fun DoubleLineListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(rowHeight)
-            .clickable {  delegate.onItemClicked() }
-//            .combinedClickable(onLongClick = delegate::onItemLongPressed) { delegate.onItemClicked() }
             .padding(start = AppDimensions.spacing.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -115,7 +102,7 @@ fun DoubleLineListItem(
         }
 
         if (afterListContent != null) {
-            afterListContent { delegate.onSecondaryActionIconClicked() }
+            afterListContent()
         }
     }
 }

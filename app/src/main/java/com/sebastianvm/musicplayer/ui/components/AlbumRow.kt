@@ -20,7 +20,6 @@ import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
@@ -38,12 +37,12 @@ data class AlbumRowState(
 @Composable
 fun AlbumRowPreview(@PreviewParameter(AlbumRowStateProvider::class) state: AlbumRowState) {
     ThemedPreview {
-        AlbumRow(state = state, delegate = object : ListItemDelegate {})
+        AlbumRow(state = state) {}
     }
 }
 
 @Composable
-fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, delegate: ListItemDelegate) {
+fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, onOverflowMenuIconClicked: () -> Unit) {
     with(state) {
         DoubleLineListItem(
             modifier = modifier,
@@ -54,9 +53,9 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, delegate: List
                 )
             },
             supportingImageType = SupportingImageType.LARGE,
-            afterListContent = { onClick ->
+            afterListContent = {
                 IconButton(
-                    onClick = onClick,
+                    onClick = onOverflowMenuIconClicked,
                     modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                 ) {
                     Icon(
@@ -65,7 +64,6 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, delegate: List
                     )
                 }
             },
-            delegate = delegate,
             secondaryText = {
                 Row {
                     if (year != 0L) {
