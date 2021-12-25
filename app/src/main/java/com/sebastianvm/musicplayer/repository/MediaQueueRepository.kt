@@ -11,6 +11,7 @@ import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.toMediaMetadataCompat
 import com.sebastianvm.musicplayer.util.getStringComparator
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -66,13 +67,17 @@ class MediaQueueRepository @Inject constructor(
         sortKey: String
     ): Comparator<MediaMetadataCompat> {
         return when (sortKey) {
-            MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy<MediaMetadataCompat> {
+            MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy {
                 it.getLong(sortKey)
             }
             else -> getStringComparator(sortOrder) { metadata ->
                 metadata.getString(sortKey)
             }
         }
+    }
+
+    fun getAllQueues(): Flow<List<MediaQueue>> {
+        return mediaQueueDao.getAllQueues()
     }
 
 }

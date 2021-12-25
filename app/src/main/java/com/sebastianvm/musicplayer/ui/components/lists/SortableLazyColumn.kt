@@ -21,9 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -53,18 +55,16 @@ fun <T> SortableLazyColumn(
     var boxHeight by remember { mutableStateOf(0f) }
     val offsetY = remember { mutableStateOf(0f) }
     var height by remember { mutableStateOf(0f) }
+    val haptic = LocalHapticFeedback.current
+
 
     val hoveredIndex by remember {
         derivedStateOf {
-            if (listState.firstVisibleItemIndex == 0 && offsetY.value < height / 2) {
-                0
-            } else {
-                ((offsetY.value + listState.firstVisibleItemScrollOffset) / height + listState.firstVisibleItemIndex).let { num ->
-                    if (num.isNaN()) {
-                        num.toInt()
-                    } else {
-                        num.roundToInt()
-                    }
+            ((offsetY.value + listState.firstVisibleItemScrollOffset) / height + listState.firstVisibleItemIndex).let { num ->
+                if (num.isNaN()) {
+                    num.toInt()
+                } else {
+                    num.roundToInt()
                 }
             }
         }
@@ -81,9 +81,11 @@ fun <T> SortableLazyColumn(
                 Box(modifier = Modifier
                     .animateItemPlacement()
                     .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(onDragStart = {
-                            delegate.onDragStart(item)
-                        },
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                delegate.onDragStart(item)
+                            },
                             onDragEnd = {
                                 delegate.onDragEnd()
                             }) { _, dragAmount ->

@@ -20,6 +20,7 @@ import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.ListItemDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 
 
@@ -30,7 +31,7 @@ interface TracksListScreenNavigationDelegate {
     fun openContextMenu(
         mediaId: String,
         mediaGroup: MediaGroup,
-        currentSort: String,
+        currentSort: SortOption,
         sortOrder: SortOrder
     )
 }

@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.core.os.bundleOf
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.COMMAND_MOVE_ITEM
 import com.sebastianvm.musicplayer.player.EXTRA_FROM_INDEX
@@ -51,6 +52,10 @@ class QueueViewModel @Inject constructor(
                     }
                 }
             }
+        }
+
+        collect(mediaQueueRepository.getAllQueues()) { queues ->
+            setState { copy(queues = queues ) }
         }
     }
 
@@ -123,6 +128,7 @@ class QueueViewModel @Inject constructor(
 }
 
 data class QueueState(
+    val queues: List<MediaQueue>,
     val mediaGroup: MediaGroup?,
     val queueItems: List<TrackRowState>,
     val draggedItem: TrackRowState?,
@@ -135,7 +141,7 @@ object InitialQueueStateModule {
     @Provides
     @ViewModelScoped
     fun initialQueueStateProvider(): QueueState {
-        return QueueState(mediaGroup = null, queueItems = listOf(), draggedItem = null)
+        return QueueState(queues = listOf(), mediaGroup = null, queueItems = listOf(), draggedItem = null)
     }
 }
 

@@ -75,7 +75,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                 override fun openContextMenu(
                     mediaId: String,
                     mediaGroup: MediaGroup,
-                    currentSort: String,
+                    currentSort: SortOption,
                     sortOrder: SortOrder
                 ) {
                     navController.openContextMenu(

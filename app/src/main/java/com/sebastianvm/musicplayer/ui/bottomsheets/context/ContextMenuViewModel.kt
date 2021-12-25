@@ -3,19 +3,20 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
-import com.sebastianvm.musicplayer.player.SORT_ORDER
 import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -31,6 +33,7 @@ class ContextMenuViewModel @Inject constructor(
     initialState: ContextMenuState,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection
 ) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
 
@@ -62,18 +65,21 @@ class ContextMenuViewModel @Inject constructor(
         when (action) {
             is ContextMenuUserAction.RowClicked -> {
                 when (action.row) {
-                    is ContextMenuItem.Play -> {
+                    is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning -> {
                         val transportControls = musicServiceConnection.transportControls
-                        val extras = Bundle().apply {
-                            putParcelable(MEDIA_GROUP, state.value.mediaGroup)
-                            putString(
-                                SORT_BY,
-                                state.value.selectedSort
+                        viewModelScope.launch {
+                            val mediaGroup = state.value.mediaGroup
+                            mediaQueueRepository.createQueue(
+                                mediaGroup = mediaGroup,
+                                sortOrder = state.value.sortOrder,
+                                sortOption = SortOption.valueOf(state.value.selectedSort)
                             )
-                            putString(SORT_ORDER, state.value.sortOrder.name)
+                            val extras = Bundle().apply {
+                                putParcelable(MEDIA_GROUP, mediaGroup)
+                            }
+                            transportControls.playFromMediaId(state.value.mediaId, extras)
+                            addUiEvent(ContextMenuUiEvent.NavigateToPlayer)
                         }
-                        transportControls.playFromMediaId(state.value.mediaId, extras)
-                        addUiEvent(ContextMenuUiEvent.NavigateToPlayer)
                     }
                     is ContextMenuItem.ViewAlbum -> {
                         when (state.value.mediaType) {
@@ -91,21 +97,8 @@ class ContextMenuViewModel @Inject constructor(
                         }
 
                     }
-                    ContextMenuItem.PlayAllSongs -> TODO()
-                    ContextMenuItem.PlayFromBeginning -> {
-                        val transportControls = musicServiceConnection.transportControls
-                        val extras = Bundle().apply {
-                            putParcelable(MEDIA_GROUP, state.value.mediaGroup)
-                            putString(
-                                SORT_BY,
-                                state.value.selectedSort
-                            )
-                            putString(SORT_ORDER, state.value.sortOrder.name)
-                        }
-                        transportControls.playFromMediaId(state.value.mediaId, extras)
-                        addUiEvent(ContextMenuUiEvent.NavigateToPlayer)
-                    }
-                    ContextMenuItem.ViewArtists -> {
+                    is ContextMenuItem.PlayAllSongs -> TODO()
+                    is ContextMenuItem.ViewArtists -> {
                         when (state.value.mediaType) {
                             MediaType.TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) {

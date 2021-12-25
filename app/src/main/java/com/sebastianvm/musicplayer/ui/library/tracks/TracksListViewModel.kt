@@ -93,7 +93,7 @@ class TracksListViewModel @Inject constructor(
                             ?: MediaType.TRACK,
                         mediaId = state.value.genreName ?: ""
                     )
-                   mediaQueueRepository.createQueue(
+                    mediaQueueRepository.createQueue(
                         mediaGroup = mediaGroup,
                         sortOrder = state.value.sortOrder,
                         sortOption = state.value.currentSort
@@ -136,7 +136,7 @@ class TracksListViewModel @Inject constructor(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackId,
                         state.value.genreName,
-                        state.value.currentSort.metadataKey,
+                        state.value.currentSort,
                         state.value.sortOrder
                     )
                 )
@@ -207,7 +207,7 @@ sealed class TracksListUiEvent : UiEvent {
     data class OpenContextMenu(
         val trackId: String,
         val genreName: String?,
-        val currentSort: String,
+        val currentSort: SortOption,
         val sortOrder: SortOrder
     ) : TracksListUiEvent()
 

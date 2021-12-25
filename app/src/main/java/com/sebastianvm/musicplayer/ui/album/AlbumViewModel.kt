@@ -58,7 +58,7 @@ class AlbumViewModel @Inject constructor(
         collect(trackRepository.getTracksForAlbum(state.value.albumId)) { tracks ->
             setState {
                 copy(
-                    tracksList = tracks.map { it.toTrackRowState() }
+                    tracksList = tracks.map { it.toTrackRowState() }.sortedBy { it.trackNumber }
                 )
             }
         }

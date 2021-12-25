@@ -48,7 +48,11 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
 @Composable
 fun QueueLayout(state: QueueState, delegate: DraggableListItemDelegate<TrackRowState>) {
     SortableLazyColumn(
-        state = SortableLazyColumnState(state.queueItems, state.draggedItemIndex, state.draggedItem),
+        state = SortableLazyColumnState(
+            state.queueItems,
+            state.draggedItemIndex,
+            state.draggedItem
+        ),
         key = { item -> item.trackId },
         delegate = delegate
     ) { item ->
