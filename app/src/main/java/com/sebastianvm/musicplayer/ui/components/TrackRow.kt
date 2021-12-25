@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,7 +46,7 @@ fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::cla
 }
 
 @Composable
-fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, onOverflowMenuIconClicked: () -> Unit) {
+fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, color: Color = LocalContentColor.current, onOverflowMenuIconClicked: () -> Unit) {
     DoubleLineListItem(
         modifier = modifier,
         afterListContent = {
@@ -54,7 +56,8 @@ fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, onOverflowMenu
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_overflow),
-                    contentDescription = stringResource(R.string.more)
+                    contentDescription = stringResource(R.string.more),
+                    tint = color,
                 )
             }
         },
@@ -64,6 +67,7 @@ fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, onOverflowMenu
                 modifier = Modifier.alpha(0.8f).paddingFromBaseline(top = AppDimensions.spacing.mediumLarge),
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
+                color = color,
                 overflow = TextOverflow.Ellipsis
             )
         }) {
@@ -71,6 +75,7 @@ fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, onOverflowMenu
             text = state.trackName,
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 1,
+            color = color,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.xLarge)
         )

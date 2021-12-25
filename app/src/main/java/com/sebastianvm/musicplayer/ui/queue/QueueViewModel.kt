@@ -17,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.extensions.id
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,8 +34,7 @@ class QueueViewModel @Inject constructor(
     tracksRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection,
-
-    ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
+) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
         collect(musicServiceConnection.currentQueueId) { mediaGroup ->
@@ -55,7 +55,15 @@ class QueueViewModel @Inject constructor(
         }
 
         collect(mediaQueueRepository.getAllQueues()) { queues ->
-            setState { copy(queues = queues ) }
+            setState { copy(queues = queues) }
+        }
+
+        collect(musicServiceConnection.nowPlaying) { nowPlaying ->
+            setState {
+                copy(
+                    nowPlayingTrackId = nowPlaying.id ?: ""
+                )
+            }
         }
     }
 
@@ -70,7 +78,10 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
-                    musicServiceConnection.sendCommand(COMMAND_MOVE_ITEM, bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex))
+                    musicServiceConnection.sendCommand(
+                        COMMAND_MOVE_ITEM,
+                        bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex)
+                    )
                     setState {
                         copy(
                             queueItems = items,
@@ -133,6 +144,7 @@ data class QueueState(
     val queueItems: List<TrackRowState>,
     val draggedItem: TrackRowState?,
     val draggedItemIndex: Int = -1,
+    val nowPlayingTrackId: String
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -141,7 +153,13 @@ object InitialQueueStateModule {
     @Provides
     @ViewModelScoped
     fun initialQueueStateProvider(): QueueState {
-        return QueueState(queues = listOf(), mediaGroup = null, queueItems = listOf(), draggedItem = null)
+        return QueueState(
+            queues = listOf(),
+            mediaGroup = null,
+            queueItems = listOf(),
+            draggedItem = null,
+            nowPlayingTrackId = ""
+        )
     }
 }
 

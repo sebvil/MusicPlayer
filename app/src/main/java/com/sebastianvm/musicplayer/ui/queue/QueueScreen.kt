@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.queue
 
 import android.content.res.Configuration
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -55,6 +56,14 @@ fun QueueLayout(state: QueueState, delegate: DraggableListItemDelegate<TrackRowS
         key = { item -> item.trackId },
         delegate = delegate
     ) { item ->
-        TrackRow(state = item, onOverflowMenuIconClicked = {})
+        if (item.trackId == state.nowPlayingTrackId) {
+            TrackRow(
+                state = item,
+                onOverflowMenuIconClicked = {},
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            TrackRow(state = item, onOverflowMenuIconClicked = {})
+        }
     }
 }
