@@ -4,12 +4,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 
 
 fun NavGraphBuilder.artistNavDestination(navController: NavController) {
@@ -17,9 +22,22 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
         createNavRoute(NavRoutes.ARTIST, NavArgs.ARTIST_ID),
     ) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
-        ArtistScreen(screenViewModel) { albumId ->
-            navController.navigateToAlbum(albumId)
-        }
+        ArtistScreen(screenViewModel, delegate = object : ArtistScreenNavigationDelegate {
+            override fun navigateToAlbum(albumId: String) {
+                navController.navigateToAlbum(albumId)
+            }
+
+            override fun openContextMenu(albumId: String) {
+                navController.openContextMenu(
+                    mediaType = MediaType.ALBUM.name,
+                    mediaId = albumId,
+                    mediaGroup = MediaGroup(MediaType.ALBUM, albumId),
+                    currentSort = SortOption.TRACK_NUMBER,
+                    sortOrder = SortOrder.ASCENDING,
+                )
+            }
+
+        })
     }
 }
 

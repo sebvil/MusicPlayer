@@ -20,17 +20,25 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
+interface ArtistScreenNavigationDelegate {
+    fun navigateToAlbum(albumId: String)
+    fun openContextMenu(albumId: String)
+}
+
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
-    navigateToAlbum: (String) -> Unit
+    delegate: ArtistScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
                 is ArtistUiEvent.NavigateToAlbum -> {
-                    navigateToAlbum(event.albumId)
+                    delegate.navigateToAlbum(event.albumId)
+                }
+                is ArtistUiEvent.OpenContextMenu -> {
+                    delegate.openContextMenu(event.albumId)
                 }
             }
         },
@@ -40,6 +48,10 @@ fun ArtistScreen(
                 screenViewModel.handle(
                     ArtistUserAction.AlbumClicked(albumId = albumId)
                 )
+            }
+
+            override fun onAlbumOverflowMenuIconClicked(albumId: String) {
+                screenViewModel.handle(ArtistUserAction.AlbumContextButtonClicked(albumId = albumId))
             }
         })
     }
@@ -84,6 +96,7 @@ fun ArtistLayout(
 
 interface ArtistScreenRowDelegate {
     fun albumRowClicked(albumId: String) = Unit
+    fun onAlbumOverflowMenuIconClicked(albumId: String) = Unit
 }
 
 @Preview(showBackground = true)
@@ -117,7 +130,7 @@ fun ArtistScreenRow(
             AlbumRow(
                 state = item.state,
                 modifier = Modifier.clickable { delegate.albumRowClicked(item.albumId) },
-                onOverflowMenuIconClicked = {}
+                onOverflowMenuIconClicked = { delegate.onAlbumOverflowMenuIconClicked(item.albumId) }
             )
         }
     }

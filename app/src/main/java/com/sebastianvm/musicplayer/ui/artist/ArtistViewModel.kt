@@ -112,6 +112,9 @@ class ArtistViewModel @Inject constructor(
             is ArtistUserAction.AlbumClicked -> {
                 addUiEvent(ArtistUiEvent.NavigateToAlbum(action.albumId))
             }
+            is ArtistUserAction.AlbumContextButtonClicked -> {
+                addUiEvent(ArtistUiEvent.OpenContextMenu(action.albumId))
+            }
         }
     }
 
@@ -155,9 +158,12 @@ object InitialArtistState {
 
 sealed class ArtistUserAction : UserAction {
     data class AlbumClicked(val albumId: String) : ArtistUserAction()
+    data class AlbumContextButtonClicked(val albumId: String) : ArtistUserAction()
 }
 
 sealed class ArtistUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()
+    data class OpenContextMenu(val albumId: String) : ArtistUiEvent()
+
 }
 
