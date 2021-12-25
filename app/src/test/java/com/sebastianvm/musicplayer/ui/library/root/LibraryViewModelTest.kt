@@ -80,7 +80,7 @@ class LibraryViewModelTest {
     fun `RowClicked adds nav NavigateToScreen event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<LibraryUiEvent.NavigateToScreen>(this@runTest) {
-                assertEquals(ROW_ID, rowGid)
+                assertEquals(ROW_ID, rowId)
             }
             handle(LibraryUserAction.RowClicked(ROW_ID))
         }

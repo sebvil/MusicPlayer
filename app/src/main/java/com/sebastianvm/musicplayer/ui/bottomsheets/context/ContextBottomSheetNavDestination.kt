@@ -18,6 +18,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
@@ -60,12 +61,12 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                     }
                 }
 
-                override fun navigateToAlbum(albumGid: String) {
-                    navController.navigateToAlbum(albumGid)
+                override fun navigateToAlbum(albumId: String) {
+                    navController.navigateToAlbum(albumId)
                 }
 
-                override fun navigateToArtist(artistGid: String) {
-                    navController.navigateToArtist(artistGid)
+                override fun navigateToArtist(artistId: String) {
+                    navController.navigateToArtist(artistId)
                 }
 
                 override fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) {
@@ -81,7 +82,7 @@ fun NavController.openContextMenu(
     mediaType: String,
     mediaId: String,
     mediaGroup: MediaGroup,
-    currentSort: String,
+    currentSort: SortOption,
     sortOrder: SortOrder
 ) {
     navigateTo(
@@ -90,7 +91,7 @@ fun NavController.openContextMenu(
         NavArgument(NavArgs.MEDIA_TYPE, mediaType),
         NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
-        NavArgument(NavArgs.SORT_OPTION, currentSort),
+        NavArgument(NavArgs.SORT_OPTION, currentSort.name),
         NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
     )
 }

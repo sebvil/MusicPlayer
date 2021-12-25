@@ -14,8 +14,8 @@ class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicP
             artists = "Melendi, Carlos Vives",
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackGid = null,
-            albumGid = null,
+            trackId = null,
+            albumId = null,
             trackArt = MediaArt(
                 uris = listOf(),
                 contentDescription = DisplayableString.StringValue(""),

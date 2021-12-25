@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -45,7 +44,7 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
                     mediaType = MediaType.ALBUM.name,
                     mediaId = albumId,
                     mediaGroup = MediaGroup(MediaType.ALBUM, albumId),
-                    currentSort = MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
+                    currentSort = SortOption.TRACK_NUMBER,
                     sortOrder = SortOrder.ASCENDING,
                 )
             }

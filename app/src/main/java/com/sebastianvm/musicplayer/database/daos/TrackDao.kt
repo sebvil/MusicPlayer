@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.MediaType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,36 +28,52 @@ interface TrackDao {
     fun getAllTracks(): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("SELECT * FROM Track WHERE trackGid in (:trackGids)")
-    fun getTracks(trackGids: List<String>): Flow<List<FullTrackInfo>>
+    @Query("SELECT * FROM Track WHERE trackId in (:trackIds)")
+    fun getTracks(trackIds: List<String>): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("SELECT * FROM Track WHERE trackGid=:trackGid")
-    fun getTrack(trackGid: String): Flow<FullTrackInfo>
+    @Query("SELECT * FROM Track WHERE trackId=:trackId")
+    fun getTrack(trackId: String): Flow<FullTrackInfo>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT Track.* FROM Track 
-        INNER JOIN ArtistTrackCrossRef ON Track.trackGid = ArtistTrackCrossRef.trackGid
-        WHERE ArtistTrackCrossRef.artistGid=:artistId
-    """)
-    fun getTracksForArtist(artistId: String) : Flow<List<FullTrackInfo>>
+        INNER JOIN ArtistTrackCrossRef ON Track.trackId = ArtistTrackCrossRef.trackId
+        WHERE ArtistTrackCrossRef.artistId=:artistId
+    """
+    )
+    fun getTracksForArtist(artistId: String): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM Track 
-        WHERE Track.albumGid=:albumId
-    """)
-    fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>>
+        WHERE Track.albumId=:albumId
+    """
+    )
+    fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT Track.* FROM Track 
-        INNER JOIN GenreTrackCrossRef ON Track.trackGid = GenreTrackCrossRef.trackGid
+        INNER JOIN GenreTrackCrossRef ON Track.trackId = GenreTrackCrossRef.trackId
         WHERE GenreTrackCrossRef.genreName=:genreName
-    """)
-    fun getTracksForGenre(genreName: String) : Flow<List<FullTrackInfo>>
+    """
+    )
+    fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>>
 
+    @Transaction
+    @Query(
+        """
+        SELECT Track.* FROM Track 
+        INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
+        WHERE MediaQueueTrackCrossRef.mediaType=:mediaType AND MediaQueueTrackCrossRef.groupMediaId=:groupMediaId 
+        ORDER BY MediaQueueTrackCrossRef.trackIndex ASC
+    """
+    )
+    fun getTracksForQueue(mediaType: MediaType, groupMediaId: String): Flow<List<FullTrackInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

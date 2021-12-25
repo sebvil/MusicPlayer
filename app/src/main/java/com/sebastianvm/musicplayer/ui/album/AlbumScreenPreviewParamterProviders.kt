@@ -11,7 +11,7 @@ class AlbumStatePreviewParameterProvider :
     PreviewParameterProvider<AlbumState> {
     override val values = sequenceOf(
         AlbumState(
-            albumGid = "0",
+            albumId = "0",
             albumHeaderItem =  HeaderWithImageState(
                 image = MediaArt(
                     uris = listOf(),

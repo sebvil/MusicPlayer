@@ -10,11 +10,11 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 fun FullTrackInfo.toMediaMetadataCompat(): MediaMetadataCompat {
     return MediaMetadataCompat.Builder().apply {
         val uri = ContentUris.withAppendedId(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,  this@toMediaMetadataCompat.track.trackGid.toLong()
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,  this@toMediaMetadataCompat.track.trackId.toLong()
         )
         mediaUri = uri
-        id = this@toMediaMetadataCompat.track.trackGid
-        albumId = this@toMediaMetadataCompat.album.albumGid
+        id = this@toMediaMetadataCompat.track.trackId
+        albumId = this@toMediaMetadataCompat.album.albumId
         title = this@toMediaMetadataCompat.track.trackName
         album = this@toMediaMetadataCompat.album.albumName
         artist = this@toMediaMetadataCompat.artists.joinToString(", ") { it.artistName }

@@ -40,11 +40,11 @@ fun AlbumScreen(
         }) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
             override fun onTrackClicked(trackId: String) {
-                screenVieModel.handle(AlbumUserAction.TrackClicked(trackGid = trackId))
+                screenVieModel.handle(AlbumUserAction.TrackClicked(trackId = trackId))
             }
 
             override fun onTrackContextMenuClicked(trackId: String) {
-                screenVieModel.handle(AlbumUserAction.TrackContextMenuClicked(trackGid = trackId))
+                screenVieModel.handle(AlbumUserAction.TrackContextMenuClicked(trackId = trackId))
             }
         })
     }
@@ -87,11 +87,11 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                         state = i,
                         delegate = object : ListItemDelegate {
                             override fun onItemClicked() {
-                                delegate.onTrackClicked(i.trackGid)
+                                delegate.onTrackClicked(i.trackId)
                             }
 
                             override fun onSecondaryActionIconClicked() {
-                                delegate.onTrackContextMenuClicked(i.trackGid)
+                                delegate.onTrackContextMenuClicked(i.trackId)
                             }
                         }
                     )

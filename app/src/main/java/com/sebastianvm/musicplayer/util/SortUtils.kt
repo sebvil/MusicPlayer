@@ -22,7 +22,8 @@ enum class SortOption(@StringRes val id: Int, val metadataKey: String) {
     TRACK_NAME(R.string.track_name, MediaMetadataCompat.METADATA_KEY_TITLE),
     ARTIST_NAME(R.string.artist_name, MediaMetadataCompat.METADATA_KEY_ARTIST),
     ALBUM_NAME(R.string.album_name, MediaMetadataCompat.METADATA_KEY_ALBUM),
-    YEAR(R.string.year, MediaMetadataCompat.METADATA_KEY_YEAR);
+    YEAR(R.string.year, MediaMetadataCompat.METADATA_KEY_YEAR),
+    TRACK_NUMBER(R.string.track_number, MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER);
 
     companion object {
         fun fromResId(@StringRes resId: Int): SortOption {

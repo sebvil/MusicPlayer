@@ -2,7 +2,12 @@ package com.sebastianvm.musicplayer.database
 
 import android.content.Context
 import androidx.room.Room
-import com.sebastianvm.musicplayer.database.daos.*
+import com.sebastianvm.musicplayer.database.daos.AlbumDao
+import com.sebastianvm.musicplayer.database.daos.ArtistDao
+import com.sebastianvm.musicplayer.database.daos.GenreDao
+import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.database.daos.TrackDao
+import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,6 +47,12 @@ object DatabaseModule {
     @Singleton
     fun provideTrackFtsDao(database: MusicDatabase): TrackFtsDao {
         return database.trackFtsDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
+        return database.mediaQueueDao
     }
 
     @Provides

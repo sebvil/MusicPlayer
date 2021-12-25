@@ -13,12 +13,12 @@ interface AlbumDao {
     fun getAlbumsCount(): Flow<Long>
 
     @Transaction
-    @Query("SELECT * from Album WHERE Album.albumGid IN (:albumGids)")
-    fun getAlbums(albumGids: List<String>): Flow<List<AlbumWithArtists>>
+    @Query("SELECT * from Album WHERE Album.albumId IN (:albumIds)")
+    fun getAlbums(albumIds: List<String>): Flow<List<AlbumWithArtists>>
 
     @Transaction
-    @Query("SELECT * from Album WHERE Album.albumGid=:albumGid")
-    fun getAlbum(albumGid: String): Flow<FullAlbumInfo>
+    @Query("SELECT * from Album WHERE Album.albumId=:albumId")
+    fun getAlbum(albumId: String): Flow<FullAlbumInfo>
 
 
     @Transaction

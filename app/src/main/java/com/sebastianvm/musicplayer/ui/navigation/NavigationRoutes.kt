@@ -18,12 +18,13 @@ object NavRoutes {
     const val SORT = "SORT"
     const val CONTEXT = "CONTEXT"
     const val MEDIA_ARTISTS = "MEDIA_ARTISTS"
+    const val QUEUE = "QUEUE"
 }
 
 object NavArgs {
     const val GENRE_NAME = "genreName"
-    const val ALBUM_GID = "albumGid"
-    const val ARTIST_GID = "artistGid"
+    const val ALBUM_ID = "albumId"
+    const val ARTIST_ID = "artistId"
     const val SCREEN = "screen"
     const val SORT_OPTION = "sortOption"
     const val SORT_ORDER = "sortOrder"

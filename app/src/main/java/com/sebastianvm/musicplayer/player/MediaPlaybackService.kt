@@ -18,12 +18,10 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
-import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +48,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     private lateinit var stateBuilder: PlaybackStateCompat.Builder
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var currentPlayer: Player
-    private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
+    private var currentPlaylistItems: MutableList<MediaMetadataCompat> = mutableListOf()
 
     private var isForegroundService = false
 
@@ -86,6 +84,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlaybackPreparer(PlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(QueueNavigator())
         mediaSessionConnector.setMediaMetadataProvider(MetadataProvider())
+        mediaSessionConnector.registerCustomCommandReceiver(MediaCommandReceiver())
         switchToPlayer(
             previousPlayer = null,
             newPlayer = exoPlayer
@@ -157,7 +156,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         // on an album), find which window index to play first so that the song the
         // user actually wants to hear plays first.
         val initialWindowIndex = if (itemToPlay == null) 0 else metadataList.indexOf(itemToPlay)
-        currentPlaylistItems = metadataList
+        currentPlaylistItems = metadataList.toMutableList()
 
         currentPlayer.playWhenReady = playWhenReady
         currentPlayer.stop()
@@ -224,39 +223,21 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
-            val mediaGroup =
-                extras?.getParcelable<MediaGroup>(MEDIA_GROUP)
-            val sortBy = extras?.getString(SORT_BY) ?: MediaMetadataCompat.METADATA_KEY_TITLE
-            val sortOrder =
-                SortOrder.valueOf(extras?.getString(SORT_ORDER) ?: SortOrder.ASCENDING.name)
+            val queueId = extras?.getParcelable<MediaGroup>(MEDIA_GROUP)
             CoroutineScope(Dispatchers.IO).launch {
-                mediaGroup?.also {
+                queueId?.also {
                     browseTree.getTracksList(it).first().also { tracks ->
                         val itemToPlay = tracks.find { item -> item.id == mediaId }
                         withContext(Dispatchers.Main) {
                             preparePlaylist(
                                 itemToPlay,
-                                tracks.sortedWith(getTrackComparator(sortOrder, sortBy)),
+                                tracks,
                                 playWhenReady,
                                 0
                             )
                         }
                     }
-                }
-            }
-
-        }
-
-        private fun getTrackComparator(
-            sortOrder: SortOrder,
-            sortKey: String
-        ): Comparator<MediaMetadataCompat> {
-            return when (sortKey) {
-                MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy<MediaMetadataCompat> {
-                    it.getLong(sortKey)
-                }
-                else -> getStringComparator(sortOrder) { metadata ->
-                    metadata.getString(sortKey)
+                    mediaSession.setExtras(Bundle().apply { putParcelable(MEDIA_GROUP, queueId) })
                 }
             }
         }
@@ -264,7 +245,11 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         /**
          * This method is used by the Google Assistant to respond to requests such as:
          */
-        override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) =
+        override fun onPrepareFromSearch(
+            query: String,
+            playWhenReady: Boolean,
+            extras: Bundle?
+        ) =
             Unit
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
@@ -273,7 +258,10 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
     }
 
     private inner class QueueNavigator : TimelineQueueNavigator(mediaSession) {
-        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
+        override fun getMediaDescription(
+            player: Player,
+            windowIndex: Int
+        ): MediaDescriptionCompat {
             return currentPlaylistItems[windowIndex].description
         }
     }
@@ -288,6 +276,26 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
+    private inner class MediaCommandReceiver : MediaSessionConnector.CommandReceiver {
+        override fun onCommand(
+            player: Player,
+            command: String,
+            extras: Bundle?,
+            cb: ResultReceiver?
+        ): Boolean {
+            return when (command) {
+                COMMAND_MOVE_ITEM -> {
+                    val fromIndex = extras?.getInt(EXTRA_FROM_INDEX) ?: return false
+                    val toIndex = extras.getInt(EXTRA_TO_INDEX)
+                    player.moveMediaItem(fromIndex, toIndex)
+                    val item = currentPlaylistItems[fromIndex]
+                    currentPlaylistItems.add(toIndex, item)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
 
     /**
      * Listen for notification events.

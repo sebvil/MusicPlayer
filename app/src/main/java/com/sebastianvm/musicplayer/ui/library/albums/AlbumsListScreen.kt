@@ -38,7 +38,7 @@ fun AlbumsListScreen(
         eventHandler = { event ->
             when (event) {
                 is AlbumsListUiEvent.NavigateToAlbum -> {
-                    delegate.navigateToAlbum(event.albumGid)
+                    delegate.navigateToAlbum(event.albumId)
                 }
                 is AlbumsListUiEvent.NavigateUp -> {
                     delegate.navigateUp()
@@ -69,8 +69,8 @@ fun AlbumsListScreen(
             )
         }) { state ->
         AlbumsListLayout(state = state, listState = listState, object : AlbumsListScreenDelegate {
-            override fun onAlbumClicked(albumGid: String) {
-                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumGid))
+            override fun onAlbumClicked(albumId: String) {
+                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumId))
             }
 
             override fun onAlbumContextButtonClicked(albumId: String) {
@@ -81,7 +81,7 @@ fun AlbumsListScreen(
 }
 
 interface AlbumsListScreenDelegate {
-    fun onAlbumClicked(albumGid: String) = Unit
+    fun onAlbumClicked(albumId: String) = Unit
     fun onAlbumContextButtonClicked(albumId: String) = Unit
 }
 
@@ -108,11 +108,11 @@ fun AlbumsListLayout(
                 state = item.albumRowState,
                 delegate = object : ListItemDelegate {
                     override fun onItemClicked() {
-                        delegate.onAlbumClicked(item.albumGid)
+                        delegate.onAlbumClicked(item.albumId)
                     }
 
                     override fun onSecondaryActionIconClicked() {
-                        delegate.onAlbumContextButtonClicked(item.albumGid)
+                        delegate.onAlbumContextButtonClicked(item.albumId)
                     }
                 }
             )

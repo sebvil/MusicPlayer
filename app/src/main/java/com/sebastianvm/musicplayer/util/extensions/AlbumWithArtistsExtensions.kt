@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.util.AlbumType
 
 fun AlbumWithArtists.toMediaMetadataCompat(albumTypeForArtist: AlbumType) : MediaMetadataCompat {
     return MediaMetadataCompat.Builder().apply {
-        id = this@toMediaMetadataCompat.album.albumGid
+        id = this@toMediaMetadataCompat.album.albumId
         album = this@toMediaMetadataCompat.album.albumName
         albumArtists = this@toMediaMetadataCompat.artists.joinToString(", ") { it.artistName }
         year = this@toMediaMetadataCompat.album.year

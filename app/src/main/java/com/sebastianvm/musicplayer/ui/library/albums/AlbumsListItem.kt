@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 
 // TODO combine with albumRowItem
 class AlbumsListItem(
-    val albumGid: String,
+    val albumId: String,
     val albumRowState: AlbumRowState,
 ) : ListItem {
-    override val gid = albumGid
+    override val id = albumId
 }

@@ -10,8 +10,7 @@ import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
-import com.sebastianvm.musicplayer.player.SORT_ORDER
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -40,6 +39,7 @@ class TracksListViewModel @Inject constructor(
     trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection,
     private val preferencesRepository: PreferencesRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
     initialState
 ) {
@@ -87,20 +87,25 @@ class TracksListViewModel @Inject constructor(
         when (action) {
             is TracksListUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
-                val extras = Bundle().apply {
-                    putParcelable(
-                        MEDIA_GROUP,
-                        MediaGroup(
-                            mediaType = state.value.genreName?.let { MediaType.GENRE }
-                                ?: MediaType.TRACK,
-                            mediaId = state.value.genreName ?: ""
-                        )
+                viewModelScope.launch {
+                    val mediaGroup = MediaGroup(
+                        mediaType = state.value.genreName?.let { MediaType.GENRE }
+                            ?: MediaType.TRACK,
+                        mediaId = state.value.genreName ?: ""
                     )
-                    putString(SORT_BY, state.value.currentSort.metadataKey)
-                    putString(SORT_ORDER, state.value.sortOrder.name)
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = state.value.sortOrder,
+                        sortOption = state.value.currentSort
+                    )
+                    val extras = Bundle().apply {
+                        putParcelable(MEDIA_GROUP, mediaGroup)
+                    }
+                    transportControls.playFromMediaId(action.trackId, extras)
+                    addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
-                transportControls.playFromMediaId(action.trackGid, extras)
-                addUiEvent(TracksListUiEvent.NavigateToPlayer)
+
+
             }
             is TracksListUserAction.SortByClicked -> {
                 addUiEvent(
@@ -129,9 +134,9 @@ class TracksListViewModel @Inject constructor(
             is TracksListUserAction.TrackContextMenuClicked -> {
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
-                        action.trackGid,
+                        action.trackId,
                         state.value.genreName,
-                        state.value.currentSort.metadataKey,
+                        state.value.currentSort,
                         state.value.sortOrder
                     )
                 )
@@ -185,10 +190,10 @@ object InitialTracksListStateModule {
 }
 
 sealed class TracksListUserAction : UserAction {
-    data class TrackClicked(val trackGid: String) : TracksListUserAction()
+    data class TrackClicked(val trackId: String) : TracksListUserAction()
     object SortByClicked : TracksListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
-    data class TrackContextMenuClicked(val trackGid: String) : TracksListUserAction()
+    data class TrackContextMenuClicked(val trackId: String) : TracksListUserAction()
     object UpButtonClicked : TracksListUserAction()
 }
 
@@ -200,9 +205,9 @@ sealed class TracksListUiEvent : UiEvent {
     object NavigateUp : TracksListUiEvent()
 
     data class OpenContextMenu(
-        val trackGid: String,
+        val trackId: String,
         val genreName: String?,
-        val currentSort: String,
+        val currentSort: SortOption,
         val sortOrder: SortOrder
     ) : TracksListUiEvent()
 

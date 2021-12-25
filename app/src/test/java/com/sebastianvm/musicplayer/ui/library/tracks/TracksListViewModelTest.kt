@@ -83,9 +83,9 @@ class TracksListViewModelTest {
 
         with(generateViewModel(musicServiceConnection)) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_GID))
+            handle(TracksListUserAction.TrackClicked(TRACK_ID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_GID),
+                eq(TRACK_ID),
                 org.mockito.kotlin.check {
                     assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
                 }
@@ -108,9 +108,9 @@ class TracksListViewModelTest {
             )
         ) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_GID))
+            handle(TracksListUserAction.TrackClicked(TRACK_ID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_GID),
+                eq(TRACK_ID),
                 org.mockito.kotlin.check {
                     assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
                 }
@@ -134,9 +134,9 @@ class TracksListViewModelTest {
                 )
             ) {
                 expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-                handle(TracksListUserAction.TrackClicked(TRACK_GID))
+                handle(TracksListUserAction.TrackClicked(TRACK_ID))
                 verify(musicServiceConnection.transportControls).playFromMediaId(
-                    eq(TRACK_GID),
+                    eq(TRACK_ID),
                     org.mockito.kotlin.check {
                         assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
                     }
@@ -185,7 +185,7 @@ class TracksListViewModelTest {
 
     companion object {
         private const val GENRE_NAME = "GENRE_NAME"
-        private const val TRACK_GID = "TRACK_GID"
+        private const val TRACK_ID = "TRACK_ID"
     }
 
 

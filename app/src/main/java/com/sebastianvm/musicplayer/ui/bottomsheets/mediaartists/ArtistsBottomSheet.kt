@@ -95,7 +95,7 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
         items(state.artistsList) { item ->
             ArtistRow(state = item, delegate = object : ListItemDelegate {
                 override fun onItemClicked() {
-                    delegate.onArtistRowClicked(item.artistGid)
+                    delegate.onArtistRowClicked(item.artistId)
                 }
             })
         }

@@ -41,6 +41,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+
+// TODO investigate scan not starting after permission granted
 interface LibraryScreenActivityDelegate {
     @PermissionStatus
     fun getPermissionStatus(permission: String): String
@@ -92,7 +94,7 @@ fun LibraryScreen(
                     }
                 }
                 is LibraryUiEvent.NavigateToScreen -> {
-                    delegate.navigateToLibraryScreen(event.rowGid)
+                    delegate.navigateToLibraryScreen(event.rowId)
                 }
                 is LibraryUiEvent.RequestPermission -> {
                     requestStoragePermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -121,8 +123,8 @@ fun LibraryScreen(
         LibraryLayout(
             state = state,
             object : LibraryScreenDelegate {
-                override fun onRowClicked(rowGid: String) {
-                    screenViewModel.handle(LibraryUserAction.RowClicked(rowGid = rowGid))
+                override fun onRowClicked(rowId: String) {
+                    screenViewModel.handle(LibraryUserAction.RowClicked(rowId = rowId))
                 }
 
                 override fun onPermissionDeniedDialogDismissRequest() {
@@ -222,7 +224,7 @@ fun PermissionDeniedDialog(delegate: PermissionDeniedDialogDelegate) {
 fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
     ScreenPreview {
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {
-            override fun onRowClicked(rowGid: String) = Unit
+            override fun onRowClicked(rowId: String) = Unit
 
             override fun onPermissionDeniedDialogDismissRequest() = Unit
 
@@ -271,7 +273,7 @@ fun ScanFab(onClick: () -> Unit = {}) {
 }
 
 interface LibraryListDelegate {
-    fun onRowClicked(rowGid: String)
+    fun onRowClicked(rowId: String)
 }
 
 @Composable

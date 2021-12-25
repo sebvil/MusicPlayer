@@ -60,11 +60,11 @@ class AlbumsListViewModel @Inject constructor(
 
     private fun FullAlbumInfo.toAlbumsListItem(): AlbumsListItem {
         return AlbumsListItem(
-            albumGid = album.albumGid,
+            albumId = album.albumId,
             AlbumRowState(
                 albumName = album.albumName,
                 image = ArtLoader.getAlbumArt(
-                    albumGid = album.albumGid.toLong(),
+                    albumId = album.albumId.toLong(),
                     albumName = album.albumName
                 ),
                 year = album.year,
@@ -77,7 +77,7 @@ class AlbumsListViewModel @Inject constructor(
         when (action) {
             is AlbumsListUserAction.AlbumClicked -> {
                 addUiEvent(
-                    AlbumsListUiEvent.NavigateToAlbum(action.albumGid)
+                    AlbumsListUiEvent.NavigateToAlbum(action.albumId)
                 )
             }
             is AlbumsListUserAction.UpButtonClicked -> addUiEvent(AlbumsListUiEvent.NavigateUp)
@@ -146,7 +146,7 @@ object InitialAlbumsListStateModule {
 }
 
 sealed class AlbumsListUserAction : UserAction {
-    data class AlbumClicked(val albumGid: String) : AlbumsListUserAction()
+    data class AlbumClicked(val albumId: String) : AlbumsListUserAction()
     object UpButtonClicked : AlbumsListUserAction()
     object SortByClicked : AlbumsListUserAction()
     data class SortOptionClicked(val newSortOption: SortOption) : AlbumsListUserAction()
@@ -154,7 +154,7 @@ sealed class AlbumsListUserAction : UserAction {
 }
 
 sealed class AlbumsListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumGid: String) : AlbumsListUiEvent()
+    data class NavigateToAlbum(val albumId: String) : AlbumsListUiEvent()
     object NavigateUp : AlbumsListUiEvent()
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
         AlbumsListUiEvent()

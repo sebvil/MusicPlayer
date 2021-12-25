@@ -31,7 +31,7 @@ fun ArtistsListScreen(
         eventHandler = { event ->
             when (event) {
                 is ArtistsListUiEvent.NavigateToArtist -> {
-                    delegate.navigateToArtist(event.artistGid)
+                    delegate.navigateToArtist(event.artistId)
                 }
                 is ArtistsListUiEvent.NavigateUp -> delegate.navigateUp()
             }
@@ -51,9 +51,9 @@ fun ArtistsListScreen(
         }
     ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
-            override fun onArtistRowClicked(artistGid: String) {
+            override fun onArtistRowClicked(artistId: String) {
                 screenViewModel.handle(
-                    ArtistsListUserAction.ArtistClicked(artistGid = artistGid)
+                    ArtistsListUserAction.ArtistClicked(artistId = artistId)
                 )
             }
         })
@@ -61,7 +61,7 @@ fun ArtistsListScreen(
 }
 
 interface ArtistsListScreenDelegate {
-    fun onArtistRowClicked(artistGid: String) = Unit
+    fun onArtistRowClicked(artistId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -82,7 +82,7 @@ fun ArtistsListLayout(
         items(state.artistsList) { item ->
             ArtistRow(state = item, delegate = object : ListItemDelegate {
                 override fun onItemClicked() {
-                    delegate.onArtistRowClicked(item.artistGid)
+                    delegate.onArtistRowClicked(item.artistId)
                 }
             })
         }

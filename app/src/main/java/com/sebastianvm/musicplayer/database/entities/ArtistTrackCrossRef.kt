@@ -3,10 +3,10 @@ package com.sebastianvm.musicplayer.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 
-@Entity(primaryKeys = ["artistGid", "trackGid"])
+@Entity(primaryKeys = ["artistId", "trackId"])
 data class ArtistTrackCrossRef(
-    val artistGid: String,
+    val artistId: String,
     @ColumnInfo(index = true)
-    val trackGid: String,
+    val trackId: String,
 )
 

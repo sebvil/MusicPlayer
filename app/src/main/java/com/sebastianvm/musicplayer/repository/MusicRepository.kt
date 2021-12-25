@@ -44,14 +44,14 @@ class MusicRepository @Inject constructor(
         trackNumber: Long,
         numTracks: Long,
         duration: Long,
-        albumGid: String
+        albumId: String
     ) {
         val track = Track(
             id,
             title,
             trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
             duration,
-            albumGid
+            albumId
         )
         val trackArtists = parseTag(artists)
         val artistTrackCrossRefs = trackArtists.map { ArtistTrackCrossRef(it, id) }
@@ -59,14 +59,14 @@ class MusicRepository @Inject constructor(
         val trackGenres = parseTag(genres).map { Genre(it) }
         val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
         val albumArtistsList = parseTag(albumArtists).map { Artist(it, it) }
-        val album = Album(albumGid, albumName, year, "", numTracks)
+        val album = Album(albumId, albumName, year, "", numTracks)
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->
-            if (artistName in albumArtistsList.map { it.artistGid }) {
-                albumForArtists.add(AlbumsForArtist(albumGid, artistName))
+            if (artistName in albumArtistsList.map { it.artistId }) {
+                albumForArtists.add(AlbumsForArtist(albumId, artistName))
             } else {
-                appearsOnForArtists.add(AppearsOnForArtist(albumGid, artistName))
+                appearsOnForArtists.add(AppearsOnForArtist(albumId, artistName))
             }
         }
 

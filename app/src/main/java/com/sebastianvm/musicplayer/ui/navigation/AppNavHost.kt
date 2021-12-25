@@ -1,10 +1,12 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,6 +23,7 @@ import com.sebastianvm.musicplayer.ui.library.genres.genresListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracks.tracksListNavDestination
 import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
+import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +37,7 @@ fun AppNavHost(
         NavHost(
             navController = navController,
             startDestination = NavRoutes.LIBRARY,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues).onSizeChanged { Log.i("QUEUE", "ScreenSize = $it") }
         ) {
 
             libraryGraph(
@@ -42,6 +45,7 @@ fun AppNavHost(
                 requestPermission = requestPermission,
             )
 
+            queueNavDestination()
             musicPlayerNavDestination()
 
             searchNavDestination()

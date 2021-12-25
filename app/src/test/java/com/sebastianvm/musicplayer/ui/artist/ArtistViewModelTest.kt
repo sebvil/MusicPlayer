@@ -21,7 +21,7 @@ class ArtistViewModelTest  {
         return ArtistViewModel(
             initialState = ArtistState(
                 artistHeaderItem = mock(),
-                artistGid = ARTIST_GID,
+                artistId = ARTIST_ID,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
             ),
@@ -35,7 +35,7 @@ class ArtistViewModelTest  {
         val musicServiceConnection: MusicServiceConnection = mock()
         generateViewModel(musicServiceConnection)
         verify(musicServiceConnection).subscribe(
-            eq("artist-${ARTIST_GID}"),
+            eq("artist-${ARTIST_ID}"),
             any()
         )
     }
@@ -45,15 +45,15 @@ class ArtistViewModelTest  {
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_GID, albumGid)
+                assertEquals(ALBUM_ID, albumId)
             }
-            handle(ArtistUserAction.AlbumClicked(ALBUM_GID))
+            handle(ArtistUserAction.AlbumClicked(ALBUM_ID))
         }
     }
 
     companion object {
-        private const val ARTIST_GID = "ARTIST_GID"
-        private const val ALBUM_GID = "ALBUM_GID"
+        private const val ARTIST_ID = "ARTIST_ID"
+        private const val ALBUM_ID = "ALBUM_ID"
         private const val ALBUM_NAME = "ALBUM_NAME"
     }
 }

@@ -24,7 +24,7 @@ class AlbumViewModelTest {
         return AlbumViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = AlbumState(
-                albumGid = ALBUM_GID,
+                albumId = ALBUM_ID,
                 tracksList = listOf(),
                 albumHeaderItem = mock()
             ),
@@ -38,7 +38,7 @@ class AlbumViewModelTest {
         val musicServiceConnection: MusicServiceConnection = mock()
         generateViewModel(musicServiceConnection)
         verify(musicServiceConnection).subscribe(
-            eq("album-$ALBUM_GID"),
+            eq("album-$ALBUM_ID"),
             any()
         )
     }
@@ -52,9 +52,9 @@ class AlbumViewModelTest {
 
         with(generateViewModel(musicServiceConnection)) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
-            handle(AlbumUserAction.TrackClicked(TRACK_GID))
+            handle(AlbumUserAction.TrackClicked(TRACK_ID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_GID),
+                eq(TRACK_ID),
                 check {
                     assertEquals(
                         MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
@@ -66,7 +66,7 @@ class AlbumViewModelTest {
     }
 
     companion object {
-        const val TRACK_GID = "TRACK_GID"
-        const val ALBUM_GID = "ALBUM_GID"
+        const val TRACK_ID = "TRACK_ID"
+        const val ALBUM_ID = "ALBUM_ID"
     }
 }

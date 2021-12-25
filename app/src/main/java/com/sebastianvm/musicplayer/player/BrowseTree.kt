@@ -3,11 +3,11 @@ package com.sebastianvm.musicplayer.player
 import android.media.browse.MediaBrowser
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.repository.GenreRepository
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.MusicRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -41,7 +41,8 @@ data class MediaGroup(val mediaType: MediaType, val mediaId: String) : Parcelabl
 @Singleton
 class BrowseTree @Inject constructor(
     musicRepository: MusicRepository,
-    private  val trackRepository: TrackRepository,
+    private val trackRepository: TrackRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     artistRepository: ArtistRepository,
     genreRepository: GenreRepository,
     albumRepository: AlbumRepository,
@@ -103,9 +104,9 @@ class BrowseTree @Inject constructor(
 
             tree[ARTISTS_ROOT] = artists.map { artistWithAlbums ->
                 artistWithAlbums.forEach { artist ->
-                    tree["artist-${artist.artist.artistGid}"] = combine(
-                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumGid }),
-                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumGid })
+                    tree["artist-${artist.artist.artistId}"] = combine(
+                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumId }),
+                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumId })
                     ) { albums, appearsOn ->
 
                         albums.map { it.toMediaMetadataCompat(AlbumType.ALBUM) }
@@ -119,8 +120,8 @@ class BrowseTree @Inject constructor(
             tree[ALBUMS_ROOT] = albums.map { fullAlbumInfoList ->
 
                 fullAlbumInfoList.forEach { album ->
-                    tree["album-${album.album.albumGid}"] =
-                        trackRepository.getTracks(album.tracks.map { it.trackGid }).map { tracks ->
+                    tree["album-${album.album.albumId}"] =
+                        trackRepository.getTracks(album.tracks.map { it.trackId }).map { tracks ->
                             tracks.map { it.toMediaMetadataCompat() }.toMutableSet()
                         }
                 }
@@ -132,7 +133,7 @@ class BrowseTree @Inject constructor(
 
                 genresList.forEach { genre ->
                     tree["genre-${genre.genre.genreName}"] =
-                        trackRepository.getTracks(genre.tracks.map { it.trackGid }).map { tracks ->
+                        trackRepository.getTracks(genre.tracks.map { it.trackId }).map { tracks ->
                             tracks.map { it.toMediaMetadataCompat() }.toMutableSet()
                         }
                 }
@@ -144,20 +145,14 @@ class BrowseTree @Inject constructor(
 
     operator fun get(mediaId: String) = tree[mediaId]
 
-    fun getTracksList(mediaGroup: MediaGroup) : Flow<List<MediaMetadataCompat>> {
-        return when (mediaGroup.mediaType) {
-            MediaType.TRACK ->  trackRepository.getAllTracks()
-            MediaType.ARTIST -> trackRepository.getTracksForArtist(mediaGroup.mediaId)
-            MediaType.ALBUM -> trackRepository.getTracksForAlbum(mediaGroup.mediaId)
-            MediaType.GENRE -> trackRepository.getTracksForGenre(mediaGroup.mediaId)
-        }.map { tracks ->
+    fun getTracksList(mediaGroup: MediaGroup): Flow<List<MediaMetadataCompat>> {
+        return trackRepository.getTracksForQueue(mediaGroup).map { tracks ->
             tracks.map {
-                Log.i("PLAYER", "${it.track.trackNumber}")
-                val metadata = it.toMediaMetadataCompat()
-                Log.i("PLAYER", "$metadata")
-                it.toMediaMetadataCompat() }
+                it.toMediaMetadataCompat()
+            }
         }
     }
+
 
     companion object {
         const val MEDIA_ROOT = "MEDIA_ROOT"

@@ -21,7 +21,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                 ),
                 title = DisplayableString.StringValue("10:20:40")
             ),
-            artistGid = "Melendi",
+            artistId = "Melendi",
             albumsForArtistItems = listOf(
                 ArtistScreenItem.SectionHeaderItem(
                     ArtistViewModel.ALBUMS,
