@@ -72,6 +72,10 @@ class MusicServiceConnection @Inject constructor(
         mediaBrowser.unsubscribe(parentId, callback)
     }
 
+    fun getQueueId(mediaId: String): Long? {
+        return mediaController.queue.find { it.description.mediaId == mediaId }?.queueId
+    }
+
     fun sendCommand(command: String, parameters: Bundle?) =
         sendCommand(command, parameters) { _, _ -> }
 

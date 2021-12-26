@@ -16,12 +16,14 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
+import com.sebastianvm.musicplayer.util.extensions.swap
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +86,13 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         mediaSessionConnector.setPlaybackPreparer(PlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(QueueNavigator())
         mediaSessionConnector.setMediaMetadataProvider(MetadataProvider())
-        mediaSessionConnector.registerCustomCommandReceiver(MediaCommandReceiver())
+        mediaSessionConnector.setQueueEditor(
+            TimelineQueueEditor(
+                mediaSession.controller,
+                QueueDataAdapter(),
+                MediaDescriptionConverter()
+            )
+        )
         switchToPlayer(
             previousPlayer = null,
             newPlayer = exoPlayer
@@ -142,6 +150,12 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             })
         }.build()
     }
+
+    private fun MediaDescriptionCompat.metadataFromDescription(): MediaMetadataCompat {
+        return extras?.getParcelable(MEDIA_METADATA_COMPAT_KEY)
+            ?: MediaMetadataCompat.Builder().build()
+    }
+
 
     /**
      * Load the supplied list of songs and the song to play into the current player.
@@ -276,24 +290,33 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         }
     }
 
-    private inner class MediaCommandReceiver : MediaSessionConnector.CommandReceiver {
-        override fun onCommand(
-            player: Player,
-            command: String,
-            extras: Bundle?,
-            cb: ResultReceiver?
-        ): Boolean {
-            return when (command) {
-                COMMAND_MOVE_ITEM -> {
-                    val fromIndex = extras?.getInt(EXTRA_FROM_INDEX) ?: return false
-                    val toIndex = extras.getInt(EXTRA_TO_INDEX)
-                    player.moveMediaItem(fromIndex, toIndex)
-                    val item = currentPlaylistItems[fromIndex]
-                    currentPlaylistItems.add(toIndex, item)
-                    true
-                }
-                else -> false
-            }
+    private inner class QueueDataAdapter : TimelineQueueEditor.QueueDataAdapter {
+        override fun add(position: Int, description: MediaDescriptionCompat) {
+            mediaSession.controller.queue.add(
+                position,
+                MediaSessionCompat.QueueItem(
+                    description,
+                    (mediaSession.controller.queue.size + 1).toLong()
+                )
+            )
+
+            currentPlaylistItems.add(position, description.metadataFromDescription())
+        }
+
+        override fun remove(position: Int) {
+            mediaSession.controller.queue.removeAt(position)
+            currentPlaylistItems.removeAt(position)
+        }
+
+        override fun move(from: Int, to: Int) {
+            mediaSession.controller.queue.swap(from, to)
+            currentPlaylistItems.swap(from, to)
+        }
+    }
+
+    private inner class MediaDescriptionConverter : TimelineQueueEditor.MediaDescriptionConverter {
+        override fun convert(description: MediaDescriptionCompat): MediaItem? {
+            return description.mediaUri?.let { MediaItem.fromUri(it) }
         }
     }
 

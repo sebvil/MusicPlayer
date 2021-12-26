@@ -1,12 +1,13 @@
 package com.sebastianvm.musicplayer.ui.queue
 
+import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.viewModelScope
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.COMMAND_MOVE_QUEUE_ITEM
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_FROM_INDEX
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_TO_INDEX
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
-import com.sebastianvm.musicplayer.player.COMMAND_MOVE_ITEM
-import com.sebastianvm.musicplayer.player.EXTRA_FROM_INDEX
-import com.sebastianvm.musicplayer.player.EXTRA_TO_INDEX
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
@@ -78,9 +79,14 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
+//                    musicServiceConnection.sendCommand(
+//                        COMMAND_MOVE_ITEM,
+//                        bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex)
+//                    )
                     musicServiceConnection.sendCommand(
-                        COMMAND_MOVE_ITEM,
-                        bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex)
+                        COMMAND_MOVE_QUEUE_ITEM, bundleOf(
+                            EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex
+                        )
                     )
                     setState {
                         copy(
@@ -131,7 +137,14 @@ class QueueViewModel @Inject constructor(
 
                     }
                 }
+            }
+            is QueueUserAction.TrackClicked -> {
+                val queueId = musicServiceConnection.getQueueId(action.trackId)
+                Log.i("QUEUE", "track clicked: $action, $queueId")
+                queueId?.also {
+                    musicServiceConnection.transportControls.skipToQueueItem(it)
 
+                }
 
             }
         }
@@ -167,6 +180,7 @@ sealed class QueueUserAction : UserAction {
     data class ItemDragged(val newIndex: Int) : QueueUserAction()
     data class ItemSelectedForDrag(val item: TrackRowState) : QueueUserAction()
     object DragEnded : QueueUserAction()
+    data class TrackClicked(val trackId: String) : QueueUserAction()
 }
 
 sealed class QueueUiEvent : UiEvent
