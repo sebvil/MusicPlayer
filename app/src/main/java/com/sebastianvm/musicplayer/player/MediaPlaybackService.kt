@@ -23,7 +23,7 @@ import com.sebastianvm.musicplayer.util.extensions.MEDIA_METADATA_COMPAT_KEY
 import com.sebastianvm.musicplayer.util.extensions.flags
 import com.sebastianvm.musicplayer.util.extensions.id
 import com.sebastianvm.musicplayer.util.extensions.mediaUri
-import com.sebastianvm.musicplayer.util.extensions.swap
+import com.sebastianvm.musicplayer.util.extensions.move
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +93,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
                 MediaDescriptionConverter()
             )
         )
+        mediaSessionConnector.registerCustomCommandReceiver(CommandReceiver())
         switchToPlayer(
             previousPlayer = null,
             newPlayer = exoPlayer
@@ -292,25 +293,15 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
 
     private inner class QueueDataAdapter : TimelineQueueEditor.QueueDataAdapter {
         override fun add(position: Int, description: MediaDescriptionCompat) {
-            mediaSession.controller.queue.add(
-                position,
-                MediaSessionCompat.QueueItem(
-                    description,
-                    (mediaSession.controller.queue.size + 1).toLong()
-                )
-            )
-
             currentPlaylistItems.add(position, description.metadataFromDescription())
         }
 
         override fun remove(position: Int) {
-            mediaSession.controller.queue.removeAt(position)
             currentPlaylistItems.removeAt(position)
         }
 
         override fun move(from: Int, to: Int) {
-            mediaSession.controller.queue.swap(from, to)
-            currentPlaylistItems.swap(from, to)
+            currentPlaylistItems.move(from, to)
         }
     }
 
@@ -318,6 +309,27 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         override fun convert(description: MediaDescriptionCompat): MediaItem? {
             return description.mediaUri?.let { MediaItem.fromUri(it) }
         }
+    }
+
+    private inner class CommandReceiver : MediaSessionConnector.CommandReceiver {
+        override fun onCommand(
+            player: Player,
+            command: String,
+            extras: Bundle?,
+            cb: ResultReceiver?
+        ): Boolean {
+            return when (command) {
+                COMMAND_SEEK_TO_MEDIA_ITEM -> {
+                    val index = extras?.getInt(EXTRA_MEDIA_INDEX)
+                    index?.let {
+                        player.seekToDefaultPosition(it)
+                        true
+                    } ?: false
+                }
+                else -> false
+            }
+        }
+
     }
 
     /**

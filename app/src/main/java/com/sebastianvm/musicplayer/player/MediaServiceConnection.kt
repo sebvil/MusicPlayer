@@ -169,8 +169,7 @@ val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
     .build()
 
 const val SORT_BY = "SORT_BY"
-const val SORT_ORDER = "SORT_ORDER"
 const val MEDIA_GROUP = "com.sebastianvm.musicplayer.player.MEDIA_GROUP"
-const val COMMAND_MOVE_ITEM = "com.sebastianvm.player.COMMAND_MOVE_ITEM"
-const val EXTRA_FROM_INDEX = "com.sebastianvm.player.EXTRA_FROM_INDEX"
+const val COMMAND_SEEK_TO_MEDIA_ITEM = "com.sebastianvm.player.COMMAND_SEEK_TO_MEDIA_ITEM"
+const val EXTRA_MEDIA_INDEX = "com.sebastianvm.player.EXTRA_MEDIA_INDEX"
 const val EXTRA_TO_INDEX = "com.sebastianvm.player.EXTRA_TO_INDEX"

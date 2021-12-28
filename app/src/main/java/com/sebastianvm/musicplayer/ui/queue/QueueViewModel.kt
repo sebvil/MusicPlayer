@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.viewModelScope
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.COMMAND_MOVE_QUEUE_ITEM
@@ -8,6 +7,8 @@ import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_TO_INDEX
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.player.COMMAND_SEEK_TO_MEDIA_ITEM
+import com.sebastianvm.musicplayer.player.EXTRA_MEDIA_INDEX
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
@@ -79,10 +80,6 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
-//                    musicServiceConnection.sendCommand(
-//                        COMMAND_MOVE_ITEM,
-//                        bundleOf(EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex)
-//                    )
                     musicServiceConnection.sendCommand(
                         COMMAND_MOVE_QUEUE_ITEM, bundleOf(
                             EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex
@@ -139,13 +136,13 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.TrackClicked -> {
-                val queueId = musicServiceConnection.getQueueId(action.trackId)
-                Log.i("QUEUE", "track clicked: $action, $queueId")
-                queueId?.also {
-                    musicServiceConnection.transportControls.skipToQueueItem(it)
-
-                }
-
+                val index = state.value.queueItems.indexOfFirst { it.trackId == action.trackId }
+                if (index == -1) return
+                musicServiceConnection.sendCommand(
+                    COMMAND_SEEK_TO_MEDIA_ITEM, bundleOf(
+                        EXTRA_MEDIA_INDEX to index
+                    )
+                )
             }
         }
     }
