@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.util.SortOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,13 +20,16 @@ class ArtistsListScreenTest {
 
     private fun generateViewModel(): ArtistsListViewModel {
         return mockk(relaxed = true) {
-            every { state } returns MutableStateFlow(ArtistsListState(
-                listOf(
-                    ArtistRowState("A", "A"),
-                    ArtistRowState("B", "B"),
-                    ArtistRowState("C", "C"),
+            every { state } returns MutableStateFlow(
+                ArtistsListState(
+                    listOf(
+                        ArtistRowState("A", "A", shouldShowContextMenu = true),
+                        ArtistRowState("B", "B", shouldShowContextMenu = true),
+                        ArtistRowState("C", "C", shouldShowContextMenu = true),
+                    ),
+                    sortOrder = SortOrder.ASCENDING
                 )
-            ))
+            )
         }
     }
 
@@ -37,7 +41,7 @@ class ArtistsListScreenTest {
         composeTestRule.setContent {
             ArtistsListScreen(
                 screenViewModel = screenViewModel,
-                navigateToArtist = {}
+                delegate = mockk()
             )
         }
 
@@ -54,7 +58,7 @@ class ArtistsListScreenTest {
         composeTestRule.setContent {
             ArtistsListScreen(
                 screenViewModel = screenViewModel,
-                navigateToArtist = {}
+                delegate = mockk()
             )
         }
         composeTestRule.onNodeWithText("A").performClick()
@@ -62,7 +66,6 @@ class ArtistsListScreenTest {
             screenViewModel.handle(ArtistsListUserAction.ArtistClicked("A"))
         }
     }
-
 
 
 }

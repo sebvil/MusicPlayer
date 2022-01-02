@@ -26,6 +26,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
-    tracksRepository: TrackRepository,
+    private val tracksRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection,
 ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
@@ -144,17 +145,40 @@ class QueueViewModel @Inject constructor(
                     )
                 )
             }
+            is QueueUserAction.DropdownMenuClicked -> {
+                setState {
+                    copy(
+                        dropdownExpanded = !dropdownExpanded
+                    )
+                }
+            }
+            is QueueUserAction.DropdownMenuOptionChosen -> {
+                val mediaGroup = state.value.queues.find { it.groupMediaId == action.newOption }?.let {
+                    MediaGroup(it.mediaType, it.groupMediaId)
+                } ?: return
+                viewModelScope.launch {
+                    val tracks = tracksRepository.getTracksForQueue(mediaGroup).first().map { it.toTrackRowState() }
+                    setState {
+                        copy(
+                            dropdownExpanded = false,
+                            mediaGroup = mediaGroup,
+                            queueItems = tracks
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 data class QueueState(
     val queues: List<MediaQueue>,
+    val dropdownExpanded: Boolean,
     val mediaGroup: MediaGroup?,
     val queueItems: List<TrackRowState>,
     val draggedItem: TrackRowState?,
     val draggedItemIndex: Int = -1,
-    val nowPlayingTrackId: String
+    val nowPlayingTrackId: String,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -165,10 +189,11 @@ object InitialQueueStateModule {
     fun initialQueueStateProvider(): QueueState {
         return QueueState(
             queues = listOf(),
+            dropdownExpanded = false,
             mediaGroup = null,
             queueItems = listOf(),
             draggedItem = null,
-            nowPlayingTrackId = ""
+            nowPlayingTrackId = "",
         )
     }
 }
@@ -178,6 +203,8 @@ sealed class QueueUserAction : UserAction {
     data class ItemSelectedForDrag(val item: TrackRowState) : QueueUserAction()
     object DragEnded : QueueUserAction()
     data class TrackClicked(val trackId: String) : QueueUserAction()
+    object DropdownMenuClicked : QueueUserAction()
+    data class DropdownMenuOptionChosen(val newOption: String) : QueueUserAction()
 }
 
 sealed class QueueUiEvent : UiEvent

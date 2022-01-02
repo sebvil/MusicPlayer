@@ -22,7 +22,8 @@ class AlbumsListViewModelTest  {
     private fun generateViewModel(): AlbumsListViewModel {
         return AlbumsListViewModel(
             initialState = mock(),
-            albumRepository = mock()
+            albumRepository = mock(),
+            preferencesRepository = mock()
         )
     }
 

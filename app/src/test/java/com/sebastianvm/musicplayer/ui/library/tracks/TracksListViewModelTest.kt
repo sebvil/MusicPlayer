@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -37,7 +38,6 @@ class TracksListViewModelTest {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
-                screen = "TODO",
                 genreName = genreName,
                 tracksListTitle = tracksListTitle,
                 tracksList = tracksList,
@@ -45,8 +45,8 @@ class TracksListViewModelTest {
                 sortOrder = sortOrder
             ),
             preferencesRepository = preferencesRepository,
-            genreRepository = mock(),
-            trackRepository = mock()
+            trackRepository = mock(),
+            mediaQueueRepository = mock()
         )
     }
 

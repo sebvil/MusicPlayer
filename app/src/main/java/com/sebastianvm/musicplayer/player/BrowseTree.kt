@@ -37,7 +37,6 @@ enum class MediaType : Parcelable {
 
 @Parcelize
 data class MediaGroup(val mediaType: MediaType, val mediaId: String) : Parcelable
-
 @Singleton
 class BrowseTree @Inject constructor(
     musicRepository: MusicRepository,
