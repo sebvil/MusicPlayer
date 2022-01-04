@@ -129,8 +129,8 @@ fun ArtistScreenRow(
         is ArtistScreenItem.AlbumRowItem -> {
             AlbumRow(
                 state = item.state,
-                modifier = Modifier.clickable { delegate.albumRowClicked(item.albumId) },
-                onOverflowMenuIconClicked = { delegate.onAlbumOverflowMenuIconClicked(item.albumId) }
+                modifier = Modifier.clickable { delegate.albumRowClicked(item.state.albumId) },
+                onOverflowMenuIconClicked = { delegate.onAlbumOverflowMenuIconClicked(item.state.albumId) }
             )
         }
     }

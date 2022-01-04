@@ -109,7 +109,7 @@ fun AlbumsListLayout(
     LazyColumn(state = listState) {
         items(state.albumsList) { item ->
             AlbumRow(
-                state = item.albumRowState,
+                state = item,
                 modifier = Modifier.clickable {
                     delegate.onAlbumClicked(item.albumId)
                 },

@@ -7,14 +7,13 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
+import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.ArtLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -93,18 +92,7 @@ class ArtistViewModel @Inject constructor(
     }
 
     private fun AlbumWithArtists.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
-        return ArtistScreenItem.AlbumRowItem(
-            albumId = album.albumId,
-            AlbumRowState(
-                albumName = album.albumName,
-                image = ArtLoader.getAlbumArt(
-                    albumId = album.albumId.toLong(),
-                    albumName = album.albumName
-                ),
-                year = album.year,
-                artists = artists.joinToString(", ") { it.artistName }
-            )
-        )
+        return ArtistScreenItem.AlbumRowItem(this.toAlbumRowState())
     }
 
     override fun handle(action: ArtistUserAction) {

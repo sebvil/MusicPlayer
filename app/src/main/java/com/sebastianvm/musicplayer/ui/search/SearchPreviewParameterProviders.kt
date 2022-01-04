@@ -8,11 +8,15 @@ class SearchStatePreviewParameterProvider : PreviewParameterProvider<SearchState
     override val values = sequenceOf(
         SearchState(
             searchTerm = "",
+            selectedOption = R.string.songs,
             trackSearchResults = listOf(),
-            selectedOption = R.string.songs
+            artistSearchResults = listOf(),
+            albumSearchResults = listOf(),
+            genreSearchResults = listOf(),
         ),
         SearchState(
             searchTerm = "Test",
+            selectedOption = R.string.songs,
             trackSearchResults = listOf(
                 TrackRowState(
                     trackId = "1",
@@ -22,7 +26,9 @@ class SearchStatePreviewParameterProvider : PreviewParameterProvider<SearchState
                     trackNumber = null
                 )
             ),
-            selectedOption = R.string.songs
+            artistSearchResults = listOf(),
+            albumSearchResults = listOf(),
+            genreSearchResults = listOf(),
         )
     )
 }

@@ -19,13 +19,16 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
+import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.util.ArtLoader
 
 
 data class AlbumRowState(
+    val albumId: String,
     val albumName: String,
     val image: MediaArt,
     val year: Long,
@@ -98,10 +101,25 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, onOverflowMenu
 }
 
 
+fun AlbumWithArtists.toAlbumRowState(): AlbumRowState {
+    return AlbumRowState(
+        albumId = album.albumId,
+        albumName = album.albumName,
+        image = ArtLoader.getAlbumArt(
+            albumId = album.albumId.toLong(),
+            albumName = album.albumName
+        ),
+        year = album.year,
+        artists = artists.joinToString(", ") { it.artistName }
+    )
+
+}
+
 class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
     override val values =
         sequenceOf(
             AlbumRowState(
+                albumId = "1",
                 albumName = "Ahora",
                 image = MediaArt(
                     uris = listOf(),
@@ -114,6 +132,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
 
             ),
             AlbumRowState(
+                albumId = "2",
                 albumName = "VIVES",
                 image = MediaArt(
                     uris = listOf(),
