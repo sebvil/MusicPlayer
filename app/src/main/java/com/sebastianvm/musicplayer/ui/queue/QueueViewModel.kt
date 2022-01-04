@@ -49,19 +49,13 @@ class QueueViewModel @Inject constructor(
                 )
             }
             mediaGroup?.also {
-                collect(tracksRepository.getTracksForQueue(it)) { tracks ->
-                    setState {
-                        copy(
-                            queueItems = tracks.map { track -> track.toTrackRowState() }
-                        )
-                    }
-                }
-                collect(mediaQueueRepository.getQueue(mediaGroup)) { queue ->
-                    setState {
-                        copy(
-                            chosenQueue = queue
-                        )
-                    }
+                val tracks = tracksRepository.getTracksForQueue(it).first()
+                val mediaQueue = mediaQueueRepository.getQueue(mediaGroup).first()
+                setState {
+                    copy(
+                        chosenQueue = mediaQueue,
+                        queueItems = tracks.map { track -> track.toTrackRowState() }
+                    )
                 }
             }
         }
@@ -94,11 +88,15 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
-                    musicServiceConnection.sendCommand(
-                        COMMAND_MOVE_QUEUE_ITEM, bundleOf(
-                            EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex
+                    if (state.value.chosenQueue?.groupMediaId == state.value.mediaGroup?.mediaId
+                        && state.value.chosenQueue?.mediaType == state.value.mediaGroup?.mediaType
+                    ) {
+                        musicServiceConnection.sendCommand(
+                            COMMAND_MOVE_QUEUE_ITEM, bundleOf(
+                                EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex
+                            )
                         )
-                    )
+                    }
                     setState {
                         copy(
                             queueItems = items,
@@ -132,17 +130,25 @@ class QueueViewModel @Inject constructor(
                             )
                         }
 
-                        mediaGroup?.also { mediaGroup ->
+                        chosenQueue?.also { mediaQueue ->
                             viewModelScope.launch {
                                 mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
                                     queueItems.mapIndexed { index, trackRowState ->
                                         MediaQueueTrackCrossRef(
-                                            mediaType = mediaGroup.mediaType,
-                                            groupMediaId = mediaGroup.mediaId,
+                                            mediaType = mediaQueue.mediaType,
+                                            groupMediaId = mediaQueue.groupMediaId,
                                             trackId = trackRowState.trackId,
                                             trackIndex = index
                                         )
                                     })
+
+                                val tracks = tracksRepository.getTracksForQueue(mediaQueue.toMediaGroup()).first()
+                                setState {
+                                    copy(
+                                        chosenQueue = mediaQueue,
+                                        queueItems = tracks.map { track -> track.toTrackRowState() }
+                                    )
+                                }
                             }
                         }
 
@@ -154,9 +160,15 @@ class QueueViewModel @Inject constructor(
                     if (chosenQueue !== null) {
                         if (mediaGroup?.mediaId != chosenQueue.groupMediaId || mediaGroup.mediaType != chosenQueue.mediaType) {
                             val extras = Bundle().apply {
-                                putParcelable(MEDIA_GROUP, MediaGroup(chosenQueue.mediaType, chosenQueue.groupMediaId))
+                                putParcelable(
+                                    MEDIA_GROUP,
+                                    MediaGroup(chosenQueue.mediaType, chosenQueue.groupMediaId)
+                                )
                             }
-                            musicServiceConnection.transportControls.playFromMediaId(action.trackId, extras)
+                            musicServiceConnection.transportControls.playFromMediaId(
+                                action.trackId,
+                                extras
+                            )
                             return
                         }
                     }

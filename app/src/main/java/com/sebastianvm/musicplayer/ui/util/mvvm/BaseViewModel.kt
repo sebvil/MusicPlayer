@@ -32,7 +32,7 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
     }
 
 
-    fun <T> collect(flow: Flow<T>, onChanged: (T) -> Unit) {
+    fun <T> collect(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
         viewModelScope.launch {
             flow.collect {
                 onChanged(it)

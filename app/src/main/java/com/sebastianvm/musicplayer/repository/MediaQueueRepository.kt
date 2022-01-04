@@ -16,6 +16,7 @@ import com.sebastianvm.musicplayer.util.extensions.toMediaMetadataCompat
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -102,11 +103,11 @@ class MediaQueueRepository @Inject constructor(
     }
 
     fun getAllQueues(): Flow<List<MediaQueue>> {
-        return mediaQueueDao.getAllQueues()
+        return mediaQueueDao.getAllQueues().distinctUntilChanged()
     }
 
     fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue> {
-        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaType)
+        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaType).distinctUntilChanged()
     }
 
 }
