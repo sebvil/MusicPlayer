@@ -8,7 +8,6 @@
     <string name="appears_on">Appears On</string>
     <string name="library">Library</string>
     <string name="player">Player</string>
-    <string name="search">Search</string>
     <string name="queue">Queue</string>
     <string name="artists">Artists</string>
     <string name="all_songs">All songs</string>
@@ -56,6 +55,9 @@
     <string name="more">More</string>
     <string name="track_number">Track number</string>
     <string name="view_artist">View artist</string>
+    <string name="check_mark">Check mark</string>
+    <string name="songs">Songs</string>
+    <string name="search">Search</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

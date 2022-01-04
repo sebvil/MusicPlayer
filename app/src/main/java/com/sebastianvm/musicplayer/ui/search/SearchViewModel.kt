@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.ui.search
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -42,6 +44,13 @@ class SearchViewModel @Inject constructor(initialState: SearchState, private val
                     }
                 }
             }
+            is SearchUserAction.SearchTypeChanged -> {
+                setState {
+                    copy(
+                        selectedOption = action.newType
+                    )
+                }
+            }
 
         }
     }
@@ -49,7 +58,8 @@ class SearchViewModel @Inject constructor(initialState: SearchState, private val
 
 data class SearchState(
     val searchTerm: String,
-    val searchResults: List<String>
+    val searchResults: List<String>,
+    @StringRes val selectedOption: Int,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -60,13 +70,15 @@ object InitialSearchStateModule {
     fun initialSearchStateProvider(): SearchState {
         return SearchState(
             searchTerm = "",
-            searchResults = listOf()
+            searchResults = listOf(),
+            selectedOption = R.string.songs
         )
     }
 }
 
 sealed class SearchUserAction : UserAction {
     data class OnTextChanged(val newText: String) : SearchUserAction()
+    data class SearchTypeChanged(@StringRes val newType: Int): SearchUserAction()
 }
 sealed class SearchUiEvent : UiEvent
 
