@@ -80,7 +80,6 @@ class ContextMenuViewModel @Inject constructor(
                     }
                 }
             }
-            else -> Unit
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -87,8 +88,8 @@ fun SearchLayout(
             onNewOptionSelected = { newOption -> delegate.onOptionChosen(newOption) }
         )
         LazyColumn {
-            items(state.searchResults) { item ->
-                Text(text = item)
+            items(state.trackSearchResults) { item ->
+                TrackRow(state = item) {}
             }
         }
     }

@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
+import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -34,11 +36,11 @@ class SearchViewModel @Inject constructor(initialState: SearchState, private val
                 }
                 viewModelScope.launch {
                     ftsRepository.searchTracks(action.newText).map { tracks ->
-                        tracks.map { it.trackName }
+                        tracks.map { it.toTrackRowState() }
                     }.collect {
                         setState {
                             copy(
-                                searchResults = it
+                                trackSearchResults = it
                             )
                         }
                     }
@@ -58,7 +60,7 @@ class SearchViewModel @Inject constructor(initialState: SearchState, private val
 
 data class SearchState(
     val searchTerm: String,
-    val searchResults: List<String>,
+    val trackSearchResults: List<TrackRowState>,
     @StringRes val selectedOption: Int,
 ) : State
 
@@ -70,7 +72,7 @@ object InitialSearchStateModule {
     fun initialSearchStateProvider(): SearchState {
         return SearchState(
             searchTerm = "",
-            searchResults = listOf(),
+            trackSearchResults = listOf(),
             selectedOption = R.string.songs
         )
     }

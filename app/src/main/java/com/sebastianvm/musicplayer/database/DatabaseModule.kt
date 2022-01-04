@@ -3,8 +3,11 @@ package com.sebastianvm.musicplayer.database
 import android.content.Context
 import androidx.room.Room
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
+import com.sebastianvm.musicplayer.database.daos.AlbumFtsDao
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
+import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
+import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
@@ -45,14 +48,32 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
+        return database.mediaQueueDao
+    }
+
+    @Provides
+    @Singleton
     fun provideTrackFtsDao(database: MusicDatabase): TrackFtsDao {
         return database.trackFtsDao
     }
 
     @Provides
     @Singleton
-    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
-        return database.mediaQueueDao
+    fun provideArtistFtsDao(database: MusicDatabase): ArtistFtsDao {
+        return database.artistFtsDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlbumFtsDao(database: MusicDatabase): AlbumFtsDao {
+        return database.albumFtsDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideGenreFtsDao(database: MusicDatabase): GenreFtsDao {
+        return database.genreFtsDao
     }
 
     @Provides
