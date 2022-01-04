@@ -3,11 +3,14 @@ package com.sebastianvm.musicplayer.ui.queue
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.sebastianvm.musicplayer.database.entities.MediaQueue
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenu
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuDelegate
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuState
@@ -16,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumn
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnState
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -46,8 +50,12 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 screenViewModel.handle(QueueUserAction.DropdownMenuClicked)
             }
 
-            override fun optionChosen(newOption: String) {
+            override fun optionChosen(newOption: MediaQueue) {
                 screenViewModel.handle(QueueUserAction.DropdownMenuOptionChosen(newOption))
+            }
+
+            override fun getOptionDisplayName(option: MediaQueue): String {
+                return option.queueName
             }
         })
     }
@@ -64,7 +72,7 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
 }
 
 interface QueueScreenDelegate : DraggableListItemDelegate<TrackRowState>,
-    M3ExposedDropDownMenuDelegate {
+    M3ExposedDropDownMenuDelegate<MediaQueue> {
     fun onTrackClicked(trackId: String) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
 }
@@ -76,10 +84,11 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
             state = M3ExposedDropDownMenuState(
                 expanded = state.dropdownExpanded,
                 label = "Queue",
-                options = state.queues.map { it.groupMediaId },
-                chosenOption = state.mediaGroup?.mediaId ?: ""
+                options = state.queues,
+                chosenOption = state.chosenQueue ?: MediaQueue(MediaType.TRACK, "", "No queue")
             ),
-            delegate = delegate
+            delegate = delegate,
+            modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium)
         )
 
         SortableLazyColumn(

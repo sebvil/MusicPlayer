@@ -78,10 +78,10 @@ dependencies {
     // Optional -- Mockito framework
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation "junit:junit:4.13.2"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-RC2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt'
     testImplementation 'org.robolectric:robolectric:4.7.3'
 
-    androidTestImplementation "io.mockk:mockk-android:1.12.1"
+    androidTestImplementation 'io.mockk:mockk-android:1.12.2'
 
 
     annotationProcessor "androidx.room:room-compiler:$room_version"

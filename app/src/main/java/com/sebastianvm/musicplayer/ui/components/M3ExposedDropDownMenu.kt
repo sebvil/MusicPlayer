@@ -20,23 +20,24 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
-data class M3ExposedDropDownMenuState(
+data class M3ExposedDropDownMenuState<T>(
     val expanded: Boolean,
     val label: String,
-    val options: List<String>,
-    val chosenOption: String
+    val options: List<T>,
+    val chosenOption: T
 )
 
-interface M3ExposedDropDownMenuDelegate {
+interface M3ExposedDropDownMenuDelegate<T> {
     fun toggleExpanded() = Unit
-    fun optionChosen(newOption: String) = Unit
+    fun optionChosen(newOption: T) = Unit
+    fun getOptionDisplayName(option: T): String = ""
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun M3ExposedDropDownMenu(
-    state: M3ExposedDropDownMenuState,
-    delegate: M3ExposedDropDownMenuDelegate,
+fun <T> M3ExposedDropDownMenu(
+    state: M3ExposedDropDownMenuState<T>,
+    delegate: M3ExposedDropDownMenuDelegate<T>,
     modifier: Modifier = Modifier,
 ) {
     ExposedDropdownMenuBox(
@@ -46,7 +47,7 @@ fun M3ExposedDropDownMenu(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = state.chosenOption,
+            value = delegate.getOptionDisplayName(state.chosenOption),
             onValueChange = { },
             label = { Text(state.label) },
             trailingIcon = {
@@ -67,7 +68,7 @@ fun M3ExposedDropDownMenu(
                         delegate.optionChosen(selectionOption)
                     },
                 ) {
-                    Text(text = selectionOption)
+                    Text(text = delegate.getOptionDisplayName(selectionOption))
                 }
             }
         }
@@ -91,7 +92,7 @@ fun ChooseDropdownMenuPreview() {
                 options = options,
                 chosenOption = selectedOptionText
             ),
-            delegate = object : M3ExposedDropDownMenuDelegate {
+            delegate = object : M3ExposedDropDownMenuDelegate<String> {
                 override fun toggleExpanded() {
                     expanded = !expanded
                 }
@@ -100,8 +101,14 @@ fun ChooseDropdownMenuPreview() {
                     selectedOptionText = newOption
                     expanded = false
                 }
+
+                override fun getOptionDisplayName(option: String): String {
+                    return option
+                }
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = AppDimensions.spacing.medium)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AppDimensions.spacing.medium)
         )
     }
 }
