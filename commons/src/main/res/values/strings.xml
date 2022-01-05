@@ -58,6 +58,9 @@
     <string name="check_mark">Check mark</string>
     <string name="songs">Songs</string>
     <string name="search">Search</string>
+    <string name="up_arrow">Up Arrow</string>
+    <string name="down_arrow">Down arrow</string>
+    <string name="drag">Drag</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>
