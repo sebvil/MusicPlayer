@@ -41,7 +41,7 @@ class ContextMenuViewModel @Inject constructor(
 
     init {
         when (state.value.mediaType) {
-            MediaType.ALL_TRACKS -> {
+            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                 collect(trackRepository.getTrack(state.value.mediaId)) {
                     setState {
                         copy(
@@ -105,7 +105,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewAlbum -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS -> {
+                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) {
                                     addUiEvent(
                                         ContextMenuUiEvent.NavigateToAlbum(it.album.albumId)
@@ -121,7 +121,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewArtists -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS -> {
+                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                                 addUiEvent(
                                     ContextMenuUiEvent.NavigateToArtistsBottomSheet(
                                         state.value.mediaId,
@@ -142,7 +142,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewArtist -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS -> {
+                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) { track ->
                                     addUiEvent(ContextMenuUiEvent.NavigateToArtist(track.artists[0].artistId))
                                 }

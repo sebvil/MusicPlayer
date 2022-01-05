@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
@@ -35,9 +36,15 @@ import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 
 interface SearchNavigationDelegate {
     fun navigateToPlayer()
+    fun navigateToArtist(artistId: String)
+    fun navigateToAlbum(albumId: String)
+    fun navigateToGenre(genreName: String)
+    fun openContextMenu(mediaGroup: MediaGroup, sortOption: SortOption, sortOrder: SortOrder)
 }
 
 
@@ -47,10 +54,17 @@ fun SearchScreen(
     delegate: SearchNavigationDelegate
 ) {
     Screen(screenViewModel = screenViewModel, eventHandler = { event ->
-        when(event) {
-            is SearchUiEvent.NavigateToPlayer -> {
-                delegate.navigateToPlayer()
-            }
+        when (event) {
+            is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
+            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
+            is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
+            is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
+                event.mediaGroup,
+                event.sortOption,
+                event.sortOrder
+            )
+
         }
     }) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {

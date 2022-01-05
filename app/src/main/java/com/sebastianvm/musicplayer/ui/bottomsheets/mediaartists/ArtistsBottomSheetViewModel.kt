@@ -34,7 +34,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     init {
         with(state.value.mediaGroup) {
             when (mediaType) {
-                MediaType.ALL_TRACKS -> {
+                MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                     collect(trackRepository.getTrack(mediaId)) { track ->
                         setState {
                             copy(
@@ -52,7 +52,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                         }
                     }
                 }
-                else -> Unit
+                else -> throw IllegalStateException("Media artists bottom sheet not supported for mediaType: $mediaType")
             }
         }
 

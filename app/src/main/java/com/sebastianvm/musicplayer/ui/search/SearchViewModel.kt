@@ -111,13 +111,57 @@ class SearchViewModel @Inject constructor(
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }
-            is SearchUserAction.ArtistRowClicked -> TODO()
-            is SearchUserAction.AlbumRowClicked -> TODO()
-            is SearchUserAction.GenreRowClicked -> TODO()
-            is SearchUserAction.TrackOverflowMenuClicked -> TODO()
-            is SearchUserAction.ArtistOverflowMenuClicked -> TODO()
-            is SearchUserAction.AlbumOverflowMenuClicked -> TODO()
-            is SearchUserAction.GenreOverflowMenuClicked -> TODO()
+            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistId))
+            is SearchUserAction.AlbumRowClicked -> addUiEvent(SearchUiEvent.NavigateToAlbum(action.albumId))
+            is SearchUserAction.GenreRowClicked -> addUiEvent(SearchUiEvent.NavigateToGenre(action.genreName))
+            is SearchUserAction.TrackOverflowMenuClicked -> {
+                addUiEvent(
+                    SearchUiEvent.OpenContextMenu(
+                        mediaGroup = MediaGroup(
+                            MediaType.SINGLE_TRACK,
+                            action.trackId
+                        ),
+                        sortOption = SortOption.TRACK_NAME,
+                        sortOrder = SortOrder.ASCENDING
+                    )
+                )
+            }
+            is SearchUserAction.ArtistOverflowMenuClicked -> {
+                addUiEvent(
+                    SearchUiEvent.OpenContextMenu(
+                        mediaGroup = MediaGroup(
+                            MediaType.ARTIST,
+                            action.artistId
+                        ),
+                        sortOption = SortOption.TRACK_NAME,
+                        sortOrder = SortOrder.ASCENDING
+                    )
+                )
+            }
+            is SearchUserAction.AlbumOverflowMenuClicked -> {
+                addUiEvent(
+                    SearchUiEvent.OpenContextMenu(
+                        mediaGroup = MediaGroup(
+                            MediaType.ALBUM,
+                            action.albumId
+                        ),
+                        sortOption = SortOption.ALBUM_NAME,
+                        sortOrder = SortOrder.ASCENDING
+                    )
+                )
+            }
+            is SearchUserAction.GenreOverflowMenuClicked -> {
+                addUiEvent(
+                    SearchUiEvent.OpenContextMenu(
+                        mediaGroup = MediaGroup(
+                            MediaType.GENRE,
+                            action.genreName
+                        ),
+                        sortOption = SortOption.TRACK_NAME,
+                        sortOrder = SortOrder.ASCENDING
+                    )
+                )
+            }
 
         }
     }
@@ -164,5 +208,14 @@ sealed class SearchUserAction : UserAction {
 
 sealed class SearchUiEvent : UiEvent {
     object NavigateToPlayer : SearchUiEvent()
+    data class NavigateToArtist(val artistId: String) : SearchUiEvent()
+    data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
+    data class NavigateToGenre(val genreName: String) : SearchUiEvent()
+    data class OpenContextMenu(
+        val mediaGroup: MediaGroup,
+        val sortOption: SortOption,
+        val sortOrder: SortOrder
+    ) : SearchUiEvent()
+
 }
 
