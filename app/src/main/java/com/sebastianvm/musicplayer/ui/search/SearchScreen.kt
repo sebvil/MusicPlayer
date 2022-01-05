@@ -36,12 +36,23 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
+interface SearchNavigationDelegate {
+    fun navigateToPlayer()
+}
+
 
 @Composable
 fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
+    delegate: SearchNavigationDelegate
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
+    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
+        when(event) {
+            is SearchUiEvent.NavigateToPlayer -> {
+                delegate.navigateToPlayer()
+            }
+        }
+    }) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))

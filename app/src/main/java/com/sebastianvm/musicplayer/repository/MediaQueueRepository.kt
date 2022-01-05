@@ -75,7 +75,11 @@ class MediaQueueRepository @Inject constructor(
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForGenre(mediaGroup.mediaId)
             }
-            MediaType.SINGLE_TRACK -> TODO()
+            MediaType.SINGLE_TRACK -> {
+                val track = trackRepository.getTrack(mediaGroup.mediaId)
+                queueName = track.first().track.trackName
+                track.map { listOf(it) }
+            }
         }.map { tracks ->
             tracks.map {
                 it.toMediaMetadataCompat()

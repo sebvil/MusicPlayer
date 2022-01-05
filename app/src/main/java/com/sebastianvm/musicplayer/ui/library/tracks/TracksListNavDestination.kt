@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -17,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 
@@ -52,16 +52,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
             screenViewModel,
             object : TracksListScreenNavigationDelegate {
                 override fun navigateToPlayer() {
-                    navController.navigate(NavRoutes.PLAYER) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
+                    navController.navigateToPlayer()
                 }
 
                 override fun navigateUp() {
