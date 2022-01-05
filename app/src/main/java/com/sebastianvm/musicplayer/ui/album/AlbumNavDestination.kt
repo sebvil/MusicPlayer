@@ -38,7 +38,7 @@ fun NavGraphBuilder.albumNavDestination(navController: NavController) {
 
             override fun openContextMenu(trackId: String, albumId: String) {
                 navController.openContextMenu(
-                    mediaType = MediaType.TRACK,
+                    mediaType = MediaType.ALL_TRACKS,
                     mediaId = trackId,
                     mediaGroup = MediaGroup(MediaType.ALBUM, albumId),
                     currentSort = SortOption.TRACK_NUMBER,

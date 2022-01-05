@@ -18,7 +18,7 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 
 fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, artistCount: Int = 0): List<ContextMenuItem> {
     return when (mediaType) {
-        MediaType.TRACK -> {
+        MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
             if (mediaGroupType == MediaType.ALBUM) {
                 listOf(
                     ContextMenuItem.Play,

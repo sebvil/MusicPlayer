@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialState: S) :
@@ -39,6 +40,14 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
             }
         }
     }
+
+
+    fun <T> collectFirst(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
+        viewModelScope.launch {
+            onChanged(flow.first())
+        }
+    }
+
 
     abstract fun handle(action: A)
 }

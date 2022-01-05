@@ -23,5 +23,5 @@ interface AlbumDao {
 
     @Transaction
     @Query("SELECT * from Album")
-    fun getAlbums(): Flow<List<FullAlbumInfo>>
+    fun getAlbums(): Flow<List<AlbumWithArtists>>
 }

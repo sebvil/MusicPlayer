@@ -48,7 +48,7 @@ fun AppNavHost(
             queueNavDestination()
             musicPlayerNavDestination()
 
-            searchNavDestination()
+            searchNavDestination(navController)
         }
     }
 }

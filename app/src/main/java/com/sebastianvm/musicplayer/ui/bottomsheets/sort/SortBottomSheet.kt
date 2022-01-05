@@ -71,7 +71,8 @@ fun SortBottomSheet(
                                     row
                                 )
                             )
-                        }.let {
+                        }
+                        .let {
                             if (state.value.selectedSort == row) {
                                 it.background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
@@ -86,11 +87,18 @@ fun SortBottomSheet(
                     if (state.value.selectedSort == row) {
                         Icon(
                             painter = painterResource(id = if (state.value.sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
-                            contentDescription = "temp", // TODO change this
+                            contentDescription = if (state.value.sortOrder == SortOrder.ASCENDING) stringResource(
+                                R.string.up_arrow
+                            )
+                            else stringResource(R.string.down_arrow),
                             modifier = Modifier.padding(end = AppDimensions.spacing.mediumLarge),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Text(text = stringResource(id = row), modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = stringResource(id = row),
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     } else {
                         Text(
                             text = stringResource(id = row),

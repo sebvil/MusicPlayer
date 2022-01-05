@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
@@ -116,7 +117,7 @@ fun <T> SortableLazyColumn(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_drag),
-                                contentDescription = "Drag" /* TODO string res*/,
+                                contentDescription = stringResource(R.string.drag),
                                 modifier = Modifier.padding(start = AppDimensions.spacing.medium)
                             )
                             row(item)
@@ -155,7 +156,7 @@ fun <T> SortableLazyColumn(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_drag),
-                        contentDescription = "Drag" /* TODO string res*/,
+                        contentDescription = stringResource(id = R.string.drag),
                         modifier = Modifier.padding(start = AppDimensions.spacing.medium)
                     )
                     row(item)

@@ -11,8 +11,8 @@ class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<Contex
         ContextMenuState(
             mediaId = "1",
             menuTitle = "La Promesa",
-            mediaType = MediaType.TRACK,
-            mediaGroup = MediaGroup(MediaType.TRACK, ""),
+            mediaType = MediaType.ALL_TRACKS,
+            mediaGroup = MediaGroup(MediaType.ALL_TRACKS, ""),
             listItems = listOf(
                 ContextMenuItem.Play,
                 ContextMenuItem.ViewArtists,

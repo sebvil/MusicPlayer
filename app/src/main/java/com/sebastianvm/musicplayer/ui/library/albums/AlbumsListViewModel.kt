@@ -2,15 +2,14 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.repository.AlbumRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
+import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
@@ -51,27 +50,13 @@ class AlbumsListViewModel @Inject constructor(
             setState {
                 copy(
                     albumsList = albums.map { album ->
-                        album.toAlbumsListItem()
+                        album.toAlbumRowState()
                     }.sortedWith(getComparator(sortOrder, currentSort)),
                 )
             }
         }
     }
 
-    private fun FullAlbumInfo.toAlbumsListItem(): AlbumsListItem {
-        return AlbumsListItem(
-            albumId = album.albumId,
-            AlbumRowState(
-                albumName = album.albumName,
-                image = ArtLoader.getAlbumArt(
-                    albumId = album.albumId.toLong(),
-                    albumName = album.albumName
-                ),
-                year = album.year,
-                artists = artists.joinToString(", ") { it.artistName }
-            )
-        )
-    }
 
     override fun handle(action: AlbumsListUserAction) {
         when (action) {
@@ -113,12 +98,12 @@ class AlbumsListViewModel @Inject constructor(
     private fun getComparator(
         sortOrder: SortOrder,
         sortOption: SortOption
-    ): Comparator<AlbumsListItem> {
-        return getStringComparator(sortOrder) { albumListItem ->
+    ): Comparator<AlbumRowState> {
+        return getStringComparator(sortOrder) { albumRowState ->
             when (sortOption) {
-                SortOption.ARTIST_NAME -> albumListItem.albumRowState.artists
-                SortOption.ALBUM_NAME -> albumListItem.albumRowState.albumName
-                SortOption.YEAR -> albumListItem.albumRowState.year.toString()
+                SortOption.ARTIST_NAME -> albumRowState.artists
+                SortOption.ALBUM_NAME -> albumRowState.albumName
+                SortOption.YEAR -> albumRowState.year.toString()
                 else -> throw IllegalStateException("Unknown sort option for Albums list: $sortOption")
             }
         }
@@ -126,7 +111,7 @@ class AlbumsListViewModel @Inject constructor(
 }
 
 data class AlbumsListState(
-    val albumsList: List<AlbumsListItem>,
+    val albumsList: List<AlbumRowState>,
     val currentSort: SortOption,
     val sortOrder: SortOrder,
 ) : State
@@ -158,6 +143,7 @@ sealed class AlbumsListUiEvent : UiEvent {
     object NavigateUp : AlbumsListUiEvent()
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
         AlbumsListUiEvent()
+
     object ScrollToTop : AlbumsListUiEvent()
 
     data class OpenContextMenu(val albumId: String) : AlbumsListUiEvent()

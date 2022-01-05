@@ -57,7 +57,7 @@ fun TracksListScreen(
                     delegate.openContextMenu(
                         mediaId = event.trackId,
                         mediaGroup = event.genreName?.let { MediaGroup(MediaType.GENRE, it) }
-                            ?: MediaGroup(MediaType.TRACK, event.trackId),
+                            ?: MediaGroup(MediaType.ALL_TRACKS, event.trackId),
                         currentSort = event.currentSort,
                         sortOrder = event.sortOrder
                     )

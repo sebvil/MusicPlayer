@@ -85,7 +85,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 expanded = state.dropdownExpanded,
                 label = "Queue",
                 options = state.queues,
-                chosenOption = state.chosenQueue ?: MediaQueue(MediaType.TRACK, "", "No queue")
+                chosenOption = state.chosenQueue ?: MediaQueue(MediaType.ALL_TRACKS, "", "No queue")
             ),
             delegate = delegate,
             modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium)

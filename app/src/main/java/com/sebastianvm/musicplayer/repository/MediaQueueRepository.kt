@@ -59,7 +59,7 @@ class MediaQueueRepository @Inject constructor(
     ): Long {
         val queueName: String
         val trackIds = when (mediaGroup.mediaType) {
-            MediaType.TRACK -> {
+            MediaType.ALL_TRACKS -> {
                 queueName = ResUtil.getString(context = context, R.string.all_songs)
                 trackRepository.getAllTracks()
             }
@@ -74,6 +74,11 @@ class MediaQueueRepository @Inject constructor(
             MediaType.GENRE -> {
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForGenre(mediaGroup.mediaId)
+            }
+            MediaType.SINGLE_TRACK -> {
+                val track = trackRepository.getTrack(mediaGroup.mediaId)
+                queueName = track.first().track.trackName
+                track.map { listOf(it) }
             }
         }.map { tracks ->
             tracks.map {

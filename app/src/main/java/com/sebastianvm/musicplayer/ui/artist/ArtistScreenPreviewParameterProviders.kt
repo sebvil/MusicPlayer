@@ -6,7 +6,6 @@ import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
-import com.sebastianvm.musicplayer.util.AlbumType
 
 class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState> {
     override val values = sequenceOf(
@@ -30,8 +29,8 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
             ).plus(
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
-                        "0",
                         AlbumRowState(
+                            albumId = "0",
                             albumName = "Ahora",
                             image = MediaArt(
                                 uris = listOf(),
@@ -44,8 +43,8 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         ),
                     ),
                     ArtistScreenItem.AlbumRowItem(
-                        "1",
                         AlbumRowState(
+                            albumId = "1",
                             albumName = "Ahora",
                             image = MediaArt(
                                 uris = listOf(),
@@ -67,8 +66,8 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
             ).plus(
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
-                        "2",
                         AlbumRowState(
+                            albumId = "2",
                             albumName = "Ahora",
                             image = MediaArt(
                                 uris = listOf(),
@@ -81,8 +80,8 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         ),
                     ),
                     ArtistScreenItem.AlbumRowItem(
-                        "3",
                         AlbumRowState(
+                            albumId = "3",
                             albumName = "Ahora",
                             image = MediaArt(
                                 uris = listOf(),
@@ -109,8 +108,8 @@ class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {
     override val values = sequenceOf(
         ArtistScreenItem.SectionHeaderItem("ALBUMS", R.string.albums),
         ArtistScreenItem.AlbumRowItem(
-            "0",
             AlbumRowState(
+                albumId = "0",
                 albumName = "Ahora",
                 image = MediaArt(
                     uris = listOf(),

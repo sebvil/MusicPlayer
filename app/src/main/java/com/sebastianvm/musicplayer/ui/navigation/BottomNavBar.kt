@@ -55,7 +55,7 @@ object ClearRippleTheme : RippleTheme {
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {
-    CompositionLocalProvider(LocalRippleTheme provides ClearRippleTheme) {
+    CompositionLocalProvider(LocalRippleTheme provides LocalRippleTheme.current) {
         NavigationBar {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination

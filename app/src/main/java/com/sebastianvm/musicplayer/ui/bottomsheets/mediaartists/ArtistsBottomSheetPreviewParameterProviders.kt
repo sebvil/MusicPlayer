@@ -12,7 +12,7 @@ class ArtistsBottomSheetStatePreviewParameterProvider : PreviewParameterProvider
                 ArtistRowState("Melendi", "Melendi", shouldShowContextMenu = false),
                 ArtistRowState("Carlos Vives", "Carlos Vives", shouldShowContextMenu = false)
             ),
-            mediaGroup = MediaGroup(MediaType.TRACK, "123")
+            mediaGroup = MediaGroup(MediaType.ALL_TRACKS, "123")
         )
     )
 }
