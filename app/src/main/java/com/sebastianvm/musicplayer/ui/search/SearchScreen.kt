@@ -10,6 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -151,6 +154,28 @@ fun SearchLayout(
                     color = LocalContentColor.current
                 )
             },
+            leadingIcon = state.searchTerm.takeIf { it.isEmpty() }?.let {
+                {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(
+                            id = R.string.search
+                        )
+                    )
+                }
+            },
+            trailingIcon = state.searchTerm.takeUnless { it.isEmpty() }?.let {
+                {
+                    IconButton(onClick = { delegate.onTextChanged("") }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(
+                                id = R.string.search
+                            )
+                        )
+                    }
+                }
+            },
             colors = textFieldColors(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -225,7 +250,6 @@ fun SearchLayout(
             }
 
         }
-
     }
 }
 
