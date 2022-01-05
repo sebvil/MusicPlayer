@@ -79,7 +79,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     sortOrder: SortOrder
                 ) {
                     navController.openContextMenu(
-                        mediaType = MediaType.TRACK,
+                        mediaType = MediaType.ALL_TRACKS,
                         mediaId = mediaId,
                         mediaGroup = mediaGroup,
                         currentSort = currentSort,

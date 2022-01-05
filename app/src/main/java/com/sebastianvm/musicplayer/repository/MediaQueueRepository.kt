@@ -59,7 +59,7 @@ class MediaQueueRepository @Inject constructor(
     ): Long {
         val queueName: String
         val trackIds = when (mediaGroup.mediaType) {
-            MediaType.TRACK -> {
+            MediaType.ALL_TRACKS -> {
                 queueName = ResUtil.getString(context = context, R.string.all_songs)
                 trackRepository.getAllTracks()
             }
@@ -75,6 +75,7 @@ class MediaQueueRepository @Inject constructor(
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForGenre(mediaGroup.mediaId)
             }
+            MediaType.SINGLE_TRACK -> TODO()
         }.map { tracks ->
             tracks.map {
                 it.toMediaMetadataCompat()

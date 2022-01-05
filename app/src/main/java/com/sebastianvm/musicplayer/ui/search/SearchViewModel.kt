@@ -80,6 +80,14 @@ class SearchViewModel @Inject constructor(
                     )
                 }
             }
+            is SearchUserAction.TrackRowClicked -> TODO()
+            is SearchUserAction.ArtistRowClicked -> TODO()
+            is SearchUserAction.AlbumRowClicked -> TODO()
+            is SearchUserAction.GenreRowClicked -> TODO()
+            is SearchUserAction.TrackOverflowMenuClicked -> TODO()
+            is SearchUserAction.ArtistOverflowMenuClicked -> TODO()
+            is SearchUserAction.AlbumOverflowMenuClicked -> TODO()
+            is SearchUserAction.GenreOverflowMenuClicked -> TODO()
 
         }
     }
@@ -114,6 +122,14 @@ object InitialSearchStateModule {
 sealed class SearchUserAction : UserAction {
     data class OnTextChanged(val newText: String) : SearchUserAction()
     data class SearchTypeChanged(@StringRes val newType: Int) : SearchUserAction()
+    data class TrackRowClicked(val trackId: String) : SearchUserAction()
+    data class TrackOverflowMenuClicked(val trackId: String) : SearchUserAction()
+    data class ArtistRowClicked(val artistId: String) : SearchUserAction()
+    data class ArtistOverflowMenuClicked(val artistId: String) : SearchUserAction()
+    data class AlbumRowClicked(val albumId: String) : SearchUserAction()
+    data class AlbumOverflowMenuClicked(val albumId: String) : SearchUserAction()
+    data class GenreRowClicked(val genreName: String) : SearchUserAction()
+    data class GenreOverflowMenuClicked(val genreName: String) : SearchUserAction()
 }
 
 sealed class SearchUiEvent : UiEvent

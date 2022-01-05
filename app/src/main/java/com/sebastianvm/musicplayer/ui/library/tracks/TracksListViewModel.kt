@@ -90,7 +90,7 @@ class TracksListViewModel @Inject constructor(
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = state.value.genreName?.let { MediaType.GENRE }
-                            ?: MediaType.TRACK,
+                            ?: MediaType.ALL_TRACKS,
                         mediaId = state.value.genreName ?: ""
                     )
                     mediaQueueRepository.createQueue(

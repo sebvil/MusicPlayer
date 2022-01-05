@@ -17,10 +17,11 @@ import javax.inject.Singleton
 
 @Parcelize
 enum class MediaType : Parcelable {
-    TRACK,
+    ALL_TRACKS,
     ARTIST,
     ALBUM,
-    GENRE
+    GENRE,
+    SINGLE_TRACK
 }
 
 @Parcelize

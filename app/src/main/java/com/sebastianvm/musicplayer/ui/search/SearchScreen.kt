@@ -42,13 +42,45 @@ fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
 ) {
     Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
-        SearchLayout(state = state, object : SearchScreenDelegate {
+        SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))
             }
 
             override fun onOptionChosen(@StringRes newOption: Int) {
                 screenViewModel.handle(SearchUserAction.SearchTypeChanged(newType = newOption))
+            }
+
+            override fun onTrackClicked(trackId: String) {
+                screenViewModel.handle(SearchUserAction.TrackRowClicked(trackId))
+            }
+
+            override fun onTrackOverflowMenuClicked(trackId: String) {
+                screenViewModel.handle(SearchUserAction.TrackOverflowMenuClicked(trackId))
+            }
+
+            override fun onArtistClicked(artistId: String) {
+                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistId))
+            }
+
+            override fun onArtistOverflowMenuClicked(artistId: String) {
+                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistId))
+            }
+
+            override fun onAlbumClicked(albumId: String) {
+                screenViewModel.handle(SearchUserAction.AlbumRowClicked(albumId))
+            }
+
+            override fun onAlbumOverflowMenuClicked(albumId: String) {
+                screenViewModel.handle(SearchUserAction.AlbumOverflowMenuClicked(albumId))
+            }
+
+            override fun onGenreClicked(genreName: String) {
+                screenViewModel.handle(SearchUserAction.GenreRowClicked(genreName))
+            }
+
+            override fun onGenreOverflowMenuClicked(genreName: String) {
+                screenViewModel.handle(SearchUserAction.GenreOverflowMenuClicked(genreName))
             }
         })
     }
@@ -66,6 +98,14 @@ fun SearchScreenPreview(@PreviewParameter(SearchStatePreviewParameterProvider::c
 interface SearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
     fun onOptionChosen(@StringRes newOption: Int) = Unit
+    fun onTrackClicked(trackId: String) = Unit
+    fun onTrackOverflowMenuClicked(trackId: String) = Unit
+    fun onArtistClicked(artistId: String) = Unit
+    fun onArtistOverflowMenuClicked(artistId: String) = Unit
+    fun onAlbumClicked(albumId: String) = Unit
+    fun onAlbumOverflowMenuClicked(albumId: String) = Unit
+    fun onGenreClicked(genreName: String) = Unit
+    fun onGenreOverflowMenuClicked(genreName: String) = Unit
 }
 
 @Composable
@@ -100,21 +140,33 @@ fun SearchLayout(
             R.string.songs -> {
                 LazyColumn {
                     items(state.trackSearchResults) { item ->
-                        TrackRow(state = item) {}
+                        TrackRow(
+                            state = item,
+                            modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
+                            delegate.onTrackOverflowMenuClicked(item.trackId)
+                        }
                     }
                 }
             }
             R.string.artists -> {
                 LazyColumn {
                     items(state.artistSearchResults) { item ->
-                        ArtistRow(state = item) {}
+                        ArtistRow(
+                            state = item,
+                            modifier = Modifier.clickable { delegate.onArtistClicked(item.artistId) }) {
+                            delegate.onArtistOverflowMenuClicked(item.artistId)
+                        }
                     }
                 }
             }
             R.string.albums -> {
                 LazyColumn {
                     items(state.albumSearchResults) { item ->
-                        AlbumRow(state = item) {}
+                        AlbumRow(
+                            state = item,
+                            modifier = Modifier.clickable { delegate.onAlbumClicked(item.albumId) }) {
+                            delegate.onAlbumOverflowMenuClicked(item.albumId)
+                        }
                     }
                 }
             }
@@ -122,10 +174,10 @@ fun SearchLayout(
                 LazyColumn {
                     items(state.genreSearchResults) { item ->
                         SingleLineListItem(
-                            modifier = Modifier.clickable { },
+                            modifier = Modifier.clickable { delegate.onGenreClicked(item.genreName) },
                             afterListContent = {
                                 IconButton(
-                                    onClick = { },
+                                    onClick = { delegate.onGenreOverflowMenuClicked(item.genreName) },
                                     modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                                 ) {
                                     Icon(

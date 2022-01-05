@@ -34,7 +34,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     init {
         with(state.value.mediaGroup) {
             when (mediaType) {
-                MediaType.TRACK -> {
+                MediaType.ALL_TRACKS -> {
                     collect(trackRepository.getTrack(mediaId)) { track ->
                         setState {
                             copy(
