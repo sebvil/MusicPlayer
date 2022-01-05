@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlbumDao {
-       @Query("SELECT COUNT(*) FROM Album")
+    @Query("SELECT COUNT(*) FROM Album")
     fun getAlbumsCount(): Flow<Long>
 
     @Transaction
@@ -24,4 +24,8 @@ interface AlbumDao {
     @Transaction
     @Query("SELECT * from Album")
     fun getAlbums(): Flow<List<AlbumWithArtists>>
+
+    @Transaction
+    @Query("SELECT * from Album JOIN AlbumsForArtist ON Album.albumId = AlbumsForArtist.albumId WHERE AlbumsForArtist.artistId=:artistId")
+    fun getAlbumsForArtist(artistId: String): Flow<List<AlbumWithArtists>>
 }
