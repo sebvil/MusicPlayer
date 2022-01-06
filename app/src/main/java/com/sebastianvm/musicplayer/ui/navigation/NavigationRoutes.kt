@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import android.util.Log
 import androidx.navigation.NavController
 import com.sebastianvm.musicplayer.player.BrowseTree
 
@@ -38,7 +37,6 @@ fun createNavRoute(route: String, vararg parameters: String): String {
     return if (parameters.isEmpty()) {
         route
     } else {
-        Log.i("NAV", "$route?" + parameters.joinToString("&") { s -> "$s={$s}" })
         "$route?" + parameters.joinToString("&") { s -> "$s={$s}" }
     }
 }
@@ -52,14 +50,4 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
         "$route?" + parameters.joinToString("&") { s -> "${s.parameterName}=${s.value}" }
     }
     this.navigate(navRoute)
-}
-
-fun NavController.popBackStackTo(route: String, vararg parameters: NavArgument<*>) {
-    val navRoute = if (parameters.isEmpty()) {
-        route
-    } else {
-        "$route?" + parameters.joinToString("&") { s -> "${s.parameterName}=${s.value}" }
-    }
-    Log.i("NAV", navRoute)
-    this.popBackStack(navRoute, inclusive = false)
 }
