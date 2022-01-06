@@ -23,6 +23,6 @@ fun <E : UiEvent> HandleEvents(
     LaunchedEffect(key1 = eventsFlow) {
         eventsFlow.onEach { event ->
             eventHandler.onEvent(event = event)
-        }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.RESUMED).collect()
+        }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect()
     }
 }

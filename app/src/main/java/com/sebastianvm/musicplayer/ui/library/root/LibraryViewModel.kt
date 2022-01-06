@@ -51,7 +51,7 @@ class LibraryViewModel @Inject constructor(
             is LibraryUserAction.FabClicked -> {
                 when (action.permissionStatus) {
                     PERMISSION_GRANTED -> {
-                        this.addUiEvent(LibraryUiEvent.StartGetMusicService)
+                        addUiEvent(LibraryUiEvent.StartGetMusicService)
                     }
                     SHOULD_SHOW_EXPLANATION -> {
                         setState {
@@ -61,7 +61,7 @@ class LibraryViewModel @Inject constructor(
                         }
                     }
                     SHOULD_REQUEST_PERMISSION -> {
-                        this.addUiEvent(LibraryUiEvent.RequestPermission)
+                        addUiEvent(LibraryUiEvent.RequestPermission)
                     }
                 }
             }
@@ -69,7 +69,7 @@ class LibraryViewModel @Inject constructor(
                 addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowId))
             }
             is LibraryUserAction.PermissionGranted -> {
-                this.addUiEvent(LibraryUiEvent.StartGetMusicService)
+                addUiEvent(LibraryUiEvent.StartGetMusicService)
             }
             is LibraryUserAction.PermissionDenied -> {
                 when (action.permissionStatus) {
