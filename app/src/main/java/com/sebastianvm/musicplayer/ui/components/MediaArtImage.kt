@@ -50,7 +50,7 @@ fun MediaArtImage(
         color = backgroundColor,
         modifier = modifier
     ) {
-        image.getBitmap()?.also {
+        image.getImageBitmap()?.also {
             Image(
                 bitmap = it,
                 contentDescription = image.contentDescription.getString(),

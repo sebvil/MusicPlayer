@@ -3,16 +3,21 @@ package com.sebastianvm.musicplayer.player
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
+import android.util.Size
+import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.sebastianvm.commons.R
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.FileNotFoundException
 
 
 class PlaybackNotificationManager(
-    @ApplicationContext context: Context,
+    @ApplicationContext private val context: Context,
     sessionToken: MediaSessionCompat.Token,
     playerNotificationListener: PlayerNotificationManager.NotificationListener
 ) {
@@ -57,11 +62,20 @@ class PlaybackNotificationManager(
             return "Current content text"
         }
 
+        @RequiresApi(Build.VERSION_CODES.Q)
         override fun getCurrentLargeIcon(
             player: Player,
             callback: PlayerNotificationManager.BitmapCallback
         ): Bitmap? {
-            return null
+            val uri = player.currentMediaItem?.mediaMetadata?.artworkUri
+            Log.i("MEDIA", "$uri")
+            return uri?.let {
+                try {
+                    context.contentResolver.loadThumbnail(uri, Size(500,500), null)
+                } catch (e: FileNotFoundException) {
+                    null
+                }
+            }
         }
 
     }

@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor
@@ -179,9 +180,9 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
         if (currentPlayer == exoPlayer) {
             exoPlayer.setMediaItems(currentPlaylistItems.mapNotNull {
                 it.mediaUri?.let { uri ->
-                    MediaItem.fromUri(
-                        uri
-                    )
+                    MediaItem.Builder().setUri(uri)
+                        .setMediaMetadata(MediaMetadata.Builder().setArtworkUri(uri).build())
+                        .build()
                 }
             })
             exoPlayer.prepare()

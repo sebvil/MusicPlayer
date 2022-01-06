@@ -92,7 +92,7 @@ data class MediaArt(
     val backupContentDescription: DisplayableString
 ) {
     @Composable
-    fun getBitmap(): ImageBitmap? {
+    fun getImageBitmap(): ImageBitmap? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             var bitmap: ImageBitmap? = null
             val context = LocalContext.current
