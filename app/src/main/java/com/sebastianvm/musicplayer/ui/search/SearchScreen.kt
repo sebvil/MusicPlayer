@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.search
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -72,6 +75,7 @@ fun SearchScreen(
     }) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
+                Log.i("SEARCH", "New text: $newText")
                 screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))
             }
 
@@ -142,10 +146,16 @@ fun SearchLayout(
     delegate: SearchScreenDelegate = object : SearchScreenDelegate {},
 ) {
     val context = LocalContext.current
+    val input = rememberSaveable {
+        mutableStateOf("")
+    }
     Column {
         TextField(
-            value = state.searchTerm,
-            onValueChange = delegate::onTextChanged,
+            value = input.value,
+            onValueChange = {
+                input.value = it
+                delegate.onTextChanged(it)
+            },
             textStyle = LocalTextStyle.current,
             placeholder = {
                 Text(
@@ -154,7 +164,7 @@ fun SearchLayout(
                     color = LocalContentColor.current
                 )
             },
-            leadingIcon = state.searchTerm.takeIf { it.isEmpty() }?.let {
+            leadingIcon = input.value.takeIf { it.isEmpty() }?.let {
                 {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -164,9 +174,12 @@ fun SearchLayout(
                     )
                 }
             },
-            trailingIcon = state.searchTerm.takeUnless { it.isEmpty() }?.let {
+            trailingIcon = input.value.takeUnless { it.isEmpty() }?.let {
                 {
-                    IconButton(onClick = { delegate.onTextChanged("") }) {
+                    IconButton(onClick = {
+                        input.value = ""
+                        delegate.onTextChanged("")
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = stringResource(

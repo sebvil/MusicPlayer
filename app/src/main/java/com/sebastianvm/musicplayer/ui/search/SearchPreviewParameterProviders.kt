@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 class SearchStatePreviewParameterProvider : PreviewParameterProvider<SearchState> {
     override val values = sequenceOf(
         SearchState(
-            searchTerm = "",
             selectedOption = R.string.songs,
             trackSearchResults = listOf(),
             artistSearchResults = listOf(),
@@ -15,7 +14,6 @@ class SearchStatePreviewParameterProvider : PreviewParameterProvider<SearchState
             genreSearchResults = listOf(),
         ),
         SearchState(
-            searchTerm = "Test",
             selectedOption = R.string.songs,
             trackSearchResults = listOf(
                 TrackRowState(

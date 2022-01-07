@@ -29,6 +29,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,48 +43,54 @@ class SearchViewModel @Inject constructor(
 ) :
     BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
 
+    private var jobs: MutableList<Job> = mutableListOf()
+
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.OnTextChanged -> {
-                collectFirst(ftsRepository.searchTracks(action.newText)) { tracks ->
-                    setState {
-                        copy(
-                            searchTerm = action.newText,
-                            trackSearchResults = tracks.map { it.toTrackRowState() },
-                        )
-                    }
+                jobs.forEach { job ->
+                    job.cancel()
                 }
-
-                collectFirst(ftsRepository.searchArtists(action.newText)) { artists ->
-                    setState {
-                        copy(
-                            searchTerm = action.newText,
-                            artistSearchResults = artists.map {
-                                it.toArtistRowState(
-                                    shouldShowContextMenu = true
+                jobs.clear()
+                jobs.addAll(
+                    listOf(
+                        collectFirst(ftsRepository.searchTracks(action.newText)) { tracks ->
+                            setState {
+                                copy(
+                                    trackSearchResults = tracks.map { it.toTrackRowState() },
                                 )
                             }
-                        )
-                    }
-                }
 
-                collectFirst(ftsRepository.searchAlbums(action.newText)) { albums ->
-                    setState {
-                        copy(
-                            searchTerm = action.newText,
-                            albumSearchResults = albums.map { it.toAlbumRowState() }
-                        )
-                    }
-                }
+                        },
 
-                collectFirst(ftsRepository.searchGenres(action.newText)) { genres ->
-                    setState {
-                        copy(
-                            searchTerm = action.newText,
-                            genreSearchResults = genres
-                        )
-                    }
-                }
+                        collectFirst(ftsRepository.searchArtists(action.newText)) { artists ->
+                            setState {
+                                copy(
+                                    artistSearchResults = artists.map {
+                                        it.toArtistRowState(
+                                            shouldShowContextMenu = true
+                                        )
+                                    }
+                                )
+                            }
+                        },
+
+                        collectFirst(ftsRepository.searchAlbums(action.newText)) { albums ->
+                            setState {
+                                copy(
+                                    albumSearchResults = albums.map { it.toAlbumRowState() }
+                                )
+                            }
+                        },
+
+                        collectFirst(ftsRepository.searchGenres(action.newText)) { genres ->
+                            setState {
+                                copy(
+                                    genreSearchResults = genres
+                                )
+                            }
+                        })
+                )
             }
             is SearchUserAction.SearchTypeChanged -> {
                 setState {
@@ -168,7 +175,6 @@ class SearchViewModel @Inject constructor(
 }
 
 data class SearchState(
-    val searchTerm: String,
     @StringRes val selectedOption: Int,
     val trackSearchResults: List<TrackRowState>,
     val artistSearchResults: List<ArtistRowState>,
@@ -183,7 +189,6 @@ object InitialSearchStateModule {
     @ViewModelScoped
     fun initialSearchStateProvider(): SearchState {
         return SearchState(
-            searchTerm = "",
             selectedOption = R.string.songs,
             trackSearchResults = listOf(),
             artistSearchResults = listOf(),
