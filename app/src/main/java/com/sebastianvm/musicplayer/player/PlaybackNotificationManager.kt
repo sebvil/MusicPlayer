@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import android.util.Size
 import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.Player
@@ -68,7 +67,6 @@ class PlaybackNotificationManager(
             callback: PlayerNotificationManager.BitmapCallback
         ): Bitmap? {
             val uri = player.currentMediaItem?.mediaMetadata?.artworkUri
-            Log.i("MEDIA", "$uri")
             return uri?.let {
                 try {
                     context.contentResolver.loadThumbnail(uri, Size(500,500), null)
