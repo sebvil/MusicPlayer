@@ -10,13 +10,19 @@ import androidx.core.content.ContextCompat
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject lateinit var errorHandler: ErrorHandler
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.DEBUG) {
+            Thread.setDefaultUncaughtExceptionHandler(errorHandler)
+        }
         setContent {
             NavHostWrapper { navController ->
                 AppNavHost(
