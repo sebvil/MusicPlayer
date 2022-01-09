@@ -13,6 +13,7 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
     object Play : ContextMenuItem(R.drawable.ic_play, R.string.play)
     object PlayFromBeginning : ContextMenuItem(R.drawable.ic_play, R.string.play_from_beginning)
     object PlayAllSongs : ContextMenuItem(R.drawable.ic_play, R.string.play_all_songs)
+    object AddToQueue : ContextMenuItem(R.drawable.ic_queue, R.string.add_to_queue)
 }
 
 
@@ -22,11 +23,13 @@ fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, ar
             if (mediaGroupType == MediaType.ALBUM) {
                 listOf(
                     ContextMenuItem.Play,
+                    ContextMenuItem.AddToQueue,
                     if (artistCount == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                 )
             } else {
                 listOf(
                     ContextMenuItem.Play,
+                    ContextMenuItem.AddToQueue,
                     if (artistCount == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                     ContextMenuItem.ViewAlbum
                 )
