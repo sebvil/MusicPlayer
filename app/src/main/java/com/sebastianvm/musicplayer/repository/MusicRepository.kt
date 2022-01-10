@@ -6,7 +6,14 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import com.sebastianvm.musicplayer.database.MusicDatabase
-import com.sebastianvm.musicplayer.database.entities.*
+import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Track
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -59,7 +66,7 @@ class MusicRepository @Inject constructor(
         val trackGenres = parseTag(genres).map { Genre(it) }
         val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
         val albumArtistsList = parseTag(albumArtists).map { Artist(it, it) }
-        val album = Album(albumId, albumName, year, "", numTracks)
+        val album = Album(albumId, albumName, year, numTracks)
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->

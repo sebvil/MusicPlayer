@@ -10,7 +10,6 @@ data class Album(
     val albumId: String,
     val albumName: String,
     val year: Long,
-    val albumArtPath: String, // Uri to track in album to load thumbnail
     val numberOfTracks: Long,
 )
 

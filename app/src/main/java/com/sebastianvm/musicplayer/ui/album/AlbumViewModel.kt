@@ -60,6 +60,7 @@ class AlbumViewModel @Inject constructor(
     }
 
 
+    // TODO fix playback here
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {
@@ -124,7 +125,6 @@ object InitialAlbumStateModule {
 sealed class AlbumUserAction : UserAction {
     data class TrackClicked(val trackId: String) : AlbumUserAction()
     data class TrackContextMenuClicked(val trackId: String) : AlbumUserAction()
-
 }
 
 sealed class AlbumUiEvent : UiEvent {
