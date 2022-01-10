@@ -2,19 +2,23 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.content.ContentUris
 import android.provider.MediaStore
-import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
+import com.sebastianvm.musicplayer.player.MEDIA_GROUP
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -37,10 +41,14 @@ import org.robolectric.RobolectricTestRunner
 class AlbumViewModelTest {
 
     private lateinit var albumRepository: AlbumRepository
+    private lateinit var musicServiceConnection: MusicServiceConnection
+    private lateinit var mediaQueueRepository: MediaQueueRepository
 
     @Before
     fun setUp() {
+        musicServiceConnection = mock()
         albumRepository = mock()
+        mediaQueueRepository = mock()
         val album = Album(
             albumId = ALBUM_ID,
             albumName = ALBUM_NAME,
@@ -72,7 +80,7 @@ class AlbumViewModelTest {
         })
     }
 
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): AlbumViewModel {
+    private fun generateViewModel(): AlbumViewModel {
         return AlbumViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = AlbumState(
@@ -81,6 +89,7 @@ class AlbumViewModelTest {
                 albumHeaderItem = mock()
             ),
             albumRepository = albumRepository,
+            mediaQueueRepository = mediaQueueRepository
         )
     }
 
@@ -97,7 +106,7 @@ class AlbumViewModelTest {
                                     MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_ID.toLong()
                                 )
                             ),
-                            contentDescription =  DisplayableString.ResourceValue(
+                            contentDescription = DisplayableString.ResourceValue(
                                 value = R.string.album_art_for_album,
                                 arrayOf(ALBUM_NAME)
                             ),
@@ -124,23 +133,47 @@ class AlbumViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked for  triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mock {
-            on { transportControls } doReturn mock()
-        }
+    fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
+        whenever(musicServiceConnection.transportControls).doReturn(mock())
 
-        with(generateViewModel(musicServiceConnection)) {
+
+        with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TRACK_ID))
             verify(musicServiceConnection.transportControls).playFromMediaId(
                 eq(TRACK_ID),
                 check {
                     assertEquals(
-                        MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER,
-                        it.getString(SORT_BY)
+                        MediaGroup(
+                            mediaType = MediaType.ALBUM,
+                            mediaId = state.value.albumId
+                        ),
+                        it.getParcelable(MEDIA_GROUP)
                     )
                 }
             )
+            verify(mediaQueueRepository).createQueue(
+                eq(
+                    MediaGroup(
+                        mediaType = MediaType.ALBUM,
+                        mediaId = state.value.albumId
+                    )
+                ),
+                eq(SortOption.TRACK_NUMBER),
+                eq(SortOrder.ASCENDING)
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`()  = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
+                assertEquals(TRACK_ID, trackId)
+                assertEquals(ALBUM_ID, albumId)
+            }
+            handle(AlbumUserAction.TrackContextMenuClicked(TRACK_ID))
         }
     }
 
