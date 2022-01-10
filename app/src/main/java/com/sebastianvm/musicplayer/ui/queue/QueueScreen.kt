@@ -88,7 +88,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 chosenOption = state.chosenQueue ?: MediaQueue(MediaType.ALL_TRACKS, "", "No queue")
             ),
             delegate = delegate,
-            modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium)
+            modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium).padding(top = AppDimensions.spacing.medium)
         )
 
         SortableLazyColumn(

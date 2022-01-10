@@ -61,6 +61,7 @@
     <string name="up_arrow">Up Arrow</string>
     <string name="down_arrow">Down arrow</string>
     <string name="drag">Drag</string>
+    <string name="add_to_queue">Add to queue</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

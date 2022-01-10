@@ -161,6 +161,8 @@ class ContextMenuViewModel @Inject constructor(
                     is ContextMenuItem.ViewGenre -> {
                         addUiEvent(ContextMenuUiEvent.NavigateToGenre(genreName = state.value.mediaId))
                     }
+                    is ContextMenuItem.AddToQueue -> {
+                    }
                 }
             }
         }
