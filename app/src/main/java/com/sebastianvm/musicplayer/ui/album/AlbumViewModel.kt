@@ -1,15 +1,15 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import android.os.Bundle
-import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -19,18 +19,22 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.ArtLoader
+import com.sebastianvm.musicplayer.util.SortOption
+import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     private val musicServiceConnection: MusicServiceConnection,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
@@ -65,21 +69,22 @@ class AlbumViewModel @Inject constructor(
         when (action) {
             is AlbumUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
-                val extras = Bundle().apply {
-                    putParcelable(
-                        MEDIA_GROUP,
-                        MediaGroup(
-                            mediaType = MediaType.ALBUM,
-                            mediaId = state.value.albumId
-                        )
+                viewModelScope.launch {
+                    val mediaGroup =  MediaGroup(
+                        mediaType = MediaType.ALBUM,
+                        mediaId = state.value.albumId
                     )
-                    putString(
-                        SORT_BY,
-                        MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = SortOrder.ASCENDING,
+                        sortOption = SortOption.TRACK_NUMBER
                     )
+                    val extras = Bundle().apply {
+                        putParcelable(MEDIA_GROUP, mediaGroup)
+                    }
+                    transportControls.playFromMediaId(action.trackId, extras)
+                    addUiEvent(AlbumUiEvent.NavigateToPlayer)
                 }
-                transportControls.playFromMediaId(action.trackId, extras)
-                addUiEvent(AlbumUiEvent.NavigateToPlayer)
             }
             is AlbumUserAction.TrackContextMenuClicked -> {
                 addUiEvent(
