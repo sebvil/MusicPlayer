@@ -1,49 +1,131 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import com.sebastianvm.musicplayer.PERMISSION_GRANTED
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
-import com.sebastianvm.musicplayer.player.BrowseTree
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.MusicRepository
+import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class LibraryViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): LibraryViewModel {
+    private lateinit var musicRepository: MusicRepository
+
+    @Before
+    fun setUp() {
+        musicRepository = mock()
+        whenever(musicRepository.getCounts()).doReturn(flow {
+            emit(
+                MusicRepository.CountHolder(
+                    1000,
+                    100,
+                    10,
+                    1
+                )
+            )
+        })
+    }
+
+    private fun generateViewModel(): LibraryViewModel {
         return LibraryViewModel(
             initialState = LibraryState(
-                libraryItems = listOf(),
+                libraryItems = listOf(
+                    LibraryItem(
+                        rowId = NavRoutes.TRACKS_ROOT,
+                        rowName = R.string.all_songs,
+                        icon = R.drawable.ic_song,
+                        countString = R.plurals.number_of_tracks,
+                        count = 0
+                    ),
+                    LibraryItem(
+                        rowId = NavRoutes.ARTISTS_ROOT,
+                        rowName = R.string.artists,
+                        icon = R.drawable.ic_artist,
+                        countString = R.plurals.number_of_artists,
+                        count = 0
+                    ),
+                    LibraryItem(
+                        rowId = NavRoutes.ALBUMS_ROOT,
+                        rowName = R.string.albums,
+                        icon = R.drawable.ic_album,
+                        countString = R.plurals.number_of_albums,
+                        count = 0
+                    ),
+                    LibraryItem(
+                        rowId = NavRoutes.GENRES_ROOT,
+                        rowName = R.string.genres,
+                        icon = R.drawable.ic_genre,
+                        countString = R.plurals.number_of_genres,
+                        count = 0
+                    )
+                ),
                 showPermissionExplanationDialog = false,
                 showPermissionDeniedDialog = false,
             ),
-            musicRepository = mock()
+            musicRepository = musicRepository
         )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init subscribes to music service`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection = musicServiceConnection)
-        verify(musicServiceConnection).subscribe(
-            eq(BrowseTree.MEDIA_ROOT),
-            any()
-        )
+    fun `init updates counts`() = runTest {
+        with(generateViewModel()) {
+            launch {
+                assertEquals(
+                    listOf(
+                        LibraryItem(
+                            rowId = NavRoutes.TRACKS_ROOT,
+                            rowName = R.string.all_songs,
+                            icon = R.drawable.ic_song,
+                            countString = R.plurals.number_of_tracks,
+                            count = 1000
+                        ),
+                        LibraryItem(
+                            rowId = NavRoutes.ARTISTS_ROOT,
+                            rowName = R.string.artists,
+                            icon = R.drawable.ic_artist,
+                            countString = R.plurals.number_of_artists,
+                            count = 100
+                        ),
+                        LibraryItem(
+                            rowId = NavRoutes.ALBUMS_ROOT,
+                            rowName = R.string.albums,
+                            icon = R.drawable.ic_album,
+                            countString = R.plurals.number_of_albums,
+                            count = 10
+                        ),
+                        LibraryItem(
+                            rowId = NavRoutes.GENRES_ROOT,
+                            rowName = R.string.genres,
+                            icon = R.drawable.ic_genre,
+                            countString = R.plurals.number_of_genres,
+                            count = 1
+                        )
+                    ), state.value.libraryItems
+
+                )
+            }
+            delay(1)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -148,20 +230,19 @@ class LibraryViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `PermissionExplanationDialogContinueClicked changes state, adds RequestPermission event`() = runTest {
-        with(generateViewModel()) {
-            setState {
-                copy(
-                    showPermissionExplanationDialog = true
-                )
+    fun `PermissionExplanationDialogContinueClicked changes state, adds RequestPermission event`() =
+        runTest {
+            with(generateViewModel()) {
+                setState {
+                    copy(
+                        showPermissionExplanationDialog = true
+                    )
+                }
+                expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
+                handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
+                assertFalse(state.value.showPermissionExplanationDialog)
             }
-            expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
-            handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
-            assertFalse(state.value.showPermissionExplanationDialog)
         }
-    }
-
-
 
 
     companion object {
