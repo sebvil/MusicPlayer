@@ -10,7 +10,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.AlbumRepository
-import com.sebastianvm.musicplayer.repository.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -32,35 +31,31 @@ import javax.inject.Inject
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
-    trackRepository: TrackRepository,
     private val musicServiceConnection: MusicServiceConnection,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        collect(albumRepository.getAlbum(state.value.albumId)) { albumInfo ->
-            setState {
-                copy(
-                    albumHeaderItem = HeaderWithImageState(
-                        image = ArtLoader.getAlbumArt(
-                            albumId = albumInfo.album.albumId.toLong(),
-                            albumName = albumInfo.album.albumName
+        collect(albumRepository.getAlbumWithTracks(state.value.albumId)) { albumInfo ->
+            val album = albumInfo.keys.find { it.albumId == state.value.albumId }
+            album?.also {
+                setState {
+                    copy(
+                        albumHeaderItem = HeaderWithImageState(
+                            image = ArtLoader.getAlbumArt(
+                                albumId = album.albumId.toLong(),
+                                albumName = album.albumName
+                            ),
+                            title = album.albumName.let {
+                                if (it.isNotEmpty()) DisplayableString.StringValue(
+                                    it
+                                ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
+                            }
                         ),
-                        title = albumInfo.album.albumName.let {
-                            if (it.isNotEmpty()) DisplayableString.StringValue(
-                                it
-                            ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
-                        }
-                    ),
-                )
+                        tracksList = albumInfo[album]?.map { it.toTrackRowState() }?.sortedBy { it.trackNumber } ?: listOf()
+                    )
+                }
             }
-        }
 
-        collect(trackRepository.getTracksForAlbum(state.value.albumId)) { tracks ->
-            setState {
-                copy(
-                    tracksList = tracks.map { it.toTrackRowState() }.sortedBy { it.trackNumber }
-                )
-            }
         }
     }
 

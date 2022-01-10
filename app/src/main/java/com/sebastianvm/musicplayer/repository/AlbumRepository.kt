@@ -2,8 +2,10 @@ package com.sebastianvm.musicplayer.repository
 
 import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
+import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
+import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,6 +33,11 @@ class AlbumRepository @Inject constructor(
     fun getAlbum(albumId: String): Flow<FullAlbumInfo> {
         return albumDao.getAlbum(albumId = albumId).distinctUntilChanged()
     }
+
+    fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>> {
+        return albumDao.getAlbumWithTracks(albumId)
+    }
+
 
     fun getAlbumsForArtist(artistId: String) : Flow<List<AlbumWithArtists>> {
         return albumDao.getAlbumsForArtist(artistId)

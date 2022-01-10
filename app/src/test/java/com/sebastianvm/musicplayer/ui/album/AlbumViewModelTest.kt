@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.any
 import org.mockito.kotlin.check
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -35,12 +34,7 @@ class AlbumViewModelTest {
 
     @Test
     fun `init connects to service for album`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection)
-        verify(musicServiceConnection).subscribe(
-            eq("album-$ALBUM_ID"),
-            any()
-        )
+        generateViewModel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
