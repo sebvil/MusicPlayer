@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
@@ -30,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -38,6 +39,9 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -201,67 +205,94 @@ fun SearchLayout(
         )
         when (state.selectedOption) {
             R.string.songs -> {
-                LazyColumn {
-                    items(state.trackSearchResults) { item ->
-                        TrackRow(
-                            state = item,
-                            modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
-                            delegate.onTrackOverflowMenuClicked(item.trackId)
+                state.trackSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.toTrackRowState()?.also {
+                                TrackRow(
+                                    state = it,
+                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.track.trackId) }) {
+                                    delegate.onTrackOverflowMenuClicked(item.track.trackId)
+                                }
+                            }
                         }
                     }
                 }
             }
             R.string.artists -> {
-                LazyColumn {
-                    items(state.artistSearchResults) { item ->
-                        ArtistRow(
-                            state = item,
-                            modifier = Modifier.clickable { delegate.onArtistClicked(item.artistId) }) {
-                            delegate.onArtistOverflowMenuClicked(item.artistId)
+                state.artistSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.also {
+                                ArtistRow(
+                                    state = item.toArtistRowState(),
+                                    modifier = Modifier.clickable {
+                                        delegate.onArtistClicked(
+                                            item.artistId
+                                        )
+                                    }) {
+                                    delegate.onArtistOverflowMenuClicked(item.artistId)
+                                }
+                            }
                         }
                     }
                 }
             }
             R.string.albums -> {
-                LazyColumn {
-                    items(state.albumSearchResults) { item ->
-                        AlbumRow(
-                            state = item,
-                            modifier = Modifier.clickable { delegate.onAlbumClicked(item.albumId) }) {
-                            delegate.onAlbumOverflowMenuClicked(item.albumId)
+                state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.toAlbumRowState()?.also {
+                                AlbumRow(
+                                    state = it,
+                                    modifier = Modifier.clickable { delegate.onAlbumClicked(it.albumId) }) {
+                                    delegate.onAlbumOverflowMenuClicked(it.albumId)
+                                }
+                            }
                         }
                     }
                 }
             }
             R.string.genres -> {
-                LazyColumn {
-                    items(state.genreSearchResults) { item ->
-                        SingleLineListItem(
-                            modifier = Modifier.clickable { delegate.onGenreClicked(item.genreName) },
-                            afterListContent = {
-                                IconButton(
-                                    onClick = { delegate.onGenreOverflowMenuClicked(item.genreName) },
-                                    modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
+                state.genreSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.also { genre ->
+                                SingleLineListItem(
+                                    modifier = Modifier.clickable {
+                                        delegate.onGenreClicked(
+                                            genre.genreName
+                                        )
+                                    },
+                                    afterListContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onGenreOverflowMenuClicked(
+                                                    genre.genreName
+                                                )
+                                            },
+                                            modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_overflow),
+                                                contentDescription = stringResource(R.string.more)
+                                            )
+                                        }
+                                    }
                                 ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_overflow),
-                                        contentDescription = stringResource(R.string.more)
+                                    Text(
+                                        text = genre.genreName,
+                                        modifier = Modifier.weight(1f),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
-                        ) {
-                            Text(
-                                text = item.genreName,
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
                         }
                     }
                 }
             }
-
         }
     }
 }

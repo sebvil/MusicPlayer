@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,16 +7,15 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
+import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
-class ArtistViewModelTest  {
+
+class ArtistViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistViewModel {
+    private fun generateViewModel(): ArtistViewModel {
         return ArtistViewModel(
             initialState = ArtistState(
                 artistHeaderItem = mock(),
@@ -32,12 +30,7 @@ class ArtistViewModelTest  {
 
     @Test
     fun `init connects to service for artists`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection)
-        verify(musicServiceConnection).subscribe(
-            eq("artist-${ARTIST_ID}"),
-            any()
-        )
+        generateViewModel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

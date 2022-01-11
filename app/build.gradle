@@ -46,7 +46,6 @@ android {
         }
     }
 
-
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -94,6 +93,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
     implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-paging:$room_version"
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
@@ -148,4 +148,10 @@ dependencies {
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
 
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.3'
+
+    def paging_version = "3.1.0"
+
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha14"
+
 }
