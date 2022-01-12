@@ -63,8 +63,6 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-
-    // TODO fix playback here
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {

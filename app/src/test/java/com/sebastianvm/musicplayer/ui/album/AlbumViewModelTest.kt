@@ -2,13 +2,13 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.content.ContentUris
 import android.provider.MediaStore
+import android.support.v4.media.session.MediaControllerCompat
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
@@ -19,6 +19,12 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import io.mockk.Runs
+import io.mockk.coJustRun
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -28,13 +34,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.check
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -46,24 +45,24 @@ class AlbumViewModelTest {
 
     @Before
     fun setUp() {
-        musicServiceConnection = mock()
-        albumRepository = mock()
-        mediaQueueRepository = mock()
+        musicServiceConnection = mockk()
+        albumRepository = mockk()
+        mediaQueueRepository = mockk()
         val album = Album(
             albumId = ALBUM_ID,
             albumName = ALBUM_NAME,
             year = ALBUM_YEAR,
             numberOfTracks = NUMBER_OF_TRACKS
         )
-        whenever(albumRepository.getAlbumWithTracks(any())).doReturn(flow {
+        every { (albumRepository.getAlbumWithTracks(any())) } returns flow {
             emit(
                 mapOf(
                     album to listOf(
                         FullTrackInfo(
-                            track = mock {
-                                on { trackId } doReturn TRACK_ID
-                                on { trackName } doReturn TRACK_NAME
-                                on { trackNumber } doReturn TRACK_NUMBER
+                            track = mockk {
+                                every { trackId } returns  TRACK_ID
+                                every { trackName } returns  TRACK_NAME
+                                every { trackNumber } returns  TRACK_NUMBER
                             },
                             artists = listOf(
                                 Artist(
@@ -77,7 +76,7 @@ class AlbumViewModelTest {
                     )
                 )
             )
-        })
+        }
     }
 
     private fun generateViewModel(): AlbumViewModel {
@@ -86,7 +85,7 @@ class AlbumViewModelTest {
             initialState = AlbumState(
                 albumId = ALBUM_ID,
                 tracksList = listOf(),
-                albumHeaderItem = mock()
+                albumHeaderItem = mockk()
             ),
             albumRepository = albumRepository,
             mediaQueueRepository = mediaQueueRepository
@@ -100,7 +99,8 @@ class AlbumViewModelTest {
             launch {
                 assertEquals(
                     HeaderWithImageState(
-                        title = DisplayableString.StringValue(ALBUM_NAME), image = MediaArt(
+                        title = DisplayableString.StringValue(ALBUM_NAME),
+                        image = MediaArt(
                             uris = listOf(
                                 ContentUris.withAppendedId(
                                     MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_ID.toLong()
@@ -134,40 +134,36 @@ class AlbumViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
-        whenever(musicServiceConnection.transportControls).doReturn(mock())
-
+        val transportControls: MediaControllerCompat.TransportControls = mockk()
+        every { transportControls.playFromMediaId(any(), any()) } just Runs
+        every { musicServiceConnection.transportControls } returns transportControls
+        coJustRun { mediaQueueRepository.createQueue(any(), any(), any()) }
 
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TRACK_ID))
-            verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_ID),
-                check {
-                    assertEquals(
-                        MediaGroup(
-                            mediaType = MediaType.ALBUM,
-                            mediaId = state.value.albumId
-                        ),
-                        it.getParcelable(MEDIA_GROUP)
-                    )
-                }
-            )
-            verify(mediaQueueRepository).createQueue(
-                eq(
+            io.mockk.verify {
+                transportControls.playFromMediaId(any(), any())
+            }
+
+
+            coVerify {
+                mediaQueueRepository.createQueue(
                     MediaGroup(
                         mediaType = MediaType.ALBUM,
                         mediaId = state.value.albumId
-                    )
-                ),
-                eq(SortOption.TRACK_NUMBER),
-                eq(SortOrder.ASCENDING)
-            )
+                    ),
+                    SortOption.TRACK_NUMBER,
+                    SortOrder.ASCENDING
+                )
+
+            }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`()  = runTest {
+    fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(TRACK_ID, trackId)

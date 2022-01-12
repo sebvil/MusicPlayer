@@ -78,9 +78,9 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt'
     testImplementation 'org.robolectric:robolectric:4.7.3'
-
-    androidTestImplementation 'io.mockk:mockk-android:1.12.2'
-
+    def mockk_version = "1.12.2"
+    androidTestImplementation "io.mockk:mockk-android:$mockk_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
 
     annotationProcessor "androidx.room:room-compiler:$room_version"
     def lifecycle_version = "2.4.0"
