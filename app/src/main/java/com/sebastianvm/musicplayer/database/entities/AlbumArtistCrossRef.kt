@@ -1,12 +1,18 @@
 package com.sebastianvm.musicplayer.database.entities
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.Junction
+import androidx.room.Relation
 
 @Entity(primaryKeys = ["albumId", "artistId"])
 data class AlbumsForArtist(
     val albumId: String,
     @ColumnInfo(index = true)
     val artistId: String,
+    val albumName: String,
+    val artistName: String,
 )
 
 @Entity(primaryKeys = ["albumId", "artistId"])

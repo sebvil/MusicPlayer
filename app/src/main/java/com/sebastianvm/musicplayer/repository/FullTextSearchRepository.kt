@@ -19,13 +19,11 @@ class FullTextSearchRepository @Inject constructor(
     private val artistFtsDao: ArtistFtsDao,
     private val albumFtsDao: AlbumFtsDao,
     private val genreFtsDao: GenreFtsDao,
-    private val trackRepository: TrackRepository,
-    private val albumRepository: AlbumRepository,
 ) {
 
 
     fun searchTracks(text: String): PagingSource<Int, FullTrackInfo> {
-        return trackFtsDao.tracksWithText(text = "{\"$text*\"}")
+        return trackFtsDao.tracksWithText(text = "\"$text*\"")
     }
 
     fun searchArtists(text: String): PagingSource<Int, Artist> {

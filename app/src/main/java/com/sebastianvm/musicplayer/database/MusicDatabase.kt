@@ -43,7 +43,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         AlbumFts::class,
         GenreFts::class,
     ],
-    version = 20,
+    version = 1,
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {
