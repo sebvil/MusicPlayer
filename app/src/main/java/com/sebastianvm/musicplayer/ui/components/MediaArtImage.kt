@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,11 +47,12 @@ fun MediaArtImage(
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
 ) {
+    val bitmap = image.getImageBitmap().collectAsState(initial = null)
     androidx.compose.material3.Surface(
         color = backgroundColor,
         modifier = modifier
     ) {
-        image.getImageBitmap()?.also {
+        bitmap.value?.also {
             Image(
                 bitmap = it,
                 contentDescription = image.contentDescription.getString(),

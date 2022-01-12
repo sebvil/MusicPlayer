@@ -8,10 +8,15 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
 
 
@@ -44,7 +49,7 @@ class ResUtil {
 
 sealed class DisplayableString {
     data class ResourceValue(
-        @StringRes  val value: Int,
+        @StringRes val value: Int,
         val formatArgs: Array<out Any> = arrayOf()
     ) : DisplayableString() {
         override fun equals(other: Any?): Boolean {
@@ -92,26 +97,31 @@ data class MediaArt(
     val backupContentDescription: DisplayableString
 ) {
     @Composable
-    fun getImageBitmap(): ImageBitmap? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            var bitmap: ImageBitmap? = null
-            val context = LocalContext.current
-            for (uri in this.uris) {
-                try {
-                    bitmap = context.contentResolver.loadThumbnail(
-                        uri,
-                        Size(500, 500),
-                        null
-                    ).asImageBitmap()
-                } catch (e: FileNotFoundException) {
+    @ReadOnlyComposable
+    fun getImageBitmap(): Flow<ImageBitmap?> {
+        val context = LocalContext.current
+        return flow {
+            emit(null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                var bitmap: ImageBitmap? = null
+                withContext(Dispatchers.IO) {
+                    for (uri in this@MediaArt.uris) {
+                        try {
+                            bitmap = context.contentResolver.loadThumbnail(
+                                uri,
+                                Size(500, 500),
+                                null
+                            ).asImageBitmap()
+                        } catch (e: FileNotFoundException) {
+                        }
+                        if (bitmap != null) {
+                            break
+                        }
+                    }
                 }
-                if (bitmap != null) {
-                    break
-                }
+                emit(bitmap)
+
             }
-            bitmap
-        } else {
-            null
         }
     }
 }
