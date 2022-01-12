@@ -24,7 +24,11 @@ interface AlbumDao {
     fun getAlbum(albumId: String): Flow<FullAlbumInfo>
 
     @Transaction
-    @Query("SELECT * from Album JOIN Track ON Track.albumId=Album.albumId WHERE Album.albumId=:albumId ")
+    @Query(
+        "SELECT * from Album " +
+                "JOIN Track ON Track.albumId=Album.albumId " +
+                "WHERE Album.albumId=:albumId "
+    )
     fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>>
 
 
@@ -32,9 +36,4 @@ interface AlbumDao {
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from Album")
     fun getAlbums(): Flow<List<AlbumWithArtists>>
-
-    @Transaction
-    @RewriteQueriesToDropUnusedColumns
-    @Query("SELECT * from Album JOIN AlbumsForArtist ON Album.albumId = AlbumsForArtist.albumId WHERE AlbumsForArtist.artistId=:artistId")
-    fun getAlbumsForArtist(artistId: String): Flow<List<AlbumWithArtists>>
 }

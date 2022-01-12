@@ -37,9 +37,4 @@ class AlbumRepository @Inject constructor(
     fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>> {
         return albumDao.getAlbumWithTracks(albumId)
     }
-
-
-    fun getAlbumsForArtist(artistId: String) : Flow<List<AlbumWithArtists>> {
-        return albumDao.getAlbumsForArtist(artistId)
-    }
 }
