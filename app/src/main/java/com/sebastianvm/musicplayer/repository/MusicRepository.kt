@@ -61,7 +61,7 @@ class MusicRepository @Inject constructor(
             albumId
         )
         val trackArtists = parseTag(artists)
-        val artistTrackCrossRefs = trackArtists.map { ArtistTrackCrossRef(it, id) }
+        val artistTrackCrossRefs = trackArtists.map { ArtistTrackCrossRef(it, id, title, it) }
         val trackArtistsList = trackArtists.map { Artist(it, it) }
         val trackGenres = parseTag(genres).map { Genre(it) }
         val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
@@ -71,7 +71,7 @@ class MusicRepository @Inject constructor(
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->
             if (artistName in albumArtistsList.map { it.artistId }) {
-                albumForArtists.add(AlbumsForArtist(albumId, artistName))
+                albumForArtists.add(AlbumsForArtist(albumId, artistName, albumName, artistName))
             } else {
                 appearsOnForArtists.add(AppearsOnForArtist(albumId, artistName))
             }

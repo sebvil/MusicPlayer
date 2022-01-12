@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
@@ -28,10 +29,12 @@ interface AlbumDao {
 
 
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from Album")
     fun getAlbums(): Flow<List<AlbumWithArtists>>
 
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from Album JOIN AlbumsForArtist ON Album.albumId = AlbumsForArtist.albumId WHERE AlbumsForArtist.artistId=:artistId")
     fun getAlbumsForArtist(artistId: String): Flow<List<AlbumWithArtists>>
 }
