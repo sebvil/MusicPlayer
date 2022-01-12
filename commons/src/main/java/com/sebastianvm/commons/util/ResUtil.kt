@@ -96,6 +96,8 @@ data class MediaArt(
     @DrawableRes val backupResource: Int,
     val backupContentDescription: DisplayableString
 ) {
+
+    @Suppress("BlockingMethodInNonBlockingContext")
     @Composable
     @ReadOnlyComposable
     fun getImageBitmap(): Flow<ImageBitmap?> {
