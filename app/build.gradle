@@ -8,13 +8,13 @@ plugins {
 
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 32
+    buildToolsVersion "32.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
         minSdkVersion 25
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -78,6 +78,7 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt'
     testImplementation 'org.robolectric:robolectric:4.7.3'
+
     def mockk_version = "1.12.2"
     androidTestImplementation "io.mockk:mockk-android:$mockk_version"
     testImplementation "io.mockk:mockk:$mockk_version"
