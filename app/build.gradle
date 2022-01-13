@@ -8,13 +8,13 @@ plugins {
 
 
 android {
-    compileSdkVersion 32
+    compileSdk 31
     buildToolsVersion "32.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
         minSdkVersion 25
-        targetSdkVersion 32
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 

@@ -54,7 +54,7 @@ class AlbumViewModelTest {
             year = ALBUM_YEAR,
             numberOfTracks = NUMBER_OF_TRACKS
         )
-        every { (albumRepository.getAlbumWithTracks(any())) } returns flow {
+        every { albumRepository.getAlbumWithTracks(any()) } returns flow {
             emit(
                 mapOf(
                     album to listOf(
@@ -174,13 +174,13 @@ class AlbumViewModelTest {
     }
 
     companion object {
-        const val TRACK_ID = "TRACK_ID"
-        const val TRACK_NAME = "TRACK_NAME"
-        const val ARTIST_NAME = "ARTIST_NAME"
-        const val TRACK_NUMBER = 10L
-        const val ALBUM_ID = "100"
-        const val ALBUM_NAME = "ALBUM_NAME"
-        const val ALBUM_YEAR = 2020L
-        const val NUMBER_OF_TRACKS = 15L
+        private const val TRACK_ID = "TRACK_ID"
+        private const val TRACK_NAME = "TRACK_NAME"
+        private const val ARTIST_NAME = "ARTIST_NAME"
+        private const val TRACK_NUMBER = 10L
+        private const val ALBUM_ID = "100"
+        private const val ALBUM_NAME = "ALBUM_NAME"
+        private const val ALBUM_YEAR = 2020L
+        private const val NUMBER_OF_TRACKS = 15L
     }
 }
