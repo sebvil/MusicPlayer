@@ -106,7 +106,7 @@ fun AlbumWithArtists.toAlbumRowState(): AlbumRowState {
         albumId = album.albumId,
         albumName = album.albumName,
         image = ArtLoader.getAlbumArt(
-            albumId = album.albumId.toLong(),
+            albumId = album.albumId,
             albumName = album.albumName
         ),
         year = album.year,

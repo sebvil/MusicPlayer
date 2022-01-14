@@ -51,8 +51,8 @@ class MusicPlayerViewModel @Inject constructor(
                     trackId = trackId,
                     albumId = albumId,
                     trackArt = ArtLoader.getTrackArt(
-                        trackId?.toLong() ?: -1,
-                        albumId?.toLong() ?: -1,
+                        trackId ?: "0",
+                        albumId ?: "0",
                         it.title ?: ""
                     )
                 )
@@ -174,4 +174,3 @@ sealed class MusicPlayerUserAction : UserAction {
 }
 
 sealed class MusicPlayerUiEvent : UiEvent
-

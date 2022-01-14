@@ -8,8 +8,8 @@ import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -46,7 +46,7 @@ class AlbumViewModel @Inject constructor(
                     copy(
                         albumHeaderItem = HeaderWithImageState(
                             image = ArtLoader.getAlbumArt(
-                                albumId = album.albumId.toLong(),
+                                albumId = album.albumId,
                                 albumName = album.albumName
                             ),
                             title = album.albumName.let {
@@ -115,7 +115,7 @@ object InitialAlbumStateModule {
             albumId = albumId,
             albumHeaderItem = HeaderWithImageState(
                 image = ArtLoader.getAlbumArt(
-                    albumId = albumId.toLong(),
+                    albumId = albumId,
                     albumName = ""
                 ),
                 title = DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)

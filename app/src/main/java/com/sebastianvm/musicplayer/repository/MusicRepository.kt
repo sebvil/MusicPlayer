@@ -156,7 +156,7 @@ class MusicRepository @Inject constructor(
                 //add songs to list
                 var count = 0
                 do {
-                    val thisId = musicCursor.getLong(idColumn)
+                    val thisId = musicCursor.getString(idColumn) ?: ""
                     val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
                     val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
                     val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
@@ -167,7 +167,7 @@ class MusicRepository @Inject constructor(
                     val thisTrackNumber = musicCursor.getLong(trackNumber)
                     val thisNumTracks = musicCursor.getLong(numTracks)
                     val thisDuration = musicCursor.getLong(duration)
-                    val albumId = musicCursor.getLong(albumIdColumn)
+                    val albumId = musicCursor.getString(albumIdColumn)
                     val relativePath = musicCursor.getString(relativePathColumn)
                     val fileName = musicCursor.getString(fileNameColumn)
 
@@ -179,7 +179,7 @@ class MusicRepository @Inject constructor(
                     )
 
                     insertTrack(
-                        thisId.toString(),
+                        thisId,
                         thisTitle,
                         thisArtist,
                         thisGenre,
@@ -189,7 +189,7 @@ class MusicRepository @Inject constructor(
                         thisTrackNumber,
                         thisNumTracks,
                         thisDuration,
-                        albumId.toString()
+                        albumId
                     )
 
                 } while (musicCursor.moveToNext())
