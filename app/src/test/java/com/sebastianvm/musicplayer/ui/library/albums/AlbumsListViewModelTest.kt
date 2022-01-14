@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

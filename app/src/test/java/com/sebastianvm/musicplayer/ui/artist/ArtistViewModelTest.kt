@@ -9,13 +9,13 @@ import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
-import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.ALBUMS
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.APPEARS_ON
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
-import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi

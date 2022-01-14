@@ -8,7 +8,7 @@ import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.EMPTY_PLAYBACK_STATE
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.NOTHING_PLAYING
-import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.extensions.albumId
 import com.sebastianvm.musicplayer.util.extensions.artist
 import com.sebastianvm.musicplayer.util.extensions.duration

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util
+package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent

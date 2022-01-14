@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.album
 
 import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
@@ -13,28 +13,28 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AlbumRepository @Inject constructor(
+class AlbumRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
     private val albumDao: AlbumDao
-) {
+) : AlbumRepository {
 
-    fun getAlbumsCount(): Flow<Long> {
+    override fun getAlbumsCount(): Flow<Long> {
         return albumDao.getAlbumsCount().distinctUntilChanged()
     }
 
-    fun getAlbums(): Flow<List<AlbumWithArtists>> {
+    override fun getAlbums(): Flow<List<AlbumWithArtists>> {
         return albumDao.getAlbums().distinctUntilChanged()
     }
 
-    fun getAlbums(albumIds: List<String>): Flow<List<AlbumWithArtists>> {
+    override fun getAlbums(albumIds: List<String>): Flow<List<AlbumWithArtists>> {
         return albumDao.getAlbums(albumIds = albumIds).distinctUntilChanged()
     }
 
-    fun getAlbum(albumId: String): Flow<FullAlbumInfo> {
+    override fun getAlbum(albumId: String): Flow<FullAlbumInfo> {
         return albumDao.getAlbum(albumId = albumId).distinctUntilChanged()
     }
 
-    fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>> {
+    override fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>> {
         return albumDao.getAlbumWithTracks(albumId)
     }
 }

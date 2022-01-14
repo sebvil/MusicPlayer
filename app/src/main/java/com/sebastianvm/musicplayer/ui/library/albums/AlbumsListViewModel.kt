@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState

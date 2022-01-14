@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
 import com.sebastianvm.musicplayer.repository.MusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.ui.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.ui.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first

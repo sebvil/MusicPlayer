@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util
+package com.sebastianvm.musicplayer.util
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers

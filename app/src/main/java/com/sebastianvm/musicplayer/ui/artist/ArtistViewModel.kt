@@ -6,7 +6,7 @@ import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.repository.AlbumRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
