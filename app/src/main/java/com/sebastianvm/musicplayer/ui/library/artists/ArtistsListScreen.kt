@@ -19,8 +19,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface ArtistsListScreenNavigationDelegate {
     fun navigateUp()
-    fun navigateToArtist(artistId: String)
-    fun openContextMenu(artistId: String)
+    fun navigateToArtist(artistName: String)
+    fun openContextMenu(artistName: String)
 }
 
 @Composable
@@ -33,10 +33,10 @@ fun ArtistsListScreen(
         eventHandler = { event ->
             when (event) {
                 is ArtistsListUiEvent.NavigateToArtist -> {
-                    delegate.navigateToArtist(event.artistId)
+                    delegate.navigateToArtist(event.artistName)
                 }
                 is ArtistsListUiEvent.NavigateUp -> delegate.navigateUp()
-                is ArtistsListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
+                is ArtistsListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistName)
             }
         },
         topBar = {
@@ -54,22 +54,22 @@ fun ArtistsListScreen(
         }
     ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
-            override fun onArtistRowClicked(artistId: String) {
+            override fun onArtistRowClicked(artistName: String) {
                 screenViewModel.handle(
-                    ArtistsListUserAction.ArtistClicked(artistId = artistId)
+                    ArtistsListUserAction.ArtistClicked(artistName = artistName)
                 )
             }
 
-            override fun onContextMenuIconClicked(artistId: String) {
-                screenViewModel.handle(ArtistsListUserAction.ContextMenuIconClicked(artistId))
+            override fun onContextMenuIconClicked(artistName: String) {
+                screenViewModel.handle(ArtistsListUserAction.ContextMenuIconClicked(artistName))
             }
         })
     }
 }
 
 interface ArtistsListScreenDelegate {
-    fun onArtistRowClicked(artistId: String) = Unit
-    fun onContextMenuIconClicked(artistId: String) = Unit
+    fun onArtistRowClicked(artistName: String) = Unit
+    fun onContextMenuIconClicked(artistName: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -91,12 +91,10 @@ fun ArtistsListLayout(
             ArtistRow(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onArtistRowClicked(item.artistId)
+                    delegate.onArtistRowClicked(item.artistName)
                 },
-                onOverflowMenuIconClicked = { delegate.onContextMenuIconClicked(item.artistId) }
+                onOverflowMenuIconClicked = { delegate.onContextMenuIconClicked(item.artistName) }
             )
         }
     }
 }
-
-

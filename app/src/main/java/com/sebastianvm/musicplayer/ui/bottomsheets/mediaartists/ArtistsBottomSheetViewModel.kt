@@ -61,7 +61,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     override fun handle(action: ArtistsBottomSheetUserAction) {
         when (action) {
             is ArtistsBottomSheetUserAction.ArtistClicked -> {
-                addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistId))
+                addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistName))
             }
         }
     }
@@ -88,10 +88,9 @@ object InitialArtistsBottomSheetStateModule {
 }
 
 sealed class ArtistsBottomSheetUserAction : UserAction {
-    data class ArtistClicked(val artistId: String) : ArtistsBottomSheetUserAction()
+    data class ArtistClicked(val artistName: String) : ArtistsBottomSheetUserAction()
 }
 
 sealed class ArtistsBottomSheetUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: String) : ArtistsBottomSheetUiEvent()
+    data class NavigateToArtist(val artistName: String) : ArtistsBottomSheetUiEvent()
 }
-

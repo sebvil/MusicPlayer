@@ -51,7 +51,7 @@ import com.sebastianvm.musicplayer.util.SortOrder
 
 interface SearchNavigationDelegate {
     fun navigateToPlayer()
-    fun navigateToArtist(artistId: String)
+    fun navigateToArtist(artistName: String)
     fun navigateToAlbum(albumId: String)
     fun navigateToGenre(genreName: String)
     fun openContextMenu(mediaGroup: MediaGroup, sortOption: SortOption, sortOrder: SortOrder)
@@ -66,7 +66,7 @@ fun SearchScreen(
     Screen(screenViewModel = screenViewModel, eventHandler = { event ->
         when (event) {
             is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
-            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
+            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
             is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
             is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
             is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
@@ -95,12 +95,12 @@ fun SearchScreen(
                 screenViewModel.handle(SearchUserAction.TrackOverflowMenuClicked(trackId))
             }
 
-            override fun onArtistClicked(artistId: String) {
-                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistId))
+            override fun onArtistClicked(artistName: String) {
+                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistName))
             }
 
-            override fun onArtistOverflowMenuClicked(artistId: String) {
-                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistId))
+            override fun onArtistOverflowMenuClicked(artistName: String) {
+                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistName))
             }
 
             override fun onAlbumClicked(albumId: String) {
@@ -136,8 +136,8 @@ interface SearchScreenDelegate {
     fun onOptionChosen(@StringRes newOption: Int) = Unit
     fun onTrackClicked(trackId: String) = Unit
     fun onTrackOverflowMenuClicked(trackId: String) = Unit
-    fun onArtistClicked(artistId: String) = Unit
-    fun onArtistOverflowMenuClicked(artistId: String) = Unit
+    fun onArtistClicked(artistName: String) = Unit
+    fun onArtistOverflowMenuClicked(artistName: String) = Unit
     fun onAlbumClicked(albumId: String) = Unit
     fun onAlbumOverflowMenuClicked(albumId: String) = Unit
     fun onGenreClicked(genreName: String) = Unit
@@ -228,10 +228,10 @@ fun SearchLayout(
                                     state = item.toArtistRowState(),
                                     modifier = Modifier.clickable {
                                         delegate.onArtistClicked(
-                                            item.artistId
+                                            item.artistName
                                         )
                                     }) {
-                                    delegate.onArtistOverflowMenuClicked(item.artistId)
+                                    delegate.onArtistOverflowMenuClicked(item.artistName)
                                 }
                             }
                         }
@@ -296,4 +296,3 @@ fun SearchLayout(
         }
     }
 }
-

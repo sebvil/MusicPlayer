@@ -9,7 +9,7 @@ data class FullTrackInfo(
     val track: Track,
     @Relation(
         parentColumn = "trackId",
-        entityColumn = "artistId",
+        entityColumn = "artistName",
         associateBy = Junction(ArtistTrackCrossRef::class)
     )
     val artists: List<Artist>,

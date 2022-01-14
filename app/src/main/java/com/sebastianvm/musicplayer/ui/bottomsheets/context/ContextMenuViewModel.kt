@@ -144,12 +144,12 @@ class ContextMenuViewModel @Inject constructor(
                         when (state.value.mediaType) {
                             MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) { track ->
-                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(track.artists[0].artistId))
+                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(track.artists[0].artistName))
                                 }
                             }
                             MediaType.ALBUM -> {
                                 collect(albumRepository.getAlbum(state.value.mediaId)) { album ->
-                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(album.artists[0].artistId))
+                                    addUiEvent(ContextMenuUiEvent.NavigateToArtist(album.artists[0].artistName))
                                 }
                             }
                             MediaType.ARTIST -> {
@@ -212,10 +212,9 @@ sealed class ContextMenuUserAction : UserAction {
 sealed class ContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : ContextMenuUiEvent()
     data class NavigateToAlbum(val albumId: String) : ContextMenuUiEvent()
-    data class NavigateToArtist(val artistId: String) : ContextMenuUiEvent()
+    data class NavigateToArtist(val artistName: String) : ContextMenuUiEvent()
     data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
         ContextMenuUiEvent()
 
     data class NavigateToGenre(val genreName: String) : ContextMenuUiEvent()
 }
-

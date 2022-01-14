@@ -9,7 +9,7 @@ data class FullAlbumInfo(
     val album: Album,
     @Relation(
         parentColumn = "albumId",
-        entityColumn = "artistId",
+        entityColumn = "artistName",
         associateBy = Junction(AlbumsForArtist::class)
     )
     val artists: List<Artist>,

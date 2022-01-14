@@ -28,7 +28,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import kotlinx.coroutines.Dispatchers
 
 interface ArtistsBottomSheetNavigationDelegate {
-    fun navigateToArtist(artistId: String) = Unit
+    fun navigateToArtist(artistName: String) = Unit
 }
 
 @Composable
@@ -40,19 +40,19 @@ fun ArtistsBottomSheet(
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         when (event) {
             is ArtistsBottomSheetUiEvent.NavigateToArtist -> {
-                delegate.navigateToArtist(artistId = event.artistId)
+                delegate.navigateToArtist(artistName = event.artistName)
             }
         }
     }
     ArtistsBottomSheetLayout(state = state.value, delegate = object : ArtistsBottomSheetDelegate {
-        override fun onArtistRowClicked(artistId: String) {
-            sheetViewModel.handle(ArtistsBottomSheetUserAction.ArtistClicked(artistId))
+        override fun onArtistRowClicked(artistName: String) {
+            sheetViewModel.handle(ArtistsBottomSheetUserAction.ArtistClicked(artistName))
         }
     })
 }
 
 interface ArtistsBottomSheetDelegate {
-    fun onArtistRowClicked(artistId: String) = Unit
+    fun onArtistRowClicked(artistName: String) = Unit
 }
 
 
@@ -94,7 +94,7 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
         }
         items(state.artistsList) { item ->
             ArtistRow(state = item, modifier = Modifier.clickable {
-                delegate.onArtistRowClicked(item.artistId)
+                delegate.onArtistRowClicked(item.artistName)
             })
         }
     }

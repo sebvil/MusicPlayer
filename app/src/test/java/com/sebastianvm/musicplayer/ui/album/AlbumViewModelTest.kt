@@ -66,7 +66,7 @@ class AlbumViewModelTest {
                             },
                             artists = listOf(
                                 Artist(
-                                    artistId = ARTIST_NAME,
+                                    artistName = ARTIST_NAME,
                                     artistName = ARTIST_NAME
                                 )
                             ),

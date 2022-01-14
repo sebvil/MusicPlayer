@@ -92,7 +92,7 @@ class BrowseTree @Inject constructor(
 //
 //            tree[ARTISTS_ROOT] = artists.map { artistWithAlbums ->
 //                artistWithAlbums.forEach { artist ->
-//                    tree["artist-${artist.artist.artistId}"] = combine(
+//                    tree["artist-${artist.artist.artistName}"] = combine(
 //                        albumRepository.getAlbums(artist.artistAlbums.map { album -> album.albumId }),
 //                        albumRepository.getAlbums(artist.artistAppearsOn.map { album -> album.albumId })
 //                    ) { albums, appearsOn ->

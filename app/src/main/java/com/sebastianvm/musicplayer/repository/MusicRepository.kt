@@ -55,26 +55,49 @@ class MusicRepository @Inject constructor(
         albumId: String
     ) {
         val track = Track(
-            id,
-            title,
-            trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
-            duration,
-            albumId
+            trackId = id,
+            trackName = title,
+            trackNumber = trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
+            trackDurationMs = duration,
+            albumId = albumId
         )
         val trackArtists = parseTag(artists)
-        val artistTrackCrossRefs = trackArtists.map { ArtistTrackCrossRef(it, id, title, it) }
-        val trackArtistsList = trackArtists.map { Artist(it, it) }
-        val trackGenres = parseTag(genres).map { Genre(it) }
-        val genreTrackCrossRef = trackGenres.map { GenreTrackCrossRef(it.genreName, id) }
-        val albumArtistsList = parseTag(albumArtists).map { Artist(it, it) }
+        val artistTrackCrossRefs = trackArtists.map { artistName ->
+            ArtistTrackCrossRef(
+                artistName = artistName,
+                trackId = id,
+                trackName = title
+            )
+        }
+        val trackArtistsList = trackArtists.map { artistName -> Artist(artistName = artistName) }
+        val trackGenres = parseTag(genres).map { genreName -> Genre(genreName = genreName) }
+        val genreTrackCrossRef = trackGenres.map { genre ->
+            GenreTrackCrossRef(
+                genreName = genre.genreName,
+                trackId = id
+            )
+        }
+        val albumArtistsList =
+            parseTag(albumArtists).map { artistName -> Artist(artistName = artistName) }
         val album = Album(albumId, albumName, year, numTracks)
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtists.forEach { artistName ->
-            if (artistName in albumArtistsList.map { it.artistId }) {
-                albumForArtists.add(AlbumsForArtist(albumId, artistName, albumName, artistName))
+            if (artistName in albumArtistsList.map { artist -> artist.artistName }) {
+                albumForArtists.add(
+                    AlbumsForArtist(
+                        albumId = albumId,
+                        artistName = artistName,
+                        albumName = albumName
+                    )
+                )
             } else {
-                appearsOnForArtists.add(AppearsOnForArtist(albumId, artistName))
+                appearsOnForArtists.add(
+                    AppearsOnForArtist(
+                        albumId = albumId,
+                        artistName = artistName
+                    )
+                )
             }
         }
 

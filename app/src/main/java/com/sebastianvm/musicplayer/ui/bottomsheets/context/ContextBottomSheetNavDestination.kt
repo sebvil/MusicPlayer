@@ -66,8 +66,8 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                     navController.navigateToAlbum(albumId)
                 }
 
-                override fun navigateToArtist(artistId: String) {
-                    navController.navigateToArtist(artistId)
+                override fun navigateToArtist(artistName: String) {
+                    navController.navigateToArtist(artistName)
                 }
 
                 override fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) {

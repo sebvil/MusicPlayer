@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.database.entities.Artist
 @Dao
 interface ArtistFtsDao {
     @Query("SELECT * FROM Artist " +
-            "JOIN ArtistFts ON Artist.artistId == ArtistFts.artistId " +
+            "JOIN ArtistFts ON Artist.artistName == ArtistFts.artistName " +
             "WHERE ArtistFts.artistName MATCH :text" )
     fun artistsWithText(text: String): PagingSource<Int, Artist>
 }

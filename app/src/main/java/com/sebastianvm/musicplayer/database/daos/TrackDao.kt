@@ -40,10 +40,10 @@ interface TrackDao {
         """
         SELECT Track.* FROM Track 
         INNER JOIN ArtistTrackCrossRef ON Track.trackId = ArtistTrackCrossRef.trackId
-        WHERE ArtistTrackCrossRef.artistId=:artistId
+        WHERE ArtistTrackCrossRef.artistName=:artistName
     """
     )
-    fun getTracksForArtist(artistId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>>
 
     @Transaction
     @Query(

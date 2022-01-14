@@ -54,7 +54,7 @@ class ArtistsListViewModel @Inject constructor(
         when (action) {
             is ArtistsListUserAction.ArtistClicked -> {
                 addUiEvent(
-                    ArtistsListUiEvent.NavigateToArtist(action.artistId)
+                    ArtistsListUiEvent.NavigateToArtist(action.artistName)
                 )
             }
             is ArtistsListUserAction.SortByClicked -> {
@@ -64,7 +64,7 @@ class ArtistsListViewModel @Inject constructor(
             }
             is ArtistsListUserAction.UpButtonClicked -> addUiEvent(ArtistsListUiEvent.NavigateUp)
             is ArtistsListUserAction.ContextMenuIconClicked -> {
-                addUiEvent(ArtistsListUiEvent.OpenContextMenu(action.artistId))
+                addUiEvent(ArtistsListUiEvent.OpenContextMenu(action.artistName))
             }
         }
     }
@@ -89,14 +89,14 @@ object InitialArtistsListStateModule {
 }
 
 sealed class ArtistsListUserAction : UserAction {
-    data class ArtistClicked(val artistId: String) : ArtistsListUserAction()
+    data class ArtistClicked(val artistName: String) : ArtistsListUserAction()
     object SortByClicked : ArtistsListUserAction()
     object UpButtonClicked : ArtistsListUserAction()
-    data class ContextMenuIconClicked(val artistId: String) : ArtistsListUserAction()
+    data class ContextMenuIconClicked(val artistName: String) : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: String) : ArtistsListUiEvent()
+    data class NavigateToArtist(val artistName: String) : ArtistsListUiEvent()
     object NavigateUp : ArtistsListUiEvent()
-    data class OpenContextMenu(val artistId: String) : ArtistsListUiEvent()
+    data class OpenContextMenu(val artistName: String) : ArtistsListUiEvent()
 }

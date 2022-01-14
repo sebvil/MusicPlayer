@@ -18,8 +18,8 @@ interface ArtistDao {
     fun getArtists(): Flow<List<Artist>>
 
     @Transaction
-    @Query("SELECT * from Artist WHERE Artist.artistId=:artistId")
-    fun getArtist(artistId: String): Flow<ArtistWithAlbums>
+    @Query("SELECT * from Artist WHERE Artist.artistName=:artistName")
+    fun getArtist(artistName: String): Flow<ArtistWithAlbums>
 
     @Query("SELECT COUNT(*) FROM Artist")
     fun getArtistsCount(): Flow<Long>

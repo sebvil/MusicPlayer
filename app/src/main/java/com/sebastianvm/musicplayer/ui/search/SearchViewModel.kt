@@ -112,7 +112,7 @@ class SearchViewModel @Inject constructor(
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }
-            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistId))
+            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistName))
             is SearchUserAction.AlbumRowClicked -> addUiEvent(SearchUiEvent.NavigateToAlbum(action.albumId))
             is SearchUserAction.GenreRowClicked -> addUiEvent(SearchUiEvent.NavigateToGenre(action.genreName))
             is SearchUserAction.TrackOverflowMenuClicked -> {
@@ -132,7 +132,7 @@ class SearchViewModel @Inject constructor(
                     SearchUiEvent.OpenContextMenu(
                         mediaGroup = MediaGroup(
                             MediaType.ARTIST,
-                            action.artistId
+                            action.artistName
                         ),
                         sortOption = SortOption.TRACK_NAME,
                         sortOrder = SortOrder.ASCENDING
@@ -198,8 +198,8 @@ sealed class SearchUserAction : UserAction {
     data class SearchTypeChanged(@StringRes val newType: Int) : SearchUserAction()
     data class TrackRowClicked(val trackId: String) : SearchUserAction()
     data class TrackOverflowMenuClicked(val trackId: String) : SearchUserAction()
-    data class ArtistRowClicked(val artistId: String) : SearchUserAction()
-    data class ArtistOverflowMenuClicked(val artistId: String) : SearchUserAction()
+    data class ArtistRowClicked(val artistName: String) : SearchUserAction()
+    data class ArtistOverflowMenuClicked(val artistName: String) : SearchUserAction()
     data class AlbumRowClicked(val albumId: String) : SearchUserAction()
     data class AlbumOverflowMenuClicked(val albumId: String) : SearchUserAction()
     data class GenreRowClicked(val genreName: String) : SearchUserAction()
@@ -208,7 +208,7 @@ sealed class SearchUserAction : UserAction {
 
 sealed class SearchUiEvent : UiEvent {
     object NavigateToPlayer : SearchUiEvent()
-    data class NavigateToArtist(val artistId: String) : SearchUiEvent()
+    data class NavigateToArtist(val artistName: String) : SearchUiEvent()
     data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
     data class NavigateToGenre(val genreName: String) : SearchUiEvent()
     data class OpenContextMenu(
@@ -218,4 +218,3 @@ sealed class SearchUiEvent : UiEvent {
     ) : SearchUiEvent()
 
 }
-

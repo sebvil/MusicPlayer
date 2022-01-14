@@ -6,8 +6,8 @@ import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -43,7 +43,7 @@ class ArtistViewModel @Inject constructor(
     initialState
 ) {
     init {
-        collect(artistRepository.getArtist(state.value.artistId).flatMapLatest { artistWithAlbums ->
+        collect(artistRepository.getArtist(state.value.artistName).flatMapLatest { artistWithAlbums ->
             val albumsForArtist = artistWithAlbums.artistAlbums.let { albums ->
                 albumRepository.getAlbums(albums.map { it.albumId })
             }
@@ -122,7 +122,7 @@ class ArtistViewModel @Inject constructor(
 
 data class ArtistState(
     val artistHeaderItem: HeaderWithImageState,
-    val artistId: String,
+    val artistName: String,
     val albumsForArtistItems: List<ArtistScreenItem>? = null,
     val appearsOnForArtistItems: List<ArtistScreenItem>? = null,
 ) : State
@@ -134,7 +134,7 @@ object InitialArtistState {
     @Provides
     @ViewModelScoped
     fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        val artistId =
+        val artistName =
             savedStateHandle.get<String>(NavArgs.ARTIST_ID)!! // We should not get here without an id
         return ArtistState(
             artistHeaderItem = HeaderWithImageState(
@@ -146,7 +146,7 @@ object InitialArtistState {
                 ),
                 title = DisplayableString.ResourceValue(R.string.unknown_artist)
             ),
-            artistId = artistId
+            artistName = artistName
         )
     }
 }
@@ -161,4 +161,3 @@ sealed class ArtistUiEvent : UiEvent {
     data class OpenContextMenu(val albumId: String) : ArtistUiEvent()
 
 }
-

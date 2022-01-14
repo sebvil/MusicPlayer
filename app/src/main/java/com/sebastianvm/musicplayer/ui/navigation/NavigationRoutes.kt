@@ -23,7 +23,7 @@ object NavRoutes {
 object NavArgs {
     const val GENRE_NAME = "genreName"
     const val ALBUM_ID = "albumId"
-    const val ARTIST_ID = "artistId"
+    const val ARTIST_ID = "artistName"
     const val SCREEN = "screen"
     const val SORT_OPTION = "sortOption"
     const val SORT_ORDER = "sortOrder"

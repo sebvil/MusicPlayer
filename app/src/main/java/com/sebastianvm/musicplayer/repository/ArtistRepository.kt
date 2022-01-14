@@ -24,8 +24,8 @@ class ArtistRepository @Inject constructor(
     fun getArtists(): Flow<List<Artist>> {
         return artistDao.getArtists().distinctUntilChanged()
     }
-    fun getArtist(artistId: String): Flow<ArtistWithAlbums> {
-        return artistDao.getArtist(artistId).distinctUntilChanged()
+    fun getArtist(artistName: String): Flow<ArtistWithAlbums> {
+        return artistDao.getArtist(artistName).distinctUntilChanged()
 
     }
 

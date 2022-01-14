@@ -41,6 +41,6 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     }
 }
 
-fun NavController.navigateToArtist(artistId: String) {
-    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_ID, artistId))
+fun NavController.navigateToArtist(artistName: String) {
+    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_ID, artistName))
 }

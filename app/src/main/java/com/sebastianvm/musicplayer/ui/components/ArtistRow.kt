@@ -21,12 +21,12 @@ import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-class ArtistRowState(val artistId: String, val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
-    override val id = artistId
+class ArtistRowState(val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
+    override val id = artistName
 }
 
 fun Artist.toArtistRowState(shouldShowContextMenu: Boolean = false): ArtistRowState {
-    return ArtistRowState(artistId = artistId, artistName = artistName, shouldShowContextMenu = shouldShowContextMenu)
+    return ArtistRowState(artistName = artistName, shouldShowContextMenu = shouldShowContextMenu)
 }
 
 @Preview(showBackground = true)
@@ -73,7 +73,7 @@ fun ArtistRow(
 class ArtistRowStatePreviewParameterProvider :
     PreviewParameterProvider<ArtistRowState> {
     override val values = sequenceOf(
-        ArtistRowState("Melendi", "Melendi", true),
-        ArtistRowState("Melendi", "Melendi", false)
+        ArtistRowState(artistName = "Melendi", shouldShowContextMenu = true),
+        ArtistRowState(artistName = "Morat", shouldShowContextMenu = false)
     )
 }
