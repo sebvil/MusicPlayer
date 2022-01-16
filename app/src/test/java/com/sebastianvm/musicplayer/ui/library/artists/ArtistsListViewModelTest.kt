@@ -42,7 +42,7 @@ class ArtistsListViewModelTest  {
     fun `ArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                Assert.assertEquals(ARTIST_ID, artistId)
+                Assert.assertEquals(ARTIST_ID, artistName)
             }
             handle(ArtistsListUserAction.ArtistClicked(ARTIST_ID))
         }

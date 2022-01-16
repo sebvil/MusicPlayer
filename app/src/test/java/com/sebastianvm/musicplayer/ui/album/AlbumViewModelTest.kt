@@ -6,19 +6,20 @@ import android.support.v4.media.session.MediaControllerCompat
 import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
+import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
+import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
+import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import io.mockk.Runs
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -27,7 +28,6 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -39,51 +39,21 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class AlbumViewModelTest {
 
-    private lateinit var albumRepository: AlbumRepository
+    private val albumRepository: AlbumRepository = FakeAlbumRepository()
     private lateinit var musicServiceConnection: MusicServiceConnection
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
     @Before
     fun setUp() {
         musicServiceConnection = mockk()
-        albumRepository = mockk()
         mediaQueueRepository = mockk()
-        val album = Album(
-            albumId = ALBUM_ID,
-            albumName = ALBUM_NAME,
-            year = ALBUM_YEAR,
-            numberOfTracks = NUMBER_OF_TRACKS
-        )
-        every { albumRepository.getAlbumWithTracks(any()) } returns flow {
-            emit(
-                mapOf(
-                    album to listOf(
-                        FullTrackInfo(
-                            track = mockk {
-                                every { trackId } returns  TRACK_ID
-                                every { trackName } returns  TRACK_NAME
-                                every { trackNumber } returns  TRACK_NUMBER
-                            },
-                            artists = listOf(
-                                Artist(
-                                    artistName = ARTIST_NAME,
-                                    artistName = ARTIST_NAME
-                                )
-                            ),
-                            album = album,
-                            genres = listOf()
-                        )
-                    )
-                )
-            )
-        }
     }
 
     private fun generateViewModel(): AlbumViewModel {
         return AlbumViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = AlbumState(
-                albumId = ALBUM_ID,
+                albumId = AlbumBuilder.PRIMARY_ALBUM_ID,
                 tracksList = listOf(),
                 albumHeaderItem = mockk()
             ),
@@ -99,16 +69,16 @@ class AlbumViewModelTest {
             launch {
                 assertEquals(
                     HeaderWithImageState(
-                        title = DisplayableString.StringValue(ALBUM_NAME),
+                        title = DisplayableString.StringValue(AlbumBuilder.PRIMARY_ALBUM_NAME),
                         image = MediaArt(
                             uris = listOf(
                                 ContentUris.withAppendedId(
-                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_ID.toLong()
+                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.PRIMARY_ALBUM_ID.toLong()
                                 )
                             ),
                             contentDescription = DisplayableString.ResourceValue(
                                 value = R.string.album_art_for_album,
-                                arrayOf(ALBUM_NAME)
+                                arrayOf(AlbumBuilder.PRIMARY_ALBUM_NAME)
                             ),
                             backupResource = R.drawable.ic_album,
                             backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
@@ -118,11 +88,11 @@ class AlbumViewModelTest {
                 assertEquals(
                     listOf(
                         TrackRowState(
-                            trackId = TRACK_ID,
-                            trackName = TRACK_NAME,
-                            artists = ARTIST_NAME,
-                            albumName = ALBUM_NAME,
-                            trackNumber = TRACK_NUMBER
+                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
+                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
+                            artists = ArtistBuilder.PRIMARY_ARTIST_NAME,
+                            albumName = AlbumBuilder.PRIMARY_ALBUM_NAME,
+                            trackNumber = TrackBuilder.DEFAULT_TRACK_NUMBER
                         )
                     ), state.value.tracksList
                 )
@@ -141,7 +111,7 @@ class AlbumViewModelTest {
 
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
-            handle(AlbumUserAction.TrackClicked(TRACK_ID))
+            handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
             io.mockk.verify {
                 transportControls.playFromMediaId(any(), any())
             }
@@ -166,21 +136,12 @@ class AlbumViewModelTest {
     fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TRACK_ID, trackId)
-                assertEquals(ALBUM_ID, albumId)
+                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
+                assertEquals(AlbumBuilder.PRIMARY_ALBUM_ID, albumId)
             }
-            handle(AlbumUserAction.TrackContextMenuClicked(TRACK_ID))
+            handle(AlbumUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
         }
     }
 
-    companion object {
-        private const val TRACK_ID = "TRACK_ID"
-        private const val TRACK_NAME = "TRACK_NAME"
-        private const val ARTIST_NAME = "ARTIST_NAME"
-        private const val TRACK_NUMBER = 10L
-        private const val ALBUM_ID = "100"
-        private const val ALBUM_NAME = "ALBUM_NAME"
-        private const val ALBUM_YEAR = 2020L
-        private const val NUMBER_OF_TRACKS = 15L
-    }
+   
 }

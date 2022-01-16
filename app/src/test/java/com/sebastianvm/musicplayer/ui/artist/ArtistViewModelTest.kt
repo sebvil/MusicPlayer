@@ -9,8 +9,8 @@ import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.ALBUMS
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.APPEARS_ON
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -39,8 +39,8 @@ class ArtistViewModelTest {
 
     @Before
     fun setUp() {
-        val artist1 = Artist(ARTIST_ID_1, ARTIST_ID_1)
-        val artist2 = Artist(ARTIST_ID_2, ARTIST_ID_2)
+        val artist1 = Artist(ARTIST_ID_1)
+        val artist2 = Artist(ARTIST_ID_2)
         val artistAlbum = Album(
             albumId = ALBUM_ID_1,
             albumName = ALBUM_NAME_1,
@@ -87,7 +87,7 @@ class ArtistViewModelTest {
         return ArtistViewModel(
             initialState = ArtistState(
                 artistHeaderItem = mock(),
-                artistId = ARTIST_ID_1,
+                artistName = ARTIST_ID_1,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
             ),
