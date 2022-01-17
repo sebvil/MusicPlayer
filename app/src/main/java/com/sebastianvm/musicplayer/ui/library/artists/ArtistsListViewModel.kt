@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState

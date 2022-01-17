@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.artist
 
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.entities.Artist
@@ -6,27 +6,24 @@ import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ArtistRepository @Inject constructor(
+class ArtistRepositoryImpl @Inject constructor(
     private val artistDao: ArtistDao
-) {
+) : ArtistRepository {
 
-    fun getArtistsCount(): Flow<Long> {
+    override fun getArtistsCount(): Flow<Long> {
         return artistDao.getArtistsCount().distinctUntilChanged()
     }
 
-    fun getArtistsWithAlbums(): Flow<List<ArtistWithAlbums>> {
+    override fun getArtistsWithAlbums(): Flow<List<ArtistWithAlbums>> {
         return artistDao.getArtistsWithAlbums().distinctUntilChanged()
     }
 
-    fun getArtists(): Flow<List<Artist>> {
+    override fun getArtists(): Flow<List<Artist>> {
         return artistDao.getArtists().distinctUntilChanged()
     }
-    fun getArtist(artistName: String): Flow<ArtistWithAlbums> {
+
+    override fun getArtist(artistName: String): Flow<ArtistWithAlbums> {
         return artistDao.getArtist(artistName).distinctUntilChanged()
-
     }
-
 }

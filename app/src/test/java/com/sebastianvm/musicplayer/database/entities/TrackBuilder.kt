@@ -32,7 +32,7 @@ class TrackBuilder {
         const val DEFAULT_TRACK_NAME = "DEFAULT_TRACK_NAME"
         const val DEFAULT_TRACK_NUMBER = 1L
         const val DEFAULT_TRACK_DURATION = 120000L
-        const val DEFAULT_ALBUM_ID = AlbumBuilder.PRIMARY_ALBUM_ID
+        const val DEFAULT_ALBUM_ID = AlbumBuilder.DEFAULT_ALBUM_ID
 
         const val SECONDARY_TRACK_ID = "2"
         const val SECONDARY_TRACK_NAME = "TRACK_NAME_2"

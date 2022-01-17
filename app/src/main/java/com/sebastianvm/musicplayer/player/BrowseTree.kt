@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.player
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.ArtistRepository
+import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.GenreRepository
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.MusicRepository

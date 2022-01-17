@@ -53,7 +53,7 @@ class AlbumViewModelTest {
         return AlbumViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = AlbumState(
-                albumId = AlbumBuilder.PRIMARY_ALBUM_ID,
+                albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                 tracksList = listOf(),
                 albumHeaderItem = mockk()
             ),
@@ -69,16 +69,16 @@ class AlbumViewModelTest {
             launch {
                 assertEquals(
                     HeaderWithImageState(
-                        title = DisplayableString.StringValue(AlbumBuilder.PRIMARY_ALBUM_NAME),
+                        title = DisplayableString.StringValue(AlbumBuilder.DEFAULT_ALBUM_NAME),
                         image = MediaArt(
                             uris = listOf(
                                 ContentUris.withAppendedId(
-                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.PRIMARY_ALBUM_ID.toLong()
+                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.DEFAULT_ALBUM_ID.toLong()
                                 )
                             ),
                             contentDescription = DisplayableString.ResourceValue(
                                 value = R.string.album_art_for_album,
-                                arrayOf(AlbumBuilder.PRIMARY_ALBUM_NAME)
+                                arrayOf(AlbumBuilder.DEFAULT_ALBUM_NAME)
                             ),
                             backupResource = R.drawable.ic_album,
                             backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
@@ -90,8 +90,8 @@ class AlbumViewModelTest {
                         TrackRowState(
                             trackId = TrackBuilder.DEFAULT_TRACK_ID,
                             trackName = TrackBuilder.DEFAULT_TRACK_NAME,
-                            artists = ArtistBuilder.PRIMARY_ARTIST_NAME,
-                            albumName = AlbumBuilder.PRIMARY_ALBUM_NAME,
+                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
                             trackNumber = TrackBuilder.DEFAULT_TRACK_NUMBER
                         )
                     ), state.value.tracksList
@@ -137,7 +137,7 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
-                assertEquals(AlbumBuilder.PRIMARY_ALBUM_ID, albumId)
+                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
             }
             handle(AlbumUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
         }

@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.database.entities
 
 class AlbumBuilder {
-    private var albumId = PRIMARY_ALBUM_ID
-    private var albumName = PRIMARY_ALBUM_NAME
-    private var year = PRIMARY_YEAR
-    private var numberOfTracks = PRIMARY_NUMBER_OF_TRACKS
+    private var albumId = DEFAULT_ALBUM_ID
+    private var albumName = DEFAULT_ALBUM_NAME
+    private var year = DEFAULT_YEAR
+    private var numberOfTracks = DEFAULT_NUMBER_OF_TRACKS
 
     fun withAlbumId(albumId: String): AlbumBuilder = apply {
         this.albumId = albumId
@@ -32,10 +32,10 @@ class AlbumBuilder {
 
 
     companion object {
-        const val PRIMARY_ALBUM_ID = "1"
-        const val PRIMARY_ALBUM_NAME = "PRIMARY_ALBUM_NAME"
-        const val PRIMARY_YEAR = 2022L
-        const val PRIMARY_NUMBER_OF_TRACKS = 10L
+        const val DEFAULT_ALBUM_ID = "1"
+        const val DEFAULT_ALBUM_NAME = "DEFAULT_ALBUM_NAME"
+        const val DEFAULT_YEAR = 2022L
+        const val DEFAULT_NUMBER_OF_TRACKS = 10L
 
         const val SECONDARY_ALBUM_ID = "2"
         const val SECONDARY_ALBUM_NAME = "SECONDARY_ALBUM_NAME"
