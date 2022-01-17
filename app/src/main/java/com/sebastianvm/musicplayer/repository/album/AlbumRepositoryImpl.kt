@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class AlbumRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
     private val albumDao: AlbumDao

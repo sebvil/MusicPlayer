@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.preferences
 
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PreferencesRepository @Inject constructor(private val preferencesUtil: PreferencesUtil) {
-    suspend fun modifyTrackListSortOptions(
-        sortOrder: SortOrder,
-        sortOption: SortOption,
+class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil: PreferencesUtil) :
+    PreferencesRepository {
+    override suspend fun modifyTrackListSortOptions(
+        sortSettings: SortSettings,
         genreName: String?
     ) {
         preferencesUtil.dataStore.edit { settings ->
@@ -22,17 +22,17 @@ class PreferencesRepository @Inject constructor(private val preferencesUtil: Pre
                     stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
                 val sortOrderKey =
                     stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
-                settings[sortOptionKey] = sortOption.name
-                settings[sortOrderKey] = sortOrder.name
+                settings[sortOptionKey] = sortSettings.sortOption.name
+                settings[sortOrderKey] = sortSettings.sortOrder.name
             } ?: kotlin.run {
-                settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortOption.name
-                settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortOrder.name
+                settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortSettings.sortOption.name
+                settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortSettings.sortOrder.name
             }
         }
     }
 
 
-    fun getTracksListSortOptions(genreName: String?): Flow<SortSettings> {
+    override fun getTracksListSortOptions(genreName: String?): Flow<SortSettings> {
         return preferencesUtil.dataStore.data.map { preferences ->
             genreName?.let {
                 val sortOptionKey =
@@ -58,17 +58,14 @@ class PreferencesRepository @Inject constructor(private val preferencesUtil: Pre
         }
     }
 
-    suspend fun modifyAlbumsListSortOptions(
-        sortOrder: SortOrder,
-        sortOption: SortOption,
-    ) {
+    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) {
         preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortOption.name
-            settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortOrder.name
+            settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortSettings.sortOption.name
+            settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortSettings.sortOrder.name
         }
     }
 
-    fun getAlbumsListSortOptions(): Flow<SortSettings> {
+    override fun getAlbumsListSortOptions(): Flow<SortSettings> {
         return preferencesUtil.dataStore.data.map { preferences ->
             val sortOption = preferences[PreferencesUtil.ALBUMS_SORT_OPTION]
             val sortOrder = preferences[PreferencesUtil.ALBUMS_SORT_ORDER]
@@ -81,27 +78,29 @@ class PreferencesRepository @Inject constructor(private val preferencesUtil: Pre
     }
 
 
-    suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
         preferencesUtil.dataStore.edit { settings ->
             settings[PreferencesUtil.ARTISTS_SORT_ORDER] = sortOrder.name
         }
     }
 
-    fun getArtistsListSortOrder(): Flow<SortOrder> {
+    override fun getArtistsListSortOrder(): Flow<SortOrder> {
         return preferencesUtil.dataStore.data.map { preferences ->
-            preferences[PreferencesUtil.ARTISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) } ?: SortOrder.ASCENDING
+            preferences[PreferencesUtil.ARTISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) }
+                ?: SortOrder.ASCENDING
         }
     }
 
-    suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
         preferencesUtil.dataStore.edit { settings ->
             settings[PreferencesUtil.GENRES_SORT_ORDER] = sortOrder.name
         }
     }
 
-    fun getGenresListSortOrder(): Flow<SortOrder> {
+    override fun getGenresListSortOrder(): Flow<SortOrder> {
         return preferencesUtil.dataStore.data.map { preferences ->
-            preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) } ?: SortOrder.ASCENDING
+            preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) }
+                ?: SortOrder.ASCENDING
         }
     }
 }

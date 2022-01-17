@@ -27,7 +27,7 @@ class ErrorHandler @Inject constructor() : Thread.UncaughtExceptionHandler {
         .callTimeout(10, TimeUnit.SECONDS)
         .build()
 
-    private val defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+    private val defaultUEH = Thread.getDefaultUncaughtExceptionHandler()
 
 
     @RequiresApi(Build.VERSION_CODES.O)

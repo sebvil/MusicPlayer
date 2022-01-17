@@ -103,7 +103,7 @@ class MediaPlaybackService : MediaBrowserServiceCompat() {
             .setContentType(C.CONTENT_TYPE_MUSIC)
             .build()
 
-        exoPlayer.setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true);
+        exoPlayer.setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true)
         switchToPlayer(
             previousPlayer = null,
             newPlayer = exoPlayer

@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.albums
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.SortSettings
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.Module
 import dagger.Provides
@@ -83,8 +84,10 @@ class AlbumsListViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     preferencesRepository.modifyAlbumsListSortOptions(
-                        sortOrder,
-                        action.newSortOption
+                        SortSettings(
+                            sortOption = action.newSortOption,
+                            sortOrder = sortOrder
+                        )
                     )
                     addUiEvent(AlbumsListUiEvent.ScrollToTop)
                 }

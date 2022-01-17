@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.genres
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.repository.GenreRepository
-import com.sebastianvm.musicplayer.repository.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent

@@ -11,8 +11,8 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
-import com.sebastianvm.musicplayer.repository.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.TrackRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -22,6 +22,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.SortSettings
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.Module
 import dagger.Provides
@@ -124,8 +125,10 @@ class TracksListViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
-                        sortOrder,
-                        action.newSortOption,
+                        SortSettings(
+                            sortOption = state.value.currentSort,
+                            sortOrder = state.value.sortOrder
+                        ),
                         state.value.genreName
                     )
                     addUiEvent(TracksListUiEvent.ScrollToTop)
@@ -213,5 +216,3 @@ sealed class TracksListUiEvent : UiEvent {
 
     object ScrollToTop : TracksListUiEvent()
 }
-
-
