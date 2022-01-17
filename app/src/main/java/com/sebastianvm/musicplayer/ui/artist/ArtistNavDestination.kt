@@ -37,6 +37,10 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
                 )
             }
 
+            override fun navigateUp() {
+                navController.navigateUp()
+            }
+
         })
     }
 }

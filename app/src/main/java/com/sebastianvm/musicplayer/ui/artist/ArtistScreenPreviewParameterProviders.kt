@@ -5,21 +5,10 @@ import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 
 class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState> {
     override val values = sequenceOf(
         ArtistState(
-            artistHeaderItem = HeaderWithImageState(
-                image = MediaArt(
-                    uris = listOf(),
-                    contentDescription = DisplayableString.StringValue(""),
-                    backupResource = com.sebastianvm.commons.R.drawable.ic_artist,
-                    backupContentDescription = DisplayableString.StringValue("Artist Image placeholder")
-
-                ),
-                title = DisplayableString.StringValue("10:20:40")
-            ),
             artistName = "Melendi",
             albumsForArtistItems = listOf(
                 ArtistScreenItem.SectionHeaderItem(

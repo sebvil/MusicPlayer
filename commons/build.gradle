@@ -57,7 +57,7 @@ dependencies {
     api "androidx.compose.ui:ui-tooling:$compose_version"
 
 //    // Material 3
-    api "androidx.compose.material3:material3:1.0.0-alpha02"
+    api 'androidx.compose.material3:material3:1.0.0-alpha03'
 
 
 }

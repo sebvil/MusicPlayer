@@ -64,10 +64,10 @@ android {
 
 dependencies {
     implementation project(path: ":commons")
-    def room_version = "2.4.0"
+    def room_version = '2.4.1'
     // Kotlin
     implementation "androidx.core:core-ktx:1.7.0"
-    implementation "androidx.appcompat:appcompat:1.4.0"
+    implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation "androidx.room:room-runtime:$room_version"
 
     // Optional -- Robolectric environment

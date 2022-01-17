@@ -88,6 +88,11 @@ sealed class DisplayableString {
             }
         }
     }
+
+    companion object {
+        fun String.toDisplayableString()  = StringValue(this)
+        fun Int.toDisplayableString() = ResourceValue(this)
+    }
 }
 
 data class MediaArt(

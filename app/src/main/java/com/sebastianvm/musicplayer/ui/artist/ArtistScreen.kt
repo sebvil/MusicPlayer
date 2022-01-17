@@ -1,20 +1,28 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import android.content.res.Configuration
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
-import com.sebastianvm.musicplayer.ui.components.HeaderWithImage
-import com.sebastianvm.musicplayer.ui.components.ListWithHeader
-import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -23,13 +31,20 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 interface ArtistScreenNavigationDelegate {
     fun navigateToAlbum(albumId: String)
     fun openContextMenu(albumId: String)
+    fun navigateUp()
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
     delegate: ArtistScreenNavigationDelegate,
 ) {
+    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val scrollBehavior = remember(decayAnimationSpec) {
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec)
+    }
+
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
@@ -40,8 +55,27 @@ fun ArtistScreen(
                 is ArtistUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(event.albumId)
                 }
+                is ArtistUiEvent.NavigateUp -> {
+                    delegate.navigateUp()
+                }
             }
         },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { state ->
+            LargeTopAppBar(
+                title = { Text(text = state.artistName) },
+                navigationIcon = {
+                    IconButton(onClick = { screenViewModel.handle(ArtistUserAction.UpButtonClicked) }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+
+        }
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
             override fun albumRowClicked(albumId: String) {
@@ -74,23 +108,13 @@ fun ArtistLayout(
     delegate: ArtistScreenDelegate
 ) {
     with(state) {
-        val listWithHeaderState =
-            ListWithHeaderState(
-                artistHeaderItem,
-                (albumsForArtistItems ?: listOf()) + (appearsOnForArtistItems ?: listOf()),
-                { s ->
-                    HeaderWithImage(
-                        state = s,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = AppDimensions.spacing.medium),
-                    )
-                },
-                { i ->
-                    ArtistScreenRow(item = i, delegate = delegate)
-                }
-            )
-        ListWithHeader(state = listWithHeaderState)
+        LazyColumn {
+            items(
+                items = (albumsForArtistItems ?: listOf()) + (appearsOnForArtistItems ?: listOf())
+            ) { item ->
+                ArtistScreenRow(item = item, delegate = delegate)
+            }
+        }
     }
 }
 
@@ -135,7 +159,3 @@ fun ArtistScreenRow(
         }
     }
 }
-
-
-
-

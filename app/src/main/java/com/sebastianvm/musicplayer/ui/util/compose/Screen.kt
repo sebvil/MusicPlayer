@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 fun <A : UserAction, E : UiEvent, S : State> Screen(
     screenViewModel: BaseViewModel<A, E, S>,
     eventHandler: EventHandler<E>,
+    modifier: Modifier = Modifier,
     topBar: @Composable (S) -> Unit = {},
     fab: @Composable (S) -> Unit = {},
     content: @Composable (S) -> Unit
@@ -28,6 +29,7 @@ fun <A : UserAction, E : UiEvent, S : State> Screen(
     HandleEvents(eventsFlow = screenViewModel.eventsFlow, eventHandler = eventHandler)
 
     Scaffold(
+        modifier = modifier,
         topBar = { topBar(state.value) },
         floatingActionButton = { fab(state.value) }
     ) { padding ->
@@ -36,4 +38,3 @@ fun <A : UserAction, E : UiEvent, S : State> Screen(
         }
     }
 }
-
