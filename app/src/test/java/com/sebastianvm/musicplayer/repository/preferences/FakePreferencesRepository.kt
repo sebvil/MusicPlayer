@@ -4,9 +4,14 @@ import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 
 class FakePreferencesRepository : PreferencesRepository {
+
+    private val albumSortSettings =
+        MutableStateFlow(SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING))
+
     override suspend fun modifyTrackListSortOptions(
         sortSettings: SortSettings,
         genreName: String?
@@ -18,16 +23,9 @@ class FakePreferencesRepository : PreferencesRepository {
         )
     }
 
-    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) = Unit
+    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) = albumSortSettings.emit(sortSettings)
 
-    override fun getAlbumsListSortOptions(): Flow<SortSettings> = flow {
-        emit(
-            SortSettings(
-                sortOption = SortOption.ALBUM_NAME,
-                sortOrder = SortOrder.ASCENDING
-            )
-        )
-    }
+    override fun getAlbumsListSortOptions(): Flow<SortSettings> = albumSortSettings
 
     override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) = Unit
 

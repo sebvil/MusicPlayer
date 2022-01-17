@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
@@ -8,8 +9,6 @@ import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -19,10 +18,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class AlbumsListViewModelTest {
-
-    // TODO fix this so I don't need to use robolectric
-//    @get:Rule
-//    val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private fun generateViewModel(): AlbumsListViewModel {
         return AlbumsListViewModel(
@@ -36,28 +31,25 @@ class AlbumsListViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init sets initial state values`() = runTest {
+    fun `init sets initial state values`()  {
         with(generateViewModel()) {
-            launch {
-                assertEquals(2, state.value.albumsList.size)
-                val albumRow1 = state.value.albumsList[0]
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
-                assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
-                assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
+            assertEquals(2, state.value.albumsList.size)
+            val albumRow1 = state.value.albumsList[0]
+            assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
+            assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
+            assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
+            assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
 
-                val albumRow2 = state.value.albumsList[1]
-                assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
-                assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
-                assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
-                assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
+            val albumRow2 = state.value.albumsList[1]
+            assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
+            assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
+            assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
+            assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
 
-                assertEquals(SortOption.ALBUM_NAME, state.value.currentSort)
-                assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
-            }
-            delay(1)
+            assertEquals(SortOption.ALBUM_NAME, state.value.currentSort)
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+
         }
     }
 
@@ -69,6 +61,54 @@ class AlbumsListViewModelTest {
                 assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
             }
             handle(AlbumsListUserAction.AlbumClicked(AlbumBuilder.DEFAULT_ALBUM_ID))
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<AlbumsListUiEvent.NavigateUp>(this@runTest)
+            handle(AlbumsListUserAction.UpButtonClicked)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `SortByClicked adds ShowSortBottomSheet event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<AlbumsListUiEvent.ShowSortBottomSheet>(this@runTest) {
+                assertEquals(R.string.album_name, sortOption)
+                assertEquals(SortOrder.ASCENDING, sortOrder)
+            }
+            handle(AlbumsListUserAction.SortByClicked)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `SortOptionClicked changes state, adds ScrollToTop event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
+            handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            assertEquals(SortOption.YEAR, state.value.currentSort)
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+
+            expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
+            handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            assertEquals(SortOption.YEAR, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<AlbumsListUiEvent.OpenContextMenu>(this@runTest) {
+                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+            }
+            handle(AlbumsListUserAction.AlbumContextButtonClicked(albumId = AlbumBuilder.DEFAULT_ALBUM_ID))
         }
     }
 }
