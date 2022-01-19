@@ -1,10 +1,8 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.net.Uri
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.EMPTY_PLAYBACK_STATE
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.NOTHING_PLAYING
@@ -61,12 +59,7 @@ class MusicPlayerViewModelTest {
                 currentPlaybackTimeMs = null,
                 trackId = null,
                 albumId = null,
-                trackArt = MediaArt(
-                    uri = Uri.EMPTY,
-                    contentDescription = DisplayableString.StringValue(""),
-                    backupResource = R.drawable.ic_album,
-                    backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
-                )
+                trackArt = Uri.EMPTY
             )
         )
     }
