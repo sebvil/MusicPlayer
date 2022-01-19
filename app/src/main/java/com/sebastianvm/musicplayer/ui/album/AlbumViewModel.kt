@@ -6,14 +6,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -46,15 +44,13 @@ class AlbumViewModel @Inject constructor(
             album?.also {
                 setState {
                     copy(
-                        albumHeaderItem = HeaderWithImageState(
-                            image = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, album.albumId.toLong()),
-                            title = album.albumName.let {
-                                if (it.isNotEmpty()) DisplayableString.StringValue(
-                                    it
-                                ) else DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
-                            }
+                        imageUri = ContentUris.withAppendedId(
+                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                            album.albumId.toLong()
                         ),
-                        tracksList = albumInfo[album]?.map { it.toTrackRowState() }?.sortedBy { it.trackNumber } ?: listOf()
+                        albumName = album.albumName,
+                        tracksList = albumInfo[album]?.map { it.toTrackRowState() }
+                            ?.sortedBy { it.trackNumber } ?: listOf()
                     )
                 }
             }
@@ -67,7 +63,7 @@ class AlbumViewModel @Inject constructor(
             is AlbumUserAction.TrackClicked -> {
                 val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
-                    val mediaGroup =  MediaGroup(
+                    val mediaGroup = MediaGroup(
                         mediaType = MediaType.ALBUM,
                         mediaId = state.value.albumId
                     )
@@ -98,7 +94,8 @@ class AlbumViewModel @Inject constructor(
 
 data class AlbumState(
     val albumId: String,
-    val albumHeaderItem: HeaderWithImageState,
+    val imageUri: Uri,
+    val albumName: String,
     val tracksList: List<TrackRowState>
 ) : State
 
@@ -112,10 +109,8 @@ object InitialAlbumStateModule {
         val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
         return AlbumState(
             albumId = albumId,
-            albumHeaderItem = HeaderWithImageState(
-                image = Uri.EMPTY,
-                title = DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
-            ),
+            imageUri = Uri.EMPTY,
+            albumName = "",
             tracksList = emptyList()
         )
     }
