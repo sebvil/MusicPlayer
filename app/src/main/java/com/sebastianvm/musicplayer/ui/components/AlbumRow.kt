@@ -1,6 +1,9 @@
 package com.sebastianvm.musicplayer.ui.components
 
+import android.content.ContentUris
 import android.content.res.Configuration
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
@@ -16,21 +19,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import coil.annotation.ExperimentalCoilApi
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.util.ArtLoader
 
 
 data class AlbumRowState(
     val albumId: String,
     val albumName: String,
-    val image: MediaArt,
+    val imageUri: Uri,
     val year: Long,
     val artists: String,
 )
@@ -44,15 +45,27 @@ fun AlbumRowPreview(@PreviewParameter(AlbumRowStateProvider::class) state: Album
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
-fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, onOverflowMenuIconClicked: () -> Unit) {
+fun AlbumRow(
+    state: AlbumRowState,
+    modifier: Modifier = Modifier,
+    onOverflowMenuIconClicked: () -> Unit
+) {
+
     with(state) {
         DoubleLineListItem(
             modifier = modifier,
-            supportingImage = { modifier ->
+            supportingImage = { imageModifier ->
                 MediaArtImage(
-                    image = state.image,
-                    modifier = modifier
+                    uri = imageUri,
+                    contentDescription = stringResource(
+                        id = R.string.album_art_for_album,
+                        albumName
+                    ),
+                    backupResource = R.drawable.ic_album,
+                    backupContentDescription = R.string.placeholder_album_art,
+                    modifier = imageModifier
                 )
             },
             supportingImageType = SupportingImageType.LARGE,
@@ -62,8 +75,8 @@ fun AlbumRow(state: AlbumRowState, modifier: Modifier = Modifier, onOverflowMenu
                     modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                 ) {
                     Icon(
-                        painter = painterResource(id = com.sebastianvm.musicplayer.R.drawable.ic_overflow),
-                        contentDescription = stringResource(com.sebastianvm.musicplayer.R.string.more)
+                        painter = painterResource(id = R.drawable.ic_overflow),
+                        contentDescription = stringResource(id = R.string.more)
                     )
                 }
             },
@@ -105,9 +118,9 @@ fun AlbumWithArtists.toAlbumRowState(): AlbumRowState {
     return AlbumRowState(
         albumId = album.albumId,
         albumName = album.albumName,
-        image = ArtLoader.getAlbumArt(
-            albumId = album.albumId,
-            albumName = album.albumName
+        imageUri = ContentUris.withAppendedId(
+            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+            album.albumId.toLong()
         ),
         year = album.year,
         artists = artists.joinToString(", ") { it.artistName }
@@ -121,12 +134,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "1",
                 albumName = "Ahora",
-                image = MediaArt(
-                    uris = listOf(),
-                    contentDescription = DisplayableString.StringValue(""),
-                    backupResource = R.drawable.ic_album,
-                    backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                ),
+                imageUri = Uri.EMPTY,
                 year = 2017,
                 artists = "Melendi"
 
@@ -134,12 +142,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "2",
                 albumName = "VIVES",
-                image = MediaArt(
-                    uris = listOf(),
-                    contentDescription = DisplayableString.StringValue(""),
-                    backupResource = R.drawable.ic_album,
-                    backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                ),
+                imageUri = Uri.EMPTY,
                 year = 2017,
                 artists = "Carlos Vives"
             ),
