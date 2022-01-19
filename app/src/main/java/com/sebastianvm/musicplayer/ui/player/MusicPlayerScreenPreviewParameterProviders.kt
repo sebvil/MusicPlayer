@@ -1,9 +1,7 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 
 
 class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicPlayerState> {
@@ -16,12 +14,7 @@ class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicP
             currentPlaybackTimeMs = null,
             trackId = null,
             albumId = null,
-            trackArt = MediaArt(
-                uris = listOf(),
-                contentDescription = DisplayableString.StringValue(""),
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
-            )
+            trackArt = Uri.EMPTY
         )
     )
 }

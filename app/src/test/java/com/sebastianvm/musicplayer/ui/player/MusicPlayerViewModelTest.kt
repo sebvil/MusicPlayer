@@ -62,7 +62,7 @@ class MusicPlayerViewModelTest {
                 trackId = null,
                 albumId = null,
                 trackArt = MediaArt(
-                    uris = listOf(),
+                    uri = Uri.EMPTY,
                     contentDescription = DisplayableString.StringValue(""),
                     backupResource = R.drawable.ic_album,
                     backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),

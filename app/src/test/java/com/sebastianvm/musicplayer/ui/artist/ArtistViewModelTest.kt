@@ -55,7 +55,7 @@ class ArtistViewModelTest {
                     HeaderWithImageState(
                         title = DisplayableString.StringValue(ArtistBuilder.DEFAULT_ARTIST_NAME),
                         image = MediaArt(
-                            uris = listOf(),
+                            uri = Uri.EMPTY,
                             contentDescription = DisplayableString.StringValue(""),
                             backupResource = R.drawable.ic_artist,
                             backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_artist_image),

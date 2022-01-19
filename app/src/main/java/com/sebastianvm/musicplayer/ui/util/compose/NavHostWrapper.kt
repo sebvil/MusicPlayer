@@ -8,13 +8,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
+import coil.compose.LocalImageLoader
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
-import com.sebastianvm.musicplayer.ui.components.ThumbnailFetcher
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
-import com.skydoves.landscapist.coil.LocalCoilImageLoader
+import com.sebastianvm.musicplayer.ui.util.images.ThumbnailFetcher
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -23,7 +23,7 @@ import com.skydoves.landscapist.coil.LocalCoilImageLoader
 @Composable
 fun NavHostWrapper(navHost: @Composable (NavHostController) -> Unit) {
     CompositionLocalProvider(
-        LocalCoilImageLoader provides ImageLoader.Builder(LocalContext.current).componentRegistry {
+        LocalImageLoader provides ImageLoader.Builder(LocalContext.current).componentRegistry {
             add(ThumbnailFetcher(LocalContext.current, ))
         }.build()
     ) {

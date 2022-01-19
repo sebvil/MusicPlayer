@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -15,14 +16,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.R
 import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 data class HeaderWithImageState(
-    val image: MediaArt,
+    val image: Uri,
     val title: DisplayableString
 )
 
@@ -45,8 +44,13 @@ fun HeaderWithImage(
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         MediaArtImage(
-            image = state.image,
-            modifier = Modifier.aspectRatio(1f).padding(all = AppDimensions.spacing.mediumLarge),
+            uri = state.image,
+            contentDescription = "",
+            backupContentDescription = 0,
+            backupResource = 0,
+            modifier = Modifier
+                .aspectRatio(1f)
+                .padding(all = AppDimensions.spacing.mediumLarge),
             contentScale = ContentScale.FillHeight
         )
         Text(
@@ -63,12 +67,7 @@ class HeaderWithImageStatePreviewParameterProvider :
     PreviewParameterProvider<HeaderWithImageState> {
     override val values = sequenceOf(
         HeaderWithImageState(
-            image = MediaArt(
-                uris = listOf(),
-                contentDescription = DisplayableString.StringValue(""),
-                backupResource = R.drawable.ic_song,
-                backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-            ),
+            image = Uri.EMPTY,
             title = DisplayableString.StringValue("10:20:40")
         )
     )

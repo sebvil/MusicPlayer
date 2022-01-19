@@ -1,6 +1,9 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import android.content.ContentUris
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.commons.util.DisplayableString
@@ -18,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
@@ -45,10 +47,7 @@ class AlbumViewModel @Inject constructor(
                 setState {
                     copy(
                         albumHeaderItem = HeaderWithImageState(
-                            image = ArtLoader.getAlbumArt(
-                                albumId = album.albumId,
-                                albumName = album.albumName
-                            ),
+                            image = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, album.albumId.toLong()),
                             title = album.albumName.let {
                                 if (it.isNotEmpty()) DisplayableString.StringValue(
                                     it
@@ -114,10 +113,7 @@ object InitialAlbumStateModule {
         return AlbumState(
             albumId = albumId,
             albumHeaderItem = HeaderWithImageState(
-                image = ArtLoader.getAlbumArt(
-                    albumId = albumId,
-                    albumName = ""
-                ),
+                image = Uri.EMPTY,
                 title = DisplayableString.ResourceValue(com.sebastianvm.musicplayer.R.string.unknown_album)
             ),
             tracksList = emptyList()

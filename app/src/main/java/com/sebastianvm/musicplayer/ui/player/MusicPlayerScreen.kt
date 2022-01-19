@@ -71,7 +71,13 @@ fun MusicPlayerLayout(
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         Row {
             MediaArtImage(
-                image = state.trackArt,
+                uri = state.trackArt,
+                contentDescription = stringResource(
+                    id = R.string.album_art_for_album,
+                    state.trackName ?: ""
+                ),
+                backupResource = R.drawable.ic_album,
+                backupContentDescription = R.string.placeholder_album_art,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.mediumLarge),
@@ -99,7 +105,13 @@ fun MusicPlayerLayout(
             modifier = Modifier.fillMaxHeight()
         ) {
             MediaArtImage(
-                image = state.trackArt,
+                uri = state.trackArt,
+                contentDescription = stringResource(
+                    id = R.string.album_art_for_album,
+                    state.trackName ?: ""
+                ),
+                backupResource = R.drawable.ic_album,
+                backupContentDescription = R.string.placeholder_album_art,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.mediumLarge),
