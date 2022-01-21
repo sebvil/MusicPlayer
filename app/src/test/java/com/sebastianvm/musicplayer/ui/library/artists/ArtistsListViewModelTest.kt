@@ -1,40 +1,42 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
-import com.sebastianvm.musicplayer.player.BrowseTree
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
+import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
+import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
-import org.junit.Rule
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-class ArtistsListViewModelTest  {
+@RunWith(RobolectricTestRunner::class)
+class ArtistsListViewModelTest {
 
-    @get:Rule
-    val dispatcherSetUpRule = DispatcherSetUpRule()
-
-    private fun generateViewModel(musicServiceConnection: MusicServiceConnection = mock()): ArtistsListViewModel {
+    private fun generateViewModel(): ArtistsListViewModel {
         return ArtistsListViewModel(
-            initialState = mock(),
-            artistRepository = mock(),
-            preferencesRepository = mock(),
+            initialState = ArtistsListState(
+                artistsList = listOf(),
+                sortOrder = SortOrder.DESCENDING
+            ),
+            artistRepository = FakeArtistRepository(),
+            preferencesRepository = FakePreferencesRepository(),
         )
     }
 
     @Test
-    fun `init connects to service for artists root`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection)
-        verify(musicServiceConnection).subscribe(
-            eq(BrowseTree.ARTISTS_ROOT),
-            any()
-        )
+    fun `init sets initial state`() {
+        with(generateViewModel()) {
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+
+            assertEquals(1, state.value.artistsList.size)
+            val artistRowState = state.value.artistsList[0]
+            assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, artistRowState.artistName)
+            assertTrue(artistRowState.shouldShowContextMenu)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,13 +44,38 @@ class ArtistsListViewModelTest  {
     fun `ArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                Assert.assertEquals(ARTIST_ID, artistName)
+                assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, artistName)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_ID))
+            handle(ArtistsListUserAction.ArtistClicked(ArtistBuilder.DEFAULT_ARTIST_NAME))
         }
     }
 
-    companion object {
-        private const val ARTIST_ID = "ARTIST_ID"
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<ArtistsListUiEvent.NavigateUp>(this@runTest)
+            handle(ArtistsListUserAction.UpButtonClicked)
+        }
+    }
+
+    @Test
+    fun `SortByClicked changes sortOrder`() {
+        with(generateViewModel()) {
+            handle(ArtistsListUserAction.SortByClicked)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `ContextMenuIconClicked adds OpenContextMenu event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<ArtistsListUiEvent.OpenContextMenu>(this@runTest) {
+                assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, artistName)
+            }
+            handle(ArtistsListUserAction.ContextMenuIconClicked(artistName = ArtistBuilder.DEFAULT_ARTIST_NAME))
+        }
     }
 }
