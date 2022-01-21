@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.ui.artist
 
+import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 
@@ -21,12 +20,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = "0",
                             albumName = "Ahora",
-                            image = MediaArt(
-                                uris = listOf(),
-                                contentDescription = DisplayableString.StringValue(""),
-                                backupResource = com.sebastianvm.commons.R.drawable.ic_album,
-                                backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                            ),
+                            imageUri = Uri.EMPTY,
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -35,12 +29,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = "1",
                             albumName = "Ahora",
-                            image = MediaArt(
-                                uris = listOf(),
-                                contentDescription = DisplayableString.StringValue(""),
-                                backupResource = com.sebastianvm.commons.R.drawable.ic_album,
-                                backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                            ),
+                            imageUri = Uri.EMPTY,
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -58,12 +47,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = "2",
                             albumName = "Ahora",
-                            image = MediaArt(
-                                uris = listOf(),
-                                contentDescription = DisplayableString.StringValue(""),
-                                backupResource = com.sebastianvm.commons.R.drawable.ic_album,
-                                backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                            ),
+                            imageUri = Uri.EMPTY,
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -72,12 +56,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = "3",
                             albumName = "Ahora",
-                            image = MediaArt(
-                                uris = listOf(),
-                                contentDescription = DisplayableString.StringValue(""),
-                                backupResource = com.sebastianvm.commons.R.drawable.ic_album,
-                                backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                            ),
+                            imageUri = Uri.EMPTY,
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -100,12 +79,7 @@ class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {
             AlbumRowState(
                 albumId = "0",
                 albumName = "Ahora",
-                image = MediaArt(
-                    uris = listOf(),
-                    contentDescription = DisplayableString.StringValue(""),
-                    backupResource = com.sebastianvm.commons.R.drawable.ic_album,
-                    backupContentDescription = DisplayableString.StringValue("Album art placeholder")
-                ),
+                imageUri = Uri.EMPTY,
                 year = 2017,
                 artists = "Melendi"
             ),

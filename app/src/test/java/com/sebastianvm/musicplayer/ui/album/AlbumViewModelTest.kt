@@ -1,11 +1,7 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import android.content.ContentUris
-import android.provider.MediaStore
+import android.net.Uri
 import android.support.v4.media.session.MediaControllerCompat
-import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
@@ -15,7 +11,6 @@ import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -55,7 +50,8 @@ class AlbumViewModelTest {
             initialState = AlbumState(
                 albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                 tracksList = listOf(),
-                albumHeaderItem = mockk()
+                albumName = "",
+                imageUri = Uri.EMPTY
             ),
             albumRepository = albumRepository,
             mediaQueueRepository = mediaQueueRepository
@@ -67,24 +63,7 @@ class AlbumViewModelTest {
     fun `init sets albumHeaderItem and tracksList`() = runTest {
         with(generateViewModel()) {
             launch {
-                assertEquals(
-                    HeaderWithImageState(
-                        title = DisplayableString.StringValue(AlbumBuilder.DEFAULT_ALBUM_NAME),
-                        image = MediaArt(
-                            uris = listOf(
-                                ContentUris.withAppendedId(
-                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.DEFAULT_ALBUM_ID.toLong()
-                                )
-                            ),
-                            contentDescription = DisplayableString.ResourceValue(
-                                value = R.string.album_art_for_album,
-                                arrayOf(AlbumBuilder.DEFAULT_ALBUM_NAME)
-                            ),
-                            backupResource = R.drawable.ic_album,
-                            backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
-                        )
-                    ), state.value.albumHeaderItem
-                )
+                assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, state.value.albumName)
                 assertEquals(
                     listOf(
                         TrackRowState(

@@ -3,8 +3,6 @@ package com.sebastianvm.musicplayer.ui.artist
 import android.content.ContentUris
 import android.provider.MediaStore
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -14,9 +12,7 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.ALBUMS
 import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.APPEARS_ON
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.ui.components.HeaderWithImageState
 import com.sebastianvm.musicplayer.util.expectUiEvent
-import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,7 +32,6 @@ class ArtistViewModelTest {
     private fun generateViewModel(): ArtistViewModel {
         return ArtistViewModel(
             initialState = ArtistState(
-                artistHeaderItem = mockk(),
                 artistName = ArtistBuilder.DEFAULT_ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
@@ -52,39 +47,19 @@ class ArtistViewModelTest {
         with(generateViewModel()) {
             launch {
                 assertEquals(
-                    HeaderWithImageState(
-                        title = DisplayableString.StringValue(ArtistBuilder.DEFAULT_ARTIST_NAME),
-                        image = MediaArt(
-                            uris = listOf(),
-                            contentDescription = DisplayableString.StringValue(""),
-                            backupResource = R.drawable.ic_artist,
-                            backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_artist_image),
-                        )
-                    ), state.value.artistHeaderItem
-                )
-                assertEquals(
                     listOf(
                         ArtistScreenItem.SectionHeaderItem(ALBUMS, R.string.albums),
                         ArtistScreenItem.AlbumRowItem(
                             AlbumRowState(
-                                AlbumBuilder.DEFAULT_ALBUM_ID,
-                                AlbumBuilder.DEFAULT_ALBUM_NAME,
-                                MediaArt(
-                                    uris = listOf(
-                                        ContentUris.withAppendedId(
-                                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                            AlbumBuilder.DEFAULT_ALBUM_ID.toLong()
-                                        )
-                                    ),
-                                    contentDescription = DisplayableString.ResourceValue(
-                                        value = R.string.album_art_for_album,
-                                        arrayOf(AlbumBuilder.DEFAULT_ALBUM_NAME)
-                                    ),
-                                    backupResource = R.drawable.ic_album,
-                                    backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art)
+                                albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
+                                albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                                imageUri =
+                                ContentUris.withAppendedId(
+                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                    AlbumBuilder.DEFAULT_ALBUM_ID.toLong()
                                 ),
-                                AlbumBuilder.DEFAULT_YEAR,
-                                ArtistBuilder.DEFAULT_ARTIST_NAME
+                                year = AlbumBuilder.DEFAULT_YEAR,
+                                artists = ArtistBuilder.DEFAULT_ARTIST_NAME
                             )
                         )
                     ), state.value.albumsForArtistItems
@@ -94,24 +69,15 @@ class ArtistViewModelTest {
                         ArtistScreenItem.SectionHeaderItem(APPEARS_ON, R.string.appears_on),
                         ArtistScreenItem.AlbumRowItem(
                             AlbumRowState(
-                                AlbumBuilder.SECONDARY_ALBUM_ID,
-                                AlbumBuilder.SECONDARY_ALBUM_NAME,
-                                MediaArt(
-                                    uris = listOf(
-                                        ContentUris.withAppendedId(
-                                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                            AlbumBuilder.SECONDARY_ALBUM_ID.toLong()
-                                        )
-                                    ),
-                                    contentDescription = DisplayableString.ResourceValue(
-                                        value = R.string.album_art_for_album,
-                                        arrayOf(AlbumBuilder.SECONDARY_ALBUM_NAME)
-                                    ),
-                                    backupResource = R.drawable.ic_album,
-                                    backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art)
+                                albumId = AlbumBuilder.SECONDARY_ALBUM_ID,
+                                albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
+                                imageUri =
+                                ContentUris.withAppendedId(
+                                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                    AlbumBuilder.SECONDARY_ALBUM_ID.toLong()
                                 ),
-                                AlbumBuilder.SECONDARY_YEAR,
-                                ArtistBuilder.SECONDARY_ARTIST_NAME
+                                year = AlbumBuilder.SECONDARY_YEAR,
+                                artists = ArtistBuilder.SECONDARY_ARTIST_NAME
                             )
                         )
                     ), state.value.appearsOnForArtistItems

@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
+import android.content.ContentUris
+import android.provider.MediaStore
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
@@ -38,12 +40,14 @@ class AlbumsListViewModelTest {
             val albumRow1 = state.value.albumsList[0]
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
+            assertEquals(ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.DEFAULT_ALBUM_ID.toLong()), albumRow1.imageUri)
             assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
             assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
 
             val albumRow2 = state.value.albumsList[1]
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
+            assertEquals(ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.SECONDARY_ALBUM_ID.toLong()), albumRow2.imageUri)
             assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
             assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
 

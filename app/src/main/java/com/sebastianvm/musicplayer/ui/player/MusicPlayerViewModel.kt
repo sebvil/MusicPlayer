@@ -1,17 +1,15 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.content.ContentUris
+import android.net.Uri
 import android.os.SystemClock
+import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.commons.util.MediaArt
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.ui.player.MusicPlayerUserAction.NextTapped
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.ArtLoader
 import com.sebastianvm.musicplayer.util.extensions.albumId
 import com.sebastianvm.musicplayer.util.extensions.artist
 import com.sebastianvm.musicplayer.util.extensions.duration
@@ -50,11 +48,7 @@ class MusicPlayerViewModel @Inject constructor(
                     trackLengthMs = it.duration,
                     trackId = trackId,
                     albumId = albumId,
-                    trackArt = ArtLoader.getTrackArt(
-                        trackId ?: "0",
-                        albumId ?: "0",
-                        it.title ?: ""
-                    )
+                    trackArt = trackId?.let { id -> ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, id.toLong()) } ?: Uri.EMPTY
                 )
             }
         }
@@ -94,7 +88,7 @@ class MusicPlayerViewModel @Inject constructor(
             is MusicPlayerUserAction.PreviousTapped -> {
                 transportControls.skipToPrevious()
             }
-            is NextTapped -> {
+            is MusicPlayerUserAction.NextTapped -> {
                 transportControls.skipToNext()
             }
         }
@@ -140,7 +134,7 @@ data class MusicPlayerState(
     val currentPlaybackTimeMs: Long?,
     val trackId: String?,
     val albumId: String?,
-    val trackArt: MediaArt
+    val trackArt: Uri
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -157,12 +151,7 @@ object InitialMusicPlayerStateModule {
             currentPlaybackTimeMs = null,
             trackId = null,
             albumId = null,
-            trackArt = MediaArt(
-                uris = listOf(),
-                contentDescription = DisplayableString.StringValue(""),
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = DisplayableString.ResourceValue(R.string.placeholder_album_art),
-            )
+            trackArt = Uri.EMPTY
         )
     }
 }
