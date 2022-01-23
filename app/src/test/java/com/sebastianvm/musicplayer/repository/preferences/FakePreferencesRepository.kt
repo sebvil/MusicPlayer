@@ -11,6 +11,9 @@ class FakePreferencesRepository : PreferencesRepository {
 
     private val albumSortSettings =
         MutableStateFlow(SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING))
+    private val artistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
+    private val genresSortOrder = MutableStateFlow(SortOrder.ASCENDING)
+
 
     override suspend fun modifyTrackListSortOptions(
         sortSettings: SortSettings,
@@ -23,11 +26,11 @@ class FakePreferencesRepository : PreferencesRepository {
         )
     }
 
-    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) = albumSortSettings.emit(sortSettings)
+    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) =
+        albumSortSettings.emit(sortSettings)
 
     override fun getAlbumsListSortOptions(): Flow<SortSettings> = albumSortSettings
 
-    private val artistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
 
     override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
         artistSortOrder.emit(!artistSortOrder.value)
@@ -35,7 +38,8 @@ class FakePreferencesRepository : PreferencesRepository {
 
     override fun getArtistsListSortOrder(): Flow<SortOrder> = artistSortOrder
 
-    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) = Unit
+    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) =
+        genresSortOrder.emit(sortOrder)
 
-    override fun getGenresListSortOrder(): Flow<SortOrder> = flow { emit(SortOrder.ASCENDING) }
+    override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
 }
