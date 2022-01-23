@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.PERMISSION_GRANTED
 import com.sebastianvm.musicplayer.PermissionStatus
@@ -301,8 +300,7 @@ fun LibraryList(
                 { iconModifier ->
                     Icon(
                         painter = painterResource(id = item.icon),
-                        contentDescription = DisplayableString.ResourceValue(item.rowName)
-                            .getString(),
+                        contentDescription = stringResource(id = item.rowName),
                         modifier = iconModifier,
                     )
                 },

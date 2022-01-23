@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
@@ -113,8 +112,7 @@ fun ContextMenuLayout(
                         supportingImage = { iconModifier ->
                             Icon(
                                 painter = painterResource(id = it.icon),
-                                contentDescription = DisplayableString.ResourceValue(it.text)
-                                    .getString(),
+                                contentDescription = stringResource(id = it.text),
                                 modifier = iconModifier,
                             )
                         },

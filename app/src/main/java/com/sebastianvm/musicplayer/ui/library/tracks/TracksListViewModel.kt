@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
@@ -46,7 +44,7 @@ class TracksListViewModel @Inject constructor(
 ) {
 
     init {
-        collect(preferencesRepository.getTracksListSortOptions(genreName = state.value.genreName)) { settings ->
+        collect(preferencesRepository.getTracksListSortOptions(genreName = state.value.tracksListTitle)) { settings ->
             setState {
                 copy(
                     currentSort = settings.sortOption,
@@ -61,7 +59,7 @@ class TracksListViewModel @Inject constructor(
             }
 
         }
-        state.value.genreName?.also { genre ->
+        state.value.tracksListTitle?.also { genre ->
             collect(trackRepository.getTracksForGenre(genre)) { tracks ->
                 setState {
                     copy(
@@ -90,9 +88,9 @@ class TracksListViewModel @Inject constructor(
                 val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaType = state.value.genreName?.let { MediaType.GENRE }
+                        mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
                             ?: MediaType.ALL_TRACKS,
-                        mediaId = state.value.genreName ?: ""
+                        mediaId = state.value.tracksListTitle ?: ""
                     )
                     mediaQueueRepository.createQueue(
                         mediaGroup = mediaGroup,
@@ -129,7 +127,7 @@ class TracksListViewModel @Inject constructor(
                             sortOption = action.newSortOption,
                             sortOrder = sortOrder
                         ),
-                        state.value.genreName
+                        state.value.tracksListTitle
                     )
                     addUiEvent(TracksListUiEvent.ScrollToTop)
                 }
@@ -138,7 +136,7 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackId,
-                        state.value.genreName,
+                        state.value.tracksListTitle,
                         state.value.currentSort,
                         state.value.sortOrder
                     )
@@ -167,8 +165,7 @@ class TracksListViewModel @Inject constructor(
 
 
 data class TracksListState(
-    val genreName: String?,
-    val tracksListTitle: DisplayableString,
+    val tracksListTitle: String?,
     val tracksList: List<TrackRowState>,
     val currentSort: SortOption,
     val sortOrder: SortOrder
@@ -182,9 +179,7 @@ object InitialTracksListStateModule {
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
         val genreName = savedStateHandle.get<String?>(NavArgs.GENRE_NAME)
         return TracksListState(
-            genreName = genreName,
-            tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
-                ?: DisplayableString.ResourceValue(R.string.all_songs),
+            tracksListTitle = genreName,
             tracksList = listOf(),
             currentSort = SortOption.TRACK_NAME,
             sortOrder = SortOrder.ASCENDING

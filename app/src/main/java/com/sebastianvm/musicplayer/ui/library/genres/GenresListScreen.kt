@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
@@ -54,7 +53,7 @@ fun GenresListScreen(
         },
         topBar = {
             LibraryTopBar(
-                title = DisplayableString.ResourceValue(R.string.genres),
+                title = stringResource(id = R.string.genres),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
                         screenViewModel.handle(GenresListUserAction.SortByClicked)

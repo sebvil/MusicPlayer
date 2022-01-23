@@ -10,9 +10,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.util.compose.DisplayableStringPreviewParameterProvider
+import com.sebastianvm.musicplayer.ui.util.compose.StringPreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
@@ -22,10 +21,10 @@ interface LibraryTopBarDelegate {
 }
 
 @Composable
-fun LibraryTopBar(title: DisplayableString, delegate: LibraryTopBarDelegate) {
+fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
     SmallTopAppBar(
         title = {
-            Text(text = title.getString())
+            Text(text = title)
         },
         navigationIcon = {
             IconButton(onClick = { delegate.upButtonClicked() }) {
@@ -49,7 +48,7 @@ fun LibraryTopBar(title: DisplayableString, delegate: LibraryTopBarDelegate) {
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TopBarPreview(@PreviewParameter(DisplayableStringPreviewParameterProvider::class) title: DisplayableString) {
+fun TopBarPreview(@PreviewParameter(StringPreviewParameterProvider::class) title: String) {
     ThemedPreview {
         LibraryTopBar(title = title, delegate = object : LibraryTopBarDelegate {})
     }

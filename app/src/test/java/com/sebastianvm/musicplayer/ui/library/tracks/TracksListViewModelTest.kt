@@ -1,16 +1,14 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
 import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.BrowseTree
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.player.SORT_BY
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,7 +27,6 @@ class TracksListViewModelTest {
     private fun generateViewModel(
         musicServiceConnection: MusicServiceConnection = mock(),
         genreName: String? = null,
-        tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs),
         tracksList: List<TrackRowState> = listOf(),
         currentSort: SortOption = SortOption.TRACK_NAME,
         sortOrder: SortOrder = SortOrder.ASCENDING,
@@ -38,8 +35,7 @@ class TracksListViewModelTest {
         return TracksListViewModel(
             musicServiceConnection = musicServiceConnection,
             initialState = TracksListState(
-                genreName = genreName,
-                tracksListTitle = tracksListTitle,
+                tracksListTitle = genreName,
                 tracksList = tracksList,
                 currentSort = currentSort,
                 sortOrder = sortOrder
@@ -66,7 +62,6 @@ class TracksListViewModelTest {
         generateViewModel(
             musicServiceConnection = musicServiceConnection,
             genreName = GENRE_NAME,
-            tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
         )
         verify(musicServiceConnection).subscribe(
             eq("genre-$GENRE_NAME"),
@@ -104,7 +99,6 @@ class TracksListViewModelTest {
             generateViewModel(
                 musicServiceConnection = musicServiceConnection,
                 genreName = GENRE_NAME,
-                tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
             )
         ) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
@@ -129,7 +123,6 @@ class TracksListViewModelTest {
                 generateViewModel(
                     musicServiceConnection = musicServiceConnection,
                     genreName = GENRE_NAME,
-                    tracksListTitle = DisplayableString.StringValue(GENRE_NAME),
                     currentSort = SortOption.ARTIST_NAME
                 )
             ) {

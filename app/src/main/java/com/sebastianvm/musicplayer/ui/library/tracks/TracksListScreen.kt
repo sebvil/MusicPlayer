@@ -10,9 +10,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
@@ -67,15 +69,17 @@ fun TracksListScreen(
             }
         },
         topBar = { state ->
-            LibraryTopBar(title = state.tracksListTitle, delegate = object : LibraryTopBarDelegate {
-                override fun upButtonClicked() {
-                    screenViewModel.handle(TracksListUserAction.UpButtonClicked)
-                }
+            LibraryTopBar(
+                title = state.tracksListTitle ?: stringResource(id = R.string.all_songs),
+                delegate = object : LibraryTopBarDelegate {
+                    override fun upButtonClicked() {
+                        screenViewModel.handle(TracksListUserAction.UpButtonClicked)
+                    }
 
-                override fun sortByClicked() {
-                    screenViewModel.handle(TracksListUserAction.SortByClicked)
-                }
-            })
+                    override fun sortByClicked() {
+                        screenViewModel.handle(TracksListUserAction.SortByClicked)
+                    }
+                })
         },
     ) { state ->
         TracksListLayout(
@@ -114,7 +118,9 @@ interface TracksListScreenDelegate {
 fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterProvider::class) state: TracksListState) {
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
-        LibraryTopBar(title = state.tracksListTitle, delegate = object : LibraryTopBarDelegate {})
+        LibraryTopBar(
+            title = state.tracksListTitle ?: stringResource(id = R.string.all_songs),
+            delegate = object : LibraryTopBarDelegate {})
     }) {
         TracksListLayout(
             state = state,
@@ -146,5 +152,3 @@ fun TracksListLayout(
         }
     }
 }
-
-
