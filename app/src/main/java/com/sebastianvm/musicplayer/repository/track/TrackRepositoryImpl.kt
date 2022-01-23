@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.track
 
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.Album
@@ -14,46 +14,40 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TrackRepository @Inject constructor(
+class TrackRepositoryImpl@Inject constructor(
     private val trackDao: TrackDao
-) {
+): TrackRepository {
 
-    fun getTracksCount(): Flow<Long> {
+    override fun getTracksCount(): Flow<Long> {
         return trackDao.getTracksCount().distinctUntilChanged()
     }
 
-    fun getAllTracks(): Flow<List<FullTrackInfo>> {
+    override fun getAllTracks(): Flow<List<FullTrackInfo>> {
         return trackDao.getAllTracks().distinctUntilChanged()
     }
 
-    fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracks(tracksIds).distinctUntilChanged()
-    }
-
-    fun getTrack(tracksId: String): Flow<FullTrackInfo> {
+    override fun getTrack(tracksId: String): Flow<FullTrackInfo> {
         return trackDao.getTrack(tracksId).distinctUntilChanged()
     }
 
-    fun getTracksForArtist(artistName: String) : Flow<List<FullTrackInfo>> {
+    override fun getTracksForArtist(artistName: String) : Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForArtist(artistName)
     }
 
-    fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>> {
+    override fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForAlbum(albumId)
     }
 
-    fun getTracksForGenre(genreName: String) :Flow<List<FullTrackInfo>> {
+    override fun getTracksForGenre(genreName: String) : Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForGenre(genreName)
     }
 
-    fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
+    override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForQueue(mediaGroup.mediaType, mediaGroup.mediaId)
     }
 
-    suspend fun insertAllTracks(
+    suspend override fun insertAllTracks(
         tracks: Set<Track>,
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
         genreTrackCrossRefs: Set<GenreTrackCrossRef>,

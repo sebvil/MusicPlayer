@@ -25,6 +25,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class LibraryViewModelTest {
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 

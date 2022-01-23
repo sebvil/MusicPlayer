@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.queue
 
 import android.content.Context
 import android.support.v4.media.MediaMetadataCompat
@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.extensions.id
@@ -21,15 +22,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MediaQueueRepository @Inject constructor(
+class MediaQueueRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val mediaQueueDao: MediaQueueDao,
     private val albumRepository: AlbumRepository,
     private val trackRepository: TrackRepository
-) {
+) : MediaQueueRepository {
     private suspend fun createQueue(
         mediaGroup: MediaGroup,
         trackIds: List<String>,
@@ -53,7 +52,7 @@ class MediaQueueRepository @Inject constructor(
         return queueId
     }
 
-    suspend fun createQueue(
+    override suspend fun createQueue(
         mediaGroup: MediaGroup,
         sortOption: SortOption,
         sortOrder: SortOrder
@@ -90,7 +89,7 @@ class MediaQueueRepository @Inject constructor(
         return createQueue(mediaGroup, trackIds, queueName)
     }
 
-    suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) {
+    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) {
         mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
     }
 
@@ -108,12 +107,13 @@ class MediaQueueRepository @Inject constructor(
         }
     }
 
-    fun getAllQueues(): Flow<List<MediaQueue>> {
+    override fun getAllQueues(): Flow<List<MediaQueue>> {
         return mediaQueueDao.getAllQueues().distinctUntilChanged()
     }
 
-    fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue> {
-        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaType).distinctUntilChanged()
+    override fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue> {
+        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaType)
+            .distinctUntilChanged()
     }
 
 }

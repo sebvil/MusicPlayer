@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.player
 
 import android.os.Parcelable
 import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.musicplayer.repository.TrackRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.toMediaMetadataCompat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
