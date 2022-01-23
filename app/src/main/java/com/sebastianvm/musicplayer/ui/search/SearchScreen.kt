@@ -208,7 +208,7 @@ fun SearchLayout(
                 state.trackSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
                     LazyColumn {
                         items(lazyPagingItems) { item ->
-                            item?.toTrackRowState()?.also {
+                            item?.toTrackRowState(includeTrackNumber = false)?.also {
                                 TrackRow(
                                     state = it,
                                     modifier = Modifier.clickable { delegate.onTrackClicked(item.track.trackId) }) {

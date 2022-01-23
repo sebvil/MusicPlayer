@@ -54,7 +54,7 @@ class QueueViewModel @Inject constructor(
                 setState {
                     copy(
                         chosenQueue = mediaQueue,
-                        queueItems = tracks.map { track -> track.toTrackRowState() }
+                        queueItems = tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
                     )
                 }
             }
@@ -146,7 +146,7 @@ class QueueViewModel @Inject constructor(
                                 setState {
                                     copy(
                                         chosenQueue = mediaQueue,
-                                        queueItems = tracks.map { track -> track.toTrackRowState() }
+                                        queueItems = tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
                                     )
                                 }
                             }
@@ -197,7 +197,7 @@ class QueueViewModel @Inject constructor(
                             action.newOption.groupMediaId
                         )
                     ).first()
-                        .map { it.toTrackRowState() }
+                        .map { it.toTrackRowState(includeTrackNumber = false) }
                     setState {
                         copy(
                             dropdownExpanded = false,

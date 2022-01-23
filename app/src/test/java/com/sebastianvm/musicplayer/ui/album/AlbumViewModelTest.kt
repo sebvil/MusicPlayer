@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.album
 import android.content.ContentUris
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.media.session.MediaControllerCompat
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
@@ -27,6 +26,7 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -98,9 +98,7 @@ class AlbumViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
-        val transportControls: MediaControllerCompat.TransportControls = mockk()
-        every { transportControls.playFromMediaId(any(), any()) } just Runs
-        every { musicServiceConnection.transportControls } returns transportControls
+        every { musicServiceConnection.transportControls.playFromMediaId(any(), any()) } just Runs
         coJustRun { mediaQueueRepository.createQueue(any(), any(), any()) }
 
         mockkConstructor(Bundle::class)
@@ -110,8 +108,11 @@ class AlbumViewModelTest {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
             delay(1)
-            io.mockk.verify {
-                transportControls.playFromMediaId(TrackBuilder.DEFAULT_TRACK_ID, any())
+            verify {
+                musicServiceConnection.transportControls.playFromMediaId(
+                    TrackBuilder.DEFAULT_TRACK_ID,
+                    any()
+                )
             }
 
 

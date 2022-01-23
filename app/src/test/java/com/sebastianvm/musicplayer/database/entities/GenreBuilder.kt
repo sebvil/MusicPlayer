@@ -11,7 +11,7 @@ class GenreBuilder {
     fun build() = Genre(genreName)
 
     companion object {
-        const val DEFAULT_GENRE_NAME = "PRIMARY_GENRE_NAME"
+        const val DEFAULT_GENRE_NAME = "DEFAULT_GENRE_NAME"
         const val SECONDARY_GENRE_NAME = "SECONDARY_GENRE_NAME"
 
         fun getDefaultGenre() = GenreBuilder()

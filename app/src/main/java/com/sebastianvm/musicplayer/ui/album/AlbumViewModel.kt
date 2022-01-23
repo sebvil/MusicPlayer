@@ -10,8 +10,8 @@ import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -49,7 +49,7 @@ class AlbumViewModel @Inject constructor(
                             album.albumId.toLong()
                         ),
                         albumName = album.albumName,
-                        tracksList = albumInfo[album]?.map { it.toTrackRowState() }
+                        tracksList = albumInfo[album]?.map { it.toTrackRowState(includeTrackNumber = true) }
                             ?.sortedBy { it.trackNumber } ?: listOf()
                     )
                 }

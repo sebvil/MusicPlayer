@@ -89,12 +89,12 @@ class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowS
     )
 }
 
-fun FullTrackInfo.toTrackRowState(): TrackRowState {
+fun FullTrackInfo.toTrackRowState(includeTrackNumber: Boolean): TrackRowState {
     return TrackRowState(
         trackId = track.trackId,
         trackName = track.trackName,
         artists = artists.joinToString(", ") { it.artistName },
         albumName = album.albumName,
-        trackNumber = track.trackNumber
+        trackNumber = if (includeTrackNumber) track.trackNumber else null
     )
 }
