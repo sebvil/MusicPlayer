@@ -10,9 +10,9 @@ import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -126,8 +126,8 @@ class TracksListViewModel @Inject constructor(
                 viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
                         SortSettings(
-                            sortOption = state.value.currentSort,
-                            sortOrder = state.value.sortOrder
+                            sortOption = action.newSortOption,
+                            sortOrder = sortOrder
                         ),
                         state.value.genreName
                     )
