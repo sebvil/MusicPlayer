@@ -1,25 +1,48 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import android.content.ContentUris
-import android.provider.MediaStore
+import android.net.Uri
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-
-@RunWith(RobolectricTestRunner::class)
 class AlbumsListViewModelTest {
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val mainCoroutineRule = DispatcherSetUpRule()
+
+    private lateinit var defaultUri: Uri
+    private lateinit var secondaryUri: Uri
+
+    @Before
+    fun setUp() {
+        mockkStatic(ContentUris::class)
+        defaultUri = mockk()
+        secondaryUri = mockk()
+        every {
+            ContentUris.withAppendedId(any(), AlbumBuilder.DEFAULT_ALBUM_ID.toLong())
+        } returns defaultUri
+        every {
+            ContentUris.withAppendedId(any(), AlbumBuilder.SECONDARY_ALBUM_ID.toLong())
+        } returns secondaryUri
+    }
 
     private fun generateViewModel(): AlbumsListViewModel {
         return AlbumsListViewModel(
@@ -33,21 +56,24 @@ class AlbumsListViewModelTest {
         )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init sets initial state values`()  {
+    fun `init sets initial state values`() = runTest {
+
         with(generateViewModel()) {
+            delay(1)
             assertEquals(2, state.value.albumsList.size)
             val albumRow1 = state.value.albumsList[0]
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
-            assertEquals(ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.DEFAULT_ALBUM_ID.toLong()), albumRow1.imageUri)
+            assertEquals(defaultUri, albumRow1.imageUri)
             assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
             assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
 
             val albumRow2 = state.value.albumsList[1]
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
-            assertEquals(ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, AlbumBuilder.SECONDARY_ALBUM_ID.toLong()), albumRow2.imageUri)
+            assertEquals(secondaryUri, albumRow2.imageUri)
             assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
             assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
 
@@ -95,12 +121,21 @@ class AlbumsListViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
             handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            delay(1)
             assertEquals(SortOption.YEAR, state.value.currentSort)
             assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
 
+
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
             handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            delay(1)
             assertEquals(SortOption.YEAR, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+
+            expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
+            handle(AlbumsListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            delay(1)
+            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
             assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
         }
     }

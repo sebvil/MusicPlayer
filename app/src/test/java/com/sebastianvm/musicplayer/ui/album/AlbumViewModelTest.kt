@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import android.content.ContentUris
 import android.net.Uri
+import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
@@ -12,6 +14,7 @@ import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
@@ -21,25 +24,36 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkConstructor
+import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class AlbumViewModelTest {
 
     private val albumRepository: AlbumRepository = FakeAlbumRepository()
     private lateinit var musicServiceConnection: MusicServiceConnection
     private lateinit var mediaQueueRepository: MediaQueueRepository
+    private lateinit var defaultUri: Uri
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val mainCoroutineRule = DispatcherSetUpRule()
 
     @Before
     fun setUp() {
+        mockkStatic(ContentUris::class)
+        defaultUri = mockk()
+        every {
+            ContentUris.withAppendedId(any(), AlbumBuilder.DEFAULT_ALBUM_ID.toLong())
+        } returns defaultUri
+
         musicServiceConnection = mockk()
         mediaQueueRepository = mockk()
     }
@@ -51,7 +65,7 @@ class AlbumViewModelTest {
                 albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                 tracksList = listOf(),
                 albumName = "",
-                imageUri = Uri.EMPTY
+                imageUri = mockk()
             ),
             albumRepository = albumRepository,
             mediaQueueRepository = mediaQueueRepository
@@ -64,6 +78,7 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             launch {
                 assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, state.value.albumName)
+                assertEquals(defaultUri, state.value.imageUri)
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -88,11 +103,15 @@ class AlbumViewModelTest {
         every { musicServiceConnection.transportControls } returns transportControls
         coJustRun { mediaQueueRepository.createQueue(any(), any(), any()) }
 
+        mockkConstructor(Bundle::class)
+
+        every { anyConstructed<Bundle>().putParcelable(any(), any()) } just Runs
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            delay(1)
             io.mockk.verify {
-                transportControls.playFromMediaId(any(), any())
+                transportControls.playFromMediaId(TrackBuilder.DEFAULT_TRACK_ID, any())
             }
 
 
@@ -122,5 +141,5 @@ class AlbumViewModelTest {
         }
     }
 
-   
+
 }

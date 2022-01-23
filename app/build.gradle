@@ -144,7 +144,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.10'
 
     // Accompanist
-    def accompanist_version = "0.22.0-rc"
+    def accompanist_version = '0.24.0-alpha'
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
 
@@ -159,6 +159,4 @@ dependencies {
     def coil_version = '1.4.0'
     implementation "io.coil-kt:coil:$coil_version"
     implementation "io.coil-kt:coil-compose:$coil_version"
-
-
 }
