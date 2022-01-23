@@ -51,18 +51,17 @@ class TracksListViewModel @Inject constructor(
 
         collect(tracksListFlow.combine(preferencesRepository.getTracksListSortOptions(genreName = state.value.tracksListTitle)) { trackList, sortSettings ->
             Pair(trackList, sortSettings)
-        }) { pair ->
-            val tracksList = pair.first.map { it.toTrackRowState(includeTrackNumber = false) }
-            val sortSettings = pair.second
+        }) { (tracksList, sortSettings) ->
             setState {
                 copy(
                     currentSort = sortSettings.sortOption,
-                    tracksList = tracksList.sortedWith(
-                        getComparator(
-                            sortSettings.sortOrder,
-                            sortSettings.sortOption
-                        )
-                    ),
+                    tracksList = tracksList.map { it.toTrackRowState(includeTrackNumber = false) }
+                        .sortedWith(
+                            getComparator(
+                                sortSettings.sortOrder,
+                                sortSettings.sortOption
+                            )
+                        ),
                     sortOrder = sortSettings.sortOrder
                 )
             }

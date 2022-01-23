@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 
 class FakeArtistRepository : ArtistRepository {
     private val artist1 = ArtistBuilder.getDefaultArtist().build()
+    private val artist2 = ArtistBuilder.getSecondaryArtist().build()
 
     private val album1 = AlbumBuilder.getDefaultAlbum().build()
     private val album2 = AlbumBuilder.getSecondaryAlbum().build()
@@ -18,6 +19,11 @@ class FakeArtistRepository : ArtistRepository {
             artist = artist1,
             artistAlbums = listOf(album1),
             artistAppearsOn = listOf(album2)
+        ),
+        ArtistWithAlbums(
+            artist = artist2,
+            artistAlbums = listOf(album2),
+            artistAppearsOn = listOf()
         )
     )
 

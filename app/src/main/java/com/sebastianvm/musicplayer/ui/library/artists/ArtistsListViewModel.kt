@@ -17,6 +17,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,21 +30,17 @@ class ArtistsListViewModel @Inject constructor(
 ) : BaseViewModel<ArtistsListUserAction, ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {
-        collect(preferencesRepository.getArtistsListSortOrder()) { savedSortOrder ->
+        collect(
+            preferencesRepository.getArtistsListSortOrder()
+                .combine(artistRepository.getArtists()) { sortOrder, artists ->
+                    Pair(sortOrder, artists)
+                }) { (savedSortOrder, artists) ->
             setState {
                 copy(
                     sortOrder = savedSortOrder,
-                    artistsList = artistsList.sortedWith(getStringComparator(savedSortOrder) { item -> item.artistName }),
-                )
-            }
-        }
-        collect(artistRepository.getArtists()) { artists ->
-            setState {
-                copy(
                     artistsList = artists.map { artist ->
                         artist.toArtistRowState(shouldShowContextMenu = true)
-                    }
-                        .sortedWith(getStringComparator(state.value.sortOrder) { item -> item.artistName }),
+                    }.sortedWith(getStringComparator(savedSortOrder) { item -> item.artistName }),
                 )
             }
         }

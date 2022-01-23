@@ -43,6 +43,10 @@ class ArtistsListViewModelTest {
                     ArtistRowState(
                         artistName = ArtistBuilder.DEFAULT_ARTIST_NAME,
                         shouldShowContextMenu = true
+                    ),
+                    ArtistRowState(
+                        artistName = ArtistBuilder.SECONDARY_ARTIST_NAME,
+                        shouldShowContextMenu = true
                     )
                 ), state.value.artistsList
             )
