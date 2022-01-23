@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.MainActivity
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

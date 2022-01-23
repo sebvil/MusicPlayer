@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.PermissionStatus
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
-import com.sebastianvm.musicplayer.repository.MusicRepository
+import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction

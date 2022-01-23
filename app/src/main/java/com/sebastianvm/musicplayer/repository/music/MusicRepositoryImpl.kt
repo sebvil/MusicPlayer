@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.music
 
 import android.content.Context
 import android.os.Build
@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
@@ -23,17 +24,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MusicRepository @Inject constructor(
+class MusicRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
     private val musicDatabase: MusicDatabase,
     private val trackRepository: TrackRepository,
     private val artistRepository: ArtistRepository,
     private val genreRepository: GenreRepository,
     private val albumRepository: AlbumRepository,
-) {
+): MusicRepository {
 
     private val trackSet = mutableSetOf<Track>()
     private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
@@ -121,14 +120,7 @@ class MusicRepository @Inject constructor(
         }
     }
 
-    data class CountHolder(
-        val tracks: Long,
-        val artists: Long,
-        val albums: Long,
-        val genres: Long,
-    )
-
-    fun getCounts(): Flow<CountHolder> {
+    override fun getCounts(): Flow<CountHolder> {
         return combine(
             trackRepository.getTracksCount(),
             artistRepository.getArtistsCount(),
@@ -143,7 +135,7 @@ class MusicRepository @Inject constructor(
     // TODO makes this work for API 29
     @WorkerThread
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
+    override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
 
         musicDatabase.clearAllTables()
 
