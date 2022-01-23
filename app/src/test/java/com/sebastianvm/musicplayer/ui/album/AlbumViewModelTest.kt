@@ -10,9 +10,9 @@ import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
+import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
@@ -26,6 +26,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,7 +38,6 @@ import org.junit.Test
 
 class AlbumViewModelTest {
 
-    private val albumRepository: AlbumRepository = FakeAlbumRepository()
     private lateinit var musicServiceConnection: MusicServiceConnection
     private lateinit var mediaQueueRepository: MediaQueueRepository
     private lateinit var defaultUri: Uri
@@ -55,7 +55,7 @@ class AlbumViewModelTest {
         } returns defaultUri
 
         musicServiceConnection = mockk()
-        mediaQueueRepository = mockk()
+        mediaQueueRepository = spyk(FakeMediaQueueRepository())
     }
 
     private fun generateViewModel(): AlbumViewModel {
@@ -67,7 +67,7 @@ class AlbumViewModelTest {
                 albumName = "",
                 imageUri = mockk()
             ),
-            albumRepository = albumRepository,
+            albumRepository = FakeAlbumRepository(),
             mediaQueueRepository = mediaQueueRepository
         )
     }

@@ -86,11 +86,11 @@ class GenresListViewModelTest {
     fun `OverflowMenuIconClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<GenresListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(GenreBuilder.PRIMARY_GENRE_NAME, genreName)
+                assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, genreName)
                 assertEquals(SortOption.TRACK_NAME, currentSort)
                 assertEquals(SortOrder.ASCENDING, sortOrder)
             }
-            handle(GenresListUserAction.OverflowMenuIconClicked(GenreBuilder.PRIMARY_GENRE_NAME))
+            handle(GenresListUserAction.OverflowMenuIconClicked(GenreBuilder.DEFAULT_GENRE_NAME))
         }
     }
 
