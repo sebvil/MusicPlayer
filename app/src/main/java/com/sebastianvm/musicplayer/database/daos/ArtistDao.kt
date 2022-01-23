@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArtistDao {
-    @Transaction
-    @Query("SELECT * from Artist")
-    fun getArtistsWithAlbums(): Flow<List<ArtistWithAlbums>>
 
     @Query("SELECT * from Artist")
     fun getArtists(): Flow<List<Artist>>

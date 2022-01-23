@@ -23,9 +23,6 @@ class FakeArtistRepository : ArtistRepository {
 
     override fun getArtistsCount(): Flow<Long> = flow { emit(artistsWithAlbums.size.toLong()) }
 
-    override fun getArtistsWithAlbums(): Flow<List<ArtistWithAlbums>> =
-        flow { emit(artistsWithAlbums) }
-
     override fun getArtists(): Flow<List<Artist>> =
         flow { emit(artistsWithAlbums.map { it.artist }) }
 
