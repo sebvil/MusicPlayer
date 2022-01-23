@@ -27,8 +27,5 @@ class ResUtil {
         ): String {
             return LocalContext.current.resources.getQuantityString(id, quantity, *formatArgs)
         }
-
-
     }
-
 }
