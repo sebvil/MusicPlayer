@@ -44,14 +44,6 @@ class PlaybackServiceRepositoryImpl @Inject constructor(
     override val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
-    override fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
-        mediaBrowser.subscribe(parentId, callback)
-    }
-
-    override fun unsubscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
-        mediaBrowser.unsubscribe(parentId, callback)
-    }
-
     override fun getQueueId(mediaId: String): Long? {
         return mediaController.queue.find { it.description.mediaId == mediaId }?.queueId
     }

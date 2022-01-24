@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -22,10 +21,6 @@ interface PlaybackServiceRepository {
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
-
-    fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback)
-
-    fun unsubscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback)
 
     fun getQueueId(mediaId: String): Long?
 
