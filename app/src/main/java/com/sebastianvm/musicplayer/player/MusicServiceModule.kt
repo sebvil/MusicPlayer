@@ -15,6 +15,6 @@ object MusicServiceModule {
     @Provides
     @Singleton
     fun provideComponentName(@ApplicationContext appContext: Context): ComponentName {
-        return ComponentName(appContext, MediaPlaybackService::class.java)
+        return ComponentName(appContext, OldMediaPlaybackService::class.java)
     }
 }
