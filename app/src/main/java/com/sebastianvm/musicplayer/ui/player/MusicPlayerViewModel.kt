@@ -5,7 +5,7 @@ import android.net.Uri
 import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -32,13 +32,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
-    private val musicServiceConnection: MusicServiceConnection,
+    private val playbackServiceRepository: PlaybackServiceRepository,
     initialState: MusicPlayerState,
 ) :
     BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
-        collect(musicServiceConnection.nowPlaying) {
+        collect(playbackServiceRepository.nowPlaying) {
             val trackId = if (it.id.isNullOrEmpty()) null else it.id
             val albumId = if (it.albumId.isNullOrEmpty()) null else it.albumId
             setState {
@@ -52,7 +52,7 @@ class MusicPlayerViewModel @Inject constructor(
                 )
             }
         }
-        collect(musicServiceConnection.playbackState) {
+        collect(playbackServiceRepository.playbackState) {
             setState {
                 copy(
                     isPlaying = it.isPlaying,
@@ -71,10 +71,10 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     override fun handle(action: MusicPlayerUserAction) {
-        val transportControls = musicServiceConnection.transportControls
+        val transportControls = playbackServiceRepository.transportControls
         when (action) {
             is MusicPlayerUserAction.TogglePlay -> {
-                musicServiceConnection.playbackState.value.let { playbackState ->
+                playbackServiceRepository.playbackState.value.let { playbackState ->
                     when {
                         playbackState.isPlaying -> {
                             transportControls.pause()
@@ -103,7 +103,7 @@ class MusicPlayerViewModel @Inject constructor(
             }
             return
         }
-        val playbackState = musicServiceConnection.playbackState.value
+        val playbackState = playbackServiceRepository.playbackState.value
 
         var currentPosition: Long = playbackState.position
         if (state.value.isPlaying) {

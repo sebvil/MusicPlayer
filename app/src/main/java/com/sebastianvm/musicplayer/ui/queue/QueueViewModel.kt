@@ -8,11 +8,11 @@ import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueEditor.EXTRA_TO_INDEX
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
-import com.sebastianvm.musicplayer.player.COMMAND_SEEK_TO_MEDIA_ITEM
-import com.sebastianvm.musicplayer.player.EXTRA_MEDIA_INDEX
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.playback.COMMAND_SEEK_TO_MEDIA_ITEM
+import com.sebastianvm.musicplayer.repository.playback.EXTRA_MEDIA_INDEX
+import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
+import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -38,11 +38,11 @@ class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val tracksRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val playbackServiceRepository: PlaybackServiceRepository,
 ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
-        collect(musicServiceConnection.currentQueueId) { mediaGroup ->
+        collect(playbackServiceRepository.currentQueueId) { mediaGroup ->
             setState {
                 copy(
                     mediaGroup = mediaGroup
@@ -68,7 +68,7 @@ class QueueViewModel @Inject constructor(
             }
         }
 
-        collect(musicServiceConnection.nowPlaying) { nowPlaying ->
+        collect(playbackServiceRepository.nowPlaying) { nowPlaying ->
             setState {
                 copy(
                     nowPlayingTrackId = nowPlaying.id ?: ""
@@ -91,7 +91,7 @@ class QueueViewModel @Inject constructor(
                     if (state.value.chosenQueue?.groupMediaId == state.value.mediaGroup?.mediaId
                         && state.value.chosenQueue?.mediaType == state.value.mediaGroup?.mediaType
                     ) {
-                        musicServiceConnection.sendCommand(
+                        playbackServiceRepository.sendCommand(
                             COMMAND_MOVE_QUEUE_ITEM, bundleOf(
                                 EXTRA_FROM_INDEX to oldIndex, EXTRA_TO_INDEX to action.newIndex
                             )
@@ -165,7 +165,7 @@ class QueueViewModel @Inject constructor(
                                     MediaGroup(chosenQueue.mediaType, chosenQueue.groupMediaId)
                                 )
                             }
-                            musicServiceConnection.transportControls.playFromMediaId(
+                            playbackServiceRepository.transportControls.playFromMediaId(
                                 action.trackId,
                                 extras
                             )
@@ -174,7 +174,7 @@ class QueueViewModel @Inject constructor(
                     }
                     val index = state.value.queueItems.indexOfFirst { it.trackId == action.trackId }
                     if (index == -1) return
-                    musicServiceConnection.sendCommand(
+                    playbackServiceRepository.sendCommand(
                         COMMAND_SEEK_TO_MEDIA_ITEM, bundleOf(
                             EXTRA_MEDIA_INDEX to index
                         )

@@ -51,13 +51,7 @@ dependencies {
     
     implementation "androidx.core:core-ktx:1.7.0"
 
-    api "androidx.compose.material:material:$compose_version"
-
-//    // Tooling support (Previews, etc.)
+   // Tooling support (Previews, etc.)
     api "androidx.compose.ui:ui-tooling:$compose_version"
-
-//    // Material 3
-    api 'androidx.compose.material3:material3:1.0.0-alpha03'
-
 
 }

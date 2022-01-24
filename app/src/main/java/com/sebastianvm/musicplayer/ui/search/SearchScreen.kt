@@ -4,7 +4,10 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,9 +45,6 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
-import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
-import com.sebastianvm.musicplayer.ui.components.toArtistRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -153,7 +156,14 @@ fun SearchLayout(
     val input = rememberSaveable {
         mutableStateOf("")
     }
-    Column {
+    val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .focusRequester(focusRequester)
+            .focusable(enabled = true, interactionSource)
+            .clickable { focusRequester.requestFocus() }) {
         TextField(
             value = input.value,
             onValueChange = {
@@ -193,6 +203,7 @@ fun SearchLayout(
                     }
                 }
             },
+            interactionSource = interactionSource,
             colors = textFieldColors(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -208,11 +219,11 @@ fun SearchLayout(
                 state.trackSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
                     LazyColumn {
                         items(lazyPagingItems) { item ->
-                            item?.toTrackRowState(includeTrackNumber = false)?.also {
+                            item?.also {
                                 TrackRow(
                                     state = it,
-                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.track.trackId) }) {
-                                    delegate.onTrackOverflowMenuClicked(item.track.trackId)
+                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
+                                    delegate.onTrackOverflowMenuClicked(item.trackId)
                                 }
                             }
                         }
@@ -225,7 +236,7 @@ fun SearchLayout(
                         items(lazyPagingItems) { item ->
                             item?.also {
                                 ArtistRow(
-                                    state = item.toArtistRowState(),
+                                    state = item,
                                     modifier = Modifier.clickable {
                                         delegate.onArtistClicked(
                                             item.artistName
@@ -242,7 +253,7 @@ fun SearchLayout(
                 state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
                     LazyColumn {
                         items(lazyPagingItems) { item ->
-                            item?.toAlbumRowState()?.also {
+                            item?.also {
                                 AlbumRow(
                                     state = it,
                                     modifier = Modifier.clickable { delegate.onAlbumClicked(it.albumId) }) {

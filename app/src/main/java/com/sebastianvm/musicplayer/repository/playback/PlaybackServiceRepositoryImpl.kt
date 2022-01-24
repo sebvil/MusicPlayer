@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.player
+package com.sebastianvm.musicplayer.repository.playback
 
 import android.content.ComponentName
 import android.content.Context
@@ -11,46 +11,26 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
-import com.sebastianvm.musicplayer.player.MusicServiceConnection.MediaBrowserConnectionCallback
+import com.sebastianvm.musicplayer.player.MediaGroup
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
-/**
- * Class that manages a connection to a [MediaBrowserServiceCompat] instance, typically a
- * [MusicService] or one of its subclasses.
- *
- * Typically it's best to construct/inject dependencies either using DI or, as UAMP does,
- * using [InjectorUtils] in the app module. There are a few difficulties for that here:
- * - [MediaBrowserCompat] is a final class, so mocking it directly is difficult.
- * - A [MediaBrowserConnectionCallback] is a parameter into the construction of
- *   a [MediaBrowserCompat], and provides callbacks to this class.
- * - [MediaBrowserCompat.ConnectionCallback.onConnected] is the best place to construct
- *   a [MediaControllerCompat] that will be used to control the [MediaSessionCompat].
- *
- *  Because of these reasons, rather than constructing additional classes, this is treated as
- *  a black box (which is why there's very little logic here).
- *
- *  This is also why the parameters to construct a [MusicServiceConnection] are simple
- *  parameters, rather than private properties. They're only required to build the
- *  [MediaBrowserConne@Suppress("PropertyName")
-ctionCallback] and [MediaBrowserCompat] objects.
- */
-@Singleton
-class MusicServiceConnection @Inject constructor(
+class PlaybackServiceRepositoryImpl @Inject constructor(
     @ApplicationContext context: Context,
     serviceComponent: ComponentName
-) {
-    val isConnected = MutableLiveData<Boolean>().apply { postValue(false) }
+) : PlaybackServiceRepository {
+    override val isConnected = MutableStateFlow(false)
 
-    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
+    override val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
 
-    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
+    override val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
-    val currentQueueId: MutableStateFlow<MediaGroup?> = MutableStateFlow(null)
+    override val currentQueueId: MutableStateFlow<MediaGroup?> = MutableStateFlow(null)
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
     private val mediaBrowser = MediaBrowserCompat(
@@ -59,27 +39,19 @@ class MusicServiceConnection @Inject constructor(
         mediaBrowserConnectionCallback, null
     ).apply { connect() }
 
-    lateinit var mediaController: MediaControllerCompat
+    override lateinit var mediaController: MediaControllerCompat
 
-    val transportControls: MediaControllerCompat.TransportControls
+    override val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
 
-    fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
-        mediaBrowser.subscribe(parentId, callback)
-    }
-
-    fun unsubscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
-        mediaBrowser.unsubscribe(parentId, callback)
-    }
-
-    fun getQueueId(mediaId: String): Long? {
+    override fun getQueueId(mediaId: String): Long? {
         return mediaController.queue.find { it.description.mediaId == mediaId }?.queueId
     }
 
-    fun sendCommand(command: String, parameters: Bundle?) =
+    override fun sendCommand(command: String, parameters: Bundle?) =
         sendCommand(command, parameters) { _, _ -> }
 
-    fun sendCommand(
+    override fun sendCommand(
         command: String,
         parameters: Bundle?,
         resultCallback: ((Int, Bundle?) -> Unit)
@@ -103,16 +75,22 @@ class MusicServiceConnection @Inject constructor(
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(MediaControllerCallback())
             }
-            isConnected.postValue(true)
+            CoroutineScope(Dispatchers.Main).launch {
+                isConnected.emit(true)
+            }
         }
 
         override fun onConnectionSuspended() {
-            isConnected.postValue(false)
+            CoroutineScope(Dispatchers.Main).launch {
+                isConnected.emit(true)
+            }
         }
 
 
         override fun onConnectionFailed() {
-            isConnected.postValue(false)
+            CoroutineScope(Dispatchers.Main).launch {
+                isConnected.emit(false)
+            }
         }
     }
 
@@ -159,17 +137,3 @@ class MusicServiceConnection @Inject constructor(
         }
     }
 }
-
-val EMPTY_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
-    .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
-    .build()
-val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
-    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-    .build()
-
-const val SORT_BY = "SORT_BY"
-const val MEDIA_GROUP = "com.sebastianvm.musicplayer.player.MEDIA_GROUP"
-const val COMMAND_SEEK_TO_MEDIA_ITEM = "com.sebastianvm.player.COMMAND_SEEK_TO_MEDIA_ITEM"
-const val EXTRA_MEDIA_INDEX = "com.sebastianvm.player.EXTRA_MEDIA_INDEX"
-const val EXTRA_TO_INDEX = "com.sebastianvm.player.EXTRA_TO_INDEX"

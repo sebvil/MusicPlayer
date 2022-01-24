@@ -4,12 +4,12 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
+import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -36,7 +36,7 @@ class ContextMenuViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
     artistRepository: ArtistRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val musicServiceConnection: MusicServiceConnection
+    private val playbackServiceRepository: PlaybackServiceRepository
 ) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
 
     init {
@@ -88,7 +88,7 @@ class ContextMenuViewModel @Inject constructor(
             is ContextMenuUserAction.RowClicked -> {
                 when (action.row) {
                     is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning, is ContextMenuItem.PlayAllSongs -> {
-                        val transportControls = musicServiceConnection.transportControls
+                        val transportControls = playbackServiceRepository.transportControls
                         viewModelScope.launch {
                             val mediaGroup = state.value.mediaGroup
                             mediaQueueRepository.createQueue(
