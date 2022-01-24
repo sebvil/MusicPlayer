@@ -9,11 +9,11 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
+import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -48,7 +48,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val playbackServiceRepository: PlaybackServiceRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
     BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
@@ -105,7 +105,7 @@ class SearchViewModel @Inject constructor(
                 }
             }
             is SearchUserAction.TrackRowClicked -> {
-                val transportControls = musicServiceConnection.transportControls
+                val transportControls = playbackServiceRepository.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.SINGLE_TRACK,

@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
+import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -35,7 +35,7 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val playbackServiceRepository: PlaybackServiceRepository,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
@@ -61,7 +61,7 @@ class AlbumViewModel @Inject constructor(
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {
-                val transportControls = musicServiceConnection.transportControls
+                val transportControls = playbackServiceRepository.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.ALBUM,
