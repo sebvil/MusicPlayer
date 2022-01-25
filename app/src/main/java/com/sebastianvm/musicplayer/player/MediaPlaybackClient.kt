@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -70,29 +71,19 @@ class MediaPlaybackClient @Inject constructor(
         controller.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    Log.i("PLAYER", "${controller.currentPosition}")
                     playbackState.value = playbackState.value.copy(
                         isPlaying = isPlaying,
-                        currentPlayTimeMs = controller.contentPosition,
-                        trackDurationMs = controller.duration
+                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET } ?: 0,
+                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
                     )
                 }
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                     nowPlaying.value = mediaMetadata
                     playbackState.value = playbackState.value.copy(
-                        currentPlayTimeMs = controller.currentPosition,
-                        trackDurationMs = controller.duration
+                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET } ?: 0,
+                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
                     )
-                }
-
-                override fun onPositionDiscontinuity(
-                    oldPosition: Player.PositionInfo,
-                    newPosition: Player.PositionInfo,
-                    reason: Int
-                ) {
-                    super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                    Log.i("PLAYER", "Position discontinuity: $reason")
                 }
             }
         )

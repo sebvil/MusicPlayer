@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -12,8 +11,7 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
-import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -48,7 +46,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
-    private val playbackServiceRepository: PlaybackServiceRepository,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
     BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
@@ -105,7 +103,6 @@ class SearchViewModel @Inject constructor(
                 }
             }
             is SearchUserAction.TrackRowClicked -> {
-                val transportControls = playbackServiceRepository.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.SINGLE_TRACK,
@@ -116,10 +113,8 @@ class SearchViewModel @Inject constructor(
                         sortOrder = SortOrder.ASCENDING,
                         sortOption = SortOption.TRACK_NAME
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }
