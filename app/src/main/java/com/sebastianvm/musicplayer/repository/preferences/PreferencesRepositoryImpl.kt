@@ -1,7 +1,13 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import android.net.Uri
+import android.util.Log
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.sebastianvm.musicplayer.player.CurrentPlaybackInfo
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -101,6 +107,26 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
         return preferencesUtil.dataStore.data.map { preferences ->
             preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) }
                 ?: SortOrder.ASCENDING
+        }
+    }
+
+    override suspend fun modifyCurrentPlaybackInfo(playbackInfo: CurrentPlaybackInfo) {
+        preferencesUtil.dataStore.edit { settings ->
+            settings[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_GROUP] =
+                playbackInfo.currentQueue.mediaType.name
+            settings[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_GROUP_ID] =
+                playbackInfo.currentQueue.mediaId
+            settings[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_ID] = playbackInfo.currentItemUri.toString()
+        }
+    }
+
+    override fun getCurrentPlaybackInfo(): Flow<CurrentPlaybackInfo> {
+        return preferencesUtil.dataStore.data.map { preferences ->
+            val mediaGroup =
+                preferences[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_GROUP] ?: MediaType.UNKNOWN.name
+            val mediaGroupId = preferences[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_GROUP_ID] ?: ""
+            val mediaId = preferences[PreferencesUtil.CURRENT_PLAYBACK_MEDIA_ID]?.toUri() ?: Uri.EMPTY
+            CurrentPlaybackInfo(MediaGroup(MediaType.valueOf(mediaGroup), mediaGroupId), mediaId)
         }
     }
 }

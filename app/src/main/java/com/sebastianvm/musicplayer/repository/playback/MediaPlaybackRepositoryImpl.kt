@@ -40,10 +40,10 @@ class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackC
     }
 
     override fun moveQueueItem(previousIndex: Int, newIndex: Int) {
-        TODO("Not yet implemented")
+        mediaPlaybackClient.moveQueueItem(previousIndex, newIndex)
     }
 
     override fun playQueueItem(index: Int) {
-        TODO("Not yet implemented")
+        mediaPlaybackClient.playQueueItem(index)
     }
 }

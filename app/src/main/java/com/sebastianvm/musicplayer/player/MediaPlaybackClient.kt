@@ -3,12 +3,12 @@ package com.sebastianvm.musicplayer.player
 import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -16,14 +16,17 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -33,15 +36,24 @@ import javax.inject.Singleton
 @androidx.annotation.OptIn(UnstableApi::class)
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val trackRepository: TrackRepository
+    private val trackRepository: TrackRepository,
+    private val preferencesRepository: PreferencesRepository,
 ) {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
 
-    val playbackState = MutableStateFlow(PlaybackState(isPlaying = false, currentPlayTimeMs = 0, trackDurationMs = 0))
+    val playbackState = MutableStateFlow(
+        PlaybackState(
+            isPlaying = false,
+            currentPlayTimeMs = 0,
+            trackDurationMs = 0
+        )
+    )
     val nowPlaying: MutableStateFlow<MediaMetadata?> = MutableStateFlow(null)
+
+    private lateinit var currentQueue: StateFlow<CurrentPlaybackInfo>
 
 
     fun initializeController() {
@@ -50,6 +62,8 @@ class MediaPlaybackClient @Inject constructor(
         mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
         mediaControllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
         CoroutineScope(Dispatchers.Main).launch {
+            currentQueue = preferencesRepository.getCurrentPlaybackInfo()
+                .stateIn(CoroutineScope(Dispatchers.IO))
             while (true) {
                 delay(1000)
                 controller?.also {
@@ -73,7 +87,8 @@ class MediaPlaybackClient @Inject constructor(
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     playbackState.value = playbackState.value.copy(
                         isPlaying = isPlaying,
-                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET } ?: 0,
+                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
+                            ?: 0,
                         trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
                     )
                 }
@@ -81,9 +96,18 @@ class MediaPlaybackClient @Inject constructor(
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                     nowPlaying.value = mediaMetadata
                     playbackState.value = playbackState.value.copy(
-                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET } ?: 0,
+                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
+                            ?: 0,
                         trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
                     )
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        preferencesRepository.modifyCurrentPlaybackInfo(
+                            currentQueue.value.copy(
+                                currentItemUri = mediaMetadata.mediaUri ?: Uri.EMPTY
+                            )
+                        )
+                    }
                 }
             }
         )
@@ -106,13 +130,25 @@ class MediaPlaybackClient @Inject constructor(
         controller?.seekToPrevious()
     }
 
-    // TODO experiment with collect to modify queue
+    fun moveQueueItem(currentIndex: Int, newIndex: Int) {
+        controller?.moveMediaItem(currentIndex, newIndex)
+    }
+
+    fun playQueueItem(index: Int) {
+        controller?.seekToDefaultPosition(index)
+    }
+
     fun playFromId(mediaId: String, mediaGroup: MediaGroup) {
         CoroutineScope(Dispatchers.IO).launch {
             val mediaItems = trackRepository.getTracksForQueue(mediaGroup).map { tracks ->
                 tracks.map { it.toMediaItem() }
             }.first()
 
+            preferencesRepository.modifyCurrentPlaybackInfo(
+                currentQueue.value.copy(
+                    currentQueue = mediaGroup,
+                )
+            )
             withContext(Dispatchers.Main) {
                 preparePlaylist(mediaId, mediaItems)
             }
@@ -126,8 +162,6 @@ class MediaPlaybackClient @Inject constructor(
         mediaId: String,
         mediaItems: List<MediaItem>,
     ) {
-        mediaItems.find { it.localConfiguration == null }
-            ?.also { Log.i("PLAYLIST", "Found culprit: ${it.mediaMetadata.title}") }
         val initialWindowIndex =
             mediaItems.indexOfFirst { it.mediaId == mediaId }.takeUnless { it == -1 } ?: 0
 
@@ -163,6 +197,12 @@ class MediaPlaybackClient @Inject constructor(
             setArtist(artists.joinToString(", ") { it.artistName })
             setAlbumTitle(album.albumName)
             setArtworkUri(
+                ContentUris.withAppendedId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    track.trackId.toLong()
+                )
+            )
+            setMediaUri(
                 ContentUris.withAppendedId(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     track.trackId.toLong()

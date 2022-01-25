@@ -27,6 +27,9 @@ class PreferencesUtil @Inject constructor(val dataStore: DataStore<Preferences>)
         val ALBUMS_SORT_ORDER = stringPreferencesKey("ALBUMS_SORT_ORDER")
         val ARTISTS_SORT_ORDER = stringPreferencesKey("ARTISTS_SORT_ORDER")
         val GENRES_SORT_ORDER = stringPreferencesKey("GENRES_SORT_ORDER")
+        val CURRENT_PLAYBACK_MEDIA_GROUP = stringPreferencesKey("CURRENT_PLAYBACK_MEDIA_GROUP")
+        val CURRENT_PLAYBACK_MEDIA_GROUP_ID = stringPreferencesKey("CURRENT_PLAYBACK_MEDIA_GROUP_ID")
+        val CURRENT_PLAYBACK_MEDIA_ID = stringPreferencesKey("CURRENT_PLAYBACK_MEDIA_ID")
     }
 }
 

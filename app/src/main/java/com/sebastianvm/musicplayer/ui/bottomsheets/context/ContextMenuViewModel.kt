@@ -78,6 +78,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                 }
             }
+            MediaType.UNKNOWN -> Unit
         }
     }
 

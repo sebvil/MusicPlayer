@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -29,27 +30,28 @@ class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val tracksRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
+    preferencesRepository: PreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
-//        collect(playbackServiceRepository.currentQueueId) { mediaGroup ->
-//            setState {
-//                copy(
-//                    mediaGroup = mediaGroup
-//                )
-//            }
-//            mediaGroup?.also {
-//                val tracks = tracksRepository.getTracksForQueue(it).first()
-//                val mediaQueue = mediaQueueRepository.getQueue(mediaGroup).first()
-//                setState {
-//                    copy(
-//                        chosenQueue = mediaQueue,
-//                        queueItems = tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
-//                    )
-//                }
-//            }
-//        }
+        collect(preferencesRepository.getCurrentPlaybackInfo()) { playbackInfo ->
+            setState {
+                copy(
+                    mediaGroup = playbackInfo.currentQueue,
+                    nowPlayingTrackId = playbackInfo.currentItemUri.toString()
+                        .substringAfterLast("/")
+                )
+            }
+            val tracks = tracksRepository.getTracksForQueue(playbackInfo.currentQueue).first()
+            val mediaQueue = mediaQueueRepository.getQueue(playbackInfo.currentQueue).first()
+            setState {
+                copy(
+                    chosenQueue = mediaQueue,
+                    queueItems = tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
+                )
+            }
+        }
 
         collect(mediaQueueRepository.getAllQueues()) { queues ->
             setState {
@@ -58,20 +60,12 @@ class QueueViewModel @Inject constructor(
                 )
             }
         }
-
-        collect(mediaPlaybackRepository.nowPlaying) {
-            setState {
-                copy(
-                    nowPlayingTrackId = ""
-                )
-            }
-        }
     }
 
     override fun handle(action: QueueUserAction) {
         when (action) {
             is QueueUserAction.ItemDragged -> {
-                val oldIndex = state.value.draggedItemIndex
+                val oldIndex = state.value.draggedItemFinalIndex
                 if (oldIndex != action.newIndex) {
                     if (action.newIndex !in state.value.queueItems.indices || oldIndex !in state.value.queueItems.indices) {
                         return
@@ -79,18 +73,10 @@ class QueueViewModel @Inject constructor(
                     val items = state.value.queueItems.toMutableList()
                     val item = items.removeAt(oldIndex)
                     items.add(action.newIndex, item)
-                    if (state.value.chosenQueue?.groupMediaId == state.value.mediaGroup?.mediaId
-                        && state.value.chosenQueue?.mediaType == state.value.mediaGroup?.mediaType
-                    ) {
-                        mediaPlaybackRepository.moveQueueItem(
-                            previousIndex = oldIndex,
-                            newIndex = action.newIndex
-                        )
-                    }
                     setState {
                         copy(
                             queueItems = items,
-                            draggedItemIndex = action.newIndex
+                            draggedItemFinalIndex = action.newIndex
                         )
                     }
                 }
@@ -102,7 +88,8 @@ class QueueViewModel @Inject constructor(
                 setState {
                     copy(
                         draggedItem = itemToDrag,
-                        draggedItemIndex = index,
+                        draggedItemStartingIndex = index,
+                        draggedItemFinalIndex = index,
                         queueItems = items
                     )
                 }
@@ -111,11 +98,16 @@ class QueueViewModel @Inject constructor(
                 with(state.value) {
                     draggedItem?.also {
                         val items = queueItems.toMutableList()
-                        items[draggedItemIndex] = it
+                        mediaPlaybackRepository.moveQueueItem(
+                            previousIndex = draggedItemStartingIndex,
+                            newIndex = draggedItemFinalIndex
+                        )
+                        items[draggedItemFinalIndex] = it
                         setState {
                             copy(
                                 queueItems = items,
-                                draggedItemIndex = -1,
+                                draggedItemFinalIndex = -1,
+                                draggedItemStartingIndex = -1,
                                 draggedItem = null
                             )
                         }
@@ -205,7 +197,8 @@ data class QueueState(
     val mediaGroup: MediaGroup?,
     val queueItems: List<TrackRowState>,
     val draggedItem: TrackRowState?,
-    val draggedItemIndex: Int = -1,
+    val draggedItemStartingIndex: Int = -1,
+    val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackId: String,
 ) : State
 

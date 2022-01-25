@@ -20,6 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -79,6 +80,10 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 val track = trackRepository.getTrack(mediaGroup.mediaId)
                 queueName = track.first().track.trackName
                 track.map { listOf(it) }
+            }
+            MediaType.UNKNOWN -> {
+                queueName =""
+                flow {  }
             }
         }.map { tracks ->
             tracks.map {
