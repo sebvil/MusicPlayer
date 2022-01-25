@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
@@ -37,12 +38,14 @@ import javax.inject.Inject
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val playbackServiceRepository: PlaybackServiceRepository,
     private val preferencesRepository: PreferencesRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
     initialState
 ) {
+    private val useNewService = true
 
     init {
         val tracksListFlow =
@@ -71,23 +74,40 @@ class TracksListViewModel @Inject constructor(
     override fun handle(action: TracksListUserAction) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
-                val transportControls = playbackServiceRepository.transportControls
-                viewModelScope.launch {
-                    val mediaGroup = MediaGroup(
-                        mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
-                            ?: MediaType.ALL_TRACKS,
-                        mediaId = state.value.tracksListTitle ?: ""
-                    )
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = state.value.sortOrder,
-                        sortOption = state.value.currentSort
-                    )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
+                if (useNewService) {
+                    viewModelScope.launch {
+                        val mediaGroup = MediaGroup(
+                            mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
+                                ?: MediaType.ALL_TRACKS,
+                            mediaId = state.value.tracksListTitle ?: ""
+                        )
+                        mediaQueueRepository.createQueue(
+                            mediaGroup = mediaGroup,
+                            sortOrder = state.value.sortOrder,
+                            sortOption = state.value.currentSort
+                        )
+                        addUiEvent(TracksListUiEvent.NavigateToPlayer)
+                        mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     }
-                    transportControls.playFromMediaId(action.trackId, extras)
-                    addUiEvent(TracksListUiEvent.NavigateToPlayer)
+                } else {
+                    val transportControls = playbackServiceRepository.transportControls
+                    viewModelScope.launch {
+                        val mediaGroup = MediaGroup(
+                            mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
+                                ?: MediaType.ALL_TRACKS,
+                            mediaId = state.value.tracksListTitle ?: ""
+                        )
+                        mediaQueueRepository.createQueue(
+                            mediaGroup = mediaGroup,
+                            sortOrder = state.value.sortOrder,
+                            sortOption = state.value.currentSort
+                        )
+                        val extras = Bundle().apply {
+                            putParcelable(MEDIA_GROUP, mediaGroup)
+                        }
+                        transportControls.playFromMediaId(action.trackId, extras)
+                        addUiEvent(TracksListUiEvent.NavigateToPlayer)
+                    }
                 }
 
 

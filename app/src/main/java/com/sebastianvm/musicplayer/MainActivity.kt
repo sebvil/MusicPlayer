@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.StringDef
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.content.ContextCompat
@@ -16,6 +17,8 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var errorHandler: ErrorHandler
+
+    private val viewModel: MainViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +34,16 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.handle(MainActivityUserAction.ConnectToMusicService)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.handle(MainActivityUserAction.DisconnectFromMusicService)
     }
 
 

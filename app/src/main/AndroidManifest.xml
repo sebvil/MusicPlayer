@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sebastianvm.musicplayer">
+
     <queries>
         <intent>
             <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
             <data android:scheme="package:*" />
         </intent>
     </queries>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".MusicPlayerApplication"
         android:allowBackup="false"
@@ -17,19 +20,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicPlayer">
-        <service android:name=".player.OldMediaPlaybackService"
+        <service
+            android:name=".player.OldMediaPlaybackService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
-        <service android:name=".repository.LibraryScanService"
-            android:exported="false">
-        </service>
-        <receiver android:name=".repository.LibraryBroadcastReceiver"
+        <service
+            android:name=".player.MediaPlaybackService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE"/>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".repository.LibraryScanService"
+            android:exported="false">
+        </service>
+
+        <receiver
+            android:name=".repository.LibraryBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE" />
             </intent-filter>
         </receiver>
         <activity

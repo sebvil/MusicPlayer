@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -22,7 +21,7 @@ import javax.inject.Inject
 
 class PlaybackServiceRepositoryImpl @Inject constructor(
     @ApplicationContext context: Context,
-    serviceComponent: ComponentName
+//    serviceComponent: ComponentName
 ) : PlaybackServiceRepository {
     override val isConnected = MutableStateFlow(false)
 
@@ -33,11 +32,11 @@ class PlaybackServiceRepositoryImpl @Inject constructor(
     override val currentQueueId: MutableStateFlow<MediaGroup?> = MutableStateFlow(null)
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
-    private val mediaBrowser = MediaBrowserCompat(
-        context,
-        serviceComponent,
-        mediaBrowserConnectionCallback, null
-    ).apply { connect() }
+//    private val mediaBrowser = MediaBrowserCompat(
+//        context,
+//        serviceComponent,
+//        mediaBrowserConnectionCallback, null
+//    ).apply { connect() }
 
     override lateinit var mediaController: MediaControllerCompat
 
@@ -55,7 +54,7 @@ class PlaybackServiceRepositoryImpl @Inject constructor(
         command: String,
         parameters: Bundle?,
         resultCallback: ((Int, Bundle?) -> Unit)
-    ) = if (mediaBrowser.isConnected) {
+    ) = if (false) {
         mediaController.sendCommand(
             command,
             parameters,
@@ -72,9 +71,9 @@ class PlaybackServiceRepositoryImpl @Inject constructor(
     private inner class MediaBrowserConnectionCallback(@ApplicationContext private val context: Context) :
         MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
-            mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
-                registerCallback(MediaControllerCallback())
-            }
+//            mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
+//                registerCallback(MediaControllerCallback())
+//            }
             CoroutineScope(Dispatchers.Main).launch {
                 isConnected.emit(true)
             }
