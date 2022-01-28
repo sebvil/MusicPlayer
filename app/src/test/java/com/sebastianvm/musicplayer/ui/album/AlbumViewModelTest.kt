@@ -8,8 +8,9 @@ import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -18,7 +19,6 @@ import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import io.mockk.Runs
-import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
@@ -38,7 +38,7 @@ import org.junit.Test
 
 class AlbumViewModelTest {
 
-    private lateinit var musicServiceConnection: MusicServiceConnection
+    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
     private lateinit var defaultUri: Uri
 
@@ -54,13 +54,13 @@ class AlbumViewModelTest {
             ContentUris.withAppendedId(any(), AlbumBuilder.DEFAULT_ALBUM_ID.toLong())
         } returns defaultUri
 
-        musicServiceConnection = mockk()
+        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
         mediaQueueRepository = spyk(FakeMediaQueueRepository())
     }
 
     private fun generateViewModel(): AlbumViewModel {
         return AlbumViewModel(
-            musicServiceConnection = musicServiceConnection,
+            mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = AlbumState(
                 albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                 tracksList = listOf(),
@@ -98,8 +98,6 @@ class AlbumViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
-        every { musicServiceConnection.transportControls.playFromMediaId(any(), any()) } just Runs
-        coJustRun { mediaQueueRepository.createQueue(any(), any(), any()) }
 
         mockkConstructor(Bundle::class)
 
@@ -109,9 +107,9 @@ class AlbumViewModelTest {
             handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
             delay(1)
             verify {
-                musicServiceConnection.transportControls.playFromMediaId(
+                mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    any()
+                    MediaGroup(mediaType = MediaType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
                 )
             }
 

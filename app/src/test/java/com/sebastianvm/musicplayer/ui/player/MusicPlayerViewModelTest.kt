@@ -1,22 +1,12 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.net.Uri
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import com.sebastianvm.musicplayer.player.EMPTY_PLAYBACK_STATE
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.NOTHING_PLAYING
+import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.extensions.albumId
-import com.sebastianvm.musicplayer.util.extensions.artist
-import com.sebastianvm.musicplayer.util.extensions.duration
-import com.sebastianvm.musicplayer.util.extensions.id
-import com.sebastianvm.musicplayer.util.extensions.title
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,23 +19,20 @@ import org.junit.Test
 
 class MusicPlayerViewModelTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private lateinit var musicServiceConnection: MusicServiceConnection
+    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
 
     @Before
     fun setUp() {
-        musicServiceConnection = mockk {
-            every { playbackState } returns  MutableStateFlow(EMPTY_PLAYBACK_STATE)
-            every { nowPlaying } returns  MutableStateFlow(NOTHING_PLAYING)
-            every { transportControls } returns  mockk()
-        }
+        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
     }
 
     private fun generateViewModel(): MusicPlayerViewModel {
         return MusicPlayerViewModel(
-            musicServiceConnection = musicServiceConnection,
+            mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = MusicPlayerState(
                 isPlaying = false,
                 trackName = null,
@@ -67,9 +54,6 @@ class MusicPlayerViewModelTest {
                 assertTrue(state.drop(2).first().isPlaying)
             }
             delay(1)
-            musicServiceConnection.playbackState.value = PlaybackStateCompat.Builder().setState(
-                PlaybackStateCompat.STATE_PLAYING, 0, 1f
-            ).build()
         }
     }
 
@@ -87,13 +71,6 @@ class MusicPlayerViewModelTest {
                 }
             }
             delay(1)
-            musicServiceConnection.nowPlaying.value = MediaMetadataCompat.Builder().apply {
-                title = TRACK_TITLE
-                artist = ARTISTS
-                duration = TRACK_LENGTH
-                id = TRACK_ID
-                albumId = ALBUM_ID
-            }.build()
         }
     }
 

@@ -1,10 +1,12 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 
 class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_NAME) :
     PreferencesRepository {
@@ -41,4 +43,8 @@ class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_N
         genresSortOrder.emit(sortOrder)
 
     override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
+
+    override suspend fun modifySavedPlaybackInfo(playbackInfo: SavedPlaybackInfo) = Unit
+
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> = flow {  }
 }

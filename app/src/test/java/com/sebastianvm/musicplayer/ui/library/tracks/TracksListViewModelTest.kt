@@ -1,34 +1,29 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import android.os.Bundle
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.GenreBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.util.BundleMock
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -38,13 +33,19 @@ class TracksListViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
+    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+
+    @Before
+    fun setUp() {
+        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+    }
+
     private fun generateViewModel(
-        musicServiceConnection: MusicServiceConnection = mockk(),
         preferencesRepository: FakePreferencesRepository = FakePreferencesRepository(),
         genreName: String? = null,
     ): TracksListViewModel {
         return TracksListViewModel(
-            musicServiceConnection = musicServiceConnection,
+            mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = TracksListState(
                 tracksListTitle = genreName,
                 tracksList = listOf(),
@@ -115,55 +116,35 @@ class TracksListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mockk() {
-            every { transportControls.playFromMediaId(any(), any()) } just Runs
-        }
-        BundleMock().addParcelableGetter<MediaGroup>()
-        val bundleSlot = slot<Bundle>()
-        with(generateViewModel(musicServiceConnection = musicServiceConnection)) {
+        with(generateViewModel()) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
             handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
             delay(1)
             verify {
-                musicServiceConnection.transportControls.playFromMediaId(
+                mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    capture(bundleSlot)
+                    MediaGroup(mediaType = MediaType.ALL_TRACKS, mediaId = "")
                 )
             }
-            assertEquals(
-                MediaGroup(MediaType.ALL_TRACKS, ""),
-                bundleSlot.captured.getParcelable(MEDIA_GROUP)
-            )
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked for genre triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mockk() {
-            every { transportControls.playFromMediaId(any(), any()) } just Runs
-        }
-        BundleMock().addParcelableGetter<MediaGroup>()
-        val bundleSlot = slot<Bundle>()
-        with(
-            generateViewModel(
-                musicServiceConnection = musicServiceConnection,
-                genreName = GenreBuilder.DEFAULT_GENRE_NAME
-            )
-        ) {
+        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
             handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
             delay(1)
             verify {
-                musicServiceConnection.transportControls.playFromMediaId(
+                mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    capture(bundleSlot)
+                    MediaGroup(
+                        mediaType = MediaType.GENRE,
+                        mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                    )
                 )
             }
-            assertEquals(
-                MediaGroup(MediaType.GENRE, GenreBuilder.DEFAULT_GENRE_NAME),
-                bundleSlot.captured.getParcelable(MEDIA_GROUP)
-            )
         }
     }
 
@@ -171,14 +152,8 @@ class TracksListViewModelTest {
     @Test
     fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() =
         runTest {
-            val musicServiceConnection: MusicServiceConnection = mockk() {
-                every { transportControls.playFromMediaId(any(), any()) } just Runs
-            }
-            BundleMock().addParcelableGetter<MediaGroup>()
-            val bundleSlot = slot<Bundle>()
             with(
                 generateViewModel(
-                    musicServiceConnection = musicServiceConnection,
                     preferencesRepository = FakePreferencesRepository(trackSortOption = SortOption.ARTIST_NAME),
                     genreName = GenreBuilder.DEFAULT_GENRE_NAME,
                 )
@@ -187,15 +162,14 @@ class TracksListViewModelTest {
                 handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
                 delay(1)
                 verify {
-                    musicServiceConnection.transportControls.playFromMediaId(
+                    mediaPlaybackRepository.playFromId(
                         TrackBuilder.DEFAULT_TRACK_ID,
-                        capture(bundleSlot)
+                        MediaGroup(
+                            mediaType = MediaType.GENRE,
+                            mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                        )
                     )
                 }
-                assertEquals(
-                    MediaGroup(MediaType.GENRE, GenreBuilder.DEFAULT_GENRE_NAME),
-                    bundleSlot.captured.getParcelable(MEDIA_GROUP)
-                )
             }
         }
 
