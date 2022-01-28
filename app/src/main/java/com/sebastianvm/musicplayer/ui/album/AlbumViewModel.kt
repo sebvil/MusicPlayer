@@ -2,15 +2,13 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.content.ContentUris
 import android.net.Uri
-import android.os.Bundle
 import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
-import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -35,7 +33,7 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val playbackServiceRepository: PlaybackServiceRepository,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
@@ -61,7 +59,6 @@ class AlbumViewModel @Inject constructor(
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {
-                val transportControls = playbackServiceRepository.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.ALBUM,
@@ -72,10 +69,7 @@ class AlbumViewModel @Inject constructor(
                         sortOrder = SortOrder.ASCENDING,
                         sortOption = SortOption.TRACK_NUMBER
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(AlbumUiEvent.NavigateToPlayer)
                 }
             }

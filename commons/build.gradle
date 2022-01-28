@@ -45,6 +45,7 @@ android {
             }
         }
     }
+    namespace 'com.sebastianvm.commons'
 }
 
 dependencies {

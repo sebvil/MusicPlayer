@@ -16,7 +16,8 @@ enum class MediaType : Parcelable {
     ARTIST,
     ALBUM,
     GENRE,
-    SINGLE_TRACK
+    SINGLE_TRACK,
+    UNKNOWN
 }
 
 @Parcelize

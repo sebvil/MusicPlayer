@@ -1,13 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.repository.playback.MEDIA_GROUP
-import com.sebastianvm.musicplayer.repository.playback.PlaybackServiceRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -37,7 +35,7 @@ import javax.inject.Inject
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
-    private val playbackServiceRepository: PlaybackServiceRepository,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val preferencesRepository: PreferencesRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
@@ -71,7 +69,6 @@ class TracksListViewModel @Inject constructor(
     override fun handle(action: TracksListUserAction) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
-                val transportControls = playbackServiceRepository.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
@@ -83,14 +80,9 @@ class TracksListViewModel @Inject constructor(
                         sortOrder = state.value.sortOrder,
                         sortOption = state.value.currentSort
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
-
-
             }
             is TracksListUserAction.SortByClicked -> {
                 addUiEvent(
