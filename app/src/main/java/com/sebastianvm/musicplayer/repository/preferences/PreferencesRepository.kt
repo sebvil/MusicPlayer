@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
-import com.sebastianvm.musicplayer.player.CurrentPlaybackInfo
+import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ interface PreferencesRepository {
 
     fun getGenresListSortOrder(): Flow<SortOrder>
 
-    suspend fun modifyCurrentPlaybackInfo(playbackInfo: CurrentPlaybackInfo)
+    suspend fun modifySavedPlaybackInfo(playbackInfo: SavedPlaybackInfo)
 
-    fun getCurrentPlaybackInfo(): Flow<CurrentPlaybackInfo>
+    fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
 }

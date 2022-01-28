@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.queue
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
@@ -35,12 +36,12 @@ class QueueViewModel @Inject constructor(
 ) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(initialState) {
 
     init {
-        collect(preferencesRepository.getCurrentPlaybackInfo()) { playbackInfo ->
+        collect(preferencesRepository.getSavedPlaybackInfo()) { playbackInfo ->
+            Log.i("QUEUE", "Updating ${playbackInfo.mediaId}")
             setState {
                 copy(
                     mediaGroup = playbackInfo.currentQueue,
-                    nowPlayingTrackId = playbackInfo.currentItemUri.toString()
-                        .substringAfterLast("/")
+                    nowPlayingTrackId = playbackInfo.mediaId
                 )
             }
             val tracks = tracksRepository.getTracksForQueue(playbackInfo.currentQueue).first()

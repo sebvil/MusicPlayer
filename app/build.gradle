@@ -54,6 +54,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
     }
+    namespace 'com.sebastianvm.musicplayer'
 
 }
 
@@ -112,14 +113,14 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
     // Hilt navigation
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-rc01'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha03'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha04'
 
     // Accompanist
-    def accompanist_version = '0.24.0-alpha'
+    def accompanist_version = '0.24.1-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
 
     // Paging
