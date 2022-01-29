@@ -35,6 +35,10 @@ inline var MediaMetadata.Builder.uri: Uri
         setArtworkUri(value)
     }
 
+inline val MediaMetadata.duration: Long
+    get() = extras?.getLong(KEY_TRACK_DURATION_MS) ?: 0L
+
+
 inline var MediaMetadata.Builder.duration: Long
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {

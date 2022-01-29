@@ -45,7 +45,6 @@ class MediaPlaybackClient @Inject constructor(
         PlaybackState(
             isPlaying = false,
             currentPlayTimeMs = 0,
-            trackDurationMs = 0
         )
     )
     val nowPlaying: MutableStateFlow<MediaMetadata?> = MutableStateFlow(null)
@@ -74,13 +73,11 @@ class MediaPlaybackClient @Inject constructor(
                         playbackState.value = PlaybackState(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = it.contentPosition,
-                            trackDurationMs = it.duration
                         )
                     } else if (currentQueue.mediaType != MediaType.UNKNOWN) {
                         playbackState.value = PlaybackState(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = lastRecordedPosition,
-                            trackDurationMs = it.duration
                         )
                         playFromId(
                             mediaId = mediaId,
@@ -119,10 +116,7 @@ class MediaPlaybackClient @Inject constructor(
                     nowPlaying.value = mediaMetadata
                     playbackState.value = playbackState.value.copy(
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
-                            ?: 0,
-                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET }
-                            ?: mediaMetadata.extras?.getLong("KEY_DURATION_MS") ?: 0
-                    )
+                            ?: 0)
                 }
             }
         )
@@ -166,6 +160,14 @@ class MediaPlaybackClient @Inject constructor(
                 tracks.map { it.toMediaItem() }
             }.first()
 
+            preferencesRepository.modifySavedPlaybackInfo {
+                SavedPlaybackInfo(
+                    currentQueue = mediaGroup,
+                    mediaId = mediaId,
+                    lastRecordedPosition = position
+                )
+            }
+
             withContext(Dispatchers.Main) {
                 preparePlaylist(mediaId, mediaItems, playWhenReady, position)
             }
@@ -194,5 +196,4 @@ class MediaPlaybackClient @Inject constructor(
             mediaController.seekTo(initialWindowIndex, position)
         }
     }
-
 }

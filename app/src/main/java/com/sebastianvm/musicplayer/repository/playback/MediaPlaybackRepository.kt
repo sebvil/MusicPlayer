@@ -21,4 +21,4 @@ interface MediaPlaybackRepository {
 
 }
 
-data class PlaybackState(val isPlaying: Boolean, val currentPlayTimeMs: Long, val trackDurationMs: Long)
+data class PlaybackState(val isPlaying: Boolean, val currentPlayTimeMs: Long)
