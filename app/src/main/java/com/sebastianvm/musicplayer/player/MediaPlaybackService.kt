@@ -49,10 +49,12 @@ class MediaPlaybackService : MediaLibraryService() {
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 val mediaId = mediaMetadata.mediaUri?.toString()?.substringAfterLast("/") ?: ""
+                val contentPosition = player.contentPosition
                 CoroutineScope(Dispatchers.IO).launch {
                     preferencesRepository.modifySavedPlaybackInfo { savedPlaybackInfo ->
                         savedPlaybackInfo.copy(
-                            mediaId = mediaId
+                            mediaId = mediaId,
+                            lastRecordedPosition = contentPosition
                         )
                     }
                 }
@@ -75,7 +77,8 @@ class MediaPlaybackService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItem: MediaItem
         ): MediaItem {
-            return MediaItem.Builder().setUri(mediaItem.mediaMetadata.mediaUri)
+            return MediaItem.Builder()
+                .setUri(mediaItem.mediaMetadata.mediaUri)
                 .setMediaId(mediaItem.mediaId)
                 .setMediaMetadata(mediaItem.mediaMetadata).build()
         }

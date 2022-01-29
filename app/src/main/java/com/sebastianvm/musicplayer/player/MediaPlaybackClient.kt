@@ -117,6 +117,7 @@ class MediaPlaybackClient @Inject constructor(
                     playbackState.value = playbackState.value.copy(
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0)
+
                 }
             }
         )

@@ -16,12 +16,6 @@ inline var MediaMetadata.Builder.artist: String
         setArtist(value)
     }
 
-inline var MediaMetadata.Builder.albumTitle: String
-    get() = throw IllegalAccessException("Cannot get from MediaMetadata.Builder")
-    set(value) {
-        setAlbumTitle(value)
-    }
-
 inline var MediaMetadata.Builder.genre: String
     get() = throw IllegalAccessException("Cannot get from MediaMetadata.Builder")
     set(value) {
@@ -37,7 +31,6 @@ inline var MediaMetadata.Builder.uri: Uri
 
 inline val MediaMetadata.duration: Long
     get() = extras?.getLong(KEY_TRACK_DURATION_MS) ?: 0L
-
 
 inline var MediaMetadata.Builder.duration: Long
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
