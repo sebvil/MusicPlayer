@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -109,16 +110,15 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
         }
     }
 
-    override suspend fun modifySavedPlaybackInfo(playbackInfo: SavedPlaybackInfo) {
-        Log.i("QUEUE", "New info: ${playbackInfo.mediaId}")
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
-                playbackInfo.currentQueue.mediaType.name
-            settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] =
-                playbackInfo.currentQueue.mediaId
-            settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = playbackInfo.mediaId
-            settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] =
-                playbackInfo.lastRecordedPosition
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+        with(transform(getSavedPlaybackInfo().first())) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
+                    currentQueue.mediaType.name
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] = currentQueue.mediaId
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
+            }
         }
     }
 

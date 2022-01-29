@@ -1,8 +1,5 @@
 package com.sebastianvm.musicplayer.player
 
-import android.content.ContentUris
-import android.provider.MediaStore
-import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -16,7 +13,6 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,9 +20,9 @@ import javax.inject.Inject
 @androidx.annotation.OptIn(UnstableApi::class)
 class MediaPlaybackService : MediaLibraryService() {
 
-    private lateinit var player: ExoPlayer
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
 
     override fun onCreate() {
@@ -40,25 +36,27 @@ class MediaPlaybackService : MediaLibraryService() {
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 val contentPosition = player.contentPosition
-                val id = player.currentMediaItem?.mediaMetadata?.mediaUri?.toString()?.substringAfterLast("/") ?: ""
+                val id = player.currentMediaItem?.mediaId ?: ""
                 CoroutineScope(Dispatchers.IO).launch {
-                    preferencesRepository.modifySavedPlaybackInfo(
-                        preferencesRepository.getSavedPlaybackInfo().first().copy(
+                    preferencesRepository.modifySavedPlaybackInfo { savedPlaybackInfo ->
+                        savedPlaybackInfo.copy(
                             mediaId = id,
                             lastRecordedPosition = contentPosition
                         )
-                    )
+                    }
                 }
             }
+
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 val mediaId = mediaMetadata.mediaUri?.toString()?.substringAfterLast("/") ?: ""
-                Log.i("QUEUE", mediaId)
+                val contentPosition = player.contentPosition
                 CoroutineScope(Dispatchers.IO).launch {
-                    preferencesRepository.modifySavedPlaybackInfo(
-                        preferencesRepository.getSavedPlaybackInfo().first().copy(
-                            mediaId = mediaId
+                    preferencesRepository.modifySavedPlaybackInfo { savedPlaybackInfo ->
+                        savedPlaybackInfo.copy(
+                            mediaId = mediaId,
+                            lastRecordedPosition = contentPosition
                         )
-                    )
+                    }
                 }
             }
         })
@@ -79,12 +77,10 @@ class MediaPlaybackService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItem: MediaItem
         ): MediaItem {
-            return MediaItem.Builder().setUri(
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    mediaItem.mediaId.toLong()
-                )
-            ).setMediaMetadata(mediaItem.mediaMetadata).build()
+            return MediaItem.Builder()
+                .setUri(mediaItem.mediaMetadata.mediaUri)
+                .setMediaId(mediaItem.mediaId)
+                .setMediaMetadata(mediaItem.mediaMetadata).build()
         }
     }
 
