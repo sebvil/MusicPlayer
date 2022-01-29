@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.net.Uri
+import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
+import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
@@ -12,7 +14,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,8 +40,6 @@ class MusicPlayerViewModelTest {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackId = null,
-                albumId = null,
                 trackArt = Uri.EMPTY
             )
         )
@@ -48,12 +47,11 @@ class MusicPlayerViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `state changes when playbackState changes`() = runTest {
+    fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            this@runTest.launch {
-                assertTrue(state.drop(2).first().isPlaying)
-            }
             delay(1)
+            assertEquals(TrackBuilder.DEFAULT_TRACK_NAME, state.value.trackName)
+            assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, state.value.artists)
         }
     }
 
@@ -66,8 +64,6 @@ class MusicPlayerViewModelTest {
                     assertEquals(TRACK_TITLE, trackName)
                     assertEquals(ARTISTS, artists)
                     assertEquals(TRACK_LENGTH, trackLengthMs)
-                    assertEquals(TRACK_ID, trackId)
-                    assertEquals(ALBUM_ID, albumId)
                 }
             }
             delay(1)
