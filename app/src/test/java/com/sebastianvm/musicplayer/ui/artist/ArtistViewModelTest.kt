@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import android.content.ContentUris
-import android.net.Uri
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
@@ -13,14 +11,11 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,24 +26,11 @@ class ArtistViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
+    @get:Rule
+    val uriUtilsRule = FakeUriUtilsRule()
+
     private val albumRepository: AlbumRepository = FakeAlbumRepository()
     private val artistRepository: ArtistRepository = FakeArtistRepository()
-
-    private lateinit var defaultUri: Uri
-    private lateinit var secondaryUri: Uri
-
-    @Before
-    fun setUp() {
-        mockkStatic(ContentUris::class)
-        defaultUri = mockk()
-        secondaryUri = mockk()
-        every {
-            ContentUris.withAppendedId(any(), AlbumBuilder.DEFAULT_ALBUM_ID.toLong())
-        } returns defaultUri
-        every {
-            ContentUris.withAppendedId(any(), AlbumBuilder.SECONDARY_ALBUM_ID.toLong())
-        } returns secondaryUri
-    }
 
     private fun generateViewModel(): ArtistViewModel {
         return ArtistViewModel(
@@ -58,7 +40,7 @@ class ArtistViewModelTest {
                 appearsOnForArtistItems = listOf(),
             ),
             albumRepository = albumRepository,
-            artistRepository = artistRepository
+            artistRepository = artistRepository,
         )
     }
 
@@ -74,7 +56,7 @@ class ArtistViewModelTest {
                         AlbumRowState(
                             albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                             albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
-                            imageUri = defaultUri,
+                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
                             year = AlbumBuilder.DEFAULT_YEAR,
                             artists = ArtistBuilder.DEFAULT_ARTIST_NAME
                         )
@@ -88,7 +70,7 @@ class ArtistViewModelTest {
                         AlbumRowState(
                             albumId = AlbumBuilder.SECONDARY_ALBUM_ID,
                             albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
-                            imageUri = secondaryUri,
+                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.SECONDARY_ALBUM_ID}",
                             year = AlbumBuilder.SECONDARY_YEAR,
                             artists = ArtistBuilder.SECONDARY_ARTIST_NAME
                         )

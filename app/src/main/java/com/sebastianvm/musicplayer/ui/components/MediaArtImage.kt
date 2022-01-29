@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -30,7 +29,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 fun MediaArtImagePreview() {
     ThemedPreview {
         MediaArtImage(
-            uri = Uri.EMPTY,
+            uri = "",
             contentDescription = "",
             backupResource = R.drawable.ic_song,
             backupContentDescription = R.string.placeholder_album_art
@@ -44,7 +43,7 @@ fun MediaArtImagePreview() {
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun MediaArtImage(
-    uri: Uri,
+    uri: String,
     contentDescription: String,
     @DrawableRes backupResource: Int,
     @StringRes backupContentDescription: Int,

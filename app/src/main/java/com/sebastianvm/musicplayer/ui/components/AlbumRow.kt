@@ -1,9 +1,6 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import android.content.ContentUris
 import android.content.res.Configuration
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
@@ -26,12 +23,13 @@ import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 
 
 data class AlbumRowState(
     val albumId: String,
     val albumName: String,
-    val imageUri: Uri,
+    val imageUri: String,
     val year: Long,
     val artists: String,
 )
@@ -118,10 +116,7 @@ fun AlbumWithArtists.toAlbumRowState(): AlbumRowState {
     return AlbumRowState(
         albumId = album.albumId,
         albumName = album.albumName,
-        imageUri = ContentUris.withAppendedId(
-            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-            album.albumId.toLong()
-        ),
+        imageUri = UriUtils.getAlbumUri(albumId = album.albumId.toLong()),
         year = album.year,
         artists = artists.joinToString(", ") { it.artistName }
     )
@@ -134,7 +129,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "1",
                 albumName = "Ahora",
-                imageUri = Uri.EMPTY,
+                imageUri = "",
                 year = 2017,
                 artists = "Melendi"
 
@@ -142,7 +137,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "2",
                 albumName = "VIVES",
-                imageUri = Uri.EMPTY,
+                imageUri = "",
                 year = 2017,
                 artists = "Carlos Vives"
             ),

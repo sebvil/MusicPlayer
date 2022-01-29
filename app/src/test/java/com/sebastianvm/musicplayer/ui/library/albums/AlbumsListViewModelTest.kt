@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import android.content.ContentUris
-import android.net.Uri
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
@@ -11,14 +9,11 @@ import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
+import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -28,21 +23,8 @@ class AlbumsListViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
-    private lateinit var defaultUri: Uri
-    private lateinit var secondaryUri: Uri
-
-    @Before
-    fun setUp() {
-        mockkStatic(ContentUris::class)
-        defaultUri = mockk()
-        secondaryUri = mockk()
-        every {
-            ContentUris.withAppendedId(any(), AlbumBuilder.DEFAULT_ALBUM_ID.toLong())
-        } returns defaultUri
-        every {
-            ContentUris.withAppendedId(any(), AlbumBuilder.SECONDARY_ALBUM_ID.toLong())
-        } returns secondaryUri
-    }
+    @get:Rule
+    val fakeUriUtilsRule = FakeUriUtilsRule()
 
     private fun generateViewModel(): AlbumsListViewModel {
         return AlbumsListViewModel(
@@ -66,14 +48,20 @@ class AlbumsListViewModelTest {
             val albumRow1 = state.value.albumsList[0]
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
             assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
-            assertEquals(defaultUri, albumRow1.imageUri)
+            assertEquals(
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
+                albumRow1.imageUri
+            )
             assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
             assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
 
             val albumRow2 = state.value.albumsList[1]
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
             assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
-            assertEquals(secondaryUri, albumRow2.imageUri)
+            assertEquals(
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.SECONDARY_ALBUM_ID}",
+                albumRow2.imageUri
+            )
             assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
             assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
 

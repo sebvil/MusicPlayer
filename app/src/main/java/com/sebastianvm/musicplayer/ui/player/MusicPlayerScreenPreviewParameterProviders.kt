@@ -12,7 +12,7 @@ class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicP
             artists = "Melendi, Carlos Vives",
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackArt = Uri.EMPTY
+            trackArt = ""
         )
     )
 }

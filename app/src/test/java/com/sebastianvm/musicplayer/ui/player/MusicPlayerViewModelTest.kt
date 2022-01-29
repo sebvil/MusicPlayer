@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.player
 
-import android.net.Uri
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
@@ -40,7 +39,7 @@ class MusicPlayerViewModelTest {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackArt = Uri.EMPTY
+                trackArt = ""
             )
         )
     }

@@ -13,21 +13,21 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                 AlbumRowState(
                     albumId = "0",
                     albumName = "Ahora",
-                    imageUri = Uri.EMPTY,
+                    imageUri = "",
                     artists = "Melendi",
                     year = 2017
                 ),
                 AlbumRowState(
                     albumId = "1",
                     albumName = "VIVES",
-                    imageUri = Uri.EMPTY,
+                    imageUri = "",
                     artists = "Carlos Vives",
                     year = 2018
                 ),
                 AlbumRowState(
                     albumId = "2",
                     albumName = "Balas perdidas",
-                    imageUri = Uri.EMPTY,
+                    imageUri = "",
                     artists = "Morat",
                     year = 2019
 
@@ -35,7 +35,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                 AlbumRowState(
                     albumId = "3",
                     albumName = "LongName".repeat(10),
-                    imageUri = Uri.EMPTY,
+                    imageUri = "",
                     artists = "LongName".repeat(10),
                     year = 2014
                 ),
