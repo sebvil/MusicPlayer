@@ -22,7 +22,7 @@ interface PreferencesRepository {
 
     fun getGenresListSortOrder(): Flow<SortOrder>
 
-    suspend fun modifySavedPlaybackInfo(playbackInfo: SavedPlaybackInfo)
+    suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)
 
     fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
 }

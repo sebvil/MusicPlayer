@@ -21,6 +21,8 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 
+
+// TODO? combine with ArtistViewModel
 @HiltViewModel
 class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
