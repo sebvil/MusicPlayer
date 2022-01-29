@@ -1,15 +1,14 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
 import androidx.navigation.NavController
-import com.sebastianvm.musicplayer.player.BrowseTree
 
 object NavRoutes {
     const val LIBRARY = "LIBRARY"
     const val LIBRARY_ROOT = "LIBRARY_ROOT"
-    const val GENRES_ROOT = BrowseTree.GENRES_ROOT
-    const val TRACKS_ROOT = BrowseTree.TRACKS_ROOT
-    const val ARTISTS_ROOT = BrowseTree.ARTISTS_ROOT
-    const val ALBUMS_ROOT = BrowseTree.ALBUMS_ROOT
+    const val TRACKS_ROOT = "TRACKS_ROOT"
+    const val ARTISTS_ROOT = "ARTISTS_ROOT"
+    const val ALBUMS_ROOT = "ALBUMS_ROOT"
+    const val GENRES_ROOT = "GENRES_ROOT"
     const val ALBUM = "ALBUM"
     const val ARTIST = "ARTIST"
     const val PLAYER = "PLAYER"

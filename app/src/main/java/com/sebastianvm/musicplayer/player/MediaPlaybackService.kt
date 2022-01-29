@@ -38,6 +38,9 @@ class MediaPlaybackService : MediaLibraryService() {
         player = ExoPlayer.Builder(this)
             .setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true).build()
         player.addListener(object : Player.Listener {
+            override fun onIsLoadingChanged(isLoading: Boolean) {
+                Log.i("PLAYER", "Is loading = $isLoading")
+            }
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 val contentPosition = player.contentPosition
                 val id = player.currentMediaItem?.mediaMetadata?.mediaUri?.toString()?.substringAfterLast("/") ?: ""
@@ -69,7 +72,7 @@ class MediaPlaybackService : MediaLibraryService() {
             .setMediaItemFiller(CustomMediaItemFiller()).build()
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibraryService.MediaLibrarySession {
         return mediaSession
     }
 

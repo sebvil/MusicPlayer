@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository.queue
 
 import android.content.Context
-import android.support.v4.media.MediaMetadataCompat
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -13,8 +13,6 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.extensions.id
-import com.sebastianvm.musicplayer.util.extensions.toMediaMetadataCompat
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -82,13 +80,11 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 track.map { listOf(it) }
             }
             MediaType.UNKNOWN -> {
-                queueName =""
-                flow {  }
+                queueName = ""
+                flow { }
             }
         }.map { tracks ->
-            tracks.map {
-                it.toMediaMetadataCompat()
-            }.sortedWith(getTrackComparator(sortOrder, sortOption.metadataKey)).mapNotNull { it.id }
+            tracks.sortedWith(getTrackComparator(sortOrder, sortOption)).map { it.track.trackId }
         }.first()
 
         return createQueue(mediaGroup, trackIds, queueName)
@@ -100,15 +96,14 @@ class MediaQueueRepositoryImpl @Inject constructor(
 
     private fun getTrackComparator(
         sortOrder: SortOrder,
-        sortKey: String
-    ): Comparator<MediaMetadataCompat> {
-        return when (sortKey) {
-            MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER -> compareBy {
-                it.getLong(sortKey)
-            }
-            else -> getStringComparator(sortOrder) { metadata ->
-                metadata.getString(sortKey)
-            }
+        sortOption: SortOption
+    ): Comparator<FullTrackInfo> {
+        return when (sortOption) {
+            SortOption.ALBUM_NAME -> getStringComparator(sortOrder) { track -> track.album.albumName }
+            SortOption.TRACK_NAME -> getStringComparator(sortOrder) { track -> track.track.trackName }
+            SortOption.ARTIST_NAME -> getStringComparator(sortOrder) { track -> track.artists.toString() }
+            SortOption.YEAR -> compareBy { track -> track.album.year }
+            SortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
         }
     }
 
