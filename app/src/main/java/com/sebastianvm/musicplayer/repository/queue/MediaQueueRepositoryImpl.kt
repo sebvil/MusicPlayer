@@ -79,6 +79,10 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 queueName = track.first().track.trackName
                 track.map { listOf(it) }
             }
+            MediaType.PLAYLIST -> {
+                queueName = mediaGroup.mediaId
+                trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
+            }
             MediaType.UNKNOWN -> {
                 queueName = ""
                 flow { }

@@ -9,6 +9,8 @@ import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.database.daos.PlaylistDao
+import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
 import dagger.Module
@@ -54,6 +56,12 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun providePlaylistDao(database: MusicDatabase): PlaylistDao {
+        return database.playlistDao
+    }
+
+    @Provides
+    @Singleton
     fun provideTrackFtsDao(database: MusicDatabase): TrackFtsDao {
         return database.trackFtsDao
     }
@@ -74,6 +82,12 @@ object DatabaseModule {
     @Singleton
     fun provideGenreFtsDao(database: MusicDatabase): GenreFtsDao {
         return database.genreFtsDao
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistFtsDao(database: MusicDatabase): PlaylistFtsDao {
+        return database.playlistFtsDao
     }
 
     @Provides

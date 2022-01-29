@@ -18,6 +18,7 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +33,8 @@ class MusicRepositoryImpl @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val genreRepository: GenreRepository,
     private val albumRepository: AlbumRepository,
-): MusicRepository {
+    private val playlistRepository: PlaylistRepository,
+) : MusicRepository {
 
     private val trackSet = mutableSetOf<Track>()
     private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
@@ -125,9 +127,10 @@ class MusicRepositoryImpl @Inject constructor(
             trackRepository.getTracksCount(),
             artistRepository.getArtistsCount(),
             albumRepository.getAlbumsCount(),
-            genreRepository.getGenresCount()
-        ) { tracksCount, artistsCount, albumCounts, genreCounts ->
-            CountHolder(tracksCount, artistsCount, albumCounts, genreCounts)
+            genreRepository.getGenresCount(),
+            playlistRepository.getPlaylistsCount()
+        ) { tracksCount, artistsCount, albumCounts, genreCounts, playlistCounts ->
+            CountHolder(tracksCount, artistsCount, albumCounts, genreCounts, playlistCounts)
         }.distinctUntilChanged()
     }
 

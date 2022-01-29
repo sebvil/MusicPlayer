@@ -54,6 +54,7 @@ fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, ar
                 ContextMenuItem.ViewGenre
             )
         }
+        MediaType.PLAYLIST -> listOf()
         MediaType.UNKNOWN -> listOf()
     }
 }

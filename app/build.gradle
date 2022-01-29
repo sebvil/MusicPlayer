@@ -145,7 +145,6 @@ dependencies {
     
     // Junit
     testImplementation "junit:junit:4.13.2"
-
     // Coroutines tests
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt"
 
