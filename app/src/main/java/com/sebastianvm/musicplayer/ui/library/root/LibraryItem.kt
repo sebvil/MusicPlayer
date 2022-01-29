@@ -44,4 +44,12 @@ sealed class LibraryItem(
         countString = R.plurals.number_of_genres,
         count = count
     )
+
+    data class Playlists(override val count: Long) : LibraryItem(
+        rowId = NavRoutes.PLAYLIST_ROOT,
+        rowName = R.string.playlists,
+        icon = R.drawable.ic_playlist,
+        countString = R.plurals.number_of_playlists,
+        count = count
+    )
 }

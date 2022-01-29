@@ -9,6 +9,7 @@ object NavRoutes {
     const val ARTISTS_ROOT = "ARTISTS_ROOT"
     const val ALBUMS_ROOT = "ALBUMS_ROOT"
     const val GENRES_ROOT = "GENRES_ROOT"
+    const val PLAYLIST_ROOT = "PLAYLIST_ROOT"
     const val ALBUM = "ALBUM"
     const val ARTIST = "ARTIST"
     const val PLAYER = "PLAYER"
