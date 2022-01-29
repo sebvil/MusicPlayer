@@ -102,6 +102,7 @@ class MediaPlaybackClient @Inject constructor(
 
     private fun setController() {
         val controller = this.controller ?: return
+        // TODO move this logic to service
         controller.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {

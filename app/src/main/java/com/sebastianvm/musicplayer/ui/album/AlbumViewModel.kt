@@ -1,8 +1,5 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import android.content.ContentUris
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -19,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,10 +40,7 @@ class AlbumViewModel @Inject constructor(
             album?.also {
                 setState {
                     copy(
-                        imageUri = ContentUris.withAppendedId(
-                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                            album.albumId.toLong()
-                        ),
+                        imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
                         albumName = album.albumName,
                         tracksList = albumInfo[album]?.map { it.toTrackRowState(includeTrackNumber = true) }
                             ?.sortedBy { it.trackNumber } ?: listOf()
@@ -88,7 +83,7 @@ class AlbumViewModel @Inject constructor(
 
 data class AlbumState(
     val albumId: String,
-    val imageUri: Uri,
+    val imageUri: String,
     val albumName: String,
     val tracksList: List<TrackRowState>
 ) : State
@@ -103,7 +98,7 @@ object InitialAlbumStateModule {
         val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
         return AlbumState(
             albumId = albumId,
-            imageUri = Uri.EMPTY,
+            imageUri = "",
             albumName = "",
             tracksList = emptyList()
         )

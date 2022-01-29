@@ -68,7 +68,7 @@ class ArtistsListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+    fun `UpDEFAULT_ALBUM_IDButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateUp>(this@runTest)
             handle(ArtistsListUserAction.UpButtonClicked)

@@ -43,11 +43,6 @@ class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_N
         genresSortOrder.emit(sortOrder)
 
     override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
-
-    override suspend fun modifySavedPlaybackInfo(
-        playbackInfo: SavedPlaybackInfo,
-        transform: (SavedPlaybackInfo) -> SavedPlaybackInfo
-    ) = Unit
-
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) = Unit
     override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> = flow {  }
 }
