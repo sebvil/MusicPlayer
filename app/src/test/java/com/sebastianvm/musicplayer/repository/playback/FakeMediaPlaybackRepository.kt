@@ -19,7 +19,6 @@ class FakeMediaPlaybackRepository : MediaPlaybackRepository {
         PlaybackState(
             isPlaying = false,
             currentPlayTimeMs = 10000,
-            trackDurationMs = 120000
         )
     )
 

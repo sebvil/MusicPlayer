@@ -9,9 +9,8 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.ALBUMS
-import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel.Companion.APPEARS_ON
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
+import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import io.mockk.every
@@ -70,7 +69,7 @@ class ArtistViewModelTest {
             delay(1)
             assertEquals(
                 listOf(
-                    ArtistScreenItem.SectionHeaderItem(ALBUMS, R.string.albums),
+                    ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
                             albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
@@ -84,7 +83,7 @@ class ArtistViewModelTest {
             )
             assertEquals(
                 listOf(
-                    ArtistScreenItem.SectionHeaderItem(APPEARS_ON, R.string.appears_on),
+                    ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON, R.string.appears_on),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
                             albumId = AlbumBuilder.SECONDARY_ALBUM_ID,
