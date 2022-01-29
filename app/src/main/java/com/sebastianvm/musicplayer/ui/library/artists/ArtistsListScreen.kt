@@ -6,10 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
@@ -41,7 +41,7 @@ fun ArtistsListScreen(
         },
         topBar = {
             LibraryTopBar(
-                title = DisplayableString.ResourceValue(R.string.artists),
+                title = stringResource(id = R.string.artists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
                         screenViewModel.handle(ArtistsListUserAction.SortByClicked)

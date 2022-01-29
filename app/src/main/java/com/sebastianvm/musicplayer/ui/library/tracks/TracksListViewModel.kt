@@ -1,18 +1,14 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.MediaQueueRepository
-import com.sebastianvm.musicplayer.repository.TrackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -30,6 +26,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,7 +35,7 @@ import javax.inject.Inject
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val preferencesRepository: PreferencesRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
@@ -46,40 +43,25 @@ class TracksListViewModel @Inject constructor(
 ) {
 
     init {
-        collect(preferencesRepository.getTracksListSortOptions(genreName = state.value.genreName)) { settings ->
+        val tracksListFlow =
+            state.value.tracksListTitle?.let { trackRepository.getTracksForGenre(genreName = it) }
+                ?: trackRepository.getAllTracks()
+
+        collect(tracksListFlow.combine(preferencesRepository.getTracksListSortOptions(genreName = state.value.tracksListTitle)) { trackList, sortSettings ->
+            Pair(trackList, sortSettings)
+        }) { (tracksList, sortSettings) ->
             setState {
                 copy(
-                    currentSort = settings.sortOption,
-                    tracksList = tracksList.sortedWith(
-                        getComparator(
-                            settings.sortOrder,
-                            settings.sortOption
-                        )
-                    ),
-                    sortOrder = settings.sortOrder
+                    currentSort = sortSettings.sortOption,
+                    tracksList = tracksList.map { it.toTrackRowState(includeTrackNumber = false) }
+                        .sortedWith(
+                            getComparator(
+                                sortSettings.sortOrder,
+                                sortSettings.sortOption
+                            )
+                        ),
+                    sortOrder = sortSettings.sortOrder
                 )
-            }
-
-        }
-        state.value.genreName?.also { genre ->
-            collect(trackRepository.getTracksForGenre(genre)) { tracks ->
-                setState {
-                    copy(
-                        tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
-                            getComparator(sortOrder, currentSort)
-                        )
-                    )
-                }
-            }
-        } ?: kotlin.run {
-            collect(trackRepository.getAllTracks()) { tracks ->
-                setState {
-                    copy(
-                        tracksList = tracks.map { it.toTrackRowState() }.sortedWith(
-                            getComparator(sortOrder, currentSort)
-                        )
-                    )
-                }
             }
         }
     }
@@ -87,26 +69,20 @@ class TracksListViewModel @Inject constructor(
     override fun handle(action: TracksListUserAction) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
-                val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaType = state.value.genreName?.let { MediaType.GENRE }
+                        mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
                             ?: MediaType.ALL_TRACKS,
-                        mediaId = state.value.genreName ?: ""
+                        mediaId = state.value.tracksListTitle ?: ""
                     )
                     mediaQueueRepository.createQueue(
                         mediaGroup = mediaGroup,
                         sortOrder = state.value.sortOrder,
                         sortOption = state.value.currentSort
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
-
-
             }
             is TracksListUserAction.SortByClicked -> {
                 addUiEvent(
@@ -126,10 +102,10 @@ class TracksListViewModel @Inject constructor(
                 viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
                         SortSettings(
-                            sortOption = state.value.currentSort,
-                            sortOrder = state.value.sortOrder
+                            sortOption = action.newSortOption,
+                            sortOrder = sortOrder
                         ),
-                        state.value.genreName
+                        state.value.tracksListTitle
                     )
                     addUiEvent(TracksListUiEvent.ScrollToTop)
                 }
@@ -138,7 +114,7 @@ class TracksListViewModel @Inject constructor(
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackId,
-                        state.value.genreName,
+                        state.value.tracksListTitle,
                         state.value.currentSort,
                         state.value.sortOrder
                     )
@@ -167,8 +143,7 @@ class TracksListViewModel @Inject constructor(
 
 
 data class TracksListState(
-    val genreName: String?,
-    val tracksListTitle: DisplayableString,
+    val tracksListTitle: String?,
     val tracksList: List<TrackRowState>,
     val currentSort: SortOption,
     val sortOrder: SortOrder
@@ -182,9 +157,7 @@ object InitialTracksListStateModule {
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
         val genreName = savedStateHandle.get<String?>(NavArgs.GENRE_NAME)
         return TracksListState(
-            genreName = genreName,
-            tracksListTitle = genreName?.let { DisplayableString.StringValue(it) }
-                ?: DisplayableString.ResourceValue(R.string.all_songs),
+            tracksListTitle = genreName,
             tracksList = listOf(),
             currentSort = SortOption.TRACK_NAME,
             sortOrder = SortOrder.ASCENDING

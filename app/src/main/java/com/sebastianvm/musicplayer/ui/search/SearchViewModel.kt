@@ -1,22 +1,24 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
-import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.ui.components.AlbumRowState
+import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +46,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
     BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
@@ -55,17 +58,23 @@ class SearchViewModel @Inject constructor(
                 trackSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchTracks(it)
-                    }.flow
+                    }.flow.mapLatest { pagingData ->
+                        pagingData.map { it.toTrackRowState(includeTrackNumber = false) }
+                    }
                 },
                 artistSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchArtists(it)
-                    }.flow
+                    }.flow.mapLatest { pagingData ->
+                        pagingData.map { it.toArtistRowState(shouldShowContextMenu = true) }
+                    }
                 },
                 albumSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchAlbums(it)
-                    }.flow
+                    }.flow.mapLatest { pagingData ->
+                        pagingData.map { it.toAlbumRowState() }
+                    }
                 },
                 genreSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
@@ -94,7 +103,6 @@ class SearchViewModel @Inject constructor(
                 }
             }
             is SearchUserAction.TrackRowClicked -> {
-                val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.SINGLE_TRACK,
@@ -105,10 +113,8 @@ class SearchViewModel @Inject constructor(
                         sortOrder = SortOrder.ASCENDING,
                         sortOption = SortOption.TRACK_NAME
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }
@@ -171,9 +177,9 @@ class SearchViewModel @Inject constructor(
 data class SearchState(
     @StringRes val selectedOption: Int,
     val searchTerm: String = "",
-    val trackSearchResults: Flow<PagingData<FullTrackInfo>>,
-    val artistSearchResults: Flow<PagingData<Artist>>,
-    val albumSearchResults: Flow<PagingData<AlbumWithArtists>>,
+    val trackSearchResults: Flow<PagingData<TrackRowState>>,
+    val artistSearchResults: Flow<PagingData<ArtistRowState>>,
+    val albumSearchResults: Flow<PagingData<AlbumRowState>>,
     val genreSearchResults: Flow<PagingData<Genre>>,
 ) : State
 

@@ -1,128 +1,65 @@
 package com.sebastianvm.musicplayer.ui.player
 
-import android.content.ContentUris
-import android.net.Uri
-import android.os.SystemClock
-import android.provider.MediaStore
-import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.extensions.albumId
-import com.sebastianvm.musicplayer.util.extensions.artist
 import com.sebastianvm.musicplayer.util.extensions.duration
-import com.sebastianvm.musicplayer.util.extensions.id
-import com.sebastianvm.musicplayer.util.extensions.isPlayEnabled
-import com.sebastianvm.musicplayer.util.extensions.isPlaying
-import com.sebastianvm.musicplayer.util.extensions.title
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
-    private val musicServiceConnection: MusicServiceConnection,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
     initialState: MusicPlayerState,
 ) :
     BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
-        collect(musicServiceConnection.nowPlaying) {
-            val trackId = if (it.id.isNullOrEmpty()) null else it.id
-            val albumId = if (it.albumId.isNullOrEmpty()) null else it.albumId
-            setState {
-                copy(
-                    trackName = it.title,
-                    artists = it.artist,
-                    trackLengthMs = it.duration,
-                    trackId = trackId,
-                    albumId = albumId,
-                    trackArt = trackId?.let { id -> ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, id.toLong()) } ?: Uri.EMPTY
-                )
-            }
-        }
-        collect(musicServiceConnection.playbackState) {
+        collect(mediaPlaybackRepository.playbackState) {
             setState {
                 copy(
                     isPlaying = it.isPlaying,
+                    currentPlaybackTimeMs = it.currentPlayTimeMs,
                 )
             }
         }
 
-        viewModelScope.launch {
-            withContext(Dispatchers.Main) {
-                while (true) {
-                    delay(1)
-                    updateProgress()
-                }
+        collect(mediaPlaybackRepository.nowPlaying) { mediaMetadata ->
+            setState {
+                copy(
+                    trackName = mediaMetadata?.title?.toString(),
+                    artists = mediaMetadata?.artist?.toString(),
+                    trackArt = mediaMetadata?.artworkUri?.toString() ?: "",
+                    trackLengthMs = mediaMetadata?.duration
+                )
             }
         }
     }
 
     override fun handle(action: MusicPlayerUserAction) {
-        val transportControls = musicServiceConnection.transportControls
         when (action) {
             is MusicPlayerUserAction.TogglePlay -> {
-                musicServiceConnection.playbackState.value.let { playbackState ->
-                    when {
-                        playbackState.isPlaying -> {
-                            transportControls.pause()
-                        }
-                        playbackState.isPlayEnabled -> {
-                            transportControls.play()
-                        }
-                    }
+                if (state.value.isPlaying) {
+                    mediaPlaybackRepository.pause()
+                } else {
+                    mediaPlaybackRepository.play()
                 }
             }
             is MusicPlayerUserAction.PreviousTapped -> {
-                transportControls.skipToPrevious()
+                mediaPlaybackRepository.prev()
             }
             is MusicPlayerUserAction.NextTapped -> {
-                transportControls.skipToNext()
+                mediaPlaybackRepository.next()
             }
         }
-    }
-
-    private fun updateProgress() {
-        if (state.value.trackLengthMs == null) {
-            setState {
-                copy(
-                    currentPlaybackTimeMs = null
-                )
-            }
-            return
-        }
-        val playbackState = musicServiceConnection.playbackState.value
-
-        var currentPosition: Long = playbackState.position
-        if (state.value.isPlaying) {
-            // Calculate the elapsed time between the last position update and now and unless
-            // paused, we can assume (delta * speed) + current position is approximately the
-            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
-            // on MediaControllerCompat.
-            val timeDelta: Long = SystemClock.elapsedRealtime() -
-                    playbackState.lastPositionUpdateTime
-            currentPosition += (timeDelta * playbackState.playbackSpeed).toLong()
-        }
-
-        setState {
-            copy(
-                currentPlaybackTimeMs = currentPosition
-            )
-        }
-
-
     }
 }
 
@@ -132,9 +69,7 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackId: String?,
-    val albumId: String?,
-    val trackArt: Uri
+    val trackArt: String
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -149,9 +84,7 @@ object InitialMusicPlayerStateModule {
             artists = null,
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackId = null,
-            albumId = null,
-            trackArt = Uri.EMPTY
+            trackArt = ""
         )
     }
 }

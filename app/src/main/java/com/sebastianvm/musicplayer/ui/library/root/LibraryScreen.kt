@@ -9,6 +9,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,20 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.DisplayableString
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.PERMISSION_GRANTED
 import com.sebastianvm.musicplayer.PermissionStatus
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
-import com.sebastianvm.musicplayer.ui.components.LibraryTitle
-import com.sebastianvm.musicplayer.ui.components.ListWithHeader
-import com.sebastianvm.musicplayer.ui.components.ListWithHeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -280,11 +279,19 @@ fun LibraryList(
     @PreviewParameter(LibraryItemListProvider::class) libraryItems: List<LibraryItem>,
     delegate: LibraryListDelegate
 ) {
-    val listState = ListWithHeaderState(
-        DisplayableString.ResourceValue(R.string.library),
-        libraryItems,
-        { header -> LibraryTitle(title = header) },
-        { item ->
+    LazyColumn {
+        item {
+            Text(
+                text = stringResource(id = R.string.library),
+                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Medium),
+                modifier = Modifier.padding(
+                    start = AppDimensions.spacing.mediumLarge,
+                    top = AppDimensions.spacing.mediumLarge,
+                    bottom = AppDimensions.spacing.medium
+                )
+            )
+        }
+        items(libraryItems) { item ->
             SingleLineListItem(
                 modifier = Modifier.clickable {
                     delegate.onRowClicked(item.rowId)
@@ -293,8 +300,7 @@ fun LibraryList(
                 { iconModifier ->
                     Icon(
                         painter = painterResource(id = item.icon),
-                        contentDescription = DisplayableString.ResourceValue(item.rowName)
-                            .getString(),
+                        contentDescription = stringResource(id = item.rowName),
                         modifier = iconModifier,
                     )
                 },
@@ -302,7 +308,6 @@ fun LibraryList(
                 afterListContent = {
                     Text(
                         text = ResUtil.getQuantityString(
-                            LocalContext.current,
                             item.countString,
                             item.count.toInt(),
                             item.count
@@ -323,9 +328,5 @@ fun LibraryList(
                 )
             }
         }
-    )
-    ListWithHeader(state = listState)
-
+    }
 }
-
-

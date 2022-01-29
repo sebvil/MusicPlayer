@@ -94,7 +94,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
         SortableLazyColumn(
             state = SortableLazyColumnState(
                 state.queueItems,
-                state.draggedItemIndex,
+                state.draggedItemFinalIndex,
                 state.draggedItem
             ),
             key = { item -> item.trackId },

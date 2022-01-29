@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.genres
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.repository.GenreRepository
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -17,6 +17,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,18 +31,15 @@ class GenresListViewModel @Inject constructor(
     BaseViewModel<GenresListUserAction, GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        collect(preferencesRepository.getGenresListSortOrder()) { savedSortOrder ->
+        collect(
+            preferencesRepository.getGenresListSortOrder()
+                .combine(genreRepository.getGenres()) { sortOrder, genresList ->
+                    Pair(sortOrder, genresList)
+                }) { pair ->
             setState {
                 copy(
-                    sortOrder = savedSortOrder,
-                    genresList = genresList.sortedWith(getStringComparator(savedSortOrder) { item -> item.genreName }),
-                )
-            }
-        }
-        collect(genreRepository.getGenres()) { genres ->
-            setState {
-                copy(
-                    genresList = genres.sortedWith(getStringComparator(state.value.sortOrder) { item -> item.genreName })
+                    sortOrder = pair.first,
+                    genresList = pair.second.sortedWith(getStringComparator(pair.first) { item -> item.genreName }),
                 )
             }
         }

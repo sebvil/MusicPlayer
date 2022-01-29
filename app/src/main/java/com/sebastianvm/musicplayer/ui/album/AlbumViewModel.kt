@@ -1,17 +1,12 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import android.content.ContentUris
-import android.net.Uri
-import android.os.Bundle
-import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -21,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,7 +31,7 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val musicServiceConnection: MusicServiceConnection,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
@@ -44,12 +40,9 @@ class AlbumViewModel @Inject constructor(
             album?.also {
                 setState {
                     copy(
-                        imageUri = ContentUris.withAppendedId(
-                            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                            album.albumId.toLong()
-                        ),
+                        imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
                         albumName = album.albumName,
-                        tracksList = albumInfo[album]?.map { it.toTrackRowState() }
+                        tracksList = albumInfo[album]?.map { it.toTrackRowState(includeTrackNumber = true) }
                             ?.sortedBy { it.trackNumber } ?: listOf()
                     )
                 }
@@ -61,7 +54,6 @@ class AlbumViewModel @Inject constructor(
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {
-                val transportControls = musicServiceConnection.transportControls
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaType = MediaType.ALBUM,
@@ -72,10 +64,7 @@ class AlbumViewModel @Inject constructor(
                         sortOrder = SortOrder.ASCENDING,
                         sortOption = SortOption.TRACK_NUMBER
                     )
-                    val extras = Bundle().apply {
-                        putParcelable(MEDIA_GROUP, mediaGroup)
-                    }
-                    transportControls.playFromMediaId(action.trackId, extras)
+                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(AlbumUiEvent.NavigateToPlayer)
                 }
             }
@@ -94,7 +83,7 @@ class AlbumViewModel @Inject constructor(
 
 data class AlbumState(
     val albumId: String,
-    val imageUri: Uri,
+    val imageUri: String,
     val albumName: String,
     val tracksList: List<TrackRowState>
 ) : State
@@ -109,7 +98,7 @@ object InitialAlbumStateModule {
         val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
         return AlbumState(
             albumId = albumId,
-            imageUri = Uri.EMPTY,
+            imageUri = "",
             albumName = "",
             tracksList = emptyList()
         )

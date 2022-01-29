@@ -1,60 +1,62 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import android.net.Uri
-import android.support.v4.media.session.MediaControllerCompat
 import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.repository.MediaQueueRepository
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
-import io.mockk.Runs
-import io.mockk.coJustRun
+import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class AlbumViewModelTest {
 
-    private val albumRepository: AlbumRepository = FakeAlbumRepository()
-    private lateinit var musicServiceConnection: MusicServiceConnection
+    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val mainCoroutineRule = DispatcherSetUpRule()
+
+    @get:Rule
+    val fakeUriUtilsRule = FakeUriUtilsRule()
 
     @Before
     fun setUp() {
-        musicServiceConnection = mockk()
-        mediaQueueRepository = mockk()
+        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+        mediaQueueRepository = spyk(FakeMediaQueueRepository())
     }
 
     private fun generateViewModel(): AlbumViewModel {
         return AlbumViewModel(
-            musicServiceConnection = musicServiceConnection,
+            mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = AlbumState(
                 albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
                 tracksList = listOf(),
                 albumName = "",
-                imageUri = Uri.EMPTY
+                imageUri = ""
             ),
-            albumRepository = albumRepository,
-            mediaQueueRepository = mediaQueueRepository
+            albumRepository = FakeAlbumRepository(),
+            mediaQueueRepository = mediaQueueRepository,
         )
     }
 
@@ -64,6 +66,10 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             launch {
                 assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, state.value.albumName)
+                assertEquals(
+                    "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
+                    state.value.imageUri
+                )
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -83,16 +89,15 @@ class AlbumViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
-        val transportControls: MediaControllerCompat.TransportControls = mockk()
-        every { transportControls.playFromMediaId(any(), any()) } just Runs
-        every { musicServiceConnection.transportControls } returns transportControls
-        coJustRun { mediaQueueRepository.createQueue(any(), any(), any()) }
-
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
-            io.mockk.verify {
-                transportControls.playFromMediaId(any(), any())
+            delay(1)
+            verify {
+                mediaPlaybackRepository.playFromId(
+                    TrackBuilder.DEFAULT_TRACK_ID,
+                    MediaGroup(mediaType = MediaType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
+                )
             }
 
 
@@ -122,5 +127,5 @@ class AlbumViewModelTest {
         }
     }
 
-   
+
 }

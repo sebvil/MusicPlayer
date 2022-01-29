@@ -1,0 +1,49 @@
+package com.sebastianvm.musicplayer.repository.playback
+
+import androidx.media3.common.MediaMetadata
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaPlaybackClient
+import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+
+class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackClient: MediaPlaybackClient) : MediaPlaybackRepository {
+    override val nowPlaying: MutableStateFlow<MediaMetadata?> = mediaPlaybackClient.nowPlaying
+    override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
+
+    override fun connectToService() {
+        mediaPlaybackClient.initializeController()
+    }
+
+    override fun disconnectFromService() {
+        mediaPlaybackClient.releaseController()
+    }
+
+
+    override fun play() {
+        mediaPlaybackClient.play()
+    }
+
+    override fun pause() {
+        mediaPlaybackClient.pause()
+    }
+
+    override fun next() {
+        mediaPlaybackClient.next()
+    }
+
+    override fun prev() {
+        mediaPlaybackClient.prev()
+    }
+
+    override fun playFromId(mediaId: String, mediaGroup: MediaGroup) {
+        mediaPlaybackClient.playFromId(mediaId, mediaGroup)
+    }
+
+    override fun moveQueueItem(previousIndex: Int, newIndex: Int) {
+        mediaPlaybackClient.moveQueueItem(previousIndex, newIndex)
+    }
+
+    override fun playQueueItem(index: Int) {
+        mediaPlaybackClient.playQueueItem(index)
+    }
+}

@@ -1,120 +1,150 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import android.support.v4.media.MediaMetadataCompat
-import com.sebastianvm.commons.util.DisplayableString
-import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.BrowseTree
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
-import com.sebastianvm.musicplayer.player.SORT_BY
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
+import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
+import com.sebastianvm.musicplayer.database.entities.GenreBuilder
+import com.sebastianvm.musicplayer.database.entities.TrackBuilder
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
+import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.expectUiEvent
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TracksListViewModelTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val dispatcherSetUpRule = DispatcherSetUpRule()
+
+    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+
+    @Before
+    fun setUp() {
+        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+    }
+
     private fun generateViewModel(
-        musicServiceConnection: MusicServiceConnection = mock(),
+        preferencesRepository: FakePreferencesRepository = FakePreferencesRepository(),
         genreName: String? = null,
-        tracksListTitle: DisplayableString = DisplayableString.ResourceValue(R.string.all_songs),
-        tracksList: List<TrackRowState> = listOf(),
-        currentSort: SortOption = SortOption.TRACK_NAME,
-        sortOrder: SortOrder = SortOrder.ASCENDING,
-        preferencesRepository: PreferencesRepository = mock()
     ): TracksListViewModel {
         return TracksListViewModel(
-            musicServiceConnection = musicServiceConnection,
+            mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = TracksListState(
-                genreName = genreName,
-                tracksListTitle = tracksListTitle,
-                tracksList = tracksList,
-                currentSort = currentSort,
-                sortOrder = sortOrder
+                tracksListTitle = genreName,
+                tracksList = listOf(),
+                currentSort = SortOption.ARTIST_NAME,
+                sortOrder = SortOrder.DESCENDING
             ),
             preferencesRepository = preferencesRepository,
-            trackRepository = mock(),
-            mediaQueueRepository = mock()
+            trackRepository = FakeTrackRepository(),
+            mediaQueueRepository = FakeMediaQueueRepository()
         )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init connects to service for all tracks`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(musicServiceConnection)
-        verify(musicServiceConnection).subscribe(
-            eq(BrowseTree.TRACKS_ROOT),
-            any()
-        )
+    fun `init for all tracks sets initial state`() = runTest {
+        with(generateViewModel()) {
+            delay(1)
+            with(state.value) {
+                assertNull(tracksListTitle)
+                assertEquals(
+                    listOf(
+                        TrackRowState(
+                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
+                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
+                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                            trackNumber = null
+                        ),
+                        TrackRowState(
+                            trackId = TrackBuilder.SECONDARY_TRACK_ID,
+                            trackName = TrackBuilder.SECONDARY_TRACK_NAME,
+                            artists = ArtistBuilder.SECONDARY_ARTIST_NAME,
+                            albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
+                            trackNumber = null
+                        ),
+                    ), tracksList
+                )
+                assertEquals(SortOption.TRACK_NAME, currentSort)
+                assertEquals(SortOrder.ASCENDING, sortOrder)
+            }
+        }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init connects to service for genre`() {
-        val musicServiceConnection: MusicServiceConnection = mock()
-        generateViewModel(
-            musicServiceConnection = musicServiceConnection,
-            genreName = GENRE_NAME,
-            tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
-        )
-        verify(musicServiceConnection).subscribe(
-            eq("genre-$GENRE_NAME"),
-            any()
-        )
+    fun `init for genre sets initial state`() = runTest {
+        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
+            delay(1)
+            with(state.value) {
+                assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, tracksListTitle)
+                assertEquals(
+                    listOf(
+                        TrackRowState(
+                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
+                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
+                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                            trackNumber = null
+                        ),
+                    ), tracksList
+                )
+                assertEquals(SortOption.TRACK_NAME, currentSort)
+                assertEquals(SortOrder.ASCENDING, sortOrder)
+            }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mock {
-            on { transportControls } doReturn mock()
-        }
-
-        with(generateViewModel(musicServiceConnection)) {
+        with(generateViewModel()) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_ID))
-            verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_ID),
-                org.mockito.kotlin.check {
-                    assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
-                }
-            )
+            handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            delay(1)
+            verify {
+                mediaPlaybackRepository.playFromId(
+                    TrackBuilder.DEFAULT_TRACK_ID,
+                    MediaGroup(mediaType = MediaType.ALL_TRACKS, mediaId = "")
+                )
+            }
         }
-
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked for genre triggers playback, adds nav to player event`() = runTest {
-        val musicServiceConnection: MusicServiceConnection = mock {
-            on { transportControls } doReturn mock()
-        }
-        with(
-            generateViewModel(
-                musicServiceConnection = musicServiceConnection,
-                genreName = GENRE_NAME,
-                tracksListTitle = DisplayableString.StringValue(GENRE_NAME)
-            )
-        ) {
+        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_ID))
-            verify(musicServiceConnection.transportControls).playFromMediaId(
-                eq(TRACK_ID),
-                org.mockito.kotlin.check {
-                    assertEquals(MediaMetadataCompat.METADATA_KEY_TITLE, it.getString(SORT_BY))
-                }
-            )
+            handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            delay(1)
+            verify {
+                mediaPlaybackRepository.playFromId(
+                    TrackBuilder.DEFAULT_TRACK_ID,
+                    MediaGroup(
+                        mediaType = MediaType.GENRE,
+                        mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                    )
+                )
+            }
         }
     }
 
@@ -122,25 +152,24 @@ class TracksListViewModelTest {
     @Test
     fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() =
         runTest {
-            val musicServiceConnection: MusicServiceConnection = mock {
-                on { transportControls } doReturn mock()
-            }
             with(
                 generateViewModel(
-                    musicServiceConnection = musicServiceConnection,
-                    genreName = GENRE_NAME,
-                    tracksListTitle = DisplayableString.StringValue(GENRE_NAME),
-                    currentSort = SortOption.ARTIST_NAME
+                    preferencesRepository = FakePreferencesRepository(trackSortOption = SortOption.ARTIST_NAME),
+                    genreName = GenreBuilder.DEFAULT_GENRE_NAME,
                 )
             ) {
                 expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-                handle(TracksListUserAction.TrackClicked(TRACK_ID))
-                verify(musicServiceConnection.transportControls).playFromMediaId(
-                    eq(TRACK_ID),
-                    org.mockito.kotlin.check {
-                        assertEquals(MediaMetadataCompat.METADATA_KEY_ARTIST, it.getString(SORT_BY))
-                    }
-                )
+                handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+                delay(1)
+                verify {
+                    mediaPlaybackRepository.playFromId(
+                        TrackBuilder.DEFAULT_TRACK_ID,
+                        MediaGroup(
+                            mediaType = MediaType.GENRE,
+                            mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                        )
+                    )
+                }
             }
         }
 
@@ -153,40 +182,100 @@ class TracksListViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `SortOptionClicked changes state`() {
+    fun `SortOptionClicked changes state`() = runTest {
         val tracksList = listOf(
-            TrackRowState("1", "A", "B", "Al"),
-            TrackRowState("1", "B", "A", "Bl")
+            TrackRowState(
+                trackId = TrackBuilder.DEFAULT_TRACK_ID,
+                trackName = TrackBuilder.DEFAULT_TRACK_NAME,
+                artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                trackNumber = null
+            ),
+            TrackRowState(
+                trackId = TrackBuilder.SECONDARY_TRACK_ID,
+                trackName = TrackBuilder.SECONDARY_TRACK_NAME,
+                artists = ArtistBuilder.SECONDARY_ARTIST_NAME,
+                albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
+                trackNumber = null
+            )
         )
-        with(generateViewModel(tracksList = tracksList)) {
+        with(generateViewModel()) {
+            delay(1)
+
             handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            delay(1)
             assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
             assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
-            assertEquals(tracksList.reversed(), state.value.tracksList)
-
-            handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
-            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
-            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
+            handle(TracksListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            delay(1)
+            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(tracksList.reversed(), state.value.tracksList)
+
             handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
+            delay(1)
             assertEquals(SortOption.TRACK_NAME, state.value.currentSort)
             assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(tracksList.reversed(), state.value.tracksList)
 
             handle(TracksListUserAction.SortOptionClicked(SortOption.TRACK_NAME))
+            delay(1)
             assertEquals(SortOption.TRACK_NAME, state.value.currentSort)
             assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
+            handle(TracksListUserAction.SortOptionClicked(SortOption.ALBUM_NAME))
+            delay(1)
+            assertEquals(SortOption.ALBUM_NAME, state.value.currentSort)
+            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+            assertEquals(tracksList, state.value.tracksList)
+
+            handle(TracksListUserAction.SortOptionClicked(SortOption.ALBUM_NAME))
+            delay(1)
+            assertEquals(SortOption.ALBUM_NAME, state.value.currentSort)
+            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(tracksList.reversed(), state.value.tracksList)
         }
     }
 
-    companion object {
-        private const val GENRE_NAME = "GENRE_NAME"
-        private const val TRACK_ID = "TRACK_ID"
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `TrackContextMenuClicked  for all tracks adds OpenContextMenu UiEvent`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
+                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
+                assertNull(genreName)
+                assertEquals(SortOption.TRACK_NAME, currentSort)
+                assertEquals(SortOrder.ASCENDING, sortOrder)
+            }
+            handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
+        }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `TrackContextMenuClicked  for genre adds OpenContextMenu UiEvent`() = runTest {
+        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
+            expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
+                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
+                assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, genreName)
+                assertEquals(SortOption.TRACK_NAME, currentSort)
+                assertEquals(SortOrder.ASCENDING, sortOrder)
+            }
+            handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
+        }
+    }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+        with(generateViewModel()) {
+            expectUiEvent<TracksListUiEvent.NavigateUp>(this@runTest)
+            handle(TracksListUserAction.UpButtonClicked)
+        }
+    }
 }

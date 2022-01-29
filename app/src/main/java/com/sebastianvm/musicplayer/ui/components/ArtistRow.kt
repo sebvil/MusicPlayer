@@ -21,7 +21,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-class ArtistRowState(val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
+data class ArtistRowState(val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
     override val id = artistName
 }
 

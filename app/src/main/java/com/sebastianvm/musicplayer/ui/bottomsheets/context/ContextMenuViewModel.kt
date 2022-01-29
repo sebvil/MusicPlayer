@@ -1,17 +1,15 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 
-import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MEDIA_GROUP
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.MusicServiceConnection
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.MediaQueueRepository
-import com.sebastianvm.musicplayer.repository.TrackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -28,6 +26,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// TODO? split into different VMS
 
 @HiltViewModel
 class ContextMenuViewModel @Inject constructor(
@@ -36,7 +35,7 @@ class ContextMenuViewModel @Inject constructor(
     private val albumRepository: AlbumRepository,
     artistRepository: ArtistRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val musicServiceConnection: MusicServiceConnection
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
 
     init {
@@ -80,6 +79,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                 }
             }
+            MediaType.UNKNOWN -> Unit
         }
     }
 
@@ -88,7 +88,6 @@ class ContextMenuViewModel @Inject constructor(
             is ContextMenuUserAction.RowClicked -> {
                 when (action.row) {
                     is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning, is ContextMenuItem.PlayAllSongs -> {
-                        val transportControls = musicServiceConnection.transportControls
                         viewModelScope.launch {
                             val mediaGroup = state.value.mediaGroup
                             mediaQueueRepository.createQueue(
@@ -96,10 +95,7 @@ class ContextMenuViewModel @Inject constructor(
                                 sortOrder = state.value.sortOrder,
                                 sortOption = SortOption.valueOf(state.value.selectedSort)
                             )
-                            val extras = Bundle().apply {
-                                putParcelable(MEDIA_GROUP, mediaGroup)
-                            }
-                            transportControls.playFromMediaId(state.value.mediaId, extras)
+                            mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
                             addUiEvent(ContextMenuUiEvent.NavigateToPlayer)
                         }
                     }

@@ -37,6 +37,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun MusicPlayerScreen(
     screenViewModel: MusicPlayerViewModel = viewModel(),
 ) {
+
     Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
         MusicPlayerLayout(state = state, mediaButtonsDelegate = object : MediaButtonsDelegate() {
             override fun togglePlay() {

@@ -1,12 +1,18 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -102,5 +108,34 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
             preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) }
                 ?: SortOrder.ASCENDING
         }
+    }
+
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+        with(transform(getSavedPlaybackInfo().first())) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
+                    currentQueue.mediaType.name
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] = currentQueue.mediaId
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
+                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
+            }
+        }
+    }
+
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
+        return preferencesUtil.dataStore.data.map { preferences ->
+            val mediaGroup =
+                preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP]
+                    ?: MediaType.UNKNOWN.name
+            val mediaGroupId = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] ?: ""
+            val mediaId = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] ?: ""
+            val position = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] ?: 0
+            Log.i("QUEUE", "fetching info $mediaId")
+            SavedPlaybackInfo(
+                MediaGroup(MediaType.valueOf(mediaGroup), mediaGroupId),
+                mediaId,
+                position
+            )
+        }.distinctUntilChanged()
     }
 }

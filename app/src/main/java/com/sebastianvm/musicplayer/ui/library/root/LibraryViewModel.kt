@@ -2,11 +2,9 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import com.sebastianvm.musicplayer.PERMISSION_GRANTED
 import com.sebastianvm.musicplayer.PermissionStatus
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
-import com.sebastianvm.musicplayer.repository.MusicRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -31,13 +29,11 @@ class LibraryViewModel @Inject constructor(
             setState {
                 copy(
                     libraryItems = libraryItems.map { item ->
-                        when (item.rowId) {
-                            NavRoutes.TRACKS_ROOT -> item.copy(count = counts.tracks)
-                            NavRoutes.ARTISTS_ROOT -> item.copy(count = counts.artists)
-                            NavRoutes.ALBUMS_ROOT -> item.copy(count = counts.albums)
-                            NavRoutes.GENRES_ROOT -> item.copy(count = counts.genres)
-                            else -> throw IllegalStateException("Illegal rowId ${item.rowId}")
-
+                        when (item) {
+                            is LibraryItem.Tracks -> item.copy(count = counts.tracks)
+                            is LibraryItem.Artists -> item.copy(count = counts.artists)
+                            is LibraryItem.Albums -> item.copy(count = counts.albums)
+                            is LibraryItem.Genres -> item.copy(count = counts.genres)
                         }
                     }
                 )
@@ -134,34 +130,10 @@ object InitialLibraryStateModule {
     @ViewModelScoped
     fun initialLibraryStateProvider() = LibraryState(
         libraryItems = listOf(
-            LibraryItem(
-                rowId = NavRoutes.TRACKS_ROOT,
-                rowName = R.string.all_songs,
-                icon = R.drawable.ic_song,
-                countString = R.plurals.number_of_tracks,
-                count = 0
-            ),
-            LibraryItem(
-                rowId = NavRoutes.ARTISTS_ROOT,
-                rowName = R.string.artists,
-                icon = R.drawable.ic_artist,
-                countString = R.plurals.number_of_artists,
-                count = 0
-            ),
-            LibraryItem(
-                rowId = NavRoutes.ALBUMS_ROOT,
-                rowName = R.string.albums,
-                icon = R.drawable.ic_album,
-                countString = R.plurals.number_of_albums,
-                count = 0
-            ),
-            LibraryItem(
-                rowId = NavRoutes.GENRES_ROOT,
-                rowName = R.string.genres,
-                icon = R.drawable.ic_genre,
-                countString = R.plurals.number_of_genres,
-                count = 0
-            ),
+            LibraryItem.Tracks(count = 0),
+            LibraryItem.Artists(count = 0),
+            LibraryItem.Albums(count = 0),
+            LibraryItem.Genres(count = 0)
         ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
