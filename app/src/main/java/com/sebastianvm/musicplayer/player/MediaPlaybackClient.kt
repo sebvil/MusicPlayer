@@ -1,9 +1,7 @@
 package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
-import android.content.ContentUris
 import android.content.Context
-import android.provider.MediaStore
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -13,10 +11,10 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,11 +108,10 @@ class MediaPlaybackClient @Inject constructor(
         controller.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    playbackState.value = PlaybackState(
-                        isPlaying = isPlaying,
+                    playbackState.value = playbackState.value.copy(
+                        isPlaying = isPlaying || controller.playWhenReady,
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0,
-                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
                     )
                 }
 
@@ -123,7 +120,8 @@ class MediaPlaybackClient @Inject constructor(
                     playbackState.value = playbackState.value.copy(
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0,
-                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET } ?: 0
+                        trackDurationMs = controller.duration.takeUnless { it == C.TIME_UNSET }
+                            ?: mediaMetadata.extras?.getLong("KEY_DURATION_MS") ?: 0
                     )
                 }
             }
@@ -195,40 +193,6 @@ class MediaPlaybackClient @Inject constructor(
             mediaController.prepare()
             mediaController.seekTo(initialWindowIndex, position)
         }
-    }
-
-
-    private fun FullTrackInfo.toMediaItem(): MediaItem {
-        return MediaItem.Builder().apply {
-            setMediaId(track.trackId)
-            setUri(
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    track.trackId.toLong()
-                )
-            )
-            setMediaMetadata(getMediaMetadata())
-        }.build()
-    }
-
-    private fun FullTrackInfo.getMediaMetadata(): MediaMetadata {
-        return MediaMetadata.Builder().apply {
-            setTitle(track.trackName)
-            setArtist(artists.joinToString(", ") { it.artistName })
-            setAlbumTitle(album.albumName)
-            setArtworkUri(
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    track.trackId.toLong()
-                )
-            )
-            setMediaUri(
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    track.trackId.toLong()
-                )
-            )
-        }.build()
     }
 
 }

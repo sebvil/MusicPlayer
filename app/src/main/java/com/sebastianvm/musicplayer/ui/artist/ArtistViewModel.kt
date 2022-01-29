@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.AlbumType
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -63,7 +64,7 @@ class ArtistViewModel @Inject constructor(
                             ?.let { albumsWithArtists ->
                                 listOf(
                                     ArtistScreenItem.SectionHeaderItem(
-                                        ALBUMS,
+                                        AlbumType.ALBUM,
                                         R.string.albums
                                     )
                                 ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
@@ -74,7 +75,7 @@ class ArtistViewModel @Inject constructor(
                             ?.let { albumsWithArtists ->
                                 listOf(
                                     ArtistScreenItem.SectionHeaderItem(
-                                        APPEARS_ON,
+                                        AlbumType.APPEARS_ON,
                                         R.string.appears_on
                                     )
                                 ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
