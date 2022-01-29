@@ -68,6 +68,16 @@ interface TrackDao {
     @Query(
         """
         SELECT Track.* FROM Track 
+        INNER JOIN PlaylistWithTrackCrossRef ON Track.trackId = PlaylistWithTrackCrossRef.trackId
+        WHERE PlaylistWithTrackCrossRef.playlistName=:playlistName
+    """
+    )
+    fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>>
+
+    @Transaction
+    @Query(
+        """
+        SELECT Track.* FROM Track 
         INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
         WHERE MediaQueueTrackCrossRef.mediaType=:mediaType AND MediaQueueTrackCrossRef.groupMediaId=:groupMediaId 
         ORDER BY MediaQueueTrackCrossRef.trackIndex ASC

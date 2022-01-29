@@ -43,6 +43,10 @@ class TrackRepositoryImpl@Inject constructor(
         return trackDao.getTracksForGenre(genreName)
     }
 
+    override fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>> {
+        return trackDao.getTracksForPlaylist(playlistName)
+    }
+
     override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForQueue(mediaGroup.mediaType, mediaGroup.mediaId)
     }

@@ -10,5 +10,6 @@ enum class MediaType : Parcelable {
     ALBUM,
     GENRE,
     SINGLE_TRACK,
+    PLAYLIST,
     UNKNOWN
 }

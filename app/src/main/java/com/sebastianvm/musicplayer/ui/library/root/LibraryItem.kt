@@ -46,7 +46,7 @@ sealed class LibraryItem(
     )
 
     data class Playlists(override val count: Long) : LibraryItem(
-        rowId = NavRoutes.PLAYLIST_ROOT,
+        rowId = NavRoutes.PLAYLISTS_ROOT,
         rowName = R.string.playlists,
         icon = R.drawable.ic_playlist,
         countString = R.plurals.number_of_playlists,
