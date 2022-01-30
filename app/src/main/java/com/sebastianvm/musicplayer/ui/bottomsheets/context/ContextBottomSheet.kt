@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,31 +41,43 @@ interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToArtist(artistName: String) = Unit
     fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
     fun navigateToGenre(genreName: String)
+    fun hideBottomSheet()
 }
 
 @Composable
-fun ContextBottomSheet(
-    sheetViewModel: ContextMenuViewModel = viewModel(),
+fun <S : BaseContextMenuState> ContextBottomSheet(
+    sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     delegate: ContextBottomSheetDialogNavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
+    val context = LocalContext.current
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         when (event) {
-            is ContextMenuUiEvent.NavigateToPlayer -> {
+            is BaseContextMenuUiEvent.NavigateToPlayer -> {
                 delegate.navigateToPlayer()
             }
-            is ContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is ContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
-            is ContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
+            is BaseContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
+            is BaseContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
+            is BaseContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
                 event.mediaId,
                 event.mediaType
             )
-            is ContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is BaseContextMenuUiEvent.ShowToast -> {
+                Toast.makeText(
+                    context,
+                    event.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                if (event.success) {
+                    delegate.hideBottomSheet()
+                }
+            }
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
         override fun onRowClicked(contextMenuItem: ContextMenuItem) {
-            sheetViewModel.handle(ContextMenuUserAction.RowClicked(contextMenuItem))
+            sheetViewModel.handle(BaseContextMenuUserAction.RowClicked(contextMenuItem))
         }
     })
 }
@@ -74,7 +88,7 @@ fun ContextBottomSheet(
 @Preview
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: ContextMenuState) {
+fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
     BottomSheetPreview {
         ContextMenuLayout(state = state, object : ContextMenuDelegate {})
     }
@@ -87,7 +101,7 @@ interface ContextMenuDelegate {
 
 @Composable
 fun ContextMenuLayout(
-    state: ContextMenuState,
+    state: BaseContextMenuState,
     delegate: ContextMenuDelegate
 ) {
     with(state) {

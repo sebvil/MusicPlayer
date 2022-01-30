@@ -14,7 +14,7 @@ interface MediaQueueRepository {
         sortOrder: SortOrder
     ): Long
 
-    suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)
+    suspend fun insertOrUpdateMediaQueueTrackCrossRefs(queue: MediaGroup, mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)
     fun getAllQueues(): Flow<List<MediaQueue>>
     fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue>
 }

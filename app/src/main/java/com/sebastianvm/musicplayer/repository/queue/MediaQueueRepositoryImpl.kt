@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.SortOption
@@ -35,14 +35,14 @@ class MediaQueueRepositoryImpl @Inject constructor(
     ): Long {
         val queueId = mediaQueueDao.insertQueue(
             MediaQueue(
-                mediaType = mediaGroup.mediaType,
+                mediaGroupType = mediaGroup.mediaGroupType,
                 groupMediaId = mediaGroup.mediaId,
                 queueName = queueName,
             )
         )
         mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(trackIds.mapIndexed { index, trackId ->
             MediaQueueTrackCrossRef(
-                mediaType = mediaGroup.mediaType,
+                mediaGroupType = mediaGroup.mediaGroupType,
                 groupMediaId = mediaGroup.mediaId,
                 trackId = trackId,
                 trackIndex = index
@@ -57,33 +57,33 @@ class MediaQueueRepositoryImpl @Inject constructor(
         sortOrder: SortOrder
     ): Long {
         val queueName: String
-        val trackIds = when (mediaGroup.mediaType) {
-            MediaType.ALL_TRACKS -> {
+        val trackIds = when (mediaGroup.mediaGroupType) {
+            MediaGroupType.ALL_TRACKS -> {
                 queueName = ResUtil.getString(context = context, R.string.all_songs)
                 trackRepository.getAllTracks()
             }
-            MediaType.ARTIST -> {
+            MediaGroupType.ARTIST -> {
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForArtist(mediaGroup.mediaId)
             }
-            MediaType.ALBUM -> {
+            MediaGroupType.ALBUM -> {
                 queueName = albumRepository.getAlbum(mediaGroup.mediaId).first().album.albumName
                 trackRepository.getTracksForAlbum(mediaGroup.mediaId)
             }
-            MediaType.GENRE -> {
+            MediaGroupType.GENRE -> {
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForGenre(mediaGroup.mediaId)
             }
-            MediaType.SINGLE_TRACK -> {
+            MediaGroupType.SINGLE_TRACK -> {
                 val track = trackRepository.getTrack(mediaGroup.mediaId)
                 queueName = track.first().track.trackName
                 track.map { listOf(it) }
             }
-            MediaType.PLAYLIST -> {
+            MediaGroupType.PLAYLIST -> {
                 queueName = mediaGroup.mediaId
                 trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
             }
-            MediaType.UNKNOWN -> {
+            MediaGroupType.UNKNOWN -> {
                 queueName = ""
                 flow { }
             }
@@ -94,7 +94,11 @@ class MediaQueueRepositoryImpl @Inject constructor(
         return createQueue(mediaGroup, trackIds, queueName)
     }
 
-    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) {
+    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(
+        queue: MediaGroup,
+        mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
+    ) {
+        mediaQueueDao.deleteMediaQueueTrackCrossRefs(queueId = queue.mediaId, mediaGroupType = queue.mediaGroupType)
         mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
     }
 
@@ -116,7 +120,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
     }
 
     override fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue> {
-        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaType)
+        return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaGroupType)
             .distinctUntilChanged()
     }
 

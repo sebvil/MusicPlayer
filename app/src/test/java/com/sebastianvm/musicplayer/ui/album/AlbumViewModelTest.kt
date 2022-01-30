@@ -96,7 +96,7 @@ class AlbumViewModelTest {
             verify {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    MediaGroup(mediaType = MediaType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
+                    MediaGroup(mediaGroupType = MediaType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
                 )
             }
 
@@ -104,7 +104,7 @@ class AlbumViewModelTest {
             coVerify {
                 mediaQueueRepository.createQueue(
                     MediaGroup(
-                        mediaType = MediaType.ALBUM,
+                        mediaGroupType = MediaType.ALBUM,
                         mediaId = state.value.albumId
                     ),
                     SortOption.TRACK_NUMBER,

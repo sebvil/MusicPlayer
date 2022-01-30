@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
@@ -71,8 +71,8 @@ class TracksListViewModel @Inject constructor(
             is TracksListUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaType = state.value.tracksListTitle?.let { MediaType.GENRE }
-                            ?: MediaType.ALL_TRACKS,
+                        mediaGroupType = state.value.tracksListTitle?.let { MediaGroupType.GENRE }
+                            ?: MediaGroupType.ALL_TRACKS,
                         mediaId = state.value.tracksListTitle ?: ""
                     )
                     mediaQueueRepository.createQueue(

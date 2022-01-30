@@ -9,7 +9,7 @@ class QueueStatePreviewParameterProvider : PreviewParameterProvider<QueueState> 
             mediaGroup = null,
             queueItems = listOf(),
             draggedItem = null,
-            nowPlayingTrackId = "",
+            nowPlayingTrackIndex = -1,
             dropdownExpanded = false,
             chosenQueue = null
         )

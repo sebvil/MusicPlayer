@@ -43,8 +43,15 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             navArgument(NavArgs.SORT_OPTION) { type = NavType.StringType },
             navArgument(NavArgs.SORT_ORDER) { type = NavType.StringType },
         )
-    ) {
-        val sheetViewModel: ContextMenuViewModel = hiltViewModel()
+    ) { backedStackEntry ->
+        val sheetViewModel =
+            when (MediaType.valueOf(backedStackEntry.arguments?.getString(NavArgs.MEDIA_TYPE)!!)) {
+                MediaType.TRACK -> hiltViewModel<TrackContextMenuViewModel>()
+                MediaType.ARTIST -> hiltViewModel<ArtistContextMenuViewModel>()
+                MediaType.GENRE -> hiltViewModel<GenreContextMenuViewModel>()
+                MediaType.ALBUM -> hiltViewModel<AlbumContextMenuViewModel>()
+                MediaType.PLAYLIST -> TODO()
+            }
         ContextBottomSheet(
             sheetViewModel = sheetViewModel,
             delegate = object : ContextBottomSheetDialogNavigationDelegate {
@@ -78,6 +85,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 override fun navigateToGenre(genreName: String) {
                     navController.navigateToGenre(genreName)
                 }
+
+                override fun hideBottomSheet() {
+                    navController.navigateUp()
+                }
             }
         )
     }
@@ -94,7 +105,7 @@ fun NavController.openContextMenu(
         NavRoutes.CONTEXT,
         NavArgument(NavArgs.MEDIA_ID, mediaId),
         NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
-        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaType),
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaGroupType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
         NavArgument(NavArgs.SORT_OPTION, currentSort.name),
         NavArgument(NavArgs.SORT_ORDER, sortOrder.name),

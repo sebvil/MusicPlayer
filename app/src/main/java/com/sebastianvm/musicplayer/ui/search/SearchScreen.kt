@@ -40,6 +40,7 @@ import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
@@ -57,7 +58,7 @@ interface SearchNavigationDelegate {
     fun navigateToArtist(artistName: String)
     fun navigateToAlbum(albumId: String)
     fun navigateToGenre(genreName: String)
-    fun openContextMenu(mediaGroup: MediaGroup, sortOption: SortOption, sortOrder: SortOrder)
+    fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup, sortOption: SortOption, sortOrder: SortOrder)
 }
 
 
@@ -73,6 +74,7 @@ fun SearchScreen(
             is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
             is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
             is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
+                event.mediaType,
                 event.mediaGroup,
                 event.sortOption,
                 event.sortOrder

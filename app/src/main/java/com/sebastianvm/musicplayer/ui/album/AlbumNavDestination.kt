@@ -6,6 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -38,9 +39,9 @@ fun NavGraphBuilder.albumNavDestination(navController: NavController) {
 
             override fun openContextMenu(trackId: String, albumId: String) {
                 navController.openContextMenu(
-                    mediaType = MediaType.ALL_TRACKS,
+                    mediaType = MediaType.TRACK,
                     mediaId = trackId,
-                    mediaGroup = MediaGroup(MediaType.ALBUM, albumId),
+                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
                     currentSort = SortOption.TRACK_NUMBER,
                     sortOrder = SortOrder.ASCENDING,
                 )

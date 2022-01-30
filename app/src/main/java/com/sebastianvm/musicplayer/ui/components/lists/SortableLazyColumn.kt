@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -53,12 +53,12 @@ data class SortableLazyColumnState<T>(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun <T> SortableLazyColumn(
+fun <T> SortableLazyColumnIndexed(
     state: SortableLazyColumnState<T>,
-    key: ((T) -> Any)?,
+    key: ((Int, T) -> Any)?,
     delegate: DraggableListItemDelegate<T>,
     listState: LazyListState = rememberLazyListState(),
-    row: @Composable (item: T) -> Unit
+    row: @Composable (index: Int, item: T) -> Unit
 ) {
     var boxHeight by remember { mutableStateOf(0f) }
     val offsetY = remember { mutableStateOf(0f) }
@@ -85,7 +85,7 @@ fun <T> SortableLazyColumn(
         .fillMaxHeight()
     ) {
         LazyColumn(state = listState) {
-            items(state.itemsList, key = key) { item ->
+            itemsIndexed(state.itemsList, key = key) { index, item ->
                 Box(modifier = Modifier
                     .animateItemPlacement()
                     .pointerInput(Unit) {
@@ -120,7 +120,7 @@ fun <T> SortableLazyColumn(
                                 contentDescription = stringResource(R.string.drag),
                                 modifier = Modifier.padding(start = AppDimensions.spacing.medium)
                             )
-                            row(item)
+                            row(index, item)
                         }
                     }
                 }
@@ -159,9 +159,27 @@ fun <T> SortableLazyColumn(
                         contentDescription = stringResource(id = R.string.drag),
                         modifier = Modifier.padding(start = AppDimensions.spacing.medium)
                     )
-                    row(item)
+                    row(-1, item)
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun <T> SortableLazyColumn(
+    state: SortableLazyColumnState<T>,
+    key: ((T) -> Any)?,
+    delegate: DraggableListItemDelegate<T>,
+    listState: LazyListState = rememberLazyListState(),
+    row: @Composable (item: T) -> Unit
+) {
+    SortableLazyColumnIndexed(
+        state = state,
+        key = key?.let { { _, item -> key(item) } },
+        delegate = delegate,
+        listState = listState) { _, item ->
+        row(item)
     }
 }

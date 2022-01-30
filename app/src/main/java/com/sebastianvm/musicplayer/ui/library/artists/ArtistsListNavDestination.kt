@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
@@ -28,7 +29,7 @@ fun NavGraphBuilder.artistsNavDestination(navController: NavController) {
                 navController.openContextMenu(
                     MediaType.ARTIST,
                     artistName,
-                    MediaGroup(MediaType.ARTIST, mediaId = artistName),
+                    MediaGroup(MediaGroupType.ARTIST, mediaId = artistName),
                     SortOption.TRACK_NAME,
                     SortOrder.ASCENDING
                 )

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.lifecycle.SavedStateHandle
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -21,7 +20,6 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 
-
 // TODO? combine with ArtistViewModel
 @HiltViewModel
 class ArtistsBottomSheetViewModel @Inject constructor(
@@ -34,9 +32,9 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     ) {
 
     init {
-        with(state.value.mediaGroup) {
+        with(state.value) {
             when (mediaType) {
-                MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
+                MediaType.TRACK -> {
                     collect(trackRepository.getTrack(mediaId)) { track ->
                         setState {
                             copy(
@@ -70,7 +68,8 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 }
 
 data class ArtistsBottomSheetState(
-    val mediaGroup: MediaGroup,
+    val mediaType: MediaType,
+    val mediaId: String,
     val artistsList: List<ArtistRowState>
 ) : State
 
@@ -83,7 +82,8 @@ object InitialArtistsBottomSheetStateModule {
         val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
         return ArtistsBottomSheetState(
-            mediaGroup = MediaGroup(mediaType = mediaType, mediaId = mediaId),
+            mediaId = mediaId,
+            mediaType = mediaType,
             artistsList = listOf()
         )
     }

@@ -9,6 +9,7 @@ import javax.inject.Inject
 class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackClient: MediaPlaybackClient) : MediaPlaybackRepository {
     override val nowPlaying: MutableStateFlow<MediaMetadata?> = mediaPlaybackClient.nowPlaying
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
+    override val nowPlayingIndex: MutableStateFlow<Int> = mediaPlaybackClient.currentIndex
 
     override fun connectToService() {
         mediaPlaybackClient.initializeController()
@@ -45,5 +46,9 @@ class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackC
 
     override fun playQueueItem(index: Int) {
         mediaPlaybackClient.playQueueItem(index)
+    }
+
+    override suspend fun addToQueue(mediaId: String): Int {
+       return mediaPlaybackClient.addToQueue(mediaId)
     }
 }

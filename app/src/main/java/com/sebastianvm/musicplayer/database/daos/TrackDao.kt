@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -79,11 +79,11 @@ interface TrackDao {
         """
         SELECT Track.* FROM Track 
         INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
-        WHERE MediaQueueTrackCrossRef.mediaType=:mediaType AND MediaQueueTrackCrossRef.groupMediaId=:groupMediaId 
+        WHERE MediaQueueTrackCrossRef.mediaGroupType=:mediaType AND MediaQueueTrackCrossRef.groupMediaId=:groupMediaId 
         ORDER BY MediaQueueTrackCrossRef.trackIndex ASC
     """
     )
-    fun getTracksForQueue(mediaType: MediaType, groupMediaId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForQueue(mediaType: MediaGroupType, groupMediaId: String): Flow<List<FullTrackInfo>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

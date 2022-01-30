@@ -2,16 +2,16 @@ package com.sebastianvm.musicplayer.database.entities
 
 import androidx.room.Entity
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 
-@Entity(primaryKeys = ["mediaType", "groupMediaId"])
+@Entity(primaryKeys = ["mediaGroupType", "groupMediaId"])
 data class MediaQueue(
-    val mediaType: MediaType,
+    val mediaGroupType: MediaGroupType,
     val groupMediaId: String,
     val queueName: String
 ) {
     fun toMediaGroup(): MediaGroup {
-        return MediaGroup(mediaType, groupMediaId)
+        return MediaGroup(mediaGroupType, groupMediaId)
     }
 }
 

@@ -15,7 +15,10 @@ class FakeMediaQueueRepository : MediaQueueRepository {
         sortOrder: SortOrder
     ): Long = 1L
 
-    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) = Unit
+    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(
+        queue: MediaGroup,
+        mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
+    ) = Unit
 
     override fun getAllQueues(): Flow<List<MediaQueue>> = flow {  }
 

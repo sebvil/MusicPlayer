@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.album
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
@@ -56,7 +56,7 @@ class AlbumViewModel @Inject constructor(
             is AlbumUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaType = MediaType.ALBUM,
+                        mediaGroupType = MediaGroupType.ALBUM,
                         mediaId = state.value.albumId
                     )
                     mediaQueueRepository.createQueue(

@@ -123,7 +123,7 @@ class TracksListViewModelTest {
             verify {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    MediaGroup(mediaType = MediaType.ALL_TRACKS, mediaId = "")
+                    MediaGroup(mediaGroupType = MediaType.TRACK, mediaId = "")
                 )
             }
         }
@@ -140,7 +140,7 @@ class TracksListViewModelTest {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
                     MediaGroup(
-                        mediaType = MediaType.GENRE,
+                        mediaGroupType = MediaType.GENRE,
                         mediaId = GenreBuilder.DEFAULT_GENRE_NAME
                     )
                 )
@@ -165,7 +165,7 @@ class TracksListViewModelTest {
                     mediaPlaybackRepository.playFromId(
                         TrackBuilder.DEFAULT_TRACK_ID,
                         MediaGroup(
-                            mediaType = MediaType.GENRE,
+                            mediaGroupType = MediaType.GENRE,
                             mediaId = GenreBuilder.DEFAULT_GENRE_NAME
                         )
                     )

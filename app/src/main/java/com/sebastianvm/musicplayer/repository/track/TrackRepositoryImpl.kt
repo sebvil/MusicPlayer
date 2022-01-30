@@ -48,7 +48,7 @@ class TrackRepositoryImpl@Inject constructor(
     }
 
     override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForQueue(mediaGroup.mediaType, mediaGroup.mediaId)
+        return trackDao.getTracksForQueue(mediaGroup.mediaGroupType, mediaGroup.mediaId)
     }
 
     suspend override fun insertAllTracks(
