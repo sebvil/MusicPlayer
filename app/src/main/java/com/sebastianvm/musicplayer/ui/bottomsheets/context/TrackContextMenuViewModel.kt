@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
@@ -110,7 +111,7 @@ class TrackContextMenuViewModel @Inject constructor(
                             withContext(Dispatchers.IO) {
                                 preferencesRepository.getSavedPlaybackInfo().first().also {
                                     if (it.currentQueue.mediaGroupType == MediaGroupType.UNKNOWN) {
-                                        // TODO show no queue message
+                                        addUiEvent(BaseContextMenuUiEvent.ShowToast(R.string.no_queue_available, success = false))
                                     } else {
                                         val tracks =
                                             trackRepository.getTracksForQueue(it.currentQueue)
@@ -142,6 +143,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                             it.currentQueue,
                                             newQueue
                                         )
+                                        addUiEvent(BaseContextMenuUiEvent.ShowToast(R.string.added_to_queue, success = true))
 
                                     }
 

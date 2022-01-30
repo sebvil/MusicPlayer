@@ -81,6 +81,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 override fun navigateToGenre(genreName: String) {
                     navController.navigateToGenre(genreName)
                 }
+
+                override fun hideBottomSheet() {
+                    navController.navigateUp()
+                }
             }
         )
     }

@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +41,7 @@ interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToArtist(artistName: String) = Unit
     fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
     fun navigateToGenre(genreName: String)
+    fun hideBottomSheet()
 }
 
 @Composable
@@ -47,6 +50,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
     delegate: ContextBottomSheetDialogNavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
+    val context = LocalContext.current
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         when (event) {
             is BaseContextMenuUiEvent.NavigateToPlayer -> {
@@ -59,6 +63,16 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                 event.mediaType
             )
             is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is BaseContextMenuUiEvent.ShowToast -> {
+                Toast.makeText(
+                    context,
+                    event.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                if (event.success) {
+                    delegate.hideBottomSheet()
+                }
+            }
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {

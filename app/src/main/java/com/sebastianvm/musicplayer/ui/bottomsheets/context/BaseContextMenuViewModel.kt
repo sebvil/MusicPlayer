@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 
+import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -20,6 +21,7 @@ sealed class BaseContextMenuUiEvent : UiEvent {
         BaseContextMenuUiEvent()
 
     data class NavigateToGenre(val genreName: String) : BaseContextMenuUiEvent()
+    data class ShowToast(@StringRes val message: Int, val success: Boolean) : BaseContextMenuUiEvent()
 }
 
 sealed class BaseContextMenuUserAction : UserAction {
