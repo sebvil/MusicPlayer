@@ -17,7 +17,7 @@ import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumn
+import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnIndexed
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -88,19 +88,21 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 chosenOption = state.chosenQueue ?: MediaQueue(MediaGroupType.ALL_TRACKS, "", "No queue")
             ),
             delegate = delegate,
-            modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium).padding(top = AppDimensions.spacing.medium)
+            modifier = Modifier
+                .padding(horizontal = AppDimensions.spacing.medium)
+                .padding(top = AppDimensions.spacing.medium)
         )
 
-        SortableLazyColumn(
+        SortableLazyColumnIndexed(
             state = SortableLazyColumnState(
                 state.queueItems,
                 state.draggedItemFinalIndex,
                 state.draggedItem
             ),
-            key = { item -> item.trackId },
+            key = { index, _ -> index },
             delegate = delegate
-        ) { item ->
-            if (item.trackId == state.nowPlayingTrackId) {
+        ) { index, item ->
+            if (index == state.nowPlayingTrackIndex && state.mediaGroup == state.chosenQueue?.toMediaGroup()) {
                 TrackRow(
                     state = item,
                     modifier = Modifier.clickable {

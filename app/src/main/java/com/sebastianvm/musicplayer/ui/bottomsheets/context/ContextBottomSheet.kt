@@ -30,7 +30,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
 
@@ -43,23 +42,23 @@ interface ContextBottomSheetDialogNavigationDelegate {
 }
 
 @Composable
-fun <E : UiEvent, S : BaseContextMenuState> ContextBottomSheet(
-    sheetViewModel: BaseContextMenuViewModel<E, S> = viewModel(),
+fun <S : BaseContextMenuState> ContextBottomSheet(
+    sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     delegate: ContextBottomSheetDialogNavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
         when (event) {
-            is ContextMenuUiEvent.NavigateToPlayer -> {
+            is BaseContextMenuUiEvent.NavigateToPlayer -> {
                 delegate.navigateToPlayer()
             }
-            is ContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is ContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
-            is ContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
+            is BaseContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
+            is BaseContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
+            is BaseContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
                 event.mediaId,
                 event.mediaType
             )
-            is ContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {

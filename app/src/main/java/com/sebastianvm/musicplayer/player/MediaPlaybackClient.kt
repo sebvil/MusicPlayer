@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -48,7 +49,7 @@ class MediaPlaybackClient @Inject constructor(
         )
     )
     val nowPlaying: MutableStateFlow<MediaMetadata?> = MutableStateFlow(null)
-
+    val currentIndex: MutableStateFlow<Int> = MutableStateFlow(-1)
     private lateinit var savedPlaybackInfo: StateFlow<SavedPlaybackInfo>
 
 
@@ -115,6 +116,7 @@ class MediaPlaybackClient @Inject constructor(
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                     nowPlaying.value = mediaMetadata
+                    currentIndex.value = controller.currentMediaItemIndex
                     playbackState.value = playbackState.value.copy(
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0)
@@ -199,13 +201,17 @@ class MediaPlaybackClient @Inject constructor(
         }
     }
 
-    fun addToQueue(mediaId: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            controller?.also { controllerNotNull ->
+    suspend fun addToQueue(mediaId: String): Int {
+        val index = withContext(Dispatchers.Main) {
+            controller?.let { controllerNotNull ->
                 val nextIndex = controllerNotNull.nextMediaItemIndex
                 val track = trackRepository.getTrack(mediaId).first().toMediaItem()
+                Log.i("CLIENT", "Adding to queue ${track.mediaMetadata.title}")
                 controllerNotNull.addMediaItem(nextIndex, track)
-            }
+                nextIndex
+            } ?: -1
+
         }
+        return index
     }
 }

@@ -94,7 +94,11 @@ class MediaQueueRepositoryImpl @Inject constructor(
         return createQueue(mediaGroup, trackIds, queueName)
     }
 
-    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>) {
+    override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(
+        queue: MediaGroup,
+        mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
+    ) {
+        mediaQueueDao.deleteMediaQueueTrackCrossRefs(queueId = queue.mediaId, mediaGroupType = queue.mediaGroupType)
         mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
     }
 

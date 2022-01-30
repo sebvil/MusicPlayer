@@ -8,6 +8,7 @@ interface MediaPlaybackRepository {
 
     val nowPlaying: MutableStateFlow<MediaMetadata?>
     val playbackState: MutableStateFlow<PlaybackState>
+    val nowPlayingIndex: MutableStateFlow<Int>
 
     fun connectToService()
     fun disconnectFromService()
@@ -18,7 +19,7 @@ interface MediaPlaybackRepository {
     fun playFromId(mediaId: String, mediaGroup: MediaGroup)
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
-    fun addToQueue(mediaId: String)
+    suspend fun addToQueue(mediaId: String) : Int
 
 }
 

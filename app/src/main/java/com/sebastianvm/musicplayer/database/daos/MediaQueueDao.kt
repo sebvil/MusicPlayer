@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MediaQueueDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertQueue(queue: MediaQueue) : Long
+    suspend fun insertQueue(queue: MediaQueue): Long
+
+    @Query("DELETE FROM MediaQueueTrackCrossRef WHERE MediaQueueTrackCrossRef.groupMediaId=:queueId AND MediaQueueTrackCrossRef.mediaGroupType=:mediaGroupType")
+    suspend fun deleteMediaQueueTrackCrossRefs(queueId: String, mediaGroupType: MediaGroupType)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)

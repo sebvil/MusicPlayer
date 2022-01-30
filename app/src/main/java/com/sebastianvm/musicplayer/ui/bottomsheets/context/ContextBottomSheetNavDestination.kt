@@ -43,8 +43,11 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             navArgument(NavArgs.SORT_OPTION) { type = NavType.StringType },
             navArgument(NavArgs.SORT_ORDER) { type = NavType.StringType },
         )
-    ) {
-        val sheetViewModel: ContextMenuViewModel = hiltViewModel()
+    ) { backedStackEntry ->
+        val sheetViewModel = when (backedStackEntry.arguments?.get(NavArgs.MEDIA_TYPE)) {
+            MediaType.TRACK.name -> hiltViewModel<TrackContextMenuViewModel>()
+            else -> hiltViewModel<ContextMenuViewModel>()
+        }
         ContextBottomSheet(
             sheetViewModel = sheetViewModel,
             delegate = object : ContextBottomSheetDialogNavigationDelegate {

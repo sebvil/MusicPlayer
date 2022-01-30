@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.sebastianvm.musicplayer.player.MediaGroupType
 
-@Entity(primaryKeys = ["mediaGroupType", "groupMediaId", "trackId"])
+@Entity(primaryKeys = ["mediaGroupType", "groupMediaId", "trackId", "trackIndex"])
 data class MediaQueueTrackCrossRef(
     val mediaGroupType: MediaGroupType,
     val groupMediaId: String,
