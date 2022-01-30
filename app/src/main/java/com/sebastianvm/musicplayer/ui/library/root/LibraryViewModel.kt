@@ -34,6 +34,7 @@ class LibraryViewModel @Inject constructor(
                             is LibraryItem.Artists -> item.copy(count = counts.artists)
                             is LibraryItem.Albums -> item.copy(count = counts.albums)
                             is LibraryItem.Genres -> item.copy(count = counts.genres)
+                            is LibraryItem.Playlists -> item.copy(count = counts.playlists)
                         }
                     }
                 )
@@ -133,7 +134,8 @@ object InitialLibraryStateModule {
             LibraryItem.Tracks(count = 0),
             LibraryItem.Artists(count = 0),
             LibraryItem.Albums(count = 0),
-            LibraryItem.Genres(count = 0)
+            LibraryItem.Genres(count = 0),
+            LibraryItem.Playlists(count = 0)
         ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,

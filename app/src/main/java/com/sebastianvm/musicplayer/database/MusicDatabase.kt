@@ -9,6 +9,8 @@ import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.database.daos.PlaylistDao
+import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
 import com.sebastianvm.musicplayer.database.entities.Album
@@ -23,6 +25,9 @@ import com.sebastianvm.musicplayer.database.entities.GenreFts
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistFts
+import com.sebastianvm.musicplayer.database.entities.PlaylistWithTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackFts
 
@@ -33,15 +38,18 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         Album::class,
         Genre::class,
         MediaQueue::class,
+        Playlist::class,
         ArtistTrackCrossRef::class,
         GenreTrackCrossRef::class,
         AlbumsForArtist::class,
         AppearsOnForArtist::class,
         MediaQueueTrackCrossRef::class,
+        PlaylistWithTrackCrossRef::class,
         TrackFts::class,
         ArtistFts::class,
         AlbumFts::class,
         GenreFts::class,
+        PlaylistFts::class,
     ],
     version = 1,
     exportSchema = false
@@ -52,9 +60,11 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract val albumDao: AlbumDao
     abstract val genreDao: GenreDao
     abstract val mediaQueueDao: MediaQueueDao
+    abstract val playlistDao: PlaylistDao
 
     abstract val trackFtsDao: TrackFtsDao
     abstract val artistFtsDao: ArtistFtsDao
     abstract val albumFtsDao: AlbumFtsDao
     abstract val genreFtsDao: GenreFtsDao
+    abstract val playlistFtsDao: PlaylistFtsDao
 }

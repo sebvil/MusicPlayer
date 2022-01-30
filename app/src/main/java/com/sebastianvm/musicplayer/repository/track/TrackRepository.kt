@@ -26,6 +26,8 @@ interface TrackRepository {
 
     fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>>
 
+    fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>>
+
     fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>>
 
     suspend fun insertAllTracks(

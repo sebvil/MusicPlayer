@@ -91,6 +91,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                 }
             }
+            MediaType.PLAYLIST -> Unit
         }
     }
 

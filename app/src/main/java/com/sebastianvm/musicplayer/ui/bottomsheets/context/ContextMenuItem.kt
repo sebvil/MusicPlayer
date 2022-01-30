@@ -18,7 +18,11 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 }
 
 
-fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaGroupType, artistCount: Int = 0): List<ContextMenuItem> {
+fun contextMenuItemsForMedia(
+    mediaType: MediaType,
+    mediaGroupType: MediaGroupType,
+    artistCount: Int = 0
+): List<ContextMenuItem> {
     return when (mediaType) {
         MediaType.TRACK -> {
             if (mediaGroupType == MediaGroupType.ALBUM) {
@@ -55,5 +59,6 @@ fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaGroupTyp
                 ContextMenuItem.ViewGenre
             )
         }
+        MediaType.PLAYLIST -> listOf()
     }
 }

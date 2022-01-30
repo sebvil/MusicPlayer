@@ -9,6 +9,7 @@ enum class MediaGroupType {
     ARTIST,
     ALBUM,
     GENRE,
+    PLAYLIST,
     UNKNOWN,
 }
 

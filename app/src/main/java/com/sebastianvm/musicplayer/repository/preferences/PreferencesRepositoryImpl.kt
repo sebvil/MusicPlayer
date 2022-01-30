@@ -109,6 +109,19 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
         }
     }
 
+    override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) {
+        preferencesUtil.dataStore.edit { settings ->
+            settings[PreferencesUtil.PLAYLISTS_SORT_ORDER] = sortOrder.name
+        }
+    }
+
+    override fun getPlaylistsListSortOrder(): Flow<SortOrder> {
+        return preferencesUtil.dataStore.data.map { preferences ->
+            preferences[PreferencesUtil.PLAYLISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) }
+                ?: SortOrder.ASCENDING
+        }
+    }
+
     override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
         with(transform(getSavedPlaybackInfo().first())) {
             preferencesUtil.dataStore.edit { settings ->

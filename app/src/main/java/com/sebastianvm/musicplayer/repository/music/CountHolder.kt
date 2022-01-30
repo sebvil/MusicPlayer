@@ -5,4 +5,5 @@ data class CountHolder(
     val artists: Long,
     val albums: Long,
     val genres: Long,
+    val playlists: Long,
 )
