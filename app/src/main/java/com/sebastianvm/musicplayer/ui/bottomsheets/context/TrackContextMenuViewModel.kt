@@ -76,11 +76,20 @@ class TrackContextMenuViewModel @Inject constructor(
             setState {
                 copy(
                     menuTitle = it.track.trackName,
-                    listItems = contextMenuItemsForMedia(
-                        MediaType.TRACK,
-                        state.value.mediaGroup.mediaGroupType,
-                        it.artists.size
-                    ),
+                    listItems = if (state.value.mediaGroup.mediaGroupType == MediaGroupType.ALBUM) {
+                        listOf(
+                            ContextMenuItem.Play,
+                            ContextMenuItem.AddToQueue,
+                            if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                        )
+                    } else {
+                        listOf(
+                            ContextMenuItem.Play,
+                            ContextMenuItem.AddToQueue,
+                            if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                            ContextMenuItem.ViewAlbum
+                        )
+                    },
                     albumId = it.album.albumId,
                     artistName = if (it.artists.size == 1) it.artists[0].artistName else ""
                 )
@@ -106,12 +115,18 @@ class TrackContextMenuViewModel @Inject constructor(
                         }
 
                     }
+                    // TODO simiplify logic here
                     ContextMenuItem.AddToQueue -> {
                         viewModelScope.launch {
                             withContext(Dispatchers.IO) {
                                 preferencesRepository.getSavedPlaybackInfo().first().also {
                                     if (it.currentQueue.mediaGroupType == MediaGroupType.UNKNOWN) {
-                                        addUiEvent(BaseContextMenuUiEvent.ShowToast(R.string.no_queue_available, success = false))
+                                        addUiEvent(
+                                            BaseContextMenuUiEvent.ShowToast(
+                                                R.string.no_queue_available,
+                                                success = false
+                                            )
+                                        )
                                     } else {
                                         val tracks =
                                             trackRepository.getTracksForQueue(it.currentQueue)
@@ -143,7 +158,12 @@ class TrackContextMenuViewModel @Inject constructor(
                                             it.currentQueue,
                                             newQueue
                                         )
-                                        addUiEvent(BaseContextMenuUiEvent.ShowToast(R.string.added_to_queue, success = true))
+                                        addUiEvent(
+                                            BaseContextMenuUiEvent.ShowToast(
+                                                R.string.added_to_queue,
+                                                success = true
+                                            )
+                                        )
 
                                     }
 

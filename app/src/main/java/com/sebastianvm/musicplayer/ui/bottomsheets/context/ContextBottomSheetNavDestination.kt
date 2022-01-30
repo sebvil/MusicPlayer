@@ -44,11 +44,14 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             navArgument(NavArgs.SORT_ORDER) { type = NavType.StringType },
         )
     ) { backedStackEntry ->
-        val sheetViewModel = when (backedStackEntry.arguments?.get(NavArgs.MEDIA_TYPE)) {
-            MediaType.TRACK.name -> hiltViewModel<TrackContextMenuViewModel>()
-            MediaType.ARTIST.name -> hiltViewModel<ArtistContextMenuViewModel>()
-            else -> hiltViewModel<ContextMenuViewModel>()
-        }
+        val sheetViewModel =
+            when (MediaType.valueOf(backedStackEntry.arguments?.getString(NavArgs.MEDIA_TYPE)!!)) {
+                MediaType.TRACK -> hiltViewModel<TrackContextMenuViewModel>()
+                MediaType.ARTIST -> hiltViewModel<ArtistContextMenuViewModel>()
+                MediaType.GENRE -> hiltViewModel<GenreContextMenuViewModel>()
+                MediaType.ALBUM -> hiltViewModel<AlbumContextMenuViewModel>()
+                MediaType.PLAYLIST -> TODO()
+            }
         ContextBottomSheet(
             sheetViewModel = sheetViewModel,
             delegate = object : ContextBottomSheetDialogNavigationDelegate {
