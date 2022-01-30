@@ -46,6 +46,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
     ) { backedStackEntry ->
         val sheetViewModel = when (backedStackEntry.arguments?.get(NavArgs.MEDIA_TYPE)) {
             MediaType.TRACK.name -> hiltViewModel<TrackContextMenuViewModel>()
+            MediaType.ARTIST.name -> hiltViewModel<ArtistContextMenuViewModel>()
             else -> hiltViewModel<ContextMenuViewModel>()
         }
         ContextBottomSheet(

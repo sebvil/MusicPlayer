@@ -37,20 +37,6 @@ class ContextMenuViewModel @Inject constructor(
 
     init {
         when (state.value.mediaType) {
-            MediaType.TRACK -> {
-                collect(trackRepository.getTrack(state.value.mediaId)) {
-                    setState {
-                        copy(
-                            menuTitle = it.track.trackName,
-                            listItems = contextMenuItemsForMedia(
-                                state.value.mediaType,
-                                state.value.mediaGroup.mediaGroupType,
-                                it.artists.size
-                            )
-                        )
-                    }
-                }
-            }
             MediaType.ALBUM -> {
                 collect(albumRepository.getAlbum(state.value.mediaId)) {
                     setState {
@@ -77,20 +63,7 @@ class ContextMenuViewModel @Inject constructor(
                     )
                 }
             }
-            MediaType.ARTIST -> {
-                collect(artistRepository.getArtist(state.value.mediaId)) {
-                    setState {
-                        copy(
-                            menuTitle = it.artist.artistName,
-                            listItems = contextMenuItemsForMedia(
-                                state.value.mediaType,
-                                state.value.mediaGroup.mediaGroupType
-                            )
-                        )
-                    }
-                }
-            }
-            MediaType.PLAYLIST -> Unit
+            else -> throw IllegalStateException("This viewModel should not be used with media type ${state.value.mediaType}")
         }
     }
 
@@ -112,7 +85,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewAlbum -> {
                         when (state.value.mediaType) {
-                            MediaType.TRACK  -> {
+                            MediaType.TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) {
                                     addUiEvent(
                                         BaseContextMenuUiEvent.NavigateToAlbum(it.album.albumId)
