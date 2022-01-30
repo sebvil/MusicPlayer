@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,6 +20,6 @@ interface MediaQueueDao {
     @Query("SELECT * FROM MediaQueue")
     fun getAllQueues(): Flow<List<MediaQueue>>
 
-    @Query("SELECT * FROM MediaQueue WHERE MediaQueue.groupMediaId=:queueId AND MediaQueue.mediaType=:mediaType")
-    fun getQueue(queueId: String, mediaType: MediaType): Flow<MediaQueue>
+    @Query("SELECT * FROM MediaQueue WHERE MediaQueue.groupMediaId=:queueId AND MediaQueue.mediaGroupType=:mediaGroupType")
+    fun getQueue(queueId: String, mediaGroupType: MediaGroupType): Flow<MediaQueue>
 }

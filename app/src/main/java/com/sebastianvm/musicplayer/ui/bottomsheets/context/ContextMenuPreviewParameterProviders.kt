@@ -3,16 +3,17 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.util.SortOrder
 
-class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<ContextMenuState> {
+class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseContextMenuState> {
     override val values = sequenceOf(
         ContextMenuState(
             mediaId = "1",
             menuTitle = "La Promesa",
-            mediaType = MediaType.ALL_TRACKS,
-            mediaGroup = MediaGroup(MediaType.ALL_TRACKS, ""),
+            mediaType = MediaType.TRACK,
+            mediaGroup = MediaGroup(MediaGroupType.ALL_TRACKS, ""),
             listItems = listOf(
                 ContextMenuItem.Play,
                 ContextMenuItem.ViewArtists,

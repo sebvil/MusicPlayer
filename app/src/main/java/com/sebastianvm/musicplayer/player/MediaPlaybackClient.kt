@@ -74,7 +74,7 @@ class MediaPlaybackClient @Inject constructor(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = it.contentPosition,
                         )
-                    } else if (currentQueue.mediaType != MediaType.UNKNOWN) {
+                    } else if (currentQueue.mediaGroupType != MediaGroupType.UNKNOWN) {
                         playbackState.value = PlaybackState(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = lastRecordedPosition,
@@ -196,6 +196,16 @@ class MediaPlaybackClient @Inject constructor(
             mediaController.setMediaItems(mediaItems)
             mediaController.prepare()
             mediaController.seekTo(initialWindowIndex, position)
+        }
+    }
+
+    fun addToQueue(mediaId: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            controller?.also { controllerNotNull ->
+                val nextIndex = controllerNotNull.nextMediaItemIndex
+                val track = trackRepository.getTrack(mediaId).first().toMediaItem()
+                controllerNotNull.addMediaItem(nextIndex, track)
+            }
         }
     }
 }

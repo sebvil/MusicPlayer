@@ -9,6 +9,7 @@ import androidx.paging.map
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
@@ -105,7 +106,7 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.TrackRowClicked -> {
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaType = MediaType.SINGLE_TRACK,
+                        mediaGroupType = MediaGroupType.SINGLE_TRACK,
                         mediaId = action.trackId
                     )
                     mediaQueueRepository.createQueue(
@@ -124,8 +125,9 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.TrackOverflowMenuClicked -> {
                 addUiEvent(
                     SearchUiEvent.OpenContextMenu(
+                        mediaType = MediaType.TRACK,
                         mediaGroup = MediaGroup(
-                            MediaType.SINGLE_TRACK,
+                            MediaGroupType.SINGLE_TRACK,
                             action.trackId
                         ),
                         sortOption = SortOption.TRACK_NAME,
@@ -136,8 +138,9 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.ArtistOverflowMenuClicked -> {
                 addUiEvent(
                     SearchUiEvent.OpenContextMenu(
+                        mediaType = MediaType.ARTIST,
                         mediaGroup = MediaGroup(
-                            MediaType.ARTIST,
+                            MediaGroupType.ARTIST,
                             action.artistName
                         ),
                         sortOption = SortOption.TRACK_NAME,
@@ -148,8 +151,9 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.AlbumOverflowMenuClicked -> {
                 addUiEvent(
                     SearchUiEvent.OpenContextMenu(
+                        mediaType = MediaType.ALBUM,
                         mediaGroup = MediaGroup(
-                            MediaType.ALBUM,
+                            MediaGroupType.ALBUM,
                             action.albumId
                         ),
                         sortOption = SortOption.ALBUM_NAME,
@@ -160,8 +164,9 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.GenreOverflowMenuClicked -> {
                 addUiEvent(
                     SearchUiEvent.OpenContextMenu(
+                        mediaType = MediaType.GENRE,
                         mediaGroup = MediaGroup(
-                            MediaType.GENRE,
+                            MediaGroupType.GENRE,
                             action.genreName
                         ),
                         sortOption = SortOption.TRACK_NAME,
@@ -218,6 +223,7 @@ sealed class SearchUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
     data class NavigateToGenre(val genreName: String) : SearchUiEvent()
     data class OpenContextMenu(
+        val mediaType: MediaType,
         val mediaGroup: MediaGroup,
         val sortOption: SortOption,
         val sortOrder: SortOrder

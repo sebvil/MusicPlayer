@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 
 sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: Int) {
@@ -17,10 +18,10 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
 }
 
 
-fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, artistCount: Int = 0): List<ContextMenuItem> {
+fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaGroupType, artistCount: Int = 0): List<ContextMenuItem> {
     return when (mediaType) {
-        MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
-            if (mediaGroupType == MediaType.ALBUM) {
+        MediaType.TRACK -> {
+            if (mediaGroupType == MediaGroupType.ALBUM) {
                 listOf(
                     ContextMenuItem.Play,
                     ContextMenuItem.AddToQueue,
@@ -54,6 +55,5 @@ fun contextMenuItemsForMedia(mediaType: MediaType, mediaGroupType: MediaType, ar
                 ContextMenuItem.ViewGenre
             )
         }
-        MediaType.UNKNOWN -> listOf()
     }
 }

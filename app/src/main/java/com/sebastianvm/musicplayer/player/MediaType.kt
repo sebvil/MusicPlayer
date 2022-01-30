@@ -5,10 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 enum class MediaType : Parcelable {
-    ALL_TRACKS,
+    TRACK,
     ARTIST,
     ALBUM,
     GENRE,
-    SINGLE_TRACK,
-    UNKNOWN
 }

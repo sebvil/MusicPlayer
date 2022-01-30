@@ -118,7 +118,7 @@ class QueueViewModel @Inject constructor(
                                 mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
                                     queueItems.mapIndexed { index, trackRowState ->
                                         MediaQueueTrackCrossRef(
-                                            mediaType = mediaQueue.mediaType,
+                                            mediaGroupType = mediaQueue.mediaGroupType,
                                             groupMediaId = mediaQueue.groupMediaId,
                                             trackId = trackRowState.trackId,
                                             trackIndex = index
@@ -147,10 +147,10 @@ class QueueViewModel @Inject constructor(
             is QueueUserAction.TrackClicked -> {
                 with(state.value) {
                     if (chosenQueue != null) {
-                        if (mediaGroup?.mediaId != chosenQueue.groupMediaId || mediaGroup.mediaType != chosenQueue.mediaType) {
+                        if (mediaGroup?.mediaId != chosenQueue.groupMediaId || mediaGroup.mediaGroupType != chosenQueue.mediaGroupType) {
                             mediaPlaybackRepository.playFromId(
                                 action.trackId,
-                                MediaGroup(chosenQueue.mediaType, chosenQueue.groupMediaId)
+                                MediaGroup(chosenQueue.mediaGroupType, chosenQueue.groupMediaId)
 
                             )
                             return
@@ -173,7 +173,7 @@ class QueueViewModel @Inject constructor(
                 viewModelScope.launch {
                     val tracks = tracksRepository.getTracksForQueue(
                         MediaGroup(
-                            action.newOption.mediaType,
+                            action.newOption.mediaGroupType,
                             action.newOption.groupMediaId
                         )
                     ).first()

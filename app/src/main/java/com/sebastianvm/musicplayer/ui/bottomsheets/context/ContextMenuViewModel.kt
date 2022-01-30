@@ -4,6 +4,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -11,10 +12,7 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
@@ -36,16 +34,20 @@ class ContextMenuViewModel @Inject constructor(
     artistRepository: ArtistRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-) : BaseViewModel<ContextMenuUserAction, ContextMenuUiEvent, ContextMenuState>(initialState) {
+) : BaseContextMenuViewModel<ContextMenuUiEvent, ContextMenuState>(initialState) {
 
     init {
         when (state.value.mediaType) {
-            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
+            MediaType.TRACK -> {
                 collect(trackRepository.getTrack(state.value.mediaId)) {
                     setState {
                         copy(
                             menuTitle = it.track.trackName,
-                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType, it.artists.size)
+                            listItems = contextMenuItemsForMedia(
+                                state.value.mediaType,
+                                state.value.mediaGroup.mediaGroupType,
+                                it.artists.size
+                            )
                         )
                     }
                 }
@@ -55,7 +57,11 @@ class ContextMenuViewModel @Inject constructor(
                     setState {
                         copy(
                             menuTitle = it.album.albumName,
-                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType, it.artists.size)
+                            listItems = contextMenuItemsForMedia(
+                                state.value.mediaType,
+                                state.value.mediaGroup.mediaGroupType,
+                                it.artists.size
+                            )
 
                         )
                     }
@@ -65,7 +71,10 @@ class ContextMenuViewModel @Inject constructor(
                 setState {
                     copy(
                         menuTitle = state.value.mediaId,
-                        listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType)
+                        listItems = contextMenuItemsForMedia(
+                            state.value.mediaType,
+                            state.value.mediaGroup.mediaGroupType
+                        )
                     )
                 }
             }
@@ -74,18 +83,20 @@ class ContextMenuViewModel @Inject constructor(
                     setState {
                         copy(
                             menuTitle = it.artist.artistName,
-                            listItems = contextMenuItemsForMedia(state.value.mediaType, state.value.mediaGroup.mediaType)
+                            listItems = contextMenuItemsForMedia(
+                                state.value.mediaType,
+                                state.value.mediaGroup.mediaGroupType
+                            )
                         )
                     }
                 }
             }
-            MediaType.UNKNOWN -> Unit
         }
     }
 
-    override fun handle(action: ContextMenuUserAction) {
+    override fun handle(action: BaseContextMenuUserAction) {
         when (action) {
-            is ContextMenuUserAction.RowClicked -> {
+            is BaseContextMenuUserAction.RowClicked -> {
                 when (action.row) {
                     is ContextMenuItem.Play, is ContextMenuItem.PlayFromBeginning, is ContextMenuItem.PlayAllSongs -> {
                         viewModelScope.launch {
@@ -101,7 +112,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewAlbum -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
+                            MediaType.TRACK  -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) {
                                     addUiEvent(
                                         ContextMenuUiEvent.NavigateToAlbum(it.album.albumId)
@@ -117,7 +128,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewArtists -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
+                            MediaType.TRACK -> {
                                 addUiEvent(
                                     ContextMenuUiEvent.NavigateToArtistsBottomSheet(
                                         state.value.mediaId,
@@ -138,7 +149,7 @@ class ContextMenuViewModel @Inject constructor(
                     }
                     is ContextMenuItem.ViewArtist -> {
                         when (state.value.mediaType) {
-                            MediaType.ALL_TRACKS, MediaType.SINGLE_TRACK -> {
+                            MediaType.TRACK -> {
                                 collect(trackRepository.getTrack(state.value.mediaId)) { track ->
                                     addUiEvent(ContextMenuUiEvent.NavigateToArtist(track.artists[0].artistName))
                                 }
@@ -166,14 +177,14 @@ class ContextMenuViewModel @Inject constructor(
 }
 
 data class ContextMenuState(
+    override val listItems: List<ContextMenuItem>,
+    override val menuTitle: String,
     val mediaId: String,
-    val menuTitle: String,
     val mediaType: MediaType,
     val mediaGroup: MediaGroup,
-    val listItems: List<ContextMenuItem>,
     val selectedSort: String,
     val sortOrder: SortOrder
-) : State
+) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -184,7 +195,7 @@ object InitialContextMenuStateModule {
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
         val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
         val mediaGroupType =
-            MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
+            MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
         val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
         val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
@@ -198,11 +209,6 @@ object InitialContextMenuStateModule {
             sortOrder = SortOrder.valueOf(sortOrder)
         )
     }
-}
-
-
-sealed class ContextMenuUserAction : UserAction {
-    data class RowClicked(val row: ContextMenuItem) : ContextMenuUserAction()
 }
 
 sealed class ContextMenuUiEvent : UiEvent {

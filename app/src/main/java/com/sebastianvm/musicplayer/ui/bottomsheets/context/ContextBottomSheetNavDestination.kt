@@ -94,7 +94,7 @@ fun NavController.openContextMenu(
         NavRoutes.CONTEXT,
         NavArgument(NavArgs.MEDIA_ID, mediaId),
         NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
-        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaType),
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaGroupType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
         NavArgument(NavArgs.SORT_OPTION, currentSort.name),
         NavArgument(NavArgs.SORT_ORDER, sortOrder.name),

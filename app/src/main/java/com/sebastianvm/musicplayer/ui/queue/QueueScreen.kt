@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenu
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuDelegate
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuState
@@ -85,7 +85,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 expanded = state.dropdownExpanded,
                 label = "Queue",
                 options = state.queues,
-                chosenOption = state.chosenQueue ?: MediaQueue(MediaType.ALL_TRACKS, "", "No queue")
+                chosenOption = state.chosenQueue ?: MediaQueue(MediaGroupType.ALL_TRACKS, "", "No queue")
             ),
             delegate = delegate,
             modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium).padding(top = AppDimensions.spacing.medium)

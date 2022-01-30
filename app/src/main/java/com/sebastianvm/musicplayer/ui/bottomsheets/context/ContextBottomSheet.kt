@@ -30,6 +30,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
 
@@ -42,8 +43,8 @@ interface ContextBottomSheetDialogNavigationDelegate {
 }
 
 @Composable
-fun ContextBottomSheet(
-    sheetViewModel: ContextMenuViewModel = viewModel(),
+fun <E : UiEvent, S : BaseContextMenuState> ContextBottomSheet(
+    sheetViewModel: BaseContextMenuViewModel<E, S> = viewModel(),
     delegate: ContextBottomSheetDialogNavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
@@ -63,7 +64,7 @@ fun ContextBottomSheet(
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
         override fun onRowClicked(contextMenuItem: ContextMenuItem) {
-            sheetViewModel.handle(ContextMenuUserAction.RowClicked(contextMenuItem))
+            sheetViewModel.handle(BaseContextMenuUserAction.RowClicked(contextMenuItem))
         }
     })
 }
@@ -74,7 +75,7 @@ fun ContextBottomSheet(
 @Preview
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: ContextMenuState) {
+fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
     BottomSheetPreview {
         ContextMenuLayout(state = state, object : ContextMenuDelegate {})
     }
@@ -87,7 +88,7 @@ interface ContextMenuDelegate {
 
 @Composable
 fun ContextMenuLayout(
-    state: ContextMenuState,
+    state: BaseContextMenuState,
     delegate: ContextMenuDelegate
 ) {
     with(state) {
