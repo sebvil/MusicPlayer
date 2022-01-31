@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
@@ -75,6 +76,7 @@ class MediaPlaybackClient @Inject constructor(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = it.contentPosition,
                         )
+                        nowPlaying.value = controller?.mediaMetadata
                     } else if (currentQueue.mediaGroupType != MediaGroupType.UNKNOWN) {
                         playbackState.value = PlaybackState(
                             isPlaying = it.isPlaying,
@@ -124,6 +126,12 @@ class MediaPlaybackClient @Inject constructor(
 
                 override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                     currentIndex.value = controller.currentMediaItemIndex
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    next()
+                    controller.prepare()
+                    play()
                 }
             }
         )
@@ -216,6 +224,12 @@ class MediaPlaybackClient @Inject constructor(
                 }
                 nextIndex
             } ?: -1
+        }
+    }
+
+    fun seekToTrackPosition(position: Long) {
+        controller?.also { controllerNotNull ->
+            controllerNotNull.seekTo(position)
         }
     }
 }

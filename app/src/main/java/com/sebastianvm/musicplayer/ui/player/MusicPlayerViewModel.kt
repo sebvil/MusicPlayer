@@ -59,6 +59,10 @@ class MusicPlayerViewModel @Inject constructor(
             is MusicPlayerUserAction.NextTapped -> {
                 mediaPlaybackRepository.next()
             }
+            is MusicPlayerUserAction.ProgressTapped -> {
+                val time: Long = (state.value.trackLengthMs ?: 0) * action.position / 100
+                mediaPlaybackRepository.seekToTrackPosition(time)
+            }
         }
     }
 }
@@ -93,6 +97,7 @@ sealed class MusicPlayerUserAction : UserAction {
     object TogglePlay : MusicPlayerUserAction()
     object NextTapped : MusicPlayerUserAction()
     object PreviousTapped : MusicPlayerUserAction()
+    data class ProgressTapped(val position: Int) : MusicPlayerUserAction()
 }
 
 sealed class MusicPlayerUiEvent : UiEvent

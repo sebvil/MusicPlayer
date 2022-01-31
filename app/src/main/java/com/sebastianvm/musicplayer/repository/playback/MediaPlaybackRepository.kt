@@ -19,6 +19,7 @@ interface MediaPlaybackRepository {
     fun playFromId(mediaId: String, mediaGroup: MediaGroup)
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
+    fun seekToTrackPosition(position: Long)
     suspend fun addToQueue(mediaIds: List<String>) : Int
 
 }

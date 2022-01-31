@@ -51,6 +51,8 @@ data class SortableLazyColumnState<T>(
     val draggedItem: T?
 )
 
+
+// TODO improve scrolling behavior
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T> SortableLazyColumnIndexed(

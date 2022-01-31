@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.content.res.Configuration
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -39,7 +41,7 @@ fun MusicPlayerScreen(
 ) {
 
     Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
-        MusicPlayerLayout(state = state, mediaButtonsDelegate = object : MediaButtonsDelegate() {
+        MusicPlayerLayout(state = state, playerDelegate = object : PlayerDelegate() {
             override fun togglePlay() {
                 screenViewModel.handle(MusicPlayerUserAction.TogglePlay)
             }
@@ -51,6 +53,10 @@ fun MusicPlayerScreen(
             override fun previousClicked() {
                 screenViewModel.handle(MusicPlayerUserAction.PreviousTapped)
             }
+
+            override fun onProgressBarClicked(position: Int) {
+                screenViewModel.handle(MusicPlayerUserAction.ProgressTapped(position = position))
+            }
         })
     }
 }
@@ -60,14 +66,14 @@ fun MusicPlayerScreen(
 @Composable
 fun MusicPlayerScreenPreview(@PreviewParameter(MusicPlayerStatePreviewParameterProvider::class) state: MusicPlayerState) {
     ScreenPreview {
-        MusicPlayerLayout(state = state, mediaButtonsDelegate = MediaButtonsDelegate())
+        MusicPlayerLayout(state = state, playerDelegate = PlayerDelegate())
     }
 }
 
 @Composable
 fun MusicPlayerLayout(
     state: MusicPlayerState,
-    mediaButtonsDelegate: MediaButtonsDelegate
+    playerDelegate: PlayerDelegate
 ) {
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         Row {
@@ -94,9 +100,10 @@ fun MusicPlayerLayout(
                     TrackProgressState(
                         trackLengthMs = state.trackLengthMs,
                         currentPlaybackTimeMs = state.currentPlaybackTimeMs
-                    )
+                    ),
+                    delegate = playerDelegate
                 )
-                MediaButtons(state.isPlaying, mediaButtonsDelegate)
+                MediaButtons(state.isPlaying, playerDelegate)
             }
         }
     } else {
@@ -123,9 +130,10 @@ fun MusicPlayerLayout(
                 TrackProgressState(
                     trackLengthMs = state.trackLengthMs,
                     currentPlaybackTimeMs = state.currentPlaybackTimeMs
-                )
+                ),
+                delegate = playerDelegate
             )
-            MediaButtons(state.isPlaying, mediaButtonsDelegate)
+            MediaButtons(state.isPlaying, playerDelegate)
 
         }
     }
@@ -167,9 +175,16 @@ data class MinutesSecondsTime(val minutes: Long, val seconds: Long) {
     }
 }
 
+interface TrackProgressDelegate {
+    fun onProgressBarClicked(position: Int) = Unit
+}
+
 @Preview
 @Composable
-fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::class) trackProgressState: TrackProgressState) {
+fun TrackProgress(
+    @PreviewParameter(TrackProgressStatePreviewParameterProvider::class) trackProgressState: TrackProgressState,
+    delegate: TrackProgressDelegate = object : TrackProgressDelegate {}
+) {
     with(trackProgressState) {
         val progress =
             if (currentPlaybackTimeMs == null || trackLengthMs == null || trackLengthMs == 0L) {
@@ -186,6 +201,13 @@ fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = AppDimensions.spacing.xSmall)
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            val xOffset = offset.x
+                            val percentPosition = (xOffset / size.width) * 100
+                            delegate.onProgressBarClicked(percentPosition.toInt())
+                        }
+                    }
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -206,7 +228,7 @@ fun TrackProgress(@PreviewParameter(TrackProgressStatePreviewParameterProvider::
 
 }
 
-open class MediaButtonsDelegate {
+open class PlayerDelegate : TrackProgressDelegate {
     open fun togglePlay() = Unit
     open fun nextClicked() = Unit
     open fun previousClicked() = Unit
@@ -216,7 +238,7 @@ open class MediaButtonsDelegate {
 @Composable
 fun MediaButtons(
     @PreviewParameter(BooleanPreviewParameterProvider::class) isPlaying: Boolean,
-    delegate: MediaButtonsDelegate = MediaButtonsDelegate()
+    delegate: PlayerDelegate = PlayerDelegate()
 ) {
     Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
         IconButton(onClick = { delegate.previousClicked() }) {

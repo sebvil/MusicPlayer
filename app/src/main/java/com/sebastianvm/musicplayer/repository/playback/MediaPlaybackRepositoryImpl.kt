@@ -51,4 +51,8 @@ class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackC
     override suspend fun addToQueue(mediaIds: List<String>): Int {
        return mediaPlaybackClient.addToQueue(mediaIds)
     }
+
+    override fun seekToTrackPosition(position: Long) {
+        mediaPlaybackClient.seekToTrackPosition(position)
+    }
 }
