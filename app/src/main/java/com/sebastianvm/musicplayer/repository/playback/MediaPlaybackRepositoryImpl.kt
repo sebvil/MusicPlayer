@@ -48,7 +48,7 @@ class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackC
         mediaPlaybackClient.playQueueItem(index)
     }
 
-    override suspend fun addToQueue(mediaId: String): Int {
-       return mediaPlaybackClient.addToQueue(mediaId)
+    override suspend fun addToQueue(mediaIds: List<String>): Int {
+       return mediaPlaybackClient.addToQueue(mediaIds)
     }
 }

@@ -20,6 +20,8 @@ interface TrackRepository {
 
     fun getTrack(tracksId: String): Flow<FullTrackInfo>
 
+    fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>>
+
     fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>>
 
     fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>>

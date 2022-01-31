@@ -19,7 +19,7 @@ interface MediaPlaybackRepository {
     fun playFromId(mediaId: String, mediaGroup: MediaGroup)
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
-    suspend fun addToQueue(mediaId: String) : Int
+    suspend fun addToQueue(mediaIds: List<String>) : Int
 
 }
 

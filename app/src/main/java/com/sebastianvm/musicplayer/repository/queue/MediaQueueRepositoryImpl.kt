@@ -10,23 +10,28 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
 import com.sebastianvm.musicplayer.util.getStringComparator
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MediaQueueRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val mediaQueueDao: MediaQueueDao,
     private val albumRepository: AlbumRepository,
-    private val trackRepository: TrackRepository
+    private val trackRepository: TrackRepository,
+    private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : MediaQueueRepository {
     private suspend fun createQueue(
         mediaGroup: MediaGroup,
@@ -98,7 +103,10 @@ class MediaQueueRepositoryImpl @Inject constructor(
         queue: MediaGroup,
         mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
     ) {
-        mediaQueueDao.deleteMediaQueueTrackCrossRefs(queueId = queue.mediaId, mediaGroupType = queue.mediaGroupType)
+        mediaQueueDao.deleteMediaQueueTrackCrossRefs(
+            queueId = queue.mediaId,
+            mediaGroupType = queue.mediaGroupType
+        )
         mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
     }
 
@@ -123,5 +131,30 @@ class MediaQueueRepositoryImpl @Inject constructor(
         return mediaQueueDao.getQueue(mediaGroup.mediaId, mediaGroup.mediaGroupType)
             .distinctUntilChanged()
     }
+
+    override fun getMediaQueTrackCrossRefs(queue: MediaGroup): Flow<List<MediaQueueTrackCrossRef>> {
+        return mediaQueueDao.getMediaQueTrackCrossRefs(
+            queue.mediaId,
+            queue.mediaGroupType
+        )
+    }
+
+    override suspend fun addToQueue(queue: MediaGroup, trackIds: List<String>) {
+        val index = mediaPlaybackRepository.addToQueue(trackIds)
+        withContext(Dispatchers.IO) {
+            val queueItems = getMediaQueTrackCrossRefs(queue).first().toMutableList()
+            queueItems.addAll(index, trackIds.map {
+                MediaQueueTrackCrossRef(
+                    mediaGroupType = queue.mediaGroupType,
+                    groupMediaId = queue.mediaId,
+                    trackId = it,
+                    trackIndex = -1
+                )
+            })
+            insertOrUpdateMediaQueueTrackCrossRefs(queue, queueItems.withUpdatedIndices())
+        }
+
+    }
+
 
 }

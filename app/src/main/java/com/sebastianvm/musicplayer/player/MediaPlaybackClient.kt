@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -201,13 +200,12 @@ class MediaPlaybackClient @Inject constructor(
         }
     }
 
-    suspend fun addToQueue(mediaId: String): Int {
+    suspend fun addToQueue(mediaIds: List<String>): Int {
         val index = withContext(Dispatchers.Main) {
             controller?.let { controllerNotNull ->
                 val nextIndex = controllerNotNull.nextMediaItemIndex
-                val track = trackRepository.getTrack(mediaId).first().toMediaItem()
-                Log.i("CLIENT", "Adding to queue ${track.mediaMetadata.title}")
-                controllerNotNull.addMediaItem(nextIndex, track)
+                val track = trackRepository.getTracks(mediaIds).first().map { it.toMediaItem() }
+                controllerNotNull.addMediaItems(nextIndex, track)
                 nextIndex
             } ?: -1
 

@@ -17,4 +17,6 @@ interface MediaQueueRepository {
     suspend fun insertOrUpdateMediaQueueTrackCrossRefs(queue: MediaGroup, mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)
     fun getAllQueues(): Flow<List<MediaQueue>>
     fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue>
+    fun getMediaQueTrackCrossRefs(queue: MediaGroup): Flow<List<MediaQueueTrackCrossRef>>
+    suspend fun addToQueue(queue: MediaGroup, trackIds: List<String>)
 }

@@ -25,4 +25,13 @@ interface MediaQueueDao {
 
     @Query("SELECT * FROM MediaQueue WHERE MediaQueue.groupMediaId=:queueId AND MediaQueue.mediaGroupType=:mediaGroupType")
     fun getQueue(queueId: String, mediaGroupType: MediaGroupType): Flow<MediaQueue>
+
+    @Query("SELECT * FROM MediaQueueTrackCrossRef " +
+            "WHERE MediaQueueTrackCrossRef.groupMediaId=:queueId " +
+            "AND MediaQueueTrackCrossRef.mediaGroupType=:mediaGroupType " +
+            "ORDER BY MediaQueueTrackCrossRef.trackIndex")
+    fun getMediaQueTrackCrossRefs(
+        queueId: String,
+        mediaGroupType: MediaGroupType
+    ): Flow<List<MediaQueueTrackCrossRef>>
 }

@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -115,7 +114,6 @@ class TrackContextMenuViewModel @Inject constructor(
                         }
 
                     }
-                    // TODO simiplify logic here
                     ContextMenuItem.AddToQueue -> {
                         viewModelScope.launch {
                             withContext(Dispatchers.IO) {
@@ -127,46 +125,18 @@ class TrackContextMenuViewModel @Inject constructor(
                                                 success = false
                                             )
                                         )
-                                    } else {
-                                        val tracks =
-                                            trackRepository.getTracksForQueue(it.currentQueue)
-                                                .first()
-                                        val currentIndex =
-                                            mediaPlaybackRepository.addToQueue(mediaId = state.value.mediaId)
-                                        val oldQueue = tracks.mapIndexed { index, track ->
-                                            MediaQueueTrackCrossRef(
-                                                mediaGroupType = it.currentQueue.mediaGroupType,
-                                                groupMediaId = it.currentQueue.mediaId,
-                                                trackId = track.track.trackId,
-                                                trackIndex = index
-                                            )
-                                        }
-                                        val newQueue = oldQueue.map { queueItem ->
-                                            queueItem.copy(
-                                                trackIndex = if (queueItem.trackIndex < currentIndex) queueItem.trackIndex else queueItem.trackIndex + 1
-                                            )
-                                        }.toMutableList()
-                                        newQueue.add(
-                                            currentIndex, MediaQueueTrackCrossRef(
-                                                mediaGroupType = it.currentQueue.mediaGroupType,
-                                                groupMediaId = it.currentQueue.mediaId,
-                                                trackId = state.value.mediaId,
-                                                trackIndex = currentIndex
-                                            )
-                                        )
-                                        mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
-                                            it.currentQueue,
-                                            newQueue
-                                        )
-                                        addUiEvent(
-                                            BaseContextMenuUiEvent.ShowToast(
-                                                R.string.added_to_queue,
-                                                success = true
-                                            )
-                                        )
-
+                                        return@also
                                     }
-
+                                    mediaQueueRepository.addToQueue(
+                                        it.currentQueue,
+                                        listOf(state.value.mediaId)
+                                    )
+                                    addUiEvent(
+                                        BaseContextMenuUiEvent.ShowToast(
+                                            R.string.added_to_queue,
+                                            success = true
+                                        )
+                                    )
                                 }
                             }
                         }

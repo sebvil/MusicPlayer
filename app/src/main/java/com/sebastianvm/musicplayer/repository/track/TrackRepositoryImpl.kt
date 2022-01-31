@@ -31,6 +31,10 @@ class TrackRepositoryImpl@Inject constructor(
         return trackDao.getTrack(tracksId).distinctUntilChanged()
     }
 
+    override fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>> {
+        return trackDao.getTracks(tracksIds).distinctUntilChanged()
+    }
+
     override fun getTracksForArtist(artistName: String) : Flow<List<FullTrackInfo>> {
         return trackDao.getTracksForArtist(artistName)
     }
