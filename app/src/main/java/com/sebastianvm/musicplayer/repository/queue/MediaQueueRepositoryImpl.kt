@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.repository.queue
 
 import android.content.Context
+import androidx.media3.common.C
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
@@ -11,6 +12,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -31,6 +33,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
     private val mediaQueueDao: MediaQueueDao,
     private val albumRepository: AlbumRepository,
     private val trackRepository: TrackRepository,
+    private val preferencesRepository: PreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : MediaQueueRepository {
     private suspend fun createQueue(
@@ -139,21 +142,35 @@ class MediaQueueRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addToQueue(queue: MediaGroup, trackIds: List<String>) {
+    override suspend fun addToQueue(trackIds: List<String>): Boolean {
+        val queue = preferencesRepository.getSavedPlaybackInfo()
+            .first().currentQueue.takeUnless { it.mediaGroupType == MediaGroupType.UNKNOWN }
+            ?: return false
         val index = mediaPlaybackRepository.addToQueue(trackIds)
         withContext(Dispatchers.IO) {
             val queueItems = getMediaQueTrackCrossRefs(queue).first().toMutableList()
-            queueItems.addAll(index, trackIds.map {
-                MediaQueueTrackCrossRef(
-                    mediaGroupType = queue.mediaGroupType,
-                    groupMediaId = queue.mediaId,
-                    trackId = it,
-                    trackIndex = -1
-                )
-            })
+            if (index == C.INDEX_UNSET) {
+                queueItems.addAll(trackIds.map {
+                    MediaQueueTrackCrossRef(
+                        mediaGroupType = queue.mediaGroupType,
+                        groupMediaId = queue.mediaId,
+                        trackId = it,
+                        trackIndex = -1
+                    )
+                })
+            } else {
+                queueItems.addAll(index, trackIds.map {
+                    MediaQueueTrackCrossRef(
+                        mediaGroupType = queue.mediaGroupType,
+                        groupMediaId = queue.mediaId,
+                        trackId = it,
+                        trackIndex = -1
+                    )
+                })
+            }
             insertOrUpdateMediaQueueTrackCrossRefs(queue, queueItems.withUpdatedIndices())
         }
-
+        return true
     }
 
 

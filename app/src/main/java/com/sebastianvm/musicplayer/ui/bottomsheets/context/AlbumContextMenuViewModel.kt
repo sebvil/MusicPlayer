@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -29,13 +30,17 @@ class AlbumContextMenuViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
+    private var trackIds: List<String> = listOf()
+
     init {
         collect(albumRepository.getAlbum(state.value.mediaId)) {
+            trackIds = it.tracks.map { track -> track.trackId }
             setState {
                 copy(
                     menuTitle = it.album.albumName,
                     listItems = listOf(
                         ContextMenuItem.PlayFromBeginning,
+                        ContextMenuItem.AddToQueue,
                         if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                         ContextMenuItem.ViewAlbum
                     )
@@ -58,6 +63,18 @@ class AlbumContextMenuViewModel @Inject constructor(
                             )
                             mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
                             addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        }
+                    }
+                    is ContextMenuItem.AddToQueue -> {
+                        viewModelScope.launch {
+                            val didAddToQueue =
+                                mediaQueueRepository.addToQueue(trackIds)
+                            addUiEvent(
+                                BaseContextMenuUiEvent.ShowToast(
+                                    message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
+                                    success = didAddToQueue
+                                )
+                            )
                         }
                     }
                     is ContextMenuItem.ViewAlbum -> {

@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -19,10 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -68,7 +64,6 @@ class TrackContextMenuViewModel @Inject constructor(
     trackRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-    private val preferencesRepository: PreferencesRepository,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     init {
         collect(trackRepository.getTrack(state.value.mediaId)) {
@@ -116,29 +111,14 @@ class TrackContextMenuViewModel @Inject constructor(
                     }
                     ContextMenuItem.AddToQueue -> {
                         viewModelScope.launch {
-                            withContext(Dispatchers.IO) {
-                                preferencesRepository.getSavedPlaybackInfo().first().also {
-                                    if (it.currentQueue.mediaGroupType == MediaGroupType.UNKNOWN) {
-                                        addUiEvent(
-                                            BaseContextMenuUiEvent.ShowToast(
-                                                R.string.no_queue_available,
-                                                success = false
-                                            )
-                                        )
-                                        return@also
-                                    }
-                                    mediaQueueRepository.addToQueue(
-                                        it.currentQueue,
-                                        listOf(state.value.mediaId)
-                                    )
-                                    addUiEvent(
-                                        BaseContextMenuUiEvent.ShowToast(
-                                            R.string.added_to_queue,
-                                            success = true
-                                        )
-                                    )
-                                }
-                            }
+                            val didAddToQueue =
+                                mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
+                            addUiEvent(
+                                BaseContextMenuUiEvent.ShowToast(
+                                    message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
+                                    success = didAddToQueue
+                                )
+                            )
                         }
                     }
                     ContextMenuItem.ViewAlbum -> {

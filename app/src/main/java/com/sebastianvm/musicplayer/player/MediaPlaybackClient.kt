@@ -201,15 +201,17 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     suspend fun addToQueue(mediaIds: List<String>): Int {
-        val index = withContext(Dispatchers.Main) {
+        return withContext(Dispatchers.Main) {
             controller?.let { controllerNotNull ->
+                val tracks = trackRepository.getTracks(mediaIds).first().map { it.toMediaItem() }
                 val nextIndex = controllerNotNull.nextMediaItemIndex
-                val track = trackRepository.getTracks(mediaIds).first().map { it.toMediaItem() }
-                controllerNotNull.addMediaItems(nextIndex, track)
+                if (nextIndex == C.INDEX_UNSET) {
+                    controllerNotNull.addMediaItems(tracks)
+                } else {
+                    controllerNotNull.addMediaItems(nextIndex, tracks)
+                }
                 nextIndex
             } ?: -1
-
         }
-        return index
     }
 }
