@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenu
@@ -83,9 +85,13 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
         M3ExposedDropDownMenu(
             state = M3ExposedDropDownMenuState(
                 expanded = state.dropdownExpanded,
-                label = "Queue",
+                label = stringResource(id = R.string.queue),
                 options = state.queues,
-                chosenOption = state.chosenQueue ?: MediaQueue(MediaGroupType.ALL_TRACKS, "", "No queue")
+                chosenOption = state.chosenQueue ?: MediaQueue(
+                    mediaGroupType = MediaGroupType.UNKNOWN,
+                    groupMediaId = "",
+                    queueName = stringResource(id = R.string.no_queue)
+                )
             ),
             delegate = delegate,
             modifier = Modifier

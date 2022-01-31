@@ -65,7 +65,7 @@ object InitialTrackContextMenuStateModule {
 @HiltViewModel
 class TrackContextMenuViewModel @Inject constructor(
     initialState: TrackContextMenuState,
-    private val trackRepository: TrackRepository,
+    trackRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val preferencesRepository: PreferencesRepository,
