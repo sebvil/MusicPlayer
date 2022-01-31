@@ -6,6 +6,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -102,7 +103,6 @@ class MediaPlaybackClient @Inject constructor(
 
     private fun setController() {
         val controller = this.controller ?: return
-        // TODO move this logic to service
         controller.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -120,6 +120,10 @@ class MediaPlaybackClient @Inject constructor(
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0)
 
+                }
+
+                override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                    currentIndex.value = controller.currentMediaItemIndex
                 }
             }
         )

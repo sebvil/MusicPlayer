@@ -36,26 +36,26 @@ class TrackRepositoryImpl@Inject constructor(
     }
 
     override fun getTracksForArtist(artistName: String) : Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForArtist(artistName)
+        return trackDao.getTracksForArtist(artistName).distinctUntilChanged()
     }
 
     override fun getTracksForAlbum(albumId: String) : Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForAlbum(albumId)
+        return trackDao.getTracksForAlbum(albumId).distinctUntilChanged()
     }
 
     override fun getTracksForGenre(genreName: String) : Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForGenre(genreName)
+        return trackDao.getTracksForGenre(genreName).distinctUntilChanged()
     }
 
     override fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForPlaylist(playlistName)
+        return trackDao.getTracksForPlaylist(playlistName).distinctUntilChanged()
     }
 
     override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> {
-        return trackDao.getTracksForQueue(mediaGroup.mediaGroupType, mediaGroup.mediaId)
+        return trackDao.getTracksForQueue(mediaGroup.mediaGroupType, mediaGroup.mediaId).distinctUntilChanged()
     }
 
-    suspend override fun insertAllTracks(
+    override suspend fun insertAllTracks(
         tracks: Set<Track>,
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
         genreTrackCrossRefs: Set<GenreTrackCrossRef>,

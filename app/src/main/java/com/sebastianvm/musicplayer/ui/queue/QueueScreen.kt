@@ -17,7 +17,6 @@ import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenu
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuDelegate
 import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnIndexed
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnState
@@ -36,7 +35,7 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 screenViewModel.handle(QueueUserAction.ItemDragged(newIndex))
             }
 
-            override fun onDragStart(index: TrackRowState) {
+            override fun onDragStart(index: Int) {
                 screenViewModel.handle(QueueUserAction.ItemSelectedForDrag(index))
             }
 
@@ -73,7 +72,7 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
     }
 }
 
-interface QueueScreenDelegate : DraggableListItemDelegate<TrackRowState>,
+interface QueueScreenDelegate : DraggableListItemDelegate,
     M3ExposedDropDownMenuDelegate<MediaQueue> {
     fun onTrackClicked(trackId: String) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
@@ -105,10 +104,11 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 state.draggedItemFinalIndex,
                 state.draggedItem
             ),
-            key = { index, _ -> index },
+            key = { _, item -> "${item.trackRowState.trackId}-${item.queuePosition}"},
             delegate = delegate
-        ) { index, item ->
-            if (index == state.nowPlayingTrackIndex && state.mediaGroup == state.chosenQueue?.toMediaGroup()) {
+        ) { index, queueItem ->
+            val item = queueItem.trackRowState
+            if (index == state.nowPlayingTrackIndex && state.mediaGroup == state.chosenQueue?.toMediaGroup() && state.draggedItemFinalIndex == -1) {
                 TrackRow(
                     state = item,
                     modifier = Modifier.clickable {

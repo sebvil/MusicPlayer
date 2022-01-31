@@ -48,14 +48,17 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 queueName = queueName,
             )
         )
-        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(trackIds.mapIndexed { index, trackId ->
-            MediaQueueTrackCrossRef(
-                mediaGroupType = mediaGroup.mediaGroupType,
-                groupMediaId = mediaGroup.mediaId,
-                trackId = trackId,
-                trackIndex = index
-            )
-        })
+        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
+            queueId = mediaGroup.mediaId,
+            mediaGroupType = mediaGroup.mediaGroupType,
+            trackIds.mapIndexed { index, trackId ->
+                MediaQueueTrackCrossRef(
+                    mediaGroupType = mediaGroup.mediaGroupType,
+                    groupMediaId = mediaGroup.mediaId,
+                    trackId = trackId,
+                    trackIndex = index
+                )
+            })
         return queueId
     }
 
@@ -106,11 +109,11 @@ class MediaQueueRepositoryImpl @Inject constructor(
         queue: MediaGroup,
         mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
     ) {
-        mediaQueueDao.deleteMediaQueueTrackCrossRefs(
+        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
             queueId = queue.mediaId,
-            mediaGroupType = queue.mediaGroupType
+            mediaGroupType = queue.mediaGroupType,
+            mediaQueueTrackCrossRefs = mediaQueueTrackCrossRefs
         )
-        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(mediaQueueTrackCrossRefs)
     }
 
     private fun getTrackComparator(
@@ -139,7 +142,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
         return mediaQueueDao.getMediaQueTrackCrossRefs(
             queue.mediaId,
             queue.mediaGroupType
-        )
+        ).distinctUntilChanged()
     }
 
     override suspend fun addToQueue(trackIds: List<String>): Boolean {

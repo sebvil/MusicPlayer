@@ -10,7 +10,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class AlbumRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
@@ -34,6 +33,6 @@ class AlbumRepositoryImpl @Inject constructor(
     }
 
     override fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>> {
-        return albumDao.getAlbumWithTracks(albumId)
+        return albumDao.getAlbumWithTracks(albumId).distinctUntilChanged()
     }
 }

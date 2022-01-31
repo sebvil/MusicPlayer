@@ -39,8 +39,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import kotlin.math.roundToInt
 
 
-interface DraggableListItemDelegate<T> {
-    fun onDragStart(index: T) = Unit
+interface DraggableListItemDelegate {
+    fun onDragStart(index: Int) = Unit
     fun onDragEnd() = Unit
     fun onVerticalDrag(newIndex: Int) = Unit
 }
@@ -56,7 +56,7 @@ data class SortableLazyColumnState<T>(
 fun <T> SortableLazyColumnIndexed(
     state: SortableLazyColumnState<T>,
     key: ((Int, T) -> Any)?,
-    delegate: DraggableListItemDelegate<T>,
+    delegate: DraggableListItemDelegate,
     listState: LazyListState = rememberLazyListState(),
     row: @Composable (index: Int, item: T) -> Unit
 ) {
@@ -92,7 +92,7 @@ fun <T> SortableLazyColumnIndexed(
                         detectDragGesturesAfterLongPress(
                             onDragStart = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                delegate.onDragStart(item)
+                                delegate.onDragStart(index)
                             },
                             onDragEnd = {
                                 delegate.onDragEnd()
@@ -166,20 +166,20 @@ fun <T> SortableLazyColumnIndexed(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun <T> SortableLazyColumn(
-    state: SortableLazyColumnState<T>,
-    key: ((T) -> Any)?,
-    delegate: DraggableListItemDelegate<T>,
-    listState: LazyListState = rememberLazyListState(),
-    row: @Composable (item: T) -> Unit
-) {
-    SortableLazyColumnIndexed(
-        state = state,
-        key = key?.let { { _, item -> key(item) } },
-        delegate = delegate,
-        listState = listState) { _, item ->
-        row(item)
-    }
-}
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun <T> SortableLazyColumn(
+//    state: SortableLazyColumnState<T>,
+//    key: ((T) -> Any)?,
+//    delegate: DraggableListItemDelegate<T>,
+//    listState: LazyListState = rememberLazyListState(),
+//    row: @Composable (item: T) -> Unit
+//) {
+//    SortableLazyColumnIndexed(
+//        state = state,
+//        key = key?.let { { _, item -> key(item) } },
+//        delegate = delegate,
+//        listState = listState) { _, item ->
+//        row(item)
+//    }
+//}

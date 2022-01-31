@@ -12,6 +12,6 @@ class GenreRepositoryImpl @Inject constructor(private val genreDao: GenreDao) : 
     }
 
     override fun getGenres(): Flow<List<Genre>> {
-        return genreDao.getGenres()
+        return genreDao.getGenres().distinctUntilChanged()
     }
 }

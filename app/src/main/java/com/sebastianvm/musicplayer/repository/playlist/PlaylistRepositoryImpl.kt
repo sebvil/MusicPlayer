@@ -12,6 +12,6 @@ class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: Playli
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {
-        return playlistDao.getPlaylists()
+        return playlistDao.getPlaylists().distinctUntilChanged()
     }
 }

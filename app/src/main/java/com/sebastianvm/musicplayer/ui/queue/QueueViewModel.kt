@@ -21,6 +21,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -55,14 +56,19 @@ class QueueViewModel @Inject constructor(
                 )
             }
         }
-        collect(state.map { it.chosenQueue }.flatMapLatest { queue ->
+        collect(state.map { it.chosenQueue }.distinctUntilChanged().flatMapLatest { queue ->
             queue?.let {
                 tracksRepository.getTracksForQueue(it.toMediaGroup())
-            } ?: flow { }
+            } ?: flow {}
         }) { tracks ->
             setState {
                 copy(
-                    queueItems = tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
+                    queueItems = tracks.mapIndexed { index, track ->
+                        QueueItem(
+                            index,
+                            track.toTrackRowState(includeTrackNumber = false)
+                        )
+                    }
                 )
             }
         }
@@ -106,7 +112,7 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.ItemSelectedForDrag -> {
-                val index = state.value.queueItems.indexOf(action.item)
+                val index = action.index
                 val items = state.value.queueItems.toMutableList()
                 val itemToDrag = items[index]
                 setState {
@@ -140,28 +146,14 @@ class QueueViewModel @Inject constructor(
                             viewModelScope.launch {
                                 mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
                                     mediaQueue.toMediaGroup(),
-                                    queueItems.mapIndexed { index, trackRowState ->
+                                    queueItems.mapIndexed { index, queueItem ->
                                         MediaQueueTrackCrossRef(
                                             mediaGroupType = mediaQueue.mediaGroupType,
                                             groupMediaId = mediaQueue.groupMediaId,
-                                            trackId = trackRowState.trackId,
+                                            trackId = queueItem.trackRowState.trackId,
                                             trackIndex = index
                                         )
                                     })
-
-                                val tracks =
-                                    tracksRepository.getTracksForQueue(mediaQueue.toMediaGroup())
-                                        .first()
-                                setState {
-                                    copy(
-                                        chosenQueue = mediaQueue,
-                                        queueItems = tracks.map { track ->
-                                            track.toTrackRowState(
-                                                includeTrackNumber = false
-                                            )
-                                        }
-                                    )
-                                }
                             }
                         }
 
@@ -181,7 +173,7 @@ class QueueViewModel @Inject constructor(
                         }
                     }
                     val index =
-                        state.value.queueItems.indexOfFirst { it.trackId == action.trackId }
+                        state.value.queueItems.indexOfFirst { it.trackRowState.trackId == action.trackId }
                     if (index == -1) return
                     mediaPlaybackRepository.playQueueItem(index)
                 }
@@ -195,34 +187,26 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.DropdownMenuOptionChosen -> {
-                viewModelScope.launch {
-                    val tracks = tracksRepository.getTracksForQueue(
-                        MediaGroup(
-                            action.newOption.mediaGroupType,
-                            action.newOption.groupMediaId
-                        )
-                    ).first()
-                        .map { it.toTrackRowState(includeTrackNumber = false) }
-                    setState {
-                        copy(
-                            dropdownExpanded = false,
-                            chosenQueue = action.newOption,
-                            queueItems = tracks
-                        )
-                    }
+                setState {
+                    copy(
+                        dropdownExpanded = false,
+                        chosenQueue = action.newOption,
+                    )
                 }
             }
         }
     }
 }
 
+data class QueueItem(val queuePosition: Int, val trackRowState: TrackRowState)
+
 data class QueueState(
     val queues: List<MediaQueue>,
     val chosenQueue: MediaQueue?,
     val dropdownExpanded: Boolean,
     val mediaGroup: MediaGroup?,
-    val queueItems: List<TrackRowState>,
-    val draggedItem: TrackRowState?,
+    val queueItems: List<QueueItem>,
+    val draggedItem: QueueItem?,
     val draggedItemStartingIndex: Int = -1,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int,
@@ -248,7 +232,7 @@ object InitialQueueStateModule {
 
 sealed class QueueUserAction : UserAction {
     data class ItemDragged(val newIndex: Int) : QueueUserAction()
-    data class ItemSelectedForDrag(val item: TrackRowState) : QueueUserAction()
+    data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
     object DragEnded : QueueUserAction()
     data class TrackClicked(val trackId: String) : QueueUserAction()
     object DropdownMenuClicked : QueueUserAction()

@@ -60,7 +60,7 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
                     SortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
                 }
             }
-        }
+        }.distinctUntilChanged()
     }
 
     override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) {
@@ -79,7 +79,7 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
             } else {
                 SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING)
             }
-        }
+        }.distinctUntilChanged()
     }
 
 
@@ -93,7 +93,7 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
         return preferencesUtil.dataStore.data.map { preferences ->
             preferences[PreferencesUtil.ARTISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) }
                 ?: SortOrder.ASCENDING
-        }
+        }.distinctUntilChanged()
     }
 
     override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
@@ -106,7 +106,7 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
         return preferencesUtil.dataStore.data.map { preferences ->
             preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) }
                 ?: SortOrder.ASCENDING
-        }
+        }.distinctUntilChanged()
     }
 
     override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) {
