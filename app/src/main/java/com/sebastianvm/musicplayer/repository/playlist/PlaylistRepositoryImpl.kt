@@ -6,12 +6,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
-class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: PlaylistDao) : PlaylistRepository {
+class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: PlaylistDao) :
+    PlaylistRepository {
     override fun getPlaylistsCount(): Flow<Long> {
         return playlistDao.getPlaylistsCount().distinctUntilChanged()
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistDao.getPlaylists().distinctUntilChanged()
+    }
+
+    override suspend fun createPlaylist(playlistName: String) {
+        playlistDao.createPlaylist(Playlist(playlistName = playlistName))
     }
 }

@@ -5,11 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.TextField
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -21,6 +29,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -51,6 +60,17 @@ fun PlaylistsListScreen(
                 }
             }
         },
+        fab = {
+            ExtendedFloatingActionButton(
+                text = { Text(text = stringResource(id = R.string.new_playlist)) },
+                onClick = { screenViewModel.handle(PlaylistsListUserAction.FabClicked) },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_plus),
+                        contentDescription = stringResource(id = R.string.new_playlist)
+                    )
+                })
+        },
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.playlists),
@@ -76,11 +96,19 @@ fun PlaylistsListScreen(
                     )
                 )
             }
+
+            override fun onDismissDialog() {
+                screenViewModel.handle(PlaylistsListUserAction.DialogDismissed)
+            }
+
+            override fun onSubmit(playlistName: String) {
+                screenViewModel.handle(PlaylistsListUserAction.PlaylistCreated(playlistName))
+            }
         })
     }
 }
 
-interface PlaylistsListScreenDelegate {
+interface PlaylistsListScreenDelegate : PlaylistDialogDelegate {
     fun onPlaylistClicked(playlistName: String) = Unit
     fun onContextMenuIconClicked(playlistName: String) = Unit
 }
@@ -98,12 +126,50 @@ fun PlaylistsListScreenPreview(
     }
 }
 
+interface PlaylistDialogDelegate {
+    fun onDismissDialog() = Unit
+    fun onSubmit(playlistName: String) = Unit
+}
+
+@Composable
+fun CreatePlaylistDialog(delegate: PlaylistDialogDelegate) {
+    var playListName by rememberSaveable {
+        mutableStateOf("")
+    }
+    AlertDialog(
+        onDismissRequest = { delegate.onDismissDialog() },
+        confirmButton = {
+            TextButton(onClick = { delegate.onSubmit(playListName) }) {
+                Text(text = "Create")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { delegate.onDismissDialog() }) {
+                Text(text = "Cancel")
+            }
+        },
+        title = {
+            Text(text = "Playlist name")
+        },
+        text = {
+            TextField(
+                value = playListName,
+                onValueChange = { newValue -> playListName = newValue },
+                colors = textFieldColors()
+            )
+        }
+    )
+}
+
 
 @Composable
 fun PlaylistsListLayout(
     state: PlaylistsListState,
     delegate: PlaylistsListScreenDelegate
 ) {
+    if (state.isDialogOpen) {
+        CreatePlaylistDialog(delegate = delegate)
+    }
     LazyColumn {
         items(state.playlistsList) { item ->
             SingleLineListItem(
