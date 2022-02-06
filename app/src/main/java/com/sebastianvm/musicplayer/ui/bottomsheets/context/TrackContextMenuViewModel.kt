@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
@@ -9,7 +10,6 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
@@ -18,6 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class TrackContextMenuState(
@@ -93,7 +94,7 @@ class TrackContextMenuViewModel @Inject constructor(
         when (row) {
             is ContextMenuItem.Play -> {
                 with(state.value) {
-                    launchViewModelIOScope {
+                    viewModelScope.launch {
                         mediaQueueRepository.createQueue(
                             mediaGroup = mediaGroup,
                             sortOrder = sortOrder,
@@ -105,7 +106,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 }
             }
             ContextMenuItem.AddToQueue -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val didAddToQueue =
                         mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
                     addUiEvent(

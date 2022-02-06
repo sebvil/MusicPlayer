@@ -81,6 +81,13 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     }
 }
 
+fun NavController.navigateToTracksRoot() {
+    navigateTo(
+        NavRoutes.TRACKS_ROOT,
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, MediaGroupType.ALL_TRACKS)
+    )
+}
+
 fun NavController.navigateToGenre(genreName: String) {
     navigateTo(
         NavRoutes.TRACKS_ROOT,

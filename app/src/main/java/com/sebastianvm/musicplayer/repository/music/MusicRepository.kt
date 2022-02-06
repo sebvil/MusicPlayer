@@ -5,12 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface MusicRepository {
-
-
     fun getCounts(): Flow<CountHolder>
-
-
     suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback)
-
-
 }

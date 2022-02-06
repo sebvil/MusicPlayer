@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -7,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
@@ -18,6 +18,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -54,7 +55,7 @@ class ArtistsListViewModel @Inject constructor(
                 )
             }
             is ArtistsListUserAction.SortByClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
                 }
             }

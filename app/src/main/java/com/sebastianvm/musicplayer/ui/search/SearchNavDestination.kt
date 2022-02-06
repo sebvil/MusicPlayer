@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist

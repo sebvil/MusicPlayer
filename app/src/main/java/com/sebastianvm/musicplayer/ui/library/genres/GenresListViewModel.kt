@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.genres
 
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,13 +51,13 @@ class GenresListViewModel @Inject constructor(
                 this.addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
             }
             is GenresListUserAction.SortByClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyGenresListSortOrder(!state.value.sortOrder)
                 }
             }
             is GenresListUserAction.UpButtonClicked -> addUiEvent(GenresListUiEvent.NavigateUp)
             is GenresListUserAction.OverflowMenuIconClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val sortSettings =
                         preferencesRepository.getTracksListSortOptions(action.genreName).first()
                     addUiEvent(

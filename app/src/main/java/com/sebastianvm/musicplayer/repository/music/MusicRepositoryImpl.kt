@@ -20,14 +20,18 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MusicRepositoryImpl @Inject constructor(
-    @ApplicationContext val context: Context,
+    @ApplicationContext private val context: Context,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val musicDatabase: MusicDatabase,
     private val trackRepository: TrackRepository,
     private val artistRepository: ArtistRepository,
@@ -139,95 +143,94 @@ class MusicRepositoryImpl @Inject constructor(
     @WorkerThread
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
+        withContext(ioDispatcher) {
+            musicDatabase.clearAllTables()
+            context.let {
+                val musicResolver = context.contentResolver
+                val musicUri =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        MediaStore.Audio.Media.getContentUri(
+                            MediaStore.VOLUME_EXTERNAL_PRIMARY
+                        )
+                    } else {
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    }
 
-        musicDatabase.clearAllTables()
+                val selection = "${MediaStore.Audio.Media.IS_MUSIC} = 1"
+                val musicCursor = musicResolver.query(musicUri, null, selection, null, null)
 
+                if (musicCursor != null && musicCursor.moveToFirst()) {
+                    //get columns
+                    val titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+                    val idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID)
+                    val artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+                    val albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
+                    val albumArtistColumn =
+                        musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ARTIST)
+                    val year = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
+                    val genres = musicCursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
+                    val trackNumber = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
+                    val numTracks = musicCursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
+                    val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
+                    val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+                    val relativePathColumn =
+                        musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
+                    val fileNameColumn =
+                        musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
+                    //add songs to list
+                    var count = 0
+                    do {
+                        val thisId = musicCursor.getString(idColumn) ?: ""
+                        val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
+                        val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
+                        val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
+                        val thisAlbumArtists =
+                            musicCursor.getString(albumArtistColumn) ?: "No album artists"
+                        val thisYear = musicCursor.getLong(year)
+                        val thisGenre = musicCursor.getString(genres) ?: "No genre"
+                        val thisTrackNumber = musicCursor.getLong(trackNumber)
+                        val thisNumTracks = musicCursor.getLong(numTracks)
+                        val thisDuration = musicCursor.getLong(duration)
+                        val albumId = musicCursor.getString(albumIdColumn)
+                        val relativePath = musicCursor.getString(relativePathColumn)
+                        val fileName = musicCursor.getString(fileNameColumn)
 
-        context.let {
-            val musicResolver = context.contentResolver
-            val musicUri =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Audio.Media.getContentUri(
-                        MediaStore.VOLUME_EXTERNAL_PRIMARY
-                    )
-                } else {
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        count++
+                        messageCallback.updateProgress(
+                            musicCursor.count,
+                            count,
+                            relativePath + fileName
+                        )
+
+                        insertTrack(
+                            thisId,
+                            thisTitle,
+                            thisArtist,
+                            thisGenre,
+                            thisAlbum,
+                            thisAlbumArtists,
+                            thisYear,
+                            thisTrackNumber,
+                            thisNumTracks,
+                            thisDuration,
+                            albumId
+                        )
+
+                    } while (musicCursor.moveToNext())
                 }
-
-            val selection = "${MediaStore.Audio.Media.IS_MUSIC} = 1"
-            val musicCursor = musicResolver.query(musicUri, null, selection, null, null)
-
-            if (musicCursor != null && musicCursor.moveToFirst()) {
-                //get columns
-                val titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-                val idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID)
-                val artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-                val albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-                val albumArtistColumn =
-                    musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ARTIST)
-                val year = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
-                val genres = musicCursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
-                val trackNumber = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
-                val numTracks = musicCursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
-                val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
-                val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-                val relativePathColumn =
-                    musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
-                val fileNameColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
-                //add songs to list
-                var count = 0
-                do {
-                    val thisId = musicCursor.getString(idColumn) ?: ""
-                    val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
-                    val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
-                    val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
-                    val thisAlbumArtists =
-                        musicCursor.getString(albumArtistColumn) ?: "No album artists"
-                    val thisYear = musicCursor.getLong(year)
-                    val thisGenre = musicCursor.getString(genres) ?: "No genre"
-                    val thisTrackNumber = musicCursor.getLong(trackNumber)
-                    val thisNumTracks = musicCursor.getLong(numTracks)
-                    val thisDuration = musicCursor.getLong(duration)
-                    val albumId = musicCursor.getString(albumIdColumn)
-                    val relativePath = musicCursor.getString(relativePathColumn)
-                    val fileName = musicCursor.getString(fileNameColumn)
-
-                    count++
-                    messageCallback.updateProgress(
-                        musicCursor.count,
-                        count,
-                        relativePath + fileName
-                    )
-
-                    insertTrack(
-                        thisId,
-                        thisTitle,
-                        thisArtist,
-                        thisGenre,
-                        thisAlbum,
-                        thisAlbumArtists,
-                        thisYear,
-                        thisTrackNumber,
-                        thisNumTracks,
-                        thisDuration,
-                        albumId
-                    )
-
-                } while (musicCursor.moveToNext())
+                musicCursor?.close()
+                trackRepository.insertAllTracks(
+                    tracks = trackSet,
+                    artistTrackCrossRefs = artistTrackCrossRefsSet,
+                    genreTrackCrossRefs = genreTrackCrossRefsSet,
+                    artists = artistsSet,
+                    genres = genresSet,
+                    albums = albumSet,
+                    albumsForArtists = albumForArtistsSet,
+                    appearsOnForArtists = appearsOnForArtistSet,
+                )
             }
-            musicCursor?.close()
-            trackRepository.insertAllTracks(
-                tracks = trackSet,
-                artistTrackCrossRefs = artistTrackCrossRefsSet,
-                genreTrackCrossRefs = genreTrackCrossRefsSet,
-                artists = artistsSet,
-                genres = genresSet,
-                albums = albumSet,
-                albumsForArtists = albumForArtistsSet,
-                appearsOnForArtists = appearsOnForArtistSet,
-            )
+            messageCallback.onFinished()
         }
-        messageCallback.onFinished()
     }
-
 }

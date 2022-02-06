@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
@@ -14,7 +15,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -27,6 +27,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -75,7 +76,7 @@ class TracksListViewModel @Inject constructor(
     override fun handle(action: TracksListUserAction) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaGroupType = state.value.tracksListTitle?.let { MediaGroupType.GENRE }
                             ?: MediaGroupType.ALL_TRACKS,
@@ -105,7 +106,7 @@ class TracksListViewModel @Inject constructor(
                     state.value.sortOrder
                 }
 
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
                         SortSettings(
                             sortOption = action.newSortOption,

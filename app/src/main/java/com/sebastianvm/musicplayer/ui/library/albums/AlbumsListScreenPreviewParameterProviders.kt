@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.SortOption

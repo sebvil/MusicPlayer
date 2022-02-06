@@ -11,11 +11,15 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TrackRepositoryImpl@Inject constructor(
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val trackDao: TrackDao
 ): TrackRepository {
 
@@ -65,15 +69,17 @@ class TrackRepositoryImpl@Inject constructor(
         albumsForArtists: Set<AlbumsForArtist>,
         appearsOnForArtists: Set<AppearsOnForArtist>
     ) {
-        trackDao.insertAllTracks(
-            tracks = tracks,
-            artistTrackCrossRefs = artistTrackCrossRefs,
-            genreTrackCrossRefs = genreTrackCrossRefs,
-            artists = artists,
-            genres = genres,
-            albums = albums,
-            albumsForArtists = albumsForArtists,
-            appearsOnForArtists = appearsOnForArtists,
-        )
+        withContext(ioDispatcher) {
+            trackDao.insertAllTracks(
+                tracks = tracks,
+                artistTrackCrossRefs = artistTrackCrossRefs,
+                genreTrackCrossRefs = genreTrackCrossRefs,
+                artists = artists,
+                genres = genres,
+                albums = albums,
+                albumsForArtists = albumsForArtists,
+                appearsOnForArtists = appearsOnForArtists,
+            )
+        }
     }
 }

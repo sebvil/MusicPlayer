@@ -9,29 +9,37 @@ import com.sebastianvm.musicplayer.util.PreferencesUtil
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil: PreferencesUtil) :
+class PreferencesRepositoryImpl @Inject constructor(
+    private val preferencesUtil: PreferencesUtil,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+) :
     PreferencesRepository {
     override suspend fun modifyTrackListSortOptions(
         sortSettings: SortSettings,
         genreName: String?
     ) {
-        preferencesUtil.dataStore.edit { settings ->
-            genreName?.also {
-                val sortOptionKey =
-                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
-                val sortOrderKey =
-                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
-                settings[sortOptionKey] = sortSettings.sortOption.name
-                settings[sortOrderKey] = sortSettings.sortOrder.name
-            } ?: kotlin.run {
-                settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortSettings.sortOption.name
-                settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortSettings.sortOrder.name
+        withContext(ioDispatcher) {
+            preferencesUtil.dataStore.edit { settings ->
+                genreName?.also {
+                    val sortOptionKey =
+                        stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
+                    val sortOrderKey =
+                        stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
+                    settings[sortOptionKey] = sortSettings.sortOption.name
+                    settings[sortOrderKey] = sortSettings.sortOrder.name
+                } ?: kotlin.run {
+                    settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortSettings.sortOption.name
+                    settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortSettings.sortOrder.name
+                }
             }
         }
     }
@@ -64,9 +72,11 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
     }
 
     override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) {
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortSettings.sortOption.name
-            settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortSettings.sortOrder.name
+        withContext(ioDispatcher) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortSettings.sortOption.name
+                settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortSettings.sortOrder.name
+            }
         }
     }
 
@@ -84,8 +94,10 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
 
 
     override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.ARTISTS_SORT_ORDER] = sortOrder.name
+        withContext(ioDispatcher) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.ARTISTS_SORT_ORDER] = sortOrder.name
+            }
         }
     }
 
@@ -97,8 +109,10 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
     }
 
     override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.GENRES_SORT_ORDER] = sortOrder.name
+        withContext(ioDispatcher) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.GENRES_SORT_ORDER] = sortOrder.name
+            }
         }
     }
 
@@ -110,8 +124,10 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
     }
 
     override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) {
-        preferencesUtil.dataStore.edit { settings ->
-            settings[PreferencesUtil.PLAYLISTS_SORT_ORDER] = sortOrder.name
+        withContext(ioDispatcher) {
+            preferencesUtil.dataStore.edit { settings ->
+                settings[PreferencesUtil.PLAYLISTS_SORT_ORDER] = sortOrder.name
+            }
         }
     }
 
@@ -123,13 +139,15 @@ class PreferencesRepositoryImpl @Inject constructor(private val preferencesUtil:
     }
 
     override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
-        with(transform(getSavedPlaybackInfo().first())) {
-            preferencesUtil.dataStore.edit { settings ->
-                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
-                    currentQueue.mediaGroupType.name
-                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] = currentQueue.mediaId
-                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
-                settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
+        withContext(ioDispatcher) {
+            with(transform(getSavedPlaybackInfo().first())) {
+                preferencesUtil.dataStore.edit { settings ->
+                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
+                        currentQueue.mediaGroupType.name
+                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] = currentQueue.mediaId
+                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
+                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
+                }
             }
         }
     }

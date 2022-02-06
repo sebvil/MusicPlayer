@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.util.SortOrder
 
 class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseContextMenuState> {
