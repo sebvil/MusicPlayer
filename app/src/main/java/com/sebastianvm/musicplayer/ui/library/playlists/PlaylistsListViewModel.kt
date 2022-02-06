@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -17,11 +17,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,13 +50,13 @@ class PlaylistsListViewModel @Inject constructor(
                 this.addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
             }
             is PlaylistsListUserAction.SortByClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     preferencesRepository.modifyPlaylistsListSortOrder(!state.value.sortOrder)
                 }
             }
             is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     val sortSettings =
                         preferencesRepository.getTracksListSortOptions(action.playlistName).first()
                     addUiEvent(
@@ -83,10 +80,8 @@ class PlaylistsListViewModel @Inject constructor(
                 }
             }
             is PlaylistsListUserAction.PlaylistCreated -> {
-                viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        playlistRepository.createPlaylist(action.playlistName)
-                    }
+                launchViewModelIOScope {
+                    playlistRepository.createPlaylist(action.playlistName)
                 }
                 setState {
                     copy(isDialogOpen = false)

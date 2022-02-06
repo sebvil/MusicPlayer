@@ -21,6 +21,7 @@ sealed class BaseContextMenuUiEvent : UiEvent {
         BaseContextMenuUiEvent()
 
     data class NavigateToGenre(val genreName: String) : BaseContextMenuUiEvent()
+    data class NavigateToPlaylist(val playlistName: String) : BaseContextMenuUiEvent()
     data class ShowToast(@StringRes val message: Int, val success: Boolean) : BaseContextMenuUiEvent()
 }
 

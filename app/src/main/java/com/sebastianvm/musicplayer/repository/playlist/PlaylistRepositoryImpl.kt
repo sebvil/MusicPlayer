@@ -19,4 +19,8 @@ class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: Playli
     override suspend fun createPlaylist(playlistName: String) {
         playlistDao.createPlaylist(Playlist(playlistName = playlistName))
     }
+
+    override suspend fun deletePlaylist(playlistName: String) {
+        playlistDao.deletePlaylist(Playlist(playlistName = playlistName))
+    }
 }

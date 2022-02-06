@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.database.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -25,5 +26,8 @@ interface PlaylistDao {
     fun getPlaylists(): Flow<List<Playlist>>
 
     @Insert
-    fun createPlaylist(playlist: Playlist)
+    suspend fun createPlaylist(playlist: Playlist)
+
+    @Delete
+    suspend fun deletePlaylist(playlist: Playlist)
 }

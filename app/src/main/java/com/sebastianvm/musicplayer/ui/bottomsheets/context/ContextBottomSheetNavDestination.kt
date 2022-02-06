@@ -50,7 +50,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 MediaType.ARTIST -> hiltViewModel<ArtistContextMenuViewModel>()
                 MediaType.GENRE -> hiltViewModel<GenreContextMenuViewModel>()
                 MediaType.ALBUM -> hiltViewModel<AlbumContextMenuViewModel>()
-                MediaType.PLAYLIST -> TODO()
+                MediaType.PLAYLIST -> hiltViewModel<PlaylistContextMenuViewModel>()
             }
         ContextBottomSheet(
             sheetViewModel = sheetViewModel,

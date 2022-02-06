@@ -11,6 +11,7 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
@@ -54,7 +55,7 @@ class AlbumContextMenuViewModel @Inject constructor(
             is BaseContextMenuUserAction.RowClicked -> {
                 when (action.row) {
                     is ContextMenuItem.PlayFromBeginning -> {
-                        viewModelScope.launch {
+                        launchViewModelIOScope {
                             val mediaGroup = MediaGroup(MediaGroupType.ALBUM, state.value.mediaId)
                             mediaQueueRepository.createQueue(
                                 mediaGroup = mediaGroup,
