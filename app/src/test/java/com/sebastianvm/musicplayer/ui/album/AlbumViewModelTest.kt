@@ -4,7 +4,7 @@ import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
@@ -96,7 +96,7 @@ class AlbumViewModelTest {
             verify {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    MediaGroup(mediaGroupType = MediaType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
+                    MediaGroup(mediaGroupType = MediaGroupType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
                 )
             }
 
@@ -104,7 +104,7 @@ class AlbumViewModelTest {
             coVerify {
                 mediaQueueRepository.createQueue(
                     MediaGroup(
-                        mediaGroupType = MediaType.ALBUM,
+                        mediaGroupType = MediaGroupType.ALBUM,
                         mediaId = state.value.albumId
                     ),
                     SortOption.TRACK_NUMBER,

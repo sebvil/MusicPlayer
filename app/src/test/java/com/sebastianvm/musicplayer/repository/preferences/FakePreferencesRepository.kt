@@ -17,6 +17,7 @@ class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_N
         MutableStateFlow(SortSettings(trackSortOption, SortOrder.ASCENDING))
     private val artistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
     private val genresSortOrder = MutableStateFlow(SortOrder.ASCENDING)
+    private val playlistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
 
 
     override suspend fun modifyTrackListSortOptions(
@@ -43,6 +44,12 @@ class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_N
         genresSortOrder.emit(sortOrder)
 
     override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
-    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) = Unit
-    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> = flow {  }
+    override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) = Unit
+
+    override fun getPlaylistsListSortOrder(): Flow<SortOrder> = playlistSortOrder
+
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) =
+        Unit
+
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> = flow { }
 }

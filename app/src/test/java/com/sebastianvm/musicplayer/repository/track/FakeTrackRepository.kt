@@ -61,6 +61,7 @@ class FakeTrackRepository : TrackRepository {
     override fun getTrack(tracksId: String): Flow<FullTrackInfo> =
         flow { tracksMap[tracksId]?.also { emit(it) } }
 
+    override fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>> = flow {  }
     override fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>> =
         flow { artistMap[artistName]?.also { emit(it) } }
 
@@ -70,6 +71,8 @@ class FakeTrackRepository : TrackRepository {
 
     override fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>> =
         flow { genreMap[genreName]?.also { emit(it) } }
+
+    override fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>> = flow {  }
 
     override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> = flow {  }
 

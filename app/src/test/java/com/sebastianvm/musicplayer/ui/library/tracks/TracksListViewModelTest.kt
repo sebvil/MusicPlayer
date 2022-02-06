@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.GenreBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
@@ -42,12 +42,14 @@ class TracksListViewModelTest {
 
     private fun generateViewModel(
         preferencesRepository: FakePreferencesRepository = FakePreferencesRepository(),
+        listGroupType: MediaGroupType = MediaGroupType.ALL_TRACKS,
         genreName: String? = null,
     ): TracksListViewModel {
         return TracksListViewModel(
             mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = TracksListState(
                 tracksListTitle = genreName,
+                listGroupType = listGroupType,
                 tracksList = listOf(),
                 currentSort = SortOption.ARTIST_NAME,
                 sortOrder = SortOrder.DESCENDING
@@ -123,7 +125,7 @@ class TracksListViewModelTest {
             verify {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
-                    MediaGroup(mediaGroupType = MediaType.TRACK, mediaId = "")
+                    MediaGroup(mediaGroupType = MediaGroupType.ALL_TRACKS, mediaId = "")
                 )
             }
         }
@@ -140,7 +142,7 @@ class TracksListViewModelTest {
                 mediaPlaybackRepository.playFromId(
                     TrackBuilder.DEFAULT_TRACK_ID,
                     MediaGroup(
-                        mediaGroupType = MediaType.GENRE,
+                        mediaGroupType = MediaGroupType.GENRE,
                         mediaId = GenreBuilder.DEFAULT_GENRE_NAME
                     )
                 )
@@ -165,7 +167,7 @@ class TracksListViewModelTest {
                     mediaPlaybackRepository.playFromId(
                         TrackBuilder.DEFAULT_TRACK_ID,
                         MediaGroup(
-                            mediaGroupType = MediaType.GENRE,
+                            mediaGroupType = MediaGroupType.GENRE,
                             mediaId = GenreBuilder.DEFAULT_GENRE_NAME
                         )
                     )

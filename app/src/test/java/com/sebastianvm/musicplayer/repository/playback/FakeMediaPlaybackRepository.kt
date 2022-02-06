@@ -19,6 +19,7 @@ class FakeMediaPlaybackRepository : MediaPlaybackRepository {
             currentPlayTimeMs = 10000,
         )
     )
+    override val nowPlayingIndex: MutableStateFlow<Int> = MutableStateFlow(1)
 
     override fun connectToService() = Unit
 
@@ -37,4 +38,7 @@ class FakeMediaPlaybackRepository : MediaPlaybackRepository {
     override fun moveQueueItem(previousIndex: Int, newIndex: Int) = Unit
 
     override fun playQueueItem(index: Int) = Unit
+    override fun seekToTrackPosition(position: Long) = Unit
+
+    override suspend fun addToQueue(mediaIds: List<String>): Int = 1
 }

@@ -23,4 +23,7 @@ class FakeMediaQueueRepository : MediaQueueRepository {
     override fun getAllQueues(): Flow<List<MediaQueue>> = flow {  }
 
     override fun getQueue(mediaGroup: MediaGroup): Flow<MediaQueue> = flow {  }
+    override fun getMediaQueTrackCrossRefs(queue: MediaGroup): Flow<List<MediaQueueTrackCrossRef>> = flow {  }
+
+    override suspend fun addToQueue(trackIds: List<String>): Boolean = false
 }
