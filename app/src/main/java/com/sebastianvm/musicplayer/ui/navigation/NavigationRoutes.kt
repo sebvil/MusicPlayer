@@ -21,7 +21,7 @@ object NavRoutes {
 }
 
 object NavArgs {
-    const val GENRE_NAME = "genreName"
+    const val TRACK_LIST_NAME = "trackListName"
     const val ALBUM_ID = "albumId"
     const val ARTIST_ID = "artistName"
     const val SCREEN = "screen"

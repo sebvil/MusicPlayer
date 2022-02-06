@@ -47,7 +47,7 @@ class PlaylistsListViewModel @Inject constructor(
     override fun handle(action: PlaylistsListUserAction) {
         when (action) {
             is PlaylistsListUserAction.PlaylistClicked -> {
-                this.addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
+                addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
             }
             is PlaylistsListUserAction.SortByClicked -> {
                 launchViewModelIOScope {

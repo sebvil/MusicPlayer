@@ -44,6 +44,7 @@ interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToArtist(artistName: String) = Unit
     fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
     fun navigateToGenre(genreName: String)
+    fun navigateToPlaylist(playlistName: String)
     fun hideBottomSheet()
 }
 
@@ -76,7 +77,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                     delegate.hideBottomSheet()
                 }
             }
-            is BaseContextMenuUiEvent.NavigateToPlaylist -> TODO()
+            is BaseContextMenuUiEvent.NavigateToPlaylist -> delegate.navigateToPlaylist(event.playlistName)
             is BaseContextMenuUiEvent.HideBottomSheet -> {
                 delegate.hideBottomSheet()
             }

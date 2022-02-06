@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
+import com.sebastianvm.musicplayer.ui.library.tracks.navigateToPlaylist
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -84,6 +85,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
 
                 override fun navigateToGenre(genreName: String) {
                     navController.navigateToGenre(genreName)
+                }
+
+                override fun navigateToPlaylist(playlistName: String) {
+                    navController.navigateToPlaylist(playlistName)
                 }
 
                 override fun hideBottomSheet() {
