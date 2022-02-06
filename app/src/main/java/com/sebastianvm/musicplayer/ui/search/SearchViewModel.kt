@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.search
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -23,6 +22,7 @@ import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -104,7 +103,7 @@ class SearchViewModel @Inject constructor(
                 }
             }
             is SearchUserAction.TrackRowClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     val mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.SINGLE_TRACK,
                         mediaId = action.trackId

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -9,6 +8,7 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -20,7 +20,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -82,7 +81,7 @@ class AlbumsListViewModel @Inject constructor(
                     state.value.sortOrder
                 }
 
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     preferencesRepository.modifyAlbumsListSortOptions(
                         SortSettings(
                             sortOption = action.newSortOption,

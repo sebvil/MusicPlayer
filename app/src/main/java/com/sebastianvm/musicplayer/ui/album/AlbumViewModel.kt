@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -13,6 +12,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -23,7 +23,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +53,7 @@ class AlbumViewModel @Inject constructor(
     override fun handle(action: AlbumUserAction) {
         when (action) {
             is AlbumUserAction.TrackClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     val mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.ALBUM,
                         mediaId = state.value.albumId

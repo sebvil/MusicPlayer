@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
@@ -19,13 +19,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistsListViewModel @Inject constructor(
     initialState: PlaylistsListState,
-    playlistRepository: PlaylistRepository,
+    private val playlistRepository: PlaylistRepository,
     private val preferencesRepository: PreferencesRepository,
 ) :
     BaseViewModel<PlaylistsListUserAction, PlaylistsListUiEvent, PlaylistsListState>(initialState) {
@@ -48,16 +47,16 @@ class PlaylistsListViewModel @Inject constructor(
     override fun handle(action: PlaylistsListUserAction) {
         when (action) {
             is PlaylistsListUserAction.PlaylistClicked -> {
-                this.addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
+                addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
             }
             is PlaylistsListUserAction.SortByClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     preferencesRepository.modifyPlaylistsListSortOrder(!state.value.sortOrder)
                 }
             }
             is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                viewModelScope.launch {
+                launchViewModelIOScope {
                     val sortSettings =
                         preferencesRepository.getTracksListSortOptions(action.playlistName).first()
                     addUiEvent(
@@ -70,12 +69,31 @@ class PlaylistsListViewModel @Inject constructor(
 
                 }
             }
+            is PlaylistsListUserAction.FabClicked -> {
+                setState {
+                    copy(isDialogOpen = true)
+                }
+            }
+            is PlaylistsListUserAction.DialogDismissed -> {
+                setState {
+                    copy(isDialogOpen = false)
+                }
+            }
+            is PlaylistsListUserAction.PlaylistCreated -> {
+                launchViewModelIOScope {
+                    playlistRepository.createPlaylist(action.playlistName)
+                }
+                setState {
+                    copy(isDialogOpen = false)
+                }
+            }
         }
     }
 }
 
 data class PlaylistsListState(
     val playlistsList: List<Playlist>,
+    val isDialogOpen: Boolean,
     val sortOrder: SortOrder
 ) : State
 
@@ -87,7 +105,11 @@ object InitialPlaylistsListStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistsListStateProvider() =
-        PlaylistsListState(playlistsList = listOf(), sortOrder = SortOrder.ASCENDING)
+        PlaylistsListState(
+            playlistsList = listOf(),
+            sortOrder = SortOrder.ASCENDING,
+            isDialogOpen = false
+        )
 }
 
 sealed class PlaylistsListUserAction : UserAction {
@@ -95,6 +117,9 @@ sealed class PlaylistsListUserAction : UserAction {
     object UpButtonClicked : PlaylistsListUserAction()
     object SortByClicked : PlaylistsListUserAction()
     data class OverflowMenuIconClicked(val playlistName: String) : PlaylistsListUserAction()
+    object FabClicked : PlaylistsListUserAction()
+    object DialogDismissed : PlaylistsListUserAction()
+    data class PlaylistCreated(val playlistName: String) : PlaylistsListUserAction()
 }
 
 sealed class PlaylistsListUiEvent : UiEvent {

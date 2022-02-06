@@ -100,7 +100,7 @@ dependencies {
     implementation "io.coil-kt:coil:$coil_version"
 
     // OkHttp
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.3'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.4'
 
 
     // Start Jetpack Compose

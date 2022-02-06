@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -13,6 +12,7 @@ import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -143,7 +142,7 @@ class QueueViewModel @Inject constructor(
                         }
 
                         chosenQueue?.also { mediaQueue ->
-                            viewModelScope.launch {
+                            launchViewModelIOScope {
                                 mediaQueueRepository.insertOrUpdateMediaQueueTrackCrossRefs(
                                     mediaQueue.toMediaGroup(),
                                     queueItems.mapIndexed { index, queueItem ->

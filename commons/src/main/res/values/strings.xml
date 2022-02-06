@@ -43,6 +43,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="go_to_settings">Go to settings </string>
 
+    <string name="new_playlist">New Playlist</string>
+
     <string name="unknown_album">Unknown album</string>
     <string name="unknown_artist">Unknown artist</string>
     <string name="back">Back</string>
@@ -52,6 +54,9 @@
     <string name="album_name">Album name</string>
     <string name="view_artists">View artists</string>
     <string name="view_album">View album</string>
+    <string name="view_genre">View genre</string>
+    <string name="view_playlist">View playlist</string>
+
     <string name="year">Year</string>
     <string name="more">More</string>
     <string name="track_number">Track number</string>
@@ -65,6 +70,7 @@
     <string name="add_to_queue">Add to queue</string>
     <string name="no_queue_available">No queue available</string>
     <string name="added_to_queue">Added to queue</string>
+    <string name="delete_playlist">Delete playlist</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

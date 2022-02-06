@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
@@ -10,6 +9,7 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.util.SortOption
 import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
@@ -18,9 +18,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 data class TrackContextMenuState(
     override val listItems: List<ContextMenuItem>,
@@ -91,57 +89,52 @@ class TrackContextMenuViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: BaseContextMenuUserAction) {
-        when (action) {
-            is BaseContextMenuUserAction.RowClicked -> {
-                when (action.row) {
-                    is ContextMenuItem.Play -> {
-                        with(state.value) {
-                            viewModelScope.launch {
-                                mediaQueueRepository.createQueue(
-                                    mediaGroup = mediaGroup,
-                                    sortOrder = sortOrder,
-                                    sortOption = selectedSort
-                                )
-                                mediaPlaybackRepository.playFromId(mediaId, mediaGroup)
-                                addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                            }
-                        }
-
-                    }
-                    ContextMenuItem.AddToQueue -> {
-                        viewModelScope.launch {
-                            val didAddToQueue =
-                                mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
-                            addUiEvent(
-                                BaseContextMenuUiEvent.ShowToast(
-                                    message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
-                                    success = didAddToQueue
-                                )
-                            )
-                        }
-                    }
-                    ContextMenuItem.ViewAlbum -> {
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.albumId))
-                    }
-                    ContextMenuItem.ViewArtist -> {
-                        addUiEvent(
-                            BaseContextMenuUiEvent.NavigateToArtist(
-                                state.value.artistName
-                            )
+    override fun onRowClicked(row: ContextMenuItem) {
+        when (row) {
+            is ContextMenuItem.Play -> {
+                with(state.value) {
+                    launchViewModelIOScope {
+                        mediaQueueRepository.createQueue(
+                            mediaGroup = mediaGroup,
+                            sortOrder = sortOrder,
+                            sortOption = selectedSort
                         )
+                        mediaPlaybackRepository.playFromId(mediaId, mediaGroup)
+                        addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                     }
-                    ContextMenuItem.ViewArtists -> {
-                        addUiEvent(
-                            BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                                state.value.mediaId,
-                                MediaType.TRACK
-                            )
-                        )
-                    }
-                    else -> throw IllegalStateException("Invalid row for track context menu")
                 }
             }
+            ContextMenuItem.AddToQueue -> {
+                launchViewModelIOScope {
+                    val didAddToQueue =
+                        mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
+                    addUiEvent(
+                        BaseContextMenuUiEvent.ShowToast(
+                            message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
+                            success = didAddToQueue
+                        )
+                    )
+                }
+            }
+            ContextMenuItem.ViewAlbum -> {
+                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.albumId))
+            }
+            ContextMenuItem.ViewArtist -> {
+                addUiEvent(
+                    BaseContextMenuUiEvent.NavigateToArtist(
+                        state.value.artistName
+                    )
+                )
+            }
+            ContextMenuItem.ViewArtists -> {
+                addUiEvent(
+                    BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
+                        state.value.mediaId,
+                        MediaType.TRACK
+                    )
+                )
+            }
+            else -> throw IllegalStateException("Invalid row for track context menu")
         }
     }
 }

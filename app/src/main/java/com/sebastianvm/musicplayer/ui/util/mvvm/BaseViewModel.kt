@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.StateStore
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,7 +34,7 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
 
 
     fun <T> collect(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
-        viewModelScope.launch {
+        launchViewModelIOScope {
             flow.collect {
                 onChanged(it)
             }
@@ -43,10 +42,11 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
     }
 
 
-    fun <T> collectFirst(flow: Flow<T>, onChanged: suspend (T) -> Unit): Job {
-        return viewModelScope.launch {
+    fun <T> collectFirst(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
+        launchViewModelIOScope {
             onChanged(flow.first())
         }
+
     }
 
 

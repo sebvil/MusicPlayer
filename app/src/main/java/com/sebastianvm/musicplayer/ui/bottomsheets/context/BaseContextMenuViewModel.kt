@@ -21,12 +21,18 @@ sealed class BaseContextMenuUiEvent : UiEvent {
         BaseContextMenuUiEvent()
 
     data class NavigateToGenre(val genreName: String) : BaseContextMenuUiEvent()
-    data class ShowToast(@StringRes val message: Int, val success: Boolean) : BaseContextMenuUiEvent()
+    data class NavigateToPlaylist(val playlistName: String) : BaseContextMenuUiEvent()
+    data class ShowToast(@StringRes val message: Int, val success: Boolean) :
+        BaseContextMenuUiEvent()
+
+    object HideBottomSheet : BaseContextMenuUiEvent()
 }
 
-sealed class BaseContextMenuUserAction : UserAction {
-    data class RowClicked(val row: ContextMenuItem) : BaseContextMenuUserAction()
-}
+object BaseContextMenuUserAction : UserAction
 
-abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(initialState: S) :
-    BaseViewModel<BaseContextMenuUserAction, BaseContextMenuUiEvent, S>(initialState)
+abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
+    initialState: S
+) : BaseViewModel<BaseContextMenuUserAction, BaseContextMenuUiEvent, S>(initialState) {
+    override fun handle(action: BaseContextMenuUserAction) = Unit
+    abstract fun onRowClicked(row: ContextMenuItem)
+}

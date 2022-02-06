@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
@@ -24,17 +25,15 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     composable(
         createNavRoute(
             NavRoutes.TRACKS_ROOT,
-            NavArgs.GENRE_NAME,
-            NavArgs.SORT_OPTION,
-            NavArgs.SORT_ORDER
+            NavArgs.TRACK_LIST_NAME,
+            NavArgs.MEDIA_GROUP_TYPE
         ),
         arguments = listOf(
-            navArgument(NavArgs.GENRE_NAME) {
+            navArgument(NavArgs.TRACK_LIST_NAME) {
                 nullable = true
                 type = NavType.StringType
             },
-            navArgument(NavArgs.SORT_OPTION) {
-                nullable = true
+            navArgument(NavArgs.MEDIA_GROUP_TYPE) {
                 type = NavType.StringType
             },
         )
@@ -83,5 +82,17 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
 }
 
 fun NavController.navigateToGenre(genreName: String) {
-    navigateTo(NavRoutes.TRACKS_ROOT, NavArgument(NavArgs.GENRE_NAME, genreName))
+    navigateTo(
+        NavRoutes.TRACKS_ROOT,
+        NavArgument(NavArgs.TRACK_LIST_NAME, genreName),
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, MediaGroupType.GENRE)
+    )
+}
+
+fun NavController.navigateToPlaylist(playlistName: String) {
+    navigateTo(
+        NavRoutes.TRACKS_ROOT,
+        NavArgument(NavArgs.TRACK_LIST_NAME, playlistName),
+        NavArgument(NavArgs.MEDIA_GROUP_TYPE, MediaGroupType.PLAYLIST)
+    )
 }

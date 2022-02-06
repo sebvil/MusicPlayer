@@ -14,7 +14,18 @@ class PlaylistsListStatePreviewParameterProvider :
                 Playlist("Tropipop"),
                 Playlist("Vallenato")
             ),
-            sortOrder = SortOrder.ASCENDING
+            sortOrder = SortOrder.ASCENDING,
+            isDialogOpen = false
+        ),
+        PlaylistsListState(
+            playlistsList = listOf(
+                Playlist("Pop"),
+                Playlist("Rock"),
+                Playlist("Tropipop"),
+                Playlist("Vallenato")
+            ),
+            sortOrder = SortOrder.ASCENDING,
+            isDialogOpen = true
         )
     )
 }
