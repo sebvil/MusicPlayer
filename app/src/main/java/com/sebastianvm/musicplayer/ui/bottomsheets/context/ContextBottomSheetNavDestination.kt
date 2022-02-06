@@ -87,7 +87,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 }
 
                 override fun hideBottomSheet() {
-                    navController.navigateUp()
+                    navController.popBackStack()
                 }
             }
         )

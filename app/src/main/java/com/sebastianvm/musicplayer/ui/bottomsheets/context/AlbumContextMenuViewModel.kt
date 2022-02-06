@@ -50,53 +50,49 @@ class AlbumContextMenuViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: BaseContextMenuUserAction) {
-        when (action) {
-            is BaseContextMenuUserAction.RowClicked -> {
-                when (action.row) {
-                    is ContextMenuItem.PlayFromBeginning -> {
-                        launchViewModelIOScope {
-                            val mediaGroup = MediaGroup(MediaGroupType.ALBUM, state.value.mediaId)
-                            mediaQueueRepository.createQueue(
-                                mediaGroup = mediaGroup,
-                                sortOrder = state.value.sortOrder,
-                                sortOption = SortOption.valueOf(state.value.selectedSort)
-                            )
-                            mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
-                            addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                        }
-                    }
-                    is ContextMenuItem.AddToQueue -> {
-                        viewModelScope.launch {
-                            val didAddToQueue =
-                                mediaQueueRepository.addToQueue(trackIds)
-                            addUiEvent(
-                                BaseContextMenuUiEvent.ShowToast(
-                                    message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
-                                    success = didAddToQueue
-                                )
-                            )
-                        }
-                    }
-                    is ContextMenuItem.ViewAlbum -> {
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.mediaId))
-                    }
-                    is ContextMenuItem.ViewArtists -> {
-                        addUiEvent(
-                            BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                                state.value.mediaId,
-                                MediaType.ALBUM
-                            )
-                        )
-                    }
-                    is ContextMenuItem.ViewArtist -> {
-                        collect(albumRepository.getAlbum(state.value.mediaId)) { album ->
-                            addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(album.artists[0].artistName))
-                        }
-                    }
-                    else -> throw IllegalStateException("Invalid row for album context menu")
+    override fun onRowClicked(row: ContextMenuItem) {
+        when (row) {
+            is ContextMenuItem.PlayFromBeginning -> {
+                launchViewModelIOScope {
+                    val mediaGroup = MediaGroup(MediaGroupType.ALBUM, state.value.mediaId)
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = state.value.sortOrder,
+                        sortOption = SortOption.valueOf(state.value.selectedSort)
+                    )
+                    mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
+                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }
+            is ContextMenuItem.AddToQueue -> {
+                viewModelScope.launch {
+                    val didAddToQueue =
+                        mediaQueueRepository.addToQueue(trackIds)
+                    addUiEvent(
+                        BaseContextMenuUiEvent.ShowToast(
+                            message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
+                            success = didAddToQueue
+                        )
+                    )
+                }
+            }
+            is ContextMenuItem.ViewAlbum -> {
+                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.mediaId))
+            }
+            is ContextMenuItem.ViewArtists -> {
+                addUiEvent(
+                    BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
+                        state.value.mediaId,
+                        MediaType.ALBUM
+                    )
+                )
+            }
+            is ContextMenuItem.ViewArtist -> {
+                collect(albumRepository.getAlbum(state.value.mediaId)) { album ->
+                    addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(album.artists[0].artistName))
+                }
+            }
+            else -> throw IllegalStateException("Invalid row for album context menu")
         }
     }
 }

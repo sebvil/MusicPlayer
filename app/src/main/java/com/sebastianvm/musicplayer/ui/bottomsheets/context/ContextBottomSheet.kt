@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +13,11 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -73,11 +76,23 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                     delegate.hideBottomSheet()
                 }
             }
+            is BaseContextMenuUiEvent.NavigateToPlaylist -> TODO()
+            is BaseContextMenuUiEvent.HideBottomSheet -> {
+                delegate.hideBottomSheet()
+            }
         }
     }
     ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
         override fun onRowClicked(contextMenuItem: ContextMenuItem) {
-            sheetViewModel.handle(BaseContextMenuUserAction.RowClicked(contextMenuItem))
+            sheetViewModel.onRowClicked(contextMenuItem)
+        }
+
+        override fun onDismissDialog() {
+            (sheetViewModel as? PlaylistContextMenuViewModel)?.onCancelDeleteClicked()
+        }
+
+        override fun onSubmit() {
+            (sheetViewModel as? PlaylistContextMenuViewModel)?.onConfirmDeleteClicked()
         }
     })
 }
@@ -94,51 +109,91 @@ fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterP
     }
 }
 
-interface ContextMenuDelegate {
+interface ContextMenuDelegate : DeletePlaylistConfirmationDialogDelegate {
     fun onRowClicked(contextMenuItem: ContextMenuItem) = Unit
 }
 
+interface DeletePlaylistConfirmationDialogDelegate {
+    fun onDismissDialog() = Unit
+    fun onSubmit() = Unit
+}
+
+@Composable
+fun DeletePlaylistConfirmationDialog(
+    playlistName: String,
+    delegate: DeletePlaylistConfirmationDialogDelegate
+) {
+
+    AlertDialog(
+        onDismissRequest = { delegate.onDismissDialog() },
+        confirmButton = {
+            TextButton(onClick = { delegate.onSubmit() }) {
+                Text(text = "Delete")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { delegate.onDismissDialog() }) {
+                Text(text = "Cancel")
+            }
+        },
+        title = {
+            Text(text = "Delete playlist $playlistName")
+        },
+        text = {
+            Text(text = "Are you sure you want to delete $playlistName?")
+        }
+    )
+}
 
 @Composable
 fun ContextMenuLayout(
     state: BaseContextMenuState,
     delegate: ContextMenuDelegate
 ) {
-    with(state) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(AppDimensions.bottomSheet.rowHeight)
-                    .padding(start = AppDimensions.bottomSheet.startPadding)
-            ) {
-                Text(
-                    text = state.menuTitle,
-                    modifier = Modifier.paddingFromBaseline(top = 36.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Divider(modifier = Modifier.fillMaxWidth())
-            LazyColumn {
-                items(listItems, key = { it.text }) {
-                    SingleLineListItem(
-                        modifier = Modifier.clickable { delegate.onRowClicked(it) },
-                        supportingImage = { iconModifier ->
-                            Icon(
-                                painter = painterResource(id = it.icon),
-                                contentDescription = stringResource(id = it.text),
-                                modifier = iconModifier,
+    if (state is PlaylistContextMenuState && state.showDeleteConfirmationDialog) {
+        DeletePlaylistConfirmationDialog(
+            playlistName = state.playlistName,
+            delegate = delegate
+        )
+        // Need this to be able to dismiss bottom sheet after deleting playlist
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp))
+    } else {
+        with(state) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppDimensions.bottomSheet.rowHeight)
+                        .padding(start = AppDimensions.bottomSheet.startPadding)
+                ) {
+                    Text(
+                        text = state.menuTitle,
+                        modifier = Modifier.paddingFromBaseline(top = 36.dp),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                Divider(modifier = Modifier.fillMaxWidth())
+                LazyColumn {
+                    items(listItems, key = { it.text }) {
+                        SingleLineListItem(
+                            modifier = Modifier.clickable { delegate.onRowClicked(it) },
+                            supportingImage = { iconModifier ->
+                                Icon(
+                                    painter = painterResource(id = it.icon),
+                                    contentDescription = stringResource(id = it.text),
+                                    modifier = iconModifier,
+                                )
+                            },
+                            supportingImageType = SupportingImageType.ICON,
+                        ) {
+                            Text(
+                                text = stringResource(id = it.text),
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
-                        },
-                        supportingImageType = SupportingImageType.ICON,
-                    ) {
-                        Text(
-                            text = stringResource(id = it.text),
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                        }
                     }
                 }
             }

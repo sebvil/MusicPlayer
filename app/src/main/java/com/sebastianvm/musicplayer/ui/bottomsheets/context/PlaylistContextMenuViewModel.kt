@@ -28,37 +28,57 @@ class PlaylistContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
     // TODO check if playlist has items before playing
-    override fun handle(action: BaseContextMenuUserAction) {
-        when (action) {
-            is BaseContextMenuUserAction.RowClicked -> {
-                when (action.row) {
-                    is ContextMenuItem.PlayAllSongs -> {
-                        launchViewModelIOScope {
-                            val mediaGroup =
-                                MediaGroup(MediaGroupType.PLAYLIST, state.value.playlistName)
-                            mediaQueueRepository.createQueue(
-                                mediaGroup = mediaGroup,
-                                sortOrder = state.value.sortOrder,
-                                sortOption = state.value.selectedSort
-                            )
-                            mediaPlaybackRepository.playFromId(state.value.playlistName, mediaGroup)
-                            addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                        }
-                    }
-                    is ContextMenuItem.ViewPlaylist -> {
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistName = state.value.playlistName))
-                    }
-                    is ContextMenuItem.DeletePlaylist -> {
-                        launchViewModelIOScope {
-                            playlistRepository.deletePlaylist(state.value.playlistName)
-                        }
-                    }
-                    else -> throw IllegalStateException("Invalid row for playlist context menu")
+    override fun onRowClicked(row: ContextMenuItem) {
+        when (row) {
+            is ContextMenuItem.PlayAllSongs -> {
+                launchViewModelIOScope {
+                    val mediaGroup =
+                        MediaGroup(MediaGroupType.PLAYLIST, state.value.playlistName)
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = state.value.sortOrder,
+                        sortOption = state.value.selectedSort
+                    )
+                    mediaPlaybackRepository.playFromId(state.value.playlistName, mediaGroup)
+                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }
+            is ContextMenuItem.ViewPlaylist -> {
+                addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistName = state.value.playlistName))
+            }
+            is ContextMenuItem.DeletePlaylist -> {
+                setState {
+                    copy(
+                        showDeleteConfirmationDialog = true
+                    )
+                }
+            }
+            else -> throw IllegalStateException("Invalid row for playlist context menu")
+        }
+    }
+
+    fun onConfirmDeleteClicked() {
+        launchViewModelIOScope {
+            playlistRepository.deletePlaylist(state.value.playlistName)
+            setState {
+                copy(
+                    showDeleteConfirmationDialog = false
+                )
+            }
+        }.invokeOnCompletion {
+            addUiEvent(BaseContextMenuUiEvent.HideBottomSheet)
+        }
+    }
+
+    fun onCancelDeleteClicked() {
+        setState {
+            copy(
+                showDeleteConfirmationDialog = false
+            )
         }
     }
 }
+
 
 data class PlaylistContextMenuState(
     override val listItems: List<ContextMenuItem>,
@@ -66,7 +86,8 @@ data class PlaylistContextMenuState(
     val playlistName: String,
     val mediaGroup: MediaGroup,
     val selectedSort: SortOption,
-    val sortOrder: SortOrder
+    val sortOrder: SortOrder,
+    val showDeleteConfirmationDialog: Boolean
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -91,7 +112,8 @@ object InitialPlaylistContextMenuStateModule {
                 ContextMenuItem.DeletePlaylist
             ),
             selectedSort = SortOption.valueOf(selectedSort),
-            sortOrder = SortOrder.valueOf(sortOrder)
+            sortOrder = SortOrder.valueOf(sortOrder),
+            showDeleteConfirmationDialog = false
         )
     }
 }

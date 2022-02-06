@@ -25,28 +25,24 @@ class ArtistContextMenuViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseContextMenuViewModel<ArtistContextMenuState>(initialState) {
 
-    override fun handle(action: BaseContextMenuUserAction) {
-        when (action) {
-            is BaseContextMenuUserAction.RowClicked -> {
-                when (action.row) {
-                    is ContextMenuItem.PlayAllSongs -> {
-                        launchViewModelIOScope {
-                            val mediaGroup = MediaGroup(MediaGroupType.ARTIST, state.value.artistName)
-                            mediaQueueRepository.createQueue(
-                                mediaGroup = mediaGroup,
-                                sortOrder = SortOrder.ASCENDING,
-                                sortOption = SortOption.TRACK_NAME
-                            )
-                            mediaPlaybackRepository.playFromId(state.value.artistName, mediaGroup)
-                            addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                        }
-                    }
-                    is ContextMenuItem.ViewArtist -> {
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(state.value.artistName))
-                    }
-                    else -> throw IllegalStateException("Invalid row for artist context menu")
+    override fun onRowClicked(row: ContextMenuItem) {
+        when (row) {
+            is ContextMenuItem.PlayAllSongs -> {
+                launchViewModelIOScope {
+                    val mediaGroup = MediaGroup(MediaGroupType.ARTIST, state.value.artistName)
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = SortOrder.ASCENDING,
+                        sortOption = SortOption.TRACK_NAME
+                    )
+                    mediaPlaybackRepository.playFromId(state.value.artistName, mediaGroup)
+                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }
+            is ContextMenuItem.ViewArtist -> {
+                addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(state.value.artistName))
+            }
+            else -> throw IllegalStateException("Invalid row for artist context menu")
         }
     }
 }

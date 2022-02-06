@@ -25,28 +25,24 @@ class GenreContextMenuViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseContextMenuViewModel<GenreContextMenuState>(initialState) {
 
-    override fun handle(action: BaseContextMenuUserAction) {
-        when (action) {
-            is BaseContextMenuUserAction.RowClicked -> {
-                when (action.row) {
-                    is ContextMenuItem.PlayAllSongs -> {
-                        launchViewModelIOScope {
-                            val mediaGroup = MediaGroup(MediaGroupType.GENRE, state.value.genreName)
-                            mediaQueueRepository.createQueue(
-                                mediaGroup = mediaGroup,
-                                sortOrder = state.value.sortOrder,
-                                sortOption = state.value.selectedSort
-                            )
-                            mediaPlaybackRepository.playFromId(state.value.genreName, mediaGroup)
-                            addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                        }
-                    }
-                    is ContextMenuItem.ViewGenre -> {
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToGenre(genreName = state.value.genreName))
-                    }
-                    else -> throw IllegalStateException("Invalid row for genre context menu")
+    override fun onRowClicked(row: ContextMenuItem) {
+        when (row) {
+            is ContextMenuItem.PlayAllSongs -> {
+                launchViewModelIOScope {
+                    val mediaGroup = MediaGroup(MediaGroupType.GENRE, state.value.genreName)
+                    mediaQueueRepository.createQueue(
+                        mediaGroup = mediaGroup,
+                        sortOrder = state.value.sortOrder,
+                        sortOption = state.value.selectedSort
+                    )
+                    mediaPlaybackRepository.playFromId(state.value.genreName, mediaGroup)
+                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }
+            is ContextMenuItem.ViewGenre -> {
+                addUiEvent(BaseContextMenuUiEvent.NavigateToGenre(genreName = state.value.genreName))
+            }
+            else -> throw IllegalStateException("Invalid row for genre context menu")
         }
     }
 }
