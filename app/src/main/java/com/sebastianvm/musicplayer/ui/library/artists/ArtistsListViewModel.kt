@@ -9,8 +9,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.not
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,7 +70,7 @@ class ArtistsListViewModel @Inject constructor(
 
 data class ArtistsListState(
     val artistsList: List<ArtistRowState>,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -80,7 +81,7 @@ object InitialArtistsListStateModule {
     fun initialArtistsListStateProvider(): ArtistsListState {
         return ArtistsListState(
             artistsList = listOf(),
-            sortOrder = SortOrder.ASCENDING,
+            sortOrder = MediaSortOrder.ASCENDING,
         )
     }
 }

@@ -8,8 +8,8 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,8 +53,8 @@ data class GenreContextMenuState(
     override val menuTitle: String,
     val genreName: String,
     val mediaGroup: MediaGroup,
-    val selectedSort: SortOption,
-    val sortOrder: SortOrder
+    val selectedSort: MediaSortOption,
+    val sortOrder: MediaSortOrder
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -77,8 +77,8 @@ object InitialGenreContextMenuStateModule {
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewGenre
             ),
-            selectedSort = SortOption.valueOf(selectedSort),
-            sortOrder = SortOrder.valueOf(sortOrder)
+            selectedSort = MediaSortOption.valueOf(selectedSort),
+            sortOrder = MediaSortOrder.valueOf(sortOrder)
         )
     }
 }

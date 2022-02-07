@@ -4,8 +4,8 @@ import com.sebastianvm.musicplayer.database.entities.GenreBuilder
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -22,7 +22,7 @@ class GenresListViewModelTest {
 
     private fun generateViewModel(): GenresListViewModel {
         return GenresListViewModel(
-            initialState = GenresListState(genresList = listOf(), sortOrder = SortOrder.DESCENDING),
+            initialState = GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.DESCENDING),
             genreRepository = FakeGenreRepository(),
             preferencesRepository = FakePreferencesRepository(),
         )
@@ -33,7 +33,7 @@ class GenresListViewModelTest {
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
             delay(1)
-            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     GenreBuilder.getDefaultGenre().build(),
@@ -71,7 +71,7 @@ class GenresListViewModelTest {
             delay(1)
             handle(GenresListUserAction.SortByClicked)
             delay(1)
-            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     GenreBuilder.getSecondaryGenre().build(),
@@ -87,8 +87,8 @@ class GenresListViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<GenresListUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, genreName)
-                assertEquals(SortOption.TRACK_NAME, currentSort)
-                assertEquals(SortOrder.ASCENDING, sortOrder)
+                assertEquals(MediaSortOption.TRACK, currentSort)
+                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
             }
             handle(GenresListUserAction.OverflowMenuIconClicked(GenreBuilder.DEFAULT_GENRE_NAME))
         }

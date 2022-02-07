@@ -1,23 +1,23 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.SortSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 
-class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_NAME) :
+class FakePreferencesRepository(trackSortOption: MediaSortOption.= MediaSortOption.TRACK) :
     PreferencesRepository {
 
     private val albumSortSettings =
-        MutableStateFlow(SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING))
+        MutableStateFlow(SortSettings(MediaSortOption.ALBUM, MediaSortOrder.ASCENDING))
     private val trackSortSettings =
-        MutableStateFlow(SortSettings(trackSortOption, SortOrder.ASCENDING))
-    private val artistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
-    private val genresSortOrder = MutableStateFlow(SortOrder.ASCENDING)
-    private val playlistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
+        MutableStateFlow(SortSettings(trackSortOption, MediaSortOrder.ASCENDING))
+    private val artistSortOrder = MutableStateFlow(MediaSortOrder.ASCENDING)
+    private val genresSortOrder = MutableStateFlow(MediaSortOrder.ASCENDING)
+    private val playlistSortOrder = MutableStateFlow(MediaSortOrder.ASCENDING)
 
 
     override suspend fun modifyTrackListSortOptions(
@@ -34,19 +34,19 @@ class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_N
     override fun getAlbumsListSortOptions(): Flow<SortSettings> = albumSortSettings
 
 
-    override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyArtistsListSortOrder(sortOrder: MediaSortOrder) {
         artistSortOrder.emit(!artistSortOrder.value)
     }
 
-    override fun getArtistsListSortOrder(): Flow<SortOrder> = artistSortOrder
+    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> = artistSortOrder
 
-    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) =
+    override suspend fun modifyGenresListSortOrder(sortOrder: MediaSortOrder) =
         genresSortOrder.emit(sortOrder)
 
-    override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
-    override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) = Unit
+    override fun getGenresListSortOrder(): Flow<MediaSortOrder> = genresSortOrder
+    override suspend fun modifyPlaylistsListSortOrder(sortOrder: MediaSortOrder) = Unit
 
-    override fun getPlaylistsListSortOrder(): Flow<SortOrder> = playlistSortOrder
+    override fun getPlaylistsListSortOrder(): Flow<MediaSortOrder> = playlistSortOrder
 
     override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) =
         Unit

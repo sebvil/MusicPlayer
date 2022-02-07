@@ -14,8 +14,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
@@ -61,8 +61,8 @@ class AlbumViewModel @Inject constructor(
                     )
                     mediaQueueRepository.createQueue(
                         mediaGroup = mediaGroup,
-                        sortOrder = SortOrder.ASCENDING,
-                        sortOption = SortOption.TRACK_NUMBER
+                        sortOrder = MediaSortOrder.ASCENDING,
+                        sortOption = MediaSortOption.TRACK_NUMBER
                     )
                     mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(AlbumUiEvent.NavigateToPlayer)

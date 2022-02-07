@@ -14,8 +14,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
 fun NavGraphBuilder.artistNavDestination(navController: NavController) {
@@ -33,8 +33,8 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
                     mediaType = MediaType.ALBUM,
                     mediaId = albumId,
                     mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
-                    currentSort = SortOption.TRACK_NUMBER,
-                    sortOrder = SortOrder.ASCENDING,
+                    currentSort = MediaSortOption.TRACK_NUMBER,
+                    sortOrder = MediaSortOrder.ASCENDING,
                 )
             }
 

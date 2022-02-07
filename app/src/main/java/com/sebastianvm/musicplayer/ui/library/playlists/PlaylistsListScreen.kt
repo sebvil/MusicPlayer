@@ -33,13 +33,13 @@ import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 interface PlaylistsListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToPlaylist(playlistName: String)
-    fun openContextMenu(playlistName: String, currentSort: SortOption, sortOrder: SortOrder)
+    fun openContextMenu(playlistName: String, currentSort: MediaSortOption, sortOrder: MediaSortOrder)
 }
 
 @Composable

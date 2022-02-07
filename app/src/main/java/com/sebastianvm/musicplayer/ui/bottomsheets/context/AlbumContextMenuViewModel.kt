@@ -10,8 +10,8 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,7 +56,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                     mediaQueueRepository.createQueue(
                         mediaGroup = mediaGroup,
                         sortOrder = state.value.sortOrder,
-                        sortOption = SortOption.valueOf(state.value.selectedSort)
+                        sortOption = MediaSortOption.valueOf(state.value.selectedSort)
                     )
                     mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
@@ -100,7 +100,7 @@ data class AlbumContextMenuState(
     override val menuTitle: String,
     val mediaId: String,
     val selectedSort: String,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -117,7 +117,7 @@ object InitialAlbumContextMenuStateModule {
             menuTitle = "",
             listItems = listOf(),
             selectedSort = selectedSort,
-            sortOrder = SortOrder.valueOf(sortOrder)
+            sortOrder = MediaSortOrder.valueOf(sortOrder)
         )
     }
 }

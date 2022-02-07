@@ -1,26 +1,35 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.SortSettings
+import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import kotlinx.coroutines.flow.Flow
 
 interface PreferencesRepository {
     // TODO support playlists - migrate to Proto
-    suspend fun modifyTrackListSortOptions(sortSettings: SortSettings, genreName: String?)
-    fun getTracksListSortOptions(genreName: String?): Flow<SortSettings>
+    suspend fun modifyTrackListSortOptions(
+        mediaSortSettings: MediaSortSettings,
+        tracksListType: TracksListType,
+        tracksListName: String,
+    )
 
-    suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings)
-    fun getAlbumsListSortOptions(): Flow<SortSettings>
+    fun getTracksListSortOptions(
+        tracksListType: TracksListType,
+        tracksListName: String
+    ): Flow<MediaSortSettings>
 
-    suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder)
-    fun getArtistsListSortOrder(): Flow<SortOrder>
+    suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings)
+    fun getAlbumsListSortOptions(): Flow<MediaSortSettings>
 
-    suspend fun modifyGenresListSortOrder(sortOrder: SortOrder)
-    fun getGenresListSortOrder(): Flow<SortOrder>
+    suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder)
+    fun getArtistsListSortOrder(): Flow<MediaSortOrder>
 
-    suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder)
-    fun getPlaylistsListSortOrder(): Flow<SortOrder>
+    suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder)
+    fun getGenresListSortOrder(): Flow<MediaSortOrder>
+
+    suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder)
+    fun getPlaylistsListSortOrder(): Flow<MediaSortOrder>
 
 
     suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)

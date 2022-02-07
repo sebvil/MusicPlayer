@@ -20,8 +20,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
@@ -103,8 +103,8 @@ fun NavController.openContextMenu(
     mediaType: MediaType,
     mediaId: String,
     mediaGroup: MediaGroup,
-    currentSort: SortOption,
-    sortOrder: SortOrder
+    currentSort: MediaSortOption,
+    sortOrder: MediaSortOrder
 ) {
     navigateTo(
         NavRoutes.CONTEXT,

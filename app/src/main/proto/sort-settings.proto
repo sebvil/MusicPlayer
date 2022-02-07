@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option java_package = "com.sebastianvm.musicplayer.util.sort";
+option java_multiple_files = true;
+
+enum MediaSortOption {
+  TRACK = 0;
+  ARTIST = 1;
+  ALBUM = 2;
+  GENRE = 3;
+  YEAR = 4;
+  TRACK_NUMBER = 5;
+  // next tag = 6
+}
+
+enum MediaSortOrder {
+  ASCENDING = 0;
+  DESCENDING = 1;
+  // next tag = 2
+}
+
+message MediaSortSettings {
+  MediaSortOption sort_option = 1;
+  MediaSortOrder sort_order = 2;
+  // next tag = 3
+}
+
+message SortSettings {
+  MediaSortSettings all_tracks_sort_settings = 1;
+  map<string, MediaSortSettings> genre_track_list_sort_settings = 2;
+  map<string, MediaSortSettings> playlist_track_list_sort_settings = 3;
+  MediaSortOrder artist_list_sort_settings = 4;
+  MediaSortSettings albums_list_sort_settings = 5;
+  MediaSortOrder genres_list_sort_settings = 6;
+  MediaSortOrder playlists_list_sort_settings = 7;
+  // next tag = 2
+}

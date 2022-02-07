@@ -3,15 +3,15 @@ package com.sebastianvm.musicplayer.repository.queue
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
 
 interface MediaQueueRepository {
     suspend fun createQueue(
         mediaGroup: MediaGroup,
-        sortOption: SortOption,
-        sortOrder: SortOrder
+        sortOption: MediaSortOption,
+        sortOrder: MediaSortOrder
     ): Long
 
     suspend fun insertOrUpdateMediaQueueTrackCrossRefs(queue: MediaGroup, mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>)

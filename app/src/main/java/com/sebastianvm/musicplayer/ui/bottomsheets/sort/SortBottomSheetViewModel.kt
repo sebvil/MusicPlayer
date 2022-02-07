@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +25,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 
     override fun handle(action: SortBottomSheetUserAction) {
         when (action) {
-            is SortBottomSheetUserAction.SortOptionSelected -> {
+            is SortBottomSheetUserAction.MediaSortOptionSelected -> {
                 addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet(action.sortOption))
             }
         }
@@ -35,7 +35,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 data class SortBottomSheetState(
     val sortOptions: List<Int>,
     val selectedSort: Int,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -51,7 +51,7 @@ object InitialSortBottomSheetState {
         return SortBottomSheetState(
             sortOptions = getSortOptionsForScreen(screen),
             selectedSort = selectedSort,
-            sortOrder = SortOrder.valueOf(sortOrder)
+            sortOrder = MediaSortOrder.valueOf(sortOrder)
         )
     }
 }
@@ -69,7 +69,7 @@ fun getSortOptionsForScreen(screen: String): List<Int> {
 }
 
 sealed class SortBottomSheetUserAction : UserAction {
-    data class SortOptionSelected(@StringRes val sortOption: Int) : SortBottomSheetUserAction()
+    data class MediaSortOptionSelected(@StringRes val sortOption: Int) : SortBottomSheetUserAction()
 }
 
 sealed class SortBottomSheetUiEvent : UiEvent {

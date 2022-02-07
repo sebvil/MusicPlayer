@@ -8,8 +8,8 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -85,8 +85,8 @@ data class PlaylistContextMenuState(
     override val menuTitle: String,
     val playlistName: String,
     val mediaGroup: MediaGroup,
-    val selectedSort: SortOption,
-    val sortOrder: SortOrder,
+    val selectedSort: MediaSortOption,
+    val sortOrder: MediaSortOrder,
     val showDeleteConfirmationDialog: Boolean
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
@@ -111,8 +111,8 @@ object InitialPlaylistContextMenuStateModule {
                 ContextMenuItem.ViewPlaylist,
                 ContextMenuItem.DeletePlaylist
             ),
-            selectedSort = SortOption.valueOf(selectedSort),
-            sortOrder = SortOrder.valueOf(sortOrder),
+            selectedSort = MediaSortOption.valueOf(selectedSort),
+            sortOrder = MediaSortOrder.valueOf(sortOrder),
             showDeleteConfirmationDialog = false
         )
     }

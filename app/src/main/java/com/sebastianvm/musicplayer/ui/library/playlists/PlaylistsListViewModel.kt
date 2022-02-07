@@ -2,15 +2,17 @@ package com.sebastianvm.musicplayer.ui.library.playlists
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.not
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,7 +61,7 @@ class PlaylistsListViewModel @Inject constructor(
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
                 viewModelScope.launch {
                     val sortSettings =
-                        preferencesRepository.getTracksListSortOptions(action.playlistName).first()
+                        preferencesRepository.getTracksListSortOptions(TracksListType.PLAYLIST, action.playlistName).first()
                     addUiEvent(
                         PlaylistsListUiEvent.OpenContextMenu(
                             action.playlistName,
@@ -95,7 +97,7 @@ class PlaylistsListViewModel @Inject constructor(
 data class PlaylistsListState(
     val playlistsList: List<Playlist>,
     val isDialogOpen: Boolean,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : State
 
 
@@ -108,7 +110,7 @@ object InitialPlaylistsListStateModule {
     fun initialPlaylistsListStateProvider() =
         PlaylistsListState(
             playlistsList = listOf(),
-            sortOrder = SortOrder.ASCENDING,
+            sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false
         )
 }
@@ -128,7 +130,7 @@ sealed class PlaylistsListUiEvent : UiEvent {
     object NavigateUp : PlaylistsListUiEvent()
     data class OpenContextMenu(
         val playlistName: String,
-        val currentSort: SortOption,
-        val sortOrder: SortOrder
+        val currentSort: MediaSortOption,
+        val sortOrder: MediaSortOrder
     ) : PlaylistsListUiEvent()
 }

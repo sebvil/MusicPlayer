@@ -14,11 +14,11 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
 import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -68,8 +68,8 @@ class MediaQueueRepositoryImpl @Inject constructor(
 
     override suspend fun createQueue(
         mediaGroup: MediaGroup,
-        sortOption: SortOption,
-        sortOrder: SortOrder
+        sortOption: MediaSortOption,
+        sortOrder: MediaSortOrder
     ): Long {
         return withContext(ioDispatcher) {
             val queueName: String
@@ -125,15 +125,17 @@ class MediaQueueRepositoryImpl @Inject constructor(
     }
 
     private fun getTrackComparator(
-        sortOrder: SortOrder,
-        sortOption: SortOption
+        sortOrder: MediaSortOrder,
+        sortOption: MediaSortOption
     ): Comparator<FullTrackInfo> {
         return when (sortOption) {
-            SortOption.ALBUM_NAME -> getStringComparator(sortOrder) { track -> track.album.albumName }
-            SortOption.TRACK_NAME -> getStringComparator(sortOrder) { track -> track.track.trackName }
-            SortOption.ARTIST_NAME -> getStringComparator(sortOrder) { track -> track.artists.toString() }
-            SortOption.YEAR -> compareBy { track -> track.album.year }
-            SortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
+            MediaSortOption.ALBUM -> getStringComparator(sortOrder) { track -> track.album.albumName }
+            MediaSortOption.TRACK -> getStringComparator(sortOrder) { track -> track.track.trackName }
+            MediaSortOption.ARTIST -> getStringComparator(sortOrder) { track -> track.artists.toString() }
+            MediaSortOption.YEAR -> compareBy { track -> track.album.year }
+            MediaSortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
+            MediaSortOption.GENRE -> getStringComparator(sortOrder) { track -> track.genres.toString() }
+            MediaSortOption.UNRECOGNIZED -> throw IllegalStateException("Unknown sort option")
         }
     }
 

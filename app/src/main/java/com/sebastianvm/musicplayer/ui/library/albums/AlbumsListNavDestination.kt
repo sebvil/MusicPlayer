@@ -13,8 +13,9 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.mediaSortOptionFromResId
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
 fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
@@ -24,7 +25,7 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
             ?.observe(lifecycleOwner) {
                 screenViewModel.handle(
-                    AlbumsListUserAction.SortOptionClicked(SortOption.fromResId(it))
+                    AlbumsListUserAction.MediaSortOptionClicked(mediaSortOptionFromResId(it))
                 )
             }
         AlbumsListScreen(screenViewModel, object : AlbumsListScreenNavigationDelegate {
@@ -32,7 +33,7 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
                 navController.navigateUp()
             }
 
-            override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
+            override fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder) {
                 navController.openSortBottomSheet(NavRoutes.ALBUMS_ROOT, sortOption, sortOrder)
             }
 
@@ -45,8 +46,8 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
                     mediaType = MediaType.ALBUM,
                     mediaId = albumId,
                     mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
-                    currentSort = SortOption.TRACK_NUMBER,
-                    sortOrder = SortOrder.ASCENDING,
+                    currentSort = MediaSortOption.TRACK_NUMBER,
+                    sortOrder = MediaSortOrder.ASCENDING,
                 )
             }
         })

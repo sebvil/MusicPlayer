@@ -1,15 +1,17 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.util.PreferencesUtil
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.SortSettings
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
+import com.sebastianvm.musicplayer.util.sort.SortSettings
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -19,132 +21,121 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PreferencesRepositoryImpl @Inject constructor(
-    private val preferencesUtil: PreferencesUtil,
+    private val preferencesDataStore: DataStore<Preferences>,
+    private val sortSettingsDataStore: DataStore<SortSettings>,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
-) :
-    PreferencesRepository {
+) : PreferencesRepository {
+
     override suspend fun modifyTrackListSortOptions(
-        sortSettings: SortSettings,
-        genreName: String?
+        mediaSortSettings: MediaSortSettings,
+        tracksListType: TracksListType,
+        tracksListName: String,
     ) {
         withContext(ioDispatcher) {
-            preferencesUtil.dataStore.edit { settings ->
-                genreName?.also {
-                    val sortOptionKey =
-                        stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
-                    val sortOrderKey =
-                        stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
-                    settings[sortOptionKey] = sortSettings.sortOption.name
-                    settings[sortOrderKey] = sortSettings.sortOrder.name
-                } ?: kotlin.run {
-                    settings[PreferencesUtil.TRACKS_SORT_OPTION] = sortSettings.sortOption.name
-                    settings[PreferencesUtil.TRACKS_SORT_ORDER] = sortSettings.sortOrder.name
+            sortSettingsDataStore.updateData { sortSettings ->
+                when (tracksListType) {
+                    TracksListType.ALL_TRACKS -> {
+                        sortSettings.toBuilder().setAllTracksSortSettings(mediaSortSettings).build()
+                    }
+                    TracksListType.GENRE -> {
+                        sortSettings.toBuilder()
+                            .putGenreTrackListSortSettings(tracksListName, mediaSortSettings)
+                            .build()
+                    }
+                    TracksListType.PLAYLIST -> {
+                        sortSettings.toBuilder()
+                            .putPlaylistTrackListSortSettings(tracksListName, mediaSortSettings)
+                            .build()
+                    }
                 }
             }
         }
     }
 
-
-    override fun getTracksListSortOptions(genreName: String?): Flow<SortSettings> {
-        return preferencesUtil.dataStore.data.map { preferences ->
-            genreName?.let {
-                val sortOptionKey =
-                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_OPTION}")
-                val sortOrderKey =
-                    stringPreferencesKey("$genreName-${PreferencesUtil.TRACKS_SORT_ORDER}")
-                val sortOption = preferences[sortOptionKey]
-                val sortOrder = preferences[sortOrderKey]
-                if (sortOption != null && sortOrder != null) {
-                    SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
-                } else {
-                    SortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
-                }
-            } ?: kotlin.run {
-                val sortOption = preferences[PreferencesUtil.TRACKS_SORT_OPTION]
-                val sortOrder = preferences[PreferencesUtil.TRACKS_SORT_ORDER]
-                if (sortOption != null && sortOrder != null) {
-                    SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
-                } else {
-                    SortSettings(SortOption.TRACK_NAME, SortOrder.ASCENDING)
-                }
-            }
-        }.distinctUntilChanged()
-    }
-
-    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) {
-        withContext(ioDispatcher) {
-            preferencesUtil.dataStore.edit { settings ->
-                settings[PreferencesUtil.ALBUMS_SORT_OPTION] = sortSettings.sortOption.name
-                settings[PreferencesUtil.ALBUMS_SORT_ORDER] = sortSettings.sortOrder.name
-            }
-        }
-    }
-
-    override fun getAlbumsListSortOptions(): Flow<SortSettings> {
-        return preferencesUtil.dataStore.data.map { preferences ->
-            val sortOption = preferences[PreferencesUtil.ALBUMS_SORT_OPTION]
-            val sortOrder = preferences[PreferencesUtil.ALBUMS_SORT_ORDER]
-            if (sortOption != null && sortOrder != null) {
-                SortSettings(SortOption.valueOf(sortOption), SortOrder.valueOf(sortOrder))
-            } else {
-                SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING)
+    override fun getTracksListSortOptions(
+        tracksListType: TracksListType,
+        tracksListName: String
+    ): Flow<MediaSortSettings> {
+        return sortSettingsDataStore.data.map { sortSettings ->
+            when (tracksListType) {
+                TracksListType.ALL_TRACKS -> sortSettings.allTracksSortSettings
+                TracksListType.GENRE -> sortSettings.genreTrackListSortSettingsMap[tracksListName]
+                    ?: MediaSortSettings.getDefaultInstance()
+                TracksListType.PLAYLIST -> sortSettings.playlistTrackListSortSettingsMap[tracksListName]
+                    ?: MediaSortSettings.getDefaultInstance()
             }
         }.distinctUntilChanged()
     }
 
 
-    override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings) {
         withContext(ioDispatcher) {
-            preferencesUtil.dataStore.edit { settings ->
-                settings[PreferencesUtil.ARTISTS_SORT_ORDER] = sortOrder.name
+            sortSettingsDataStore.updateData { sortSettings ->
+                sortSettings.toBuilder().setAlbumsListSortSettings(mediaSortSettings).build()
             }
         }
     }
 
-    override fun getArtistsListSortOrder(): Flow<SortOrder> {
-        return preferencesUtil.dataStore.data.map { preferences ->
-            preferences[PreferencesUtil.ARTISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) }
-                ?: SortOrder.ASCENDING
+
+    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> {
+        return sortSettingsDataStore.data.map { sortSettings ->
+            sortSettings.albumsListSortSettings
         }.distinctUntilChanged()
     }
 
-    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         withContext(ioDispatcher) {
-            preferencesUtil.dataStore.edit { settings ->
-                settings[PreferencesUtil.GENRES_SORT_ORDER] = sortOrder.name
+            sortSettingsDataStore.updateData { sortSettings ->
+                sortSettings.toBuilder().setArtistListSortSettings(mediaSortOrder).build()
             }
         }
     }
 
-    override fun getGenresListSortOrder(): Flow<SortOrder> {
-        return preferencesUtil.dataStore.data.map { preferences ->
-            preferences[PreferencesUtil.GENRES_SORT_ORDER]?.let { SortOrder.valueOf(it) }
-                ?: SortOrder.ASCENDING
+
+    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> {
+        return sortSettingsDataStore.data.map { sortSettings ->
+            sortSettings.artistListSortSettings
         }.distinctUntilChanged()
     }
 
-    override suspend fun modifyPlaylistsListSortOrder(sortOrder: SortOrder) {
+    override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
         withContext(ioDispatcher) {
-            preferencesUtil.dataStore.edit { settings ->
-                settings[PreferencesUtil.PLAYLISTS_SORT_ORDER] = sortOrder.name
+            sortSettingsDataStore.updateData { sortSettings ->
+                sortSettings.toBuilder().setGenresListSortSettings(mediaSortOrder).build()
             }
         }
     }
 
-    override fun getPlaylistsListSortOrder(): Flow<SortOrder> {
-        return preferencesUtil.dataStore.data.map { preferences ->
-            preferences[PreferencesUtil.PLAYLISTS_SORT_ORDER]?.let { SortOrder.valueOf(it) }
-                ?: SortOrder.ASCENDING
+
+    override fun getGenresListSortOrder(): Flow<MediaSortOrder> {
+        return sortSettingsDataStore.data.map { sortSettings ->
+            sortSettings.genresListSortSettings
+        }.distinctUntilChanged()
+    }
+
+    override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {
+        withContext(ioDispatcher) {
+            sortSettingsDataStore.updateData { sortSettings ->
+                sortSettings.toBuilder().setPlaylistsListSortSettings(mediaSortOrder).build()
+            }
         }
+    }
+
+
+    override fun getPlaylistsListSortOrder(): Flow<MediaSortOrder> {
+        return sortSettingsDataStore.data.map { sortSettings ->
+            sortSettings.playlistsListSortSettings
+        }.distinctUntilChanged()
     }
 
     override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
         withContext(ioDispatcher) {
             with(transform(getSavedPlaybackInfo().first())) {
-                preferencesUtil.dataStore.edit { settings ->
+                preferencesDataStore.edit { settings ->
                     settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
                         currentQueue.mediaGroupType.name
-                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] = currentQueue.mediaId
+                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] =
+                        currentQueue.mediaId
                     settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
                     settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
                 }
@@ -153,7 +144,7 @@ class PreferencesRepositoryImpl @Inject constructor(
     }
 
     override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
-        return preferencesUtil.dataStore.data.map { preferences ->
+        return preferencesDataStore.data.map { preferences ->
             val mediaGroup =
                 preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP]
                     ?: MediaGroupType.UNKNOWN.name

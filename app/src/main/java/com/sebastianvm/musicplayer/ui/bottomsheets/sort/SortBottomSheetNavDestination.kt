@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) {
@@ -47,7 +47,7 @@ fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) 
     }
 }
 
-fun NavController.openSortBottomSheet(screen: String, sortOption: Int, sortOrder: SortOrder) {
+fun NavController.openSortBottomSheet(screen: String, sortOption: Int, sortOrder: MediaSortOrder) {
     navigateTo(
         NavRoutes.SORT,
         NavArgument(NavArgs.SCREEN, screen),

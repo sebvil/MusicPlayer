@@ -22,19 +22,19 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
 interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
-    fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
+    fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder)
     fun openContextMenu(
         mediaId: String,
         mediaGroup: MediaGroup,
-        currentSort: SortOption,
-        sortOrder: SortOrder
+        currentSort: MediaSortOption,
+        sortOrder: MediaSortOrder
     )
 }
 
@@ -70,7 +70,8 @@ fun TracksListScreen(
         },
         topBar = { state ->
             LibraryTopBar(
-                title = state.tracksListTitle ?: stringResource(id = R.string.all_songs),
+                title = state.tracksListTitle.takeUnless { it.isEmpty() }
+                    ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
                         screenViewModel.handle(TracksListUserAction.UpButtonClicked)
@@ -119,7 +120,7 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
         LibraryTopBar(
-            title = state.tracksListTitle ?: stringResource(id = R.string.all_songs),
+            title = state.tracksListTitle,
             delegate = object : LibraryTopBarDelegate {})
     }) {
         TracksListLayout(

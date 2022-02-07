@@ -10,8 +10,8 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
     composable(NavRoutes.GENRES_ROOT) {
@@ -23,8 +23,8 @@ fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
 
             override fun openContextMenu(
                 genreName: String,
-                currentSort: SortOption,
-                sortOrder: SortOrder
+                currentSort: MediaSortOption,
+                sortOrder: MediaSortOrder
             ) {
                 navController.openContextMenu(
                     mediaType = MediaType.GENRE,

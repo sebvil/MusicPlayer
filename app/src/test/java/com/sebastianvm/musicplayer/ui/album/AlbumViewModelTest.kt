@@ -12,8 +12,8 @@ import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import io.mockk.coVerify
@@ -107,8 +107,8 @@ class AlbumViewModelTest {
                         mediaGroupType = MediaGroupType.ALBUM,
                         mediaId = state.value.albumId
                     ),
-                    SortOption.TRACK_NUMBER,
-                    SortOrder.ASCENDING
+                    MediaSortOption.TRACK_NUMBER,
+                    MediaSortOrder.ASCENDING
                 )
 
             }

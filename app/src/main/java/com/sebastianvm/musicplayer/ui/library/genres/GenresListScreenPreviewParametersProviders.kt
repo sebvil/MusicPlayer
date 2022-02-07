@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.genres
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 class GenresListStatePreviewParameterProvider :
     PreviewParameterProvider<GenresListState> {
@@ -14,7 +14,7 @@ class GenresListStatePreviewParameterProvider :
                 Genre("Tropipop"),
                 Genre("Vallenato")
             ),
-            sortOrder = SortOrder.ASCENDING
+            sortOrder = MediaSortOrder.ASCENDING
         )
     )
 }

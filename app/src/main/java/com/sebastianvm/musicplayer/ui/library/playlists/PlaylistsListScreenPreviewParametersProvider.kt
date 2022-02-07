@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.playlists
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Playlist
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 class PlaylistsListStatePreviewParameterProvider :
     PreviewParameterProvider<PlaylistsListState> {
@@ -14,7 +14,7 @@ class PlaylistsListStatePreviewParameterProvider :
                 Playlist("Tropipop"),
                 Playlist("Vallenato")
             ),
-            sortOrder = SortOrder.ASCENDING,
+            sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false
         ),
         PlaylistsListState(
@@ -24,7 +24,7 @@ class PlaylistsListStatePreviewParameterProvider :
                 Playlist("Tropipop"),
                 Playlist("Vallenato")
             ),
-            sortOrder = SortOrder.ASCENDING,
+            sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = true
         )
     )

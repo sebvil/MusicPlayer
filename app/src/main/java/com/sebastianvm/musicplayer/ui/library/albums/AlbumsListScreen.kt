@@ -18,12 +18,12 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 interface AlbumsListScreenNavigationDelegate {
     fun navigateToAlbum(albumId: String)
     fun navigateUp()
-    fun openSortMenu(sortOption: Int, sortOrder: SortOrder)
+    fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder)
     fun openContextMenu(albumId: String)
 }
 
