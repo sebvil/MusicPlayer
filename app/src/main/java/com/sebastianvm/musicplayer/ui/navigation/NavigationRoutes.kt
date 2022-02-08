@@ -31,6 +31,7 @@ object NavArgs {
     const val MEDIA_TYPE = "mediaType"
     const val MEDIA_GROUP_ID = "mediaGroupId"
     const val MEDIA_GROUP_TYPE = "mediaGroupType"
+    const val TRACKS_LIST_TYPE = "tracksListType"
 }
 
 fun createNavRoute(route: String, vararg parameters: String): String {

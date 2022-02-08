@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,8 +30,8 @@ class AlbumsListViewModelTest {
         return AlbumsListViewModel(
             initialState = AlbumsListState(
                 albumsList = listOf(),
-                currentSort = SortOption.YEAR,
-                sortOrder = SortOrder.DESCENDING,
+                currentSort = MediaSortOption.YEAR,
+                sortOrder = MediaSortOrder.DESCENDING,
             ),
             albumRepository = FakeAlbumRepository(),
             preferencesRepository = FakePreferencesRepository()
@@ -65,8 +65,8 @@ class AlbumsListViewModelTest {
             assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
             assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
 
-            assertEquals(SortOption.ALBUM_NAME, state.value.currentSort)
-            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
 
         }
     }
@@ -97,7 +97,7 @@ class AlbumsListViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.ShowSortBottomSheet>(this@runTest) {
                 assertEquals(R.string.album_name, sortOption)
-                assertEquals(SortOrder.ASCENDING, sortOrder)
+                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
             }
             handle(AlbumsListUserAction.SortByClicked)
         }
@@ -105,26 +105,26 @@ class AlbumsListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `SortOptionClicked changes state, adds ScrollToTop event`() = runTest {
+    fun `MediaSortOptionClicked changes state, adds ScrollToTop event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
-            handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            handle(AlbumsListUserAction.MediaSortOptionClicked(MediaSortOption.YEAR))
             delay(1)
-            assertEquals(SortOption.YEAR, state.value.currentSort)
-            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOption.YEAR, state.value.currentSort)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
 
 
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
-            handle(AlbumsListUserAction.SortOptionClicked(SortOption.YEAR))
+            handle(AlbumsListUserAction.MediaSortOptionClicked(MediaSortOption.YEAR))
             delay(1)
-            assertEquals(SortOption.YEAR, state.value.currentSort)
-            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOption.YEAR, state.value.currentSort)
+            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
 
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
-            handle(AlbumsListUserAction.SortOptionClicked(SortOption.ARTIST_NAME))
+            handle(AlbumsListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
             delay(1)
-            assertEquals(SortOption.ARTIST_NAME, state.value.currentSort)
-            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
+            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
         }
     }
 

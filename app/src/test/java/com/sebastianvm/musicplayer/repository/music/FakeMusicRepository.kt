@@ -11,7 +11,8 @@ class FakeMusicRepository : MusicRepository {
                 tracks = FAKE_TRACK_COUNTS,
                 artists = FAKE_ARTIST_COUNTS,
                 albums = FAKE_ALBUM_COUNTS,
-                genres = FAKE_GENRE_COUNTS
+                genres = FAKE_GENRE_COUNTS,
+                playlists = FAKE_PLAYLIST_COUNTS
             )
         )
     }
@@ -23,5 +24,6 @@ class FakeMusicRepository : MusicRepository {
         const val FAKE_ARTIST_COUNTS = 10L
         const val FAKE_ALBUM_COUNTS = 100L
         const val FAKE_GENRE_COUNTS = 1L
+        const val FAKE_PLAYLIST_COUNTS = 5L
     }
 }

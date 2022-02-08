@@ -26,7 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.Dispatchers
 
 
@@ -67,7 +67,7 @@ fun SortBottomSheet(
                     modifier = Modifier
                         .clickable {
                             sheetViewModel.handle(
-                                SortBottomSheetUserAction.SortOptionSelected(
+                                SortBottomSheetUserAction.MediaSortOptionSelected(
                                     row
                                 )
                             )
@@ -86,8 +86,8 @@ fun SortBottomSheet(
                 ) {
                     if (state.value.selectedSort == row) {
                         Icon(
-                            painter = painterResource(id = if (state.value.sortOrder == SortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
-                            contentDescription = if (state.value.sortOrder == SortOrder.ASCENDING) stringResource(
+                            painter = painterResource(id = if (state.value.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
+                            contentDescription = if (state.value.sortOrder == MediaSortOrder.ASCENDING) stringResource(
                                 R.string.up_arrow
                             )
                             else stringResource(R.string.down_arrow),

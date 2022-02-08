@@ -2,8 +2,10 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
@@ -14,12 +16,13 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.SortSettings
-import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.id
+import com.sebastianvm.musicplayer.util.sort.not
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +30,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -42,20 +46,25 @@ class TracksListViewModel @Inject constructor(
 ) {
 
     init {
-        val tracksListFlow = when (state.value.listGroupType) {
-            MediaGroupType.ALL_TRACKS -> trackRepository.getAllTracks()
-            MediaGroupType.GENRE -> trackRepository.getTracksForGenre(
-                genreName = state.value.tracksListTitle ?: ""
+        val tracksListFlow = when (state.value.tracksListType) {
+            TracksListType.ALL_TRACKS -> trackRepository.getAllTracks()
+            TracksListType.GENRE -> trackRepository.getTracksForGenre(
+                genreName = state.value.tracksListTitle
             )
-            MediaGroupType.PLAYLIST -> trackRepository.getTracksForPlaylist(
-                playlistName = state.value.tracksListTitle ?: ""
+            TracksListType.PLAYLIST -> trackRepository.getTracksForPlaylist(
+                playlistName = state.value.tracksListTitle
             )
-            else -> throw IllegalStateException("Unrecognized track list type ${state.value.listGroupType}")
         }
 
-        collect(tracksListFlow.combine(preferencesRepository.getTracksListSortOptions(genreName = state.value.tracksListTitle)) { trackList, sortSettings ->
-            Pair(trackList, sortSettings)
-        }) { (tracksList, sortSettings) ->
+        collect(
+            tracksListFlow.combine(
+                preferencesRepository.getTracksListSortOptions(
+                    tracksListType = state.value.tracksListType,
+                    tracksListName = state.value.tracksListTitle
+                )
+            ) { trackList, sortSettings ->
+                Pair(trackList, sortSettings)
+            }) { (tracksList, sortSettings) ->
             setState {
                 copy(
                     currentSort = sortSettings.sortOption,
@@ -75,17 +84,16 @@ class TracksListViewModel @Inject constructor(
     override fun handle(action: TracksListUserAction) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val mediaGroup = MediaGroup(
-                        mediaGroupType = state.value.tracksListTitle?.let { MediaGroupType.GENRE }
-                            ?: MediaGroupType.ALL_TRACKS,
-                        mediaId = state.value.tracksListTitle ?: ""
+                        mediaGroupType = when (state.value.tracksListType) {
+                            TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+                            TracksListType.GENRE -> MediaGroupType.GENRE
+                            TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                        },
+                        mediaId = state.value.tracksListTitle
                     )
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = state.value.sortOrder,
-                        sortOption = state.value.currentSort
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
@@ -98,31 +106,38 @@ class TracksListViewModel @Inject constructor(
                     )
                 )
             }
-            is TracksListUserAction.SortOptionClicked -> {
+            is TracksListUserAction.MediaSortOptionClicked -> {
                 val sortOrder = if (action.newSortOption == state.value.currentSort) {
                     !state.value.sortOrder
                 } else {
                     state.value.sortOrder
                 }
 
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
-                        SortSettings(
-                            sortOption = action.newSortOption,
-                            sortOrder = sortOrder
-                        ),
+                        mediaSortSettings = mediaSortSettings {
+                            sortOption = action.newSortOption
+                            this.sortOrder = sortOrder
+                        },
+                        tracksListType = state.value.tracksListType,
                         state.value.tracksListTitle
                     )
                     addUiEvent(TracksListUiEvent.ScrollToTop)
                 }
             }
             is TracksListUserAction.TrackContextMenuClicked -> {
+                val mediaGroup = MediaGroup(
+                    mediaGroupType = when (state.value.tracksListType) {
+                        TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+                        TracksListType.GENRE -> MediaGroupType.GENRE
+                        TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                    },
+                    mediaId = state.value.tracksListTitle.ifEmpty { ALL_TRACKS }
+                )
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackId,
-                        state.value.tracksListTitle,
-                        state.value.currentSort,
-                        state.value.sortOrder
+                        mediaGroup
                     )
                 )
             }
@@ -131,43 +146,48 @@ class TracksListViewModel @Inject constructor(
     }
 
     private fun getComparator(
-        sortOrder: SortOrder,
-        sortOption: SortOption
+        sortOrder: MediaSortOrder,
+        sortOption: MediaSortOption
     ): Comparator<TrackRowState> {
         return getStringComparator(sortOrder) { trackRowState ->
             when (sortOption) {
-                SortOption.TRACK_NAME -> trackRowState.trackName
-                SortOption.ARTIST_NAME -> trackRowState.artists
-                SortOption.ALBUM_NAME -> trackRowState.albumName
+                MediaSortOption.TRACK -> trackRowState.trackName
+                MediaSortOption.ARTIST -> trackRowState.artists
+                MediaSortOption.ALBUM -> trackRowState.albumName
                 else -> throw IllegalStateException("Unknown sort option for tracks list: $sortOption")
             }
         }
+    }
+
+    companion object {
+        private const val ALL_TRACKS = ""
     }
 }
 
 
 data class TracksListState(
-    val tracksListTitle: String?,
-    val listGroupType: MediaGroupType,
+    val tracksListTitle: String,
+    val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
-    val currentSort: SortOption,
-    val sortOrder: SortOrder
+    val currentSort: MediaSortOption,
+    val sortOrder: MediaSortOrder
 ) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
 object InitialTracksListStateModule {
+
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listName = savedStateHandle.get<String?>(NavArgs.TRACK_LIST_NAME)
-        val listGroupType = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!
+        val listName = savedStateHandle.get<String?>(NavArgs.TRACK_LIST_NAME) ?: ""
+        val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
         return TracksListState(
             tracksListTitle = listName,
             tracksList = listOf(),
-            listGroupType = MediaGroupType.valueOf(listGroupType),
-            currentSort = SortOption.TRACK_NAME,
-            sortOrder = SortOrder.ASCENDING
+            tracksListType = TracksListType.valueOf(listGroupType),
+            currentSort = MediaSortOption.TRACK,
+            sortOrder = MediaSortOrder.ASCENDING
         )
     }
 }
@@ -175,24 +195,20 @@ object InitialTracksListStateModule {
 sealed class TracksListUserAction : UserAction {
     data class TrackClicked(val trackId: String) : TracksListUserAction()
     object SortByClicked : TracksListUserAction()
-    data class SortOptionClicked(val newSortOption: SortOption) : TracksListUserAction()
+    data class MediaSortOptionClicked(val newSortOption: MediaSortOption) : TracksListUserAction()
     data class TrackContextMenuClicked(val trackId: String) : TracksListUserAction()
     object UpButtonClicked : TracksListUserAction()
 }
 
 sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
-    data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: SortOrder) :
+    data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: MediaSortOrder) :
         TracksListUiEvent()
 
     object NavigateUp : TracksListUiEvent()
 
-    data class OpenContextMenu(
-        val trackId: String,
-        val genreName: String?,
-        val currentSort: SortOption,
-        val sortOrder: SortOrder
-    ) : TracksListUiEvent()
+    data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup) : TracksListUiEvent()
 
     object ScrollToTop : TracksListUiEvent()
 }
+

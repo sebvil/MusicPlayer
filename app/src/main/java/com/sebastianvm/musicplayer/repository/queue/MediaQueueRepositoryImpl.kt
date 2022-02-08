@@ -10,16 +10,18 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
-import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -30,6 +32,7 @@ import javax.inject.Inject
 
 class MediaQueueRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val mediaQueueDao: MediaQueueDao,
     private val albumRepository: AlbumRepository,
     private val trackRepository: TrackRepository,
@@ -41,91 +44,128 @@ class MediaQueueRepositoryImpl @Inject constructor(
         trackIds: List<String>,
         queueName: String
     ): Long {
-        val queueId = mediaQueueDao.insertQueue(
-            MediaQueue(
-                mediaGroupType = mediaGroup.mediaGroupType,
-                groupMediaId = mediaGroup.mediaId,
-                queueName = queueName,
-            )
-        )
-        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
-            queueId = mediaGroup.mediaId,
-            mediaGroupType = mediaGroup.mediaGroupType,
-            trackIds.mapIndexed { index, trackId ->
-                MediaQueueTrackCrossRef(
+        return withContext(ioDispatcher) {
+            val queueId = mediaQueueDao.insertQueue(
+                MediaQueue(
                     mediaGroupType = mediaGroup.mediaGroupType,
                     groupMediaId = mediaGroup.mediaId,
-                    trackId = trackId,
-                    trackIndex = index
+                    queueName = queueName,
                 )
-            })
-        return queueId
+            )
+            mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
+                queueId = mediaGroup.mediaId,
+                mediaGroupType = mediaGroup.mediaGroupType,
+                trackIds.mapIndexed { index, trackId ->
+                    MediaQueueTrackCrossRef(
+                        mediaGroupType = mediaGroup.mediaGroupType,
+                        groupMediaId = mediaGroup.mediaId,
+                        trackId = trackId,
+                        trackIndex = index
+                    )
+                })
+            queueId
+        }
     }
 
     override suspend fun createQueue(
         mediaGroup: MediaGroup,
-        sortOption: SortOption,
-        sortOrder: SortOrder
     ): Long {
-        val queueName: String
-        val trackIds = when (mediaGroup.mediaGroupType) {
-            MediaGroupType.ALL_TRACKS -> {
-                queueName = ResUtil.getString(context = context, R.string.all_songs)
-                trackRepository.getAllTracks()
-            }
-            MediaGroupType.ARTIST -> {
-                queueName = mediaGroup.mediaId
-                trackRepository.getTracksForArtist(mediaGroup.mediaId)
-            }
-            MediaGroupType.ALBUM -> {
-                queueName = albumRepository.getAlbum(mediaGroup.mediaId).first().album.albumName
-                trackRepository.getTracksForAlbum(mediaGroup.mediaId)
-            }
-            MediaGroupType.GENRE -> {
-                queueName = mediaGroup.mediaId
-                trackRepository.getTracksForGenre(mediaGroup.mediaId)
-            }
-            MediaGroupType.SINGLE_TRACK -> {
-                val track = trackRepository.getTrack(mediaGroup.mediaId)
-                queueName = track.first().track.trackName
-                track.map { listOf(it) }
-            }
-            MediaGroupType.PLAYLIST -> {
-                queueName = mediaGroup.mediaId
-                trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
-            }
-            MediaGroupType.UNKNOWN -> {
-                queueName = ""
-                flow { }
-            }
-        }.map { tracks ->
-            tracks.sortedWith(getTrackComparator(sortOrder, sortOption)).map { it.track.trackId }
-        }.first()
-
-        return createQueue(mediaGroup, trackIds, queueName)
+        return withContext(ioDispatcher) {
+            val queueName: String
+            val sortOption: MediaSortOption
+            val sortOrder: MediaSortOrder
+            val trackIds = when (mediaGroup.mediaGroupType) {
+                MediaGroupType.ALL_TRACKS -> {
+                    queueName = ResUtil.getString(context = context, R.string.all_songs)
+                    preferencesRepository.getTracksListSortOptions(TracksListType.ALL_TRACKS)
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
+                    trackRepository.getAllTracks()
+                }
+                MediaGroupType.ARTIST -> {
+                    queueName = mediaGroup.mediaId
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
+                    trackRepository.getTracksForArtist(mediaGroup.mediaId)
+                }
+                MediaGroupType.ALBUM -> {
+                    queueName = albumRepository.getAlbum(mediaGroup.mediaId).first().album.albumName
+                    sortOption = MediaSortOption.TRACK_NUMBER
+                    sortOrder = MediaSortOrder.ASCENDING
+                    trackRepository.getTracksForAlbum(mediaGroup.mediaId)
+                }
+                MediaGroupType.GENRE -> {
+                    queueName = mediaGroup.mediaId
+                    preferencesRepository.getTracksListSortOptions(
+                        TracksListType.GENRE,
+                        mediaGroup.mediaId
+                    )
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
+                    trackRepository.getTracksForGenre(mediaGroup.mediaId)
+                }
+                MediaGroupType.SINGLE_TRACK -> {
+                    val track = trackRepository.getTrack(mediaGroup.mediaId)
+                    queueName = track.first().track.trackName
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
+                    track.map { listOf(it) }
+                }
+                MediaGroupType.PLAYLIST -> {
+                    queueName = mediaGroup.mediaId
+                    preferencesRepository.getTracksListSortOptions(
+                        TracksListType.PLAYLIST,
+                        mediaGroup.mediaId
+                    )
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
+                    trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
+                }
+                MediaGroupType.UNKNOWN -> {
+                    queueName = ""
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
+                    flow { }
+                }
+            }.map { tracks ->
+                tracks.sortedWith(getTrackComparator(sortOrder, sortOption))
+                    .map { it.track.trackId }
+            }.first()
+            createQueue(mediaGroup, trackIds, queueName)
+        }
     }
 
     override suspend fun insertOrUpdateMediaQueueTrackCrossRefs(
         queue: MediaGroup,
         mediaQueueTrackCrossRefs: List<MediaQueueTrackCrossRef>
     ) {
-        mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
-            queueId = queue.mediaId,
-            mediaGroupType = queue.mediaGroupType,
-            mediaQueueTrackCrossRefs = mediaQueueTrackCrossRefs
-        )
+        withContext(ioDispatcher) {
+            mediaQueueDao.insertOrUpdateMediaQueueTrackCrossRefs(
+                queueId = queue.mediaId,
+                mediaGroupType = queue.mediaGroupType,
+                mediaQueueTrackCrossRefs = mediaQueueTrackCrossRefs
+            )
+        }
     }
 
     private fun getTrackComparator(
-        sortOrder: SortOrder,
-        sortOption: SortOption
+        sortOrder: MediaSortOrder,
+        sortOption: MediaSortOption
     ): Comparator<FullTrackInfo> {
         return when (sortOption) {
-            SortOption.ALBUM_NAME -> getStringComparator(sortOrder) { track -> track.album.albumName }
-            SortOption.TRACK_NAME -> getStringComparator(sortOrder) { track -> track.track.trackName }
-            SortOption.ARTIST_NAME -> getStringComparator(sortOrder) { track -> track.artists.toString() }
-            SortOption.YEAR -> compareBy { track -> track.album.year }
-            SortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
+            MediaSortOption.ALBUM -> getStringComparator(sortOrder) { track -> track.album.albumName }
+            MediaSortOption.TRACK -> getStringComparator(sortOrder) { track -> track.track.trackName }
+            MediaSortOption.ARTIST -> getStringComparator(sortOrder) { track -> track.artists.toString() }
+            MediaSortOption.YEAR -> compareBy { track -> track.album.year }
+            MediaSortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
+            MediaSortOption.GENRE -> getStringComparator(sortOrder) { track -> track.genres.toString() }
+            MediaSortOption.UNRECOGNIZED -> throw IllegalStateException("Unknown sort option")
         }
     }
 
@@ -146,11 +186,11 @@ class MediaQueueRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addToQueue(trackIds: List<String>): Boolean {
-        val queue = preferencesRepository.getSavedPlaybackInfo()
-            .first().currentQueue.takeUnless { it.mediaGroupType == MediaGroupType.UNKNOWN }
-            ?: return false
-        val index = mediaPlaybackRepository.addToQueue(trackIds)
-        withContext(Dispatchers.IO) {
+        return withContext(ioDispatcher) {
+            val queue = preferencesRepository.getSavedPlaybackInfo()
+                .first().currentQueue.takeUnless { it.mediaGroupType == MediaGroupType.UNKNOWN }
+                ?: return@withContext false
+            val index = mediaPlaybackRepository.addToQueue(trackIds)
             val queueItems = getMediaQueTrackCrossRefs(queue).first().toMutableList()
             if (index == C.INDEX_UNSET) {
                 queueItems.addAll(trackIds.map {
@@ -172,8 +212,8 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 })
             }
             insertOrUpdateMediaQueueTrackCrossRefs(queue, queueItems.withUpdatedIndices())
+            true
         }
-        return true
     }
 
 

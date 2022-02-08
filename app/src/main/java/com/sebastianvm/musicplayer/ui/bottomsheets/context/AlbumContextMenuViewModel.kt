@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
@@ -11,9 +10,6 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,13 +49,9 @@ class AlbumContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayFromBeginning -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.ALBUM, state.value.mediaId)
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = state.value.sortOrder,
-                        sortOption = SortOption.valueOf(state.value.selectedSort)
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
@@ -100,9 +92,7 @@ class AlbumContextMenuViewModel @Inject constructor(
 data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
-    val mediaId: String,
-    val selectedSort: String,
-    val sortOrder: SortOrder
+    val mediaId: String
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -112,14 +102,10 @@ object InitialAlbumContextMenuStateModule {
     @ViewModelScoped
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
-        val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
-        val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
         return AlbumContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
-            listItems = listOf(),
-            selectedSort = selectedSort,
-            sortOrder = SortOrder.valueOf(sortOrder)
+            listItems = listOf()
         )
     }
 }

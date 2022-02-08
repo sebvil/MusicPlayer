@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -25,7 +25,7 @@ class ArtistsListViewModelTest {
         return ArtistsListViewModel(
             initialState = ArtistsListState(
                 artistsList = listOf(),
-                sortOrder = SortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING
             ),
             artistRepository = FakeArtistRepository(),
             preferencesRepository = FakePreferencesRepository(),
@@ -37,7 +37,7 @@ class ArtistsListViewModelTest {
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
             delay(1)
-            assertEquals(SortOrder.ASCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     ArtistRowState(
@@ -82,7 +82,7 @@ class ArtistsListViewModelTest {
             delay(1)
             handle(ArtistsListUserAction.SortByClicked)
             delay(1)
-            assertEquals(SortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
         }
     }
 

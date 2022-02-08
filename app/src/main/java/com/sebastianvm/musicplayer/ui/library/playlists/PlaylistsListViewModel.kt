@@ -1,16 +1,16 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.not
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +18,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,24 +50,13 @@ class PlaylistsListViewModel @Inject constructor(
                 addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
             }
             is PlaylistsListUserAction.SortByClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyPlaylistsListSortOrder(!state.value.sortOrder)
                 }
             }
             is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                launchViewModelIOScope {
-                    val sortSettings =
-                        preferencesRepository.getTracksListSortOptions(action.playlistName).first()
-                    addUiEvent(
-                        PlaylistsListUiEvent.OpenContextMenu(
-                            action.playlistName,
-                            sortSettings.sortOption,
-                            sortSettings.sortOrder
-                        )
-                    )
-
-                }
+                addUiEvent(PlaylistsListUiEvent.OpenContextMenu(action.playlistName))
             }
             is PlaylistsListUserAction.FabClicked -> {
                 setState {
@@ -80,7 +69,7 @@ class PlaylistsListViewModel @Inject constructor(
                 }
             }
             is PlaylistsListUserAction.PlaylistCreated -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     playlistRepository.createPlaylist(action.playlistName)
                 }
                 setState {
@@ -94,7 +83,7 @@ class PlaylistsListViewModel @Inject constructor(
 data class PlaylistsListState(
     val playlistsList: List<Playlist>,
     val isDialogOpen: Boolean,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : State
 
 
@@ -107,7 +96,7 @@ object InitialPlaylistsListStateModule {
     fun initialPlaylistsListStateProvider() =
         PlaylistsListState(
             playlistsList = listOf(),
-            sortOrder = SortOrder.ASCENDING,
+            sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false
         )
 }
@@ -125,9 +114,5 @@ sealed class PlaylistsListUserAction : UserAction {
 sealed class PlaylistsListUiEvent : UiEvent {
     data class NavigateToPlaylist(val playlistName: String) : PlaylistsListUiEvent()
     object NavigateUp : PlaylistsListUiEvent()
-    data class OpenContextMenu(
-        val playlistName: String,
-        val currentSort: SortOption,
-        val sortOrder: SortOrder
-    ) : PlaylistsListUiEvent()
+    data class OpenContextMenu(val playlistName: String) : PlaylistsListUiEvent()
 }

@@ -2,11 +2,17 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: PlaylistDao) :
+class PlaylistRepositoryImpl @Inject constructor(
+    private val playlistDao: PlaylistDao,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+) :
     PlaylistRepository {
     override fun getPlaylistsCount(): Flow<Long> {
         return playlistDao.getPlaylistsCount().distinctUntilChanged()
@@ -17,10 +23,14 @@ class PlaylistRepositoryImpl @Inject constructor(private val playlistDao: Playli
     }
 
     override suspend fun createPlaylist(playlistName: String) {
-        playlistDao.createPlaylist(Playlist(playlistName = playlistName))
+        withContext(ioDispatcher) {
+            playlistDao.createPlaylist(Playlist(playlistName = playlistName))
+        }
     }
 
     override suspend fun deletePlaylist(playlistName: String) {
-        playlistDao.deletePlaylist(Playlist(playlistName = playlistName))
+        withContext(ioDispatcher) {
+            playlistDao.deletePlaylist(Playlist(playlistName = playlistName))
+        }
     }
 }

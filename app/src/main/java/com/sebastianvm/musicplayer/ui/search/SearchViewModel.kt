@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.search
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -22,10 +23,7 @@ import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +36,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -103,16 +102,12 @@ class SearchViewModel @Inject constructor(
                 }
             }
             is SearchUserAction.TrackRowClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.SINGLE_TRACK,
                         mediaId = action.trackId
                     )
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = SortOrder.ASCENDING,
-                        sortOption = SortOption.TRACK_NAME
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
 
                     mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
@@ -129,8 +124,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.SINGLE_TRACK,
                             action.trackId
                         ),
-                        sortOption = SortOption.TRACK_NAME,
-                        sortOrder = SortOrder.ASCENDING
                     )
                 )
             }
@@ -142,8 +135,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.ARTIST,
                             action.artistName
                         ),
-                        sortOption = SortOption.TRACK_NAME,
-                        sortOrder = SortOrder.ASCENDING
                     )
                 )
             }
@@ -155,8 +146,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.ALBUM,
                             action.albumId
                         ),
-                        sortOption = SortOption.ALBUM_NAME,
-                        sortOrder = SortOrder.ASCENDING
                     )
                 )
             }
@@ -168,8 +157,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.GENRE,
                             action.genreName
                         ),
-                        sortOption = SortOption.TRACK_NAME,
-                        sortOrder = SortOrder.ASCENDING
                     )
                 )
             }
@@ -221,11 +208,7 @@ sealed class SearchUiEvent : UiEvent {
     data class NavigateToArtist(val artistName: String) : SearchUiEvent()
     data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
     data class NavigateToGenre(val genreName: String) : SearchUiEvent()
-    data class OpenContextMenu(
-        val mediaType: MediaType,
-        val mediaGroup: MediaGroup,
-        val sortOption: SortOption,
-        val sortOrder: SortOrder
-    ) : SearchUiEvent()
+    data class OpenContextMenu(val mediaType: MediaType, val mediaGroup: MediaGroup) :
+        SearchUiEvent()
 
 }

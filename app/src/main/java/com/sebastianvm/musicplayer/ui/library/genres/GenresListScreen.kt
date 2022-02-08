@@ -24,13 +24,13 @@ import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 interface GenresListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToGenre(genreName: String)
-    fun openContextMenu(genreName: String, currentSort: SortOption, sortOrder: SortOrder)
+    fun openContextMenu(genreName: String, currentSort: MediaSortOption, sortOrder: MediaSortOrder)
 }
 
 @Composable

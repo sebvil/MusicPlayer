@@ -1,21 +1,19 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,13 +26,9 @@ class ArtistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.ARTIST, state.value.artistName)
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = SortOrder.ASCENDING,
-                        sortOption = SortOption.TRACK_NAME
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(state.value.artistName, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }

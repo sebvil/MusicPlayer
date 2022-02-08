@@ -5,7 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +27,7 @@ class ArtistsListScreenTest {
                         ArtistRowState("B", "B", shouldShowContextMenu = true),
                         ArtistRowState("C", "C", shouldShowContextMenu = true),
                     ),
-                    sortOrder = SortOrder.ASCENDING
+                    sortOrder = MediaSortOrder.ASCENDING
                 )
             )
         }

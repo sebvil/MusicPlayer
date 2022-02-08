@@ -8,8 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -18,22 +18,22 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
+import com.sebastianvm.musicplayer.util.sort.mediaSortOptionFromResId
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     composable(
         createNavRoute(
             NavRoutes.TRACKS_ROOT,
             NavArgs.TRACK_LIST_NAME,
-            NavArgs.MEDIA_GROUP_TYPE
+            NavArgs.TRACKS_LIST_TYPE
         ),
         arguments = listOf(
             navArgument(NavArgs.TRACK_LIST_NAME) {
                 nullable = true
                 type = NavType.StringType
             },
-            navArgument(NavArgs.MEDIA_GROUP_TYPE) {
+            navArgument(NavArgs.TRACKS_LIST_TYPE) {
                 type = NavType.StringType
             },
         )
@@ -43,7 +43,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
             ?.observe(lifecycleOwner) {
                 screenViewModel.handle(
-                    TracksListUserAction.SortOptionClicked(SortOption.fromResId(it))
+                    TracksListUserAction.MediaSortOptionClicked(mediaSortOptionFromResId(it))
                 )
             }
 
@@ -58,22 +58,15 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.navigateUp()
                 }
 
-                override fun openSortMenu(sortOption: Int, sortOrder: SortOrder) {
+                override fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder) {
                     navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT, sortOption, sortOrder)
                 }
 
-                override fun openContextMenu(
-                    mediaId: String,
-                    mediaGroup: MediaGroup,
-                    currentSort: SortOption,
-                    sortOrder: SortOrder
-                ) {
+                override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup) {
                     navController.openContextMenu(
                         mediaType = MediaType.TRACK,
                         mediaId = mediaId,
                         mediaGroup = mediaGroup,
-                        currentSort = currentSort,
-                        sortOrder = sortOrder,
                     )
                 }
             }
@@ -81,11 +74,18 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     }
 }
 
+fun NavController.navigateToTracksRoot() {
+    navigateTo(
+        NavRoutes.TRACKS_ROOT,
+        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.ALL_TRACKS)
+    )
+}
+
 fun NavController.navigateToGenre(genreName: String) {
     navigateTo(
         NavRoutes.TRACKS_ROOT,
         NavArgument(NavArgs.TRACK_LIST_NAME, genreName),
-        NavArgument(NavArgs.MEDIA_GROUP_TYPE, MediaGroupType.GENRE)
+        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.GENRE)
     )
 }
 
@@ -93,6 +93,6 @@ fun NavController.navigateToPlaylist(playlistName: String) {
     navigateTo(
         NavRoutes.TRACKS_ROOT,
         NavArgument(NavArgs.TRACK_LIST_NAME, playlistName),
-        NavArgument(NavArgs.MEDIA_GROUP_TYPE, MediaGroupType.PLAYLIST)
+        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.PLAYLIST)
     )
 }

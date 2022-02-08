@@ -1,16 +1,18 @@
 package com.sebastianvm.musicplayer.ui.library.genres
 
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.launchViewModelIOScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.not
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,15 +53,16 @@ class GenresListViewModel @Inject constructor(
                 this.addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))
             }
             is GenresListUserAction.SortByClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     preferencesRepository.modifyGenresListSortOrder(!state.value.sortOrder)
                 }
             }
             is GenresListUserAction.UpButtonClicked -> addUiEvent(GenresListUiEvent.NavigateUp)
             is GenresListUserAction.OverflowMenuIconClicked -> {
-                launchViewModelIOScope {
+                viewModelScope.launch {
                     val sortSettings =
-                        preferencesRepository.getTracksListSortOptions(action.genreName).first()
+                        preferencesRepository.getTracksListSortOptions(TracksListType.GENRE, action.genreName).first()
+                    // TODO do not pass sort settings to context menu
                     addUiEvent(
                         GenresListUiEvent.OpenContextMenu(
                             action.genreName,
@@ -74,7 +78,7 @@ class GenresListViewModel @Inject constructor(
 
 data class GenresListState(
     val genresList: List<Genre>,
-    val sortOrder: SortOrder
+    val sortOrder: MediaSortOrder
 ) : State
 
 
@@ -85,7 +89,7 @@ object InitialGenresListStateModule {
     @Provides
     @ViewModelScoped
     fun initialGenresListStateProvider() =
-        GenresListState(genresList = listOf(), sortOrder = SortOrder.ASCENDING)
+        GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.ASCENDING)
 }
 
 sealed class GenresListUserAction : UserAction {
@@ -100,7 +104,7 @@ sealed class GenresListUiEvent : UiEvent {
     object NavigateUp : GenresListUiEvent()
     data class OpenContextMenu(
         val genreName: String,
-        val currentSort: SortOption,
-        val sortOrder: SortOrder
+        val currentSort: MediaSortOption,
+        val sortOrder: MediaSortOrder
     ) : GenresListUiEvent()
 }

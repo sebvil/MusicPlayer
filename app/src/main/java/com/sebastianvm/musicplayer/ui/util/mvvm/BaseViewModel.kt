@@ -34,7 +34,7 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
 
 
     fun <T> collect(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
-        launchViewModelIOScope {
+        viewModelScope.launch {
             flow.collect {
                 onChanged(it)
             }
@@ -43,7 +43,7 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
 
 
     fun <T> collectFirst(flow: Flow<T>, onChanged: suspend (T) -> Unit) {
-        launchViewModelIOScope {
+        viewModelScope.launch {
             onChanged(flow.first())
         }
 

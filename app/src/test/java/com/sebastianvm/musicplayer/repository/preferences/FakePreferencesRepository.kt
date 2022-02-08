@@ -1,48 +1,67 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
-import com.sebastianvm.musicplayer.util.SortOption
-import com.sebastianvm.musicplayer.util.SortOrder
-import com.sebastianvm.musicplayer.util.SortSettings
+import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 
-class FakePreferencesRepository(trackSortOption: SortOption = SortOption.TRACK_NAME) :
+class FakePreferencesRepository :
     PreferencesRepository {
-
-    private val albumSortSettings =
-        MutableStateFlow(SortSettings(SortOption.ALBUM_NAME, SortOrder.ASCENDING))
-    private val trackSortSettings =
-        MutableStateFlow(SortSettings(trackSortOption, SortOrder.ASCENDING))
-    private val artistSortOrder = MutableStateFlow(SortOrder.ASCENDING)
-    private val genresSortOrder = MutableStateFlow(SortOrder.ASCENDING)
-
-
     override suspend fun modifyTrackListSortOptions(
-        sortSettings: SortSettings,
-        genreName: String?
-    ) = trackSortSettings.emit(sortSettings)
-
-    override fun getTracksListSortOptions(genreName: String?): Flow<SortSettings> =
-        trackSortSettings
-
-    override suspend fun modifyAlbumsListSortOptions(sortSettings: SortSettings) =
-        albumSortSettings.emit(sortSettings)
-
-    override fun getAlbumsListSortOptions(): Flow<SortSettings> = albumSortSettings
-
-
-    override suspend fun modifyArtistsListSortOrder(sortOrder: SortOrder) {
-        artistSortOrder.emit(!artistSortOrder.value)
+        mediaSortSettings: MediaSortSettings,
+        tracksListType: TracksListType,
+        tracksListName: String
+    ) {
+        TODO("Not yet implemented")
     }
 
-    override fun getArtistsListSortOrder(): Flow<SortOrder> = artistSortOrder
+    override fun getTracksListSortOptions(
+        tracksListType: TracksListType,
+        tracksListName: String
+    ): Flow<MediaSortSettings> {
+        TODO("Not yet implemented")
+    }
 
-    override suspend fun modifyGenresListSortOrder(sortOrder: SortOrder) =
-        genresSortOrder.emit(sortOrder)
+    override suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings) {
+        TODO("Not yet implemented")
+    }
 
-    override fun getGenresListSortOrder(): Flow<SortOrder> = genresSortOrder
-    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) = Unit
-    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> = flow {  }
+    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getGenresListSortOrder(): Flow<MediaSortOrder> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPlaylistsListSortOrder(): Flow<MediaSortOrder> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
+        TODO("Not yet implemented")
+    }
+
+
 }

@@ -13,5 +13,12 @@ enum class MediaGroupType {
     UNKNOWN,
 }
 
+// used for MediaGroups that are TrackLists
+enum class TracksListType {
+    ALL_TRACKS,
+    GENRE,
+    PLAYLIST,
+}
+
 @Parcelize
 data class MediaGroup(val mediaGroupType: MediaGroupType, val mediaId: String) : Parcelable
