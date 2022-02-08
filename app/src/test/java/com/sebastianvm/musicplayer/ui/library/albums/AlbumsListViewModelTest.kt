@@ -121,7 +121,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
 
             expectUiEvent<AlbumsListUiEvent.ScrollToTop>(this@runTest)
-            handle(AlbumsListUserAction.MediaSortOption.licked(MediaSortOption.ARTIST))
+            handle(AlbumsListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
             delay(1)
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)

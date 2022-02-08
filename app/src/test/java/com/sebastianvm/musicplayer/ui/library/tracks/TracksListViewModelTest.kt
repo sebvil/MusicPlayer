@@ -6,6 +6,7 @@ import com.sebastianvm.musicplayer.database.entities.GenreBuilder
 import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
@@ -13,9 +14,9 @@ import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,8 +43,8 @@ class TracksListViewModelTest {
 
     private fun generateViewModel(
         preferencesRepository: FakePreferencesRepository = FakePreferencesRepository(),
-        listGroupType: MediaGroupType = MediaGroupType.ALL_TRACKS,
-        genreName: String? = null,
+        listGroupType: TracksListType = TracksListType.ALL_TRACKS,
+        genreName: String = "",
     ): TracksListViewModel {
         return TracksListViewModel(
             mediaPlaybackRepository = mediaPlaybackRepository,
@@ -156,7 +157,7 @@ class TracksListViewModelTest {
         runTest {
             with(
                 generateViewModel(
-                    preferencesRepository = FakePreferencesRepository(trackSortOption = MediaSortOption.ARTIST),
+                    preferencesRepository = FakePreferencesRepository(),
                     genreName = GenreBuilder.DEFAULT_GENRE_NAME,
                 )
             ) {
@@ -206,37 +207,37 @@ class TracksListViewModelTest {
         with(generateViewModel()) {
             delay(1)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.ARTIST))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
             delay(1)
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.ARTIST))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
             delay(1)
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(tracksList.reversed(), state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.TRACK))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.TRACK))
             delay(1)
             assertEquals(MediaSortOption.TRACK, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(tracksList.reversed(), state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.TRACK))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.TRACK))
             delay(1)
             assertEquals(MediaSortOption.TRACK, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.ALBUM))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ALBUM))
             delay(1)
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(tracksList, state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOption.licked(MediaSortOption.ALBUM))
+            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ALBUM))
             delay(1)
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
@@ -250,9 +251,7 @@ class TracksListViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
-                assertNull(genreName)
-                assertEquals(MediaSortOption.TRACK, currentSort)
-                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
+                assertEquals(MediaGroup(MediaGroupType.ALL_TRACKS, "ALL_TRACKS"), mediaGroup)
             }
             handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
         }
@@ -264,9 +263,7 @@ class TracksListViewModelTest {
         with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
             expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
-                assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, genreName)
-                assertEquals(MediaSortOption.TRACK, currentSort)
-                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
+                assertEquals(MediaGroup(MediaGroupType.GENRE, GenreBuilder.DEFAULT_GENRE_NAME), mediaGroup)
             }
             handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
         }
