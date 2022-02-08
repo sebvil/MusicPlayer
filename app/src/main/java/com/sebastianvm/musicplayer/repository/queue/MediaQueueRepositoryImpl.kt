@@ -17,7 +17,7 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
-import com.sebastianvm.musicplayer.util.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext

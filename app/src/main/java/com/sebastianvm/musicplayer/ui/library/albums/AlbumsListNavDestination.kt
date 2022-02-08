@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.util.mediaSortOptionFromResId
+import com.sebastianvm.musicplayer.util.sort.mediaSortOptionFromResId
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 

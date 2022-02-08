@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.util
+package com.sebastianvm.musicplayer.util.sort
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
