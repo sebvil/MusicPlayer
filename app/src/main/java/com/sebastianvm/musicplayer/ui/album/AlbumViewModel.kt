@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -21,6 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,23 +31,24 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
+    trackRepository: TrackRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        collect(albumRepository.getAlbumWithTracks(state.value.albumId)) { albumInfo ->
-            val album = albumInfo.keys.find { it.albumId == state.value.albumId }
-            album?.also {
-                setState {
-                    copy(
-                        imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
-                        albumName = album.albumName,
-                        tracksList = albumInfo[album]?.map { it.toTrackRowState(includeTrackNumber = true) }
-                            ?.sortedBy { it.trackNumber } ?: listOf()
-                    )
-                }
+        collect(
+            albumRepository.getAlbum(state.value.albumId)
+                .combine(trackRepository.getTracksForAlbum(albumId = state.value.albumId)) { albumInfo, tracks ->
+                    Pair(albumInfo.album, tracks)
+                }) { (album, tracks) ->
+            setState {
+                copy(
+                    imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
+                    albumName = album.albumName,
+                    tracksList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
+                        .sortedBy { it.trackNumber }
+                )
             }
-
         }
     }
 

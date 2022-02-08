@@ -26,15 +26,18 @@ data class ArtistWithAlbums(
     @Relation(
         parentColumn = "artistName",
         entityColumn = "albumId",
-        associateBy = Junction(AlbumsForArtist::class),
+        entity = Album::class,
+        projection = ["albumId"], associateBy = Junction(AlbumsForArtist::class),
     )
-    val artistAlbums: List<Album>,
+    val artistAlbums: List<String>,
     @Relation(
         parentColumn = "artistName",
         entityColumn = "albumId",
+        entity = Album::class,
+        projection = ["albumId"],
         associateBy = Junction(AppearsOnForArtist::class),
     )
-    val artistAppearsOn: List<Album>,
+    val artistAppearsOn: List<String>,
 
 )
 

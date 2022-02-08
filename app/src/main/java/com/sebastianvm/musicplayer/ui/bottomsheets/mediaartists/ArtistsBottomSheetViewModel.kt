@@ -2,8 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -22,8 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
-    trackRepository: TrackRepository,
-    albumRepository: AlbumRepository
+    artistRepository: ArtistRepository,
 ) :
     BaseViewModel<ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
         initialState
@@ -33,19 +31,19 @@ class ArtistsBottomSheetViewModel @Inject constructor(
         with(state.value) {
             when (mediaType) {
                 MediaType.TRACK -> {
-                    collect(trackRepository.getTrack(mediaId)) { track ->
+                    collect(artistRepository.getArtistsForTrack(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistsList = track.artists.map { it.toArtistRowState() }
+                                artistsList = artists.map { it.toArtistRowState() }
                             )
                         }
                     }
                 }
                 MediaType.ALBUM -> {
-                    collect(albumRepository.getAlbum(mediaId)) { album ->
+                    collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistsList = album.artists.map { it.toArtistRowState() }
+                                artistsList = artists.map { it.toArtistRowState() }
                             )
                         }
                     }

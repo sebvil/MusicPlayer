@@ -2,10 +2,8 @@ package com.sebastianvm.musicplayer.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +15,7 @@ interface AlbumDao {
 
     @Transaction
     @Query("SELECT * from Album WHERE Album.albumId IN (:albumIds)")
-    fun getAlbums(albumIds: List<String>): Flow<List<AlbumWithArtists>>
+    fun getAlbums(albumIds: List<String>): Flow<List<Album>>
 
     @Transaction
     @Query("SELECT * from Album WHERE Album.albumId=:albumId")
@@ -32,8 +30,6 @@ interface AlbumDao {
     fun getAlbumWithTracks(albumId: String): Flow<Map<Album, List<FullTrackInfo>>>
 
 
-    @Transaction
-    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from Album")
-    fun getAlbums(): Flow<List<AlbumWithArtists>>
+    fun getAllAlbums(): Flow<List<Album>>
 }

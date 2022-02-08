@@ -1,5 +1,10 @@
 package com.sebastianvm.musicplayer.database.entities
 
+fun album(init: Album.() -> Album): Album = newAlbum().init()
+private fun newAlbum(): Album =
+    Album(albumId = "0", albumName = "", year = 0, numberOfTracks = 0, artists = "")
+
+
 class AlbumBuilder {
     private var albumId = DEFAULT_ALBUM_ID
     private var albumName = DEFAULT_ALBUM_NAME
@@ -26,9 +31,9 @@ class AlbumBuilder {
         albumId = albumId,
         albumName = albumName,
         year = year,
-        numberOfTracks = numberOfTracks
+        numberOfTracks = numberOfTracks,
+        artists = ""
     )
-
 
 
     companion object {

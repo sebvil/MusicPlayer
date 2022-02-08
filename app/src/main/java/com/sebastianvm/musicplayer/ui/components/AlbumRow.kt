@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.annotation.ExperimentalCoilApi
 import com.sebastianvm.commons.R
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
+import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -112,13 +112,13 @@ fun AlbumRow(
 }
 
 
-fun AlbumWithArtists.toAlbumRowState(): AlbumRowState {
+fun Album.toAlbumRowState(): AlbumRowState {
     return AlbumRowState(
-        albumId = album.albumId,
-        albumName = album.albumName,
-        imageUri = UriUtils.getAlbumUri(albumId = album.albumId.toLong()),
-        year = album.year,
-        artists = artists.joinToString(", ") { it.artistName }
+        albumId = albumId,
+        albumName = albumName,
+        imageUri = UriUtils.getAlbumUri(albumId = albumId.toLong()),
+        year = year,
+        artists = artists
     )
 
 }

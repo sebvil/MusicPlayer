@@ -16,21 +16,21 @@ interface TrackRepository {
 
     fun getTracksCount(): Flow<Long>
 
-    fun getAllTracks(): Flow<List<FullTrackInfo>>
+    fun getAllTracks(): Flow<List<Track>>
 
     fun getTrack(tracksId: String): Flow<FullTrackInfo>
 
-    fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>>
+    fun getTracks(tracksIds: List<String>): Flow<List<Track>>
 
-    fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForArtist(artistName: String): Flow<List<Track>>
 
-    fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForAlbum(albumId: String): Flow<List<Track>>
 
-    fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForGenre(genreName: String): Flow<List<Track>>
 
-    fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
 
-    fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>>
+    fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<Track>>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,

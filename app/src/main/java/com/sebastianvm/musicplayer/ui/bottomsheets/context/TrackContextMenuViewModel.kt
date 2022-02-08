@@ -24,7 +24,6 @@ data class TrackContextMenuState(
     override val menuTitle: String,
     val mediaId: String,
     val albumId: String,
-    val artistName: String,
     val mediaGroup: MediaGroup,
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
@@ -42,7 +41,6 @@ object InitialTrackContextMenuStateModule {
             mediaId = mediaId,
             menuTitle = "",
             albumId = "",
-            artistName = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
         )
@@ -56,8 +54,13 @@ class TrackContextMenuViewModel @Inject constructor(
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
+    private var artistName = ""
+
     init {
         collect(trackRepository.getTrack(state.value.mediaId)) {
+            if (it.artists.size == 1) {
+                artistName = it.artists[0]
+            }
             setState {
                 copy(
                     menuTitle = it.track.trackName,
@@ -75,8 +78,7 @@ class TrackContextMenuViewModel @Inject constructor(
                             ContextMenuItem.ViewAlbum
                         )
                     },
-                    albumId = it.album.albumId,
-                    artistName = if (it.artists.size == 1) it.artists[0].artistName else ""
+                    albumId = it.track.albumId,
                 )
             }
         }
@@ -110,9 +112,7 @@ class TrackContextMenuViewModel @Inject constructor(
             }
             ContextMenuItem.ViewArtist -> {
                 addUiEvent(
-                    BaseContextMenuUiEvent.NavigateToArtist(
-                        state.value.artistName
-                    )
+                    BaseContextMenuUiEvent.NavigateToArtist(artistName)
                 )
             }
             ContextMenuItem.ViewArtists -> {

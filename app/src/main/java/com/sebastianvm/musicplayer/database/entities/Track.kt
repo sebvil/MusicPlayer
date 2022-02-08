@@ -12,7 +12,9 @@ data class Track(
     val trackName: String,
     val trackNumber: Long,
     val trackDurationMs: Long,
+    val albumName: String,
     val albumId: String,
+    val artists: String,
 )
 
 @Fts4(contentEntity = ArtistTrackCrossRef::class, notIndexed=["trackId"], tokenizer = FtsOptions.TOKENIZER_UNICODE61)
