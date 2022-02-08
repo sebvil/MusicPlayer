@@ -11,16 +11,19 @@ protobuf {
     // Configures the Protobuf compilation and the protoc executable
     protoc {
         // Downloads from the repositories
-        artifact = "com.google.protobuf:protoc:3.14.0"
+        artifact = "com.google.protobuf:protoc:3.19.4"
     }
 
-    // Generates the java Protobuf-lite code for the Protobufs in this project
+    // Generates the java Protobuf-lite code for the Protobuf in this project
     generateProtoTasks {
         all().each { task ->
             task.builtins {
                 // Configures the task output type
                 java {
                     // Java Lite has smaller code size and is recommended for Android
+                    option 'lite'
+                }
+                kotlin {
                     option 'lite'
                 }
             }
@@ -105,7 +108,7 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:$datastore_version"
     implementation "androidx.datastore:datastore:$datastore_version"
     // Starting from Protobuf 3.8.0, use the lite runtime library
-    implementation  "com.google.protobuf:protobuf-javalite:3.18.0"
+    implementation  "com.google.protobuf:protobuf-kotlin-lite:3.19.4"
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"

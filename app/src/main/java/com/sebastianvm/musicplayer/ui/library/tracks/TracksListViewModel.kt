@@ -22,7 +22,7 @@ import com.sebastianvm.musicplayer.util.id
 import com.sebastianvm.musicplayer.util.not
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
+import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -115,8 +115,10 @@ class TracksListViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     preferencesRepository.modifyTrackListSortOptions(
-                        mediaSortSettings = MediaSortSettings.newBuilder()
-                            .setSortOption(action.newSortOption).setSortOrder(sortOrder).build(),
+                        mediaSortSettings = mediaSortSettings {
+                            sortOption = action.newSortOption
+                            this.sortOrder = sortOrder
+                        },
                         tracksListType = state.value.tracksListType,
                         state.value.tracksListTitle
                     )

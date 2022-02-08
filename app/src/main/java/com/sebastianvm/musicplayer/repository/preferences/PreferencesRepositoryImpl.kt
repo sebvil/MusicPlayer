@@ -13,6 +13,8 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.SortSettings
+import com.sebastianvm.musicplayer.util.sort.copy
+import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -33,20 +35,23 @@ class PreferencesRepositoryImpl @Inject constructor(
         tracksListName: String,
     ) {
         withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { sortSettings ->
+            sortSettingsDataStore.updateData { oldSettings ->
                 when (tracksListType) {
                     TracksListType.ALL_TRACKS -> {
-                        sortSettings.toBuilder().setAllTracksSortSettings(mediaSortSettings).build()
+                        oldSettings.copy {
+                            allTracksSortSettings = mediaSortSettings
+                        }
                     }
                     TracksListType.GENRE -> {
-                        sortSettings.toBuilder()
-                            .putGenreTrackListSortSettings(tracksListName, mediaSortSettings)
-                            .build()
+                        oldSettings.copy {
+                            genreTrackListSortSettings[tracksListName] = mediaSortSettings
+                        }
                     }
                     TracksListType.PLAYLIST -> {
-                        sortSettings.toBuilder()
-                            .putPlaylistTrackListSortSettings(tracksListName, mediaSortSettings)
-                            .build()
+                        oldSettings.copy {
+                            playlistTrackListSortSettings[tracksListName] = mediaSortSettings
+                        }
+
                     }
                 }
             }
@@ -72,18 +77,22 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings) {
         withContext(ioDispatcher) {
             sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.toBuilder().setAlbumsListSortSettings(mediaSortSettings).build()
+                sortSettings.copy {
+                    albumsListSortSettings = mediaSortSettings
+                }
             }
         }
     }
 
 
     override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> {
-        return sortSettingsDataStore.data.map { sortSettings ->
-            var settings = sortSettings.albumsListSortSettings
+        return sortSettingsDataStore.data.map { oldSettings ->
+            var settings = oldSettings.albumsListSortSettings
             if (settings.sortOption == MediaSortOption.TRACK) {
-                settings =
-                    MediaSortSettings.newBuilder().setSortOption(MediaSortOption.ALBUM).build()
+                settings = mediaSortSettings {
+                    sortOption = MediaSortOption.ALBUM
+                    sortOrder = MediaSortOrder.ASCENDING
+                }
             }
             settings
         }.distinctUntilChanged()
@@ -92,7 +101,9 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         withContext(ioDispatcher) {
             sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.toBuilder().setArtistListSortSettings(mediaSortOrder).build()
+                sortSettings.copy {
+                    artistListSortSettings = mediaSortOrder
+                }
             }
         }
     }
@@ -107,7 +118,9 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
         withContext(ioDispatcher) {
             sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.toBuilder().setGenresListSortSettings(mediaSortOrder).build()
+                sortSettings.copy {
+                    genresListSortSettings = mediaSortOrder
+                }
             }
         }
     }
@@ -122,7 +135,9 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         withContext(ioDispatcher) {
             sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.toBuilder().setPlaylistsListSortSettings(mediaSortOrder).build()
+                sortSettings.copy {
+                    playlistsListSortSettings = mediaSortOrder
+                }
             }
         }
     }
