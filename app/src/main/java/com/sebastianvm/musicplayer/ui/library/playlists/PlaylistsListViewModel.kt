@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.playlists
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
-import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -11,7 +10,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.getStringComparator
 import com.sebastianvm.musicplayer.util.not
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
@@ -20,7 +18,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,18 +56,7 @@ class PlaylistsListViewModel @Inject constructor(
             }
             is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                viewModelScope.launch {
-                    val sortSettings =
-                        preferencesRepository.getTracksListSortOptions(TracksListType.PLAYLIST, action.playlistName).first()
-                    addUiEvent(
-                        PlaylistsListUiEvent.OpenContextMenu(
-                            action.playlistName,
-                            sortSettings.sortOption,
-                            sortSettings.sortOrder
-                        )
-                    )
-
-                }
+                addUiEvent(PlaylistsListUiEvent.OpenContextMenu(action.playlistName))
             }
             is PlaylistsListUserAction.FabClicked -> {
                 setState {
@@ -128,9 +114,5 @@ sealed class PlaylistsListUserAction : UserAction {
 sealed class PlaylistsListUiEvent : UiEvent {
     data class NavigateToPlaylist(val playlistName: String) : PlaylistsListUiEvent()
     object NavigateUp : PlaylistsListUiEvent()
-    data class OpenContextMenu(
-        val playlistName: String,
-        val currentSort: MediaSortOption,
-        val sortOrder: MediaSortOrder
-    ) : PlaylistsListUiEvent()
+    data class OpenContextMenu(val playlistName: String) : PlaylistsListUiEvent()
 }

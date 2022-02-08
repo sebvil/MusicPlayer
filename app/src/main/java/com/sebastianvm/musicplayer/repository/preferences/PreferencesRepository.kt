@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import kotlinx.coroutines.flow.Flow
 
 interface PreferencesRepository {
-    // TODO support playlists - migrate to Proto
     suspend fun modifyTrackListSortOptions(
         mediaSortSettings: MediaSortSettings,
         tracksListType: TracksListType,
@@ -16,7 +15,7 @@ interface PreferencesRepository {
 
     fun getTracksListSortOptions(
         tracksListType: TracksListType,
-        tracksListName: String
+        tracksListName: String = ""
     ): Flow<MediaSortSettings>
 
     suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings)

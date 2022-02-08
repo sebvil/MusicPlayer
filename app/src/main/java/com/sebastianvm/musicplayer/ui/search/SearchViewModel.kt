@@ -24,8 +24,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -109,11 +107,7 @@ class SearchViewModel @Inject constructor(
                         mediaGroupType = MediaGroupType.SINGLE_TRACK,
                         mediaId = action.trackId
                     )
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = MediaSortOrder.ASCENDING,
-                        sortOption = MediaSortOption.TRACK
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
 
                     mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
@@ -130,8 +124,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.SINGLE_TRACK,
                             action.trackId
                         ),
-                        sortOption = MediaSortOption.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
                     )
                 )
             }
@@ -143,8 +135,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.ARTIST,
                             action.artistName
                         ),
-                        sortOption = MediaSortOption.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
                     )
                 )
             }
@@ -156,8 +146,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.ALBUM,
                             action.albumId
                         ),
-                        sortOption = MediaSortOption.ALBUM,
-                        sortOrder = MediaSortOrder.ASCENDING
                     )
                 )
             }
@@ -169,8 +157,6 @@ class SearchViewModel @Inject constructor(
                             MediaGroupType.GENRE,
                             action.genreName
                         ),
-                        sortOption = MediaSortOption.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
                     )
                 )
             }
@@ -222,11 +208,7 @@ sealed class SearchUiEvent : UiEvent {
     data class NavigateToArtist(val artistName: String) : SearchUiEvent()
     data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
     data class NavigateToGenre(val genreName: String) : SearchUiEvent()
-    data class OpenContextMenu(
-        val mediaType: MediaType,
-        val mediaGroup: MediaGroup,
-        val sortOption: MediaSortOption,
-        val sortOrder: MediaSortOrder
-    ) : SearchUiEvent()
+    data class OpenContextMenu(val mediaType: MediaType, val mediaGroup: MediaGroup) :
+        SearchUiEvent()
 
 }

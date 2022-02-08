@@ -7,8 +7,6 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,11 +28,7 @@ class ArtistContextMenuViewModel @Inject constructor(
             is ContextMenuItem.PlayAllSongs -> {
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.ARTIST, state.value.artistName)
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = MediaSortOrder.ASCENDING,
-                        sortOption = MediaSortOption.TRACK
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(state.value.artistName, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }

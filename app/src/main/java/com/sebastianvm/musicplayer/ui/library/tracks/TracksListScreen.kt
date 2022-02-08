@@ -16,13 +16,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
@@ -30,12 +28,7 @@ interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
     fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder)
-    fun openContextMenu(
-        mediaId: String,
-        mediaGroup: MediaGroup,
-        currentSort: MediaSortOption,
-        sortOrder: MediaSortOrder
-    )
+    fun openContextMenu(mediaId: String, mediaGroup: MediaGroup)
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -56,13 +49,7 @@ fun TracksListScreen(
                     delegate.openSortMenu(event.sortOption, event.sortOrder)
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(
-                        mediaId = event.trackId,
-                        mediaGroup = event.genreName?.let { MediaGroup(MediaGroupType.GENRE, it) }
-                            ?: MediaGroup(MediaGroupType.ALL_TRACKS, event.trackId),
-                        currentSort = event.currentSort,
-                        sortOrder = event.sortOrder
-                    )
+                    delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup)
                 }
                 is TracksListUiEvent.NavigateUp -> delegate.navigateUp()
                 is TracksListUiEvent.ScrollToTop -> listState.scrollToItem(0)

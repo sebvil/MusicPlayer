@@ -10,8 +10,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToPlaylist
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.playlistsListNavDestination(navController: NavController) {
     composable(NavRoutes.PLAYLISTS_ROOT) {
@@ -21,17 +19,11 @@ fun NavGraphBuilder.playlistsListNavDestination(navController: NavController) {
                 navController.navigateToPlaylist(playlistName)
             }
 
-            override fun openContextMenu(
-                playlistName: String,
-                currentSort: MediaSortOption,
-                sortOrder: MediaSortOrder
-            ) {
+            override fun openContextMenu(playlistName: String) {
                 navController.openContextMenu(
                     mediaType = MediaType.PLAYLIST,
                     mediaId = playlistName,
                     mediaGroup = MediaGroup(MediaGroupType.PLAYLIST, playlistName),
-                    currentSort = currentSort,
-                    sortOrder = sortOrder,
                 )
             }
 

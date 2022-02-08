@@ -93,11 +93,7 @@ class TracksListViewModel @Inject constructor(
                         },
                         mediaId = state.value.tracksListTitle
                     )
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = state.value.sortOrder,
-                        sortOption = state.value.currentSort
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
                     addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
@@ -128,12 +124,18 @@ class TracksListViewModel @Inject constructor(
                 }
             }
             is TracksListUserAction.TrackContextMenuClicked -> {
+                val mediaGroup = MediaGroup(
+                    mediaGroupType = when (state.value.tracksListType) {
+                        TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+                        TracksListType.GENRE -> MediaGroupType.GENRE
+                        TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                    },
+                    mediaId = state.value.tracksListTitle.ifEmpty { ALL_TRACKS }
+                )
                 addUiEvent(
                     TracksListUiEvent.OpenContextMenu(
                         action.trackId,
-                        state.value.tracksListTitle,
-                        state.value.currentSort,
-                        state.value.sortOrder
+                        mediaGroup
                     )
                 )
             }
@@ -154,6 +156,10 @@ class TracksListViewModel @Inject constructor(
             }
         }
     }
+
+    companion object {
+        private const val ALL_TRACKS = ""
+    }
 }
 
 
@@ -168,6 +174,7 @@ data class TracksListState(
 @InstallIn(ViewModelComponent::class)
 @Module
 object InitialTracksListStateModule {
+
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
@@ -198,12 +205,8 @@ sealed class TracksListUiEvent : UiEvent {
 
     object NavigateUp : TracksListUiEvent()
 
-    data class OpenContextMenu(
-        val trackId: String,
-        val genreName: String?,
-        val currentSort: MediaSortOption,
-        val sortOrder: MediaSortOrder
-    ) : TracksListUiEvent()
+    data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup) : TracksListUiEvent()
 
     object ScrollToTop : TracksListUiEvent()
 }
+

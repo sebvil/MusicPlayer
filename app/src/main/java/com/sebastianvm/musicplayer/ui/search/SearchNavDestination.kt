@@ -12,8 +12,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.searchNavDestination(navController: NavController) {
     composable(NavRoutes.SEARCH) {
@@ -35,18 +33,11 @@ fun NavGraphBuilder.searchNavDestination(navController: NavController) {
                 navController.navigateToGenre(genreName)
             }
 
-            override fun openContextMenu(
-                mediaType: MediaType,
-                mediaGroup: MediaGroup,
-                sortOption: MediaSortOption,
-                sortOrder: MediaSortOrder
-            ) {
+            override fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup) {
                 navController.openContextMenu(
                     mediaType = mediaType,
                     mediaId = mediaGroup.mediaId,
                     mediaGroup = mediaGroup,
-                    currentSort = sortOption,
-                    sortOrder = sortOrder,
                 )
             }
         })

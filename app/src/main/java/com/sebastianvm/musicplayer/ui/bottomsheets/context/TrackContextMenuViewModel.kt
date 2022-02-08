@@ -10,8 +10,6 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,8 +26,6 @@ data class TrackContextMenuState(
     val albumId: String,
     val artistName: String,
     val mediaGroup: MediaGroup,
-    val selectedSort: MediaSortOption,
-    val sortOrder: MediaSortOrder
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -42,8 +38,6 @@ object InitialTrackContextMenuStateModule {
         val mediaGroupType =
             MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
-        val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
-        val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
@@ -51,8 +45,6 @@ object InitialTrackContextMenuStateModule {
             artistName = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
-            selectedSort = MediaSortOption.valueOf(selectedSort),
-            sortOrder = MediaSortOrder.valueOf(sortOrder)
         )
     }
 }
@@ -95,11 +87,7 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.Play -> {
                 with(state.value) {
                     viewModelScope.launch {
-                        mediaQueueRepository.createQueue(
-                            mediaGroup = mediaGroup,
-                            sortOrder = sortOrder,
-                            sortOption = selectedSort
-                        )
+                        mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                         mediaPlaybackRepository.playFromId(mediaId, mediaGroup)
                         addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                     }

@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
@@ -68,39 +69,68 @@ class MediaQueueRepositoryImpl @Inject constructor(
 
     override suspend fun createQueue(
         mediaGroup: MediaGroup,
-        sortOption: MediaSortOption,
-        sortOrder: MediaSortOrder
     ): Long {
         return withContext(ioDispatcher) {
             val queueName: String
+            val sortOption: MediaSortOption
+            val sortOrder: MediaSortOrder
             val trackIds = when (mediaGroup.mediaGroupType) {
                 MediaGroupType.ALL_TRACKS -> {
                     queueName = ResUtil.getString(context = context, R.string.all_songs)
+                    preferencesRepository.getTracksListSortOptions(TracksListType.ALL_TRACKS)
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
                     trackRepository.getAllTracks()
                 }
                 MediaGroupType.ARTIST -> {
                     queueName = mediaGroup.mediaId
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
                     trackRepository.getTracksForArtist(mediaGroup.mediaId)
                 }
                 MediaGroupType.ALBUM -> {
                     queueName = albumRepository.getAlbum(mediaGroup.mediaId).first().album.albumName
+                    sortOption = MediaSortOption.TRACK_NUMBER
+                    sortOrder = MediaSortOrder.ASCENDING
                     trackRepository.getTracksForAlbum(mediaGroup.mediaId)
                 }
                 MediaGroupType.GENRE -> {
                     queueName = mediaGroup.mediaId
+                    preferencesRepository.getTracksListSortOptions(
+                        TracksListType.GENRE,
+                        mediaGroup.mediaId
+                    )
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
                     trackRepository.getTracksForGenre(mediaGroup.mediaId)
                 }
                 MediaGroupType.SINGLE_TRACK -> {
                     val track = trackRepository.getTrack(mediaGroup.mediaId)
                     queueName = track.first().track.trackName
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
                     track.map { listOf(it) }
                 }
                 MediaGroupType.PLAYLIST -> {
                     queueName = mediaGroup.mediaId
+                    preferencesRepository.getTracksListSortOptions(
+                        TracksListType.PLAYLIST,
+                        mediaGroup.mediaId
+                    )
+                        .first().also {
+                            sortOption = it.sortOption
+                            sortOrder = it.sortOrder
+                        }
                     trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
                 }
                 MediaGroupType.UNKNOWN -> {
                     queueName = ""
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.ASCENDING
                     flow { }
                 }
             }.map { tracks ->

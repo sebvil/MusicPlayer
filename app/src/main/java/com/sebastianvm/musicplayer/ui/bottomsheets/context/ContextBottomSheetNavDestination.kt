@@ -20,8 +20,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
@@ -32,17 +30,12 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             NavArgs.MEDIA_TYPE,
             NavArgs.MEDIA_GROUP_TYPE,
             NavArgs.MEDIA_GROUP_ID,
-            NavArgs.SORT_OPTION,
-            NavArgs.SORT_ORDER,
-
-            ),
+        ),
         arguments = listOf(
             navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_ID) { type = NavType.StringType },
-            navArgument(NavArgs.SORT_OPTION) { type = NavType.StringType },
-            navArgument(NavArgs.SORT_ORDER) { type = NavType.StringType },
         )
     ) { backedStackEntry ->
         val sheetViewModel =
@@ -103,8 +96,6 @@ fun NavController.openContextMenu(
     mediaType: MediaType,
     mediaId: String,
     mediaGroup: MediaGroup,
-    currentSort: MediaSortOption,
-    sortOrder: MediaSortOrder
 ) {
     navigateTo(
         NavRoutes.CONTEXT,
@@ -112,7 +103,5 @@ fun NavController.openContextMenu(
         NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
         NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaGroupType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
-        NavArgument(NavArgs.SORT_OPTION, currentSort.name),
-        NavArgument(NavArgs.SORT_ORDER, sortOrder.name),
     )
 }

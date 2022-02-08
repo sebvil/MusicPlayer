@@ -19,7 +19,6 @@ import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
 import com.sebastianvm.musicplayer.util.mediaSortOptionFromResId
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
@@ -63,18 +62,11 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT, sortOption, sortOrder)
                 }
 
-                override fun openContextMenu(
-                    mediaId: String,
-                    mediaGroup: MediaGroup,
-                    currentSort: MediaSortOption,
-                    sortOrder: MediaSortOrder
-                ) {
+                override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup) {
                     navController.openContextMenu(
                         mediaType = MediaType.TRACK,
                         mediaId = mediaId,
                         mediaGroup = mediaGroup,
-                        currentSort = currentSort,
-                        sortOrder = sortOrder,
                     )
                 }
             }

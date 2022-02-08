@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.util.mediaSortOptionFromResId
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
@@ -46,8 +45,6 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
                     mediaType = MediaType.ALBUM,
                     mediaId = albumId,
                     mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
-                    currentSort = MediaSortOption.TRACK_NUMBER,
-                    sortOrder = MediaSortOrder.ASCENDING,
                 )
             }
         })

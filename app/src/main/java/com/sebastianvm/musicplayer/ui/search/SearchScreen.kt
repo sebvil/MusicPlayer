@@ -50,15 +50,13 @@ import com.sebastianvm.musicplayer.ui.theme.textFieldColors
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 interface SearchNavigationDelegate {
     fun navigateToPlayer()
     fun navigateToArtist(artistName: String)
     fun navigateToAlbum(albumId: String)
     fun navigateToGenre(genreName: String)
-    fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup, sortOption: MediaSortOption, sortOrder: MediaSortOrder)
+    fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup)
 }
 
 
@@ -76,10 +74,7 @@ fun SearchScreen(
             is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
                 event.mediaType,
                 event.mediaGroup,
-                event.sortOption,
-                event.sortOrder
             )
-
         }
     }) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {

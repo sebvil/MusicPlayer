@@ -30,8 +30,6 @@ fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
                     mediaType = MediaType.GENRE,
                     mediaId = genreName,
                     mediaGroup = MediaGroup(MediaGroupType.GENRE, genreName),
-                    currentSort = currentSort,
-                    sortOrder = sortOrder,
                 )
             }
 

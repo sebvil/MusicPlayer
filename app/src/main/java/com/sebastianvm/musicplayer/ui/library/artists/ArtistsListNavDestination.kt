@@ -10,8 +10,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.artistsNavDestination(navController: NavController) {
     composable(NavRoutes.ARTISTS_ROOT) {
@@ -30,8 +28,6 @@ fun NavGraphBuilder.artistsNavDestination(navController: NavController) {
                     MediaType.ARTIST,
                     artistName,
                     MediaGroup(MediaGroupType.ARTIST, mediaId = artistName),
-                    MediaSortOption.TRACK,
-                    MediaSortOrder.ASCENDING
                 )
             }
         })

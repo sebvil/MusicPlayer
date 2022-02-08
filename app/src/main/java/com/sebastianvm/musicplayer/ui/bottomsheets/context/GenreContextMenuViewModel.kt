@@ -8,8 +8,6 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,11 +29,7 @@ class GenreContextMenuViewModel @Inject constructor(
             is ContextMenuItem.PlayAllSongs -> {
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.GENRE, state.value.genreName)
-                    mediaQueueRepository.createQueue(
-                        mediaGroup = mediaGroup,
-                        sortOrder = state.value.sortOrder,
-                        sortOption = state.value.selectedSort
-                    )
+                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
                     mediaPlaybackRepository.playFromId(state.value.genreName, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
@@ -53,8 +47,6 @@ data class GenreContextMenuState(
     override val menuTitle: String,
     val genreName: String,
     val mediaGroup: MediaGroup,
-    val selectedSort: MediaSortOption,
-    val sortOrder: MediaSortOrder
 ) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -67,8 +59,6 @@ object InitialGenreContextMenuStateModule {
         val mediaGroupType =
             MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
-        val selectedSort = savedStateHandle.get<String>(NavArgs.SORT_OPTION)!!
-        val sortOrder = savedStateHandle.get<String>(NavArgs.SORT_ORDER)!!
         return GenreContextMenuState(
             genreName = genreName,
             menuTitle = genreName,
@@ -77,8 +67,6 @@ object InitialGenreContextMenuStateModule {
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewGenre
             ),
-            selectedSort = MediaSortOption.valueOf(selectedSort),
-            sortOrder = MediaSortOrder.valueOf(sortOrder)
         )
     }
 }
