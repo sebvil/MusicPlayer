@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.SortSettings
@@ -79,7 +80,12 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> {
         return sortSettingsDataStore.data.map { sortSettings ->
-            sortSettings.albumsListSortSettings
+            var settings = sortSettings.albumsListSortSettings
+            if (settings.sortOption == MediaSortOption.TRACK) {
+                settings =
+                    MediaSortSettings.newBuilder().setSortOption(MediaSortOption.ALBUM).build()
+            }
+            settings
         }.distinctUntilChanged()
     }
 
