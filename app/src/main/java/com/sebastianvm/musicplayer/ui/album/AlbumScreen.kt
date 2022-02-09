@@ -57,11 +57,11 @@ fun AlbumScreen(
         }) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
             override fun onTrackClicked(trackId: String) {
-                screenVieModel.handle(AlbumUserAction.TrackClicked(trackId = trackId))
+                screenVieModel.onTrackClicked(trackId = trackId)
             }
 
-            override fun onTrackContextMenuClicked(trackId: String) {
-                screenVieModel.handle(AlbumUserAction.TrackContextMenuClicked(trackId = trackId))
+            override fun onTrackOverflowMenuIconClicked(trackId: String) {
+                screenVieModel.onTrackOverflowMenuIconClicked(trackId = trackId)
             }
         })
     }
@@ -69,7 +69,7 @@ fun AlbumScreen(
 
 interface AlbumScreenDelegate {
     fun onTrackClicked(trackId: String) = Unit
-    fun onTrackContextMenuClicked(trackId: String) = Unit
+    fun onTrackOverflowMenuIconClicked(trackId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -142,7 +142,7 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                         modifier = Modifier.clickable {
                             delegate.onTrackClicked(trackId = item.trackId)
                         },
-                        onOverflowMenuIconClicked = { delegate.onTrackContextMenuClicked(item.trackId) }
+                        onOverflowMenuIconClicked = { delegate.onTrackOverflowMenuIconClicked(item.trackId) }
                     )
                 }
             }

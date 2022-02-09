@@ -110,10 +110,10 @@ class AlbumViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
+    fun `onTrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
-            handle(AlbumUserAction.TrackClicked(TRACK_ID))
+            onTrackClicked(TRACK_ID)
             delay(1)
             verify {
                 mediaPlaybackRepository.playFromId(
@@ -140,13 +140,13 @@ class AlbumViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`() = runTest {
+    fun `onTrackOverflowMenuIconClicked adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(TRACK_ID, trackId)
                 assertEquals(ALBUM_ID, albumId)
             }
-            handle(AlbumUserAction.TrackContextMenuClicked(TRACK_ID))
+            onTrackOverflowMenuIconClicked(TRACK_ID)
         }
     }
 

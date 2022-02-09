@@ -12,9 +12,9 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
@@ -30,8 +30,8 @@ import javax.inject.Inject
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
     trackRepository: TrackRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
 
@@ -52,30 +52,26 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: AlbumUserAction) {
-        when (action) {
-            is AlbumUserAction.TrackClicked -> {
-                viewModelScope.launch {
-                    val mediaGroup = MediaGroup(
-                        mediaGroupType = MediaGroupType.ALBUM,
-                        mediaId = state.value.albumId
-                    )
-                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
-                    addUiEvent(AlbumUiEvent.NavigateToPlayer)
-                }
-            }
-            is AlbumUserAction.TrackContextMenuClicked -> {
-                addUiEvent(
-                    AlbumUiEvent.OpenContextMenu(
-                        trackId = action.trackId,
-                        albumId = state.value.albumId
-                    )
-                )
-            }
+    fun onTrackClicked(trackId: String) {
+        viewModelScope.launch {
+            val mediaGroup = MediaGroup(
+                mediaGroupType = MediaGroupType.ALBUM,
+                mediaId = state.value.albumId
+            )
+            mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
+            mediaPlaybackRepository.playFromId(trackId, mediaGroup)
+            addUiEvent(AlbumUiEvent.NavigateToPlayer)
         }
     }
 
+    fun onTrackOverflowMenuIconClicked(trackId: String) {
+        addUiEvent(
+            AlbumUiEvent.OpenContextMenu(
+                trackId = trackId,
+                albumId = state.value.albumId
+            )
+        )
+    }
 }
 
 data class AlbumState(
@@ -102,10 +98,7 @@ object InitialAlbumStateModule {
     }
 }
 
-sealed class AlbumUserAction : UserAction {
-    data class TrackClicked(val trackId: String) : AlbumUserAction()
-    data class TrackContextMenuClicked(val trackId: String) : AlbumUserAction()
-}
+object AlbumUserAction : UserAction
 
 sealed class AlbumUiEvent : UiEvent {
     object NavigateToPlayer : AlbumUiEvent()
