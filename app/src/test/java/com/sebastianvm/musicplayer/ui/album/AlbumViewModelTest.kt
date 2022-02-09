@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
+import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
@@ -18,7 +19,6 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -53,7 +53,7 @@ class AlbumViewModelTest {
                 imageUri = ""
             ),
             albumRepository = FakeAlbumRepository(
-                listOf(
+                fullAlbumInfo = listOf(
                     fullAlbumInfo {
                         album {
                             albumId = ALBUM_ID
@@ -69,7 +69,17 @@ class AlbumViewModelTest {
                         }
                     })
             ),
-            trackRepository = FakeTrackRepository(),
+            trackRepository = FakeTrackRepository(tracks = listOf(
+                fullTrackInfo {
+                    track {
+                        trackId = TRACK_ID
+                        trackName = TRACK_NAME
+                        albumName = ALBUM_NAME
+                        trackNumber = TRACK_NUMBER
+                        artists = ALBUM_ARTIST
+                    }
+                }
+            )),
             mediaQueueRepository = mediaQueueRepository,
         )
     }
@@ -78,25 +88,23 @@ class AlbumViewModelTest {
     @Test
     fun `init sets albumHeaderItem and tracksList`() = runTest {
         with(generateViewModel()) {
-            launch {
-                assertEquals(ALBUM_NAME, state.value.albumName)
-                assertEquals(
-                    "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
-                    state.value.imageUri
-                )
-                assertEquals(
-                    listOf(
-                        TrackRowState(
-                            trackId = TRACK_ID,
-                            trackName = TRACK_NAME,
-                            artists = ALBUM_ARTIST,
-                            albumName = ALBUM_NAME,
-                            trackNumber = TRACK_NUMBER
-                        )
-                    ), state.value.tracksList
-                )
-            }
             delay(1)
+            assertEquals(ALBUM_NAME, state.value.albumName)
+            assertEquals(
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
+                state.value.imageUri
+            )
+            assertEquals(
+                listOf(
+                    TrackRowState(
+                        trackId = TRACK_ID,
+                        trackName = TRACK_NAME,
+                        artists = ALBUM_ARTIST,
+                        albumName = ALBUM_NAME,
+                        trackNumber = TRACK_NUMBER
+                    )
+                ), state.value.tracksList
+            )
         }
     }
 

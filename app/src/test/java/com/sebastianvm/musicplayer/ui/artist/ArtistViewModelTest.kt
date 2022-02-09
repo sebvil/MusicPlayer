@@ -123,6 +123,5 @@ class ArtistViewModelTest {
         private const val APPEARS_ON_NAME = "APPEARS_ON_NAME"
         private const val APPEARS_ON_ARTIST = "APPEARS_ON_ARTIST"
         private const val APPEARS_ON_YEAR = 1999L
-
     }
 }

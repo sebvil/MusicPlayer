@@ -1,8 +1,20 @@
 package com.sebastianvm.musicplayer.database.entities
 
 
-fun genre(init: Genre.() -> Genre): Genre = newGenre().init()
+@DslMarker
+annotation class GenreDsl
 
-private fun newGenre(): Genre =
-    Genre(genreName = "")
+@GenreDsl
+class GenreBuilder {
+    var genreName = ""
 
+    fun build(): Genre {
+        return Genre(genreName = genreName)
+    }
+}
+
+fun genre(init: GenreBuilder.() -> Unit): Genre {
+    val builder = GenreBuilder()
+    builder.init()
+    return builder.build()
+}

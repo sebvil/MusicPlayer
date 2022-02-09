@@ -1,12 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.expectUiEvent
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -41,11 +40,11 @@ class ArtistsListViewModelTest {
             assertEquals(
                 listOf(
                     ArtistRowState(
-                        artistName = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                        artistName = ARTIST_NAME_0,
                         shouldShowContextMenu = true
                     ),
                     ArtistRowState(
-                        artistName = ArtistBuilder.SECONDARY_ARTIST_NAME,
+                        artistName = ARTIST_NAME_1,
                         shouldShowContextMenu = true
                     )
                 ), state.value.artistsList
@@ -59,9 +58,9 @@ class ArtistsListViewModelTest {
     fun `ArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, artistName)
+                assertEquals(ARTIST_NAME_0, artistName)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ArtistBuilder.DEFAULT_ARTIST_NAME))
+            handle(ArtistsListUserAction.ArtistClicked(ARTIST_NAME_0))
         }
     }
 
@@ -91,9 +90,14 @@ class ArtistsListViewModelTest {
     fun `ContextMenuIconClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, artistName)
+                assertEquals(ARTIST_NAME_0, artistName)
             }
-            handle(ArtistsListUserAction.ContextMenuIconClicked(artistName = ArtistBuilder.DEFAULT_ARTIST_NAME))
+            handle(ArtistsListUserAction.ContextMenuIconClicked(artistName = ARTIST_NAME_0))
         }
+    }
+    
+    companion object {
+        private const val ARTIST_NAME_0 = "ARTIST_NAME_0"
+        private const val ARTIST_NAME_1 = "ARTIST_NAME_1"
     }
 }
