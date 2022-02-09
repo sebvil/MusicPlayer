@@ -4,12 +4,14 @@ import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
@@ -29,6 +31,8 @@ class AlbumViewModelTest {
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
+    private lateinit var albumRepository: AlbumRepository
+    private lateinit var trackRepository: TrackRepository
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
@@ -41,6 +45,34 @@ class AlbumViewModelTest {
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
         mediaQueueRepository = spyk(FakeMediaQueueRepository())
+        albumRepository = FakeAlbumRepository(
+            fullAlbumInfo = listOf(
+                fullAlbumInfo {
+                    album {
+                        albumId = ALBUM_ID
+                        albumName = ALBUM_NAME
+                        year = ALBUM_YEAR
+                        artists = ALBUM_ARTIST
+                    }
+                    artistIds {
+                        add(ALBUM_ARTIST)
+                    }
+                    trackIds {
+                        add(TRACK_ID)
+                    }
+                })
+        )
+        trackRepository = FakeTrackRepository(tracks = listOf(
+            fullTrackInfo {
+                track {
+                    trackId = TRACK_ID
+                    trackName = TRACK_NAME
+                    albumName = ALBUM_NAME
+                    trackNumber = TRACK_NUMBER
+                    artists = ALBUM_ARTIST
+                }
+            }
+        ))
     }
 
     private fun generateViewModel(): AlbumViewModel {
@@ -52,34 +84,8 @@ class AlbumViewModelTest {
                 albumName = "",
                 imageUri = ""
             ),
-            albumRepository = FakeAlbumRepository(
-                fullAlbumInfo = listOf(
-                    fullAlbumInfo {
-                        album {
-                            albumId = ALBUM_ID
-                            albumName = ALBUM_NAME
-                            year = ALBUM_YEAR
-                            artists = ALBUM_ARTIST
-                        }
-                        artistIds {
-                            add(ALBUM_ARTIST)
-                        }
-                        trackIds {
-                            add(TRACK_ID)
-                        }
-                    })
-            ),
-            trackRepository = FakeTrackRepository(tracks = listOf(
-                fullTrackInfo {
-                    track {
-                        trackId = TRACK_ID
-                        trackName = TRACK_NAME
-                        albumName = ALBUM_NAME
-                        trackNumber = TRACK_NUMBER
-                        artists = ALBUM_ARTIST
-                    }
-                }
-            )),
+            albumRepository = albumRepository,
+            trackRepository = trackRepository,
             mediaQueueRepository = mediaQueueRepository,
         )
     }

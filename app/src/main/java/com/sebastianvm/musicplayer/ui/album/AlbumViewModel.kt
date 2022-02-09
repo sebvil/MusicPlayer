@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// TODO maybe trigger playback from mediaQueueRepo?
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,

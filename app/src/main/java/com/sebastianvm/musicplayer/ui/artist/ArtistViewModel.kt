@@ -8,9 +8,9 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.util.AlbumType
 import dagger.Module
 import dagger.Provides
@@ -80,17 +80,18 @@ class ArtistViewModel @Inject constructor(
         return ArtistScreenItem.AlbumRowItem(this.toAlbumRowState())
     }
 
-    override fun handle(action: ArtistUserAction) {
-        when (action) {
-            is ArtistUserAction.AlbumClicked -> {
-                addUiEvent(ArtistUiEvent.NavigateToAlbum(action.albumId))
-            }
-            is ArtistUserAction.AlbumContextButtonClicked -> {
-                addUiEvent(ArtistUiEvent.OpenContextMenu(action.albumId))
-            }
-            is ArtistUserAction.UpButtonClicked -> addUiEvent(ArtistUiEvent.NavigateUp)
-        }
+    fun onAlbumClicked(albumId: String) {
+        addUiEvent(ArtistUiEvent.NavigateToAlbum(albumId))
     }
+
+    fun onAlbumOverflowMenuIconClicked(albumId: String) {
+        addUiEvent(ArtistUiEvent.OpenContextMenu(albumId))
+    }
+
+    fun onUpButtonClicked() {
+        addUiEvent(ArtistUiEvent.NavigateUp)
+    }
+
 }
 
 data class ArtistState(
@@ -116,11 +117,7 @@ object InitialArtistState {
     }
 }
 
-sealed class ArtistUserAction : UserAction {
-    data class AlbumClicked(val albumId: String) : ArtistUserAction()
-    data class AlbumContextButtonClicked(val albumId: String) : ArtistUserAction()
-    object UpButtonClicked : ArtistUserAction()
-}
+object ArtistUserAction : UserAction
 
 sealed class ArtistUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()
