@@ -5,9 +5,9 @@ import androidx.media3.common.C
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
@@ -17,9 +17,9 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -113,7 +113,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
                     queueName = track.first().track.trackName
                     sortOption = MediaSortOption.TRACK
                     sortOrder = MediaSortOrder.ASCENDING
-                    track.map { listOf(it) }
+                    track.map { listOf(it.track) }
                 }
                 MediaGroupType.PLAYLIST -> {
                     queueName = mediaGroup.mediaId
@@ -135,7 +135,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
                 }
             }.map { tracks ->
                 tracks.sortedWith(getTrackComparator(sortOrder, sortOption))
-                    .map { it.track.trackId }
+                    .map { it.trackId }
             }.first()
             createQueue(mediaGroup, trackIds, queueName)
         }
@@ -157,15 +157,13 @@ class MediaQueueRepositoryImpl @Inject constructor(
     private fun getTrackComparator(
         sortOrder: MediaSortOrder,
         sortOption: MediaSortOption
-    ): Comparator<FullTrackInfo> {
+    ): Comparator<Track> {
         return when (sortOption) {
-            MediaSortOption.ALBUM -> getStringComparator(sortOrder) { track -> track.album.albumName }
-            MediaSortOption.TRACK -> getStringComparator(sortOrder) { track -> track.track.trackName }
-            MediaSortOption.ARTIST -> getStringComparator(sortOrder) { track -> track.artists.toString() }
-            MediaSortOption.YEAR -> compareBy { track -> track.album.year }
-            MediaSortOption.TRACK_NUMBER -> compareBy { track -> track.track.trackNumber }
-            MediaSortOption.GENRE -> getStringComparator(sortOrder) { track -> track.genres.toString() }
-            MediaSortOption.UNRECOGNIZED -> throw IllegalStateException("Unknown sort option")
+            MediaSortOption.ALBUM -> getStringComparator(sortOrder) { track -> track.albumName }
+            MediaSortOption.TRACK -> getStringComparator(sortOrder) { track -> track.trackName }
+            MediaSortOption.ARTIST -> getStringComparator(sortOrder) { track -> track.artists }
+            MediaSortOption.TRACK_NUMBER -> compareBy { track -> track.trackNumber }
+            else -> throw IllegalStateException("Invalid sort option for tracks")
         }
     }
 

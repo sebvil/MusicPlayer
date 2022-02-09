@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
@@ -46,24 +44,24 @@ class AlbumsListViewModelTest {
             delay(1)
             assertEquals(2, state.value.albumsList.size)
             val albumRow1 = state.value.albumsList[0]
-            assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumRow1.albumId)
-            assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, albumRow1.albumName)
+            assertEquals(ALBUM_ID_0, albumRow1.albumId)
+            assertEquals(ALBUM_NAME_0, albumRow1.albumName)
             assertEquals(
-                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID_0}",
                 albumRow1.imageUri
             )
-            assertEquals(AlbumBuilder.DEFAULT_YEAR, albumRow1.year)
-            assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, albumRow1.artists)
+            assertEquals(ALBUM_YEAR_0, albumRow1.year)
+            assertEquals(ARTIST_NAME_0, albumRow1.artists)
 
             val albumRow2 = state.value.albumsList[1]
-            assertEquals(AlbumBuilder.SECONDARY_ALBUM_ID, albumRow2.albumId)
-            assertEquals(AlbumBuilder.SECONDARY_ALBUM_NAME, albumRow2.albumName)
+            assertEquals(ALBUM_ID_1, albumRow2.albumId)
+            assertEquals(ALBUM_NAME_1, albumRow2.albumName)
             assertEquals(
-                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.SECONDARY_ALBUM_ID}",
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID_1}",
                 albumRow2.imageUri
             )
-            assertEquals(AlbumBuilder.SECONDARY_YEAR, albumRow2.year)
-            assertEquals(ArtistBuilder.SECONDARY_ARTIST_NAME, albumRow2.artists)
+            assertEquals(ALBUM_YEAR_1, albumRow2.year)
+            assertEquals(ARTIST_NAME_1, albumRow2.artists)
 
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
@@ -76,9 +74,9 @@ class AlbumsListViewModelTest {
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+                assertEquals(ALBUM_ID_0, albumId)
             }
-            handle(AlbumsListUserAction.AlbumClicked(AlbumBuilder.DEFAULT_ALBUM_ID))
+            handle(AlbumsListUserAction.AlbumClicked(ALBUM_ID_0))
         }
     }
 
@@ -133,9 +131,21 @@ class AlbumsListViewModelTest {
     fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumsListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+                assertEquals(ALBUM_ID_0, albumId)
             }
-            handle(AlbumsListUserAction.AlbumContextButtonClicked(albumId = AlbumBuilder.DEFAULT_ALBUM_ID))
+            handle(AlbumsListUserAction.AlbumContextButtonClicked(albumId = ALBUM_ID_0))
         }
+    }
+
+    companion object {
+        private const val ALBUM_ID_0 = "0"
+        private const val ALBUM_NAME_0 = "ALBUM_NAME_0"
+        private const val ALBUM_YEAR_0 = 2000L
+        private const val ARTIST_NAME_0 = "ARTIST_NAME_0"
+
+        private const val ALBUM_ID_1 = "1"
+        private const val ALBUM_NAME_1 = "ALBUM_NAME_1"
+        private const val ARTIST_NAME_1 = "ARTIST_NAME_1"
+        private const val ALBUM_YEAR_1 = 1999L
     }
 }

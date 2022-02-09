@@ -10,12 +10,16 @@ data class FullAlbumInfo(
     @Relation(
         parentColumn = "albumId",
         entityColumn = "artistName",
+        entity = Artist::class,
+        projection = ["artistName"],
         associateBy = Junction(AlbumsForArtist::class)
     )
-    val artists: List<Artist>,
+    val artists: List<String>,
     @Relation(
         parentColumn = "albumId",
         entityColumn = "albumId",
+        entity = Track::class,
+        projection = ["trackId"],
     )
-    val tracks: List<Track>,
+    val tracks: List<String>,
 )

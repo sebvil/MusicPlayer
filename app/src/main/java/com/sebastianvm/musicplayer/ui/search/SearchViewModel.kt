@@ -58,7 +58,7 @@ class SearchViewModel @Inject constructor(
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchTracks(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.toTrackRowState(includeTrackNumber = false) }
+                        pagingData.map { it.track.toTrackRowState(includeTrackNumber = false) }
                     }
                 },
                 artistSearchResults = searchTerm.flatMapLatest {
@@ -72,7 +72,7 @@ class SearchViewModel @Inject constructor(
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchAlbums(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.toAlbumRowState() }
+                        pagingData.map { it.album.toAlbumRowState() }
                     }
                 },
                 genreSearchResults = searchTerm.flatMapLatest {

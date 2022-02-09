@@ -28,17 +28,19 @@ class AlbumContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
     private var trackIds: List<String> = listOf()
+    private var artistIds: List<String> = listOf()
 
     init {
         collect(albumRepository.getAlbum(state.value.mediaId)) {
-            trackIds = it.tracks.map { track -> track.trackId }
+            trackIds = it.tracks
+            artistIds = it.artists
             setState {
                 copy(
                     menuTitle = it.album.albumName,
                     listItems = listOf(
                         ContextMenuItem.PlayFromBeginning,
                         ContextMenuItem.AddToQueue,
-                        if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                        if (artistIds.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                         ContextMenuItem.ViewAlbum
                     )
                 )
@@ -80,9 +82,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                 )
             }
             is ContextMenuItem.ViewArtist -> {
-                collect(albumRepository.getAlbum(state.value.mediaId)) { album ->
-                    addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(album.artists[0].artistName))
-                }
+                addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(artistIds[0]))
             }
             else -> throw IllegalStateException("Invalid row for album context menu")
         }

@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
@@ -46,7 +46,12 @@ fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::cla
 }
 
 @Composable
-fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, color: Color = LocalContentColor.current, onOverflowMenuIconClicked: () -> Unit) {
+fun TrackRow(
+    state: TrackRowState,
+    modifier: Modifier = Modifier,
+    color: Color = LocalContentColor.current,
+    onOverflowMenuIconClicked: () -> Unit
+) {
     DoubleLineListItem(
         modifier = modifier,
         afterListContent = {
@@ -64,7 +69,9 @@ fun TrackRow(state: TrackRowState, modifier: Modifier = Modifier, color: Color =
         secondaryText = {
             Text(
                 text = state.artists,
-                modifier = Modifier.alpha(0.8f).paddingFromBaseline(top = AppDimensions.spacing.mediumLarge),
+                modifier = Modifier
+                    .alpha(0.8f)
+                    .paddingFromBaseline(top = AppDimensions.spacing.mediumLarge),
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 color = color,
@@ -89,12 +96,12 @@ class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowS
     )
 }
 
-fun FullTrackInfo.toTrackRowState(includeTrackNumber: Boolean): TrackRowState {
+fun Track.toTrackRowState(includeTrackNumber: Boolean): TrackRowState {
     return TrackRowState(
-        trackId = track.trackId,
-        trackName = track.trackName,
-        artists = artists.joinToString(", ") { it.artistName },
-        albumName = album.albumName,
-        trackNumber = if (includeTrackNumber) track.trackNumber else null
+        trackId = trackId,
+        trackName = trackName,
+        artists = artists,
+        albumName = albumName,
+        trackNumber = if (includeTrackNumber) trackNumber else null
     )
 }

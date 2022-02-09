@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import com.sebastianvm.commons.R
-import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
+import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -16,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,12 +30,23 @@ class ArtistViewModelTest {
     val uriUtilsRule = FakeUriUtilsRule()
 
     private val albumRepository: AlbumRepository = FakeAlbumRepository()
-    private val artistRepository: ArtistRepository = FakeArtistRepository()
+    private lateinit var artistRepository: ArtistRepository
+
+    @Before
+    fun setUp() {
+        artistRepository = FakeArtistRepository(
+            artistsWithAlbums = listOf(artistWithAlbums {
+                artist { artistName = ARTIST_NAME }
+                albumsForArtistIds { add(ALBUM_ID) }
+                appearsOnForArtistIds { add(APPEARS_ON_ID) }
+            })
+        )
+    }
 
     private fun generateViewModel(): ArtistViewModel {
         return ArtistViewModel(
             initialState = ArtistState(
-                artistName = ArtistBuilder.DEFAULT_ARTIST_NAME,
+                artistName = ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
             ),
@@ -54,11 +65,11 @@ class ArtistViewModelTest {
                     ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
-                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
-                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
-                            year = AlbumBuilder.DEFAULT_YEAR,
-                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME
+                            albumId = ALBUM_ID,
+                            albumName = ALBUM_NAME,
+                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
+                            year = ALBUM_YEAR,
+                            artists = ARTIST_NAME
                         )
                     )
                 ), state.value.albumsForArtistItems
@@ -68,11 +79,11 @@ class ArtistViewModelTest {
                     ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON, R.string.appears_on),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = AlbumBuilder.SECONDARY_ALBUM_ID,
-                            albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
-                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.SECONDARY_ALBUM_ID}",
-                            year = AlbumBuilder.SECONDARY_YEAR,
-                            artists = ArtistBuilder.SECONDARY_ARTIST_NAME
+                            albumId = APPEARS_ON_ID,
+                            albumName = APPEARS_ON_NAME,
+                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${APPEARS_ON_ID}",
+                            year = APPEARS_ON_YEAR,
+                            artists = APPEARS_ON_ARTIST
                         )
                     )
                 ), state.value.appearsOnForArtistItems
@@ -86,9 +97,9 @@ class ArtistViewModelTest {
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+                assertEquals(ALBUM_ID, albumId)
             }
-            handle(ArtistUserAction.AlbumClicked(AlbumBuilder.DEFAULT_ALBUM_ID))
+            handle(ArtistUserAction.AlbumClicked(ALBUM_ID))
         }
     }
 
@@ -97,9 +108,20 @@ class ArtistViewModelTest {
     fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+                assertEquals(ALBUM_ID, albumId)
             }
-            handle(ArtistUserAction.AlbumContextButtonClicked(AlbumBuilder.DEFAULT_ALBUM_ID))
+            handle(ArtistUserAction.AlbumContextButtonClicked(ALBUM_ID))
         }
+    }
+
+    companion object {
+        private const val ARTIST_NAME = "ARTIST_NAME"
+        private const val ALBUM_ID = "0"
+        private const val ALBUM_NAME = "ALBUM_NAME"
+        private const val ALBUM_YEAR = 2000L
+        private const val APPEARS_ON_ID = "1"
+        private const val APPEARS_ON_NAME = "APPEARS_ON_NAME"
+        private const val APPEARS_ON_ARTIST = "APPEARS_ON_ARTIST"
+        private const val APPEARS_ON_YEAR = 1999L
     }
 }

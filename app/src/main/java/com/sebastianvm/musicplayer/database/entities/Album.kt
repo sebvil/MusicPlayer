@@ -11,7 +11,7 @@ data class Album(
     val albumId: String,
     val albumName: String,
     val year: Long,
-    val numberOfTracks: Long,
+    val artists: String
 )
 
 @Fts4(contentEntity = AlbumsForArtist::class, notIndexed=["albumId"], tokenizer = FtsOptions.TOKENIZER_UNICODE61)

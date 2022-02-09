@@ -22,4 +22,10 @@ class ArtistRepositoryImpl @Inject constructor(
     override fun getArtist(artistName: String): Flow<ArtistWithAlbums> {
         return artistDao.getArtist(artistName).distinctUntilChanged()
     }
+
+    override fun getArtistsForTrack(trackId: String): Flow<List<Artist>> =
+        artistDao.getArtistsForTrack(trackId).distinctUntilChanged()
+
+    override fun getArtistsForAlbum(albumId: String): Flow<List<Artist>> =
+        artistDao.getArtistsForAlbum(albumId).distinctUntilChanged()
 }

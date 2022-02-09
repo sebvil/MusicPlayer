@@ -25,11 +25,11 @@ interface TrackDao {
 
     @Transaction
     @Query("SELECT * FROM Track")
-    fun getAllTracks(): Flow<List<FullTrackInfo>>
+    fun getAllTracks(): Flow<List<Track>>
 
     @Transaction
     @Query("SELECT * FROM Track WHERE trackId in (:trackIds)")
-    fun getTracks(trackIds: List<String>): Flow<List<FullTrackInfo>>
+    fun getTracks(trackIds: List<String>): Flow<List<Track>>
 
     @Transaction
     @Query("SELECT * FROM Track WHERE trackId=:trackId")
@@ -43,7 +43,7 @@ interface TrackDao {
         WHERE ArtistTrackCrossRef.artistName=:artistName
     """
     )
-    fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForArtist(artistName: String): Flow<List<Track>>
 
     @Transaction
     @Query(
@@ -52,7 +52,7 @@ interface TrackDao {
         WHERE Track.albumId=:albumId
     """
     )
-    fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForAlbum(albumId: String): Flow<List<Track>>
 
     @Transaction
     @Query(
@@ -62,17 +62,17 @@ interface TrackDao {
         WHERE GenreTrackCrossRef.genreName=:genreName
     """
     )
-    fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForGenre(genreName: String): Flow<List<Track>>
 
     @Transaction
     @Query(
         """
         SELECT Track.* FROM Track 
-        INNER JOIN PlaylistWithTrackCrossRef ON Track.trackId = PlaylistWithTrackCrossRef.trackId
-        WHERE PlaylistWithTrackCrossRef.playlistName=:playlistName
+        INNER JOIN PlaylistTrackCrossRef ON Track.trackId = PlaylistTrackCrossRef.trackId
+        WHERE PlaylistTrackCrossRef.playlistName=:playlistName
     """
     )
-    fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>>
+    fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
 
     @Transaction
     @Query(
@@ -83,7 +83,7 @@ interface TrackDao {
         ORDER BY MediaQueueTrackCrossRef.trackIndex ASC
     """
     )
-    fun getTracksForQueue(mediaType: MediaGroupType, groupMediaId: String): Flow<List<FullTrackInfo>>
+    fun getTracksForQueue(mediaType: MediaGroupType, groupMediaId: String): Flow<List<Track>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

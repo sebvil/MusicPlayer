@@ -1,9 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
-import com.sebastianvm.musicplayer.database.entities.GenreBuilder
-import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
@@ -71,17 +67,17 @@ class TracksListViewModelTest {
                 assertEquals(
                     listOf(
                         TrackRowState(
-                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
-                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
-                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
-                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                            trackId = TRACK_ID_0,
+                            trackName = TRACK_NAME_0,
+                            artists = TRACK_ARTIST_0,
+                            albumName = TRACK_ALBUM_0,
                             trackNumber = null
                         ),
                         TrackRowState(
-                            trackId = TrackBuilder.SECONDARY_TRACK_ID,
-                            trackName = TrackBuilder.SECONDARY_TRACK_NAME,
-                            artists = ArtistBuilder.SECONDARY_ARTIST_NAME,
-                            albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
+                            trackId = TRACK_ID_1,
+                            trackName = TRACK_NAME_1,
+                            artists = TRACK_ARTIST_1,
+                            albumName = TRACK_ALBUM_1,
                             trackNumber = null
                         ),
                     ), tracksList
@@ -95,17 +91,17 @@ class TracksListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for genre sets initial state`() = runTest {
-        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
+        with(generateViewModel(genreName = TRACK_GENRE_0)) {
             delay(1)
             with(state.value) {
-                assertEquals(GenreBuilder.DEFAULT_GENRE_NAME, tracksListTitle)
+                assertEquals(TRACK_GENRE_0, tracksListTitle)
                 assertEquals(
                     listOf(
                         TrackRowState(
-                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
-                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
-                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
-                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                            trackId = TRACK_ID_0,
+                            trackName = TRACK_NAME_0,
+                            artists = TRACK_ARTIST_0,
+                            albumName = TRACK_ALBUM_0,
                             trackNumber = null
                         ),
                     ), tracksList
@@ -121,11 +117,11 @@ class TracksListViewModelTest {
     fun `TrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
             delay(1)
             verify {
                 mediaPlaybackRepository.playFromId(
-                    TrackBuilder.DEFAULT_TRACK_ID,
+                    TRACK_ID_0,
                     MediaGroup(mediaGroupType = MediaGroupType.ALL_TRACKS, mediaId = "")
                 )
             }
@@ -135,16 +131,16 @@ class TracksListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackClicked for genre triggers playback, adds nav to player event`() = runTest {
-        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
+        with(generateViewModel(genreName = TRACK_GENRE_0)) {
             expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
             delay(1)
             verify {
                 mediaPlaybackRepository.playFromId(
-                    TrackBuilder.DEFAULT_TRACK_ID,
+                    TRACK_ID_0,
                     MediaGroup(
                         mediaGroupType = MediaGroupType.GENRE,
-                        mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                        mediaId = TRACK_GENRE_0
                     )
                 )
             }
@@ -158,18 +154,18 @@ class TracksListViewModelTest {
             with(
                 generateViewModel(
                     preferencesRepository = FakePreferencesRepository(),
-                    genreName = GenreBuilder.DEFAULT_GENRE_NAME,
+                    genreName = TRACK_GENRE_0,
                 )
             ) {
                 expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-                handle(TracksListUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+                handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
                 delay(1)
                 verify {
                     mediaPlaybackRepository.playFromId(
-                        TrackBuilder.DEFAULT_TRACK_ID,
+                        TRACK_ID_0,
                         MediaGroup(
                             mediaGroupType = MediaGroupType.GENRE,
-                            mediaId = GenreBuilder.DEFAULT_GENRE_NAME
+                            mediaId = TRACK_GENRE_0
                         )
                     )
                 }
@@ -190,17 +186,17 @@ class TracksListViewModelTest {
     fun `MediaSortOptionClicked changes state`() = runTest {
         val tracksList = listOf(
             TrackRowState(
-                trackId = TrackBuilder.DEFAULT_TRACK_ID,
-                trackName = TrackBuilder.DEFAULT_TRACK_NAME,
-                artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
-                albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
+                trackId = TRACK_ID_0,
+                trackName = TRACK_NAME_0,
+                artists = TRACK_ARTIST_0,
+                albumName = TRACK_ALBUM_0,
                 trackNumber = null
             ),
             TrackRowState(
-                trackId = TrackBuilder.SECONDARY_TRACK_ID,
-                trackName = TrackBuilder.SECONDARY_TRACK_NAME,
-                artists = ArtistBuilder.SECONDARY_ARTIST_NAME,
-                albumName = AlbumBuilder.SECONDARY_ALBUM_NAME,
+                trackId = TRACK_ID_1,
+                trackName = TRACK_NAME_1,
+                artists = TRACK_ARTIST_1,
+                albumName = TRACK_ALBUM_1,
                 trackNumber = null
             )
         )
@@ -250,22 +246,22 @@ class TracksListViewModelTest {
     fun `TrackContextMenuClicked  for all tracks adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
+                assertEquals(TRACK_ID_0, trackId)
                 assertEquals(MediaGroup(MediaGroupType.ALL_TRACKS, "ALL_TRACKS"), mediaGroup)
             }
-            handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(TracksListUserAction.TrackContextMenuClicked(TRACK_ID_0))
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `TrackContextMenuClicked  for genre adds OpenContextMenu UiEvent`() = runTest {
-        with(generateViewModel(genreName = GenreBuilder.DEFAULT_GENRE_NAME)) {
+        with(generateViewModel(genreName = TRACK_GENRE_0)) {
             expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
-                assertEquals(MediaGroup(MediaGroupType.GENRE, GenreBuilder.DEFAULT_GENRE_NAME), mediaGroup)
+                assertEquals(TRACK_ID_0, trackId)
+                assertEquals(MediaGroup(MediaGroupType.GENRE, TRACK_GENRE_0), mediaGroup)
             }
-            handle(TracksListUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(TracksListUserAction.TrackContextMenuClicked(TRACK_ID_0))
         }
     }
 
@@ -276,5 +272,19 @@ class TracksListViewModelTest {
             expectUiEvent<TracksListUiEvent.NavigateUp>(this@runTest)
             handle(TracksListUserAction.UpButtonClicked)
         }
+    }
+    
+    companion object {
+        private const val TRACK_ID_0 = "0"
+        private const val TRACK_NAME_0 = "TRACK_NAME_0"
+        private const val TRACK_ALBUM_0 = "0"
+        private const val TRACK_ARTIST_0 = "TRACK_ARTIST_0"
+        private const val TRACK_GENRE_0 = "TRACK_GENRE_0"
+
+        private const val TRACK_ID_1 = "1"
+        private const val TRACK_NAME_1 = "TRACK_NAME_1"
+        private const val TRACK_ALBUM_1 = "1"
+        private const val TRACK_ARTIST_1 = "TRACK_ARTIST_1"
+
     }
 }

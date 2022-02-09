@@ -10,19 +10,17 @@ data class FullTrackInfo(
     @Relation(
         parentColumn = "trackId",
         entityColumn = "artistName",
+        entity = Artist::class,
+        projection = ["artistName"],
         associateBy = Junction(ArtistTrackCrossRef::class)
     )
-    val artists: List<Artist>,
+    val artists: List<String>,
     @Relation(
         parentColumn = "trackId",
         entityColumn = "genreName",
+        entity = Genre::class,
+        projection = ["genreName"],
         associateBy = Junction(GenreTrackCrossRef::class)
     )
-    val genres: List<Genre>,
-    @Relation(
-        parentColumn = "albumId",
-        entityColumn = "albumId",
-    )
-    val album: Album
-
+    val genres: List<String>,
 )

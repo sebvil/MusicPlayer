@@ -2,8 +2,7 @@ package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
@@ -24,13 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
-data class ArtistInfo(
-    val artist: Artist,
-    val albumsForArtist: List<AlbumWithArtists>,
-    val appearsOnForArtist: List<AlbumWithArtists>
-)
-
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
@@ -44,50 +36,47 @@ class ArtistViewModel @Inject constructor(
         collect(
             artistRepository.getArtist(state.value.artistName).flatMapLatest { artistWithAlbums ->
                 val albumsForArtist = artistWithAlbums.artistAlbums.let { albums ->
-                    albumRepository.getAlbums(albums.map { it.albumId })
+                    albumRepository.getAlbums(albums)
                 }
                 val appearsOnForArtist = artistWithAlbums.artistAppearsOn.let { albums ->
-                    albumRepository.getAlbums(albums.map { it.albumId })
+                    albumRepository.getAlbums(albums)
                 }
                 albumsForArtist.combine(appearsOnForArtist) { albumsFor, appearsOn ->
-                    ArtistInfo(
-                        artistWithAlbums.artist,
+                    Pair(
                         albumsFor,
                         appearsOn
                     )
                 }
-            }) { artistInfo ->
-            with(artistInfo) {
-                setState {
-                    copy(
-                        albumsForArtistItems = albumsForArtist.takeUnless { it.isEmpty() }
-                            ?.let { albumsWithArtists ->
-                                listOf(
-                                    ArtistScreenItem.SectionHeaderItem(
-                                        AlbumType.ALBUM,
-                                        R.string.albums
-                                    )
-                                ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
-                                    .map { it.toAlbumRowItem() })
+            }) { (albumsForArtist, appearsOnForArtist) ->
+            setState {
+                copy(
+                    albumsForArtistItems = albumsForArtist.takeUnless { it.isEmpty() }
+                        ?.let { albums ->
+                            listOf(
+                                ArtistScreenItem.SectionHeaderItem(
+                                    AlbumType.ALBUM,
+                                    R.string.albums
+                                )
+                            ).plus(albums.sortedByDescending { album -> album.year }
+                                .map { it.toAlbumRowItem() })
 
-                            },
-                        appearsOnForArtistItems = appearsOnForArtist.takeUnless { it.isEmpty() }
-                            ?.let { albumsWithArtists ->
-                                listOf(
-                                    ArtistScreenItem.SectionHeaderItem(
-                                        AlbumType.APPEARS_ON,
-                                        R.string.appears_on
-                                    )
-                                ).plus(albumsWithArtists.sortedByDescending { albumItem -> albumItem.album.year }
-                                    .map { it.toAlbumRowItem() })
-                            },
-                        )
-                }
+                        },
+                    appearsOnForArtistItems = appearsOnForArtist.takeUnless { it.isEmpty() }
+                        ?.let { albums ->
+                            listOf(
+                                ArtistScreenItem.SectionHeaderItem(
+                                    AlbumType.APPEARS_ON,
+                                    R.string.appears_on
+                                )
+                            ).plus(albums.sortedByDescending { album -> album.year }
+                                .map { it.toAlbumRowItem() })
+                        },
+                )
             }
         }
     }
 
-    private fun AlbumWithArtists.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
+    private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
         return ArtistScreenItem.AlbumRowItem(this.toAlbumRowState())
     }
 
@@ -102,12 +91,6 @@ class ArtistViewModel @Inject constructor(
             is ArtistUserAction.UpButtonClicked -> addUiEvent(ArtistUiEvent.NavigateUp)
         }
     }
-
-    companion object {
-        const val ALBUMS = "ALBUMS"
-        const val APPEARS_ON = "APPEARS_ON"
-    }
-
 }
 
 data class ArtistState(
@@ -143,5 +126,4 @@ sealed class ArtistUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()
     data class OpenContextMenu(val albumId: String) : ArtistUiEvent()
     object NavigateUp : ArtistUiEvent()
-
 }

@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.ui.player
 
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
-import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
@@ -49,8 +47,8 @@ class MusicPlayerViewModelTest {
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
             delay(1)
-            assertEquals(TrackBuilder.DEFAULT_TRACK_NAME, state.value.trackName)
-            assertEquals(ArtistBuilder.DEFAULT_ARTIST_NAME, state.value.artists)
+            assertEquals(TRACK_NAME, state.value.trackName)
+            assertEquals(ARTIST_NAME, state.value.artists)
         }
     }
 
@@ -60,8 +58,8 @@ class MusicPlayerViewModelTest {
         with(generateViewModel()) {
             this@runTest.launch {
                 with(state.drop(2).first()) {
-                    assertEquals(TRACK_TITLE, trackName)
-                    assertEquals(ARTISTS, artists)
+                    assertEquals(TRACK_NAME, trackName)
+                    assertEquals(ARTIST_NAME, artists)
                     assertEquals(TRACK_LENGTH, trackLengthMs)
                 }
             }
@@ -112,11 +110,9 @@ class MusicPlayerViewModelTest {
 //    }
 
     companion object {
-        private const val TRACK_TITLE = "TRACK_TITLE"
-        private const val ARTISTS = "ARTISTS"
+        private const val TRACK_NAME = "TRACK_NAME"
+        private const val ARTIST_NAME = "ARTIST_NAME"
         private const val TRACK_LENGTH = 300000L
-        private const val TRACK_ID = "11111"
-        private const val ALBUM_ID = "22222"
     }
 
 

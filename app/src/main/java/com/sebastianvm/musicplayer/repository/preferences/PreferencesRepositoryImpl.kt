@@ -66,9 +66,9 @@ class PreferencesRepositoryImpl @Inject constructor(
             when (tracksListType) {
                 TracksListType.ALL_TRACKS -> sortSettings.allTracksSortSettings
                 TracksListType.GENRE -> sortSettings.genreTrackListSortSettingsMap[tracksListName]
-                    ?: MediaSortSettings.getDefaultInstance()
+                    ?: mediaSortSettings {  }
                 TracksListType.PLAYLIST -> sortSettings.playlistTrackListSortSettingsMap[tracksListName]
-                    ?: MediaSortSettings.getDefaultInstance()
+                    ?: mediaSortSettings {  }
             }
         }.distinctUntilChanged()
     }

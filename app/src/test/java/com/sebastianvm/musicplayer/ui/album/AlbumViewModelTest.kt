@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
-import com.sebastianvm.musicplayer.database.entities.TrackBuilder
+import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
+import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
@@ -10,6 +9,7 @@ import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackReposito
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
@@ -19,7 +19,6 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -48,12 +47,39 @@ class AlbumViewModelTest {
         return AlbumViewModel(
             mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = AlbumState(
-                albumId = AlbumBuilder.DEFAULT_ALBUM_ID,
+                albumId = ALBUM_ID,
                 tracksList = listOf(),
                 albumName = "",
                 imageUri = ""
             ),
-            albumRepository = FakeAlbumRepository(),
+            albumRepository = FakeAlbumRepository(
+                fullAlbumInfo = listOf(
+                    fullAlbumInfo {
+                        album {
+                            albumId = ALBUM_ID
+                            albumName = ALBUM_NAME
+                            year = ALBUM_YEAR
+                            artists = ALBUM_ARTIST
+                        }
+                        artistIds {
+                            add(ALBUM_ARTIST)
+                        }
+                        trackIds {
+                            add(TRACK_ID)
+                        }
+                    })
+            ),
+            trackRepository = FakeTrackRepository(tracks = listOf(
+                fullTrackInfo {
+                    track {
+                        trackId = TRACK_ID
+                        trackName = TRACK_NAME
+                        albumName = ALBUM_NAME
+                        trackNumber = TRACK_NUMBER
+                        artists = ALBUM_ARTIST
+                    }
+                }
+            )),
             mediaQueueRepository = mediaQueueRepository,
         )
     }
@@ -62,25 +88,23 @@ class AlbumViewModelTest {
     @Test
     fun `init sets albumHeaderItem and tracksList`() = runTest {
         with(generateViewModel()) {
-            launch {
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_NAME, state.value.albumName)
-                assertEquals(
-                    "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${AlbumBuilder.DEFAULT_ALBUM_ID}",
-                    state.value.imageUri
-                )
-                assertEquals(
-                    listOf(
-                        TrackRowState(
-                            trackId = TrackBuilder.DEFAULT_TRACK_ID,
-                            trackName = TrackBuilder.DEFAULT_TRACK_NAME,
-                            artists = ArtistBuilder.DEFAULT_ARTIST_NAME,
-                            albumName = AlbumBuilder.DEFAULT_ALBUM_NAME,
-                            trackNumber = TrackBuilder.DEFAULT_TRACK_NUMBER
-                        )
-                    ), state.value.tracksList
-                )
-            }
             delay(1)
+            assertEquals(ALBUM_NAME, state.value.albumName)
+            assertEquals(
+                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
+                state.value.imageUri
+            )
+            assertEquals(
+                listOf(
+                    TrackRowState(
+                        trackId = TRACK_ID,
+                        trackName = TRACK_NAME,
+                        artists = ALBUM_ARTIST,
+                        albumName = ALBUM_NAME,
+                        trackNumber = TRACK_NUMBER
+                    )
+                ), state.value.tracksList
+            )
         }
     }
 
@@ -89,12 +113,15 @@ class AlbumViewModelTest {
     fun `TrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
-            handle(AlbumUserAction.TrackClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(AlbumUserAction.TrackClicked(TRACK_ID))
             delay(1)
             verify {
                 mediaPlaybackRepository.playFromId(
-                    TrackBuilder.DEFAULT_TRACK_ID,
-                    MediaGroup(mediaGroupType = MediaGroupType.ALBUM, mediaId = AlbumBuilder.DEFAULT_ALBUM_ID)
+                    TRACK_ID,
+                    MediaGroup(
+                        mediaGroupType = MediaGroupType.ALBUM,
+                        mediaId = ALBUM_ID
+                    )
                 )
             }
 
@@ -116,12 +143,21 @@ class AlbumViewModelTest {
     fun `TrackContextMenuClicked adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TrackBuilder.DEFAULT_TRACK_ID, trackId)
-                assertEquals(AlbumBuilder.DEFAULT_ALBUM_ID, albumId)
+                assertEquals(TRACK_ID, trackId)
+                assertEquals(ALBUM_ID, albumId)
             }
-            handle(AlbumUserAction.TrackContextMenuClicked(TrackBuilder.DEFAULT_TRACK_ID))
+            handle(AlbumUserAction.TrackContextMenuClicked(TRACK_ID))
         }
     }
 
 
+    companion object {
+        private const val ALBUM_ID = "0"
+        private const val ALBUM_NAME = "ALBUM_NAME"
+        private const val ALBUM_ARTIST = "ALBUM_ARTIST"
+        private const val ALBUM_YEAR = 2000L
+        private const val TRACK_ID = "0"
+        private const val TRACK_NAME = "TRACK_NAME"
+        private const val TRACK_NUMBER = 1L
+    }
 }
