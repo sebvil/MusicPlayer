@@ -11,7 +11,6 @@ data class Album(
     val albumId: String,
     val albumName: String,
     val year: Long,
-    val numberOfTracks: Long,
     val artists: String
 )
 

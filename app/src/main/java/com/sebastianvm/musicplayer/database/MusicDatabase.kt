@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
-import com.sebastianvm.musicplayer.database.entities.PlaylistWithTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackFts
 
@@ -44,7 +44,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         AlbumsForArtist::class,
         AppearsOnForArtist::class,
         MediaQueueTrackCrossRef::class,
-        PlaylistWithTrackCrossRef::class,
+        PlaylistTrackCrossRef::class,
         TrackFts::class,
         ArtistFts::class,
         AlbumFts::class,

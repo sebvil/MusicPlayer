@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaMetadata
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
-import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -10,8 +8,8 @@ class FakeMediaPlaybackRepository : MediaPlaybackRepository {
 
     override val nowPlaying: MutableStateFlow<MediaMetadata?> =
         MutableStateFlow(MediaMetadata.Builder().apply {
-            setTitle(TrackBuilder.DEFAULT_TRACK_NAME)
-            setArtist(ArtistBuilder.DEFAULT_ARTIST_NAME)
+            setTitle("")
+            setArtist("")
         }.build())
     override val playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(
         PlaybackState(

@@ -1,80 +1,65 @@
 package com.sebastianvm.musicplayer.repository.track
 
 import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.AlbumBuilder
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.database.entities.ArtistBuilder
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.database.entities.GenreBuilder
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.database.entities.TrackBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class FakeTrackRepository : TrackRepository {
-    private val defaultTrackInfo = FullTrackInfo(
-        track = TrackBuilder.getDefaultTrack().build(),
-        artists = listOf(ArtistBuilder.getDefaultArtist().build()),
-        album = AlbumBuilder.getDefaultAlbum().build(),
-        genres = listOf(GenreBuilder.getDefaultGenre().build())
-    )
+class FakeTrackRepository(
+    private val tracks: List<FullTrackInfo> = listOf(),
+    private val playlistTrackCrossRefs: List<PlaylistTrackCrossRef> = listOf(),
+    private val queueTrackCrossRefs: List<MediaQueueTrackCrossRef> = listOf(),
+) : TrackRepository {
 
-    private val secondaryTrackInfo = FullTrackInfo(
-        track = TrackBuilder.getSecondaryTrack().build(),
-        artists = listOf(ArtistBuilder.getSecondaryArtist().build()),
-        album = AlbumBuilder.getSecondaryAlbum().build(),
-        genres = listOf(GenreBuilder.getSecondaryGenre().build())
-    )
+    override fun getTracksCount(): Flow<Long> = flow { emit(tracks.size.toLong()) }
 
+    override fun getAllTracks(): Flow<List<Track>> = flow { emit(tracks.map { it.track }) }
 
-    private val tracksMap = mapOf(
-        TrackBuilder.DEFAULT_TRACK_ID to defaultTrackInfo,
-        TrackBuilder.SECONDARY_TRACK_ID to secondaryTrackInfo
-    )
+    override fun getTrack(tracksId: String): Flow<FullTrackInfo> = flow {
+        tracks.find { it.track.trackId == tracksId }?.also { emit(it) }
+    }
 
-    private val artistMap = mapOf(
-        ArtistBuilder.DEFAULT_ARTIST_NAME to listOf(defaultTrackInfo),
-        ArtistBuilder.SECONDARY_ARTIST_NAME to listOf(secondaryTrackInfo),
-    )
+    override fun getTracks(tracksIds: List<String>): Flow<List<Track>> = flow {
+        emit(tracks.map { it.track }.filter { it.trackId in tracksIds })
+    }
 
-    private val albumMap = mapOf(
-        AlbumBuilder.DEFAULT_ALBUM_ID to listOf(defaultTrackInfo),
-        AlbumBuilder.SECONDARY_ALBUM_ID to listOf(secondaryTrackInfo),
-    )
+    override fun getTracksForArtist(artistName: String): Flow<List<Track>> = flow {
+        emit(tracks.filter { artistName in it.artists }.map { it.track })
+    }
 
-    private val genreMap = mapOf(
-        GenreBuilder.DEFAULT_GENRE_NAME to listOf(defaultTrackInfo),
-        GenreBuilder.SECONDARY_GENRE_NAME to listOf(secondaryTrackInfo),
-    )
-
-    override fun getTracksCount(): Flow<Long> = flow { emit(tracksMap.size.toLong()) }
-
-    override fun getAllTracks(): Flow<List<FullTrackInfo>> =
-        flow { emit(tracksMap.values.toList()) }
-
-    override fun getTrack(tracksId: String): Flow<FullTrackInfo> =
-        flow { tracksMap[tracksId]?.also { emit(it) } }
-
-    override fun getTracks(tracksIds: List<String>): Flow<List<FullTrackInfo>> = flow {  }
-    override fun getTracksForArtist(artistName: String): Flow<List<FullTrackInfo>> =
-        flow { artistMap[artistName]?.also { emit(it) } }
-
-    override fun getTracksForAlbum(albumId: String): Flow<List<FullTrackInfo>> =
-        flow { albumMap[albumId]?.also { emit(it) } }
+    override fun getTracksForAlbum(albumId: String): Flow<List<Track>> = flow {
+        emit(tracks.filter { albumId === it.track.albumId }.map { it.track })
+    }
 
 
-    override fun getTracksForGenre(genreName: String): Flow<List<FullTrackInfo>> =
-        flow { genreMap[genreName]?.also { emit(it) } }
+    override fun getTracksForGenre(genreName: String): Flow<List<Track>> = flow {
+        emit(tracks.filter { genreName in it.genres }.map { it.track })
+    }
 
-    override fun getTracksForPlaylist(playlistName: String): Flow<List<FullTrackInfo>> = flow {  }
+    override fun getTracksForPlaylist(playlistName: String): Flow<List<Track>> = flow {
+        emit(tracks.filter {
+            it.track.trackId in playlistTrackCrossRefs.filter { xref -> xref.playlistName == playlistName }
+                .map { xref -> xref.trackId }
+        }.map { it.track })
+    }
 
-    override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<FullTrackInfo>> = flow {  }
+    override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<Track>> = flow {
+        emit(tracks.filter {
+            it.track.trackId in queueTrackCrossRefs.filter { xref ->
+                xref.mediaGroupType == mediaGroup.mediaGroupType && xref.groupMediaId == mediaGroup.mediaId
+            }.map { xref -> xref.trackId }
+        }.map { it.track })
+    }
 
     override suspend fun insertAllTracks(
         tracks: Set<Track>,

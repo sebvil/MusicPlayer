@@ -93,7 +93,6 @@ class MusicRepositoryImpl @Inject constructor(
             albumId = albumId,
             albumName = albumName,
             year = year,
-            numberOfTracks = numTracks,
             artists = albumArtistsList.joinToString(", ") { it.artistName })
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()

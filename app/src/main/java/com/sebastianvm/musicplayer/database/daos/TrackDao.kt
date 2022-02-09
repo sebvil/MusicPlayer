@@ -68,8 +68,8 @@ interface TrackDao {
     @Query(
         """
         SELECT Track.* FROM Track 
-        INNER JOIN PlaylistWithTrackCrossRef ON Track.trackId = PlaylistWithTrackCrossRef.trackId
-        WHERE PlaylistWithTrackCrossRef.playlistName=:playlistName
+        INNER JOIN PlaylistTrackCrossRef ON Track.trackId = PlaylistTrackCrossRef.trackId
+        WHERE PlaylistTrackCrossRef.playlistName=:playlistName
     """
     )
     fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
