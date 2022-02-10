@@ -60,22 +60,22 @@ fun AlbumsListScreen(
                 title = stringResource(id = R.string.albums),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.handle(AlbumsListUserAction.UpButtonClicked)
+                        screenViewModel.onUpButtonClicked()
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.handle(AlbumsListUserAction.SortByClicked)
+                        screenViewModel.onSortByClicked()
                     }
                 }
             )
         }) { state ->
         AlbumsListLayout(state = state, listState = listState, object : AlbumsListScreenDelegate {
             override fun onAlbumClicked(albumId: String) {
-                screenViewModel.handle(AlbumsListUserAction.AlbumClicked(albumId))
+                screenViewModel.onAlbumClicked(albumId)
             }
 
-            override fun onAlbumContextButtonClicked(albumId: String) {
-                screenViewModel.handle(AlbumsListUserAction.AlbumContextButtonClicked(albumId = albumId))
+            override fun onAlbumOverflowMenuIconClicked(albumId: String) {
+                screenViewModel.onAlbumOverflowMenuIconClicked(albumId = albumId)
             }
         })
     }
@@ -83,7 +83,7 @@ fun AlbumsListScreen(
 
 interface AlbumsListScreenDelegate {
     fun onAlbumClicked(albumId: String) = Unit
-    fun onAlbumContextButtonClicked(albumId: String) = Unit
+    fun onAlbumOverflowMenuIconClicked(albumId: String) = Unit
 }
 
 
@@ -113,7 +113,7 @@ fun AlbumsListLayout(
                 modifier = Modifier.clickable {
                     delegate.onAlbumClicked(item.albumId)
                 },
-                onOverflowMenuIconClicked = { delegate.onAlbumContextButtonClicked(item.albumId) }
+                onOverflowMenuIconClicked = { delegate.onAlbumOverflowMenuIconClicked(item.albumId) }
             )
         }
     }

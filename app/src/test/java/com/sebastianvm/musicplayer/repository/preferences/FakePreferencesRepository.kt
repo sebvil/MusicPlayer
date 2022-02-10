@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
     PreferencesRepository {
@@ -72,9 +73,7 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
         }
     }
 
-    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> = flow {
-        emit(savedSortSettings.albumsListSortSettings)
-    }.distinctUntilChanged()
+    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> = _savedSortSettings.map { it.albumsListSortSettings }
 
     override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         savedSortSettings = savedSortSettings.copy {

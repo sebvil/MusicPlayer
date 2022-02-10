@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.util.sort
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import java.text.Collator
 
 
@@ -48,5 +46,16 @@ fun <T> getStringComparator(
         Comparator.comparing(sortBy, collator)
     } else {
         Comparator.comparing(sortBy, collator.reversed())
+    }
+}
+
+fun <T> getLongComparator(
+    sortOrder: MediaSortOrder,
+    sortBy: (T) -> Long
+): Comparator<T> {
+    return if (sortOrder == MediaSortOrder.ASCENDING) {
+        compareBy { x: T -> sortBy(x) }
+    } else {
+        compareBy { x: T -> sortBy(x) }.reversed()
     }
 }

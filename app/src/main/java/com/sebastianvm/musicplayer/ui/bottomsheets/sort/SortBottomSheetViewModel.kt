@@ -3,11 +3,12 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
@@ -18,15 +19,42 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @HiltViewModel
-class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState) :
+class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState, private val preferencesRepository: PreferencesRepository) :
     BaseViewModel<SortBottomSheetUserAction, SortBottomSheetUiEvent, SortBottomSheetState>(
         initialState
     ) {
 
+    // TODO add mediaGroup to determine which to modify
+//    fun onMediaSortOptionClicked(newSortOption: MediaSortOption) {
+//        val sortOrder = if (newSortOption == state.value.currentSort) {
+//            !state.value.sortOrder
+//        } else {
+//            state.value.sortOrder
+//        }
+//
+//        viewModelScope.launch {
+//            preferencesRepository.modifyAlbumsListSortOptions(
+//                mediaSortSettings = mediaSortSettings {
+//                    sortOption = newSortOption
+//                    this.sortOrder = sortOrder
+//                },
+//            )
+//            addUiEvent(AlbumsListUiEvent.ScrollToTop)
+//        }
+//    }
     override fun handle(action: SortBottomSheetUserAction) {
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionSelected -> {
-                addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet(action.sortOption))
+//                viewModelScope.launch {
+//                    preferencesRepository.modifyAlbumsListSortOptions(
+//                        mediaSortSettings = mediaSortSettings {
+//                            sortOption = action.sortOption
+//                            this.sortOrder = sortOrder
+//                        },
+//                    )
+//                    addUiEvent(AlbumsListUiEvent.ScrollToTop)
+//                }
+//                addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet(action.sortOption))
             }
         }
     }
