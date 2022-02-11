@@ -7,9 +7,9 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +23,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
+    BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
         initialState
     ) {
 
@@ -54,7 +54,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 
     }
 
-    override fun handle(action: ArtistsBottomSheetUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is ArtistsBottomSheetUserAction.ArtistClicked -> {
                 addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistName))

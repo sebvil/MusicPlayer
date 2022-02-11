@@ -29,7 +29,7 @@ class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
     artistRepository: ArtistRepository,
     private val albumRepository: AlbumRepository,
-) : BaseViewModel<ArtistUserAction, ArtistUiEvent, ArtistState>(
+) : BaseViewModel<ArtistUiEvent, ArtistState>(
     initialState
 ) {
     init {

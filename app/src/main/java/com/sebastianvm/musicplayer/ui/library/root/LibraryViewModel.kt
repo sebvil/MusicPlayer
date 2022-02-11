@@ -21,7 +21,7 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState
-) : BaseViewModel<LibraryUserAction, LibraryUiEvent, LibraryState>(initialState) {
+) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
 
 
     init {
@@ -43,7 +43,7 @@ class LibraryViewModel @Inject constructor(
     }
 
 
-    override fun handle(action: LibraryUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is LibraryUserAction.FabClicked -> {
                 when (action.permissionStatus) {

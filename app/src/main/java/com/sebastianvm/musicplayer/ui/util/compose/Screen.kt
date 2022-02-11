@@ -8,17 +8,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.EventHandler
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <A : UserAction, E : UiEvent, S : State> Screen(
-    screenViewModel: BaseViewModel<A, E, S>,
+fun <E : UiEvent, S : State> Screen(
+    screenViewModel: BaseViewModel<E, S>,
     eventHandler: EventHandler<E>,
     modifier: Modifier = Modifier,
     topBar: @Composable (S) -> Unit = {},

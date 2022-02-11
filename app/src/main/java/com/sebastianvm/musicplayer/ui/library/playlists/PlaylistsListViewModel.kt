@@ -27,7 +27,7 @@ class PlaylistsListViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
     private val preferencesRepository: PreferencesRepository,
 ) :
-    BaseViewModel<PlaylistsListUserAction, PlaylistsListUiEvent, PlaylistsListState>(initialState) {
+    BaseViewModel<PlaylistsListUiEvent, PlaylistsListState>(initialState) {
 
     init {
         collect(
@@ -44,7 +44,7 @@ class PlaylistsListViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: PlaylistsListUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is PlaylistsListUserAction.PlaylistClicked -> {
                 addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))

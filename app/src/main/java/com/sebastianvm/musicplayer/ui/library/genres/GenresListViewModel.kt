@@ -30,7 +30,7 @@ class GenresListViewModel @Inject constructor(
     genreRepository: GenreRepository,
     private val preferencesRepository: PreferencesRepository,
 ) :
-    BaseViewModel<GenresListUserAction, GenresListUiEvent, GenresListState>(initialState) {
+    BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
         collect(
@@ -47,7 +47,7 @@ class GenresListViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: GenresListUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is GenresListUserAction.GenreClicked -> {
                 this.addUiEvent(GenresListUiEvent.NavigateToGenre(genreName = action.genreName))

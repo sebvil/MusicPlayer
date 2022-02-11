@@ -48,7 +48,7 @@ class SearchViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
-    BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
+    BaseViewModel<SearchUiEvent, SearchState>(initialState) {
 
     init {
         val searchTerm = state.map { it.searchTerm }
@@ -85,7 +85,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: SearchUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is SearchUserAction.OnTextChanged -> {
                 setState {

@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState, private val preferencesRepository: PreferencesRepository) :
-    BaseViewModel<SortBottomSheetUserAction, SortBottomSheetUiEvent, SortBottomSheetState>(
+    BaseViewModel<SortBottomSheetUiEvent, SortBottomSheetState>(
         initialState
     ) {
 
@@ -42,7 +42,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 //            addUiEvent(AlbumsListUiEvent.ScrollToTop)
 //        }
 //    }
-    override fun handle(action: SortBottomSheetUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionSelected -> {
 //                viewModelScope.launch {

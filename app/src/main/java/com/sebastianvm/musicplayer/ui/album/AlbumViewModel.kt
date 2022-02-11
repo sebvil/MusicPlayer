@@ -34,7 +34,7 @@ class AlbumViewModel @Inject constructor(
     trackRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
+) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState) {
 
     init {
         collect(

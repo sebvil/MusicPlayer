@@ -38,7 +38,7 @@ class QueueViewModel @Inject constructor(
     private val mediaQueueRepository: MediaQueueRepository,
     preferencesRepository: PreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(
+) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
 
@@ -92,7 +92,7 @@ class QueueViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: QueueUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is QueueUserAction.ItemDragged -> {
                 val oldIndex = state.value.draggedItemFinalIndex

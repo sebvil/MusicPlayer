@@ -18,8 +18,8 @@ class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val mediaPlaybackRepository: MediaPlaybackRepository
 ) :
-    BaseViewModel<MainActivityUserAction, MainActivityUiEvent, MainActivityState>(initialState) {
-    override fun handle(action: MainActivityUserAction) {
+    BaseViewModel<MainActivityUiEvent, MainActivityState>(initialState) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is MainActivityUserAction.ConnectToMusicService -> {
                 mediaPlaybackRepository.connectToService()

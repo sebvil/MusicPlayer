@@ -29,7 +29,7 @@ class AlbumsListViewModel @Inject constructor(
     initialState: AlbumsListState,
     albumRepository: AlbumRepository,
     preferencesRepository: PreferencesRepository,
-) : BaseViewModel<AlbumsListUserAction, AlbumsListUiEvent, AlbumsListState>(initialState) {
+) : BaseViewModel<AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
         collect(

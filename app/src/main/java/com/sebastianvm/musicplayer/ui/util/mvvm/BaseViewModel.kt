@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-// TODO remove UserAction when all `handle` overrides have been removed.
-abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialState: S) :
+abstract class BaseViewModel<E : UiEvent, S : State>(initialState: S) :
     ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
@@ -39,7 +38,4 @@ abstract class BaseViewModel<A : UserAction, E : UiEvent, S : State>(initialStat
             }
         }
     }
-
-    @Deprecated(message = "", replaceWith = ReplaceWith("Create functions for each action instead"))
-    open fun handle(action: A) {}
 }

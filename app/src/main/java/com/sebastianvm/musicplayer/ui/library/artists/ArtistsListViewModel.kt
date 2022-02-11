@@ -6,12 +6,12 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +28,7 @@ class ArtistsListViewModel @Inject constructor(
     initialState: ArtistsListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: PreferencesRepository,
-) : BaseViewModel<ArtistsListUserAction, ArtistsListUiEvent, ArtistsListState>(initialState) {
+) : BaseViewModel<ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {
         collect(
@@ -47,8 +47,10 @@ class ArtistsListViewModel @Inject constructor(
         }
     }
 
+    fun artistClicked() {}
 
-    override fun handle(action: ArtistsListUserAction) {
+
+    fun <A : UserAction> handle(action: A) {
         when (action) {
             is ArtistsListUserAction.ArtistClicked -> {
                 addUiEvent(

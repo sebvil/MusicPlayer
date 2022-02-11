@@ -41,7 +41,7 @@ class TracksListViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val preferencesRepository: PreferencesRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-) : BaseViewModel<TracksListUserAction, TracksListUiEvent, TracksListState>(
+) : BaseViewModel<TracksListUiEvent, TracksListState>(
     initialState
 ) {
 
@@ -81,7 +81,7 @@ class TracksListViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: TracksListUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is TracksListUserAction.TrackClicked -> {
                 viewModelScope.launch {

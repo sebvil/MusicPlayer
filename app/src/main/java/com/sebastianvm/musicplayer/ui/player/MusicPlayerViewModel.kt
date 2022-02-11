@@ -20,7 +20,7 @@ class MusicPlayerViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     initialState: MusicPlayerState,
 ) :
-    BaseViewModel<MusicPlayerUserAction, MusicPlayerUiEvent, MusicPlayerState>(initialState) {
+    BaseViewModel<MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
         collect(mediaPlaybackRepository.playbackState) {
@@ -44,7 +44,7 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: MusicPlayerUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is MusicPlayerUserAction.TogglePlay -> {
                 if (state.value.isPlaying) {
