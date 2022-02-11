@@ -24,13 +24,11 @@ import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 interface GenresListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToGenre(genreName: String)
-    fun openContextMenu(genreName: String, currentSort: MediaSortOption, sortOrder: MediaSortOrder)
+    fun openContextMenu(genreName: String)
 }
 
 @Composable
@@ -47,7 +45,7 @@ fun GenresListScreen(
                 }
                 is GenresListUiEvent.NavigateUp -> delegate.navigateUp()
                 is GenresListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.genreName, event.currentSort, event.sortOrder)
+                    delegate.openContextMenu(event.genreName)
                 }
             }
         },
@@ -56,25 +54,21 @@ fun GenresListScreen(
                 title = stringResource(id = R.string.genres),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.handle(GenresListUserAction.SortByClicked)
+                        screenViewModel.onSortByClicked()
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.handle(GenresListUserAction.UpButtonClicked)
+                        screenViewModel.onUpButtonClicked()
                     }
                 })
         }) { state ->
         GenresListLayout(state = state, object : GenresListScreenDelegate {
             override fun onGenreClicked(genreName: String) {
-                screenViewModel.handle(action = GenresListUserAction.GenreClicked(genreName = genreName))
+                screenViewModel.onGenreClicked(genreName)
             }
 
             override fun onContextMenuIconClicked(genreName: String) {
-                screenViewModel.handle(
-                    action = GenresListUserAction.OverflowMenuIconClicked(
-                        genreName = genreName
-                    )
-                )
+                screenViewModel.onGenreOverflowMenuIconClicked(genreName)
             }
         })
     }

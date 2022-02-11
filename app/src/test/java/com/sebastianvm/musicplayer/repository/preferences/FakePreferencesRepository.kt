@@ -73,7 +73,8 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
         }
     }
 
-    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> = _savedSortSettings.map { it.albumsListSortSettings }.distinctUntilChanged()
+    override fun getAlbumsListSortOptions(): Flow<MediaSortSettings> =
+        _savedSortSettings.map { it.albumsListSortSettings }.distinctUntilChanged()
 
     override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         savedSortSettings = savedSortSettings.copy {
@@ -81,7 +82,8 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
         }
     }
 
-    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> = _savedSortSettings.map { it.artistListSortSettings }.distinctUntilChanged()
+    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> =
+        _savedSortSettings.map { it.artistListSortSettings }.distinctUntilChanged()
 
     override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
         savedSortSettings = savedSortSettings.copy {
@@ -89,9 +91,8 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
         }
     }
 
-    override fun getGenresListSortOrder(): Flow<MediaSortOrder> = flow {
-        emit(savedSortSettings.genresListSortSettings)
-    }.distinctUntilChanged()
+    override fun getGenresListSortOrder(): Flow<MediaSortOrder> =
+        _savedSortSettings.map { it.genresListSortSettings }.distinctUntilChanged()
 
     override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {
         savedSortSettings = savedSortSettings.copy {

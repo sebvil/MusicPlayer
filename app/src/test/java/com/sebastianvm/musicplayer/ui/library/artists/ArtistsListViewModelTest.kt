@@ -74,9 +74,9 @@ class ArtistsListViewModelTest {
                         artistName = ARTIST_NAME_1,
                         shouldShowContextMenu = true
                     )
-                ), state.value.artistsList
+                ),
+                state.value.artistsList
             )
-
         }
     }
 
@@ -109,6 +109,19 @@ class ArtistsListViewModelTest {
             onSortByClicked()
             delay(1)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(
+                listOf(
+                    ArtistRowState(
+                        artistName = ARTIST_NAME_1,
+                        shouldShowContextMenu = true
+                    ),
+                    ArtistRowState(
+                        artistName = ARTIST_NAME_0,
+                        shouldShowContextMenu = true
+                    )
+                ),
+                state.value.artistsList
+            )
         }
     }
 
