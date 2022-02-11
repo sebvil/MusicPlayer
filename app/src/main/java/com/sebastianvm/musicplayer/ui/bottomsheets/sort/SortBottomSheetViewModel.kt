@@ -24,7 +24,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
         initialState
     ) {
 
-    // TODO add mediaGroup to determine which to modify
+    // TODO add mediaGroup to determine which to modify and current sort
 //    fun onMediaSortOptionClicked(newSortOption: MediaSortOption) {
 //        val sortOrder = if (newSortOption == state.value.currentSort) {
 //            !state.value.sortOrder

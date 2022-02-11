@@ -22,8 +22,8 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
                 navController.navigateUp()
             }
 
-            override fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder) {
-                navController.openSortBottomSheet(NavRoutes.ALBUMS_ROOT, sortOption, sortOrder)
+            override fun openSortMenu() {
+                navController.openSortBottomSheet(NavRoutes.ALBUMS_ROOT)
             }
 
             override fun navigateToAlbum(albumId: String) {
