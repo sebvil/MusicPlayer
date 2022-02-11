@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.junit.Assert
 
-suspend inline fun <reified F : UiEvent> BaseViewModel<*, *, *>.expectUiEvent(
+suspend inline fun <reified F : UiEvent> BaseViewModel<*, *>.expectUiEvent(
     externalScope: CoroutineScope,
     crossinline checks: F.() -> Unit = {}
 ) {

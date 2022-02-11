@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -102,8 +101,6 @@ object InitialAlbumsListStateModule {
         )
     }
 }
-
-object AlbumsListUserAction : UserAction
 
 sealed class AlbumsListUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : AlbumsListUiEvent()

@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.AlbumType
 import dagger.Module
@@ -116,8 +115,6 @@ object InitialArtistState {
         )
     }
 }
-
-object ArtistUserAction : UserAction
 
 sealed class ArtistUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()

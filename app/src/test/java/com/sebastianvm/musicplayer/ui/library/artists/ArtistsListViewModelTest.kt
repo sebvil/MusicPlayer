@@ -1,15 +1,20 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
+import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
+import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,6 +24,28 @@ class ArtistsListViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
+    private lateinit var artistRepository: ArtistRepository
+    private lateinit var preferencesRepository: PreferencesRepository
+
+    @Before
+    fun setUp() {
+        artistRepository = FakeArtistRepository(artistsWithAlbums = listOf(
+            artistWithAlbums {
+                artist {
+                    artistName = ARTIST_NAME_0
+                }
+            },
+            artistWithAlbums {
+                artist {
+                    artistName = ARTIST_NAME_1
+                }
+            }
+        ))
+
+        preferencesRepository = FakePreferencesRepository(sortSettings = sortSettings {
+            artistListSortSettings = MediaSortOrder.ASCENDING
+        })
+    }
 
     private fun generateViewModel(): ArtistsListViewModel {
         return ArtistsListViewModel(
@@ -26,8 +53,8 @@ class ArtistsListViewModelTest {
                 artistsList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING
             ),
-            artistRepository = FakeArtistRepository(),
-            preferencesRepository = FakePreferencesRepository(),
+            artistRepository = artistRepository,
+            preferencesRepository = preferencesRepository,
         )
     }
 
@@ -55,22 +82,22 @@ class ArtistsListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `ArtistClicked adds NavigateToArtist event`() = runTest {
+    fun `onArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
                 assertEquals(ARTIST_NAME_0, artistName)
             }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_NAME_0))
+            onArtistClicked(ARTIST_NAME_0)
         }
     }
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpDEFAULT_ALBUM_IDButtonClicked adds NavigateUp event`() = runTest {
+    fun `onUpButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
             expectUiEvent<ArtistsListUiEvent.NavigateUp>(this@runTest)
-            handle(ArtistsListUserAction.UpButtonClicked)
+            onUpButtonClicked()
         }
     }
 
@@ -79,7 +106,7 @@ class ArtistsListViewModelTest {
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
             delay(1)
-            handle(ArtistsListUserAction.SortByClicked)
+            onSortByClicked()
             delay(1)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
         }
@@ -92,10 +119,10 @@ class ArtistsListViewModelTest {
             expectUiEvent<ArtistsListUiEvent.OpenContextMenu>(this@runTest) {
                 assertEquals(ARTIST_NAME_0, artistName)
             }
-            handle(ArtistsListUserAction.ContextMenuIconClicked(artistName = ARTIST_NAME_0))
+            onArtistOverflowMenuIconClicked(artistName = ARTIST_NAME_0)
         }
     }
-    
+
     companion object {
         private const val ARTIST_NAME_0 = "ARTIST_NAME_0"
         private const val ARTIST_NAME_1 = "ARTIST_NAME_1"

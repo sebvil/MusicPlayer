@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
@@ -98,8 +97,6 @@ object InitialAlbumStateModule {
         )
     }
 }
-
-object AlbumUserAction : UserAction
 
 sealed class AlbumUiEvent : UiEvent {
     object NavigateToPlayer : AlbumUiEvent()

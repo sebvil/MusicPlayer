@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
@@ -47,26 +46,22 @@ class ArtistsListViewModel @Inject constructor(
         }
     }
 
-    fun artistClicked() {}
+    fun onArtistClicked(artistName: String) {
+        addUiEvent(ArtistsListUiEvent.NavigateToArtist(artistName))
+    }
 
-
-    fun <A : UserAction> handle(action: A) {
-        when (action) {
-            is ArtistsListUserAction.ArtistClicked -> {
-                addUiEvent(
-                    ArtistsListUiEvent.NavigateToArtist(action.artistName)
-                )
-            }
-            is ArtistsListUserAction.SortByClicked -> {
-                viewModelScope.launch {
-                    preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
-                }
-            }
-            is ArtistsListUserAction.UpButtonClicked -> addUiEvent(ArtistsListUiEvent.NavigateUp)
-            is ArtistsListUserAction.ContextMenuIconClicked -> {
-                addUiEvent(ArtistsListUiEvent.OpenContextMenu(action.artistName))
-            }
+    fun onSortByClicked() {
+        viewModelScope.launch {
+            preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
         }
+    }
+
+    fun onUpButtonClicked() {
+        addUiEvent(ArtistsListUiEvent.NavigateUp)
+    }
+
+    fun onArtistOverflowMenuIconClicked(artistName: String) {
+        addUiEvent(ArtistsListUiEvent.OpenContextMenu(artistName))
     }
 }
 
@@ -86,13 +81,6 @@ object InitialArtistsListStateModule {
             sortOrder = MediaSortOrder.ASCENDING,
         )
     }
-}
-
-sealed class ArtistsListUserAction : UserAction {
-    data class ArtistClicked(val artistName: String) : ArtistsListUserAction()
-    object SortByClicked : ArtistsListUserAction()
-    object UpButtonClicked : ArtistsListUserAction()
-    data class ContextMenuIconClicked(val artistName: String) : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
