@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -86,7 +85,6 @@ class ArtistViewModelTest {
     @Test
     fun `init sets initial state values`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(
                 listOf(
                     ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),

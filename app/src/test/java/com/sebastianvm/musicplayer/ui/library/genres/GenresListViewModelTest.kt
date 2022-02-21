@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -53,7 +52,6 @@ class GenresListViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(Genre(genreName = GENRE_NAME_0), Genre(genreName = GENRE_NAME_1)),
@@ -86,9 +84,7 @@ class GenresListViewModelTest {
     @Test
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             onSortByClicked()
-            delay(1)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(Genre(genreName = GENRE_NAME_1), Genre(genreName = GENRE_NAME_0)),

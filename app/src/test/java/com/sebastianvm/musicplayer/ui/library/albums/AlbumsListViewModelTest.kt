@@ -15,7 +15,6 @@ import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.sortSettings
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -76,7 +75,6 @@ class AlbumsListViewModelTest {
     @Test
     fun `init sets initial state values`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(listOf(ALBUM_ROW_0, ALBUM_ROW_1), state.value.albumsList)
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
@@ -161,7 +159,6 @@ class AlbumsListViewModelTest {
                 sortOption = MediaSortOption.ALBUM
                 sortOrder = MediaSortOrder.DESCENDING
             })
-            delay(1)
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
@@ -170,7 +167,6 @@ class AlbumsListViewModelTest {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.DESCENDING
             })
-            delay(1)
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
@@ -179,7 +175,6 @@ class AlbumsListViewModelTest {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.ASCENDING
             })
-            delay(1)
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_0, ALBUM_ROW_1), state.value.albumsList)
@@ -188,7 +183,6 @@ class AlbumsListViewModelTest {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.ASCENDING
             })
-            delay(1)
             assertEquals(MediaSortOption.YEAR, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
@@ -197,14 +191,12 @@ class AlbumsListViewModelTest {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.DESCENDING
             })
-            delay(1)
             assertEquals(MediaSortOption.YEAR, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_0, ALBUM_ROW_1), state.value.albumsList)
 
         }
     }
-
 
     companion object {
         private const val ALBUM_ID_0 = "0"

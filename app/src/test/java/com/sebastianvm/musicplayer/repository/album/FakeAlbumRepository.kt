@@ -3,23 +3,24 @@ package com.sebastianvm.musicplayer.repository.album
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class FakeAlbumRepository(
     private val fullAlbumInfo: List<FullAlbumInfo> = listOf(),
 ) : AlbumRepository {
-    override fun getAlbumsCount(): Flow<Long> = flow { emit(fullAlbumInfo.size.toLong()) }
+
+    private val albumList = MutableStateFlow(fullAlbumInfo)
+
+    override fun getAlbumsCount(): Flow<Long> = albumList.map { it.size.toLong() }
 
     override fun getAlbums(): Flow<List<Album>> =
-        flow { emit(fullAlbumInfo.map { it.album }.toList()) }
+        albumList.map { albums -> albums.map { it.album } }
 
-    override fun getAlbums(albumIds: List<String>): Flow<List<Album>> = flow {
-        emit(fullAlbumInfo.mapNotNull { album -> album.takeIf { it.album.albumId in albumIds }?.album }
-            .toList())
+    override fun getAlbums(albumIds: List<String>): Flow<List<Album>> = albumList.map { albums ->
+        albums.mapNotNull { album -> album.takeIf { it.album.albumId in albumIds }?.album }.toList()
     }
 
-
-    override fun getAlbum(albumId: String): Flow<FullAlbumInfo> = flow {
-        fullAlbumInfo.find { it.album.albumId == albumId }?.also { emit(it) }
-    }
+    override fun getAlbum(albumId: String): Flow<FullAlbumInfo> = albumList.mapNotNull { albums -> albums.find { it.album.albumId == albumId } }
 }

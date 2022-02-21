@@ -148,7 +148,7 @@ object InitialTracksListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listName = savedStateHandle.get<String?>(NavArgs.TRACK_LIST_NAME) ?: ""
+        val listName = savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: ""
         val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
         return TracksListState(
             tracksListTitle = listName,

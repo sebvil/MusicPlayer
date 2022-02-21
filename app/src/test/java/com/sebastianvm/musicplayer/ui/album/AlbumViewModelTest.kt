@@ -20,7 +20,6 @@ import io.mockk.coVerify
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -94,7 +93,6 @@ class AlbumViewModelTest {
     @Test
     fun `init sets albumHeaderItem and tracksList`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(ALBUM_NAME, state.value.albumName)
             assertEquals(
                 "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
@@ -120,7 +118,6 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             onTrackClicked(TRACK_ID)
-            delay(1)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID,
