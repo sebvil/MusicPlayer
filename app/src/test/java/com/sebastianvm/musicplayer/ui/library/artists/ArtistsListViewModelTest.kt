@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesReposit
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,7 +49,8 @@ class ArtistsListViewModelTest {
         return ArtistsListViewModel(
             initialState = ArtistsListState(
                 artistsList = listOf(),
-                sortOrder = MediaSortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING,
+                events = null
             ),
             artistRepository = artistRepository,
             preferencesRepository = preferencesRepository,
@@ -82,10 +82,8 @@ class ArtistsListViewModelTest {
     @Test
     fun `onArtistClicked adds NavigateToArtist event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                assertEquals(ARTIST_NAME_0, artistName)
-            }
             onArtistClicked(ARTIST_NAME_0)
+            assertEquals(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0), state.value.events)
         }
     }
 
@@ -94,8 +92,8 @@ class ArtistsListViewModelTest {
     @Test
     fun `onUpButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.NavigateUp>(this@runTest)
             onUpButtonClicked()
+            assertEquals(ArtistsListUiEvent.NavigateUp, state.value.events)
         }
     }
 
@@ -125,10 +123,11 @@ class ArtistsListViewModelTest {
     @Test
     fun `ContextMenuIconClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ARTIST_NAME_0, artistName)
-            }
             onArtistOverflowMenuIconClicked(artistName = ARTIST_NAME_0)
+            assertEquals(
+                ArtistsListUiEvent.OpenContextMenu(artistName = ARTIST_NAME_0),
+                state.value.events
+            )
         }
     }
 

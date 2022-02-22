@@ -37,7 +37,8 @@ class MusicPlayerViewModelTest {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackArt = ""
+                trackArt = "",
+                events = null
             )
         )
     }

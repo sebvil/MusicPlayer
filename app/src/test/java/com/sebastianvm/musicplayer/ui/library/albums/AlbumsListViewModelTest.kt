@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
@@ -10,7 +10,6 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.sortSettings
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
@@ -65,6 +64,7 @@ class AlbumsListViewModelTest {
                 albumsList = listOf(),
                 currentSort = MediaSortOption.YEAR,
                 sortOrder = MediaSortOrder.DESCENDING,
+                events = null
             ),
             albumRepository = albumRepository,
             preferencesRepository = preferencesRepository
@@ -86,10 +86,11 @@ class AlbumsListViewModelTest {
     @Test
     fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumsListUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_ID_0, albumId)
-            }
             onAlbumClicked(ALBUM_ID_0)
+            assertEquals(
+                AlbumsListUiEvent.NavigateToAlbum(albumId = ALBUM_ID_0),
+                state.value.events
+            )
         }
     }
 
@@ -97,8 +98,8 @@ class AlbumsListViewModelTest {
     @Test
     fun `UpButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumsListUiEvent.NavigateUp>(this@runTest)
             onUpButtonClicked()
+            assertEquals(AlbumsListUiEvent.NavigateUp, state.value.events)
         }
     }
 
@@ -106,11 +107,14 @@ class AlbumsListViewModelTest {
     @Test
     fun `SortByClicked adds ShowSortBottomSheet event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumsListUiEvent.ShowSortBottomSheet>(this@runTest) {
-                assertEquals(R.string.album_name, sortOption)
-                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
-            }
             onSortByClicked()
+            assertEquals(
+                AlbumsListUiEvent.ShowSortBottomSheet(
+                    sortOption = R.string.album_name,
+                    sortOrder = MediaSortOrder.ASCENDING
+                ),
+                state.value.events
+            )
         }
     }
 
@@ -144,10 +148,11 @@ class AlbumsListViewModelTest {
     @Test
     fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumsListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ALBUM_ID_0, albumId)
-            }
             onAlbumOverflowMenuIconClicked(albumId = ALBUM_ID_0)
+            assertEquals(
+                AlbumsListUiEvent.OpenContextMenu(albumId = ALBUM_ID_0),
+                state.value.events
+            )
         }
     }
 

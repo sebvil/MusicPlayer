@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +40,8 @@ class GenresListViewModelTest {
         return GenresListViewModel(
             initialState = GenresListState(
                 genresList = listOf(),
-                sortOrder = MediaSortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING,
+                events = null
             ),
             genreRepository = genreRepository,
             preferencesRepository = preferencesRepository,
@@ -64,10 +64,11 @@ class GenresListViewModelTest {
     @Test
     fun `GenreClicked adds NavigateToGenre event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.NavigateToGenre>(this@runTest) {
-                assertEquals(GENRE_NAME_0, genreName)
-            }
             onGenreClicked(GENRE_NAME_0)
+            assertEquals(
+                GenresListUiEvent.NavigateToGenre(genreName = GENRE_NAME_0),
+                state.value.events
+            )
         }
     }
 
@@ -75,8 +76,8 @@ class GenresListViewModelTest {
     @Test
     fun `UpButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.NavigateUp>(this@runTest)
             onUpButtonClicked()
+            assertEquals(GenresListUiEvent.NavigateUp, state.value.events)
         }
     }
 
@@ -97,10 +98,11 @@ class GenresListViewModelTest {
     @Test
     fun `OverflowMenuIconClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(GENRE_NAME_0, genreName)
-            }
             onGenreOverflowMenuIconClicked(GENRE_NAME_0)
+            assertEquals(
+                GenresListUiEvent.OpenContextMenu(genreName = GENRE_NAME_0),
+                state.value.events
+            )
         }
     }
 

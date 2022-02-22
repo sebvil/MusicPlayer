@@ -25,8 +25,6 @@ fun <E : UiEvent, S : State<E>> Screen(
     content: @Composable (S) -> Unit
 ) {
     val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
-    val event = state.value.events
-
     HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
 
     Scaffold(

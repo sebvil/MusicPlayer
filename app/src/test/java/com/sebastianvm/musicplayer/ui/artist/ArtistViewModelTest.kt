@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -75,6 +74,7 @@ class ArtistViewModelTest {
                 artistName = ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
+                events = null
             ),
             albumRepository = albumRepository,
             artistRepository = artistRepository,
@@ -121,10 +121,8 @@ class ArtistViewModelTest {
     @Test
     fun `onAlbumClicked adds NavigateToAlbum event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_ID, albumId)
-            }
             onAlbumClicked(ALBUM_ID)
+            assertEquals(ArtistUiEvent.NavigateToAlbum(albumId = ALBUM_ID), state.value.events)
         }
     }
 
@@ -132,10 +130,9 @@ class ArtistViewModelTest {
     @Test
     fun `onAlbumOverflowMenuIconClicked adds OpenContextMenu event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ALBUM_ID, albumId)
-            }
             onAlbumOverflowMenuIconClicked(ALBUM_ID)
+            assertEquals(ArtistUiEvent.OpenContextMenu(albumId = ALBUM_ID), state.value.events)
+
         }
     }
 
@@ -143,8 +140,8 @@ class ArtistViewModelTest {
     @Test
     fun `onUpButtonClicked adds NavigateUp event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<ArtistUiEvent.NavigateUp>(this@runTest)
             onUpButtonClicked()
+            assertEquals(ArtistUiEvent.NavigateUp, state.value.events)
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 fun interface EventHandler<E : UiEvent> {
@@ -21,15 +22,12 @@ fun <E : UiEvent, S: State<E>> HandleEvents(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
-
-    LaunchedEffect(key1 = viewModel.eventsFlow) {
-        viewModel.eventsFlow.onEach { event ->
+    LaunchedEffect(key1 = viewModel.state) {
+        viewModel.state.map { it.events }.onEach { event ->
             if (event != null) {
                 eventHandler.onEvent(event = event)
                 viewModel.onEventHandled()
             }
         }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect()
     }
-
-
 }

@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import io.mockk.coVerify
 import io.mockk.spyk
@@ -81,7 +80,8 @@ class AlbumViewModelTest {
                 albumId = ALBUM_ID,
                 tracksList = listOf(),
                 albumName = "",
-                imageUri = ""
+                imageUri = "",
+                events = null
             ),
             albumRepository = albumRepository,
             trackRepository = trackRepository,
@@ -116,8 +116,8 @@ class AlbumViewModelTest {
     @Test
     fun `onTrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumUiEvent.NavigateToPlayer>(this@runTest)
             onTrackClicked(TRACK_ID)
+            assertEquals(AlbumUiEvent.NavigateToPlayer, state.value.events)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID,
@@ -145,11 +145,11 @@ class AlbumViewModelTest {
     @Test
     fun `onTrackOverflowMenuIconClicked adds OpenContextMenu UiEvent`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<AlbumUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TRACK_ID, trackId)
-                assertEquals(ALBUM_ID, albumId)
-            }
             onTrackOverflowMenuIconClicked(TRACK_ID)
+            assertEquals(
+                AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID),
+                state.value.events
+            )
         }
     }
 
