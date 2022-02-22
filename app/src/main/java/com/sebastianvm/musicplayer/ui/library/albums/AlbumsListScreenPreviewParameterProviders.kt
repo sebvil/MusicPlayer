@@ -40,7 +40,8 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                 ),
             ),
             currentSort = MediaSortOption.ALBUM,
-            sortOrder = MediaSortOrder.ASCENDING
+            sortOrder = MediaSortOrder.ASCENDING,
+            events = null
         )
     )
 }

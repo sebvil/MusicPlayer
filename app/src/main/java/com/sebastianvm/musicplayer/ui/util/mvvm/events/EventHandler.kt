@@ -6,7 +6,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
-import kotlinx.coroutines.flow.Flow
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
@@ -15,14 +16,20 @@ fun interface EventHandler<E : UiEvent> {
 }
 
 @Composable
-fun <E : UiEvent> HandleEvents(
-    eventsFlow: Flow<E>,
+fun <E : UiEvent, S: State<E>> HandleEvents(
+    viewModel: BaseViewModel<E,S>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
-    LaunchedEffect(key1 = eventsFlow) {
-        eventsFlow.onEach { event ->
-            eventHandler.onEvent(event = event)
+
+    LaunchedEffect(key1 = viewModel.eventsFlow) {
+        viewModel.eventsFlow.onEach { event ->
+            if (event != null) {
+                eventHandler.onEvent(event = event)
+                viewModel.onEventHandled()
+            }
         }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect()
     }
+
+
 }

@@ -21,9 +21,9 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -172,7 +172,14 @@ data class SearchState(
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
     val albumSearchResults: Flow<PagingData<AlbumRowState>>,
     val genreSearchResults: Flow<PagingData<Genre>>,
-) : State
+    override val events: SearchUiEvent?
+) : State<SearchUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<SearchUiEvent>> setEvent(event: SearchUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -186,6 +193,7 @@ object InitialSearchStateModule {
             artistSearchResults = flow {},
             albumSearchResults = flow {},
             genreSearchResults = flow {},
+            events = null
         )
     }
 }

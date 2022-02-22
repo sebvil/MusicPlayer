@@ -97,8 +97,14 @@ data class ArtistState(
     val artistName: String,
     val albumsForArtistItems: List<ArtistScreenItem>?,
     val appearsOnForArtistItems: List<ArtistScreenItem>?,
-) : State
+    override val events: ArtistUiEvent?,
+) : State<ArtistUiEvent> {
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<ArtistUiEvent>> setEvent(event: ArtistUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -111,7 +117,8 @@ object InitialArtistState {
         return ArtistState(
             artistName = artistName,
             albumsForArtistItems = null,
-            appearsOnForArtistItems = null
+            appearsOnForArtistItems = null,
+            events = null
         )
     }
 }

@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
@@ -65,8 +64,15 @@ class GenresListViewModel @Inject constructor(
 
 data class GenresListState(
     val genresList: List<Genre>,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: GenresListUiEvent?
+) : State<GenresListUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<GenresListUiEvent>> setEvent(event: GenresListUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 
 @InstallIn(ViewModelComponent::class)
@@ -76,14 +82,7 @@ object InitialGenresListStateModule {
     @Provides
     @ViewModelScoped
     fun initialGenresListStateProvider() =
-        GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.ASCENDING)
-}
-
-sealed class GenresListUserAction : UserAction {
-    data class GenreClicked(val genreName: String) : GenresListUserAction()
-    object UpButtonClicked : GenresListUserAction()
-    object SortByClicked : GenresListUserAction()
-    data class OverflowMenuIconClicked(val genreName: String) : GenresListUserAction()
+        GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.ASCENDING, events = null)
 }
 
 sealed class GenresListUiEvent : UiEvent {

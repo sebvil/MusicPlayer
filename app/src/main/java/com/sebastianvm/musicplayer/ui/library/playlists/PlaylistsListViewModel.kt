@@ -5,12 +5,12 @@ import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -83,8 +83,15 @@ class PlaylistsListViewModel @Inject constructor(
 data class PlaylistsListState(
     val playlistsList: List<Playlist>,
     val isDialogOpen: Boolean,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: PlaylistsListUiEvent?
+) : State<PlaylistsListUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<PlaylistsListUiEvent>> setEvent(event: PlaylistsListUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 
 @InstallIn(ViewModelComponent::class)
@@ -97,7 +104,8 @@ object InitialPlaylistsListStateModule {
         PlaylistsListState(
             playlistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
-            isDialogOpen = false
+            isDialogOpen = false,
+            events = null
         )
 }
 

@@ -2,9 +2,9 @@ package com.sebastianvm.musicplayer
 
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +32,15 @@ class MainViewModel @Inject constructor(
 }
 
 
-object MainActivityState : State
+object MainActivityState : State<MainActivityUiEvent> {
+    override val events: MainActivityUiEvent?
+        get() = null
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<MainActivityUiEvent>> setEvent(event: MainActivityUiEvent?): S {
+       return MainActivityState as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module

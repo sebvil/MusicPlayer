@@ -63,8 +63,15 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 data class SortBottomSheetState(
     val sortOptions: List<Int>,
     val selectedSort: Int,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: SortBottomSheetUiEvent?
+) : State<SortBottomSheetUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<SortBottomSheetUiEvent>> setEvent(event: SortBottomSheetUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -79,7 +86,8 @@ object InitialSortBottomSheetState {
         return SortBottomSheetState(
             sortOptions = getSortOptionsForScreen(screen),
             selectedSort = selectedSort,
-            sortOrder = MediaSortOrder.valueOf(sortOrder)
+            sortOrder = MediaSortOrder.valueOf(sortOrder),
+            events = null
         )
     }
 }

@@ -86,7 +86,14 @@ data class AlbumsListState(
     val albumsList: List<AlbumRowState>,
     val currentSort: MediaSortOption,
     val sortOrder: MediaSortOrder,
-) : State
+    override val events: AlbumsListUiEvent?
+) : State<AlbumsListUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<AlbumsListUiEvent>> setEvent(event: AlbumsListUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -97,7 +104,8 @@ object InitialAlbumsListStateModule {
         return AlbumsListState(
             albumsList = listOf(),
             currentSort = MediaSortOption.ALBUM,
-            sortOrder = MediaSortOrder.ASCENDING
+            sortOrder = MediaSortOrder.ASCENDING,
+            events = null
         )
     }
 }

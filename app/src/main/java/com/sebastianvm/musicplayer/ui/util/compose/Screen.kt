@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <E : UiEvent, S : State> Screen(
+fun <E : UiEvent, S : State<E>> Screen(
     screenViewModel: BaseViewModel<E, S>,
     eventHandler: EventHandler<E>,
     modifier: Modifier = Modifier,
@@ -25,7 +25,9 @@ fun <E : UiEvent, S : State> Screen(
     content: @Composable (S) -> Unit
 ) {
     val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
-    HandleEvents(eventsFlow = screenViewModel.eventsFlow, eventHandler = eventHandler)
+    val event = state.value.events
+
+    HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
 
     Scaffold(
         modifier = modifier,

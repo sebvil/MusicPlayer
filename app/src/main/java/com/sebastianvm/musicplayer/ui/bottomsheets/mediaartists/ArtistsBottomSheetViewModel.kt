@@ -23,10 +23,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
-        initialState
-    ) {
-
+    BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(initialState) {
     init {
         with(state.value) {
             when (mediaType) {
@@ -66,8 +63,15 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 data class ArtistsBottomSheetState(
     val mediaType: MediaType,
     val mediaId: String,
-    val artistsList: List<ArtistRowState>
-) : State
+    val artistsList: List<ArtistRowState>,
+    override val events: ArtistsBottomSheetUiEvent?
+) : State<ArtistsBottomSheetUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<ArtistsBottomSheetUiEvent>> setEvent(event: ArtistsBottomSheetUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -80,7 +84,8 @@ object InitialArtistsBottomSheetStateModule {
         return ArtistsBottomSheetState(
             mediaId = mediaId,
             mediaType = mediaType,
-            artistsList = listOf()
+            artistsList = listOf(),
+            events = null
         )
     }
 }

@@ -6,9 +6,9 @@ import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,7 +66,7 @@ class LibraryViewModel @Inject constructor(
                 addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowId))
             }
             is LibraryUserAction.PermissionGranted -> {
-                addUiEvent(LibraryUiEvent.StartGetMusicService)
+                setState { copy(events = LibraryUiEvent.StartGetMusicService) }
             }
             is LibraryUserAction.PermissionDenied -> {
                 when (action.permissionStatus) {
@@ -109,7 +109,7 @@ class LibraryViewModel @Inject constructor(
                         showPermissionExplanationDialog = false
                     )
                 }
-                this.addUiEvent(LibraryUiEvent.RequestPermission)
+                addUiEvent(LibraryUiEvent.RequestPermission)
             }
         }
     }
@@ -121,7 +121,14 @@ data class LibraryState(
     val libraryItems: List<LibraryItem>,
     val showPermissionDeniedDialog: Boolean,
     val showPermissionExplanationDialog: Boolean,
-) : State
+    override val events: LibraryUiEvent?
+) : State<LibraryUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<LibraryUiEvent>> setEvent(event: LibraryUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -139,6 +146,7 @@ object InitialLibraryStateModule {
         ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
+        events = null
     )
 
 }

@@ -130,6 +130,7 @@ class TracksListViewModel @Inject constructor(
     companion object {
         private const val ALL_TRACKS = ""
     }
+
 }
 
 
@@ -138,8 +139,15 @@ data class TracksListState(
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
     val currentSort: MediaSortOption,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: TracksListUiEvent?
+) : State<TracksListUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<TracksListUiEvent>> setEvent(event: TracksListUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -155,7 +163,8 @@ object InitialTracksListStateModule {
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
             currentSort = MediaSortOption.TRACK,
-            sortOrder = MediaSortOrder.ASCENDING
+            sortOrder = MediaSortOrder.ASCENDING,
+            events = null,
         )
     }
 }

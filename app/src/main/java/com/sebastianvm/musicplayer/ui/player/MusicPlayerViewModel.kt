@@ -2,9 +2,9 @@ package com.sebastianvm.musicplayer.ui.player
 
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.util.extensions.duration
 import dagger.Module
 import dagger.Provides
@@ -73,8 +73,15 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackArt: String
-) : State
+    val trackArt: String,
+    override val events: MusicPlayerUiEvent?
+) : State<MusicPlayerUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<MusicPlayerUiEvent>> setEvent(event: MusicPlayerUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -88,7 +95,8 @@ object InitialMusicPlayerStateModule {
             artists = null,
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackArt = ""
+            trackArt = "",
+            events = null
         )
     }
 }

@@ -15,7 +15,8 @@ class PlaylistsListStatePreviewParameterProvider :
                 Playlist("Vallenato")
             ),
             sortOrder = MediaSortOrder.ASCENDING,
-            isDialogOpen = false
+            isDialogOpen = false,
+            events = null
         ),
         PlaylistsListState(
             playlistsList = listOf(
@@ -25,7 +26,8 @@ class PlaylistsListStatePreviewParameterProvider :
                 Playlist("Vallenato")
             ),
             sortOrder = MediaSortOrder.ASCENDING,
-            isDialogOpen = true
+            isDialogOpen = true,
+            events = null
         )
     )
 }

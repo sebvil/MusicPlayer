@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumContextMenuViewModel @Inject constructor(
     initialState: AlbumContextMenuState,
-    private val albumRepository: AlbumRepository,
+    albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
@@ -92,8 +93,15 @@ class AlbumContextMenuViewModel @Inject constructor(
 data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
-    val mediaId: String
-) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
+    val mediaId: String,
+    override val events: BaseContextMenuUiEvent?
+) : BaseContextMenuState(listItems, menuTitle) {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(event: BaseContextMenuUiEvent?): S {
+        return copy(events = event) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -105,7 +113,8 @@ object InitialAlbumContextMenuStateModule {
         return AlbumContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
-            listItems = listOf()
+            listItems = listOf(),
+            events = null
         )
     }
 }

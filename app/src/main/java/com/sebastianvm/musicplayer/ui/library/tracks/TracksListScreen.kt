@@ -37,6 +37,7 @@ fun TracksListScreen(
     delegate: TracksListScreenNavigationDelegate
 ) {
     val listState = rememberLazyListState()
+
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->

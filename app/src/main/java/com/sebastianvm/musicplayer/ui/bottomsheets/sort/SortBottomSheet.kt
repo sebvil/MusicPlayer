@@ -40,7 +40,7 @@ fun SortBottomSheet(
     delegate: SortBottomSheetDelegate
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
-    HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
+    HandleEvents(viewModel = sheetViewModel) { event ->
         when (event) {
             is SortBottomSheetUiEvent.CloseBottomSheet -> {
                 delegate.popBackStack(event.sortOption)
