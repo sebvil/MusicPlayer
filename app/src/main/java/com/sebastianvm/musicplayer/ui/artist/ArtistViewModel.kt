@@ -97,12 +97,12 @@ data class ArtistState(
     val artistName: String,
     val albumsForArtistItems: List<ArtistScreenItem>?,
     val appearsOnForArtistItems: List<ArtistScreenItem>?,
-    override val events: ArtistUiEvent?,
+    override val events: List<ArtistUiEvent>,
 ) : State<ArtistUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<ArtistUiEvent>> setEvent(event: ArtistUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<ArtistUiEvent>> setEvent(events: List<ArtistUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -118,7 +118,7 @@ object InitialArtistState {
             artistName = artistName,
             albumsForArtistItems = null,
             appearsOnForArtistItems = null,
-            events = null
+            events = listOf()
         )
     }
 }

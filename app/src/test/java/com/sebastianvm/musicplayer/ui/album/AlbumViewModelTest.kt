@@ -81,7 +81,7 @@ class AlbumViewModelTest {
                 tracksList = listOf(),
                 albumName = "",
                 imageUri = "",
-                events = null
+                events = listOf()
             ),
             albumRepository = albumRepository,
             trackRepository = trackRepository,

@@ -15,7 +15,7 @@ class AlbumStatePreviewParameterProvider :
                 TrackRowState("2", "La Promesa", "Melendi", "Un alumno mas"),
                 TrackRowState("3", "La Promesa", "Melendi", "Un alumno mas")
             ),
-            events = null
+            events = listOf()
         )
     )
 }

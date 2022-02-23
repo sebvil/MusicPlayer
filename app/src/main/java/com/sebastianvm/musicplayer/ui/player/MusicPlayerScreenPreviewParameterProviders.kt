@@ -12,7 +12,7 @@ class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicP
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
             trackArt = "",
-            events = null
+            events = listOf()
         )
     )
 }

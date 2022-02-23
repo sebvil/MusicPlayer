@@ -76,7 +76,7 @@ class TracksListViewModelTest {
                 tracksList = listOf(),
                 currentSort = MediaSortOption.ARTIST,
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = null
+                events = listOf()
             ),
             preferencesRepository = preferencesRepository,
             trackRepository = trackRepository,

@@ -23,10 +23,11 @@ fun <E : UiEvent, S: State<E>> HandleEvents(
     eventHandler: EventHandler<E>
 ) {
     LaunchedEffect(key1 = viewModel.state) {
-        viewModel.state.map { it.events }.onEach { event ->
+        viewModel.state.map { it.events }.onEach { events ->
+            val event = events.firstOrNull()
             if (event != null) {
                 eventHandler.onEvent(event = event)
-                viewModel.onEventHandled()
+                viewModel.onEventHandled(event)
             }
         }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect()
     }

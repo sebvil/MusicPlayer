@@ -74,7 +74,7 @@ class ArtistViewModelTest {
                 artistName = ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
-                events = null
+                events = listOf()
             ),
             albumRepository = albumRepository,
             artistRepository = artistRepository,

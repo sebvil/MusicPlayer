@@ -14,7 +14,7 @@ class ArtistsListStatePreviewParameterProvider : PreviewParameterProvider<Artist
                 ArtistRowState("LongName".repeat(10), shouldShowContextMenu = true),
             ),
             sortOrder = MediaSortOrder.ASCENDING,
-            events = null
+            events = listOf()
         )
     )
 }

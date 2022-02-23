@@ -64,12 +64,12 @@ data class SortBottomSheetState(
     val sortOptions: List<Int>,
     val selectedSort: Int,
     val sortOrder: MediaSortOrder,
-    override val events: SortBottomSheetUiEvent?
+    override val events: List<SortBottomSheetUiEvent>
 ) : State<SortBottomSheetUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<SortBottomSheetUiEvent>> setEvent(event: SortBottomSheetUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<SortBottomSheetUiEvent>> setEvent(events: List<SortBottomSheetUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -87,7 +87,7 @@ object InitialSortBottomSheetState {
             sortOptions = getSortOptionsForScreen(screen),
             selectedSort = selectedSort,
             sortOrder = MediaSortOrder.valueOf(sortOrder),
-            events = null
+            events = listOf()
         )
     }
 }

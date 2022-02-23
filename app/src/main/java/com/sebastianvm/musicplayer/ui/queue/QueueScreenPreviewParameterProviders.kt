@@ -12,7 +12,7 @@ class QueueStatePreviewParameterProvider : PreviewParameterProvider<QueueState> 
             nowPlayingTrackIndex = -1,
             dropdownExpanded = false,
             chosenQueue = null,
-            events = null
+            events = listOf()
         )
     )
 }

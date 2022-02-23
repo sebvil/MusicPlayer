@@ -14,7 +14,7 @@ class LibraryStateProvider : PreviewParameterProvider<LibraryState> {
             ),
             showPermissionDeniedDialog = false,
             showPermissionExplanationDialog = false,
-            events = null
+            events = listOf()
         )
     )
 }

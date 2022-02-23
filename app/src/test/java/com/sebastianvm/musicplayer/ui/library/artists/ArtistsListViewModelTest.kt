@@ -50,7 +50,7 @@ class ArtistsListViewModelTest {
             initialState = ArtistsListState(
                 artistsList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = null
+                events = listOf()
             ),
             artistRepository = artistRepository,
             preferencesRepository = preferencesRepository,

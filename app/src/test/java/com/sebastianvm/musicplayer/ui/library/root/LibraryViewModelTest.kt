@@ -32,7 +32,7 @@ class LibraryViewModelTest {
                 ),
                 showPermissionExplanationDialog = false,
                 showPermissionDeniedDialog = false,
-                events = null
+                events = listOf()
             ),
             musicRepository = FakeMusicRepository()
         )

@@ -12,7 +12,7 @@ class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseCo
                 ContextMenuItem.ViewArtists,
                 ContextMenuItem.ViewAlbum
             ),
-            events = null
+            events = listOf()
         )
     )
 }

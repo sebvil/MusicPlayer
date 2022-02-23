@@ -81,12 +81,12 @@ data class PlaylistContextMenuState(
     val playlistName: String,
     val mediaGroup: MediaGroup,
     val showDeleteConfirmationDialog: Boolean,
-    override val events: BaseContextMenuUiEvent?
+    override val events: List<BaseContextMenuUiEvent>
 ) : BaseContextMenuState(listItems, menuTitle) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<BaseContextMenuUiEvent>> setEvent(event: BaseContextMenuUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 @InstallIn(ViewModelComponent::class)
@@ -109,7 +109,7 @@ object InitialPlaylistContextMenuStateModule {
                 ContextMenuItem.DeletePlaylist
             ),
             showDeleteConfirmationDialog = false,
-            events = null
+            events = listOf()
         )
     }
 }

@@ -68,12 +68,12 @@ class ArtistsListViewModel @Inject constructor(
 data class ArtistsListState(
     val artistsList: List<ArtistRowState>,
     val sortOrder: MediaSortOrder,
-    override val events: ArtistsListUiEvent?
+    override val events: List<ArtistsListUiEvent>
 ) : State<ArtistsListUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<ArtistsListUiEvent>> setEvent(event: ArtistsListUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<ArtistsListUiEvent>> setEvent(events: List<ArtistsListUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -86,7 +86,7 @@ object InitialArtistsListStateModule {
         return ArtistsListState(
             artistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
-            events = null
+            events = listOf()
         )
     }
 }

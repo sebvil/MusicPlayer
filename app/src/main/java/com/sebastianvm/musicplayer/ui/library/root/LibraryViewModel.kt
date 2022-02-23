@@ -66,7 +66,7 @@ class LibraryViewModel @Inject constructor(
                 addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowId))
             }
             is LibraryUserAction.PermissionGranted -> {
-                setState { copy(events = LibraryUiEvent.StartGetMusicService) }
+                addUiEvent(LibraryUiEvent.StartGetMusicService)
             }
             is LibraryUserAction.PermissionDenied -> {
                 when (action.permissionStatus) {
@@ -121,12 +121,12 @@ data class LibraryState(
     val libraryItems: List<LibraryItem>,
     val showPermissionDeniedDialog: Boolean,
     val showPermissionExplanationDialog: Boolean,
-    override val events: LibraryUiEvent?
+    override val events: List<LibraryUiEvent>
 ) : State<LibraryUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<LibraryUiEvent>> setEvent(event: LibraryUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<LibraryUiEvent>> setEvent(events: List<LibraryUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -146,7 +146,7 @@ object InitialLibraryStateModule {
         ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
-        events = null
+        events = listOf()
     )
 
 }

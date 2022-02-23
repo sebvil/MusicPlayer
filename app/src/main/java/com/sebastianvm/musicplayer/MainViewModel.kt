@@ -33,11 +33,11 @@ class MainViewModel @Inject constructor(
 
 
 object MainActivityState : State<MainActivityUiEvent> {
-    override val events: MainActivityUiEvent?
-        get() = null
+    override val events: List<MainActivityUiEvent>
+        get() = listOf()
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<MainActivityUiEvent>> setEvent(event: MainActivityUiEvent?): S {
+    override fun <S : State<MainActivityUiEvent>> setEvent(events: List<MainActivityUiEvent>): S {
        return MainActivityState as S
     }
 }

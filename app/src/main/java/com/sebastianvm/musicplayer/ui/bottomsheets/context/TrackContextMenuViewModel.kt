@@ -26,12 +26,12 @@ data class TrackContextMenuState(
     val mediaId: String,
     val albumId: String,
     val mediaGroup: MediaGroup,
-    override val events: BaseContextMenuUiEvent?
+    override val events: List<BaseContextMenuUiEvent>
 ) : BaseContextMenuState(listItems, menuTitle) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<BaseContextMenuUiEvent>> setEvent(event: BaseContextMenuUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 @InstallIn(ViewModelComponent::class)
@@ -50,7 +50,7 @@ object InitialTrackContextMenuStateModule {
             albumId = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
-            events = null
+            events = listOf()
         )
     }
 }

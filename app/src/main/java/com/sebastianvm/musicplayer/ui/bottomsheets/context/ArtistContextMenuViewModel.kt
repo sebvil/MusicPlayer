@@ -46,12 +46,12 @@ data class ArtistContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
     val artistName: String,
-    override val events: BaseContextMenuUiEvent?
+    override val events: List<BaseContextMenuUiEvent>
 ) : BaseContextMenuState(listItems, menuTitle) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<BaseContextMenuUiEvent>> setEvent(event: BaseContextMenuUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -69,7 +69,7 @@ object InitialArtistContextMenuStateModule {
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewArtist
             ),
-            events = null
+            events = listOf()
         )
     }
 }

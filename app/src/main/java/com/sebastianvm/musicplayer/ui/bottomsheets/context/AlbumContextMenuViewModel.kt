@@ -94,12 +94,12 @@ data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
     val mediaId: String,
-    override val events: BaseContextMenuUiEvent?
+    override val events: List<BaseContextMenuUiEvent>
 ) : BaseContextMenuState(listItems, menuTitle) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<BaseContextMenuUiEvent>> setEvent(event: BaseContextMenuUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -114,7 +114,7 @@ object InitialAlbumContextMenuStateModule {
             mediaId = mediaId,
             menuTitle = "",
             listItems = listOf(),
-            events = null
+            events = listOf()
         )
     }
 }

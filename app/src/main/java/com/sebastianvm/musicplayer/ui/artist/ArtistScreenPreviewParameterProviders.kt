@@ -63,7 +63,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                     ),
                 )
             ),
-            events = null
+            events = listOf()
         )
     )
 }

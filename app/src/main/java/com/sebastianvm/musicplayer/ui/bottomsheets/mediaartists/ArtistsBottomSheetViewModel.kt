@@ -64,12 +64,12 @@ data class ArtistsBottomSheetState(
     val mediaType: MediaType,
     val mediaId: String,
     val artistsList: List<ArtistRowState>,
-    override val events: ArtistsBottomSheetUiEvent?
+    override val events: List<ArtistsBottomSheetUiEvent>
 ) : State<ArtistsBottomSheetUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<ArtistsBottomSheetUiEvent>> setEvent(event: ArtistsBottomSheetUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<ArtistsBottomSheetUiEvent>> setEvent(events: List<ArtistsBottomSheetUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -85,7 +85,7 @@ object InitialArtistsBottomSheetStateModule {
             mediaId = mediaId,
             mediaType = mediaType,
             artistsList = listOf(),
-            events = null
+            events = listOf()
         )
     }
 }

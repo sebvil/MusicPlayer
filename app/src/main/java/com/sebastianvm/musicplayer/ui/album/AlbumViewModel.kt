@@ -79,11 +79,11 @@ data class AlbumState(
     val imageUri: String,
     val albumName: String,
     val tracksList: List<TrackRowState>,
-    override val events: AlbumUiEvent?,
+    override val events: List<AlbumUiEvent>,
 ) : State<AlbumUiEvent> {
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<AlbumUiEvent>> setEvent(event: AlbumUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<AlbumUiEvent>> setEvent(events: List<AlbumUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -100,7 +100,7 @@ object InitialAlbumStateModule {
             imageUri = "",
             albumName = "",
             tracksList = emptyList(),
-            events = null
+            events = listOf()
         )
     }
 }

@@ -206,12 +206,12 @@ data class QueueState(
     val draggedItemStartingIndex: Int = -1,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int,
-    override val events: QueueUiEvent?
+    override val events: List<QueueUiEvent>
 ) : State<QueueUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<QueueUiEvent>> setEvent(event: QueueUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<QueueUiEvent>> setEvent(events: List<QueueUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -229,7 +229,7 @@ object InitialQueueStateModule {
             queueItems = listOf(),
             draggedItem = null,
             nowPlayingTrackIndex = -1,
-            events = null
+            events = listOf()
         )
     }
 }

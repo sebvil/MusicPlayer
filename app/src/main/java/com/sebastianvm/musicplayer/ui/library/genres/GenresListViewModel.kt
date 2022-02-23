@@ -65,12 +65,12 @@ class GenresListViewModel @Inject constructor(
 data class GenresListState(
     val genresList: List<Genre>,
     val sortOrder: MediaSortOrder,
-    override val events: GenresListUiEvent?
+    override val events: List<GenresListUiEvent>
 ) : State<GenresListUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<GenresListUiEvent>> setEvent(event: GenresListUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<GenresListUiEvent>> setEvent(events: List<GenresListUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -82,7 +82,7 @@ object InitialGenresListStateModule {
     @Provides
     @ViewModelScoped
     fun initialGenresListStateProvider() =
-        GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.ASCENDING, events = null)
+        GenresListState(genresList = listOf(), sortOrder = MediaSortOrder.ASCENDING, events = listOf())
 }
 
 sealed class GenresListUiEvent : UiEvent {

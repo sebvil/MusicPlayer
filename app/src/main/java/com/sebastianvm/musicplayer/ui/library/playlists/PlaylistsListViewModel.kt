@@ -84,12 +84,12 @@ data class PlaylistsListState(
     val playlistsList: List<Playlist>,
     val isDialogOpen: Boolean,
     val sortOrder: MediaSortOrder,
-    override val events: PlaylistsListUiEvent?
+    override val events: List<PlaylistsListUiEvent>
 ) : State<PlaylistsListUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<PlaylistsListUiEvent>> setEvent(event: PlaylistsListUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<PlaylistsListUiEvent>> setEvent(events: List<PlaylistsListUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -105,7 +105,7 @@ object InitialPlaylistsListStateModule {
             playlistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false,
-            events = null
+            events = listOf()
         )
 }
 

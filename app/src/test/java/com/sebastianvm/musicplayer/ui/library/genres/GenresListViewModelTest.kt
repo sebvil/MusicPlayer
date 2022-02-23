@@ -41,7 +41,7 @@ class GenresListViewModelTest {
             initialState = GenresListState(
                 genresList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = null
+                events = listOf()
             ),
             genreRepository = genreRepository,
             preferencesRepository = preferencesRepository,

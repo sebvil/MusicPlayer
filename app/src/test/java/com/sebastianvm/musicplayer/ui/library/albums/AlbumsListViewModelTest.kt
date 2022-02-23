@@ -64,7 +64,7 @@ class AlbumsListViewModelTest {
                 albumsList = listOf(),
                 currentSort = MediaSortOption.YEAR,
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = null
+                events = listOf()
             ),
             albumRepository = albumRepository,
             preferencesRepository = preferencesRepository

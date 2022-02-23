@@ -172,12 +172,12 @@ data class SearchState(
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
     val albumSearchResults: Flow<PagingData<AlbumRowState>>,
     val genreSearchResults: Flow<PagingData<Genre>>,
-    override val events: SearchUiEvent?
+    override val events: List<SearchUiEvent>
 ) : State<SearchUiEvent> {
 
     @Suppress("UNCHECKED_CAST")
-    override fun <S : State<SearchUiEvent>> setEvent(event: SearchUiEvent?): S {
-        return copy(events = event) as S
+    override fun <S : State<SearchUiEvent>> setEvent(events: List<SearchUiEvent>): S {
+        return copy(events = events) as S
     }
 }
 
@@ -193,7 +193,7 @@ object InitialSearchStateModule {
             artistSearchResults = flow {},
             albumSearchResults = flow {},
             genreSearchResults = flow {},
-            events = null
+            events = listOf()
         )
     }
 }
