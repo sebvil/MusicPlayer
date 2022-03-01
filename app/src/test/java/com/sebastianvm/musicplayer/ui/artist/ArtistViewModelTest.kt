@@ -1,7 +1,9 @@
 package com.sebastianvm.musicplayer.ui.artist
 
+import android.provider.MediaStore.MediaColumns.ALBUM_ARTIST
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
+import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -9,10 +11,8 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -29,7 +29,7 @@ class ArtistViewModelTest {
     @get:Rule
     val uriUtilsRule = FakeUriUtilsRule()
 
-    private val albumRepository: AlbumRepository = FakeAlbumRepository()
+    private lateinit var albumRepository: AlbumRepository
     private lateinit var artistRepository: ArtistRepository
 
     @Before
@@ -41,6 +41,31 @@ class ArtistViewModelTest {
                 appearsOnForArtistIds { add(APPEARS_ON_ID) }
             })
         )
+        albumRepository = FakeAlbumRepository(
+            fullAlbumInfo = listOf(
+                fullAlbumInfo {
+                    album {
+                        albumId = ALBUM_ID
+                        albumName = ALBUM_NAME
+                        year = ALBUM_YEAR
+                        artists = ARTIST_NAME
+                    }
+                    artistIds {
+                        add(ALBUM_ARTIST)
+                    }
+                },
+                fullAlbumInfo {
+                    album {
+                        albumId = APPEARS_ON_ID
+                        albumName = APPEARS_ON_NAME
+                        year = APPEARS_ON_YEAR
+                        artists = APPEARS_ON_ARTIST
+                    }
+                    artistIds {
+                        add(APPEARS_ON_ARTIST)
+                    }
+                })
+        )
     }
 
     private fun generateViewModel(): ArtistViewModel {
@@ -49,6 +74,7 @@ class ArtistViewModelTest {
                 artistName = ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
+                events = listOf()
             ),
             albumRepository = albumRepository,
             artistRepository = artistRepository,
@@ -59,7 +85,6 @@ class ArtistViewModelTest {
     @Test
     fun `init sets initial state values`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(
                 listOf(
                     ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
@@ -92,25 +117,31 @@ class ArtistViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
+    fun `onAlbumClicked adds NavigateToAlbum event`()  {
         with(generateViewModel()) {
-            expectUiEvent<ArtistUiEvent.NavigateToAlbum>(this@runTest) {
-                assertEquals(ALBUM_ID, albumId)
-            }
-            handle(ArtistUserAction.AlbumClicked(ALBUM_ID))
+            onAlbumClicked(ALBUM_ID)
+            assertEquals(listOf(ArtistUiEvent.NavigateToAlbum(albumId = ALBUM_ID)), state.value.events)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
+    fun `onAlbumOverflowMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
-            expectUiEvent<ArtistUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ALBUM_ID, albumId)
-            }
-            handle(ArtistUserAction.AlbumContextButtonClicked(ALBUM_ID))
+            onAlbumOverflowMenuIconClicked(ALBUM_ID)
+            assertEquals(
+                listOf(ArtistUiEvent.OpenContextMenu(albumId = ALBUM_ID)),
+                state.value.events
+            )
+
+        }
+    }
+
+    @Test
+    fun `onUpButtonClicked adds NavigateUp event`() {
+        with(generateViewModel()) {
+            onUpButtonClicked()
+            assertEquals(listOf(ArtistUiEvent.NavigateUp), state.value.events)
         }
     }
 

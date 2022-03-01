@@ -4,14 +4,13 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 
-open class BaseContextMenuState(
+abstract class BaseContextMenuState(
     open val listItems: List<ContextMenuItem>,
     open val menuTitle: String
-) : State
+) : State<BaseContextMenuUiEvent>
 
 sealed class BaseContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : BaseContextMenuUiEvent()
@@ -28,11 +27,8 @@ sealed class BaseContextMenuUiEvent : UiEvent {
     object HideBottomSheet : BaseContextMenuUiEvent()
 }
 
-object BaseContextMenuUserAction : UserAction
-
 abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
     initialState: S
-) : BaseViewModel<BaseContextMenuUserAction, BaseContextMenuUiEvent, S>(initialState) {
-    override fun handle(action: BaseContextMenuUserAction) = Unit
+) : BaseViewModel<BaseContextMenuUiEvent, S>(initialState) {
     abstract fun onRowClicked(row: ContextMenuItem)
 }

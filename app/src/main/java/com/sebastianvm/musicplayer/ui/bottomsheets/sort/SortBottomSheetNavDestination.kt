@@ -12,23 +12,13 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) {
     bottomSheet(
-        route = createNavRoute(
-            NavRoutes.SORT,
-            NavArgs.SCREEN,
-            NavArgs.SORT_OPTION,
-            NavArgs.SORT_ORDER
-        ),
+        route = createNavRoute(NavRoutes.SORT, NavArgs.SCREEN),
         arguments = listOf(
             navArgument(NavArgs.SCREEN) { type = NavType.StringType },
-            navArgument(NavArgs.SORT_OPTION) { type = NavType.ReferenceType },
-            navArgument(NavArgs.SORT_ORDER) {
-                type = NavType.StringType
-            },
         )
     ) {
         val sheetViewModel = hiltViewModel<SortBottomSheetViewModel>()
@@ -47,11 +37,6 @@ fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) 
     }
 }
 
-fun NavController.openSortBottomSheet(screen: String, sortOption: Int, sortOrder: MediaSortOrder) {
-    navigateTo(
-        NavRoutes.SORT,
-        NavArgument(NavArgs.SCREEN, screen),
-        NavArgument(NavArgs.SORT_OPTION, sortOption),
-        NavArgument(NavArgs.SORT_ORDER, sortOrder.name)
-    )
+fun NavController.openSortBottomSheet(screen: String) {
+    navigateTo(NavRoutes.SORT, NavArgument(NavArgs.SCREEN, screen))
 }

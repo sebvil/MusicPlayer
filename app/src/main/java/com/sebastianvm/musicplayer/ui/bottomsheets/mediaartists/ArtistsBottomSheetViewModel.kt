@@ -7,9 +7,9 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,10 +23,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(
-        initialState
-    ) {
-
+    BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(initialState) {
     init {
         with(state.value) {
             when (mediaType) {
@@ -54,7 +51,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 
     }
 
-    override fun handle(action: ArtistsBottomSheetUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is ArtistsBottomSheetUserAction.ArtistClicked -> {
                 addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistName))
@@ -66,8 +63,15 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 data class ArtistsBottomSheetState(
     val mediaType: MediaType,
     val mediaId: String,
-    val artistsList: List<ArtistRowState>
-) : State
+    val artistsList: List<ArtistRowState>,
+    override val events: List<ArtistsBottomSheetUiEvent>
+) : State<ArtistsBottomSheetUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<ArtistsBottomSheetUiEvent>> setEvent(events: List<ArtistsBottomSheetUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -80,7 +84,8 @@ object InitialArtistsBottomSheetStateModule {
         return ArtistsBottomSheetState(
             mediaId = mediaId,
             mediaType = mediaType,
-            artistsList = listOf()
+            artistsList = listOf(),
+            events = listOf()
         )
     }
 }

@@ -21,13 +21,12 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
 interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
-    fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder)
+    fun openSortMenu()
     fun openContextMenu(mediaId: String, mediaGroup: MediaGroup)
 }
 
@@ -38,6 +37,7 @@ fun TracksListScreen(
     delegate: TracksListScreenNavigationDelegate
 ) {
     val listState = rememberLazyListState()
+
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
@@ -46,7 +46,7 @@ fun TracksListScreen(
                     delegate.navigateToPlayer()
                 }
                 is TracksListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu(event.sortOption, event.sortOrder)
+                    delegate.openSortMenu()
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup)
@@ -61,11 +61,11 @@ fun TracksListScreen(
                     ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.handle(TracksListUserAction.UpButtonClicked)
+                        screenViewModel.onUpButtonClicked()
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.handle(TracksListUserAction.SortByClicked)
+                        screenViewModel.onSortByClicked()
                     }
                 })
         },
@@ -75,19 +75,11 @@ fun TracksListScreen(
             listState = listState,
             delegate = object : TracksListScreenDelegate {
                 override fun onTrackClicked(trackId: String) {
-                    screenViewModel.handle(
-                        TracksListUserAction.TrackClicked(
-                            trackId
-                        )
-                    )
+                    screenViewModel.onTrackClicked(trackId)
                 }
 
-                override fun onOverflowMenuClicked(trackId: String) {
-                    screenViewModel.handle(
-                        TracksListUserAction.TrackContextMenuClicked(
-                            trackId
-                        )
-                    )
+                override fun onOverflowMenuIconClicked(trackId: String) {
+                    screenViewModel.onTrackOverflowMenuIconClicked(trackId)
                 }
             })
     }
@@ -96,7 +88,7 @@ fun TracksListScreen(
 
 interface TracksListScreenDelegate {
     fun onTrackClicked(trackId: String)
-    fun onOverflowMenuClicked(trackId: String) = Unit
+    fun onOverflowMenuIconClicked(trackId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -135,7 +127,7 @@ fun TracksListLayout(
                     .clickable {
                         delegate.onTrackClicked(item.trackId)
                     },
-                onOverflowMenuIconClicked = { delegate.onOverflowMenuClicked(item.trackId) }
+                onOverflowMenuIconClicked = { delegate.onOverflowMenuIconClicked(item.trackId) }
             )
         }
     }

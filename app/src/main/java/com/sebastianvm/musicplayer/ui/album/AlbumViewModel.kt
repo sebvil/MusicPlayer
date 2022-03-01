@@ -12,9 +12,8 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
@@ -26,14 +25,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// TODO maybe trigger playback from mediaQueueRepo?
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
     trackRepository: TrackRepository,
+    private val mediaQueueRepository: MediaQueueRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-) : BaseViewModel<AlbumUserAction, AlbumUiEvent, AlbumState>(initialState) {
+) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState) {
 
     init {
         collect(
@@ -52,38 +52,40 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: AlbumUserAction) {
-        when (action) {
-            is AlbumUserAction.TrackClicked -> {
-                viewModelScope.launch {
-                    val mediaGroup = MediaGroup(
-                        mediaGroupType = MediaGroupType.ALBUM,
-                        mediaId = state.value.albumId
-                    )
-                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
-                    addUiEvent(AlbumUiEvent.NavigateToPlayer)
-                }
-            }
-            is AlbumUserAction.TrackContextMenuClicked -> {
-                addUiEvent(
-                    AlbumUiEvent.OpenContextMenu(
-                        trackId = action.trackId,
-                        albumId = state.value.albumId
-                    )
-                )
-            }
+    fun onTrackClicked(trackId: String) {
+        viewModelScope.launch {
+            val mediaGroup = MediaGroup(
+                mediaGroupType = MediaGroupType.ALBUM,
+                mediaId = state.value.albumId
+            )
+            mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
+            mediaPlaybackRepository.playFromId(trackId, mediaGroup)
+            addUiEvent(AlbumUiEvent.NavigateToPlayer)
         }
     }
 
+    fun onTrackOverflowMenuIconClicked(trackId: String) {
+        addUiEvent(
+            AlbumUiEvent.OpenContextMenu(
+                trackId = trackId,
+                albumId = state.value.albumId
+            )
+        )
+    }
 }
 
 data class AlbumState(
     val albumId: String,
     val imageUri: String,
     val albumName: String,
-    val tracksList: List<TrackRowState>
-) : State
+    val tracksList: List<TrackRowState>,
+    override val events: List<AlbumUiEvent>,
+) : State<AlbumUiEvent> {
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<AlbumUiEvent>> setEvent(events: List<AlbumUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 
 @InstallIn(ViewModelComponent::class)
@@ -97,14 +99,10 @@ object InitialAlbumStateModule {
             albumId = albumId,
             imageUri = "",
             albumName = "",
-            tracksList = emptyList()
+            tracksList = emptyList(),
+            events = listOf()
         )
     }
-}
-
-sealed class AlbumUserAction : UserAction {
-    data class TrackClicked(val trackId: String) : AlbumUserAction()
-    data class TrackContextMenuClicked(val trackId: String) : AlbumUserAction()
 }
 
 sealed class AlbumUiEvent : UiEvent {

@@ -55,7 +55,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
-    HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
+    HandleEvents(viewModel= sheetViewModel) { event ->
         when (event) {
             is BaseContextMenuUiEvent.NavigateToPlayer -> {
                 delegate.navigateToPlayer()

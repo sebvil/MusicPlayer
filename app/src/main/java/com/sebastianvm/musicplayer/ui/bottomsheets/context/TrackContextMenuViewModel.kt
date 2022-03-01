@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,8 +26,14 @@ data class TrackContextMenuState(
     val mediaId: String,
     val albumId: String,
     val mediaGroup: MediaGroup,
-) : BaseContextMenuState(listItems = listItems, menuTitle = menuTitle)
+    override val events: List<BaseContextMenuUiEvent>
+) : BaseContextMenuState(listItems, menuTitle) {
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 @InstallIn(ViewModelComponent::class)
 @Module
 object InitialTrackContextMenuStateModule {
@@ -43,6 +50,7 @@ object InitialTrackContextMenuStateModule {
             albumId = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
+            events = listOf()
         )
     }
 }

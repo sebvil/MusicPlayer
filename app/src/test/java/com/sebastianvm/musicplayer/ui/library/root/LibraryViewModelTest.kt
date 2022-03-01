@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -15,23 +14,26 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertContains
 
 class LibraryViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private fun generateViewModel(): LibraryViewModel {
+    private fun generateViewModel(showPermissionExplanationDialog: Boolean = false): LibraryViewModel {
         return LibraryViewModel(
             initialState = LibraryState(
                 libraryItems = listOf(
                     LibraryItem.Tracks(count = 0),
                     LibraryItem.Artists(count = 0),
                     LibraryItem.Albums(count = 0),
-                    LibraryItem.Genres(count = 0)
+                    LibraryItem.Genres(count = 0),
+                    LibraryItem.Playlists(count = 0)
                 ),
-                showPermissionExplanationDialog = false,
+                showPermissionExplanationDialog = showPermissionExplanationDialog,
                 showPermissionDeniedDialog = false,
+                events = listOf()
             ),
             musicRepository = FakeMusicRepository()
         )
@@ -44,21 +46,22 @@ class LibraryViewModelTest {
             delay(1)
             assertEquals(
                 listOf(
-                    LibraryItem.Tracks(count = 1000),
-                    LibraryItem.Artists(count = 10),
-                    LibraryItem.Albums(count = 100),
-                    LibraryItem.Genres(count = 1)
+                    LibraryItem.Tracks(count = FakeMusicRepository.FAKE_TRACK_COUNTS),
+                    LibraryItem.Artists(count = FakeMusicRepository.FAKE_ARTIST_COUNTS),
+                    LibraryItem.Albums(count = FakeMusicRepository.FAKE_ALBUM_COUNTS),
+                    LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
+                    LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
                 ), state.value.libraryItems
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `FabClicked with permission granted starts music scan service`() = runTest {
+    fun `FabClicked with permission granted starts music scan service`() {
         with(generateViewModel()) {
-            expectUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
-            handle(LibraryUserAction.FabClicked(PERMISSION_GRANTED))
+            onFabClicked(PERMISSION_GRANTED)
+            assertContains(state.value.events, LibraryUiEvent.StartGetMusicService)
+
         }
     }
 
@@ -66,44 +69,43 @@ class LibraryViewModelTest {
     @Test
     fun `FabClicked with should show permission explanation dialog changes state`() = runTest {
         with(generateViewModel()) {
-            handle(LibraryUserAction.FabClicked(SHOULD_SHOW_EXPLANATION))
+            onFabClicked(SHOULD_SHOW_EXPLANATION)
             assertTrue(state.value.showPermissionExplanationDialog)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `FabClicked with should request permission adds request permission event`() = runTest {
+    fun `FabClicked with should request permission adds request permission event`() {
         with(generateViewModel()) {
-            expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
-            handle(LibraryUserAction.FabClicked(SHOULD_REQUEST_PERMISSION))
+            onFabClicked(SHOULD_REQUEST_PERMISSION)
+            assertContains(state.value.events, LibraryUiEvent.RequestPermission)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `RowClicked adds nav NavigateToScreen event`() = runTest {
+    fun `RowClicked adds nav NavigateToScreen event`() {
         with(generateViewModel()) {
-            expectUiEvent<LibraryUiEvent.NavigateToScreen>(this@runTest) {
-                assertEquals(NavRoutes.TRACKS_ROOT, rowId)
-            }
-            handle(LibraryUserAction.RowClicked(NavRoutes.TRACKS_ROOT))
+            onRowClicked(NavRoutes.TRACKS_ROOT)
+            assertContains(
+                state.value.events,
+                LibraryUiEvent.NavigateToScreen(rowId = NavRoutes.TRACKS_ROOT)
+            )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `PermissionGranted adds StartGetMusicService event`() = runTest {
+    fun `PermissionGranted adds StartGetMusicService event`() {
         with(generateViewModel()) {
-            expectUiEvent<LibraryUiEvent.StartGetMusicService>(this@runTest)
-            handle(LibraryUserAction.PermissionGranted)
+            onPermissionGranted()
+            assertContains(state.value.events, LibraryUiEvent.StartGetMusicService)
+
         }
     }
 
     @Test
     fun `PermissionDenied changes state when should show explanation`() {
         with(generateViewModel()) {
-            handle(LibraryUserAction.PermissionDenied(SHOULD_SHOW_EXPLANATION))
+            onPermissionDenied(SHOULD_SHOW_EXPLANATION)
             assertTrue(state.value.showPermissionExplanationDialog)
         }
     }
@@ -111,20 +113,15 @@ class LibraryViewModelTest {
     @Test
     fun `PermissionDenied changes state when should not show explanation`() {
         with(generateViewModel()) {
-            handle(LibraryUserAction.PermissionDenied(SHOULD_REQUEST_PERMISSION))
+            onPermissionDenied(SHOULD_REQUEST_PERMISSION)
             assertTrue(state.value.showPermissionDeniedDialog)
         }
     }
 
     @Test
     fun `DismissPermissionDeniedDialog changes state`() {
-        with(generateViewModel()) {
-            setState {
-                copy(
-                    showPermissionDeniedDialog = true
-                )
-            }
-            handle(LibraryUserAction.DismissPermissionDeniedDialog)
+        with(generateViewModel(showPermissionExplanationDialog = true)) {
+            onDismissPermissionDeniedDialog()
             assertFalse(state.value.showPermissionDeniedDialog)
         }
     }
@@ -133,38 +130,27 @@ class LibraryViewModelTest {
     @Test
     fun `PermissionDeniedConfirmButtonClicked adds OpenAppSettings event`() = runTest {
         with(generateViewModel()) {
-            expectUiEvent<LibraryUiEvent.OpenAppSettings>(this@runTest)
-            handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
+            onPermissionDeniedConfirmButtonClicked()
+            assertContains(state.value.events, LibraryUiEvent.OpenAppSettings)
         }
     }
 
     @Test
     fun `DismissPermissionExplanationDialog changes state`() {
-        with(generateViewModel()) {
-            setState {
-                copy(
-                    showPermissionExplanationDialog = true
-                )
-            }
-            handle(LibraryUserAction.DismissPermissionExplanationDialog)
+        with(generateViewModel(showPermissionExplanationDialog = true)) {
+            onDismissPermissionExplanationDialog()
             assertFalse(state.value.showPermissionExplanationDialog)
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `PermissionExplanationDialogContinueClicked changes state, adds RequestPermission event`() =
-        runTest {
-            with(generateViewModel()) {
-                setState {
-                    copy(
-                        showPermissionExplanationDialog = true
-                    )
-                }
-                expectUiEvent<LibraryUiEvent.RequestPermission>(this@runTest)
-                handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
-                assertFalse(state.value.showPermissionExplanationDialog)
-            }
+    fun `PermissionExplanationDialogContinueClicked changes state, adds RequestPermission event`() {
+        with(generateViewModel(showPermissionExplanationDialog = true)) {
+            onPermissionExplanationDialogContinueClicked()
+            assertFalse(state.value.showPermissionExplanationDialog)
+            assertContains(state.value.events, LibraryUiEvent.RequestPermission)
         }
+    }
 
 }

@@ -35,6 +35,7 @@ class FullTrackInfoBuilder {
     private var track = TrackBuilder.getDefaultInstance()
     private var artistIds: MutableList<String> = mutableListOf()
     private var genreIds: MutableList<String> = mutableListOf()
+    private var playlistIds: MutableList<String> = mutableListOf()
 
     fun track(init: TrackBuilder.() -> Unit): Track {
         val builder = TrackBuilder()
@@ -53,11 +54,17 @@ class FullTrackInfoBuilder {
         return genreIds
     }
 
+    fun playlistIds(init: MutableList<String>.() -> Unit): MutableList<String> {
+        playlistIds.init()
+        return playlistIds
+    }
+
     fun build(): FullTrackInfo {
         return FullTrackInfo(
             track = track,
             artists = artistIds,
-            genres = genreIds
+            genres = genreIds,
+            playlists = playlistIds,
         )
     }
 }

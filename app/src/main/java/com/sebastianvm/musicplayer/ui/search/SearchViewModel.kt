@@ -21,9 +21,9 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,7 +48,7 @@ class SearchViewModel @Inject constructor(
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
-    BaseViewModel<SearchUserAction, SearchUiEvent, SearchState>(initialState) {
+    BaseViewModel<SearchUiEvent, SearchState>(initialState) {
 
     init {
         val searchTerm = state.map { it.searchTerm }
@@ -85,7 +85,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: SearchUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is SearchUserAction.OnTextChanged -> {
                 setState {
@@ -172,7 +172,14 @@ data class SearchState(
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
     val albumSearchResults: Flow<PagingData<AlbumRowState>>,
     val genreSearchResults: Flow<PagingData<Genre>>,
-) : State
+    override val events: List<SearchUiEvent>
+) : State<SearchUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<SearchUiEvent>> setEvent(events: List<SearchUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -186,6 +193,7 @@ object InitialSearchStateModule {
             artistSearchResults = flow {},
             albumSearchResults = flow {},
             genreSearchResults = flow {},
+            events = listOf()
         )
     }
 }

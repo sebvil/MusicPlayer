@@ -11,9 +11,9 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,17 +38,13 @@ class QueueViewModel @Inject constructor(
     private val mediaQueueRepository: MediaQueueRepository,
     preferencesRepository: PreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
-) : BaseViewModel<QueueUserAction, QueueUiEvent, QueueState>(
+) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
 
     init {
         collect(preferencesRepository.getSavedPlaybackInfo()) { playbackInfo ->
-            setState {
-                copy(
-                    mediaGroup = playbackInfo.currentQueue,
-                )
-            }
+            setState { copy(mediaGroup = playbackInfo.currentQueue) }
             val mediaQueue = mediaQueueRepository.getQueue(playbackInfo.currentQueue).first()
             setState {
                 copy(
@@ -92,7 +88,7 @@ class QueueViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: QueueUserAction) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is QueueUserAction.ItemDragged -> {
                 val oldIndex = state.value.draggedItemFinalIndex
@@ -210,7 +206,14 @@ data class QueueState(
     val draggedItemStartingIndex: Int = -1,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int,
-) : State
+    override val events: List<QueueUiEvent>
+) : State<QueueUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<QueueUiEvent>> setEvent(events: List<QueueUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -226,6 +229,7 @@ object InitialQueueStateModule {
             queueItems = listOf(),
             draggedItem = null,
             nowPlayingTrackIndex = -1,
+            events = listOf()
         )
     }
 }

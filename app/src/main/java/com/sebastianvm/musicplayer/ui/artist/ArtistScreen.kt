@@ -65,7 +65,7 @@ fun ArtistScreen(
             LargeTopAppBar(
                 title = { Text(text = state.artistName) },
                 navigationIcon = {
-                    IconButton(onClick = { screenViewModel.handle(ArtistUserAction.UpButtonClicked) }) {
+                    IconButton(onClick = { screenViewModel.onUpButtonClicked() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = stringResource(id = R.string.back)
@@ -79,13 +79,11 @@ fun ArtistScreen(
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
             override fun albumRowClicked(albumId: String) {
-                screenViewModel.handle(
-                    ArtistUserAction.AlbumClicked(albumId = albumId)
-                )
+                screenViewModel.onAlbumClicked(albumId = albumId)
             }
 
             override fun onAlbumOverflowMenuIconClicked(albumId: String) {
-                screenViewModel.handle(ArtistUserAction.AlbumContextButtonClicked(albumId = albumId))
+                screenViewModel.onAlbumOverflowMenuIconClicked(albumId = albumId)
             }
         })
     }

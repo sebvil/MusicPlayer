@@ -5,15 +5,16 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.junit.Assert
 
-suspend inline fun <reified F : UiEvent> BaseViewModel<*, *, *>.expectUiEvent(
+suspend inline fun <reified F : UiEvent> BaseViewModel<*, *>.expectUiEvent(
     externalScope: CoroutineScope,
     crossinline checks: F.() -> Unit = {}
 ) {
     externalScope.launch {
-        val event = eventsFlow.first()
+        val event = state.map { it.events }.first()
         Assert.assertTrue(event is F)
         checks(event as F)
     }

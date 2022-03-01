@@ -1,28 +1,31 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
+import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
+import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertContains
 
 class TracksListViewModelTest {
 
@@ -31,29 +34,58 @@ class TracksListViewModelTest {
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var trackRepository: TrackRepository
+    private lateinit var mediaQueueRepository: MediaQueueRepository
 
     @Before
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+        preferencesRepository = FakePreferencesRepository()
+        trackRepository = FakeTrackRepository(
+            tracks = listOf(fullTrackInfo {
+                track {
+                    trackId = TRACK_ID_0
+                    trackName = TRACK_NAME_0
+                    artists = TRACK_ARTIST_0
+                    albumName = TRACK_ALBUM_0
+                }
+                genreIds {
+                    add(TRACK_GENRE_0)
+                }
+            },
+                fullTrackInfo {
+                    track {
+                        trackId = TRACK_ID_1
+                        trackName = TRACK_NAME_1
+                        artists = TRACK_ARTIST_1
+                        albumName = TRACK_ALBUM_1
+                    }
+                    playlistIds {
+                        add(TRACK_PLAYLIST_1)
+                    }
+                }),
+        )
+        mediaQueueRepository = FakeMediaQueueRepository()
     }
 
     private fun generateViewModel(
-        preferencesRepository: FakePreferencesRepository = FakePreferencesRepository(),
         listGroupType: TracksListType = TracksListType.ALL_TRACKS,
-        genreName: String = "",
+        tracksListTitle: String = TracksListViewModel.ALL_TRACKS,
     ): TracksListViewModel {
         return TracksListViewModel(
             mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = TracksListState(
-                tracksListTitle = genreName,
+                tracksListTitle = tracksListTitle,
                 tracksListType = listGroupType,
                 tracksList = listOf(),
                 currentSort = MediaSortOption.ARTIST,
-                sortOrder = MediaSortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING,
+                events = listOf()
             ),
             preferencesRepository = preferencesRepository,
-            trackRepository = FakeTrackRepository(),
-            mediaQueueRepository = FakeMediaQueueRepository()
+            trackRepository = trackRepository,
+            mediaQueueRepository = mediaQueueRepository
         )
     }
 
@@ -61,9 +93,8 @@ class TracksListViewModelTest {
     @Test
     fun `init for all tracks sets initial state`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             with(state.value) {
-                assertNull(tracksListTitle)
+                assertEquals(TracksListViewModel.ALL_TRACKS, tracksListTitle)
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -91,8 +122,12 @@ class TracksListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for genre sets initial state`() = runTest {
-        with(generateViewModel(genreName = TRACK_GENRE_0)) {
-            delay(1)
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.GENRE,
+                tracksListTitle = TRACK_GENRE_0
+            )
+        ) {
             with(state.value) {
                 assertEquals(TRACK_GENRE_0, tracksListTitle)
                 assertEquals(
@@ -114,11 +149,37 @@ class TracksListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
+    fun `init for playlist sets initial state`() = runTest {
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.PLAYLIST,
+                tracksListTitle = TRACK_PLAYLIST_1
+            )
+        ) {
+            with(state.value) {
+                assertEquals(TRACK_PLAYLIST_1, tracksListTitle)
+                assertEquals(
+                    listOf(
+                        TrackRowState(
+                            trackId = TRACK_ID_1,
+                            trackName = TRACK_NAME_1,
+                            artists = TRACK_ARTIST_1,
+                            albumName = TRACK_ALBUM_1,
+                            trackNumber = null
+                        ),
+                    ), tracksList
+                )
+                assertEquals(MediaSortOption.TRACK, currentSort)
+                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
+            }
+        }
+    }
+
+    @Test
+    fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() {
         with(generateViewModel()) {
-            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
-            delay(1)
+            onTrackClicked(TRACK_ID_0)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -128,13 +189,16 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked for genre triggers playback, adds nav to player event`() = runTest {
-        with(generateViewModel(genreName = TRACK_GENRE_0)) {
-            expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-            handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
-            delay(1)
+    fun `onTrackClicked for genre triggers playback, adds nav to player event`() {
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.GENRE,
+                tracksListTitle = TRACK_GENRE_0
+            )
+        ) {
+            onTrackClicked(TRACK_ID_0)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -147,133 +211,166 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackClicked for genre sorted by artists triggers playback, adds nav to player event`() =
-        runTest {
-            with(
-                generateViewModel(
-                    preferencesRepository = FakePreferencesRepository(),
-                    genreName = TRACK_GENRE_0,
-                )
-            ) {
-                expectUiEvent<TracksListUiEvent.NavigateToPlayer>(this@runTest)
-                handle(TracksListUserAction.TrackClicked(TRACK_ID_0))
-                delay(1)
-                verify {
-                    mediaPlaybackRepository.playFromId(
-                        TRACK_ID_0,
-                        MediaGroup(
-                            mediaGroupType = MediaGroupType.GENRE,
-                            mediaId = TRACK_GENRE_0
-                        )
-                    )
-                }
-            }
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `SortByClicked changes state`() = runTest {
-        with(generateViewModel()) {
-            expectUiEvent<TracksListUiEvent.ShowSortBottomSheet>(this@runTest)
-            handle(TracksListUserAction.SortByClicked)
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `MediaSortOptionClicked changes state`() = runTest {
-        val tracksList = listOf(
-            TrackRowState(
-                trackId = TRACK_ID_0,
-                trackName = TRACK_NAME_0,
-                artists = TRACK_ARTIST_0,
-                albumName = TRACK_ALBUM_0,
-                trackNumber = null
-            ),
-            TrackRowState(
-                trackId = TRACK_ID_1,
-                trackName = TRACK_NAME_1,
-                artists = TRACK_ARTIST_1,
-                albumName = TRACK_ALBUM_1,
-                trackNumber = null
+    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() {
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.PLAYLIST,
+                tracksListTitle = TRACK_PLAYLIST_1
             )
-        )
+        ) {
+            onTrackClicked(TRACK_ID_1)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
+            verify {
+                mediaPlaybackRepository.playFromId(
+                    TRACK_ID_1,
+                    MediaGroup(
+                        mediaGroupType = MediaGroupType.PLAYLIST,
+                        mediaId = TRACK_PLAYLIST_1
+                    )
+                )
+            }
+        }
+    }
+
+
+    @Test
+    fun `onSortByClicked adds ShowSortBottomSheet UiEvent`() {
         with(generateViewModel()) {
-            delay(1)
+            onSortByClicked()
+            assertContains(state.value.events, TracksListUiEvent.ShowSortBottomSheet)
+        }
+    }
 
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
-            delay(1)
-            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
-            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
-            assertEquals(tracksList, state.value.tracksList)
+    @Test
+    fun `onTrackOverflowMenuIconClicked for all tracks adds OpenContextMenu UiEvent`() {
+        with(generateViewModel()) {
+            onTrackOverflowMenuIconClicked(TRACK_ID_0)
+            assertContains(
+                state.value.events, TracksListUiEvent.OpenContextMenu(
+                    trackId = TRACK_ID_0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.ALL_TRACKS,
+                        mediaId = ""
+                    )
+                )
+            )
+        }
+    }
 
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ARTIST))
-            delay(1)
-            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
-            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
-            assertEquals(tracksList.reversed(), state.value.tracksList)
+    @Test
+    fun `onTrackOverflowMenuIconClicked for genre adds OpenContextMenu UiEvent`() {
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.GENRE,
+                tracksListTitle = TRACK_GENRE_0
+            )
+        ) {
+            onTrackOverflowMenuIconClicked(TRACK_ID_0)
+            assertContains(
+                state.value.events, TracksListUiEvent.OpenContextMenu(
+                    trackId = TRACK_ID_0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.GENRE,
+                        mediaId = TRACK_GENRE_0
+                    )
+                )
+            )
+        }
+    }
 
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.TRACK))
-            delay(1)
+    @Test
+    fun `onTrackOverflowMenuIconClicked for playlist adds OpenContextMenu UiEvent`() {
+        with(
+            generateViewModel(
+                listGroupType = TracksListType.PLAYLIST,
+                tracksListTitle = TRACK_PLAYLIST_1
+            )
+        ) {
+            onTrackOverflowMenuIconClicked(TRACK_ID_1)
+            assertContains(
+                state.value.events, TracksListUiEvent.OpenContextMenu(
+                    trackId = TRACK_ID_1,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.PLAYLIST,
+                        mediaId = TRACK_PLAYLIST_1
+                    )
+                )
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `modifying sortOption changes order`() = runTest {
+        with(generateViewModel()) {
+            preferencesRepository.modifyTrackListSortOptions(
+                mediaSortSettings = mediaSortSettings {
+                    sortOption = MediaSortOption.TRACK
+                    sortOrder = MediaSortOrder.DESCENDING
+                },
+                tracksListType = TracksListType.ALL_TRACKS,
+                tracksListName = TracksListViewModel.ALL_TRACKS
+            )
             assertEquals(MediaSortOption.TRACK, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
-            assertEquals(tracksList.reversed(), state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.TRACK))
-            delay(1)
-            assertEquals(MediaSortOption.TRACK, state.value.currentSort)
-            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
-            assertEquals(tracksList, state.value.tracksList)
 
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ALBUM))
-            delay(1)
-            assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
-            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
-            assertEquals(tracksList, state.value.tracksList)
-
-            handle(TracksListUserAction.MediaSortOptionClicked(MediaSortOption.ALBUM))
-            delay(1)
+            preferencesRepository.modifyTrackListSortOptions(
+                mediaSortSettings = mediaSortSettings {
+                    sortOption = MediaSortOption.ALBUM
+                    sortOrder = MediaSortOrder.DESCENDING
+                },
+                tracksListType = TracksListType.ALL_TRACKS,
+                tracksListName = ""
+            )
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
-            assertEquals(tracksList.reversed(), state.value.tracksList)
+
+            preferencesRepository.modifyTrackListSortOptions(
+                mediaSortSettings = mediaSortSettings {
+                    sortOption = MediaSortOption.ALBUM
+                    sortOrder = MediaSortOrder.ASCENDING
+                },
+                tracksListType = TracksListType.ALL_TRACKS,
+                tracksListName = ""
+            )
+            assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
+
+            preferencesRepository.modifyTrackListSortOptions(
+                mediaSortSettings = mediaSortSettings {
+                    sortOption = MediaSortOption.ARTIST
+                    sortOrder = MediaSortOrder.ASCENDING
+                },
+                tracksListType = TracksListType.ALL_TRACKS,
+                tracksListName = ""
+            )
+            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
+            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
+
+
+            preferencesRepository.modifyTrackListSortOptions(
+                mediaSortSettings = mediaSortSettings {
+                    sortOption = MediaSortOption.ARTIST
+                    sortOrder = MediaSortOrder.DESCENDING
+                },
+                tracksListType = TracksListType.ALL_TRACKS,
+                tracksListName = ""
+            )
+            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
+            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `TrackContextMenuClicked  for all tracks adds OpenContextMenu UiEvent`() = runTest {
+    fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
-            expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TRACK_ID_0, trackId)
-                assertEquals(MediaGroup(MediaGroupType.ALL_TRACKS, "ALL_TRACKS"), mediaGroup)
-            }
-            handle(TracksListUserAction.TrackContextMenuClicked(TRACK_ID_0))
+            onUpButtonClicked()
+            assertContains(state.value.events, TracksListUiEvent.NavigateUp)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `TrackContextMenuClicked  for genre adds OpenContextMenu UiEvent`() = runTest {
-        with(generateViewModel(genreName = TRACK_GENRE_0)) {
-            expectUiEvent<TracksListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(TRACK_ID_0, trackId)
-                assertEquals(MediaGroup(MediaGroupType.GENRE, TRACK_GENRE_0), mediaGroup)
-            }
-            handle(TracksListUserAction.TrackContextMenuClicked(TRACK_ID_0))
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `UpButtonClicked adds NavigateUp event`() = runTest {
-        with(generateViewModel()) {
-            expectUiEvent<TracksListUiEvent.NavigateUp>(this@runTest)
-            handle(TracksListUserAction.UpButtonClicked)
-        }
-    }
-    
     companion object {
         private const val TRACK_ID_0 = "0"
         private const val TRACK_NAME_0 = "TRACK_NAME_0"
@@ -285,6 +382,6 @@ class TracksListViewModelTest {
         private const val TRACK_NAME_1 = "TRACK_NAME_1"
         private const val TRACK_ALBUM_1 = "1"
         private const val TRACK_ARTIST_1 = "TRACK_ARTIST_1"
-
+        private const val TRACK_PLAYLIST_1 = "TRACK_PLAYLIST_1"
     }
 }

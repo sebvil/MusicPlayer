@@ -14,7 +14,8 @@ class GenresListStatePreviewParameterProvider :
                 Genre("Tropipop"),
                 Genre("Vallenato")
             ),
-            sortOrder = MediaSortOrder.ASCENDING
+            sortOrder = MediaSortOrder.ASCENDING,
+            events = listOf()
         )
     )
 }

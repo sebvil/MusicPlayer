@@ -19,6 +19,7 @@ class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksL
             ),
             currentSort = MediaSortOption.TRACK,
             sortOrder = MediaSortOrder.ASCENDING,
+            events = listOf()
         )
     )
 }

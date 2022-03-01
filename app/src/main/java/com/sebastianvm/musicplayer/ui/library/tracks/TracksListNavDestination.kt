@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -18,8 +17,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
-import com.sebastianvm.musicplayer.util.sort.mediaSortOptionFromResId
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     composable(
@@ -39,14 +36,6 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
         )
     ) {
         val screenViewModel = hiltViewModel<TracksListViewModel>()
-        val lifecycleOwner = LocalLifecycleOwner.current
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(NavArgs.SORT_OPTION)
-            ?.observe(lifecycleOwner) {
-                screenViewModel.handle(
-                    TracksListUserAction.MediaSortOptionClicked(mediaSortOptionFromResId(it))
-                )
-            }
-
         TracksListScreen(
             screenViewModel,
             object : TracksListScreenNavigationDelegate {
@@ -58,8 +47,8 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.navigateUp()
                 }
 
-                override fun openSortMenu(sortOption: Int, sortOrder: MediaSortOrder) {
-                    navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT, sortOption, sortOrder)
+                override fun openSortMenu() {
+                    navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT)
                 }
 
                 override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup) {

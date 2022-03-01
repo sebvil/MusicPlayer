@@ -44,24 +44,22 @@ fun ArtistsListScreen(
                 title = stringResource(id = R.string.artists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.handle(ArtistsListUserAction.SortByClicked)
+                        screenViewModel.onSortByClicked()
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.handle(ArtistsListUserAction.UpButtonClicked)
+                        screenViewModel.onUpButtonClicked()
                     }
                 })
         }
     ) { state ->
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
             override fun onArtistRowClicked(artistName: String) {
-                screenViewModel.handle(
-                    ArtistsListUserAction.ArtistClicked(artistName = artistName)
-                )
+                screenViewModel.onArtistClicked(artistName = artistName)
             }
 
-            override fun onContextMenuIconClicked(artistName: String) {
-                screenViewModel.handle(ArtistsListUserAction.ContextMenuIconClicked(artistName))
+            override fun onArtistOverflowMenuIconClicked(artistName: String) {
+                screenViewModel.onArtistOverflowMenuIconClicked(artistName)
             }
         })
     }
@@ -69,7 +67,7 @@ fun ArtistsListScreen(
 
 interface ArtistsListScreenDelegate {
     fun onArtistRowClicked(artistName: String) = Unit
-    fun onContextMenuIconClicked(artistName: String) = Unit
+    fun onArtistOverflowMenuIconClicked(artistName: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -93,7 +91,7 @@ fun ArtistsListLayout(
                 modifier = Modifier.clickable {
                     delegate.onArtistRowClicked(item.artistName)
                 },
-                onOverflowMenuIconClicked = { delegate.onContextMenuIconClicked(item.artistName) }
+                onOverflowMenuIconClicked = { delegate.onArtistOverflowMenuIconClicked(item.artistName) }
             )
         }
     }

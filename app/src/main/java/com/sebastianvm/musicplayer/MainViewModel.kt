@@ -2,9 +2,9 @@ package com.sebastianvm.musicplayer
 
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +18,8 @@ class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val mediaPlaybackRepository: MediaPlaybackRepository
 ) :
-    BaseViewModel<MainActivityUserAction, MainActivityUiEvent, MainActivityState>(initialState) {
-    override fun handle(action: MainActivityUserAction) {
+    BaseViewModel<MainActivityUiEvent, MainActivityState>(initialState) {
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is MainActivityUserAction.ConnectToMusicService -> {
                 mediaPlaybackRepository.connectToService()
@@ -32,7 +32,15 @@ class MainViewModel @Inject constructor(
 }
 
 
-object MainActivityState : State
+object MainActivityState : State<MainActivityUiEvent> {
+    override val events: List<MainActivityUiEvent>
+        get() = listOf()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<MainActivityUiEvent>> setEvent(events: List<MainActivityUiEvent>): S {
+       return MainActivityState as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module

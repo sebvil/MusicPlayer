@@ -3,13 +3,13 @@ package com.sebastianvm.musicplayer.ui.library.genres
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.genre
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -22,24 +22,29 @@ class GenresListViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private lateinit var genres: List<Genre>
+    private lateinit var genreRepository: GenreRepository
+    private lateinit var preferencesRepository: PreferencesRepository
 
     @Before
     fun setUp() {
-        genres = listOf(
+        genreRepository = FakeGenreRepository(genres = listOf(
             genre { genreName = GENRE_NAME_0 },
             genre { genreName = GENRE_NAME_1 }
-        )
+        ))
+        preferencesRepository = FakePreferencesRepository(sortSettings = sortSettings {
+            genresListSortSettings = MediaSortOrder.ASCENDING
+        })
     }
 
     private fun generateViewModel(): GenresListViewModel {
         return GenresListViewModel(
             initialState = GenresListState(
                 genresList = listOf(),
-                sortOrder = MediaSortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING,
+                events = listOf()
             ),
-            genreRepository = FakeGenreRepository(),
-            preferencesRepository = FakePreferencesRepository(),
+            genreRepository = genreRepository,
+            preferencesRepository = preferencesRepository,
         )
     }
 
@@ -47,32 +52,30 @@ class GenresListViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
-                listOf<Genre>(),
+                listOf(Genre(genreName = GENRE_NAME_0), Genre(genreName = GENRE_NAME_1)),
                 state.value.genresList
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `GenreClicked adds NavigateToGenre event`() = runTest {
+    fun `GenreClicked adds NavigateToGenre event`() {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.NavigateToGenre>(this@runTest) {
-                assertEquals(GENRE_NAME_0, genreName)
-            }
-            handle(GenresListUserAction.GenreClicked(GENRE_NAME_0))
+            onGenreClicked(GENRE_NAME_0)
+            assertEquals(
+                listOf(GenresListUiEvent.NavigateToGenre(genreName = GENRE_NAME_0)),
+                state.value.events
+            )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+    fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.NavigateUp>(this@runTest)
-            handle(GenresListUserAction.UpButtonClicked)
+            onUpButtonClicked()
+            assertEquals(listOf(GenresListUiEvent.NavigateUp), state.value.events)
         }
     }
 
@@ -80,24 +83,23 @@ class GenresListViewModelTest {
     @Test
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
-            delay(1)
-            handle(GenresListUserAction.SortByClicked)
-            delay(1)
+            onSortByClicked()
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
-            assertEquals(genres, state.value.genresList)
+            assertEquals(
+                listOf(Genre(genreName = GENRE_NAME_1), Genre(genreName = GENRE_NAME_0)),
+                state.value.genresList
+            )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `OverflowMenuIconClicked adds OpenContextMenu event`() = runTest {
+    fun `OverflowMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
-            expectUiEvent<GenresListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(GENRE_NAME_0, genreName)
-                assertEquals(MediaSortOption.TRACK, currentSort)
-                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
-            }
-            handle(GenresListUserAction.OverflowMenuIconClicked(GENRE_NAME_0))
+            onGenreOverflowMenuIconClicked(GENRE_NAME_0)
+            assertEquals(
+                listOf(GenresListUiEvent.OpenContextMenu(genreName = GENRE_NAME_0)),
+                state.value.events
+            )
         }
     }
 

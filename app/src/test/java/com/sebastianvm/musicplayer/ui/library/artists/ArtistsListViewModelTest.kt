@@ -1,15 +1,18 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
+import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
+import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.expectUiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.sortSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,15 +22,38 @@ class ArtistsListViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
+    private lateinit var artistRepository: ArtistRepository
+    private lateinit var preferencesRepository: PreferencesRepository
+
+    @Before
+    fun setUp() {
+        artistRepository = FakeArtistRepository(artistsWithAlbums = listOf(
+            artistWithAlbums {
+                artist {
+                    artistName = ARTIST_NAME_0
+                }
+            },
+            artistWithAlbums {
+                artist {
+                    artistName = ARTIST_NAME_1
+                }
+            }
+        ))
+
+        preferencesRepository = FakePreferencesRepository(sortSettings = sortSettings {
+            artistListSortSettings = MediaSortOrder.ASCENDING
+        })
+    }
 
     private fun generateViewModel(): ArtistsListViewModel {
         return ArtistsListViewModel(
             initialState = ArtistsListState(
                 artistsList = listOf(),
-                sortOrder = MediaSortOrder.DESCENDING
+                sortOrder = MediaSortOrder.DESCENDING,
+                events = listOf()
             ),
-            artistRepository = FakeArtistRepository(),
-            preferencesRepository = FakePreferencesRepository(),
+            artistRepository = artistRepository,
+            preferencesRepository = preferencesRepository,
         )
     }
 
@@ -35,7 +61,6 @@ class ArtistsListViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
@@ -47,30 +72,25 @@ class ArtistsListViewModelTest {
                         artistName = ARTIST_NAME_1,
                         shouldShowContextMenu = true
                     )
-                ), state.value.artistsList
+                ),
+                state.value.artistsList
             )
-
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `ArtistClicked adds NavigateToArtist event`() = runTest {
+    fun `onArtistClicked adds NavigateToArtist event`() {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.NavigateToArtist>(this@runTest) {
-                assertEquals(ARTIST_NAME_0, artistName)
-            }
-            handle(ArtistsListUserAction.ArtistClicked(ARTIST_NAME_0))
+            onArtistClicked(ARTIST_NAME_0)
+            assertEquals(listOf(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0)), state.value.events)
         }
     }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpDEFAULT_ALBUM_IDButtonClicked adds NavigateUp event`() = runTest {
+    fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.NavigateUp>(this@runTest)
-            handle(ArtistsListUserAction.UpButtonClicked)
+            onUpButtonClicked()
+            assertEquals(listOf(ArtistsListUiEvent.NavigateUp), state.value.events)
         }
     }
 
@@ -78,24 +98,35 @@ class ArtistsListViewModelTest {
     @Test
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
-            delay(1)
-            handle(ArtistsListUserAction.SortByClicked)
-            delay(1)
+            onSortByClicked()
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
+            assertEquals(
+                listOf(
+                    ArtistRowState(
+                        artistName = ARTIST_NAME_1,
+                        shouldShowContextMenu = true
+                    ),
+                    ArtistRowState(
+                        artistName = ARTIST_NAME_0,
+                        shouldShowContextMenu = true
+                    )
+                ),
+                state.value.artistsList
+            )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `ContextMenuIconClicked adds OpenContextMenu event`() = runTest {
+    fun `ContextMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
-            expectUiEvent<ArtistsListUiEvent.OpenContextMenu>(this@runTest) {
-                assertEquals(ARTIST_NAME_0, artistName)
-            }
-            handle(ArtistsListUserAction.ContextMenuIconClicked(artistName = ARTIST_NAME_0))
+            onArtistOverflowMenuIconClicked(artistName = ARTIST_NAME_0)
+            assertEquals(
+                listOf(ArtistsListUiEvent.OpenContextMenu(artistName = ARTIST_NAME_0)),
+                state.value.events
+            )
         }
     }
-    
+
     companion object {
         private const val ARTIST_NAME_0 = "ARTIST_NAME_0"
         private const val ARTIST_NAME_1 = "ARTIST_NAME_1"

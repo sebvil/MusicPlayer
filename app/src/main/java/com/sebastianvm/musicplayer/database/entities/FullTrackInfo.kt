@@ -23,4 +23,12 @@ data class FullTrackInfo(
         associateBy = Junction(GenreTrackCrossRef::class)
     )
     val genres: List<String>,
+    @Relation(
+        parentColumn = "trackId",
+        entityColumn = "playlistName",
+        entity = Playlist::class,
+        projection = ["playlistName"],
+        associateBy = Junction(PlaylistTrackCrossRef::class)
+    )
+    val playlists: List<String>,
 )

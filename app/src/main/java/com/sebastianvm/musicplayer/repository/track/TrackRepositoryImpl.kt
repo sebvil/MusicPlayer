@@ -31,8 +31,8 @@ class TrackRepositoryImpl@Inject constructor(
         return trackDao.getAllTracks().distinctUntilChanged()
     }
 
-    override fun getTrack(tracksId: String): Flow<FullTrackInfo> {
-        return trackDao.getTrack(tracksId).distinctUntilChanged()
+    override fun getTrack(trackId: String): Flow<FullTrackInfo> {
+        return trackDao.getTrack(trackId).distinctUntilChanged()
     }
 
     override fun getTracks(tracksIds: List<String>): Flow<List<Track>> {

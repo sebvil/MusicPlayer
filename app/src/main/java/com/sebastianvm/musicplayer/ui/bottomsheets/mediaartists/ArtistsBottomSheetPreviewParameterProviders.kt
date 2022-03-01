@@ -13,7 +13,8 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
                 ArtistRowState(artistName = "Carlos Vives", shouldShowContextMenu = false)
             ),
             mediaType = MediaType.TRACK,
-            mediaId = "123"
+            mediaId = "123",
+            events = listOf()
         )
     )
 }

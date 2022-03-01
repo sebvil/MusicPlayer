@@ -6,9 +6,8 @@ import com.sebastianvm.musicplayer.SHOULD_REQUEST_PERMISSION
 import com.sebastianvm.musicplayer.SHOULD_SHOW_EXPLANATION
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState
-) : BaseViewModel<LibraryUserAction, LibraryUiEvent, LibraryState>(initialState) {
+) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
 
 
     init {
@@ -42,78 +41,67 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-
-    override fun handle(action: LibraryUserAction) {
-        when (action) {
-            is LibraryUserAction.FabClicked -> {
-                when (action.permissionStatus) {
-                    PERMISSION_GRANTED -> {
-                        addUiEvent(LibraryUiEvent.StartGetMusicService)
-                    }
-                    SHOULD_SHOW_EXPLANATION -> {
-                        setState {
-                            copy(
-                                showPermissionExplanationDialog = true
-                            )
-                        }
-                    }
-                    SHOULD_REQUEST_PERMISSION -> {
-                        addUiEvent(LibraryUiEvent.RequestPermission)
-                    }
-                }
-            }
-            is LibraryUserAction.RowClicked -> {
-                addUiEvent(LibraryUiEvent.NavigateToScreen(action.rowId))
-            }
-            is LibraryUserAction.PermissionGranted -> {
+    fun onFabClicked(@PermissionStatus permissionStatus: String) {
+        when (permissionStatus) {
+            PERMISSION_GRANTED -> {
                 addUiEvent(LibraryUiEvent.StartGetMusicService)
             }
-            is LibraryUserAction.PermissionDenied -> {
-                when (action.permissionStatus) {
-                    SHOULD_SHOW_EXPLANATION -> {
-                        setState {
-                            copy(
-                                showPermissionExplanationDialog = true
-                            )
-                        }
-                    }
-                    else -> {
-                        setState {
-                            copy(
-                                showPermissionDeniedDialog = true
-                            )
-                        }
-                    }
-                }
-            }
-            is LibraryUserAction.DismissPermissionDeniedDialog -> {
+            SHOULD_SHOW_EXPLANATION -> {
                 setState {
                     copy(
-                        showPermissionDeniedDialog = false
+                        showPermissionExplanationDialog = true
                     )
                 }
             }
-            is LibraryUserAction.PermissionDeniedConfirmButtonClicked -> {
-                this.addUiEvent(LibraryUiEvent.OpenAppSettings)
-            }
-            is LibraryUserAction.DismissPermissionExplanationDialog -> {
-                setState {
-                    copy(
-                        showPermissionExplanationDialog = false
-                    )
-                }
-            }
-            is LibraryUserAction.PermissionExplanationDialogContinueClicked -> {
-                setState {
-                    copy(
-                        showPermissionExplanationDialog = false
-                    )
-                }
-                this.addUiEvent(LibraryUiEvent.RequestPermission)
+            SHOULD_REQUEST_PERMISSION -> {
+                addUiEvent(LibraryUiEvent.RequestPermission)
             }
         }
     }
 
+    fun onRowClicked(rowId: String) {
+        addUiEvent(LibraryUiEvent.NavigateToScreen(rowId))
+    }
+
+    fun onPermissionGranted() {
+        addUiEvent(LibraryUiEvent.StartGetMusicService)
+    }
+
+    fun onPermissionDenied(@PermissionStatus permissionStatus: String) {
+        when (permissionStatus) {
+            SHOULD_SHOW_EXPLANATION -> {
+                setState {
+                    copy(
+                        showPermissionExplanationDialog = true
+                    )
+                }
+            }
+            else -> {
+                setState {
+                    copy(
+                        showPermissionDeniedDialog = true
+                    )
+                }
+            }
+        }
+    }
+
+    fun onDismissPermissionDeniedDialog() {
+        setState { copy(showPermissionExplanationDialog = false) }
+    }
+
+    fun onPermissionDeniedConfirmButtonClicked() {
+        addUiEvent(LibraryUiEvent.OpenAppSettings)
+    }
+
+    fun onDismissPermissionExplanationDialog() {
+        setState { copy(showPermissionExplanationDialog = false) }
+    }
+
+    fun onPermissionExplanationDialogContinueClicked() {
+        setState { copy(showPermissionExplanationDialog = false) }
+        addUiEvent(LibraryUiEvent.RequestPermission)
+    }
 
 }
 
@@ -121,7 +109,14 @@ data class LibraryState(
     val libraryItems: List<LibraryItem>,
     val showPermissionDeniedDialog: Boolean,
     val showPermissionExplanationDialog: Boolean,
-) : State
+    override val events: List<LibraryUiEvent>
+) : State<LibraryUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<LibraryUiEvent>> setEvent(events: List<LibraryUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -139,21 +134,9 @@ object InitialLibraryStateModule {
         ),
         showPermissionDeniedDialog = false,
         showPermissionExplanationDialog = false,
+        events = listOf()
     )
 
-}
-
-sealed class LibraryUserAction : UserAction {
-    data class FabClicked(@PermissionStatus val permissionStatus: String) : LibraryUserAction()
-    data class RowClicked(val rowId: String) : LibraryUserAction()
-    object PermissionGranted : LibraryUserAction()
-    data class PermissionDenied(@PermissionStatus val permissionStatus: String) :
-        LibraryUserAction()
-
-    object DismissPermissionDeniedDialog : LibraryUserAction()
-    object PermissionDeniedConfirmButtonClicked : LibraryUserAction()
-    object DismissPermissionExplanationDialog : LibraryUserAction()
-    object PermissionExplanationDialogContinueClicked : LibraryUserAction()
 }
 
 sealed class LibraryUiEvent : UiEvent {

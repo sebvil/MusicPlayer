@@ -6,12 +6,11 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +27,7 @@ class ArtistsListViewModel @Inject constructor(
     initialState: ArtistsListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: PreferencesRepository,
-) : BaseViewModel<ArtistsListUserAction, ArtistsListUiEvent, ArtistsListState>(initialState) {
+) : BaseViewModel<ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {
         collect(
@@ -47,31 +46,36 @@ class ArtistsListViewModel @Inject constructor(
         }
     }
 
+    fun onArtistClicked(artistName: String) {
+        addUiEvent(ArtistsListUiEvent.NavigateToArtist(artistName))
+    }
 
-    override fun handle(action: ArtistsListUserAction) {
-        when (action) {
-            is ArtistsListUserAction.ArtistClicked -> {
-                addUiEvent(
-                    ArtistsListUiEvent.NavigateToArtist(action.artistName)
-                )
-            }
-            is ArtistsListUserAction.SortByClicked -> {
-                viewModelScope.launch {
-                    preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
-                }
-            }
-            is ArtistsListUserAction.UpButtonClicked -> addUiEvent(ArtistsListUiEvent.NavigateUp)
-            is ArtistsListUserAction.ContextMenuIconClicked -> {
-                addUiEvent(ArtistsListUiEvent.OpenContextMenu(action.artistName))
-            }
+    fun onSortByClicked() {
+        viewModelScope.launch {
+            preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
         }
+    }
+
+    fun onUpButtonClicked() {
+        addUiEvent(ArtistsListUiEvent.NavigateUp)
+    }
+
+    fun onArtistOverflowMenuIconClicked(artistName: String) {
+        addUiEvent(ArtistsListUiEvent.OpenContextMenu(artistName))
     }
 }
 
 data class ArtistsListState(
     val artistsList: List<ArtistRowState>,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: List<ArtistsListUiEvent>
+) : State<ArtistsListUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<ArtistsListUiEvent>> setEvent(events: List<ArtistsListUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -82,15 +86,9 @@ object InitialArtistsListStateModule {
         return ArtistsListState(
             artistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
+            events = listOf()
         )
     }
-}
-
-sealed class ArtistsListUserAction : UserAction {
-    data class ArtistClicked(val artistName: String) : ArtistsListUserAction()
-    object SortByClicked : ArtistsListUserAction()
-    object UpButtonClicked : ArtistsListUserAction()
-    data class ContextMenuIconClicked(val artistName: String) : ArtistsListUserAction()
 }
 
 sealed class ArtistsListUiEvent : UiEvent {

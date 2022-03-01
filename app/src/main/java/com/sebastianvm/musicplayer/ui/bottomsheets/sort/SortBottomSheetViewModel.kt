@@ -3,11 +3,12 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.state.State
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
@@ -18,15 +19,42 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @HiltViewModel
-class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState) :
-    BaseViewModel<SortBottomSheetUserAction, SortBottomSheetUiEvent, SortBottomSheetState>(
+class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState, private val preferencesRepository: PreferencesRepository) :
+    BaseViewModel<SortBottomSheetUiEvent, SortBottomSheetState>(
         initialState
     ) {
 
-    override fun handle(action: SortBottomSheetUserAction) {
+    // TODO add mediaGroup to determine which to modify and current sort
+//    fun onMediaSortOptionClicked(newSortOption: MediaSortOption) {
+//        val sortOrder = if (newSortOption == state.value.currentSort) {
+//            !state.value.sortOrder
+//        } else {
+//            state.value.sortOrder
+//        }
+//
+//        viewModelScope.launch {
+//            preferencesRepository.modifyAlbumsListSortOptions(
+//                mediaSortSettings = mediaSortSettings {
+//                    sortOption = newSortOption
+//                    this.sortOrder = sortOrder
+//                },
+//            )
+//            addUiEvent(AlbumsListUiEvent.ScrollToTop)
+//        }
+//    }
+    fun <A: UserAction> handle(action: A) {
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionSelected -> {
-                addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet(action.sortOption))
+//                viewModelScope.launch {
+//                    preferencesRepository.modifyAlbumsListSortOptions(
+//                        mediaSortSettings = mediaSortSettings {
+//                            sortOption = action.sortOption
+//                            this.sortOrder = sortOrder
+//                        },
+//                    )
+//                    addUiEvent(AlbumsListUiEvent.ScrollToTop)
+//                }
+//                addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet(action.sortOption))
             }
         }
     }
@@ -35,8 +63,15 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 data class SortBottomSheetState(
     val sortOptions: List<Int>,
     val selectedSort: Int,
-    val sortOrder: MediaSortOrder
-) : State
+    val sortOrder: MediaSortOrder,
+    override val events: List<SortBottomSheetUiEvent>
+) : State<SortBottomSheetUiEvent> {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <S : State<SortBottomSheetUiEvent>> setEvent(events: List<SortBottomSheetUiEvent>): S {
+        return copy(events = events) as S
+    }
+}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -51,7 +86,8 @@ object InitialSortBottomSheetState {
         return SortBottomSheetState(
             sortOptions = getSortOptionsForScreen(screen),
             selectedSort = selectedSort,
-            sortOrder = MediaSortOrder.valueOf(sortOrder)
+            sortOrder = MediaSortOrder.valueOf(sortOrder),
+            events = listOf()
         )
     }
 }

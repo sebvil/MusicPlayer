@@ -37,7 +37,7 @@ fun ArtistsBottomSheet(
     delegate: ArtistsBottomSheetNavigationDelegate
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
-    HandleEvents(eventsFlow = sheetViewModel.eventsFlow) { event ->
+    HandleEvents(viewModel = sheetViewModel) { event ->
         when (event) {
             is ArtistsBottomSheetUiEvent.NavigateToArtist -> {
                 delegate.navigateToArtist(artistName = event.artistName)
