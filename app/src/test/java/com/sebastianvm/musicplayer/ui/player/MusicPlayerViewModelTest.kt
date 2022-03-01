@@ -5,10 +5,6 @@ import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -25,7 +21,8 @@ class MusicPlayerViewModelTest {
 
     @Before
     fun setUp() {
-        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+        mediaPlaybackRepository =
+            spyk(FakeMediaPlaybackRepository(title = TRACK_NAME, artist = ARTIST_NAME))
     }
 
     private fun generateViewModel(): MusicPlayerViewModel {
@@ -47,26 +44,11 @@ class MusicPlayerViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            delay(1)
             assertEquals(TRACK_NAME, state.value.trackName)
             assertEquals(ARTIST_NAME, state.value.artists)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `state changes when nowPlaying changes`() = runTest {
-        with(generateViewModel()) {
-            this@runTest.launch {
-                with(state.drop(2).first()) {
-                    assertEquals(TRACK_NAME, trackName)
-                    assertEquals(ARTIST_NAME, artists)
-                    assertEquals(TRACK_LENGTH, trackLengthMs)
-                }
-            }
-            delay(1)
-        }
-    }
 
 //    @Test
 //    fun `TogglePlay while playing triggers pause`() {
