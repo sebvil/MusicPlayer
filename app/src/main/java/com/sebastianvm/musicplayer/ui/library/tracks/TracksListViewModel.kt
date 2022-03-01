@@ -128,7 +128,7 @@ class TracksListViewModel @Inject constructor(
     }
 
     companion object {
-        private const val ALL_TRACKS = ""
+        const val ALL_TRACKS = ""
     }
 
 }
@@ -156,7 +156,7 @@ object InitialTracksListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listName = savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: ""
+        val listName = savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: TracksListViewModel.ALL_TRACKS
         val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
         return TracksListState(
             tracksListTitle = listName,

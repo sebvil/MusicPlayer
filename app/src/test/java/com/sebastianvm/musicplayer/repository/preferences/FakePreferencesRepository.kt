@@ -51,8 +51,8 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
     override fun getTracksListSortOptions(
         tracksListType: TracksListType,
         tracksListName: String
-    ): Flow<MediaSortSettings> = flow {
-        emit(when (tracksListType) {
+    ): Flow<MediaSortSettings> = _savedSortSettings.map {
+        when (tracksListType) {
             TracksListType.ALL_TRACKS -> {
                 savedSortSettings.allTracksSortSettings
             }
@@ -64,7 +64,7 @@ class FakePreferencesRepository(sortSettings: SortSettings = sortSettings {}) :
                 savedSortSettings.playlistTrackListSortSettingsMap[tracksListName]
 
             }
-        } ?: mediaSortSettings {})
+        } ?: mediaSortSettings {}
     }.distinctUntilChanged()
 
     override suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings) {

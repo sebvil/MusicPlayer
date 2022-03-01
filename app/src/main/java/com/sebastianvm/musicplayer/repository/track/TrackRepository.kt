@@ -18,7 +18,7 @@ interface TrackRepository {
 
     fun getAllTracks(): Flow<List<Track>>
 
-    fun getTrack(tracksId: String): Flow<FullTrackInfo>
+    fun getTrack(trackId: String): Flow<FullTrackInfo>
 
     fun getTracks(tracksIds: List<String>): Flow<List<Track>>
 

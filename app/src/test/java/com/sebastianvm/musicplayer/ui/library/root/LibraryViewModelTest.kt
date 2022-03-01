@@ -28,7 +28,8 @@ class LibraryViewModelTest {
                     LibraryItem.Tracks(count = 0),
                     LibraryItem.Artists(count = 0),
                     LibraryItem.Albums(count = 0),
-                    LibraryItem.Genres(count = 0)
+                    LibraryItem.Genres(count = 0),
+                    LibraryItem.Playlists(count = 0)
                 ),
                 showPermissionExplanationDialog = showPermissionExplanationDialog,
                 showPermissionDeniedDialog = false,
@@ -45,10 +46,11 @@ class LibraryViewModelTest {
             delay(1)
             assertEquals(
                 listOf(
-                    LibraryItem.Tracks(count = 1000),
-                    LibraryItem.Artists(count = 10),
-                    LibraryItem.Albums(count = 100),
-                    LibraryItem.Genres(count = 1)
+                    LibraryItem.Tracks(count = FakeMusicRepository.FAKE_TRACK_COUNTS),
+                    LibraryItem.Artists(count = FakeMusicRepository.FAKE_ARTIST_COUNTS),
+                    LibraryItem.Albums(count = FakeMusicRepository.FAKE_ALBUM_COUNTS),
+                    LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
+                    LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
                 ), state.value.libraryItems
             )
         }
@@ -103,7 +105,7 @@ class LibraryViewModelTest {
     @Test
     fun `PermissionDenied changes state when should show explanation`() {
         with(generateViewModel()) {
-           onPermissionDenied(SHOULD_SHOW_EXPLANATION)
+            onPermissionDenied(SHOULD_SHOW_EXPLANATION)
             assertTrue(state.value.showPermissionExplanationDialog)
         }
     }
@@ -136,7 +138,7 @@ class LibraryViewModelTest {
     @Test
     fun `DismissPermissionExplanationDialog changes state`() {
         with(generateViewModel(showPermissionExplanationDialog = true)) {
-           onDismissPermissionExplanationDialog()
+            onDismissPermissionExplanationDialog()
             assertFalse(state.value.showPermissionExplanationDialog)
         }
     }
