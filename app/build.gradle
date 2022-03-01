@@ -32,13 +32,13 @@ protobuf {
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
     buildToolsVersion "32.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
         minSdkVersion 25
-        targetSdk 31
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 

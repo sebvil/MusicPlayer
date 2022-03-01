@@ -58,7 +58,6 @@ class MusicRepositoryImpl @Inject constructor(
         albumArtists: String,
         year: Long,
         trackNumber: Long,
-        numTracks: Long,
         duration: Long,
         albumId: String
     ) {
@@ -176,7 +175,6 @@ class MusicRepositoryImpl @Inject constructor(
                     val year = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
                     val genres = musicCursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
                     val trackNumber = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
-                    val numTracks = musicCursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
                     val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                     val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
                     val relativePathColumn =
@@ -195,7 +193,6 @@ class MusicRepositoryImpl @Inject constructor(
                         val thisYear = musicCursor.getLong(year)
                         val thisGenre = musicCursor.getString(genres) ?: "No genre"
                         val thisTrackNumber = musicCursor.getLong(trackNumber)
-                        val thisNumTracks = musicCursor.getLong(numTracks)
                         val thisDuration = musicCursor.getLong(duration)
                         val albumId = musicCursor.getString(albumIdColumn)
                         val relativePath = musicCursor.getString(relativePathColumn)
@@ -217,7 +214,6 @@ class MusicRepositoryImpl @Inject constructor(
                             thisAlbumArtists,
                             thisYear,
                             thisTrackNumber,
-                            thisNumTracks,
                             thisDuration,
                             albumId
                         )
