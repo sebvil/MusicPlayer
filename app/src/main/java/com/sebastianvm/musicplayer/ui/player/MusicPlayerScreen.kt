@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,23 +39,22 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 fun MusicPlayerScreen(
     screenViewModel: MusicPlayerViewModel = viewModel(),
 ) {
-
     Screen(screenViewModel = screenViewModel, eventHandler = {}) { state ->
         MusicPlayerLayout(state = state, playerDelegate = object : PlayerDelegate() {
             override fun togglePlay() {
-                screenViewModel.handle(MusicPlayerUserAction.TogglePlay)
+                screenViewModel.onPlayToggled()
             }
 
             override fun nextClicked() {
-                screenViewModel.handle(MusicPlayerUserAction.NextTapped)
+                screenViewModel.onNextTapped()
             }
 
             override fun previousClicked() {
-                screenViewModel.handle(MusicPlayerUserAction.PreviousTapped)
+                screenViewModel.onPreviousTapped()
             }
 
             override fun onProgressBarClicked(position: Int) {
-                screenViewModel.handle(MusicPlayerUserAction.ProgressTapped(position = position))
+                screenViewModel.onProgressTapped(position)
             }
         })
     }

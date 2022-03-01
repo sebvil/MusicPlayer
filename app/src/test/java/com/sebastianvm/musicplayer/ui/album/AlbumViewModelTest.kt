@@ -127,7 +127,6 @@ class AlbumViewModelTest {
                 )
             }
 
-
             coVerify {
                 mediaQueueRepository.createQueue(
                     MediaGroup(

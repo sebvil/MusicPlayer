@@ -8,14 +8,15 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +33,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-@androidx.annotation.OptIn(UnstableApi::class)
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
     private val trackRepository: TrackRepository,
@@ -45,6 +45,7 @@ class MediaPlaybackClient @Inject constructor(
 
     val playbackState = MutableStateFlow(
         PlaybackState(
+            mediaItemMetadata = null,
             isPlaying = false,
             currentPlayTimeMs = 0,
         )
@@ -73,12 +74,13 @@ class MediaPlaybackClient @Inject constructor(
                 with(savedPlaybackInfo.value) {
                     if (it.isPlaying) {
                         playbackState.value = PlaybackState(
+                            mediaItemMetadata = controller?.mediaMetadata?.toMediaItemMetadata(),
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = it.contentPosition,
                         )
-                        nowPlaying.value = controller?.mediaMetadata
                     } else if (currentQueue.mediaGroupType != MediaGroupType.UNKNOWN) {
                         playbackState.value = PlaybackState(
+                            mediaItemMetadata = null,
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = lastRecordedPosition,
                         )
@@ -119,6 +121,7 @@ class MediaPlaybackClient @Inject constructor(
                     nowPlaying.value = mediaMetadata
                     currentIndex.value = controller.currentMediaItemIndex
                     playbackState.value = playbackState.value.copy(
+                        mediaItemMetadata = mediaMetadata.toMediaItemMetadata(),
                         currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0)
 
@@ -232,4 +235,14 @@ class MediaPlaybackClient @Inject constructor(
             controllerNotNull.seekTo(position)
         }
     }
+
+    private fun MediaMetadata?.toMediaItemMetadata(): MediaItemMetadata? = this?.let {
+        MediaItemMetadata(
+            title = title?.toString() ?: "",
+            artists = artist?.toString() ?: "",
+            artworkUri = artworkUri?.toString() ?: "",
+            trackDurationMs = duration
+        )
+    }
+
 }

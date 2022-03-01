@@ -1,31 +1,30 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import androidx.media3.common.MediaMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeMediaPlaybackRepository(title: String = "", artist: String ="") : MediaPlaybackRepository {
-
-    override val nowPlaying: MutableStateFlow<MediaMetadata?> =
-        MutableStateFlow(MediaMetadata.Builder().apply {
-            setTitle(title)
-            setArtist(artist)
-        }.build())
-    override val playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(
-        PlaybackState(
-            isPlaying = false,
-            currentPlayTimeMs = 10000,
-        )
+class FakeMediaPlaybackRepository(
+    playbackState: PlaybackState = PlaybackState(
+        mediaItemMetadata = null,
+        isPlaying = false,
+        currentPlayTimeMs = 0
     )
+) : MediaPlaybackRepository {
+
+    override val playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(playbackState)
     override val nowPlayingIndex: MutableStateFlow<Int> = MutableStateFlow(1)
 
     override fun connectToService() = Unit
 
     override fun disconnectFromService() = Unit
 
-    override fun play() = Unit
+    override fun play() {
+        playbackState.value = playbackState.value.copy(isPlaying = true)
+    }
 
-    override fun pause() = Unit
+    override fun pause() {
+        playbackState.value = playbackState.value.copy(isPlaying = false)
+    }
 
     override fun next() = Unit
 
