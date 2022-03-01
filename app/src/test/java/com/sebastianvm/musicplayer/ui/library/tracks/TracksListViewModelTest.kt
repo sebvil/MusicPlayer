@@ -24,6 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertContains
 
 class TracksListViewModelTest {
 
@@ -142,7 +143,7 @@ class TracksListViewModelTest {
     fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID_0)
-            assertEquals(TracksListUiEvent.NavigateToPlayer, state.value.events)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -152,12 +153,11 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked for genre triggers playback, adds nav to player event`() = runTest {
+    fun `onTrackClicked for genre triggers playback, adds nav to player event`() {
         with(generateViewModel(listGroupType = TracksListType.GENRE, genreName = TRACK_GENRE_0)) {
             onTrackClicked(TRACK_ID_0)
-            assertEquals(TracksListUiEvent.NavigateToPlayer, state.value.events)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -172,79 +172,67 @@ class TracksListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked for genre sorted by artists triggers playback, adds nav to player event`() =
-        runTest {
-            with(
-                generateViewModel(
-                    listGroupType = TracksListType.GENRE,
-                    genreName = TRACK_GENRE_0,
-                )
-            ) {
-                onTrackClicked(TRACK_ID_0)
-                assertEquals(TracksListUiEvent.NavigateToPlayer, state.value.events)
-                verify {
-                    mediaPlaybackRepository.playFromId(
-                        TRACK_ID_0,
-                        MediaGroup(
-                            mediaGroupType = MediaGroupType.GENRE,
-                            mediaId = TRACK_GENRE_0
-                        )
+    fun `onTrackClicked for genre sorted by artists triggers playback, adds nav to player event`() {
+        with(generateViewModel(listGroupType = TracksListType.GENRE, genreName = TRACK_GENRE_0)) {
+            onTrackClicked(TRACK_ID_0)
+            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
+            verify {
+                mediaPlaybackRepository.playFromId(
+                    TRACK_ID_0,
+                    MediaGroup(
+                        mediaGroupType = MediaGroupType.GENRE,
+                        mediaId = TRACK_GENRE_0
                     )
-                }
+                )
             }
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `SortByClicked adds ShowSortBottomSheet UiEvent`() = runTest {
-        with(generateViewModel()) {
-            onSortByClicked()
-            assertEquals(TracksListUiEvent.ShowSortBottomSheet, state.value.events)
-
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackOverflowMenuIconClicked for all tracks adds OpenContextMenu UiEvent`() = runTest {
+    fun `onSortByClicked adds ShowSortBottomSheet UiEvent`() {
+        with(generateViewModel()) {
+            onSortByClicked()
+            assertContains(state.value.events, TracksListUiEvent.ShowSortBottomSheet)
+        }
+    }
+
+    @Test
+    fun `onTrackOverflowMenuIconClicked for all tracks adds OpenContextMenu UiEvent`() {
         with(generateViewModel()) {
             onTrackOverflowMenuIconClicked(TRACK_ID_0)
-            assertEquals(
-                TracksListUiEvent.OpenContextMenu(
+            assertContains(
+                state.value.events, TracksListUiEvent.OpenContextMenu(
                     trackId = TRACK_ID_0,
                     mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.ALL_TRACKS,
                         mediaId = ""
                     )
-                ), state.value.events
+                )
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackOverflowMenuIconClicked  for genre adds OpenContextMenu UiEvent`() = runTest {
+    fun `onTrackOverflowMenuIconClicked  for genre adds OpenContextMenu UiEvent`() {
         with(generateViewModel(listGroupType = TracksListType.GENRE, genreName = TRACK_GENRE_0)) {
             onTrackOverflowMenuIconClicked(TRACK_ID_0)
-            assertEquals(
-                TracksListUiEvent.OpenContextMenu(
+            assertContains(
+                state.value.events, TracksListUiEvent.OpenContextMenu(
                     trackId = TRACK_ID_0,
                     mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.GENRE,
                         mediaId = TRACK_GENRE_0
                     )
-                ),
-                state.value.events
+                )
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onUpButtonClicked adds NavigateUp event`() = runTest {
+    fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(TracksListUiEvent.NavigateUp, state.value.events)
+            assertContains(state.value.events, TracksListUiEvent.NavigateUp)
         }
     }
 

@@ -112,12 +112,11 @@ class AlbumViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked creates queue, triggers playback adds nav to player event`() = runTest {
+    fun `onTrackClicked creates queue, triggers playback adds nav to player event`() {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID)
-            assertEquals(AlbumUiEvent.NavigateToPlayer, state.value.events)
+            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), state.value.events)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID,
@@ -141,13 +140,12 @@ class AlbumViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackOverflowMenuIconClicked adds OpenContextMenu UiEvent`() = runTest {
+    fun `onTrackOverflowMenuIconClicked adds OpenContextMenu UiEvent`() {
         with(generateViewModel()) {
             onTrackOverflowMenuIconClicked(TRACK_ID)
             assertEquals(
-                AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID),
+                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)),
                 state.value.events
             )
         }

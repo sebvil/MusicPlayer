@@ -60,24 +60,22 @@ class GenresListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `GenreClicked adds NavigateToGenre event`() = runTest {
+    fun `GenreClicked adds NavigateToGenre event`() {
         with(generateViewModel()) {
             onGenreClicked(GENRE_NAME_0)
             assertEquals(
-                GenresListUiEvent.NavigateToGenre(genreName = GENRE_NAME_0),
+                listOf(GenresListUiEvent.NavigateToGenre(genreName = GENRE_NAME_0)),
                 state.value.events
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+    fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(GenresListUiEvent.NavigateUp, state.value.events)
+            assertEquals(listOf(GenresListUiEvent.NavigateUp), state.value.events)
         }
     }
 
@@ -94,13 +92,12 @@ class GenresListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `OverflowMenuIconClicked adds OpenContextMenu event`() = runTest {
+    fun `OverflowMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
             onGenreOverflowMenuIconClicked(GENRE_NAME_0)
             assertEquals(
-                GenresListUiEvent.OpenContextMenu(genreName = GENRE_NAME_0),
+                listOf(GenresListUiEvent.OpenContextMenu(genreName = GENRE_NAME_0)),
                 state.value.events
             )
         }

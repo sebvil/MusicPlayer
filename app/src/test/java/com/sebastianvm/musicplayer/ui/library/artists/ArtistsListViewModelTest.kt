@@ -78,22 +78,19 @@ class ArtistsListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onArtistClicked adds NavigateToArtist event`() = runTest {
+    fun `onArtistClicked adds NavigateToArtist event`() {
         with(generateViewModel()) {
             onArtistClicked(ARTIST_NAME_0)
-            assertEquals(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0), state.value.events)
+            assertEquals(listOf(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0)), state.value.events)
         }
     }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onUpButtonClicked adds NavigateUp event`() = runTest {
+    fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(ArtistsListUiEvent.NavigateUp, state.value.events)
+            assertEquals(listOf(ArtistsListUiEvent.NavigateUp), state.value.events)
         }
     }
 
@@ -119,13 +116,12 @@ class ArtistsListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `ContextMenuIconClicked adds OpenContextMenu event`() = runTest {
+    fun `ContextMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
             onArtistOverflowMenuIconClicked(artistName = ARTIST_NAME_0)
             assertEquals(
-                ArtistsListUiEvent.OpenContextMenu(artistName = ARTIST_NAME_0),
+                listOf(ArtistsListUiEvent.OpenContextMenu(artistName = ARTIST_NAME_0)),
                 state.value.events
             )
         }

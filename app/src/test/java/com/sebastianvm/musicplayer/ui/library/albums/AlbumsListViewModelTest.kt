@@ -82,37 +82,34 @@ class AlbumsListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `AlbumClicked adds NavigateToAlbum event`() = runTest {
+    fun `AlbumClicked adds NavigateToAlbum event`() {
         with(generateViewModel()) {
             onAlbumClicked(ALBUM_ID_0)
             assertEquals(
-                AlbumsListUiEvent.NavigateToAlbum(albumId = ALBUM_ID_0),
+                listOf(AlbumsListUiEvent.NavigateToAlbum(albumId = ALBUM_ID_0)),
                 state.value.events
             )
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `UpButtonClicked adds NavigateUp event`() = runTest {
+    fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(AlbumsListUiEvent.NavigateUp, state.value.events)
+            assertEquals(listOf(AlbumsListUiEvent.NavigateUp), state.value.events)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `SortByClicked adds ShowSortBottomSheet event`() = runTest {
+    fun `SortByClicked adds ShowSortBottomSheet event`() {
         with(generateViewModel()) {
             onSortByClicked()
             assertEquals(
-                AlbumsListUiEvent.ShowSortBottomSheet(
+                listOf(AlbumsListUiEvent.ShowSortBottomSheet(
                     sortOption = R.string.album_name,
                     sortOrder = MediaSortOrder.ASCENDING
-                ),
+                )),
                 state.value.events
             )
         }
@@ -144,13 +141,12 @@ class AlbumsListViewModelTest {
 //        }
 //    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `AlbumContextButtonClicked adds OpenContextMenu event`() = runTest {
+    fun `AlbumContextButtonClicked adds OpenContextMenu event`()  {
         with(generateViewModel()) {
             onAlbumOverflowMenuIconClicked(albumId = ALBUM_ID_0)
             assertEquals(
-                AlbumsListUiEvent.OpenContextMenu(albumId = ALBUM_ID_0),
+                listOf(AlbumsListUiEvent.OpenContextMenu(albumId = ALBUM_ID_0)),
                 state.value.events
             )
         }
