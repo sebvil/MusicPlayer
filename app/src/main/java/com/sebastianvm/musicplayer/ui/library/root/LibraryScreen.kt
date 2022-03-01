@@ -59,15 +59,9 @@ fun LibraryScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                screenViewModel.handle(LibraryUserAction.PermissionGranted)
+                screenViewModel.onPermissionGranted()
             } else {
-                screenViewModel.handle(
-                    LibraryUserAction.PermissionDenied(
-                        delegate.getPermissionStatus(
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        )
-                    )
-                )
+                screenViewModel.onPermissionDenied(delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE))
             }
         }
     )
@@ -75,8 +69,9 @@ fun LibraryScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             if (delegate.getPermissionStatus(Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-                screenViewModel.handle(LibraryUserAction.PermissionGranted)
-                screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                screenViewModel.onPermissionGranted()
+            } else {
+                screenViewModel.onDismissPermissionDeniedDialog()
             }
         }
     )
@@ -108,11 +103,9 @@ fun LibraryScreen(
         },
         fab = {
             ScanFab(onClick = {
-                screenViewModel.handle(
-                    LibraryUserAction.FabClicked(
-                        delegate.getPermissionStatus(
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        )
+                screenViewModel.onFabClicked(
+                    delegate.getPermissionStatus(
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                 )
             })
@@ -122,24 +115,24 @@ fun LibraryScreen(
             state = state,
             object : LibraryScreenDelegate {
                 override fun onRowClicked(rowId: String) {
-                    screenViewModel.handle(LibraryUserAction.RowClicked(rowId = rowId))
+                    screenViewModel.onRowClicked(rowId = rowId)
                 }
 
                 override fun onPermissionDeniedDialogDismissRequest() {
-                    screenViewModel.handle(LibraryUserAction.DismissPermissionDeniedDialog)
+                    screenViewModel.onDismissPermissionDeniedDialog()
                 }
 
                 override fun onPermissionDeniedConfirmButtonClicked() {
-                    screenViewModel.handle(LibraryUserAction.PermissionDeniedConfirmButtonClicked)
+                    screenViewModel.onPermissionDeniedConfirmButtonClicked()
                 }
 
                 override fun onRequestDialogDismissRequest() {
-                    screenViewModel.handle(LibraryUserAction.DismissPermissionExplanationDialog)
+                    screenViewModel.onDismissPermissionExplanationDialog()
                 }
 
 
                 override fun onContinueClicked() {
-                    screenViewModel.handle(LibraryUserAction.PermissionExplanationDialogContinueClicked)
+                    screenViewModel.onPermissionExplanationDialogContinueClicked()
                 }
             }
         )
