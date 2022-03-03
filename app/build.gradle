@@ -172,7 +172,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt"
 
     // Mockk
-    def mockk_version = "1.12.2"
+    def mockk_version = '1.12.3'
     testImplementation "io.mockk:mockk:$mockk_version"
 
 }
