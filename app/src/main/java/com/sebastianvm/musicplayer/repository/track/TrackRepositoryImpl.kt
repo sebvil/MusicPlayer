@@ -23,7 +23,7 @@ class TrackRepositoryImpl@Inject constructor(
     private val trackDao: TrackDao
 ): TrackRepository {
 
-    override fun getTracksCount(): Flow<Long> {
+    override fun getTracksCount(): Flow<Int> {
         return trackDao.getTracksCount().distinctUntilChanged()
     }
 

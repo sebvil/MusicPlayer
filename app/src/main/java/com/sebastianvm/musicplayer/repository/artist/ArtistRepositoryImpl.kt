@@ -11,7 +11,7 @@ class ArtistRepositoryImpl @Inject constructor(
     private val artistDao: ArtistDao
 ) : ArtistRepository {
 
-    override fun getArtistsCount(): Flow<Long> {
+    override fun getArtistsCount(): Flow<Int> {
         return artistDao.getArtistsCount().distinctUntilChanged()
     }
 

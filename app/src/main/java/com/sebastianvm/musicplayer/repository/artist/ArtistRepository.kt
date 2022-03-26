@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import kotlinx.coroutines.flow.Flow
 
 interface ArtistRepository {
-    fun getArtistsCount(): Flow<Long>
+    fun getArtistsCount(): Flow<Int>
     fun getArtists(): Flow<List<Artist>>
     fun getArtist(artistName: String): Flow<ArtistWithAlbums>
     fun getArtistsForTrack(trackId: String): Flow<List<Artist>>

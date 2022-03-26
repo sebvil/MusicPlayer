@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import kotlinx.coroutines.flow.Flow
 
 interface AlbumRepository {
-    fun getAlbumsCount(): Flow<Long>
+    fun getAlbumsCount(): Flow<Int>
     fun getAlbums(): Flow<List<Album>>
     fun getAlbums(albumIds: List<String>): Flow<List<Album>>
     fun getAlbum(albumId: String): Flow<FullAlbumInfo>

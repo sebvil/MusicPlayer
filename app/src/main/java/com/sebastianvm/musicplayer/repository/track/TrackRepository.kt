@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface TrackRepository {
 
-    fun getTracksCount(): Flow<Long>
+    fun getTracksCount(): Flow<Int>
 
     fun getAllTracks(): Flow<List<Track>>
 
