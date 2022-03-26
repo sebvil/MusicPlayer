@@ -1,13 +1,11 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import androidx.media3.common.MediaMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackClient: MediaPlaybackClient) : MediaPlaybackRepository {
-    override val nowPlaying: MutableStateFlow<MediaMetadata?> = mediaPlaybackClient.nowPlaying
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
     override val nowPlayingIndex: MutableStateFlow<Int> = mediaPlaybackClient.currentIndex
 

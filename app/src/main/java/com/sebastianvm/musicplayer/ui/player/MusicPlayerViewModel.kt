@@ -3,9 +3,7 @@ package com.sebastianvm.musicplayer.ui.player
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.extensions.duration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,44 +24,36 @@ class MusicPlayerViewModel @Inject constructor(
         collect(mediaPlaybackRepository.playbackState) {
             setState {
                 copy(
+                    trackName = it.mediaItemMetadata?.title,
+                    artists = it.mediaItemMetadata?.artists,
+                    trackArt = it.mediaItemMetadata?.artworkUri ?: "",
+                    trackLengthMs = it.mediaItemMetadata?.trackDurationMs,
                     isPlaying = it.isPlaying,
                     currentPlaybackTimeMs = it.currentPlayTimeMs,
                 )
             }
         }
+    }
 
-        collect(mediaPlaybackRepository.nowPlaying) { mediaMetadata ->
-            setState {
-                copy(
-                    trackName = mediaMetadata?.title?.toString(),
-                    artists = mediaMetadata?.artist?.toString(),
-                    trackArt = mediaMetadata?.artworkUri?.toString() ?: "",
-                    trackLengthMs = mediaMetadata?.duration
-                )
-            }
+    fun onPlayToggled() {
+        if (state.value.isPlaying) {
+            mediaPlaybackRepository.pause()
+        } else {
+            mediaPlaybackRepository.play()
         }
     }
 
-    fun <A: UserAction> handle(action: A) {
-        when (action) {
-            is MusicPlayerUserAction.TogglePlay -> {
-                if (state.value.isPlaying) {
-                    mediaPlaybackRepository.pause()
-                } else {
-                    mediaPlaybackRepository.play()
-                }
-            }
-            is MusicPlayerUserAction.PreviousTapped -> {
-                mediaPlaybackRepository.prev()
-            }
-            is MusicPlayerUserAction.NextTapped -> {
-                mediaPlaybackRepository.next()
-            }
-            is MusicPlayerUserAction.ProgressTapped -> {
-                val time: Long = (state.value.trackLengthMs ?: 0) * action.position / 100
-                mediaPlaybackRepository.seekToTrackPosition(time)
-            }
-        }
+    fun onPreviousTapped() {
+        mediaPlaybackRepository.prev()
+    }
+
+    fun onNextTapped() {
+        mediaPlaybackRepository.next()
+    }
+
+    fun onProgressTapped(position: Int) {
+        val time: Long = (state.value.trackLengthMs ?: 0) * position / 100
+        mediaPlaybackRepository.seekToTrackPosition(time)
     }
 }
 
@@ -99,13 +89,6 @@ object InitialMusicPlayerStateModule {
             events = listOf()
         )
     }
-}
-
-sealed class MusicPlayerUserAction : UserAction {
-    object TogglePlay : MusicPlayerUserAction()
-    object NextTapped : MusicPlayerUserAction()
-    object PreviousTapped : MusicPlayerUserAction()
-    data class ProgressTapped(val position: Int) : MusicPlayerUserAction()
 }
 
 sealed class MusicPlayerUiEvent : UiEvent

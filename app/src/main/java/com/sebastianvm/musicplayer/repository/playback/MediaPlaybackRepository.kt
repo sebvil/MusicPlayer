@@ -1,12 +1,10 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import androidx.media3.common.MediaMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface MediaPlaybackRepository {
 
-    val nowPlaying: MutableStateFlow<MediaMetadata?>
     val playbackState: MutableStateFlow<PlaybackState>
     val nowPlayingIndex: MutableStateFlow<Int>
 
@@ -20,8 +18,19 @@ interface MediaPlaybackRepository {
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)
-    suspend fun addToQueue(mediaIds: List<String>) : Int
+    suspend fun addToQueue(mediaIds: List<String>): Int
 
 }
 
-data class PlaybackState(val isPlaying: Boolean, val currentPlayTimeMs: Long)
+data class PlaybackState(
+    val mediaItemMetadata: MediaItemMetadata?,
+    val isPlaying: Boolean,
+    val currentPlayTimeMs: Long
+)
+
+data class MediaItemMetadata(
+    val title: String,
+    val artists: String,
+    val artworkUri: String,
+    val trackDurationMs: Long
+)

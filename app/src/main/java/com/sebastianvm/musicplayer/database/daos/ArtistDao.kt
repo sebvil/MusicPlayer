@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
@@ -22,17 +21,15 @@ interface ArtistDao {
     @Query("SELECT COUNT(*) FROM Artist")
     fun getArtistsCount(): Flow<Long>
 
-    @RewriteQueriesToDropUnusedColumns
     @Query(
-        "SELECT * FROM Artist " +
+        "SELECT Artist.artistName FROM Artist " +
                 "JOIN ArtistTrackCrossRef ON Artist.artistName=ArtistTrackCrossRef.artistName " +
                 "WHERE ArtistTrackCrossRef.trackId=:trackId"
     )
     fun getArtistsForTrack(trackId: String): Flow<List<Artist>>
 
-    @RewriteQueriesToDropUnusedColumns
     @Query(
-        "SELECT * FROM Artist " +
+        "SELECT Artist.artistName FROM Artist " +
                 "JOIN AlbumsForArtist ON Artist.artistName=AlbumsForArtist.artistName " +
                 "WHERE AlbumsForArtist.albumId=:albumId"
     )

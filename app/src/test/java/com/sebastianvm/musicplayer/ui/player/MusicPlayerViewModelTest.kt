@@ -1,13 +1,15 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,13 +21,22 @@ class MusicPlayerViewModelTest {
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
 
-    @Before
-    fun setUp() {
-        mediaPlaybackRepository =
-            spyk(FakeMediaPlaybackRepository(title = TRACK_NAME, artist = ARTIST_NAME))
-    }
 
-    private fun generateViewModel(): MusicPlayerViewModel {
+    private fun generateViewModel(isPlaying: Boolean = false): MusicPlayerViewModel {
+        mediaPlaybackRepository = spyk(
+            FakeMediaPlaybackRepository(
+                playbackState = PlaybackState(
+                    mediaItemMetadata = MediaItemMetadata(
+                        title = TRACK_NAME,
+                        artists = ARTIST_NAME,
+                        artworkUri = ARTWORK_URI,
+                        trackDurationMs = TRACK_LENGTH
+                    ),
+                    isPlaying = isPlaying,
+                    currentPlayTimeMs = 0L
+                )
+            )
+        )
         return MusicPlayerViewModel(
             mediaPlaybackRepository = mediaPlaybackRepository,
             initialState = MusicPlayerState(
@@ -44,57 +55,66 @@ class MusicPlayerViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
-            assertEquals(TRACK_NAME, state.value.trackName)
-            assertEquals(ARTIST_NAME, state.value.artists)
+            assertEquals(
+                MusicPlayerState(
+                    trackName = TRACK_NAME,
+                    artists = ARTIST_NAME,
+                    trackArt = ARTWORK_URI,
+                    trackLengthMs = TRACK_LENGTH,
+                    isPlaying = false,
+                    currentPlaybackTimeMs = 0,
+                    events = listOf()
+                ), state.value
+            )
         }
     }
 
 
-//    @Test
-//    fun `TogglePlay while playing triggers pause`() {
-//        whenever(musicServiceConnection.playbackState) doReturn MutableStateFlow(
-//            PlaybackStateCompat.Builder().setState(
-//                PlaybackStateCompat.STATE_PLAYING, 0, 1f
-//            ).build()
-//        )
-//        with(generateViewModel()) {
-//            handle(MusicPlayerUserAction.TogglePlay)
-//            verify(musicServiceConnection.transportControls).pause()
-//        }
-//    }
-//
-//    @Test
-//    fun `TogglePlay while paused triggers play`() {
-//        whenever(musicServiceConnection.playbackState) doReturn MutableStateFlow(
-//            PlaybackStateCompat.Builder().setState(
-//                PlaybackStateCompat.STATE_PAUSED, 0, 1f
-//            ).setActions(PlaybackStateCompat.ACTION_PLAY).build()
-//        )
-//        with(generateViewModel()) {
-//            handle(MusicPlayerUserAction.TogglePlay)
-//            verify(musicServiceConnection.transportControls).play()
-//        }
-//    }
-//
-//    @Test
-//    fun `PreviousTapped triggers skipToPrevious`() {
-//        with(generateViewModel()) {
-//            handle(MusicPlayerUserAction.PreviousTapped)
-//            verify(musicServiceConnection.transportControls).skipToPrevious()
-//        }
-//    }
-//
-//    @Test
-//    fun `NextTapped triggers skipToNext`() {
-//        with(generateViewModel()) {
-//            handle(MusicPlayerUserAction.NextTapped)
-//            verify(musicServiceConnection.transportControls).skipToNext()
-//        }
-//    }
+    @Test
+    fun `onPlayToggled while paused triggers playback`() {
+        with(generateViewModel()) {
+            onPlayToggled()
+            verify { mediaPlaybackRepository.play() }
+        }
+    }
+
+    @Test
+    fun `onPlayToggled while playing pauses playback`() {
+        with(generateViewModel(isPlaying = true)) {
+            onPlayToggled()
+            verify { mediaPlaybackRepository.pause() }
+        }
+    }
+
+
+    @Test
+    fun `onPreviousTapped triggers prev call`() {
+        with(generateViewModel()) {
+            onPreviousTapped()
+            verify { mediaPlaybackRepository.prev() }
+        }
+    }
+
+    @Test
+    fun `onNextTapped triggers next call`() {
+        with(generateViewModel()) {
+            onNextTapped()
+            verify { mediaPlaybackRepository.next() }
+        }
+    }
+
+    @Test
+    fun `onProgressTapped triggers seekToTrackPosition call`() {
+        with(generateViewModel()) {
+            onProgressTapped(50)
+            verify { mediaPlaybackRepository.seekToTrackPosition(TRACK_LENGTH / 2) }
+        }
+    }
 
     companion object {
         private const val TRACK_NAME = "TRACK_NAME"
         private const val ARTIST_NAME = "ARTIST_NAME"
+        private const val ARTWORK_URI = "ARTWORK_URI"
         private const val TRACK_LENGTH = 300000L
     }
 

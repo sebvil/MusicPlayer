@@ -32,13 +32,13 @@ protobuf {
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
     buildToolsVersion "32.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
         minSdkVersion 25
-        targetSdk 31
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -99,7 +99,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     // Lifecycle
-    def lifecycle_version = '2.5.0-alpha03'
+    def lifecycle_version = '2.5.0-alpha05'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
@@ -119,7 +119,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
     // Paging
-    def paging_version = "3.1.0"
+    def paging_version = '3.1.1'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Glide
@@ -131,7 +131,7 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     // Integration with activities
-    implementation 'androidx.activity:activity-compose:1.5.0-alpha03'
+    implementation 'androidx.activity:activity-compose:1.6.0-alpha01'
     // Integration with ViewModels
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
@@ -140,10 +140,10 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha06'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha08'
 
     // Accompanist
-    def accompanist_version = '0.24.2-alpha'
+    def accompanist_version = '0.24.5-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
 
     // Paging
@@ -154,14 +154,9 @@ dependencies {
 
     // End Jetpack Compose
 
-    //Exo player
-    def exo_player_version = "2.16.1"
-    implementation "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
-    implementation "com.google.android.exoplayer:extension-mediasession:$exo_player_version"
 
     // Media 3
-    def media3_version = "1.0.0-alpha01"
+    def media3_version = '1.0.0-alpha03'
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-session:$media3_version"
     
@@ -169,10 +164,10 @@ dependencies {
     // Junit
     testImplementation "junit:junit:4.13.2"
     // Coroutines tests
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0-native-mt"
+    testImplementation  "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
     // Mockk
-    def mockk_version = "1.12.2"
+    def mockk_version = '1.12.3'
     testImplementation "io.mockk:mockk:$mockk_version"
 
 }
