@@ -112,7 +112,7 @@ class MediaPlaybackClient @Inject constructor(
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     playbackState.value = playbackState.value.copy(
                         isPlaying = isPlaying || controller.playWhenReady,
-                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
+                        currentPlayTimeMs = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0,
                     )
                 }
@@ -122,7 +122,7 @@ class MediaPlaybackClient @Inject constructor(
                     currentIndex.value = controller.currentMediaItemIndex
                     playbackState.value = playbackState.value.copy(
                         mediaItemMetadata = mediaMetadata.toMediaItemMetadata(),
-                        currentPlayTimeMs = controller.currentPosition.takeUnless { it == C.TIME_UNSET }
+                        currentPlayTimeMs = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
                             ?: 0)
 
                 }
