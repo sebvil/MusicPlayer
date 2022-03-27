@@ -16,15 +16,3 @@ class LibraryStateProvider : PreviewParameterProvider<LibraryState> {
         )
     )
 }
-
-
-class LibraryItemListProvider : PreviewParameterProvider<List<LibraryItem>> {
-    override val values = sequenceOf(
-        listOf(
-            LibraryItem.Tracks(count = 1000),
-            LibraryItem.Artists(count = 10),
-            LibraryItem.Albums(count = 100),
-            LibraryItem.Genres(count = 1)
-        )
-    )
-}

@@ -13,7 +13,7 @@ fun NavGraphBuilder.libraryNavDestination(navController: NavController) {
         val screenViewModel = hiltViewModel<LibraryViewModel>()
         LibraryScreen(
             screenViewModel = screenViewModel,
-            delegate = object : LibraryScreenActivityDelegate {
+            delegate = object : LibraryScreenNavigationDelegate {
 
                 override fun navigateToLibraryScreen(route: String) {
                     if (route == NavRoutes.TRACKS_ROOT) {
