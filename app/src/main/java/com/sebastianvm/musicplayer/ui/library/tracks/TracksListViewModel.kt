@@ -139,15 +139,9 @@ data class TracksListState(
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
     val currentSort: MediaSortOption,
-    val sortOrder: MediaSortOrder,
-    override val events: List<TracksListUiEvent>
-) : State<TracksListUiEvent> {
+    val sortOrder: MediaSortOrder
+) : State
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<TracksListUiEvent>> setEvent(events: List<TracksListUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -164,7 +158,6 @@ object InitialTracksListStateModule {
             tracksListType = TracksListType.valueOf(listGroupType),
             currentSort = MediaSortOption.TRACK,
             sortOrder = MediaSortOrder.ASCENDING,
-            events = listOf(),
         )
     }
 }

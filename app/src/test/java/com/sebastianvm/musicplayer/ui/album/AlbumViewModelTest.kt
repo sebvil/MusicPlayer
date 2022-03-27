@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import android.content.ContentUris
+import android.net.Uri
+import android.provider.MediaStore
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -14,7 +17,6 @@ import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import io.mockk.coVerify
 import io.mockk.spyk
 import io.mockk.verify
@@ -24,7 +26,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class AlbumViewModelTest {
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
@@ -36,8 +41,8 @@ class AlbumViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
-    @get:Rule
-    val fakeUriUtilsRule = FakeUriUtilsRule()
+//    @get:Rule
+//    val fakeUriUtilsRule = FakeUriUtilsRule()
 
     @Before
     fun setUp() {
@@ -80,8 +85,7 @@ class AlbumViewModelTest {
                 albumId = ALBUM_ID,
                 tracksList = listOf(),
                 albumName = "",
-                imageUri = "",
-                events = listOf()
+                imageUri = Uri.EMPTY,
             ),
             albumRepository = albumRepository,
             trackRepository = trackRepository,
@@ -95,7 +99,7 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             assertEquals(ALBUM_NAME, state.value.albumName)
             assertEquals(
-                "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
+                ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_ID.toLong()),
                 state.value.imageUri
             )
             assertEquals(
@@ -116,7 +120,7 @@ class AlbumViewModelTest {
     fun `onTrackClicked creates queue, triggers playback adds nav to player event`() {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID)
-            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), state.value.events)
+            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID,
@@ -144,8 +148,7 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             onTrackOverflowMenuIconClicked(TRACK_ID)
             assertEquals(
-                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)),
-                state.value.events
+                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)), events.value
             )
         }
     }

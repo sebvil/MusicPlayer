@@ -16,7 +16,6 @@ class PlaylistsListStatePreviewParameterProvider :
             ),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false,
-            events = listOf()
         ),
         PlaylistsListState(
             playlistsList = listOf(
@@ -27,7 +26,6 @@ class PlaylistsListStatePreviewParameterProvider :
             ),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = true,
-            events = listOf()
         )
     )
 }

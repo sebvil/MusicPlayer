@@ -14,7 +14,6 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
             ),
             mediaType = MediaType.TRACK,
             mediaId = "123",
-            events = listOf()
         )
     )
 }

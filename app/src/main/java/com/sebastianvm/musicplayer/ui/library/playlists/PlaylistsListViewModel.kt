@@ -44,7 +44,7 @@ class PlaylistsListViewModel @Inject constructor(
         }
     }
 
-    fun <A: UserAction> handle(action: A) {
+    fun <A : UserAction> handle(action: A) {
         when (action) {
             is PlaylistsListUserAction.PlaylistClicked -> {
                 addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
@@ -83,15 +83,8 @@ class PlaylistsListViewModel @Inject constructor(
 data class PlaylistsListState(
     val playlistsList: List<Playlist>,
     val isDialogOpen: Boolean,
-    val sortOrder: MediaSortOrder,
-    override val events: List<PlaylistsListUiEvent>
-) : State<PlaylistsListUiEvent> {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<PlaylistsListUiEvent>> setEvent(events: List<PlaylistsListUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
+    val sortOrder: MediaSortOrder
+) : State
 
 
 @InstallIn(ViewModelComponent::class)
@@ -105,7 +98,6 @@ object InitialPlaylistsListStateModule {
             playlistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false,
-            events = listOf()
         )
 }
 

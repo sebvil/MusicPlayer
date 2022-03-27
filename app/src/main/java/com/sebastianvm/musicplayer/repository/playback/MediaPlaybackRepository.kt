@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
+import android.net.Uri
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -31,6 +32,6 @@ data class PlaybackState(
 data class MediaItemMetadata(
     val title: String,
     val artists: String,
-    val artworkUri: String,
+    val artworkUri: Uri,
     val trackDurationMs: Long
 )

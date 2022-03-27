@@ -89,9 +89,6 @@ dependencies {
     // Kotlin
     implementation "androidx.core:core-ktx:1.7.0"
 
-    // Kotlin reflect
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-
     // Room
     def room_version = '2.4.2'
     implementation "androidx.room:room-runtime:$room_version"
@@ -146,6 +143,7 @@ dependencies {
     // Accompanist
     def accompanist_version = '0.24.5-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
     // Paging
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"

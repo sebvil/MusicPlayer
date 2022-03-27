@@ -20,10 +20,10 @@ class FakeMusicRepository : MusicRepository {
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) = Unit
 
     companion object {
-        const val FAKE_TRACK_COUNTS = 1000L
-        const val FAKE_ARTIST_COUNTS = 10L
-        const val FAKE_ALBUM_COUNTS = 100L
-        const val FAKE_GENRE_COUNTS = 1L
-        const val FAKE_PLAYLIST_COUNTS = 5L
+        const val FAKE_TRACK_COUNTS = 1000
+        const val FAKE_ARTIST_COUNTS = 10
+        const val FAKE_ALBUM_COUNTS = 100
+        const val FAKE_GENRE_COUNTS = 1
+        const val FAKE_PLAYLIST_COUNTS = 5
     }
 }

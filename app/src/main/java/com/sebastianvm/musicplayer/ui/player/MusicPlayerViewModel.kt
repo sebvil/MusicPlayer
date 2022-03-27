@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.net.Uri
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -26,7 +27,7 @@ class MusicPlayerViewModel @Inject constructor(
                 copy(
                     trackName = it.mediaItemMetadata?.title,
                     artists = it.mediaItemMetadata?.artists,
-                    trackArt = it.mediaItemMetadata?.artworkUri ?: "",
+                    trackArt = it.mediaItemMetadata?.artworkUri ?: Uri.EMPTY,
                     trackLengthMs = it.mediaItemMetadata?.trackDurationMs,
                     isPlaying = it.isPlaying,
                     currentPlaybackTimeMs = it.currentPlayTimeMs,
@@ -63,15 +64,9 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackArt: String,
-    override val events: List<MusicPlayerUiEvent>
-) : State<MusicPlayerUiEvent> {
+    val trackArt: Uri
+) : State
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<MusicPlayerUiEvent>> setEvent(events: List<MusicPlayerUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -85,8 +80,7 @@ object InitialMusicPlayerStateModule {
             artists = null,
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackArt = "",
-            events = listOf()
+            trackArt = Uri.EMPTY,
         )
     }
 }

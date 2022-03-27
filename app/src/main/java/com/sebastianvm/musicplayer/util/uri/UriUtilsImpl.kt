@@ -6,8 +6,8 @@ import android.provider.MediaStore
 
 object UriUtils {
 
-    fun getAlbumUri(albumId: Long): String =
-        ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId).toString()
+    fun getAlbumUri(albumId: Long): Uri =
+        ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, albumId)
 
     fun getTrackUri(trackId: Long): Uri =
         ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, trackId)
