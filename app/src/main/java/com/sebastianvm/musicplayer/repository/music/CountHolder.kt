@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.music
 
 data class CountHolder(
-    val tracks: Long,
-    val artists: Long,
-    val albums: Long,
-    val genres: Long,
-    val playlists: Long,
+    val tracks: Int,
+    val artists: Int,
+    val albums: Int,
+    val genres: Int,
+    val playlists: Int,
 )

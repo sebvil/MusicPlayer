@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class GenreRepositoryImpl @Inject constructor(private val genreDao: GenreDao) : GenreRepository {
-    override fun getGenresCount(): Flow<Long> {
+    override fun getGenresCount(): Flow<Int> {
         return genreDao.getGenresCount().distinctUntilChanged()
     }
 

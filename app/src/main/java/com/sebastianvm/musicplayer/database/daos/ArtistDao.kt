@@ -19,7 +19,7 @@ interface ArtistDao {
     fun getArtist(artistName: String): Flow<ArtistWithAlbums>
 
     @Query("SELECT COUNT(*) FROM Artist")
-    fun getArtistsCount(): Flow<Long>
+    fun getArtistsCount(): Flow<Int>
 
     @Query(
         "SELECT Artist.artistName FROM Artist " +

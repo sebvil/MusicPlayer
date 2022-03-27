@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlaylistDao {
     @Query("SELECT COUNT(*) FROM Playlist")
-    fun getPlaylistsCount(): Flow<Long>
+    fun getPlaylistsCount(): Flow<Int>
 
     @Transaction
     @Query("SELECT * FROM Playlist")

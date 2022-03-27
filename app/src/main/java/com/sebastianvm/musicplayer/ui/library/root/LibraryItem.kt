@@ -11,9 +11,9 @@ sealed class LibraryItem(
     @StringRes val rowName: Int,
     @DrawableRes val icon: Int,
     @PluralsRes val countString: Int,
-    open val count: Long
+    open val count: Int
 ) {
-    data class Tracks(override val count: Long) : LibraryItem(
+    data class Tracks(override val count: Int) : LibraryItem(
         rowId = NavRoutes.TRACKS_ROOT,
         rowName = R.string.all_songs,
         icon = R.drawable.ic_song,
@@ -21,7 +21,7 @@ sealed class LibraryItem(
         count = count
     )
 
-    data class Artists(override val count: Long) : LibraryItem(
+    data class Artists(override val count: Int) : LibraryItem(
         rowId = NavRoutes.ARTISTS_ROOT,
         rowName = R.string.artists,
         icon = R.drawable.ic_artist,
@@ -29,7 +29,7 @@ sealed class LibraryItem(
         count = count
     )
 
-    data class Albums(override val count: Long) : LibraryItem(
+    data class Albums(override val count: Int) : LibraryItem(
         rowId = NavRoutes.ALBUMS_ROOT,
         rowName = R.string.albums,
         icon = R.drawable.ic_album,
@@ -37,7 +37,7 @@ sealed class LibraryItem(
         count = count
     )
 
-    data class Genres(override val count: Long) : LibraryItem(
+    data class Genres(override val count: Int) : LibraryItem(
         rowId = NavRoutes.GENRES_ROOT,
         rowName = R.string.genres,
         icon = R.drawable.ic_genre,
@@ -45,7 +45,7 @@ sealed class LibraryItem(
         count = count
     )
 
-    data class Playlists(override val count: Long) : LibraryItem(
+    data class Playlists(override val count: Int) : LibraryItem(
         rowId = NavRoutes.PLAYLISTS_ROOT,
         rowName = R.string.playlists,
         icon = R.drawable.ic_playlist,

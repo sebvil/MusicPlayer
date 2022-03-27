@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.Flow
 interface TrackDao {
 
     @Query("SELECT COUNT(*) FROM Track")
-    fun getTracksCount(): Flow<Long>
+    fun getTracksCount(): Flow<Int>
 
     @Transaction
     @Query("SELECT * FROM Track")

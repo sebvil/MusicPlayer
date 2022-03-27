@@ -14,7 +14,7 @@ class PlaylistRepositoryImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) :
     PlaylistRepository {
-    override fun getPlaylistsCount(): Flow<Long> {
+    override fun getPlaylistsCount(): Flow<Int> {
         return playlistDao.getPlaylistsCount().distinctUntilChanged()
     }
 

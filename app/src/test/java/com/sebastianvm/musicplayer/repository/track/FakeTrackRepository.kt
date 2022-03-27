@@ -23,7 +23,7 @@ class FakeTrackRepository(
 
     private val tracksState = MutableStateFlow(tracks)
 
-    override fun getTracksCount(): Flow<Long> = tracksState.map { it.size.toLong() }
+    override fun getTracksCount(): Flow<Int> = tracksState.map { it.size.toLong() }
 
     override fun getAllTracks(): Flow<List<Track>> =
         tracksState.map { tracks -> tracks.map { it.track } }

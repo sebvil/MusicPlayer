@@ -14,7 +14,7 @@ class AlbumRepositoryImpl @Inject constructor(
     private val albumDao: AlbumDao
 ) : AlbumRepository {
 
-    override fun getAlbumsCount(): Flow<Long> {
+    override fun getAlbumsCount(): Flow<Int> {
         return albumDao.getAlbumsCount().distinctUntilChanged()
     }
 

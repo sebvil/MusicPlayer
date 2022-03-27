@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.PERMISSION_GRANTED
 import com.sebastianvm.musicplayer.PermissionStatus
 import com.sebastianvm.musicplayer.R
@@ -300,11 +300,7 @@ fun LibraryList(
                 supportingImageType = SupportingImageType.AVATAR,
                 afterListContent = {
                     Text(
-                        text = ResUtil.getQuantityString(
-                            item.countString,
-                            item.count.toInt(),
-                            item.count
-                        ),
+                        text = pluralStringResource(id = item.countString, count = item.count, item.count),
                         modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
