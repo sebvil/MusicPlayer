@@ -13,7 +13,7 @@ class FakeAlbumRepository(
 
     private val albumList = MutableStateFlow(fullAlbumInfo)
 
-    override fun getAlbumsCount(): Flow<Int> = albumList.map { it.size.toLong() }
+    override fun getAlbumsCount(): Flow<Int> = albumList.map { it.size }
 
     override fun getAlbums(): Flow<List<Album>> =
         albumList.map { albums -> albums.map { it.album } }
