@@ -65,7 +65,7 @@ class GenresListViewModelTest {
             onGenreClicked(GENRE_NAME_0)
             assertEquals(
                 listOf(GenresListUiEvent.NavigateToGenre(genreName = GENRE_NAME_0)),
-                events
+                events.value
             )
         }
     }
@@ -74,7 +74,7 @@ class GenresListViewModelTest {
     fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(listOf(GenresListUiEvent.NavigateUp), events)
+            assertEquals(listOf(GenresListUiEvent.NavigateUp), events.value)
         }
     }
 
@@ -97,7 +97,7 @@ class GenresListViewModelTest {
             onGenreOverflowMenuIconClicked(GENRE_NAME_0)
             assertEquals(
                 listOf(GenresListUiEvent.OpenContextMenu(genreName = GENRE_NAME_0)),
-                events
+                events.value
             )
         }
     }
