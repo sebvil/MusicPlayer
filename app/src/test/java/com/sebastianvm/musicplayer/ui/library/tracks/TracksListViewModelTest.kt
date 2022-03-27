@@ -1,10 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -13,7 +8,6 @@ import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
@@ -22,8 +16,6 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.SortSettings
-import com.sebastianvm.musicplayer.util.sort.SortSettingsSerializer
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import io.mockk.spyk
 import io.mockk.verify
@@ -50,19 +42,12 @@ class TracksListViewModelTest {
     private lateinit var trackRepository: TrackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
-    private val Context.prefsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-    private val Context.sortDataStore: DataStore<SortSettings> by dataStore(
-        fileName = "settings.pb",
-        serializer = SortSettingsSerializer
-    )
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
-        preferencesRepository = PreferencesRepositoryImpl(
-            preferencesDataStore = ApplicationProvider.getApplicationContext<Context>().prefsDataStore,
-            ApplicationProvider.getApplicationContext<Context>().sortDataStore,
+        preferencesRepository = PreferencesRepository(
+            context = ApplicationProvider.getApplicationContext(),
             ioDispatcher = Dispatchers.Main
         )
         trackRepository = FakeTrackRepository(

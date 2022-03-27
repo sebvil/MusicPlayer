@@ -1,21 +1,25 @@
 package com.sebastianvm.musicplayer.ui.library.genres
 
+import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.genre
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.ui.util.mvvm.updateState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.sortSettings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class GenresListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,17 +29,20 @@ class GenresListViewModelTest {
     private lateinit var genreRepository: GenreRepository
     private lateinit var preferencesRepository: PreferencesRepository
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         genreRepository = FakeGenreRepository(genres = listOf(
             genre { genreName = GENRE_NAME_0 },
             genre { genreName = GENRE_NAME_1 }
         ))
-        preferencesRepository = FakePreferencesRepository(sortSettings = sortSettings {
-            genresListSortSettings = MediaSortOrder.ASCENDING
-        })
+        preferencesRepository = PreferencesRepository(
+            context = ApplicationProvider.getApplicationContext(),
+            ioDispatcher = Dispatchers.Main
+        )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun generateViewModel(): GenresListViewModel {
         return GenresListViewModel(
             initialState = GenresListState(
@@ -44,6 +51,7 @@ class GenresListViewModelTest {
             ),
             genreRepository = genreRepository,
             preferencesRepository = preferencesRepository,
+            ioDispatcher = Dispatchers.Main
         )
     }
 
@@ -51,6 +59,7 @@ class GenresListViewModelTest {
     @Test
     fun `init sets initial state`() = runTest {
         with(generateViewModel()) {
+            updateState()
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(Genre(genreName = GENRE_NAME_0), Genre(genreName = GENRE_NAME_1)),
@@ -82,7 +91,9 @@ class GenresListViewModelTest {
     @Test
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
+            updateState()
             onSortByClicked()
+            updateState()
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(Genre(genreName = GENRE_NAME_1), Genre(genreName = GENRE_NAME_0)),

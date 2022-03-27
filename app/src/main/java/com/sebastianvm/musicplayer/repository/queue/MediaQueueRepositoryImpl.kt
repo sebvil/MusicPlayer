@@ -77,7 +77,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
             val trackIds = when (mediaGroup.mediaGroupType) {
                 MediaGroupType.ALL_TRACKS -> {
                     queueName = ResUtil.getString(context = context, R.string.all_songs)
-                    preferencesRepository.getTracksListSortOptions(TracksListType.ALL_TRACKS)
+                    preferencesRepository.getTracksListSortOptions(TracksListType.ALL_TRACKS, tracksListName = "")
                         .first().also {
                             sortOption = it.sortOption
                             sortOrder = it.sortOrder

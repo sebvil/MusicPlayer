@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
@@ -16,6 +17,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,21 +27,26 @@ class GenresListViewModel @Inject constructor(
     initialState: GenresListState,
     genreRepository: GenreRepository,
     private val preferencesRepository: PreferencesRepository,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) :
     BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        collect(
+        viewModelScope.launch(ioDispatcher) {
             preferencesRepository.getGenresListSortOrder()
                 .combine(genreRepository.getGenres()) { sortOrder, genresList ->
-                    Pair(sortOrder, genresList)
-                }) { pair ->
-            setState {
-                copy(
-                    sortOrder = pair.first,
-                    genresList = pair.second.sortedWith(getStringComparator(pair.first) { item -> item.genreName }),
-                )
-            }
+                    Pair(
+                        sortOrder,
+                        genresList
+                    )
+                }.collect { (sortOrder, genresList) ->
+                    setState {
+                        copy(
+                            sortOrder = sortOrder,
+                            genresList = genresList.sortedWith(getStringComparator(sortOrder) { item -> item.genreName }),
+                        )
+                    }
+                }
         }
     }
 
