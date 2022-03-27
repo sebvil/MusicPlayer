@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
+import android.content.ContentUris
+import android.provider.MediaStore
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -12,7 +14,6 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.sortSettings
-import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,9 +26,6 @@ class AlbumsListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
-
-    @get:Rule
-    val fakeUriUtilsRule = FakeUriUtilsRule()
 
     private lateinit var albumRepository: AlbumRepository
     private lateinit var preferencesRepository: PreferencesRepository
@@ -105,10 +103,12 @@ class AlbumsListViewModelTest {
         with(generateViewModel()) {
             onSortByClicked()
             assertEquals(
-                listOf(AlbumsListUiEvent.ShowSortBottomSheet(
-                    sortOption = R.string.album_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )),
+                listOf(
+                    AlbumsListUiEvent.ShowSortBottomSheet(
+                        sortOption = R.string.album_name,
+                        sortOrder = MediaSortOrder.ASCENDING
+                    )
+                ),
                 events
             )
         }
@@ -141,7 +141,7 @@ class AlbumsListViewModelTest {
 //    }
 
     @Test
-    fun `AlbumContextButtonClicked adds OpenContextMenu event`()  {
+    fun `AlbumContextButtonClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
             onAlbumOverflowMenuIconClicked(albumId = ALBUM_ID_0)
             assertEquals(
@@ -213,7 +213,10 @@ class AlbumsListViewModelTest {
             albumId = ALBUM_ID_0,
             albumName = ALBUM_NAME_0,
             year = ALBUM_YEAR_0,
-            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID_0}",
+            imageUri = ContentUris.withAppendedId(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                ALBUM_ID_0.toLong()
+            ),
             artists = ARTIST_NAME_0
         )
 
@@ -221,7 +224,10 @@ class AlbumsListViewModelTest {
             albumId = ALBUM_ID_1,
             albumName = ALBUM_NAME_1,
             year = ALBUM_YEAR_1,
-            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID_1}",
+            imageUri = ContentUris.withAppendedId(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                ALBUM_ID_1.toLong()
+            ),
             artists = ARTIST_NAME_1
         )
     }

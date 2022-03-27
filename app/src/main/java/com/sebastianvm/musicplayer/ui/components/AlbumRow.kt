@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
@@ -29,7 +30,7 @@ import com.sebastianvm.musicplayer.util.uri.UriUtils
 data class AlbumRowState(
     val albumId: String,
     val albumName: String,
-    val imageUri: String,
+    val imageUri: Uri,
     val year: Long,
     val artists: String,
 )
@@ -129,7 +130,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "1",
                 albumName = "Ahora",
-                imageUri = "",
+                imageUri = Uri.EMPTY,
                 year = 2017,
                 artists = "Melendi"
 
@@ -137,7 +138,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
             AlbumRowState(
                 albumId = "2",
                 albumName = "VIVES",
-                imageUri = "",
+                imageUri = Uri.EMPTY,
                 year = 2017,
                 artists = "Carlos Vives"
             ),

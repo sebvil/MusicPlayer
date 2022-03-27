@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.artist
 
+import android.content.ContentUris
+import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns.ALBUM_ARTIST
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
@@ -11,7 +13,6 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.uri.FakeUriUtilsRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,9 +26,6 @@ class ArtistViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
-
-    @get:Rule
-    val uriUtilsRule = FakeUriUtilsRule()
 
     private lateinit var albumRepository: AlbumRepository
     private lateinit var artistRepository: ArtistRepository
@@ -91,7 +89,10 @@ class ArtistViewModelTest {
                         AlbumRowState(
                             albumId = ALBUM_ID,
                             albumName = ALBUM_NAME,
-                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${ALBUM_ID}",
+                            imageUri = ContentUris.withAppendedId(
+                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                ALBUM_ID.toLong()
+                            ),
                             year = ALBUM_YEAR,
                             artists = ARTIST_NAME
                         )
@@ -105,7 +106,10 @@ class ArtistViewModelTest {
                         AlbumRowState(
                             albumId = APPEARS_ON_ID,
                             albumName = APPEARS_ON_NAME,
-                            imageUri = "${FakeUriUtilsRule.FAKE_ALBUM_PATH}/${APPEARS_ON_ID}",
+                            imageUri = ContentUris.withAppendedId(
+                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                                APPEARS_ON_ID.toLong()
+                            ),
                             year = APPEARS_ON_YEAR,
                             artists = APPEARS_ON_ARTIST
                         )
@@ -117,7 +121,7 @@ class ArtistViewModelTest {
     }
 
     @Test
-    fun `onAlbumClicked adds NavigateToAlbum event`()  {
+    fun `onAlbumClicked adds NavigateToAlbum event`() {
         with(generateViewModel()) {
             onAlbumClicked(ALBUM_ID)
             assertEquals(listOf(ArtistUiEvent.NavigateToAlbum(albumId = ALBUM_ID)), events)

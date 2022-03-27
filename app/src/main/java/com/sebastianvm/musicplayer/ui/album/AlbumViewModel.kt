@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -76,7 +77,7 @@ class AlbumViewModel @Inject constructor(
 
 data class AlbumState(
     val albumId: String,
-    val imageUri: String,
+    val imageUri: Uri,
     val albumName: String,
     val tracksList: List<TrackRowState>,
 ) : State
@@ -91,7 +92,7 @@ object InitialAlbumStateModule {
         val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
         return AlbumState(
             albumId = albumId,
-            imageUri = "",
+            imageUri = Uri.EMPTY,
             albumName = "",
             tracksList = emptyList(),
         )

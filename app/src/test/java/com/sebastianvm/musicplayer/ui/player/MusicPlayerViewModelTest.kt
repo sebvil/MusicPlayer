@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.net.Uri
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
@@ -45,7 +46,7 @@ class MusicPlayerViewModelTest {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackArt = "",
+                trackArt = Uri.EMPTY,
             )
         )
     }
@@ -112,7 +113,7 @@ class MusicPlayerViewModelTest {
     companion object {
         private const val TRACK_NAME = "TRACK_NAME"
         private const val ARTIST_NAME = "ARTIST_NAME"
-        private const val ARTWORK_URI = "ARTWORK_URI"
+        private val ARTWORK_URI = Uri.EMPTY
         private const val TRACK_LENGTH = 300000L
     }
 

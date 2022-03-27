@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import android.net.Uri
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -26,7 +27,7 @@ class MusicPlayerViewModel @Inject constructor(
                 copy(
                     trackName = it.mediaItemMetadata?.title,
                     artists = it.mediaItemMetadata?.artists,
-                    trackArt = it.mediaItemMetadata?.artworkUri ?: "",
+                    trackArt = it.mediaItemMetadata?.artworkUri ?: Uri.EMPTY,
                     trackLengthMs = it.mediaItemMetadata?.trackDurationMs,
                     isPlaying = it.isPlaying,
                     currentPlaybackTimeMs = it.currentPlayTimeMs,
@@ -63,7 +64,7 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackArt: String
+    val trackArt: Uri
 ) : State
 
 
@@ -79,7 +80,7 @@ object InitialMusicPlayerStateModule {
             artists = null,
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackArt = "",
+            trackArt = Uri.EMPTY,
         )
     }
 }
