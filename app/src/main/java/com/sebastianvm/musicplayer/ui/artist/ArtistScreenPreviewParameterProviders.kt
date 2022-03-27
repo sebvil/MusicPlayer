@@ -63,15 +63,8 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                     ),
                 )
             ),
-            events = listOf()
         )
     )
-}
-
-
-class SectionHeaderItemProvider : PreviewParameterProvider<ArtistScreenItem.SectionHeaderItem> {
-    override val values =
-        sequenceOf(ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums))
 }
 
 class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {

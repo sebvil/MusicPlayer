@@ -12,7 +12,6 @@ class LibraryStateProvider : PreviewParameterProvider<LibraryState> {
                 LibraryItem.Albums(count = 100),
                 LibraryItem.Genres(count = 1)
             ),
-            events = listOf()
         )
     )
 }

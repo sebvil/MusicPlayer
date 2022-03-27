@@ -9,7 +9,6 @@ import androidx.lifecycle.flowWithLifecycle
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 fun interface EventHandler<E : UiEvent> {
@@ -17,13 +16,13 @@ fun interface EventHandler<E : UiEvent> {
 }
 
 @Composable
-fun <E : UiEvent, S: State<E>> HandleEvents(
+fun <E : UiEvent, S: State> HandleEvents(
     viewModel: BaseViewModel<E,S>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
     LaunchedEffect(key1 = viewModel.state) {
-        viewModel.state.map { it.events }.onEach { events ->
+        viewModel.events.onEach { events ->
             val event = events.firstOrNull()
             if (event != null) {
                 eventHandler.onEvent(event = event)

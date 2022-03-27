@@ -41,7 +41,6 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
             ),
             currentSort = MediaSortOption.ALBUM,
             sortOrder = MediaSortOrder.ASCENDING,
-            events = listOf()
         )
     )
 }

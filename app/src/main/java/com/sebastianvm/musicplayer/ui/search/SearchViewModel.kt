@@ -85,7 +85,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun <A: UserAction> handle(action: A) {
+    fun <A : UserAction> handle(action: A) {
         when (action) {
             is SearchUserAction.OnTextChanged -> {
                 setState {
@@ -171,15 +171,9 @@ data class SearchState(
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
     val albumSearchResults: Flow<PagingData<AlbumRowState>>,
-    val genreSearchResults: Flow<PagingData<Genre>>,
-    override val events: List<SearchUiEvent>
-) : State<SearchUiEvent> {
+    val genreSearchResults: Flow<PagingData<Genre>>
+) : State
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<SearchUiEvent>> setEvent(events: List<SearchUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -193,7 +187,6 @@ object InitialSearchStateModule {
             artistSearchResults = flow {},
             albumSearchResults = flow {},
             genreSearchResults = flow {},
-            events = listOf()
         )
     }
 }

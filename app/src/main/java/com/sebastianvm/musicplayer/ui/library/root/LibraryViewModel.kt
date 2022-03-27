@@ -42,16 +42,7 @@ class LibraryViewModel @Inject constructor(
 
 }
 
-data class LibraryState(
-    val libraryItems: List<LibraryItem>,
-    override val events: List<LibraryUiEvent>
-) : State<LibraryUiEvent> {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<LibraryUiEvent>> setEvent(events: List<LibraryUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
+data class LibraryState(val libraryItems: List<LibraryItem>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -66,10 +57,8 @@ object InitialLibraryStateModule {
             LibraryItem.Albums(count = 0),
             LibraryItem.Genres(count = 0),
             LibraryItem.Playlists(count = 0)
-        ),
-        events = listOf()
+        )
     )
-
 }
 
 sealed class LibraryUiEvent : UiEvent {

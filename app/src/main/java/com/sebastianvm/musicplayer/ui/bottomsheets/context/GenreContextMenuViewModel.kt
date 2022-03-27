@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,14 +47,8 @@ data class GenreContextMenuState(
     override val menuTitle: String,
     val genreName: String,
     val mediaGroup: MediaGroup,
-    override val events: List<BaseContextMenuUiEvent>
-) : BaseContextMenuState(listItems, menuTitle) {
+) : BaseContextMenuState(listItems, menuTitle)
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<BaseContextMenuUiEvent>> setEvent(events: List<BaseContextMenuUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -75,7 +68,6 @@ object InitialGenreContextMenuStateModule {
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewGenre
             ),
-            events = listOf()
         )
     }
 }

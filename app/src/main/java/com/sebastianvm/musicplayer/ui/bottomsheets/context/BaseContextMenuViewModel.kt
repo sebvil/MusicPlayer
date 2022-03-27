@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 abstract class BaseContextMenuState(
     open val listItems: List<ContextMenuItem>,
     open val menuTitle: String
-) : State<BaseContextMenuUiEvent>
+) : State
 
 sealed class BaseContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : BaseContextMenuUiEvent()

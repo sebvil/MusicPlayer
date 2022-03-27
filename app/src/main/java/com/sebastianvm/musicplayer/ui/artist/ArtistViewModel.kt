@@ -96,15 +96,9 @@ class ArtistViewModel @Inject constructor(
 data class ArtistState(
     val artistName: String,
     val albumsForArtistItems: List<ArtistScreenItem>?,
-    val appearsOnForArtistItems: List<ArtistScreenItem>?,
-    override val events: List<ArtistUiEvent>,
-) : State<ArtistUiEvent> {
+    val appearsOnForArtistItems: List<ArtistScreenItem>?
+) : State
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<ArtistUiEvent>> setEvent(events: List<ArtistUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -118,7 +112,6 @@ object InitialArtistState {
             artistName = artistName,
             albumsForArtistItems = null,
             appearsOnForArtistItems = null,
-            events = listOf()
         )
     }
 }

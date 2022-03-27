@@ -12,7 +12,6 @@ class SearchStatePreviewParameterProvider : PreviewParameterProvider<SearchState
             artistSearchResults = flow {},
             albumSearchResults = flow {},
             genreSearchResults = flow {},
-            events = listOf()
         ),
     )
 }

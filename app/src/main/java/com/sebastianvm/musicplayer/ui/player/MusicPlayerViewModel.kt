@@ -63,15 +63,9 @@ data class MusicPlayerState(
     val artists: String?,
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?,
-    val trackArt: String,
-    override val events: List<MusicPlayerUiEvent>
-) : State<MusicPlayerUiEvent> {
+    val trackArt: String
+) : State
 
-    @Suppress("UNCHECKED_CAST")
-    override fun <S : State<MusicPlayerUiEvent>> setEvent(events: List<MusicPlayerUiEvent>): S {
-        return copy(events = events) as S
-    }
-}
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -86,7 +80,6 @@ object InitialMusicPlayerStateModule {
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
             trackArt = "",
-            events = listOf()
         )
     }
 }
