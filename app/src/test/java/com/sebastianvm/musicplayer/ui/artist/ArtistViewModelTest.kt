@@ -74,7 +74,6 @@ class ArtistViewModelTest {
                 artistName = ARTIST_NAME,
                 albumsForArtistItems = listOf(),
                 appearsOnForArtistItems = listOf(),
-                events = listOf()
             ),
             albumRepository = albumRepository,
             artistRepository = artistRepository,
@@ -121,7 +120,7 @@ class ArtistViewModelTest {
     fun `onAlbumClicked adds NavigateToAlbum event`()  {
         with(generateViewModel()) {
             onAlbumClicked(ALBUM_ID)
-            assertEquals(listOf(ArtistUiEvent.NavigateToAlbum(albumId = ALBUM_ID)), state.value.events)
+            assertEquals(listOf(ArtistUiEvent.NavigateToAlbum(albumId = ALBUM_ID)), events)
         }
     }
 
@@ -131,7 +130,7 @@ class ArtistViewModelTest {
             onAlbumOverflowMenuIconClicked(ALBUM_ID)
             assertEquals(
                 listOf(ArtistUiEvent.OpenContextMenu(albumId = ALBUM_ID)),
-                state.value.events
+                events
             )
 
         }
@@ -141,7 +140,7 @@ class ArtistViewModelTest {
     fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(listOf(ArtistUiEvent.NavigateUp), state.value.events)
+            assertEquals(listOf(ArtistUiEvent.NavigateUp), events)
         }
     }
 

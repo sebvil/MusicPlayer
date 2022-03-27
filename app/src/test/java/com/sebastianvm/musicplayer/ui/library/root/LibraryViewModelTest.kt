@@ -26,7 +26,6 @@ class LibraryViewModelTest {
                     LibraryItem.Genres(count = 0),
                     LibraryItem.Playlists(count = 0)
                 ),
-                events = listOf()
             ),
             musicRepository = FakeMusicRepository()
         )
@@ -55,7 +54,7 @@ class LibraryViewModelTest {
         with(generateViewModel()) {
             onRowClicked(NavRoutes.TRACKS_ROOT)
             assertContains(
-                state.value.events,
+                events.value,
                 LibraryUiEvent.NavigateToScreen(rowId = NavRoutes.TRACKS_ROOT)
             )
         }

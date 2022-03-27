@@ -81,7 +81,6 @@ class AlbumViewModelTest {
                 tracksList = listOf(),
                 albumName = "",
                 imageUri = "",
-                events = listOf()
             ),
             albumRepository = albumRepository,
             trackRepository = trackRepository,
@@ -116,7 +115,7 @@ class AlbumViewModelTest {
     fun `onTrackClicked creates queue, triggers playback adds nav to player event`() {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID)
-            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), state.value.events)
+            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), events)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID,
@@ -144,8 +143,7 @@ class AlbumViewModelTest {
         with(generateViewModel()) {
             onTrackOverflowMenuIconClicked(TRACK_ID)
             assertEquals(
-                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)),
-                state.value.events
+                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)), events
             )
         }
     }

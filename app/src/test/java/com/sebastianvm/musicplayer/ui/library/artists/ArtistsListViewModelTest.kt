@@ -50,7 +50,6 @@ class ArtistsListViewModelTest {
             initialState = ArtistsListState(
                 artistsList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = listOf()
             ),
             artistRepository = artistRepository,
             preferencesRepository = preferencesRepository,
@@ -82,7 +81,7 @@ class ArtistsListViewModelTest {
     fun `onArtistClicked adds NavigateToArtist event`() {
         with(generateViewModel()) {
             onArtistClicked(ARTIST_NAME_0)
-            assertEquals(listOf(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0)), state.value.events)
+            assertEquals(listOf(ArtistsListUiEvent.NavigateToArtist(ARTIST_NAME_0)), events)
         }
     }
 
@@ -90,7 +89,7 @@ class ArtistsListViewModelTest {
     fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(listOf(ArtistsListUiEvent.NavigateUp), state.value.events)
+            assertEquals(listOf(ArtistsListUiEvent.NavigateUp), events)
         }
     }
 
@@ -122,7 +121,7 @@ class ArtistsListViewModelTest {
             onArtistOverflowMenuIconClicked(artistName = ARTIST_NAME_0)
             assertEquals(
                 listOf(ArtistsListUiEvent.OpenContextMenu(artistName = ARTIST_NAME_0)),
-                state.value.events
+                events
             )
         }
     }

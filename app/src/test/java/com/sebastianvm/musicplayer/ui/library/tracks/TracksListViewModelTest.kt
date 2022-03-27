@@ -104,7 +104,6 @@ class TracksListViewModelTest {
                 tracksList = listOf(),
                 currentSort = MediaSortOption.ARTIST,
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = listOf()
             ),
             preferencesRepository = preferencesRepository,
             trackRepository = trackRepository,
@@ -202,7 +201,7 @@ class TracksListViewModelTest {
     fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID_0)
-            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
+            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -221,7 +220,7 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_0)
-            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
+            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -243,7 +242,7 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_1)
-            assertContains(state.value.events, TracksListUiEvent.NavigateToPlayer)
+            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_1,
@@ -261,7 +260,7 @@ class TracksListViewModelTest {
     fun `onSortByClicked adds ShowSortBottomSheet UiEvent`() {
         with(generateViewModel()) {
             onSortByClicked()
-            assertContains(state.value.events, TracksListUiEvent.ShowSortBottomSheet)
+            assertContains(events.value, TracksListUiEvent.ShowSortBottomSheet)
         }
     }
 
@@ -270,7 +269,7 @@ class TracksListViewModelTest {
         with(generateViewModel()) {
             onTrackOverflowMenuIconClicked(TRACK_ID_0)
             assertContains(
-                state.value.events, TracksListUiEvent.OpenContextMenu(
+                events.value, TracksListUiEvent.OpenContextMenu(
                     trackId = TRACK_ID_0,
                     mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.ALL_TRACKS,
@@ -291,7 +290,7 @@ class TracksListViewModelTest {
         ) {
             onTrackOverflowMenuIconClicked(TRACK_ID_0)
             assertContains(
-                state.value.events, TracksListUiEvent.OpenContextMenu(
+                events.value, TracksListUiEvent.OpenContextMenu(
                     trackId = TRACK_ID_0,
                     mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.GENRE,
@@ -312,7 +311,7 @@ class TracksListViewModelTest {
         ) {
             onTrackOverflowMenuIconClicked(TRACK_ID_1)
             assertContains(
-                state.value.events, TracksListUiEvent.OpenContextMenu(
+                events.value, TracksListUiEvent.OpenContextMenu(
                     trackId = TRACK_ID_1,
                     mediaGroup = MediaGroup(
                         mediaGroupType = MediaGroupType.PLAYLIST,
@@ -390,7 +389,7 @@ class TracksListViewModelTest {
     fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertContains(state.value.events, TracksListUiEvent.NavigateUp)
+            assertContains(events.value, TracksListUiEvent.NavigateUp)
         }
     }
 

@@ -64,7 +64,6 @@ class AlbumsListViewModelTest {
                 albumsList = listOf(),
                 currentSort = MediaSortOption.YEAR,
                 sortOrder = MediaSortOrder.DESCENDING,
-                events = listOf()
             ),
             albumRepository = albumRepository,
             preferencesRepository = preferencesRepository
@@ -88,7 +87,7 @@ class AlbumsListViewModelTest {
             onAlbumClicked(ALBUM_ID_0)
             assertEquals(
                 listOf(AlbumsListUiEvent.NavigateToAlbum(albumId = ALBUM_ID_0)),
-                state.value.events
+                events
             )
         }
     }
@@ -97,7 +96,7 @@ class AlbumsListViewModelTest {
     fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(listOf(AlbumsListUiEvent.NavigateUp), state.value.events)
+            assertEquals(listOf(AlbumsListUiEvent.NavigateUp), events)
         }
     }
 
@@ -110,7 +109,7 @@ class AlbumsListViewModelTest {
                     sortOption = R.string.album_name,
                     sortOrder = MediaSortOrder.ASCENDING
                 )),
-                state.value.events
+                events
             )
         }
     }
@@ -147,7 +146,7 @@ class AlbumsListViewModelTest {
             onAlbumOverflowMenuIconClicked(albumId = ALBUM_ID_0)
             assertEquals(
                 listOf(AlbumsListUiEvent.OpenContextMenu(albumId = ALBUM_ID_0)),
-                state.value.events
+                events
             )
         }
     }

@@ -46,7 +46,6 @@ class MusicPlayerViewModelTest {
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
                 trackArt = "",
-                events = listOf()
             )
         )
     }
@@ -63,8 +62,7 @@ class MusicPlayerViewModelTest {
                     trackLengthMs = TRACK_LENGTH,
                     isPlaying = false,
                     currentPlaybackTimeMs = 0,
-                    events = listOf()
-                ), state.value
+                    ), state.value
             )
         }
     }
