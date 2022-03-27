@@ -146,6 +146,7 @@ dependencies {
     // Accompanist
     def accompanist_version = '0.24.5-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
     // Paging
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"

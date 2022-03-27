@@ -12,8 +12,6 @@ class LibraryStateProvider : PreviewParameterProvider<LibraryState> {
                 LibraryItem.Albums(count = 100),
                 LibraryItem.Genres(count = 1)
             ),
-            showPermissionDeniedDialog = false,
-            showPermissionExplanationDialog = false,
             events = listOf()
         )
     )

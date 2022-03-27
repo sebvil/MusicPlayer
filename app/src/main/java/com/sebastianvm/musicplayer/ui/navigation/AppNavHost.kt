@@ -27,10 +27,7 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(
-    navController: NavHostController,
-    requestPermission: (String) -> String,
-) {
+fun AppNavHost(navController: NavHostController, ) {
     val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
     Scaffold(bottomBar = bottomNavBar) { paddingValues ->
         NavHost(
@@ -39,10 +36,7 @@ fun AppNavHost(
             modifier = Modifier.padding(paddingValues)
         ) {
 
-            libraryGraph(
-                navController = navController,
-                requestPermission = requestPermission,
-            )
+            libraryGraph(navController = navController)
 
             queueNavDestination()
             musicPlayerNavDestination()
@@ -55,11 +49,10 @@ fun AppNavHost(
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.libraryGraph(
     navController: NavHostController,
-    requestPermission: (String) -> String,
 ) {
 
     navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
-        libraryNavDestination(navController, requestPermission)
+        libraryNavDestination(navController)
 
         tracksListNavDestination(navController)
         artistsNavDestination(navController)

@@ -8,15 +8,12 @@ import com.sebastianvm.musicplayer.ui.library.tracks.navigateToTracksRoot
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 
 
-fun NavGraphBuilder.libraryNavDestination(navController: NavController, requestPermission: (permission: String) -> String) {
+fun NavGraphBuilder.libraryNavDestination(navController: NavController) {
     composable(NavRoutes.LIBRARY_ROOT) {
         val screenViewModel = hiltViewModel<LibraryViewModel>()
         LibraryScreen(
             screenViewModel = screenViewModel,
             delegate = object : LibraryScreenActivityDelegate {
-                override fun getPermissionStatus(permission: String): String {
-                    return requestPermission(permission)
-                }
 
                 override fun navigateToLibraryScreen(route: String) {
                     if (route == NavRoutes.TRACKS_ROOT) {
