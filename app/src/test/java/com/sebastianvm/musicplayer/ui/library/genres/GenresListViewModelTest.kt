@@ -1,9 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.genres
 
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.sebastianvm.musicplayer.database.MusicDatabase
+import com.sebastianvm.musicplayer.database.daos.FakeGenreDao
+import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.genre
-import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.updateState
@@ -26,16 +29,29 @@ class GenresListViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
+    private lateinit var dataBase: MusicDatabase
+    private lateinit var genreDao: GenreDao
+
     private lateinit var genreRepository: GenreRepository
     private lateinit var preferencesRepository: PreferencesRepository
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
-        genreRepository = FakeGenreRepository(genres = listOf(
-            genre { genreName = GENRE_NAME_0 },
-            genre { genreName = GENRE_NAME_1 }
-        ))
+        dataBase = Room.databaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            MusicDatabase::class.java,
+            "music_database"
+        ).build()
+
+        genreDao = dataBase.genreDao
+
+        genreRepository = GenreRepository(
+            FakeGenreDao(genres = listOf(
+                genre { genreName = GENRE_NAME_0 },
+                genre { genreName = GENRE_NAME_1 }
+            )))
+
         preferencesRepository = PreferencesRepository(
             context = ApplicationProvider.getApplicationContext(),
             ioDispatcher = Dispatchers.Main

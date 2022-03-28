@@ -28,25 +28,26 @@ class GenresListViewModel @Inject constructor(
     genreRepository: GenreRepository,
     private val preferencesRepository: PreferencesRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
-) :
-    BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
+) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
         viewModelScope.launch(ioDispatcher) {
-            preferencesRepository.getGenresListSortOrder()
-                .combine(genreRepository.getGenres()) { sortOrder, genresList ->
-                    Pair(
-                        sortOrder,
-                        genresList
+            combine(
+                preferencesRepository.getGenresListSortOrder(),
+                genreRepository.getGenres()
+            ) { sortOrder, genresList ->
+                Pair(
+                    sortOrder,
+                    genresList
+                )
+            }.collect { (sortOrder, genresList) ->
+                setState {
+                    copy(
+                        sortOrder = sortOrder,
+                        genresList = genresList.sortedWith(getStringComparator(sortOrder) { item -> item.genreName }),
                     )
-                }.collect { (sortOrder, genresList) ->
-                    setState {
-                        copy(
-                            sortOrder = sortOrder,
-                            genresList = genresList.sortedWith(getStringComparator(sortOrder) { item -> item.genreName }),
-                        )
-                    }
                 }
+            }
         }
     }
 
