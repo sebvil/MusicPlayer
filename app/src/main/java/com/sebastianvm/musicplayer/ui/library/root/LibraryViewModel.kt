@@ -1,37 +1,45 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
-    initialState: LibraryState
+    initialState: LibraryState,
+    @IODispatcher ioDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
 
     init {
-        collect(musicRepository.getCounts()) { counts ->
-            setState {
-                copy(
-                    libraryItems = libraryItems.map { item ->
-                        when (item) {
-                            is LibraryItem.Tracks -> item.copy(count = counts.tracks)
-                            is LibraryItem.Artists -> item.copy(count = counts.artists)
-                            is LibraryItem.Albums -> item.copy(count = counts.albums)
-                            is LibraryItem.Genres -> item.copy(count = counts.genres)
-                            is LibraryItem.Playlists -> item.copy(count = counts.playlists)
+        viewModelScope.launch(ioDispatcher) {
+            musicRepository.getCounts().collect { counts ->
+                setState {
+                    copy(
+                        libraryItems = libraryItems.map { item ->
+                            when (item) {
+                                is LibraryItem.Tracks -> item.copy(count = counts.tracks)
+                                is LibraryItem.Artists -> item.copy(count = counts.artists)
+                                is LibraryItem.Albums -> item.copy(count = counts.albums)
+                                is LibraryItem.Genres -> item.copy(count = counts.genres)
+                                is LibraryItem.Playlists -> item.copy(count = counts.playlists)
+                            }
                         }
-                    }
-                )
+                    )
+                }
+
             }
         }
     }

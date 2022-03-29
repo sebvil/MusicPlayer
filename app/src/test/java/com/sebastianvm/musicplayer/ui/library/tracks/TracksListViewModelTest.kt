@@ -13,6 +13,7 @@ import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.util.mvvm.updateState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -21,6 +22,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -100,6 +102,7 @@ class TracksListViewModelTest {
     @Test
     fun `init for all tracks sets initial state`() = runTest {
         with(generateViewModel()) {
+            updateState()
             with(state.value) {
                 assertEquals(TracksListViewModel.ALL_TRACKS, tracksListTitle)
                 assertEquals(
@@ -135,6 +138,7 @@ class TracksListViewModelTest {
                 tracksListTitle = TRACK_GENRE_0
             )
         ) {
+            updateState()
             with(state.value) {
                 assertEquals(TRACK_GENRE_0, tracksListTitle)
                 assertEquals(
@@ -163,6 +167,7 @@ class TracksListViewModelTest {
                 tracksListTitle = TRACK_PLAYLIST_1
             )
         ) {
+            updateState()
             with(state.value) {
                 assertEquals(TRACK_PLAYLIST_1, tracksListTitle)
                 assertEquals(
@@ -182,11 +187,13 @@ class TracksListViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() {
+    fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID_0)
-            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
+            runCurrent()
+            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -196,8 +203,9 @@ class TracksListViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked for genre triggers playback, adds nav to player event`() {
+    fun `onTrackClicked for genre triggers playback, adds nav to player event`() = runTest{
         with(
             generateViewModel(
                 listGroupType = TracksListType.GENRE,
@@ -205,7 +213,8 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_0)
-            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
+            runCurrent()
+            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_0,
@@ -218,8 +227,9 @@ class TracksListViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() {
+    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() = runTest {
         with(
             generateViewModel(
                 listGroupType = TracksListType.PLAYLIST,
@@ -227,7 +237,8 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_1)
-            assertContains(events.value, TracksListUiEvent.NavigateToPlayer)
+            runCurrent()
+            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
                     TRACK_ID_1,

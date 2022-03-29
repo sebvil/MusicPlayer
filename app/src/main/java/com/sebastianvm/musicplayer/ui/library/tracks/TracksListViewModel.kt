@@ -51,30 +51,33 @@ class TracksListViewModel @Inject constructor(
             )
         }
 
-        collect(
-            tracksListFlow.combine(
+        viewModelScope.launch {
+            combine(
+                tracksListFlow,
                 preferencesRepository.getTracksListSortOptions(
                     tracksListType = state.value.tracksListType,
                     tracksListName = state.value.tracksListTitle
                 )
             ) { trackList, sortSettings ->
                 Pair(trackList, sortSettings)
-            }) { (tracksList, sortSettings) ->
-            setState {
-                copy(
-                    currentSort = sortSettings.sortOption,
-                    tracksList = tracksList.map { it.toTrackRowState(includeTrackNumber = false) }
-                        .sortedWith(
-                            getComparator(
-                                sortSettings.sortOrder,
-                                sortSettings.sortOption
-                            )
-                        ),
-                    sortOrder = sortSettings.sortOrder
-                )
+            }.collect { (tracksList, sortSettings) ->
+                setState {
+                    copy(
+                        currentSort = sortSettings.sortOption,
+                        tracksList = tracksList.map { it.toTrackRowState(includeTrackNumber = false) }
+                            .sortedWith(
+                                getComparator(
+                                    sortSettings.sortOrder,
+                                    sortSettings.sortOption
+                                )
+                            ),
+                        sortOrder = sortSettings.sortOrder
+                    )
+                }
             }
             addUiEvent(TracksListUiEvent.ScrollToTop)
         }
+
     }
 
     fun onTrackClicked(trackId: String) {
