@@ -2,6 +2,8 @@ package com.sebastianvm.musicplayer.repository.playback
 
 import android.net.Uri
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 interface MediaPlaybackRepository {
@@ -20,6 +22,8 @@ interface MediaPlaybackRepository {
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)
     suspend fun addToQueue(mediaIds: List<String>): Int
+    suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)
+    fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
 
 }
 

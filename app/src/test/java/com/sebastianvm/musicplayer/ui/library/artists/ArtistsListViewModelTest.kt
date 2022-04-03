@@ -4,7 +4,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -23,7 +23,7 @@ class ArtistsListViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var artistRepository: ArtistRepository
-    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
 
 
     @Before
@@ -41,7 +41,7 @@ class ArtistsListViewModelTest {
             }
         ))
 
-        preferencesRepository = PreferencesRepository(
+        preferencesRepository = SortPreferencesRepositoryImpl(
             context = ApplicationProvider.getApplicationContext(),
             ioDispatcher = Dispatchers.Main
         )

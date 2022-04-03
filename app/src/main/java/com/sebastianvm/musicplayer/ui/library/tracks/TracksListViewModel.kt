@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -33,7 +33,7 @@ import javax.inject.Inject
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
-    preferencesRepository: PreferencesRepository,
+    preferencesRepository: SortPreferencesRepositoryImpl,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUiEvent, TracksListState>(

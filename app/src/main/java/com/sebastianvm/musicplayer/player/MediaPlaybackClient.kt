@@ -14,8 +14,8 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
+import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoDataSource
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
@@ -37,7 +37,7 @@ import javax.inject.Singleton
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
     private val trackRepository: TrackRepository,
-    private val preferencesRepository: PreferencesRepository,
+    private val playbackInfoDataSource: PlaybackInfoDataSource,
 ) {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
@@ -69,7 +69,7 @@ class MediaPlaybackClient @Inject constructor(
 
     private fun prepareClient() {
         CoroutineScope(Dispatchers.Main).launch {
-            savedPlaybackInfo = preferencesRepository.getSavedPlaybackInfo()
+            savedPlaybackInfo = playbackInfoDataSource.getSavedPlaybackInfo()
                 .stateIn(CoroutineScope(Dispatchers.IO))
             controller?.also {
                 with(savedPlaybackInfo.value) {
@@ -179,7 +179,7 @@ class MediaPlaybackClient @Inject constructor(
                 tracks.map { it.toMediaItem() }
             }.first()
 
-            preferencesRepository.modifySavedPlaybackInfo {
+            playbackInfoDataSource.modifySavedPlaybackInfo {
                 SavedPlaybackInfo(
                     currentQueue = mediaGroup,
                     mediaId = mediaId,

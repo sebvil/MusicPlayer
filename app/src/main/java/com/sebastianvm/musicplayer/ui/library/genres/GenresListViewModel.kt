@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.genres
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class GenresListViewModel @Inject constructor(
     initialState: GenresListState,
     genreRepository: GenreRepository,
-    private val preferencesRepository: PreferencesRepository,
+    private val preferencesRepository: SortPreferencesRepositoryImpl,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 

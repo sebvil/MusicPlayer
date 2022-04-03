@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -19,7 +19,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @HiltViewModel
-class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState, private val preferencesRepository: PreferencesRepository) :
+class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheetState, private val preferencesRepository: SortPreferencesRepositoryImpl) :
     BaseViewModel<SortBottomSheetUiEvent, SortBottomSheetState>(
         initialState
     ) {

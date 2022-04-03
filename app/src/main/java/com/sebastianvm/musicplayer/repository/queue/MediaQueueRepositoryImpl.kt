@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.withUpdatedIndices
@@ -36,7 +36,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
     private val mediaQueueDao: MediaQueueDao,
     private val albumRepository: AlbumRepository,
     private val trackRepository: TrackRepository,
-    private val preferencesRepository: PreferencesRepository,
+    private val preferencesRepository: SortPreferencesRepositoryImpl,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : MediaQueueRepository {
     private suspend fun createQueue(
@@ -185,7 +185,7 @@ class MediaQueueRepositoryImpl @Inject constructor(
 
     override suspend fun addToQueue(trackIds: List<String>): Boolean {
         return withContext(ioDispatcher) {
-            val queue = preferencesRepository.getSavedPlaybackInfo()
+            val queue = mediaPlaybackRepository.getSavedPlaybackInfo()
                 .first().currentQueue.takeUnless { it.mediaGroupType == MediaGroupType.UNKNOWN }
                 ?: return@withContext false
             val index = mediaPlaybackRepository.addToQueue(trackIds)

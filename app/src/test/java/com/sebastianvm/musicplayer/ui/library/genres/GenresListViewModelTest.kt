@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.database.daos.FakeGenreDao
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.genre
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.util.mvvm.updateState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -27,7 +27,7 @@ class GenresListViewModelTest {
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private lateinit var genreRepository: GenreRepository
-    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -38,7 +38,7 @@ class GenresListViewModelTest {
                 genre { genreName = GENRE_NAME_1 }
             )))
 
-        preferencesRepository = PreferencesRepository(
+        preferencesRepository = SortPreferencesRepositoryImpl(
             context = ApplicationProvider.getApplicationContext(),
             ioDispatcher = Dispatchers.Main
         )

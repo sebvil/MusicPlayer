@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -36,14 +35,13 @@ class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val tracksRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    preferencesRepository: PreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
 ) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
 
     init {
-        collect(preferencesRepository.getSavedPlaybackInfo()) { playbackInfo ->
+        collect(mediaPlaybackRepository.getSavedPlaybackInfo()) { playbackInfo ->
             setState { copy(mediaGroup = playbackInfo.currentQueue) }
             val mediaQueue = mediaQueueRepository.getQueue(playbackInfo.currentQueue).first()
             setState {

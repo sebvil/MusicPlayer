@@ -2,10 +2,18 @@ package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
+import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
-class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackClient: MediaPlaybackClient) : MediaPlaybackRepository {
+class MediaPlaybackRepositoryImpl @Inject constructor(
+    private val mediaPlaybackClient: MediaPlaybackClient,
+    private val playbackInfoDataSource: PlaybackInfoDataSource,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+) : MediaPlaybackRepository {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
     override val nowPlayingIndex: MutableStateFlow<Int> = mediaPlaybackClient.currentIndex
 
@@ -47,10 +55,18 @@ class MediaPlaybackRepositoryImpl @Inject constructor(private val mediaPlaybackC
     }
 
     override suspend fun addToQueue(mediaIds: List<String>): Int {
-       return mediaPlaybackClient.addToQueue(mediaIds)
+        return mediaPlaybackClient.addToQueue(mediaIds)
     }
 
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
+    }
+
+    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+        playbackInfoDataSource.modifySavedPlaybackInfo(transform)
+    }
+
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
+        return playbackInfoDataSource.getSavedPlaybackInfo()
     }
 }

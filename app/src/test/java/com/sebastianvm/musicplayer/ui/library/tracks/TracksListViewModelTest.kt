@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
@@ -40,7 +40,7 @@ class TracksListViewModelTest {
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
-    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
     private lateinit var trackRepository: TrackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
@@ -48,7 +48,7 @@ class TracksListViewModelTest {
     @Before
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
-        preferencesRepository = PreferencesRepository(
+        preferencesRepository = SortPreferencesRepositoryImpl(
             context = ApplicationProvider.getApplicationContext(),
             ioDispatcher = Dispatchers.Main
         )
