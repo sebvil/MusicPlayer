@@ -26,7 +26,6 @@ object NavArgs {
     const val ARTIST_ID = "artistName"
     const val SCREEN = "screen"
     const val SORT_OPTION = "sortOption"
-    const val SORT_ORDER = "sortOrder"
     const val MEDIA_ID = "mediaId"
     const val MEDIA_TYPE = "mediaType"
     const val MEDIA_GROUP_ID = "mediaGroupId"
@@ -48,7 +47,8 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
     val navRoute = if (parameters.isEmpty()) {
         route
     } else {
-        "$route?" + parameters.joinToString("&") { s -> "${s.parameterName}=${s.value}" }
+        "$route?" + parameters.filter { it.value != null && (it.value.toString().isNotEmpty()) }
+            .joinToString("&") { s -> "${s.parameterName}=${s.value}" }
     }
     this.navigate(navRoute)
 }

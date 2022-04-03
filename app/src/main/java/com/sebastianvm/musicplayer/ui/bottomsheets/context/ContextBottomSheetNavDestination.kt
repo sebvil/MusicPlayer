@@ -35,7 +35,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_TYPE) { type = NavType.StringType },
-            navArgument(NavArgs.MEDIA_GROUP_ID) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_GROUP_ID) {
+                type = NavType.StringType
+                nullable = true
+            },
         )
     ) { backedStackEntry ->
         val sheetViewModel =

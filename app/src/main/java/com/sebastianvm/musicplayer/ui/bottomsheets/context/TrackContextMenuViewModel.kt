@@ -36,7 +36,7 @@ object InitialTrackContextMenuStateModule {
         val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
         val mediaGroupType =
             MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
-        val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
+        val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID) ?: ""
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
