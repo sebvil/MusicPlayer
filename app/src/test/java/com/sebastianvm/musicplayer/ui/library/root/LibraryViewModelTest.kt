@@ -12,8 +12,9 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertContains
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LibraryViewModelTest {
-    @OptIn(ExperimentalCoroutinesApi::class)
+
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
@@ -33,7 +34,6 @@ class LibraryViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init updates counts`() = runTest {
         with(generateViewModel()) {

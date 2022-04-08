@@ -1,28 +1,26 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
-import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesDataSource
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.util.mvvm.updateState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -40,7 +38,7 @@ class TracksListViewModelTest {
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
     private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
-    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
+    private lateinit var preferencesRepository: SortPreferencesRepository
     private lateinit var trackRepository: TrackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
@@ -48,10 +46,7 @@ class TracksListViewModelTest {
     @Before
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
-        preferencesRepository = SortPreferencesRepositoryImpl(
-            context = ApplicationProvider.getApplicationContext(),
-            ioDispatcher = Dispatchers.Main
-        )
+        preferencesRepository = SortPreferencesRepository(FakeSortPreferencesDataSource())
         trackRepository = FakeTrackRepository(
             tracks = listOf(fullTrackInfo {
                 track {
@@ -102,7 +97,7 @@ class TracksListViewModelTest {
     @Test
     fun `init for all tracks sets initial state`() = runTest {
         with(generateViewModel()) {
-            updateState()
+            advanceUntilIdle()
             with(state.value) {
                 assertEquals(TracksListViewModel.ALL_TRACKS, tracksListTitle)
                 assertEquals(
@@ -138,7 +133,7 @@ class TracksListViewModelTest {
                 tracksListTitle = TRACK_GENRE_0
             )
         ) {
-            updateState()
+            advanceUntilIdle()
             with(state.value) {
                 assertEquals(TRACK_GENRE_0, tracksListTitle)
                 assertEquals(
@@ -161,13 +156,8 @@ class TracksListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for playlist sets initial state`() = runTest {
-        with(
-            generateViewModel(
-                listGroupType = TracksListType.PLAYLIST,
-                tracksListTitle = TRACK_PLAYLIST_1
-            )
-        ) {
-            updateState()
+        with(generateViewModel(listGroupType = TracksListType.PLAYLIST, tracksListTitle = TRACK_PLAYLIST_1)) {
+            advanceUntilIdle()
             with(state.value) {
                 assertEquals(TRACK_PLAYLIST_1, tracksListTitle)
                 assertEquals(
@@ -192,7 +182,7 @@ class TracksListViewModelTest {
     fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
         with(generateViewModel()) {
             onTrackClicked(TRACK_ID_0)
-            runCurrent()
+            advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
@@ -213,7 +203,7 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_0)
-            runCurrent()
+            advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
@@ -237,7 +227,7 @@ class TracksListViewModelTest {
             )
         ) {
             onTrackClicked(TRACK_ID_1)
-            runCurrent()
+            advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
                 mediaPlaybackRepository.playFromId(
@@ -322,6 +312,7 @@ class TracksListViewModelTest {
     @Test
     fun `modifying sortOption changes order`() = runTest {
         with(generateViewModel()) {
+            advanceUntilIdle()
             preferencesRepository.modifyTrackListSortOptions(
                 mediaSortSettings = mediaSortSettings {
                     sortOption = MediaSortOption.TRACK
@@ -330,6 +321,7 @@ class TracksListViewModelTest {
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = TracksListViewModel.ALL_TRACKS
             )
+            advanceUntilIdle()
             assertEquals(MediaSortOption.TRACK, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
 
@@ -342,6 +334,7 @@ class TracksListViewModelTest {
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
+            advanceUntilIdle()
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
 
@@ -353,6 +346,7 @@ class TracksListViewModelTest {
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
+            advanceUntilIdle()
             assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
 
@@ -364,6 +358,7 @@ class TracksListViewModelTest {
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
+            advanceUntilIdle()
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
 
@@ -376,11 +371,12 @@ class TracksListViewModelTest {
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
+            advanceUntilIdle()
             assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
         }
     }
-
+  
     @Test
     fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {

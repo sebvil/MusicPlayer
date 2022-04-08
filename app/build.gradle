@@ -141,7 +141,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.0.0-alpha08'
 
     // Accompanist
-    def accompanist_version = '0.24.5-alpha'
+    def accompanist_version = '0.24.6-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
@@ -163,7 +163,7 @@ dependencies {
     // Junit
     testImplementation "junit:junit:4.13.2"
     // Coroutines tests
-    testImplementation  "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1-native-mt'
 
     testImplementation 'org.robolectric:robolectric:4.8-alpha-1'
     testImplementation "androidx.test:core-ktx:1.4.0"

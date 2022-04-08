@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.artists
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ArtistsListViewModel @Inject constructor(
     initialState: ArtistsListState,
     artistRepository: ArtistRepository,
-    private val preferencesRepository: SortPreferencesRepositoryImpl,
+    private val preferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<ArtistsListUiEvent, ArtistsListState>(initialState) {
 
     init {

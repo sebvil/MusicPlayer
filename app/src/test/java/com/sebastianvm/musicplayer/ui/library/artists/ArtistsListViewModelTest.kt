@@ -1,14 +1,13 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
-import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import kotlinx.coroutines.Dispatchers
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -23,7 +22,7 @@ class ArtistsListViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var artistRepository: ArtistRepository
-    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
+    private lateinit var preferencesRepository: SortPreferencesRepository
 
 
     @Before
@@ -41,10 +40,7 @@ class ArtistsListViewModelTest {
             }
         ))
 
-        preferencesRepository = SortPreferencesRepositoryImpl(
-            context = ApplicationProvider.getApplicationContext(),
-            ioDispatcher = Dispatchers.Main
-        )
+        preferencesRepository = mockk()
     }
 
     private fun generateViewModel(): ArtistsListViewModel {

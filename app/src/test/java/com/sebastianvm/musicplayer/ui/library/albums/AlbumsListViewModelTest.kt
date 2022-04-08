@@ -2,18 +2,17 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import android.content.ContentUris
 import android.provider.MediaStore
-import androidx.test.core.app.ApplicationProvider
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
-import kotlinx.coroutines.Dispatchers
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -28,14 +27,11 @@ class AlbumsListViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var albumRepository: AlbumRepository
-    private lateinit var preferencesRepository: SortPreferencesRepositoryImpl
+    private lateinit var preferencesRepository: SortPreferencesRepository
 
     @Before
     fun setUp() {
-        preferencesRepository = SortPreferencesRepositoryImpl(
-            context = ApplicationProvider.getApplicationContext(),
-            ioDispatcher = Dispatchers.Main
-        )
+        preferencesRepository = mockk()
         albumRepository = FakeAlbumRepository(
             fullAlbumInfo = listOf(
                 fullAlbumInfo {

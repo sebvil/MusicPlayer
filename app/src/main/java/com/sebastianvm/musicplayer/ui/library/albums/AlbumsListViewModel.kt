@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class AlbumsListViewModel @Inject constructor(
     initialState: AlbumsListState,
     albumRepository: AlbumRepository,
-    preferencesRepository: SortPreferencesRepositoryImpl,
+    preferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {

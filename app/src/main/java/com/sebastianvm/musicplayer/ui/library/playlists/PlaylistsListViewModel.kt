@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.playlists
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class PlaylistsListViewModel @Inject constructor(
     initialState: PlaylistsListState,
     private val playlistRepository: PlaylistRepository,
-    private val preferencesRepository: SortPreferencesRepositoryImpl,
+    private val preferencesRepository: SortPreferencesRepository,
 ) :
     BaseViewModel<PlaylistsListUiEvent, PlaylistsListState>(initialState) {
 

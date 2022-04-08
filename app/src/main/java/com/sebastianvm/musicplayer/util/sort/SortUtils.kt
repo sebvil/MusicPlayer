@@ -1,20 +1,8 @@
 package com.sebastianvm.musicplayer.util.sort
 
-import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
 import java.text.Collator
 
-
-fun mediaSortOptionFromResId(@StringRes resId: Int): MediaSortOption {
-    return when (resId) {
-        R.string.track_name -> MediaSortOption.TRACK
-        R.string.artist_name -> MediaSortOption.ARTIST
-        R.string.album_name -> MediaSortOption.ALBUM
-        R.string.year -> MediaSortOption.YEAR
-        R.string.track_number -> MediaSortOption.TRACK_NUMBER
-        else -> throw IllegalStateException("Unknown sort option")
-    }
-}
 
 val MediaSortOption.id: Int
     get() = when (this) {
@@ -59,3 +47,4 @@ fun <T> getLongComparator(
         compareBy { x: T -> sortBy(x) }.reversed()
     }
 }
+

@@ -24,7 +24,7 @@ class LibraryViewModel @Inject constructor(
 ) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
 
     init {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             musicRepository.getCounts().collect { counts ->
                 setState {
                     copy(

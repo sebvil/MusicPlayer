@@ -3,11 +3,10 @@ package com.sebastianvm.musicplayer.ui.library.genres
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
@@ -17,7 +16,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,12 +24,11 @@ import javax.inject.Inject
 class GenresListViewModel @Inject constructor(
     initialState: GenresListState,
     genreRepository: GenreRepository,
-    private val preferencesRepository: SortPreferencesRepositoryImpl,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+    private val preferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             combine(
                 preferencesRepository.getGenresListSortOrder(),
                 genreRepository.getGenres()
