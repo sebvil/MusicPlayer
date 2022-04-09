@@ -3,19 +3,29 @@ package com.sebastianvm.musicplayer.ui.queue
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
-import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenu
-import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuDelegate
-import com.sebastianvm.musicplayer.ui.components.M3ExposedDropDownMenuState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnIndexed
@@ -47,17 +57,10 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 screenViewModel.handle(QueueUserAction.TrackClicked(trackId))
             }
 
-            override fun toggleExpanded() {
-                screenViewModel.handle(QueueUserAction.DropdownMenuClicked)
+            override fun optionChosen(queue: MediaQueue) {
+                screenViewModel.handle(QueueUserAction.DropdownMenuOptionChosen(queue))
             }
 
-            override fun optionChosen(newOption: MediaQueue) {
-                screenViewModel.handle(QueueUserAction.DropdownMenuOptionChosen(newOption))
-            }
-
-            override fun getOptionDisplayName(option: MediaQueue): String {
-                return option.queueName
-            }
         })
     }
 }
@@ -72,31 +75,57 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
     }
 }
 
-interface QueueScreenDelegate : DraggableListItemDelegate,
-    M3ExposedDropDownMenuDelegate<MediaQueue> {
+interface QueueScreenDelegate : DraggableListItemDelegate {
     fun onTrackClicked(trackId: String) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
+    fun optionChosen(queue: MediaQueue) = Unit
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
+    val focusManager = LocalFocusManager.current
+
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = isDropdownExpanded, block = { if (!isDropdownExpanded) focusManager.clearFocus() })
     Column {
-        M3ExposedDropDownMenu(
-            state = M3ExposedDropDownMenuState(
-                expanded = state.dropdownExpanded,
-                label = stringResource(id = R.string.queue),
-                options = state.queues,
-                chosenOption = state.chosenQueue ?: MediaQueue(
-                    mediaGroupType = MediaGroupType.UNKNOWN,
-                    groupMediaId = "",
-                    queueName = stringResource(id = R.string.no_queue)
-                )
-            ),
-            delegate = delegate,
+        ExposedDropdownMenuBox(
+            expanded = isDropdownExpanded,
+            onExpandedChange = { isExpanded ->
+                isDropdownExpanded = isExpanded
+            },
             modifier = Modifier
                 .padding(horizontal = AppDimensions.spacing.medium)
                 .padding(top = AppDimensions.spacing.medium)
-        )
+        ) {
+            OutlinedTextField(
+                readOnly = true,
+                value = state.chosenQueue?.queueName ?: stringResource(id = R.string.no_queue),
+                onValueChange = { },
+                label = { Text(text = stringResource(id = R.string.queue)) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = state.dropdownExpanded
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            ExposedDropdownMenu(
+                expanded = isDropdownExpanded,
+                onDismissRequest = { isDropdownExpanded = false },
+            ) {
+                state.queues.forEach { selectionOption ->
+                    DropdownMenuItem(
+                        onClick = {
+                            delegate.optionChosen(selectionOption)
+                            isDropdownExpanded = false
+                        },
+                    ) {
+                        Text(text = selectionOption.queueName)
+                    }
+                }
+            }
+        }
 
         SortableLazyColumnIndexed(
             state = SortableLazyColumnState(
@@ -104,7 +133,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
                 state.draggedItemFinalIndex,
                 state.draggedItem
             ),
-            key = { _, item -> "${item.trackRowState.trackId}-${item.queuePosition}"},
+            key = { _, item -> "${item.trackRowState.trackId}-${item.queuePosition}" },
             delegate = delegate
         ) { index, queueItem ->
             val item = queueItem.trackRowState

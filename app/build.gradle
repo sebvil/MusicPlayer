@@ -138,7 +138,7 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha08'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha09'
 
     // Accompanist
     def accompanist_version = '0.24.6-alpha'
