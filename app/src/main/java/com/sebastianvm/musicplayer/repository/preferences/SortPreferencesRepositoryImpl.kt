@@ -1,88 +1,117 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import androidx.datastore.core.DataStore
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.SortSettings
 import com.sebastianvm.musicplayer.util.sort.copy
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SortPreferencesDataSourceImpl @Inject constructor(
+class SortPreferencesRepositoryImpl @Inject constructor(
     private val sortSettingsDataStore: DataStore<SortSettings>,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
-) : SortPreferencesDataSource {
-    override suspend fun modifyAllTracksListSortOptions(mediaSortSettings: MediaSortSettings) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { oldSettings ->
-                oldSettings.copy {
-                    allTracksSortSettings = mediaSortSettings
-                }
+) : SortPreferencesRepository {
+
+    private suspend fun modifyAllTracksListSortOptions(mediaSortSettings: MediaSortSettings) {
+        sortSettingsDataStore.updateData { oldSettings ->
+            oldSettings.copy {
+                allTracksSortSettings = mediaSortSettings
             }
         }
+
     }
 
-    override suspend fun modifyGenreTracksListSortOptions(
+    private suspend fun modifyGenreTracksListSortOptions(
         genreName: String,
         mediaSortSettings: MediaSortSettings
     ) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { oldSettings ->
-                oldSettings.copy {
-                    genreTrackListSortSettings[genreName] = mediaSortSettings
-                }
+        sortSettingsDataStore.updateData { oldSettings ->
+            oldSettings.copy {
+                genreTrackListSortSettings[genreName] = mediaSortSettings
             }
         }
+
     }
 
-    override suspend fun modifyPlaylistTracksListSortOptions(
+    private suspend fun modifyPlaylistTracksListSortOptions(
         playlistName: String,
         mediaSortSettings: MediaSortSettings
     ) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { oldSettings ->
-                oldSettings.copy {
-                    playlistTrackListSortSettings[playlistName] = mediaSortSettings
-                }
+        sortSettingsDataStore.updateData { oldSettings ->
+            oldSettings.copy {
+                playlistTrackListSortSettings[playlistName] = mediaSortSettings
             }
+        }
+
+    }
+
+    override suspend fun modifyTrackListSortOptions(
+        mediaSortSettings: MediaSortSettings,
+        tracksListType: TracksListType,
+        tracksListName: String,
+    ) {
+        when (tracksListType) {
+            TracksListType.ALL_TRACKS -> modifyAllTracksListSortOptions(
+                mediaSortSettings
+            )
+            TracksListType.GENRE -> modifyGenreTracksListSortOptions(
+                tracksListName,
+                mediaSortSettings
+            )
+            TracksListType.PLAYLIST -> modifyPlaylistTracksListSortOptions(
+                tracksListName,
+                mediaSortSettings
+            )
         }
     }
 
-    override fun getAllTracksListSortOptions(): Flow<MediaSortSettings> {
+    private fun getAllTracksListSortOptions(): Flow<MediaSortSettings> {
         return sortSettingsDataStore.data.map { sortSettings ->
             sortSettings.allTracksSortSettings
         }
     }
 
-    override fun getGenreTracksListSortOptions(genreName: String): Flow<MediaSortSettings> {
+    private fun getGenreTracksListSortOptions(genreName: String): Flow<MediaSortSettings> {
         return sortSettingsDataStore.data.map { sortSettings ->
             sortSettings.genreTrackListSortSettingsMap[genreName]
                 ?: MediaSortSettings.getDefaultInstance()
         }
     }
 
-    override fun getPlaylistTracksListSortOptions(playlistName: String): Flow<MediaSortSettings> {
+    private fun getPlaylistTracksListSortOptions(playlistName: String): Flow<MediaSortSettings> {
         return sortSettingsDataStore.data.map { sortSettings ->
             sortSettings.playlistTrackListSortSettingsMap[playlistName]
                 ?: MediaSortSettings.getDefaultInstance()
         }
     }
 
+    override fun getTracksListSortOptions(
+        tracksListType: TracksListType,
+        tracksListName: String
+    ): Flow<MediaSortSettings> {
+        return when (tracksListType) {
+            TracksListType.ALL_TRACKS -> getAllTracksListSortOptions()
+            TracksListType.GENRE -> getGenreTracksListSortOptions(
+                tracksListName
+            )
+            TracksListType.PLAYLIST -> getPlaylistTracksListSortOptions(
+                tracksListName
+            )
+        }
+    }
+
 
     override suspend fun modifyAlbumsListSortOptions(mediaSortSettings: MediaSortSettings) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.copy {
-                    albumsListSortSettings = mediaSortSettings
-                }
+        sortSettingsDataStore.updateData { sortSettings ->
+            sortSettings.copy {
+                albumsListSortSettings = mediaSortSettings
             }
         }
+
     }
 
 
@@ -100,11 +129,9 @@ class SortPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.copy {
-                    artistListSortSettings = mediaSortOrder
-                }
+        sortSettingsDataStore.updateData { sortSettings ->
+            sortSettings.copy {
+                artistListSortSettings = mediaSortOrder
             }
         }
     }
@@ -117,13 +144,12 @@ class SortPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.copy {
-                    genresListSortSettings = mediaSortOrder
-                }
+        sortSettingsDataStore.updateData { sortSettings ->
+            sortSettings.copy {
+                genresListSortSettings = mediaSortOrder
             }
         }
+
     }
 
 
@@ -134,13 +160,12 @@ class SortPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {
-        withContext(ioDispatcher) {
-            sortSettingsDataStore.updateData { sortSettings ->
-                sortSettings.copy {
-                    playlistsListSortSettings = mediaSortOrder
-                }
+        sortSettingsDataStore.updateData { sortSettings ->
+            sortSettings.copy {
+                playlistsListSortSettings = mediaSortOrder
             }
         }
+
     }
 
 

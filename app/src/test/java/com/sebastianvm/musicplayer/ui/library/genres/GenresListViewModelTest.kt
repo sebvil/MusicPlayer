@@ -4,7 +4,7 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.genreFixtureList
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesDataSource
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.Fixtures
@@ -35,7 +35,7 @@ class GenresListViewModelTest {
     fun setUp() {
         genres = genreFixtureList(10)
         genreRepository = FakeGenreRepository(genres)
-        preferencesRepository = SortPreferencesRepository(FakeSortPreferencesDataSource())
+        preferencesRepository = FakeSortPreferencesRepository()
 
     }
 

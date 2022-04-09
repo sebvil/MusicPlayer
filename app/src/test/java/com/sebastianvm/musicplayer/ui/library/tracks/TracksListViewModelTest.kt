@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesDataSource
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
@@ -30,10 +30,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertContains
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class TracksListViewModelTest {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
@@ -42,11 +42,10 @@ class TracksListViewModelTest {
     private lateinit var trackRepository: TrackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
-        preferencesRepository = SortPreferencesRepository(FakeSortPreferencesDataSource())
+        preferencesRepository = FakeSortPreferencesRepository()
         trackRepository = FakeTrackRepository(
             tracks = listOf(fullTrackInfo {
                 track {
@@ -93,7 +92,6 @@ class TracksListViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for all tracks sets initial state`() = runTest {
         with(generateViewModel()) {
@@ -124,7 +122,6 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for genre sets initial state`() = runTest {
         with(
@@ -153,7 +150,6 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init for playlist sets initial state`() = runTest {
         with(generateViewModel(listGroupType = TracksListType.PLAYLIST, tracksListTitle = TRACK_PLAYLIST_1)) {
@@ -177,7 +173,6 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
         with(generateViewModel()) {
@@ -193,7 +188,6 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onTrackClicked for genre triggers playback, adds nav to player event`() = runTest{
         with(
@@ -217,7 +211,6 @@ class TracksListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onTrackClicked for playlist triggers playback, adds nav to player event`() = runTest {
         with(

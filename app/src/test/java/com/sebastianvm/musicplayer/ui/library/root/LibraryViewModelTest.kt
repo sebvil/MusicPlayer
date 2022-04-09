@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.library.root
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -30,7 +29,6 @@ class LibraryViewModelTest {
                 ),
             ),
             musicRepository = FakeMusicRepository(),
-            ioDispatcher = Dispatchers.Main
         )
     }
 

@@ -5,14 +5,12 @@ import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +18,6 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState,
-    @IODispatcher ioDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
 
     init {
