@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -81,13 +80,15 @@ interface QueueScreenDelegate : DraggableListItemDelegate {
     fun optionChosen(queue: MediaQueue) = Unit
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
     val focusManager = LocalFocusManager.current
 
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = isDropdownExpanded, block = { if (!isDropdownExpanded) focusManager.clearFocus() })
+    LaunchedEffect(
+        key1 = isDropdownExpanded,
+        block = { if (!isDropdownExpanded) focusManager.clearFocus(force = true) })
     Column {
         ExposedDropdownMenuBox(
             expanded = isDropdownExpanded,
@@ -116,13 +117,12 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
             ) {
                 state.queues.forEach { selectionOption ->
                     DropdownMenuItem(
+                        text = { Text(text = selectionOption.queueName) },
                         onClick = {
                             delegate.optionChosen(selectionOption)
                             isDropdownExpanded = false
                         },
-                    ) {
-                        Text(text = selectionOption.queueName)
-                    }
+                    )
                 }
             }
         }

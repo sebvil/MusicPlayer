@@ -23,7 +23,6 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 /**
  * This is only used for previews as of right now
  */
-@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 @ExperimentalMaterialApi
 fun M3ModalBottomSheetLayout(
