@@ -7,4 +7,8 @@ object Fixtures {
             .map { allowedChars.random() }
             .joinToString("")
     }
+
+    inline fun <reified T: Enum<T>> getRandomEnum(validOptions: List<T> = listOf()): T {
+        return (validOptions.ifEmpty { enumValues<T>().toList() }).random()
+    }
 }

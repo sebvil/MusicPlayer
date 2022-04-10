@@ -22,6 +22,7 @@ interface MediaPlaybackRepository {
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)
     suspend fun addToQueue(mediaIds: List<String>): Int
+    fun getQueue(): Flow<List<String>>
     suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)
     fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
 

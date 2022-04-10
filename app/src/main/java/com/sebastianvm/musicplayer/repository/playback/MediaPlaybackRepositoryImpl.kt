@@ -3,8 +3,6 @@ package com.sebastianvm.musicplayer.repository.playback
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -12,7 +10,6 @@ import javax.inject.Inject
 class MediaPlaybackRepositoryImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val playbackInfoDataSource: PlaybackInfoDataSource,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : MediaPlaybackRepository {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
     override val nowPlayingIndex: MutableStateFlow<Int> = mediaPlaybackClient.currentIndex
@@ -56,6 +53,10 @@ class MediaPlaybackRepositoryImpl @Inject constructor(
 
     override suspend fun addToQueue(mediaIds: List<String>): Int {
         return mediaPlaybackClient.addToQueue(mediaIds)
+    }
+
+    override fun getQueue(): Flow<List<String>> {
+        return mediaPlaybackClient.queue
     }
 
     override fun seekToTrackPosition(position: Long) {

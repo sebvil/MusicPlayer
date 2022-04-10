@@ -11,7 +11,6 @@ class QueueStatePreviewParameterProvider : PreviewParameterProvider<QueueState> 
             draggedItem = null,
             nowPlayingTrackIndex = -1,
             dropdownExpanded = false,
-            chosenQueue = null,
         )
     )
 }

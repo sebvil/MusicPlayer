@@ -51,6 +51,7 @@ class MediaPlaybackClient @Inject constructor(
             currentPlayTimeMs = 0,
         )
     )
+    val queue: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
     val nowPlaying: MutableStateFlow<MediaMetadata?> = MutableStateFlow(null)
     val currentIndex: MutableStateFlow<Int> = MutableStateFlow(-1)
     private lateinit var savedPlaybackInfo: StateFlow<SavedPlaybackInfo>
@@ -130,6 +131,9 @@ class MediaPlaybackClient @Inject constructor(
 
                 override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                     currentIndex.value = controller.currentMediaItemIndex
+                    CoroutineScope(Dispatchers.Main).launch {
+                        updateQueue()
+                    }
                 }
 
                 override fun onPlayerError(error: PlaybackException) {
@@ -244,6 +248,18 @@ class MediaPlaybackClient @Inject constructor(
             artworkUri = artworkUri ?: Uri.EMPTY,
             trackDurationMs = duration
         )
+    }
+
+    suspend fun updateQueue() {
+        val controllerNotNull = controller ?: return
+        val currentIndex = controllerNotNull.currentMediaItemIndex
+        val timeline = controllerNotNull.currentTimeline
+        withContext(Dispatchers.Main) {
+            val newQueue = (currentIndex until timeline.windowCount).map {
+                timeline.getWindow(it, Timeline.Window()).mediaItem.mediaId
+            }
+            queue.value = newQueue
+        }
     }
 
 }
