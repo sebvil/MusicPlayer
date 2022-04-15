@@ -5,18 +5,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
 
 @Composable
 fun PlaylistScreen(screenViewModel: PlaylistViewModel) {
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            TODO("Not yet implemented")
-        },
-    ) { state ->
-        PlaylistLayout(state = state)
-    }
+//    Screen(
+//        screenViewModel = screenViewModel,
+//        eventHandler = { event ->
+//            TODO("Not yet implemented")
+//        },
+//    ) { state ->
+//        PlaylistLayout(state = state)
+//    }
 }
 
 
