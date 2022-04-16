@@ -8,11 +8,10 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.getLongComparator
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
-import com.sebastianvm.musicplayer.util.sort.id
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +31,7 @@ class AlbumsListViewModel @Inject constructor(
 
     init {
         collect(
-            preferencesRepository.getAlbumsListSortOptions()
+            preferencesRepository.getAlbumsListSortPreferences()
                 .combine(albumRepository.getAlbums()) { sortSettings, albums ->
                     Pair(sortSettings, albums)
                 }) { (sortSettings, albums) ->
@@ -59,7 +58,7 @@ class AlbumsListViewModel @Inject constructor(
     fun onSortByClicked() {
         addUiEvent(
             AlbumsListUiEvent.ShowSortBottomSheet(
-                sortOption = state.value.currentSort.id,
+                sortOption = state.value.currentSort.stringId,
                 sortOrder = state.value.sortOrder
             )
         )
@@ -71,20 +70,19 @@ class AlbumsListViewModel @Inject constructor(
 
     private fun getComparator(
         sortOrder: MediaSortOrder,
-        sortOption: MediaSortOption
+        sortOption: AlbumListSortOptions
     ): Comparator<AlbumRowState> {
         return when (sortOption) {
-            MediaSortOption.ARTIST -> getStringComparator(sortOrder) { albumRowState -> albumRowState.artists }
-            MediaSortOption.ALBUM -> getStringComparator(sortOrder) { albumRowState -> albumRowState.albumName }
-            MediaSortOption.YEAR -> getLongComparator(sortOrder) { albumRowState -> albumRowState.year }
-            else -> throw throw IllegalStateException("Invalid sort option for Albums list: $sortOption")
+            AlbumListSortOptions.ARTIST -> getStringComparator(sortOrder) { albumRowState -> albumRowState.artists }
+            AlbumListSortOptions.ALBUM -> getStringComparator(sortOrder) { albumRowState -> albumRowState.albumName }
+            AlbumListSortOptions.YEAR -> getLongComparator(sortOrder) { albumRowState -> albumRowState.year }
         }
     }
 }
 
 data class AlbumsListState(
     val albumsList: List<AlbumRowState>,
-    val currentSort: MediaSortOption,
+    val currentSort: AlbumListSortOptions,
     val sortOrder: MediaSortOrder
 ) : State
 
@@ -97,7 +95,7 @@ object InitialAlbumsListStateModule {
     fun initialAlbumsStateProvider(): AlbumsListState {
         return AlbumsListState(
             albumsList = listOf(),
-            currentSort = MediaSortOption.ALBUM,
+            currentSort = AlbumListSortOptions.ALBUM,
             sortOrder = MediaSortOrder.ASCENDING,
         )
     }

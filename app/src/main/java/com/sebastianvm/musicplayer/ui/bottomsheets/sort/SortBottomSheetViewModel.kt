@@ -33,7 +33,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
 //        }
 //
 //        viewModelScope.launch {
-//            preferencesRepository.modifyAlbumsListSortOptions(
+//            preferencesRepository.modifyAlbumsListSortPreferences(
 //                mediaSortSettings = mediaSortSettings {
 //                    sortOption = newSortOption
 //                    this.sortOrder = sortOrder
@@ -46,7 +46,7 @@ class SortBottomSheetViewModel @Inject constructor(initialState: SortBottomSheet
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionSelected -> {
 //                viewModelScope.launch {
-//                    preferencesRepository.modifyAlbumsListSortOptions(
+//                    preferencesRepository.modifyAlbumsListSortPreferences(
 //                        mediaSortSettings = mediaSortSettings {
 //                            sortOption = action.sortOption
 //                            this.sortOrder = sortOrder

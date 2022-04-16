@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.sebastianvm.musicplayer.util.sort.SortSettings
-import com.sebastianvm.musicplayer.util.sort.SortSettingsSerializer
+import com.sebastianvm.musicplayer.util.sort.SortPreferences
+import com.sebastianvm.musicplayer.util.sort.SortPreferencesSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +21,9 @@ object SortPreferencesDataStoreModule {
 
     @Singleton
     @Provides
-    fun provideSortSettingsDataStore(@ApplicationContext appContext: Context): DataStore<SortSettings> {
+    fun provideSortPreferencesDataStore(@ApplicationContext appContext: Context): DataStore<SortPreferences> {
         return DataStoreFactory.create(
-            serializer = SortSettingsSerializer,
+            serializer = SortPreferencesSerializer,
             corruptionHandler = null,
             migrations = listOf(),
             produceFile = { appContext.dataStoreFile(SORT_SETTINGS_DATA_STORE_FILE_NAME) },

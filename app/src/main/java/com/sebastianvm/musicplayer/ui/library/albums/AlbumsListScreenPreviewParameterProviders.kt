@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.albums
 import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
+import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsListState> {
@@ -40,7 +40,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
                     year = 2014
                 ),
             ),
-            currentSort = MediaSortOption.ALBUM,
+            currentSort = AlbumListSortOptions.ALBUM,
             sortOrder = MediaSortOrder.ASCENDING,
         )
     )

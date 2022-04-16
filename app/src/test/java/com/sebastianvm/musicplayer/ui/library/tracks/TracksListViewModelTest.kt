@@ -16,7 +16,6 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -307,10 +306,7 @@ class TracksListViewModelTest {
         with(generateViewModel()) {
             advanceUntilIdle()
             preferencesRepository.modifyTrackListSortOptions(
-                mediaSortSettings = mediaSortSettings {
-                    sortOption = MediaSortOption.TRACK
-                    sortOrder = MediaSortOrder.DESCENDING
-                },
+                ,
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = TracksListViewModel.ALL_TRACKS
             )
@@ -320,10 +316,7 @@ class TracksListViewModelTest {
 
 
             preferencesRepository.modifyTrackListSortOptions(
-                mediaSortSettings = mediaSortSettings {
-                    sortOption = MediaSortOption.ALBUM
-                    sortOrder = MediaSortOrder.DESCENDING
-                },
+                ,
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
@@ -332,10 +325,7 @@ class TracksListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
 
             preferencesRepository.modifyTrackListSortOptions(
-                mediaSortSettings = mediaSortSettings {
-                    sortOption = MediaSortOption.ALBUM
-                    sortOrder = MediaSortOrder.ASCENDING
-                },
+                ,
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
@@ -344,10 +334,7 @@ class TracksListViewModelTest {
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
 
             preferencesRepository.modifyTrackListSortOptions(
-                mediaSortSettings = mediaSortSettings {
-                    sortOption = MediaSortOption.ARTIST
-                    sortOrder = MediaSortOrder.ASCENDING
-                },
+                ,
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )
@@ -357,10 +344,7 @@ class TracksListViewModelTest {
 
 
             preferencesRepository.modifyTrackListSortOptions(
-                mediaSortSettings = mediaSortSettings {
-                    sortOption = MediaSortOption.ARTIST
-                    sortOrder = MediaSortOrder.DESCENDING
-                },
+                ,
                 tracksListType = TracksListType.ALL_TRACKS,
                 tracksListName = ""
             )

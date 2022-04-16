@@ -3,22 +3,32 @@ package com.sebastianvm.musicplayer.util.sort
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 
 @Suppress("BlockingMethodInNonBlockingContext")
-object SortSettingsSerializer : Serializer<SortSettings> {
-    override val defaultValue: SortSettings = SortSettings.getDefaultInstance()
+object SortPreferencesSerializer : Serializer<SortPreferences> {
 
-    override suspend fun readFrom(input: InputStream): SortSettings {
+    private val serializer = SortPreferences.serializer()
+
+    override val defaultValue = SortPreferences()
+
+    override suspend fun readFrom(input: InputStream): SortPreferences {
         try {
-            return SortSettings.parseFrom(input)
-        } catch (exception: InvalidProtocolBufferException) {
-            throw CorruptionException("Cannot read proto.", exception)
+            return Json.decodeFromString(
+                serializer, input.readBytes().decodeToString()
+            )
+        } catch (serialization: SerializationException) {
+            throw CorruptionException("Unable to read UserPrefs", serialization)
         }
     }
 
-    override suspend fun writeTo(t: SortSettings, output: OutputStream) {
-        t.writeTo(output)
+    override suspend fun writeTo(t: SortPreferences, output: OutputStream) {
+        output.write(
+            Json.encodeToString(serializer, t)
+                .encodeToByteArray()
+        )
     }
 }

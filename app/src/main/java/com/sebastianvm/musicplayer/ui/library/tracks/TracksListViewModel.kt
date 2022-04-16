@@ -15,8 +15,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
 import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import dagger.Module
 import dagger.Provides
@@ -46,15 +46,12 @@ class TracksListViewModel @Inject constructor(
             TracksListType.GENRE -> trackRepository.getTracksForGenre(
                 genreName = state.value.tracksListTitle
             )
-            TracksListType.PLAYLIST -> trackRepository.getTracksForPlaylist(
-                playlistName = state.value.tracksListTitle
-            )
         }
 
         viewModelScope.launch {
             combine(
                 tracksListFlow,
-                preferencesRepository.getTracksListSortOptions(
+                preferencesRepository.getTracksListSortPreferences(
                     tracksListType = state.value.tracksListType,
                     tracksListName = state.value.tracksListTitle
                 )
@@ -86,7 +83,6 @@ class TracksListViewModel @Inject constructor(
                 mediaGroupType = when (state.value.tracksListType) {
                     TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                     TracksListType.GENRE -> MediaGroupType.GENRE
-                    TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
                 },
                 mediaId = state.value.tracksListTitle
             )
@@ -105,7 +101,6 @@ class TracksListViewModel @Inject constructor(
             mediaGroupType = when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                 TracksListType.GENRE -> MediaGroupType.GENRE
-                TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
             },
             mediaId = state.value.tracksListTitle.ifEmpty { ALL_TRACKS }
         )
@@ -118,14 +113,13 @@ class TracksListViewModel @Inject constructor(
 
     private fun getComparator(
         sortOrder: MediaSortOrder,
-        sortOption: MediaSortOption
+        sortOption: TrackListSortOptions
     ): Comparator<TrackRowState> {
         return getStringComparator(sortOrder) { trackRowState ->
             when (sortOption) {
-                MediaSortOption.TRACK -> trackRowState.trackName
-                MediaSortOption.ARTIST -> trackRowState.artists
-                MediaSortOption.ALBUM -> trackRowState.albumName
-                else -> throw IllegalStateException("Unknown sort option for tracks list: $sortOption")
+                TrackListSortOptions.TRACK -> trackRowState.trackName
+                TrackListSortOptions.ARTIST -> trackRowState.artists
+                TrackListSortOptions.ALBUM -> trackRowState.albumName
             }
         }
     }
@@ -141,7 +135,7 @@ data class TracksListState(
     val tracksListTitle: String,
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
-    val currentSort: MediaSortOption,
+    val currentSort: TrackListSortOptions,
     val sortOrder: MediaSortOrder
 ) : State
 
@@ -159,7 +153,7 @@ object InitialTracksListStateModule {
             tracksListTitle = listName,
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
-            currentSort = MediaSortOption.TRACK,
+            currentSort = TrackListSortOptions.TRACK,
             sortOrder = MediaSortOrder.ASCENDING,
         )
     }

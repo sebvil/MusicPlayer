@@ -152,7 +152,7 @@ class AlbumsListViewModelTest {
     @Test
     fun `modifying sortOption changes order`() = runTest {
         with(generateViewModel()) {
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ALBUM
                 sortOrder = MediaSortOrder.DESCENDING
             })
@@ -160,7 +160,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.DESCENDING
             })
@@ -168,7 +168,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.ASCENDING
             })
@@ -176,7 +176,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_0, ALBUM_ROW_1), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.ASCENDING
             })
@@ -184,7 +184,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.DESCENDING
             })

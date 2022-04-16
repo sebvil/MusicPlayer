@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
 import androidx.lifecycle.SavedStateHandle
+import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -18,7 +19,7 @@ class PlaylistViewModel @Inject constructor(initialState: PlaylistState) :
     BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
 }
 
-data class PlaylistState(val playlistName: String) : State
+data class PlaylistState(val playlistName: String, val tracksList: List<TrackRowState>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -26,7 +27,7 @@ object InitialPlaylistStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistStateProvider(savedStateHandle: SavedStateHandle): PlaylistState {
-        return PlaylistState(playlistName = "")
+        return PlaylistState(playlistName = "", tracksList = listOf())
     }
 }
 

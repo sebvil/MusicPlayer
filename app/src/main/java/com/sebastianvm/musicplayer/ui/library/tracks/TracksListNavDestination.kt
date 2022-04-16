@@ -77,11 +77,3 @@ fun NavController.navigateToGenre(genreName: String) {
         NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.GENRE)
     )
 }
-
-fun NavController.navigateToPlaylist(playlistName: String) {
-    navigateTo(
-        NavRoutes.TRACKS_ROOT,
-        NavArgument(NavArgs.TRACK_LIST_NAME, playlistName),
-        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.PLAYLIST)
-    )
-}
