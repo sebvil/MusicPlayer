@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
 import dagger.Module
 import dagger.Provides
@@ -16,10 +15,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GenresListViewModel @Inject constructor(
     initialState: GenresListState,
@@ -29,19 +30,17 @@ class GenresListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                preferencesRepository.getGenresListSortOrder(),
-                genreRepository.getGenres()
-            ) { sortOrder, genresList ->
-                Pair(
-                    sortOrder,
-                    genresList
-                )
-            }.collect { (sortOrder, genresList) ->
+            preferencesRepository.getGenresListSortOrder().flatMapLatest {
                 setState {
                     copy(
-                        sortOrder = sortOrder,
-                        genresList = genresList.sortedWith(getStringComparator(sortOrder) { item -> item.genreName }),
+                        sortOrder = it
+                    )
+                }
+                genreRepository.getGenresSorted(sortOrder = it)
+            }.collect {  genresList ->
+                setState {
+                    copy(
+                        genresList = genresList,
                     )
                 }
             }
