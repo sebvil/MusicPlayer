@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface GenreRepository   {
     fun getGenresCount(): Flow<Int>
-    fun getGenresSorted(sortOrder: MediaSortOrder): Flow<List<Genre>>
+    fun getGenres(sortOrder: MediaSortOrder): Flow<List<Genre>>
 
 }

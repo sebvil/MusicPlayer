@@ -11,6 +11,8 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -25,7 +27,7 @@ class FakeTrackRepository(
 
     override fun getTracksCount(): Flow<Int> = tracksState.map { it.size }
 
-    override fun getAllTracks(): Flow<List<Track>> =
+    override fun getAllTracks(mediaSortPreferences: MediaSortPreferences<TrackListSortOptions>): Flow<List<Track>> =
         tracksState.map { tracks -> tracks.map { it.track } }
 
     override fun getTrack(trackId: String): Flow<FullTrackInfo> =
@@ -46,7 +48,10 @@ class FakeTrackRepository(
         tracksState.map { tracks -> tracks.filter { it.track.albumId == albumId }.map { it.track } }
 
 
-    override fun getTracksForGenre(genreName: String): Flow<List<Track>> =
+    override fun getTracksForGenre(
+        genreName: String,
+        mediaSortPreferences: MediaSortPreferences<TrackListSortOptions>
+    ): Flow<List<Track>> =
         tracksState.map { tracks ->
             tracks.filter { it.genres.contains(genreName) }.map { it.track }
         }

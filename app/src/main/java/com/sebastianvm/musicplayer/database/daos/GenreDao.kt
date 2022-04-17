@@ -11,8 +11,10 @@ interface GenreDao {
     @Query("SELECT COUNT(*) FROM Genre")
     fun getGenresCount(): Flow<Int>
 
-    @Query("SELECT * FROM Genre ORDER BY " +
-            "CASE WHEN :sortOrder='ASCENDING' THEN genreName END ASC, " +
-            "CASE WHEN :sortOrder='ASCENDING' THEN genreName END DESC")
-    fun getGenresSorted(sortOrder: MediaSortOrder): Flow<List<Genre>>
+    @Query(
+        "SELECT * FROM Genre ORDER BY " +
+                "CASE WHEN :sortOrder='ASCENDING' THEN genreName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN :sortOrder='ASCENDING' THEN genreName END COLLATE LOCALIZED DESC"
+    )
+    fun getGenres(sortOrder: MediaSortOrder): Flow<List<Genre>>
 }

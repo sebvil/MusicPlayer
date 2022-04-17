@@ -36,7 +36,7 @@ class GenresListViewModel @Inject constructor(
                         sortOrder = it
                     )
                 }
-                genreRepository.getGenresSorted(sortOrder = it)
+                genreRepository.getGenres(sortOrder = it)
             }.collect {  genresList ->
                 setState {
                     copy(
