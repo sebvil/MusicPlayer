@@ -5,14 +5,18 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface ArtistDao {
 
-    @Query("SELECT * from Artist")
-    fun getArtists(): Flow<List<Artist>>
+    @Query("SELECT * from Artist ORDER BY " +
+            "CASE WHEN :sortOrder='ASCENDING' THEN artistName END COLLATE LOCALIZED ASC, " +
+            "CASE WHEN :sortOrder='DESCENDING' THEN artistName END COLLATE LOCALIZED DESC"
+    )
+    fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>>
 
     @Transaction
     @Query("SELECT * from Artist WHERE Artist.artistName=:artistName")
