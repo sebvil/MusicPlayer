@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository.playlist
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -18,8 +19,8 @@ class PlaylistRepositoryImpl @Inject constructor(
         return playlistDao.getPlaylistsCount().distinctUntilChanged()
     }
 
-    override fun getPlaylists(): Flow<List<Playlist>> {
-        return playlistDao.getPlaylists().distinctUntilChanged()
+    override fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>> {
+        return playlistDao.getPlaylists(sortOrder = sortOrder).distinctUntilChanged()
     }
 
     override suspend fun createPlaylist(playlistName: String) {

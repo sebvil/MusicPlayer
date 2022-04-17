@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albums
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -10,18 +11,20 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.getLongComparator
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AlbumsListViewModel @Inject constructor(
     initialState: AlbumsListState,
@@ -30,19 +33,22 @@ class AlbumsListViewModel @Inject constructor(
 ) : BaseViewModel<AlbumsListUiEvent, AlbumsListState>(initialState) {
 
     init {
-        collect(
-            preferencesRepository.getAlbumsListSortPreferences()
-                .combine(albumRepository.getAlbums()) { sortSettings, albums ->
-                    Pair(sortSettings, albums)
-                }) { (sortSettings, albums) ->
-            setState {
-                copy(
-                    currentSort = sortSettings.sortOption,
-                    albumsList = albums.map { album ->
-                        album.toAlbumRowState()
-                    }.sortedWith(getComparator(sortSettings.sortOrder, sortSettings.sortOption)),
-                    sortOrder = sortSettings.sortOrder
-                )
+        viewModelScope.launch {
+            preferencesRepository.getAlbumsListSortPreferences().flatMapLatest {
+                setState {
+                    copy(
+                        sortPreferences = it
+                    )
+                }
+                albumRepository.getAlbums(sortPreferences = it)
+            }.collect { albums ->
+                setState {
+                    copy(
+                        albumsList = albums.map { album ->
+                            album.toAlbumRowState()
+                        }
+                    )
+                }
             }
         }
     }
@@ -58,8 +64,8 @@ class AlbumsListViewModel @Inject constructor(
     fun onSortByClicked() {
         addUiEvent(
             AlbumsListUiEvent.ShowSortBottomSheet(
-                sortOption = state.value.currentSort.stringId,
-                sortOrder = state.value.sortOrder
+                sortOption = state.value.sortPreferences.sortOption.stringId,
+                sortOrder = state.value.sortPreferences.sortOrder
             )
         )
     }
@@ -67,23 +73,11 @@ class AlbumsListViewModel @Inject constructor(
     fun onAlbumOverflowMenuIconClicked(albumId: String) {
         addUiEvent(AlbumsListUiEvent.OpenContextMenu(albumId))
     }
-
-    private fun getComparator(
-        sortOrder: MediaSortOrder,
-        sortOption: AlbumListSortOptions
-    ): Comparator<AlbumRowState> {
-        return when (sortOption) {
-            AlbumListSortOptions.ARTIST -> getStringComparator(sortOrder) { albumRowState -> albumRowState.artists }
-            AlbumListSortOptions.ALBUM -> getStringComparator(sortOrder) { albumRowState -> albumRowState.albumName }
-            AlbumListSortOptions.YEAR -> getLongComparator(sortOrder) { albumRowState -> albumRowState.year }
-        }
-    }
 }
 
 data class AlbumsListState(
     val albumsList: List<AlbumRowState>,
-    val currentSort: AlbumListSortOptions,
-    val sortOrder: MediaSortOrder
+    val sortPreferences: MediaSortPreferences<AlbumListSortOptions>
 ) : State
 
 
@@ -95,8 +89,7 @@ object InitialAlbumsListStateModule {
     fun initialAlbumsStateProvider(): AlbumsListState {
         return AlbumsListState(
             albumsList = listOf(),
-            currentSort = AlbumListSortOptions.ALBUM,
-            sortOrder = MediaSortOrder.ASCENDING,
+            sortPreferences = MediaSortPreferences(sortOption = AlbumListSortOptions.ALBUM)
         )
     }
 }

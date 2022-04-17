@@ -4,6 +4,8 @@ import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
+import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -18,8 +20,8 @@ class AlbumRepositoryImpl @Inject constructor(
         return albumDao.getAlbumsCount().distinctUntilChanged()
     }
 
-    override fun getAlbums(): Flow<List<Album>> {
-        return albumDao.getAllAlbums().distinctUntilChanged()
+    override fun getAlbums(sortPreferences: MediaSortPreferences<AlbumListSortOptions>): Flow<List<Album>> {
+        return albumDao.getAllAlbums(sortOption = sortPreferences.sortOption, sortOrder = sortPreferences.sortOrder).distinctUntilChanged()
     }
 
     override fun getAlbums(albumIds: List<String>): Flow<List<Album>> {

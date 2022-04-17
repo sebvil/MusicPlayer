@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,8 +23,12 @@ interface PlaylistDao {
     @Query("SELECT * FROM Playlist WHERE Playlist.playlistName=:playlistName")
     fun getPlaylistWithTracks(playlistName: String): Flow<PlaylistWithTracks>
 
-    @Query("SELECT * FROM Playlist")
-    fun getPlaylists(): Flow<List<Playlist>>
+    @Query(
+        "SELECT * FROM Playlist ORDER BY " +
+                "CASE WHEN :sortOrder='ASCENDING' THEN playlistName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN :sortOrder='DESCENDING' THEN playlistName END COLLATE LOCALIZED DESC"
+    )
+    fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
 
     @Insert
     suspend fun createPlaylist(playlist: Playlist)

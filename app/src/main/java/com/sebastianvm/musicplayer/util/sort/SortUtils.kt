@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.R
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.Serializable
-import java.text.Collator
 
 interface SortOptions
 
@@ -54,31 +53,7 @@ operator fun MediaSortOrder.not(): MediaSortOrder {
     return when (this) {
         MediaSortOrder.ASCENDING -> MediaSortOrder.DESCENDING
         MediaSortOrder.DESCENDING -> MediaSortOrder.ASCENDING
-        else -> throw IllegalStateException("Unrecognized sort order")
     }
 }
 
-fun <T> getStringComparator(
-    sortOrder: MediaSortOrder,
-    sortBy: (T) -> String
-): Comparator<T> {
-    val collator = Collator.getInstance()
-    collator.strength = Collator.PRIMARY
-    return if (sortOrder == MediaSortOrder.ASCENDING) {
-        Comparator.comparing(sortBy, collator)
-    } else {
-        Comparator.comparing(sortBy, collator.reversed())
-    }
-}
-
-fun <T> getLongComparator(
-    sortOrder: MediaSortOrder,
-    sortBy: (T) -> Long
-): Comparator<T> {
-    return if (sortOrder == MediaSortOrder.ASCENDING) {
-        compareBy { x: T -> sortBy(x) }
-    } else {
-        compareBy { x: T -> sortBy(x) }.reversed()
-    }
-}
 

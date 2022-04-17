@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
 import dagger.Module
 import dagger.Provides
@@ -17,10 +16,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PlaylistsListViewModel @Inject constructor(
     initialState: PlaylistsListState,
@@ -30,16 +31,20 @@ class PlaylistsListViewModel @Inject constructor(
     BaseViewModel<PlaylistsListUiEvent, PlaylistsListState>(initialState) {
 
     init {
-        collect(
-            preferencesRepository.getPlaylistsListSortOrder()
-                .combine(playlistRepository.getPlaylists()) { sortOrder, playlistsList ->
-                    Pair(sortOrder, playlistsList)
-                }) { pair ->
-            setState {
-                copy(
-                    sortOrder = pair.first,
-                    playlistsList = pair.second.sortedWith(getStringComparator(pair.first) { item -> item.playlistName }),
-                )
+        viewModelScope.launch {
+            preferencesRepository.getPlaylistsListSortOrder().flatMapLatest {
+                setState {
+                    copy(
+                        sortOrder = it
+                    )
+                }
+                playlistRepository.getPlaylists(it)
+            }.collect { playlists ->
+                setState {
+                    copy(
+                        playlistsList = playlists,
+                    )
+                }
             }
         }
     }
