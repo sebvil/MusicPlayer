@@ -2,12 +2,10 @@ package com.sebastianvm.musicplayer.repository.preferences
 
 import androidx.datastore.core.DataStore
 import com.sebastianvm.musicplayer.player.TracksListType
-import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.PlaylistSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.SortPreferences
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,7 +15,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     private val sortPreferencesDataStore: DataStore<SortPreferences>,
 ) : SortPreferencesRepository {
 
-    private suspend fun modifyAllTracksListSortPreferences(newPreferences: MediaSortPreferences<TrackListSortOptions>) {
+    private suspend fun modifyAllTracksListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
                 allTracksListSortPreferences = newPreferences
@@ -28,7 +26,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
     private suspend fun modifyGenreTracksListSortPreferences(
         genreName: String,
-        newPreferences: MediaSortPreferences<TrackListSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
@@ -40,7 +38,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun modifyTrackListSortPreferences(
-        newPreferences: MediaSortPreferences<TrackListSortOptions>,
+        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
         tracksListType: TracksListType,
         tracksListName: String,
     ) {
@@ -55,16 +53,16 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun getAllTracksListSortPreferences(): Flow<MediaSortPreferences<TrackListSortOptions>> {
+    private fun getAllTracksListSortPreferences(): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.allTracksListSortPreferences
         }
     }
 
-    private fun getGenreTracksListSortPreferences(genreName: String): Flow<MediaSortPreferences<TrackListSortOptions>> {
+    private fun getGenreTracksListSortPreferences(genreName: String): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.genreTracksListSortPreferences[genreName] ?: MediaSortPreferences(
-                sortOption = TrackListSortOptions.TRACK,
+                sortOption = SortOptions.TrackListSortOptions.TRACK,
                 sortOrder = MediaSortOrder.ASCENDING
             )
         }
@@ -73,7 +71,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     override fun getTracksListSortPreferences(
         tracksListType: TracksListType,
         tracksListName: String
-    ): Flow<MediaSortPreferences<TrackListSortOptions>> {
+    ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (tracksListType) {
             TracksListType.ALL_TRACKS -> getAllTracksListSortPreferences()
             TracksListType.GENRE -> getGenreTracksListSortPreferences(
@@ -82,7 +80,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun modifyAlbumsListSortPreferences(newPreferences: MediaSortPreferences<AlbumListSortOptions>) {
+    override suspend fun modifyAlbumsListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
                 albumListSortPreferences = newPreferences
@@ -90,7 +88,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAlbumsListSortPreferences(): Flow<MediaSortPreferences<AlbumListSortOptions>> {
+    override fun getAlbumsListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.albumListSortPreferences
         }
@@ -144,7 +142,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun modifyPlaylistsSortPreferences(
         playlistName: String,
-        newPreferences: MediaSortPreferences<PlaylistSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
@@ -155,10 +153,10 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPlaylistSortPreferences(playlistName: String): Flow<MediaSortPreferences<PlaylistSortOptions>> {
+    override fun getPlaylistSortPreferences(playlistName: String): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.playlistSortPreferences[playlistName] ?: MediaSortPreferences(
-                sortOption = PlaylistSortOptions.CUSTOM,
+                sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
                 sortOrder = MediaSortOrder.ASCENDING
             )
         }

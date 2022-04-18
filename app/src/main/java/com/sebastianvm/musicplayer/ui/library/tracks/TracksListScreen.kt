@@ -25,7 +25,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
-    fun openSortMenu()
+    fun openSortMenu(mediaId: String)
     fun openContextMenu(mediaId: String, mediaGroup: MediaGroup)
 }
 
@@ -44,7 +44,7 @@ fun TracksListScreen(
                     delegate.navigateToPlayer()
                 }
                 is TracksListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu()
+                    delegate.openSortMenu(mediaId = event.mediaId)
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup)

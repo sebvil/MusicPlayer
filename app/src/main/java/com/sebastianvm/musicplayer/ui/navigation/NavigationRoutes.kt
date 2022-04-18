@@ -24,13 +24,13 @@ object NavArgs {
     const val TRACK_LIST_NAME = "trackListName"
     const val ALBUM_ID = "albumId"
     const val ARTIST_ID = "artistName"
-    const val SCREEN = "screen"
-    const val SORT_OPTION = "sortOption"
+    const val SCREEN = "listType"
     const val MEDIA_ID = "mediaId"
     const val MEDIA_TYPE = "mediaType"
     const val MEDIA_GROUP_ID = "mediaGroupId"
     const val MEDIA_GROUP_TYPE = "mediaGroupType"
     const val TRACKS_LIST_TYPE = "tracksListType"
+    const val SORTABLE_LIST_TYPE = "sortableListType"
 }
 
 fun createNavRoute(route: String, vararg parameters: String): String {
@@ -47,8 +47,7 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
     val navRoute = if (parameters.isEmpty()) {
         route
     } else {
-        "$route?" + parameters.filter { it.value != null && (it.value.toString().isNotEmpty()) }
-            .joinToString("&") { s -> "${s.parameterName}=${s.value}" }
+        "$route?" + parameters.joinToString("&") { s -> "${s.parameterName}=${s.value}" }
     }
     this.navigate(navRoute)
 }

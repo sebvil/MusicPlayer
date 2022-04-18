@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -23,7 +24,7 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
             }
 
             override fun openSortMenu() {
-                navController.openSortBottomSheet(NavRoutes.ALBUMS_ROOT)
+                navController.openSortBottomSheet(listType = SortableListType.ALBUMS)
             }
 
             override fun navigateToAlbum(albumId: String) {

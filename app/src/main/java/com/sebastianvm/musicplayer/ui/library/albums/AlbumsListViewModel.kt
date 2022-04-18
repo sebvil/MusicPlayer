@@ -9,9 +9,9 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.AlbumListSortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,7 +77,7 @@ class AlbumsListViewModel @Inject constructor(
 
 data class AlbumsListState(
     val albumsList: List<AlbumRowState>,
-    val sortPreferences: MediaSortPreferences<AlbumListSortOptions>
+    val sortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
 ) : State
 
 
@@ -89,7 +89,7 @@ object InitialAlbumsListStateModule {
     fun initialAlbumsStateProvider(): AlbumsListState {
         return AlbumsListState(
             albumsList = listOf(),
-            sortPreferences = MediaSortPreferences(sortOption = AlbumListSortOptions.ALBUM)
+            sortPreferences = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM)
         )
     }
 }

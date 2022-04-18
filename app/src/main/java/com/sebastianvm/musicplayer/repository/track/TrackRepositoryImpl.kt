@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,7 +29,7 @@ class TrackRepositoryImpl @Inject constructor(
         return trackDao.getTracksCount().distinctUntilChanged()
     }
 
-    override fun getAllTracks(mediaSortPreferences: MediaSortPreferences<TrackListSortOptions>): Flow<List<Track>> {
+    override fun getAllTracks(mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>> {
         return trackDao.getAllTracks(
             sortOption = mediaSortPreferences.sortOption,
             sortOrder = mediaSortPreferences.sortOrder
@@ -54,7 +54,7 @@ class TrackRepositoryImpl @Inject constructor(
 
     override fun getTracksForGenre(
         genreName: String,
-        mediaSortPreferences: MediaSortPreferences<TrackListSortOptions>
+        mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
     ): Flow<List<Track>> {
         return trackDao.getTracksForGenre(
             genreName = genreName,

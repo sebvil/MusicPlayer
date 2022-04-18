@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -36,7 +36,7 @@ interface TrackDao {
                 "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
     fun getAllTracks(
-        sortOption: TrackListSortOptions,
+        sortOption: SortOptions.TrackListSortOptions,
         sortOrder: MediaSortOrder
     ): Flow<List<Track>>
 
@@ -82,7 +82,7 @@ interface TrackDao {
     )
     fun getTracksForGenre(
         genreName: String,
-        sortOption: TrackListSortOptions,
+        sortOption: SortOptions.TrackListSortOptions,
         sortOrder: MediaSortOrder
     ): Flow<List<Track>>
 

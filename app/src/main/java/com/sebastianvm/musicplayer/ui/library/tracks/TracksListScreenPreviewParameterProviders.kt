@@ -4,7 +4,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 
 class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {
     override val values = sequenceOf(
@@ -17,7 +17,7 @@ class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksL
                 TrackRowState("2", "La Promesa", "Melendi", "Un alumno mas"),
                 TrackRowState("3", "La Promesa", "Melendi", "Un alumno mas")
             ),
-            sortPreferences = MediaSortPreferences(sortOption = TrackListSortOptions.TRACK)
+            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )
     )
 }

@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
@@ -47,8 +48,8 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.navigateUp()
                 }
 
-                override fun openSortMenu() {
-                    navController.openSortBottomSheet(NavRoutes.TRACKS_ROOT)
+                override fun openSortMenu(mediaId: String) {
+                    navController.openSortBottomSheet(listType = SortableListType.TRACKS, mediaId = mediaId)
                 }
 
                 override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup) {

@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.MediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.SortSettings
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.copy
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
 import com.sebastianvm.musicplayer.util.sort.sortSettings

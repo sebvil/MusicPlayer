@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

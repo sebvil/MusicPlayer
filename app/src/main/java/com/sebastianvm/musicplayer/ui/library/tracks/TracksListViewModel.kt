@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.TrackListSortOptions
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,12 +43,12 @@ class TracksListViewModel @Inject constructor(
 
     init {
         val tracksListFlow = when (state.value.tracksListType) {
-            TracksListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<TrackListSortOptions> ->
+            TracksListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
                 trackRepository.getAllTracks(
                     sortPreferences
                 )
             }
-            TracksListType.GENRE -> { sortPreferences: MediaSortPreferences<TrackListSortOptions> ->
+            TracksListType.GENRE -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
                 trackRepository.getTracksForGenre(
                     genreName = state.value.tracksListTitle,
                     mediaSortPreferences = sortPreferences
@@ -95,7 +95,7 @@ class TracksListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(TracksListUiEvent.ShowSortBottomSheet)
+        addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListTitle))
     }
 
     fun onTrackOverflowMenuIconClicked(trackId: String) {
@@ -124,7 +124,7 @@ data class TracksListState(
     val tracksListTitle: String,
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
-    val sortPreferences: MediaSortPreferences<TrackListSortOptions>
+    val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
 ) : State
 
 
@@ -142,7 +142,7 @@ object InitialTracksListStateModule {
             tracksListTitle = listName,
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
-            sortPreferences = MediaSortPreferences(sortOption = TrackListSortOptions.TRACK)
+            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )
     }
 }
@@ -150,7 +150,7 @@ object InitialTracksListStateModule {
 sealed class TracksListUiEvent : UiEvent {
     object ScrollToTop : TracksListUiEvent()
     object NavigateToPlayer : TracksListUiEvent()
-    object ShowSortBottomSheet : TracksListUiEvent()
+    data class ShowSortBottomSheet(val mediaId: String) : TracksListUiEvent()
     object NavigateUp : TracksListUiEvent()
     data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup) :
         TracksListUiEvent()
