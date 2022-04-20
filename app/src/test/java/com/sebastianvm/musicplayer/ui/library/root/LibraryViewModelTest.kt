@@ -4,15 +4,16 @@ import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertContains
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LibraryViewModelTest {
-    @OptIn(ExperimentalCoroutinesApi::class)
+
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
@@ -27,15 +28,14 @@ class LibraryViewModelTest {
                     LibraryItem.Playlists(count = 0)
                 ),
             ),
-            musicRepository = FakeMusicRepository()
+            musicRepository = FakeMusicRepository(),
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init updates counts`() = runTest {
         with(generateViewModel()) {
-            delay(1)
+            advanceUntilIdle()
             assertEquals(
                 listOf(
                     LibraryItem.Tracks(count = FakeMusicRepository.FAKE_TRACK_COUNTS),

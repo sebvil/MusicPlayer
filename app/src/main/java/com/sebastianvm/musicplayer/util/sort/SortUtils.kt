@@ -2,60 +2,61 @@ package com.sebastianvm.musicplayer.util.sort
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
-import java.text.Collator
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.Serializable
 
+sealed interface SortOptions {
+    val stringId: Int
+    @Serializable
+    enum class TrackListSortOptions(@StringRes override val stringId: Int) : SortOptions {
+        TRACK(R.string.track_name),
+        ARTIST(R.string.artist_name),
+        ALBUM(R.string.album_name)
+    }
 
-fun mediaSortOptionFromResId(@StringRes resId: Int): MediaSortOption {
-    return when (resId) {
-        R.string.track_name -> MediaSortOption.TRACK
-        R.string.artist_name -> MediaSortOption.ARTIST
-        R.string.album_name -> MediaSortOption.ALBUM
-        R.string.year -> MediaSortOption.YEAR
-        R.string.track_number -> MediaSortOption.TRACK_NUMBER
-        else -> throw IllegalStateException("Unknown sort option")
+    @Serializable
+    enum class AlbumListSortOptions(@StringRes override val stringId: Int) : SortOptions {
+        ALBUM(R.string.album_name),
+        ARTIST(R.string.artist_name),
+        YEAR(R.string.year)
+    }
+
+    @Serializable
+    enum class PlaylistSortOptions(@StringRes override val stringId: Int) : SortOptions {
+        CUSTOM(R.string.custom),
+        TRACK(R.string.track_name),
+        ARTIST(R.string.artist_name),
+        ALBUM(R.string.album_name)
     }
 }
 
-val MediaSortOption.id: Int
-    get() = when (this) {
-        MediaSortOption.TRACK -> R.string.track_name
-        MediaSortOption.ARTIST -> R.string.artist_name
-        MediaSortOption.ALBUM -> R.string.album_name
-        MediaSortOption.GENRE -> R.string.genres
-        MediaSortOption.YEAR -> R.string.year
-        MediaSortOption.TRACK_NUMBER -> R.string.track_number
-        MediaSortOption.UNRECOGNIZED -> throw IllegalStateException("Unknown sort option")
-    }
+@Serializable
+data class SortPreferences(
+    val allTracksListSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
+    val genreTracksListSortPreferences: PersistentMap<String, MediaSortPreferences<SortOptions.TrackListSortOptions>> = persistentMapOf(),
+    val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM),
+    val artistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
+    val genreListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
+    val playlistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
+    val playlistSortPreferences: PersistentMap<String, MediaSortPreferences<SortOptions.PlaylistSortOptions>> = persistentMapOf()
+)
 
+@Serializable
+data class MediaSortPreferences<T: SortOptions>(val sortOption: T, val sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING)
+
+
+
+enum class MediaSortOrder {
+    ASCENDING,
+    DESCENDING
+}
 
 operator fun MediaSortOrder.not(): MediaSortOrder {
     return when (this) {
         MediaSortOrder.ASCENDING -> MediaSortOrder.DESCENDING
         MediaSortOrder.DESCENDING -> MediaSortOrder.ASCENDING
-        else -> throw IllegalStateException("Unrecognized sort order")
     }
 }
 
-fun <T> getStringComparator(
-    sortOrder: MediaSortOrder,
-    sortBy: (T) -> String
-): Comparator<T> {
-    val collator = Collator.getInstance()
-    collator.strength = Collator.PRIMARY
-    return if (sortOrder == MediaSortOrder.ASCENDING) {
-        Comparator.comparing(sortBy, collator)
-    } else {
-        Comparator.comparing(sortBy, collator.reversed())
-    }
-}
 
-fun <T> getLongComparator(
-    sortOrder: MediaSortOrder,
-    sortBy: (T) -> Long
-): Comparator<T> {
-    return if (sortOrder == MediaSortOrder.ASCENDING) {
-        compareBy { x: T -> sortBy(x) }
-    } else {
-        compareBy { x: T -> sortBy(x) }.reversed()
-    }
-}

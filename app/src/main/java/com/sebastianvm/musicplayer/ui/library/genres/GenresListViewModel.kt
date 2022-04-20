@@ -3,12 +3,11 @@ package com.sebastianvm.musicplayer.ui.library.genres
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
 import com.sebastianvm.musicplayer.util.sort.not
 import dagger.Module
 import dagger.Provides
@@ -16,29 +15,34 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GenresListViewModel @Inject constructor(
     initialState: GenresListState,
     genreRepository: GenreRepository,
-    private val preferencesRepository: PreferencesRepository,
-) :
-    BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
+    private val preferencesRepository: SortPreferencesRepository,
+) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        collect(
-            preferencesRepository.getGenresListSortOrder()
-                .combine(genreRepository.getGenres()) { sortOrder, genresList ->
-                    Pair(sortOrder, genresList)
-                }) { pair ->
-            setState {
-                copy(
-                    sortOrder = pair.first,
-                    genresList = pair.second.sortedWith(getStringComparator(pair.first) { item -> item.genreName }),
-                )
+        viewModelScope.launch {
+            preferencesRepository.getGenresListSortOrder().flatMapLatest {
+                setState {
+                    copy(
+                        sortOrder = it
+                    )
+                }
+                genreRepository.getGenres(sortOrder = it)
+            }.collect {  genresList ->
+                setState {
+                    copy(
+                        genresList = genresList,
+                    )
+                }
             }
         }
     }

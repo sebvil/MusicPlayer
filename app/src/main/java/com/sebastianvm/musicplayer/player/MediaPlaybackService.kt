@@ -5,11 +5,10 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,11 +16,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-@androidx.annotation.OptIn(UnstableApi::class)
 class MediaPlaybackService : MediaLibraryService() {
 
     @Inject
-    lateinit var preferencesRepository: PreferencesRepository
+    lateinit var playbackInfoDataSource: PlaybackInfoDataSource
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
 
@@ -38,7 +36,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 val contentPosition = player.contentPosition
                 val id = player.currentMediaItem?.mediaId ?: ""
                 CoroutineScope(Dispatchers.IO).launch {
-                    preferencesRepository.modifySavedPlaybackInfo { savedPlaybackInfo ->
+                    playbackInfoDataSource.modifySavedPlaybackInfo { savedPlaybackInfo ->
                         savedPlaybackInfo.copy(
                             mediaId = id,
                             lastRecordedPosition = contentPosition
@@ -51,7 +49,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 val mediaId = mediaMetadata.mediaUri?.toString()?.substringAfterLast("/") ?: ""
                 val contentPosition = player.contentPosition
                 CoroutineScope(Dispatchers.IO).launch {
-                    preferencesRepository.modifySavedPlaybackInfo { savedPlaybackInfo ->
+                    playbackInfoDataSource.modifySavedPlaybackInfo { savedPlaybackInfo ->
                         savedPlaybackInfo.copy(
                             mediaId = mediaId,
                             lastRecordedPosition = contentPosition

@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.database.entities
 
+import com.sebastianvm.musicplayer.util.Fixtures
+
 
 @DslMarker
 annotation class GenreDsl
@@ -18,3 +20,14 @@ fun genre(init: GenreBuilder.() -> Unit): Genre {
     builder.init()
     return builder.build()
 }
+
+fun genreFixture(): Genre = genre {
+    genreName = Fixtures.getRandomString()
+}
+
+fun genreFixtureList(numItems: Int): List<Genre> {
+    return List(numItems) {
+        genreFixture()
+    }
+}
+

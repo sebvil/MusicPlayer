@@ -10,13 +10,15 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 
 interface TrackRepository {
 
     fun getTracksCount(): Flow<Int>
 
-    fun getAllTracks(): Flow<List<Track>>
+    fun getAllTracks(mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 
     fun getTrack(trackId: String): Flow<FullTrackInfo>
 
@@ -26,7 +28,7 @@ interface TrackRepository {
 
     fun getTracksForAlbum(albumId: String): Flow<List<Track>>
 
-    fun getTracksForGenre(genreName: String): Flow<List<Track>>
+    fun getTracksForGenre(genreName: String, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 
     fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
 

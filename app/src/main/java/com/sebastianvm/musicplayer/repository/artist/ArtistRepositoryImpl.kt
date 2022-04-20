@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository.artist
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -15,8 +16,8 @@ class ArtistRepositoryImpl @Inject constructor(
         return artistDao.getArtistsCount().distinctUntilChanged()
     }
 
-    override fun getArtists(): Flow<List<Artist>> {
-        return artistDao.getArtists().distinctUntilChanged()
+    override fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>> {
+        return artistDao.getArtists(sortOrder = sortOrder).distinctUntilChanged()
     }
 
     override fun getArtist(artistName: String): Flow<ArtistWithAlbums> {

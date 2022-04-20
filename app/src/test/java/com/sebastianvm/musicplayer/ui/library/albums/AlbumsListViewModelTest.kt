@@ -6,14 +6,13 @@ import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakePreferencesRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOption
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.mediaSortSettings
-import com.sebastianvm.musicplayer.util.sort.sortSettings
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -28,13 +27,11 @@ class AlbumsListViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var albumRepository: AlbumRepository
-    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var preferencesRepository: SortPreferencesRepository
 
     @Before
     fun setUp() {
-        preferencesRepository = FakePreferencesRepository(sortSettings = sortSettings {
-            albumsListSortSettings = mediaSortSettings { sortOption = MediaSortOption.ALBUM }
-        })
+        preferencesRepository = mockk()
         albumRepository = FakeAlbumRepository(
             fullAlbumInfo = listOf(
                 fullAlbumInfo {
@@ -155,7 +152,7 @@ class AlbumsListViewModelTest {
     @Test
     fun `modifying sortOption changes order`() = runTest {
         with(generateViewModel()) {
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ALBUM
                 sortOrder = MediaSortOrder.DESCENDING
             })
@@ -163,7 +160,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.DESCENDING
             })
@@ -171,7 +168,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.ARTIST
                 sortOrder = MediaSortOrder.ASCENDING
             })
@@ -179,7 +176,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_0, ALBUM_ROW_1), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.ASCENDING
             })
@@ -187,7 +184,7 @@ class AlbumsListViewModelTest {
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(listOf(ALBUM_ROW_1, ALBUM_ROW_0), state.value.albumsList)
 
-            preferencesRepository.modifyAlbumsListSortOptions(mediaSortSettings {
+            preferencesRepository.modifyAlbumsListSortPreferences(mediaSortSettings {
                 sortOption = MediaSortOption.YEAR
                 sortOrder = MediaSortOrder.DESCENDING
             })

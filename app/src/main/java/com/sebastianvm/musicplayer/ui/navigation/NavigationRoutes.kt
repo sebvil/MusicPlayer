@@ -24,14 +24,13 @@ object NavArgs {
     const val TRACK_LIST_NAME = "trackListName"
     const val ALBUM_ID = "albumId"
     const val ARTIST_ID = "artistName"
-    const val SCREEN = "screen"
-    const val SORT_OPTION = "sortOption"
-    const val SORT_ORDER = "sortOrder"
+    const val SCREEN = "listType"
     const val MEDIA_ID = "mediaId"
     const val MEDIA_TYPE = "mediaType"
     const val MEDIA_GROUP_ID = "mediaGroupId"
     const val MEDIA_GROUP_TYPE = "mediaGroupType"
     const val TRACKS_LIST_TYPE = "tracksListType"
+    const val SORTABLE_LIST_TYPE = "sortableListType"
 }
 
 fun createNavRoute(route: String, vararg parameters: String): String {

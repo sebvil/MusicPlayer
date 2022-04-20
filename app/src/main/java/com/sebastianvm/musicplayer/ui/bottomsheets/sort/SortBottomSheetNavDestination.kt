@@ -16,20 +16,17 @@ import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) {
     bottomSheet(
-        route = createNavRoute(NavRoutes.SORT, NavArgs.SCREEN),
+        route = createNavRoute(NavRoutes.SORT, NavArgs.SORTABLE_LIST_TYPE, NavArgs.MEDIA_ID),
         arguments = listOf(
-            navArgument(NavArgs.SCREEN) { type = NavType.StringType },
+            navArgument(NavArgs.SORTABLE_LIST_TYPE) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
         )
     ) {
         val sheetViewModel = hiltViewModel<SortBottomSheetViewModel>()
         SortBottomSheet(
             sheetViewModel = sheetViewModel,
             delegate = object : SortBottomSheetDelegate {
-                override fun popBackStack(sortOption: Int) {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        NavArgs.SORT_OPTION,
-                        sortOption
-                    )
+                override fun popBackStack() {
                     navController.popBackStack()
                 }
             }
@@ -37,6 +34,10 @@ fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) 
     }
 }
 
-fun NavController.openSortBottomSheet(screen: String) {
-    navigateTo(NavRoutes.SORT, NavArgument(NavArgs.SCREEN, screen))
+fun NavController.openSortBottomSheet(listType: SortableListType, mediaId: String = "") {
+    navigateTo(
+        NavRoutes.SORT,
+        NavArgument(NavArgs.SORTABLE_LIST_TYPE, listType),
+        NavArgument(NavArgs.MEDIA_ID, mediaId)
+    )
 }

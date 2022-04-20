@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.preferences.PreferencesRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -15,25 +15,26 @@ import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOption
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.getStringComparator
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class TracksListViewModel @Inject constructor(
     initialState: TracksListState,
     trackRepository: TrackRepository,
-    preferencesRepository: PreferencesRepository,
+    preferencesRepository: SortPreferencesRepository,
     private val mediaPlaybackRepository: MediaPlaybackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
 ) : BaseViewModel<TracksListUiEvent, TracksListState>(
@@ -42,39 +43,40 @@ class TracksListViewModel @Inject constructor(
 
     init {
         val tracksListFlow = when (state.value.tracksListType) {
-            TracksListType.ALL_TRACKS -> trackRepository.getAllTracks()
-            TracksListType.GENRE -> trackRepository.getTracksForGenre(
-                genreName = state.value.tracksListTitle
-            )
-            TracksListType.PLAYLIST -> trackRepository.getTracksForPlaylist(
-                playlistName = state.value.tracksListTitle
-            )
-        }
-
-        collect(
-            tracksListFlow.combine(
-                preferencesRepository.getTracksListSortOptions(
-                    tracksListType = state.value.tracksListType,
-                    tracksListName = state.value.tracksListTitle
-                )
-            ) { trackList, sortSettings ->
-                Pair(trackList, sortSettings)
-            }) { (tracksList, sortSettings) ->
-            setState {
-                copy(
-                    currentSort = sortSettings.sortOption,
-                    tracksList = tracksList.map { it.toTrackRowState(includeTrackNumber = false) }
-                        .sortedWith(
-                            getComparator(
-                                sortSettings.sortOrder,
-                                sortSettings.sortOption
-                            )
-                        ),
-                    sortOrder = sortSettings.sortOrder
+            TracksListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
+                trackRepository.getAllTracks(
+                    sortPreferences
                 )
             }
-            addUiEvent(TracksListUiEvent.ScrollToTop)
+            TracksListType.GENRE -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
+                trackRepository.getTracksForGenre(
+                    genreName = state.value.tracksListTitle,
+                    mediaSortPreferences = sortPreferences
+                )
+            }
         }
+
+        viewModelScope.launch {
+            preferencesRepository.getTracksListSortPreferences(
+                tracksListType = state.value.tracksListType,
+                tracksListName = state.value.tracksListTitle
+            ).flatMapLatest {
+                setState {
+                    copy(
+                        sortPreferences = it
+                    )
+                }
+                tracksListFlow(it)
+            }.collect { newTracksList ->
+                setState {
+                    copy(
+                        tracksList = newTracksList.map { it.toTrackRowState(includeTrackNumber = false) },
+                    )
+                }
+                addUiEvent(TracksListUiEvent.ScrollToTop)
+            }
+        }
+
     }
 
     fun onTrackClicked(trackId: String) {
@@ -83,7 +85,6 @@ class TracksListViewModel @Inject constructor(
                 mediaGroupType = when (state.value.tracksListType) {
                     TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                     TracksListType.GENRE -> MediaGroupType.GENRE
-                    TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
                 },
                 mediaId = state.value.tracksListTitle
             )
@@ -94,7 +95,7 @@ class TracksListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(TracksListUiEvent.ShowSortBottomSheet)
+        addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListTitle))
     }
 
     fun onTrackOverflowMenuIconClicked(trackId: String) {
@@ -102,7 +103,6 @@ class TracksListViewModel @Inject constructor(
             mediaGroupType = when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                 TracksListType.GENRE -> MediaGroupType.GENRE
-                TracksListType.PLAYLIST -> MediaGroupType.PLAYLIST
             },
             mediaId = state.value.tracksListTitle.ifEmpty { ALL_TRACKS }
         )
@@ -111,20 +111,6 @@ class TracksListViewModel @Inject constructor(
 
     fun onUpButtonClicked() {
         addUiEvent(TracksListUiEvent.NavigateUp)
-    }
-
-    private fun getComparator(
-        sortOrder: MediaSortOrder,
-        sortOption: MediaSortOption
-    ): Comparator<TrackRowState> {
-        return getStringComparator(sortOrder) { trackRowState ->
-            when (sortOption) {
-                MediaSortOption.TRACK -> trackRowState.trackName
-                MediaSortOption.ARTIST -> trackRowState.artists
-                MediaSortOption.ALBUM -> trackRowState.albumName
-                else -> throw IllegalStateException("Unknown sort option for tracks list: $sortOption")
-            }
-        }
     }
 
     companion object {
@@ -138,8 +124,7 @@ data class TracksListState(
     val tracksListTitle: String,
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
-    val currentSort: MediaSortOption,
-    val sortOrder: MediaSortOrder
+    val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
 ) : State
 
 
@@ -150,14 +135,14 @@ object InitialTracksListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listName = savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: TracksListViewModel.ALL_TRACKS
+        val listName =
+            savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: TracksListViewModel.ALL_TRACKS
         val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
         return TracksListState(
             tracksListTitle = listName,
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
-            currentSort = MediaSortOption.TRACK,
-            sortOrder = MediaSortOrder.ASCENDING,
+            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )
     }
 }
@@ -165,7 +150,7 @@ object InitialTracksListStateModule {
 sealed class TracksListUiEvent : UiEvent {
     object ScrollToTop : TracksListUiEvent()
     object NavigateToPlayer : TracksListUiEvent()
-    object ShowSortBottomSheet : TracksListUiEvent()
+    data class ShowSortBottomSheet(val mediaId: String) : TracksListUiEvent()
     object NavigateUp : TracksListUiEvent()
     data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup) :
         TracksListUiEvent()

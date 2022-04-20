@@ -15,6 +15,8 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,8 +26,19 @@ interface TrackDao {
     fun getTracksCount(): Flow<Int>
 
     @Transaction
-    @Query("SELECT * FROM Track")
-    fun getAllTracks(): Flow<List<Track>>
+    @Query(
+        "SELECT * FROM Track ORDER BY " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
+    )
+    fun getAllTracks(
+        sortOption: SortOptions.TrackListSortOptions,
+        sortOrder: MediaSortOrder
+    ): Flow<List<Track>>
 
     @Transaction
     @Query("SELECT * FROM Track WHERE trackId in (:trackIds)")
@@ -56,13 +69,22 @@ interface TrackDao {
 
     @Transaction
     @Query(
-        """
-        SELECT Track.* FROM Track 
-        INNER JOIN GenreTrackCrossRef ON Track.trackId = GenreTrackCrossRef.trackId
-        WHERE GenreTrackCrossRef.genreName=:genreName
-    """
+        "SELECT Track.* FROM Track " +
+                "INNER JOIN GenreTrackCrossRef " +
+                "ON Track.trackId = GenreTrackCrossRef.trackId " +
+                "WHERE GenreTrackCrossRef.genreName=:genreName ORDER BY " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
-    fun getTracksForGenre(genreName: String): Flow<List<Track>>
+    fun getTracksForGenre(
+        genreName: String,
+        sortOption: SortOptions.TrackListSortOptions,
+        sortOrder: MediaSortOrder
+    ): Flow<List<Track>>
 
     @Transaction
     @Query(

@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
-import com.sebastianvm.musicplayer.ui.library.tracks.navigateToPlaylist
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -35,7 +34,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_TYPE) { type = NavType.StringType },
-            navArgument(NavArgs.MEDIA_GROUP_ID) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_GROUP_ID) {
+                type = NavType.StringType
+                nullable = true
+            },
         )
     ) { backedStackEntry ->
         val sheetViewModel =
@@ -81,7 +83,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 }
 
                 override fun navigateToPlaylist(playlistName: String) {
-                    navController.navigateToPlaylist(playlistName)
+//                    navController.navigateToPlaylist(playlistName)
                 }
 
                 override fun hideBottomSheet() {

@@ -17,7 +17,6 @@ enum class MediaGroupType {
 enum class TracksListType {
     ALL_TRACKS,
     GENRE,
-    PLAYLIST,
 }
 
 @Parcelize

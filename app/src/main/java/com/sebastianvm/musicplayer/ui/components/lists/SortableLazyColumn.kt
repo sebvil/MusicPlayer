@@ -62,15 +62,15 @@ fun <T> SortableLazyColumnIndexed(
     listState: LazyListState = rememberLazyListState(),
     row: @Composable (index: Int, item: T) -> Unit
 ) {
-    var boxHeight by remember { mutableStateOf(0f) }
-    val offsetY = remember { mutableStateOf(0f) }
-    var height by remember { mutableStateOf(0f) }
+    var listHeight by remember { mutableStateOf(0f) }
+    val draggedItemYOffset = remember { mutableStateOf(0f) }
+    var draggedItemHeight by remember { mutableStateOf(0f) }
     val haptic = LocalHapticFeedback.current
 
 
     val hoveredIndex by remember {
         derivedStateOf {
-            ((offsetY.value + listState.firstVisibleItemScrollOffset) / height + listState.firstVisibleItemIndex).let { num ->
+            ((draggedItemYOffset.value + listState.firstVisibleItemScrollOffset) / draggedItemHeight + listState.firstVisibleItemIndex).let { num ->
                 if (num.isNaN()) {
                     num.toInt()
                 } else {
@@ -82,7 +82,7 @@ fun <T> SortableLazyColumnIndexed(
 
     Box(modifier = Modifier
         .onSizeChanged {
-            boxHeight = it.height.toFloat()
+            listHeight = it.height.toFloat()
         }
         .fillMaxHeight()
     ) {
@@ -99,15 +99,15 @@ fun <T> SortableLazyColumnIndexed(
                             onDragEnd = {
                                 delegate.onDragEnd()
                             }) { _, dragAmount ->
-                            val originalY = offsetY.value
+                            val originalY = draggedItemYOffset.value
                             val newValue = originalY + dragAmount.y
-                            offsetY.value = newValue
+                            draggedItemYOffset.value = newValue
                             delegate.onVerticalDrag(hoveredIndex)
                         }
                     }) {
                     if (item == state.draggedItem) {
                         val dpHeight = with(LocalDensity.current) {
-                            height.toDp()
+                            draggedItemHeight.toDp()
                         }
                         Surface(
                             modifier = Modifier
@@ -132,26 +132,26 @@ fun <T> SortableLazyColumnIndexed(
         }
         state.draggedItem?.also { item ->
             var heightSet by remember { mutableStateOf(false) }
-            LaunchedEffect(offsetY.value, listState.firstVisibleItemIndex) {
-                if (offsetY.value > boxHeight - height) {
-                    listState.scrollBy(offsetY.value - boxHeight + height)
-                } else if (offsetY.value <= height) {
-                    listState.scrollBy(offsetY.value - height)
+            LaunchedEffect(draggedItemYOffset.value, listState.firstVisibleItemIndex) {
+                if (draggedItemYOffset.value > listHeight - draggedItemHeight) {
+                    listState.scrollBy(draggedItemYOffset.value - listHeight + draggedItemHeight)
+                } else if (draggedItemYOffset.value <= draggedItemHeight) {
+                    listState.scrollBy(draggedItemYOffset.value - draggedItemHeight)
                 }
             }
             Surface(
                 modifier = Modifier
                     .onSizeChanged { size ->
-                        height = size.height.toFloat()
+                        draggedItemHeight = size.height.toFloat()
                         if (!heightSet) {
-                            offsetY.value =
-                                ((state.selectedIndex - listState.firstVisibleItemIndex) * height - listState.firstVisibleItemScrollOffset)
+                            draggedItemYOffset.value =
+                                ((state.selectedIndex - listState.firstVisibleItemIndex) * draggedItemHeight - listState.firstVisibleItemScrollOffset)
                             heightSet = true
                         }
 
                     }
                     .offset {
-                        IntOffset(0, offsetY.value.roundToInt())
+                        IntOffset(0, draggedItemYOffset.value.roundToInt())
                     },
                 tonalElevation = 0.5.dp,
             ) {

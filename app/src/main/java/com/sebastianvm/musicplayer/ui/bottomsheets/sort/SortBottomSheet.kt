@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,7 @@ import kotlinx.coroutines.Dispatchers
 
 
 interface SortBottomSheetDelegate {
-    fun popBackStack(@StringRes sortOption: Int)
+    fun popBackStack()
 }
 
 @Composable
@@ -43,7 +42,7 @@ fun SortBottomSheet(
     HandleEvents(viewModel = sheetViewModel) { event ->
         when (event) {
             is SortBottomSheetUiEvent.CloseBottomSheet -> {
-                delegate.popBackStack(event.sortOption)
+                delegate.popBackStack()
             }
         }
     }
@@ -52,6 +51,7 @@ fun SortBottomSheet(
         .fillMaxWidth()
         .height(AppDimensions.bottomSheet.rowHeight)
         .padding(start = AppDimensions.bottomSheet.startPadding)
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = rowModifier) {
             Text(
@@ -65,13 +65,7 @@ fun SortBottomSheet(
             items(state.value.sortOptions, key = { it }) { row ->
                 Row(
                     modifier = Modifier
-                        .clickable {
-                            sheetViewModel.handle(
-                                SortBottomSheetUserAction.MediaSortOptionSelected(
-                                    row
-                                )
-                            )
-                        }
+                        .clickable { sheetViewModel.onMediaSortOptionClicked(row) }
                         .let {
                             if (state.value.selectedSort == row) {
                                 it.background(
@@ -95,13 +89,13 @@ fun SortBottomSheet(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = stringResource(id = row),
+                            text = stringResource(id = row.stringId),
                             modifier = Modifier.weight(1f),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     } else {
                         Text(
-                            text = stringResource(id = row),
+                            text = stringResource(id = row.stringId),
                             modifier = Modifier.padding(start = 24.dp.plus(AppDimensions.spacing.mediumLarge))
                         )
                     }
