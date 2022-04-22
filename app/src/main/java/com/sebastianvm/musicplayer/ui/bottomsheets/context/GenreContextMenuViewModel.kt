@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
@@ -20,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class GenreContextMenuViewModel @Inject constructor(
     initialState: GenreContextMenuState,
-    private val mediaQueueRepository: MediaQueueRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<GenreContextMenuState>(initialState) {
 
@@ -28,9 +26,7 @@ class GenreContextMenuViewModel @Inject constructor(
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
                 viewModelScope.launch {
-                    val mediaGroup = MediaGroup(MediaGroupType.GENRE, state.value.genreName)
-                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    playbackManager.playFromId(state.value.genreName, mediaGroup)
+                    playbackManager.playGenre(state.value.genreName)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }

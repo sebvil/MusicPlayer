@@ -1,10 +1,7 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import android.net.Uri
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -20,13 +17,13 @@ interface PlaybackManager {
     fun next()
     fun prev()
 
-    suspend fun playAllTracks(startingTrackId: Long, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>)
-    suspend fun playGenre(genreName: String, startingTrackId: Long, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>)
-//    fun playAlbum(albumId: Long, startingTrackId: Long)
-//    fun playArtist(artistName: String)
-//    fun playPlaylist(playlistName: String, startingTrackId: Long)
+    suspend fun playAllTracks(startingTrackId: String)
+    suspend fun playGenre(genreName: String, startingTrackId: String? = null)
+    suspend fun playAlbum(albumId: String, startingTrackId: String? = null)
+    suspend fun playArtist(artistName: String)
+    suspend fun playPlaylist(playlistName: String, startingTrackId: String? = null)
+    suspend fun playSingleTrack(trackId: String)
 
-    fun playFromId(mediaId: String, mediaGroup: MediaGroup)
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)

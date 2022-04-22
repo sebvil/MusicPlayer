@@ -2,12 +2,10 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -51,7 +49,6 @@ object InitialTrackContextMenuStateModule {
 class TrackContextMenuViewModel @Inject constructor(
     initialState: TrackContextMenuState,
     trackRepository: TrackRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistName = ""
@@ -89,22 +86,40 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.Play -> {
                 with(state.value) {
                     viewModelScope.launch {
-                        mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                        playbackManager.playFromId(mediaId, mediaGroup)
+                        when (mediaGroup.mediaGroupType) {
+                            MediaGroupType.ALL_TRACKS -> {
+                                playbackManager.playAllTracks(mediaId)
+                            }
+                            MediaGroupType.GENRE -> {
+                                playbackManager.playGenre(
+                                    genreName = mediaGroup.mediaId,
+                                    startingTrackId = mediaId
+                                )
+                            }
+                            MediaGroupType.ALBUM -> {
+                                playbackManager.playAlbum(
+                                    albumId = mediaGroup.mediaId,
+                                    startingTrackId = mediaId
+                                )
+                            }
+                            MediaGroupType.PLAYLIST -> {
+                                playbackManager.playPlaylist(
+                                    playlistName = mediaGroup.mediaId,
+                                    startingTrackId = mediaId
+                                )
+                            }
+                            MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
+                            MediaGroupType.ARTIST, MediaGroupType.UNKNOWN -> throw IllegalStateException(
+                                "Unsupported media group type: ${mediaGroup.mediaGroupType}"
+                            )
+                        }
                         addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                     }
                 }
             }
             ContextMenuItem.AddToQueue -> {
                 viewModelScope.launch {
-                    val didAddToQueue =
-                        mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
-                    addUiEvent(
-                        BaseContextMenuUiEvent.ShowToast(
-                            message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
-                            success = didAddToQueue
-                        )
-                    )
+                    playbackManager.addToQueue(listOf(state.value.mediaId))
                 }
             }
             ContextMenuItem.ViewAlbum -> {

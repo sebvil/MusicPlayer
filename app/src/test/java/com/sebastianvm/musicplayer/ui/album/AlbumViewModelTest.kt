@@ -131,15 +131,6 @@ class AlbumViewModelTest {
                 )
             }
 
-            coVerify {
-                mediaQueueRepository.createQueue(
-                    MediaGroup(
-                        mediaGroupType = MediaGroupType.ALBUM,
-                        mediaId = state.value.albumId
-                    ),
-                )
-
-            }
         }
     }
 

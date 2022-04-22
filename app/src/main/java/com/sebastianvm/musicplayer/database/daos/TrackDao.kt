@@ -50,21 +50,16 @@ interface TrackDao {
 
     @Transaction
     @Query(
-        """
-        SELECT Track.* FROM Track 
-        INNER JOIN ArtistTrackCrossRef ON Track.trackId = ArtistTrackCrossRef.trackId
-        WHERE ArtistTrackCrossRef.artistName=:artistName
-    """
+        "SELECT Track.* FROM Track " +
+                "INNER JOIN ArtistTrackCrossRef " +
+                "ON Track.trackId = ArtistTrackCrossRef.trackId " +
+                "WHERE ArtistTrackCrossRef.artistName=:artistName " +
+                "ORDER BY trackName COLLATE LOCALIZED ASC"
     )
     fun getTracksForArtist(artistName: String): Flow<List<Track>>
 
     @Transaction
-    @Query(
-        """
-        SELECT * FROM Track 
-        WHERE Track.albumId=:albumId
-    """
-    )
+    @Query("SELECT * FROM Track WHERE Track.albumId=:albumId ORDER BY trackNumber")
     fun getTracksForAlbum(albumId: String): Flow<List<Track>>
 
     @Transaction

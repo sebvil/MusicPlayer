@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -46,7 +45,6 @@ class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-    private val mediaQueueRepository: MediaQueueRepository,
 ) :
     BaseViewModel<SearchUiEvent, SearchState>(initialState) {
 
@@ -103,13 +101,7 @@ class SearchViewModel @Inject constructor(
             }
             is SearchUserAction.TrackRowClicked -> {
                 viewModelScope.launch {
-                    val mediaGroup = MediaGroup(
-                        mediaGroupType = MediaGroupType.SINGLE_TRACK,
-                        mediaId = action.trackId
-                    )
-                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-
-                    playbackManager.playFromId(action.trackId, mediaGroup)
+                    playbackManager.playSingleTrack(action.trackId)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }

@@ -173,7 +173,7 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     fun playMediaItems(
-        startingMediaId: Long,
+        startingMediaId: String,
         mediaItems: List<MediaItem>,
         playWhenReady: Boolean = true,
         position: Long = 0

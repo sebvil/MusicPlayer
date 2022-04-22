@@ -3,11 +3,8 @@ package com.sebastianvm.musicplayer.ui.album
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -32,7 +29,6 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     trackRepository: TrackRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState) {
 
@@ -47,7 +43,6 @@ class AlbumViewModel @Inject constructor(
                     imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
                     albumName = album.albumName,
                     tracksList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
-                        .sortedBy { it.trackNumber }
                 )
             }
         }
@@ -55,12 +50,7 @@ class AlbumViewModel @Inject constructor(
 
     fun onTrackClicked(trackId: String) {
         viewModelScope.launch {
-            val mediaGroup = MediaGroup(
-                mediaGroupType = MediaGroupType.ALBUM,
-                mediaId = state.value.albumId
-            )
-            mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-            playbackManager.playFromId(trackId, mediaGroup)
+            playbackManager.playAlbum(albumId = state.value.albumId, startingTrackId = trackId)
             addUiEvent(AlbumUiEvent.NavigateToPlayer)
         }
     }

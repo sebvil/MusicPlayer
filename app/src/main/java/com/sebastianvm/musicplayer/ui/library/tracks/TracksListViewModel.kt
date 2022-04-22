@@ -81,13 +81,12 @@ class TracksListViewModel @Inject constructor(
         viewModelScope.launch {
             when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> {
-                    playbackManager.playAllTracks(trackId.toLong(), state.value.sortPreferences)
+                    playbackManager.playAllTracks(trackId)
                 }
                 TracksListType.GENRE -> {
                     playbackManager.playGenre(
                         state.value.tracksListName,
-                        trackId.toLong(),
-                        state.value.sortPreferences
+                        trackId,
                     )
 
                 }
