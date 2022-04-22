@@ -172,6 +172,15 @@ class MediaPlaybackClient @Inject constructor(
         controller?.play()
     }
 
+    fun playMediaItems(
+        startingMediaId: Long,
+        mediaItems: List<MediaItem>,
+        playWhenReady: Boolean = true,
+        position: Long = 0
+    ) {
+        preparePlaylist(startingMediaId, mediaItems, playWhenReady, position)
+    }
+
     fun playFromId(
         mediaId: String,
         mediaGroup: MediaGroup,
@@ -208,6 +217,30 @@ class MediaPlaybackClient @Inject constructor(
     ) {
         val initialWindowIndex =
             mediaItems.indexOfFirst { it.mediaId == mediaId }.takeUnless { it == -1 } ?: 0
+
+        controller?.let { mediaController ->
+            mediaController.playWhenReady = playWhenReady
+            mediaController.stop()
+            mediaController.clearMediaItems()
+
+            mediaController.setMediaItems(mediaItems)
+            mediaController.prepare()
+            mediaController.seekTo(initialWindowIndex, position)
+        }
+    }
+
+    /**
+     * Load the supplied list of songs and the song to play into the current player.
+     */
+    private fun preparePlaylist(
+        mediaId: Long,
+        mediaItems: List<MediaItem>,
+        playWhenReady: Boolean,
+        position: Long
+    ) {
+        val initialWindowIndex =
+            mediaItems.indexOfFirst { it.mediaId == mediaId.toString() }.takeUnless { it == -1 }
+                ?: 0
 
         controller?.let { mediaController ->
             mediaController.playWhenReady = playWhenReady

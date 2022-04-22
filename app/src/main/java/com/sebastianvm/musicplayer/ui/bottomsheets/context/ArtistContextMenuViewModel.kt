@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class ArtistContextMenuViewModel @Inject constructor(
     initialState: ArtistContextMenuState,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<ArtistContextMenuState>(initialState) {
 
     override fun onRowClicked(row: ContextMenuItem) {
@@ -29,7 +29,7 @@ class ArtistContextMenuViewModel @Inject constructor(
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.ARTIST, state.value.artistName)
                     mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    mediaPlaybackRepository.playFromId(state.value.artistName, mediaGroup)
+                    playbackManager.playFromId(state.value.artistName, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }

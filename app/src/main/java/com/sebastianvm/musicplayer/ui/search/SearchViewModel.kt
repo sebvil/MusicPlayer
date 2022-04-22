@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -45,7 +45,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
     private val mediaQueueRepository: MediaQueueRepository,
 ) :
     BaseViewModel<SearchUiEvent, SearchState>(initialState) {
@@ -109,7 +109,7 @@ class SearchViewModel @Inject constructor(
                     )
                     mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
 
-                    mediaPlaybackRepository.playFromId(action.trackId, mediaGroup)
+                    playbackManager.playFromId(action.trackId, mediaGroup)
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }

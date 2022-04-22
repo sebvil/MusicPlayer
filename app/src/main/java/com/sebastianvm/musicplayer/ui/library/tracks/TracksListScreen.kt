@@ -55,7 +55,7 @@ fun TracksListScreen(
         },
         topBar = { state ->
             LibraryTopBar(
-                title = state.tracksListTitle.takeUnless { it.isEmpty() }
+                title = state.tracksListName.takeUnless { it.isEmpty() }
                     ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
@@ -96,7 +96,7 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
         LibraryTopBar(
-            title = state.tracksListTitle,
+            title = state.tracksListName,
             delegate = object : LibraryTopBarDelegate {})
     }) {
         TracksListLayout(

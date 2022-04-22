@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -52,7 +52,7 @@ class TrackContextMenuViewModel @Inject constructor(
     initialState: TrackContextMenuState,
     trackRepository: TrackRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistName = ""
 
@@ -90,7 +90,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 with(state.value) {
                     viewModelScope.launch {
                         mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                        mediaPlaybackRepository.playFromId(mediaId, mediaGroup)
+                        playbackManager.playFromId(mediaId, mediaGroup)
                         addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                     }
                 }

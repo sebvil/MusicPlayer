@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.queue
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
@@ -29,14 +29,14 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val tracksRepository: TrackRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
 
     init {
         viewModelScope.launch {
-            mediaPlaybackRepository.getQueue().flatMapLatest { ids ->
+            playbackManager.getQueue().flatMapLatest { ids ->
                 tracksRepository.getTracks(ids).map { tracks ->
                     tracks.sortedBy { track -> ids.indexOf(track.trackId) }
                 }
@@ -91,7 +91,7 @@ class QueueViewModel @Inject constructor(
                 with(state.value) {
                     draggedItem?.also {
                         val items = queueItems.toMutableList()
-                        mediaPlaybackRepository.moveQueueItem(
+                        playbackManager.moveQueueItem(
                             previousIndex = draggedItemStartingIndex,
                             newIndex = draggedItemFinalIndex
                         )
@@ -111,7 +111,7 @@ class QueueViewModel @Inject constructor(
                 val index =
                     state.value.queueItems.indexOfFirst { it.trackRowState.trackId == action.trackId }
                 if (index == -1) return
-                mediaPlaybackRepository.playQueueItem(index)
+                playbackManager.playQueueItem(index)
             }
             is QueueUserAction.DropdownMenuClicked -> {
                 setState {

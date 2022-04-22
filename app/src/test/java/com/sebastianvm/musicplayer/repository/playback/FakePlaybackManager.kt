@@ -5,13 +5,13 @@ import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeMediaPlaybackRepository(
+class FakePlaybackManager(
     playbackState: PlaybackState = PlaybackState(
         mediaItemMetadata = null,
         isPlaying = false,
         currentPlayTimeMs = 0
     )
-) : MediaPlaybackRepository {
+) : PlaybackManager {
 
     override val playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(playbackState)
     override val nowPlayingIndex: MutableStateFlow<Int> = MutableStateFlow(1)

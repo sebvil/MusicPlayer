@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -24,7 +24,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     initialState: AlbumContextMenuState,
     albumRepository: AlbumRepository,
     private val mediaQueueRepository: MediaQueueRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
     private var trackIds: List<String> = listOf()
@@ -54,7 +54,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                 viewModelScope.launch {
                     val mediaGroup = MediaGroup(MediaGroupType.ALBUM, state.value.mediaId)
                     mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    mediaPlaybackRepository.playFromId(state.value.mediaId, mediaGroup)
+                    playbackManager.playFromId(state.value.mediaId, mediaGroup)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }

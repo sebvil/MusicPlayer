@@ -4,8 +4,8 @@ import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
-import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
@@ -36,14 +36,14 @@ class TracksListViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+    private lateinit var playbackManager: PlaybackManager
     private lateinit var preferencesRepository: SortPreferencesRepository
     private lateinit var trackRepository: TrackRepository
     private lateinit var mediaQueueRepository: MediaQueueRepository
 
     @Before
     fun setUp() {
-        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+        playbackManager = spyk(FakePlaybackManager())
         preferencesRepository = FakeSortPreferencesRepository()
         trackRepository = FakeTrackRepository(
             tracks = listOf(fullTrackInfo {
@@ -77,9 +77,9 @@ class TracksListViewModelTest {
         tracksListTitle: String = TracksListViewModel.ALL_TRACKS,
     ): TracksListViewModel {
         return TracksListViewModel(
-            mediaPlaybackRepository = mediaPlaybackRepository,
+            mediaPlaybackRepository = playbackManager,
             initialState = TracksListState(
-                tracksListTitle = tracksListTitle,
+                tracksListName = tracksListTitle,
                 tracksListType = listGroupType,
                 tracksList = listOf(),
                 currentSort = MediaSortOption.ARTIST,
@@ -96,7 +96,7 @@ class TracksListViewModelTest {
         with(generateViewModel()) {
             advanceUntilIdle()
             with(state.value) {
-                assertEquals(TracksListViewModel.ALL_TRACKS, tracksListTitle)
+                assertEquals(TracksListViewModel.ALL_TRACKS, tracksListName)
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -131,7 +131,7 @@ class TracksListViewModelTest {
         ) {
             advanceUntilIdle()
             with(state.value) {
-                assertEquals(TRACK_GENRE_0, tracksListTitle)
+                assertEquals(TRACK_GENRE_0, tracksListName)
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -154,7 +154,7 @@ class TracksListViewModelTest {
         with(generateViewModel(listGroupType = TracksListType.PLAYLIST, tracksListTitle = TRACK_PLAYLIST_1)) {
             advanceUntilIdle()
             with(state.value) {
-                assertEquals(TRACK_PLAYLIST_1, tracksListTitle)
+                assertEquals(TRACK_PLAYLIST_1, tracksListName)
                 assertEquals(
                     listOf(
                         TrackRowState(
@@ -179,7 +179,7 @@ class TracksListViewModelTest {
             advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
-                mediaPlaybackRepository.playFromId(
+                playbackManager.playFromId(
                     TRACK_ID_0,
                     MediaGroup(mediaGroupType = MediaGroupType.ALL_TRACKS, mediaId = "")
                 )
@@ -199,7 +199,7 @@ class TracksListViewModelTest {
             advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
-                mediaPlaybackRepository.playFromId(
+                playbackManager.playFromId(
                     TRACK_ID_0,
                     MediaGroup(
                         mediaGroupType = MediaGroupType.GENRE,
@@ -222,7 +222,7 @@ class TracksListViewModelTest {
             advanceUntilIdle()
             assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
             verify {
-                mediaPlaybackRepository.playFromId(
+                playbackManager.playFromId(
                     TRACK_ID_1,
                     MediaGroup(
                         mediaGroupType = MediaGroupType.PLAYLIST,
