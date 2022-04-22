@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
-import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
@@ -46,12 +45,6 @@ object DatabaseModule {
     @Singleton
     fun provideGenreDao(database: MusicDatabase): GenreDao {
         return database.genreDao
-    }
-
-    @Provides
-    @Singleton
-    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
-        return database.mediaQueueDao
     }
 
     @Provides

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -113,13 +112,6 @@ class QueueViewModel @Inject constructor(
                 if (index == -1) return
                 playbackManager.playQueueItem(index)
             }
-            is QueueUserAction.DropdownMenuClicked -> {
-                setState {
-                    copy(
-                        dropdownExpanded = !dropdownExpanded
-                    )
-                }
-            }
         }
     }
 }
@@ -127,8 +119,6 @@ class QueueViewModel @Inject constructor(
 data class QueueItem(val queuePosition: Int, val trackRowState: TrackRowState)
 
 data class QueueState(
-    val queues: List<MediaQueue>,
-    val dropdownExpanded: Boolean,
     val mediaGroup: MediaGroup?,
     val queueItems: List<QueueItem>,
     val draggedItem: QueueItem?,
@@ -145,8 +135,6 @@ object InitialQueueStateModule {
     @ViewModelScoped
     fun initialQueueStateProvider(): QueueState {
         return QueueState(
-            queues = listOf(),
-            dropdownExpanded = false,
             mediaGroup = null,
             queueItems = listOf(),
             draggedItem = null,
@@ -160,7 +148,6 @@ sealed class QueueUserAction : UserAction {
     data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
     object DragEnded : QueueUserAction()
     data class TrackClicked(val trackId: String) : QueueUserAction()
-    object DropdownMenuClicked : QueueUserAction()
 }
 
 sealed class QueueUiEvent : UiEvent

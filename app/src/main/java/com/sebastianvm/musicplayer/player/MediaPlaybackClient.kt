@@ -26,7 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -86,12 +85,12 @@ class MediaPlaybackClient @Inject constructor(
                             isPlaying = it.isPlaying,
                             currentPlayTimeMs = lastRecordedPosition,
                         )
-                        playFromId(
-                            mediaId = mediaId,
-                            mediaGroup = currentQueue,
-                            playWhenReady = false,
-                            position = lastRecordedPosition
-                        )
+//                        playFromId(
+//                            mediaId = mediaId,
+//                            mediaGroup = currentQueue,
+//                            playWhenReady = false,
+//                            position = lastRecordedPosition
+//                        )
                     }
                 }
             }
@@ -181,31 +180,6 @@ class MediaPlaybackClient @Inject constructor(
         preparePlaylist(startingMediaId, mediaItems, playWhenReady, position)
     }
 
-    fun playFromId(
-        mediaId: String,
-        mediaGroup: MediaGroup,
-        playWhenReady: Boolean = true,
-        position: Long = 0
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val mediaItems = trackRepository.getTracksForQueue(mediaGroup).map { tracks ->
-                tracks.map { it.toMediaItem() }
-            }.first()
-
-            playbackInfoDataSource.modifySavedPlaybackInfo {
-                SavedPlaybackInfo(
-                    currentQueue = mediaGroup,
-                    mediaId = mediaId,
-                    lastRecordedPosition = position
-                )
-            }
-
-            withContext(Dispatchers.Main) {
-                preparePlaylist(mediaId, mediaItems, playWhenReady, position)
-            }
-        }
-    }
-
     /**
      * Load the supplied list of songs and the song to play into the current player.
      */
@@ -217,30 +191,6 @@ class MediaPlaybackClient @Inject constructor(
     ) {
         val initialWindowIndex =
             mediaItems.indexOfFirst { it.mediaId == mediaId }.takeUnless { it == -1 } ?: 0
-
-        controller?.let { mediaController ->
-            mediaController.playWhenReady = playWhenReady
-            mediaController.stop()
-            mediaController.clearMediaItems()
-
-            mediaController.setMediaItems(mediaItems)
-            mediaController.prepare()
-            mediaController.seekTo(initialWindowIndex, position)
-        }
-    }
-
-    /**
-     * Load the supplied list of songs and the song to play into the current player.
-     */
-    private fun preparePlaylist(
-        mediaId: Long,
-        mediaItems: List<MediaItem>,
-        playWhenReady: Boolean,
-        position: Long
-    ) {
-        val initialWindowIndex =
-            mediaItems.indexOfFirst { it.mediaId == mediaId.toString() }.takeUnless { it == -1 }
-                ?: 0
 
         controller?.let { mediaController ->
             mediaController.playWhenReady = playWhenReady

@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
-import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
@@ -23,7 +22,6 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreFts
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
@@ -37,7 +35,6 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         Artist::class,
         Album::class,
         Genre::class,
-        MediaQueue::class,
         Playlist::class,
         ArtistTrackCrossRef::class,
         GenreTrackCrossRef::class,
@@ -59,7 +56,6 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract val artistDao: ArtistDao
     abstract val albumDao: AlbumDao
     abstract val genreDao: GenreDao
-    abstract val mediaQueueDao: MediaQueueDao
     abstract val playlistDao: PlaylistDao
 
     abstract val trackFtsDao: TrackFtsDao

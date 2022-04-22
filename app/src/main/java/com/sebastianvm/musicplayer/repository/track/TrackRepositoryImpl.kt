@@ -67,11 +67,6 @@ class TrackRepositoryImpl @Inject constructor(
         return trackDao.getTracksForPlaylist(playlistName).distinctUntilChanged()
     }
 
-    override fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<Track>> {
-        return trackDao.getTracksForQueue(mediaGroup.mediaGroupType, mediaGroup.mediaId)
-            .distinctUntilChanged()
-    }
-
     override suspend fun insertAllTracks(
         tracks: Set<Track>,
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,

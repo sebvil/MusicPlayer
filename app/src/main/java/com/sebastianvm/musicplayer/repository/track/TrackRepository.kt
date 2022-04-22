@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
@@ -31,8 +30,6 @@ interface TrackRepository {
     fun getTracksForGenre(genreName: String, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 
     fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
-
-    fun getTracksForQueue(mediaGroup: MediaGroup): Flow<List<Track>>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,
