@@ -77,16 +77,16 @@ class TracksListViewModel @Inject constructor(
 
     }
 
-    fun onTrackClicked(trackId: String) {
+    fun onTrackClicked(trackIndex: Int) {
         viewModelScope.launch {
             when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> {
-                    playbackManager.playAllTracks(trackId)
+                    playbackManager.playAllTracks(initialTrackIndex = trackIndex)
                 }
                 TracksListType.GENRE -> {
                     playbackManager.playGenre(
                         state.value.tracksListName,
-                        trackId,
+                        initialTrackIndex = trackIndex,
                     )
 
                 }
@@ -99,7 +99,7 @@ class TracksListViewModel @Inject constructor(
         addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListName))
     }
 
-    fun onTrackOverflowMenuIconClicked(trackId: String) {
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
         val mediaGroup = MediaGroup(
             mediaGroupType = when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
@@ -107,7 +107,7 @@ class TracksListViewModel @Inject constructor(
             },
             mediaId = state.value.tracksListName.ifEmpty { ALL_TRACKS }
         )
-        addUiEvent(TracksListUiEvent.OpenContextMenu(trackId, mediaGroup))
+        addUiEvent(TracksListUiEvent.OpenContextMenu(trackId, mediaGroup, trackIndex))
     }
 
     fun onUpButtonClicked() {
@@ -153,7 +153,7 @@ sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
     data class ShowSortBottomSheet(val mediaId: String) : TracksListUiEvent()
     object NavigateUp : TracksListUiEvent()
-    data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup) :
+    data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup, val trackIndex: Int) :
         TracksListUiEvent()
 }
 

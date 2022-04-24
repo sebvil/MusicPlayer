@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// TODO maybe trigger playback from mediaQueueRepo?
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
@@ -48,18 +47,19 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    fun onTrackClicked(trackId: String) {
+    fun onTrackClicked(trackIndex: Int) {
         viewModelScope.launch {
-            playbackManager.playAlbum(albumId = state.value.albumId, startingTrackId = trackId)
+            playbackManager.playAlbum(albumId = state.value.albumId, initialTrackIndex = trackIndex)
             addUiEvent(AlbumUiEvent.NavigateToPlayer)
         }
     }
 
-    fun onTrackOverflowMenuIconClicked(trackId: String) {
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
         addUiEvent(
             AlbumUiEvent.OpenContextMenu(
                 trackId = trackId,
-                albumId = state.value.albumId
+                albumId = state.value.albumId,
+                trackIndex = trackIndex
             )
         )
     }
@@ -91,5 +91,5 @@ object InitialAlbumStateModule {
 
 sealed class AlbumUiEvent : UiEvent {
     object NavigateToPlayer : AlbumUiEvent()
-    data class OpenContextMenu(val trackId: String, val albumId: String) : AlbumUiEvent()
+    data class OpenContextMenu(val trackId: String, val albumId: String, val trackIndex: Int) : AlbumUiEvent()
 }

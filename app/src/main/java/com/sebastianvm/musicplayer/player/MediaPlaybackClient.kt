@@ -142,12 +142,12 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     fun playMediaItems(
-        startingMediaId: String,
+        initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
         playWhenReady: Boolean = true,
         position: Long = 0
     ) {
-        preparePlaylist(startingMediaId, mediaItems, playWhenReady, position)
+        preparePlaylist(initialWindowIndex, mediaItems, playWhenReady, position)
     }
 
     /**
@@ -155,14 +155,11 @@ class MediaPlaybackClient @Inject constructor(
      * TODO this should take an index instead of an id
      */
     private fun preparePlaylist(
-        mediaId: String,
+        initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
         playWhenReady: Boolean,
         position: Long
     ) {
-        val initialWindowIndex =
-            mediaItems.indexOfFirst { it.mediaId == mediaId }.takeUnless { it == -1 } ?: 0
-
         controller?.let { mediaController ->
             mediaController.playWhenReady = playWhenReady
             mediaController.stop()

@@ -23,6 +23,7 @@ data class TrackContextMenuState(
     val mediaId: String,
     val albumId: String,
     val mediaGroup: MediaGroup,
+    val trackIndex: Int
 ) : BaseContextMenuState(listItems, menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -35,12 +36,14 @@ object InitialTrackContextMenuStateModule {
         val mediaGroupType =
             MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID) ?: ""
+        val trackIndex = savedStateHandle.get<Int>(NavArgs.TRACK_INDEX) ?: 0
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
             albumId = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
+            trackIndex = trackIndex
         )
     }
 }
@@ -88,24 +91,23 @@ class TrackContextMenuViewModel @Inject constructor(
                     viewModelScope.launch {
                         when (mediaGroup.mediaGroupType) {
                             MediaGroupType.ALL_TRACKS -> {
-                                playbackManager.playAllTracks(mediaId)
+                                playbackManager.playAllTracks(trackIndex)
                             }
                             MediaGroupType.GENRE -> {
                                 playbackManager.playGenre(
                                     genreName = mediaGroup.mediaId,
-                                    startingTrackId = mediaId
+                                    initialTrackIndex = trackIndex
                                 )
                             }
                             MediaGroupType.ALBUM -> {
                                 playbackManager.playAlbum(
                                     albumId = mediaGroup.mediaId,
-                                    startingTrackId = mediaId
+                                    initialTrackIndex = trackIndex
                                 )
                             }
                             MediaGroupType.PLAYLIST -> {
                                 playbackManager.playPlaylist(
-                                    playlistName = mediaGroup.mediaId,
-                                    startingTrackId = mediaId
+                                    playlistName = mediaGroup.mediaId
                                 )
                             }
                             MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)

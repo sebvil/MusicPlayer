@@ -52,11 +52,12 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.openSortBottomSheet(listType = SortableListType.TRACKS, mediaId = mediaId)
                 }
 
-                override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup) {
+                override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup, trackIndex: Int) {
                     navController.openContextMenu(
                         mediaType = MediaType.TRACK,
                         mediaId = mediaId,
                         mediaGroup = mediaGroup,
+                        trackIndex = trackIndex
                     )
                 }
             }

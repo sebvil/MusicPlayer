@@ -35,11 +35,12 @@ fun NavGraphBuilder.albumNavDestination(navController: NavController) {
                 }
             }
 
-            override fun openContextMenu(trackId: String, albumId: String) {
+            override fun openContextMenu(trackId: String, albumId: String, trackIndex: Int) {
                 navController.openContextMenu(
                     mediaType = MediaType.TRACK,
                     mediaId = trackId,
                     mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
+                    trackIndex = trackIndex
                 )
             }
         })

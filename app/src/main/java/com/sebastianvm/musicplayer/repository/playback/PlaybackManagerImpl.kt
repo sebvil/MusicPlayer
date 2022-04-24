@@ -55,20 +55,19 @@ class PlaybackManagerImpl @Inject constructor(
 
     // TODO use flow and Data/Loading/Error pattern to handle this
     private suspend fun playTracks(
-        startingTrackId: String? = null,
+        initialTrackIndex: Int = 0,
         tracksGetter: suspend () -> List<MediaItem>
     ) {
         val mediaItems = withContext(ioDispatcher) {
             tracksGetter()
         }
-        val startingTrackIdNonNull = startingTrackId ?: mediaItems.firstOrNull()?.mediaId ?: return
-        mediaPlaybackClient.playMediaItems(startingTrackIdNonNull, mediaItems)
+        mediaPlaybackClient.playMediaItems(initialTrackIndex, mediaItems)
     }
 
     override suspend fun playAllTracks(
-        startingTrackId: String
+        initialTrackIndex: Int
     ) {
-        playTracks(startingTrackId) {
+        playTracks(initialTrackIndex) {
             sortPreferencesRepository.getTracksListSortPreferences(TracksListType.ALL_TRACKS)
                 .flatMapLatest { mediaSortPreferences ->
                     trackRepository.getAllTracks(mediaSortPreferences)
@@ -78,9 +77,9 @@ class PlaybackManagerImpl @Inject constructor(
 
     override suspend fun playGenre(
         genreName: String,
-        startingTrackId: String?,
+        initialTrackIndex: Int,
     ) {
-        playTracks(startingTrackId) {
+        playTracks(initialTrackIndex) {
             sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreName)
                 .flatMapLatest { mediaSortPreferences ->
                     trackRepository.getTracksForGenre(genreName, mediaSortPreferences)
@@ -88,8 +87,8 @@ class PlaybackManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun playAlbum(albumId: String, startingTrackId: String?) {
-        playTracks(startingTrackId) {
+    override suspend fun playAlbum(albumId: String, initialTrackIndex: Int) {
+        playTracks(initialTrackIndex) {
             trackRepository.getTracksForAlbum(albumId).first().map { it.toMediaItem() }
         }
     }
@@ -100,14 +99,14 @@ class PlaybackManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun playPlaylist(playlistName: String, startingTrackId: String?) {
-        playTracks(startingTrackId) {
+    override suspend fun playPlaylist(playlistName: String, initialTrackIndex: Int) {
+        playTracks(initialTrackIndex) {
             trackRepository.getTracksForPlaylist(playlistName).first().map { it.toMediaItem() }
         }
     }
 
     override suspend fun playSingleTrack(trackId: String) {
-        playTracks(trackId) {
+        playTracks(initialTrackIndex = 0) {
             listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
         }
     }
