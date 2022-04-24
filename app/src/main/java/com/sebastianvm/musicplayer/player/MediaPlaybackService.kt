@@ -4,6 +4,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
@@ -12,14 +13,15 @@ import androidx.media3.session.MediaSession
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
+import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -27,6 +29,10 @@ class MediaPlaybackService : MediaLibraryService() {
 
     @Inject
     lateinit var playbackManager: PlaybackManager
+
+    @Inject
+    @MainDispatcher
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     @Inject
     @DefaultDispatcher
@@ -45,22 +51,35 @@ class MediaPlaybackService : MediaLibraryService() {
             .build()
         player = ExoPlayer.Builder(this)
             .setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true).build()
-        CoroutineScope(Dispatchers.Main).launch {
+
+        CoroutineScope(mainDispatcher).launch {
             initializeQueue()
         }
 
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                savePlaybackInfo()
+                CoroutineScope(mainDispatcher).launch {
+                    savePlaybackInfo()
+                }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                savePlaybackInfo()
+                CoroutineScope(mainDispatcher).launch {
+                    savePlaybackInfo()
+                }
             }
 
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                updateQueue()
-                savePlaybackInfo()
+                CoroutineScope(mainDispatcher).launch {
+                    updateQueue()
+                    savePlaybackInfo()
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                player.seekToNext()
+                player.prepare()
+                player.play()
             }
         })
         mediaSession = MediaLibrarySession.Builder(
@@ -88,28 +107,29 @@ class MediaPlaybackService : MediaLibraryService() {
     }
 
     private suspend fun initializeQueue() {
-        playbackManager.getSavedPlaybackInfo().first().run {
-            if (queuedTracks.isEmpty()) {
-                return
+        withContext(defaultDispatcher) {
+            playbackManager.getSavedPlaybackInfo().first().run {
+                if (queuedTracks.isEmpty()) {
+                    return@run
+                }
+                withContext(mainDispatcher) {
+                    preparePlaylist(
+                        initialWindowIndex = nowPlayingIndex,
+                        mediaItems = queuedTracks.map { it.toMediaItem() },
+                        position = lastRecordedPosition
+                    )
+                }
             }
-
-            preparePlaylist(
-                initialWindowIndex = nowPlayingIndex,
-                mediaItems = queuedTracks.map { it.toMediaItem() },
-                playWhenReady = false,
-                position = lastRecordedPosition
-            )
         }
     }
 
     private fun preparePlaylist(
         initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
-        playWhenReady: Boolean,
         position: Long
     ) {
         player.apply {
-            player.playWhenReady = playWhenReady
+            player.playWhenReady = false
             stop()
             clearMediaItems()
 
@@ -125,24 +145,21 @@ class MediaPlaybackService : MediaLibraryService() {
         mediaSession.release()
     }
 
-    fun savePlaybackInfo() {
+    suspend fun savePlaybackInfo() {
         val index = player.currentMediaItemIndex
         val contentPosition = player.contentPosition
-        CoroutineScope(Dispatchers.Main).launch {
-            playbackManager.modifySavedPlaybackInfo(
-                PlaybackInfo(
-                    queuedTracks = queue.value,
-                    nowPlayingIndex = index,
-                    lastRecordedPosition = contentPosition
-                )
+        playbackManager.modifySavedPlaybackInfo(
+            PlaybackInfo(
+                queuedTracks = queue.value,
+                nowPlayingIndex = index,
+                lastRecordedPosition = contentPosition
             )
-
-        }
+        )
     }
 
-    fun updateQueue() {
+    suspend fun updateQueue() {
         val timeline = player.currentTimeline
-        CoroutineScope(defaultDispatcher).launch {
+        withContext(defaultDispatcher) {
             val newQueue = (0 until timeline.windowCount).map {
                 Track.fromId(trackId = timeline.getWindow(it, Timeline.Window()).mediaItem.mediaId)
             }

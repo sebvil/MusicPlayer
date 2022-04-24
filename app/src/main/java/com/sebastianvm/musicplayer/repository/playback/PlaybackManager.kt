@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface PlaybackManager {
 
     val playbackState: MutableStateFlow<PlaybackState>
-    val nowPlayingIndex: MutableStateFlow<Int>
 
     fun connectToService()
     fun disconnectFromService()

@@ -28,7 +28,6 @@ class PlaybackManagerImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
-    override val nowPlayingIndex: MutableStateFlow<Int> = mediaPlaybackClient.currentIndex
 
     override fun connectToService() {
         mediaPlaybackClient.initializeController()
