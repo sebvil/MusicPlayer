@@ -3,47 +3,47 @@ package com.sebastianvm.musicplayer.repository.playback
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
+import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.util.PreferencesUtil
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class PlaybackInfoDataSourceImpl @Inject constructor(private val playbackInfoDataStore: DataStore<Preferences>, @IODispatcher private val ioDispatcher: CoroutineDispatcher) :
-    PlaybackInfoDataSource {
-    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+class PlaybackInfoDataSourceImpl @Inject constructor(
+    private val mediaQueueDao: MediaQueueDao,
+    private val playbackInfoDataStore: DataStore<Preferences>,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+) : PlaybackInfoDataSource {
+    override suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo) {
+        playbackInfoDataStore.edit { savedPrefs ->
+            savedPrefs[PreferencesUtil.KEY_LAST_RECORDED_POSITION] =
+                newPlaybackInfo.lastRecordedPosition
+            savedPrefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] = newPlaybackInfo.nowPlayingIndex
+        }
         withContext(ioDispatcher) {
-            with(transform(getSavedPlaybackInfo().first())) {
-                playbackInfoDataStore.edit { settings ->
-                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP] =
-                        currentQueue.mediaGroupType.name
-                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] =
-                        currentQueue.mediaId
-                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] = mediaId
-                    settings[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] = lastRecordedPosition
-                }
-            }
+            mediaQueueDao.saveQueue(newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
+                MediaQueueItem(
+                    track.trackId,
+                    index
+                )
+            })
         }
     }
 
-    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
-        return playbackInfoDataStore.data.map { preferences ->
-            val mediaGroup =
-                preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP]
-                    ?: MediaGroupType.UNKNOWN.name
-            val mediaGroupId = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_GROUP_ID] ?: ""
-            val mediaId = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_MEDIA_ID] ?: ""
-            val position = preferences[PreferencesUtil.SAVED_PLAYBACK_INFO_POSITION] ?: 0
-            SavedPlaybackInfo(
-                MediaGroup(MediaGroupType.valueOf(mediaGroup), mediaGroupId),
-                mediaId,
-                position
+    override fun getSavedPlaybackInfo(): Flow<PlaybackInfo> {
+        return combine(
+            playbackInfoDataStore.data,
+            mediaQueueDao.getQueuedTracks()
+        ) { prefs, tracks ->
+            PlaybackInfo(
+                queuedTracks = tracks,
+                nowPlayingIndex = prefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] ?: -1,
+                lastRecordedPosition = prefs[PreferencesUtil.KEY_LAST_RECORDED_POSITION] ?: 0
             )
         }
     }

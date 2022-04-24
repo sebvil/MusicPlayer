@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-private const val SORT_SETTINGS_DATA_STORE_FILE_NAME = "sort_settings.pb"
+private const val SORT_PREFERENCES_DATA_STORE_FILE_NAME = "sort_prefs.json"
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -26,7 +26,7 @@ object SortPreferencesDataStoreModule {
             serializer = SortPreferencesSerializer,
             corruptionHandler = null,
             migrations = listOf(),
-            produceFile = { appContext.dataStoreFile(SORT_SETTINGS_DATA_STORE_FILE_NAME) },
+            produceFile = { appContext.dataStoreFile(SORT_PREFERENCES_DATA_STORE_FILE_NAME) },
         )
     }
 }

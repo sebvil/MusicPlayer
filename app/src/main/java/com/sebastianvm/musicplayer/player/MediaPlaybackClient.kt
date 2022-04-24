@@ -14,19 +14,15 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
-import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoDataSource
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
+import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.duration
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,8 +31,8 @@ import javax.inject.Singleton
 @Singleton
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val trackRepository: TrackRepository,
-    private val playbackInfoDataSource: PlaybackInfoDataSource,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
@@ -53,7 +49,6 @@ class MediaPlaybackClient @Inject constructor(
     val queue: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
     val nowPlaying: MutableStateFlow<MediaMetadata?> = MutableStateFlow(null)
     val currentIndex: MutableStateFlow<Int> = MutableStateFlow(-1)
-    private lateinit var savedPlaybackInfo: StateFlow<SavedPlaybackInfo>
 
 
     fun initializeController() {
@@ -67,33 +62,8 @@ class MediaPlaybackClient @Inject constructor(
         MediaController.releaseFuture(mediaControllerFuture)
     }
 
-    private fun prepareClient() {
-        CoroutineScope(Dispatchers.Main).launch {
-            savedPlaybackInfo = playbackInfoDataSource.getSavedPlaybackInfo()
-                .stateIn(CoroutineScope(Dispatchers.IO))
-            controller?.also {
-                with(savedPlaybackInfo.value) {
-                    if (it.isPlaying) {
-                        playbackState.value = PlaybackState(
-                            mediaItemMetadata = controller?.mediaMetadata?.toMediaItemMetadata(),
-                            isPlaying = it.isPlaying,
-                            currentPlayTimeMs = it.contentPosition,
-                        )
-                    } else if (currentQueue.mediaGroupType != MediaGroupType.UNKNOWN) {
-                        playbackState.value = PlaybackState(
-                            mediaItemMetadata = null,
-                            isPlaying = it.isPlaying,
-                            currentPlayTimeMs = lastRecordedPosition,
-                        )
-//                        playFromId(
-//                            mediaId = mediaId,
-//                            mediaGroup = currentQueue,
-//                            playWhenReady = false,
-//                            position = lastRecordedPosition
-//                        )
-                    }
-                }
-            }
+    private fun launchCurrentPlayTimeUpdates() {
+        CoroutineScope(mainDispatcher).launch {
             while (true) {
                 delay(1000)
                 controller?.also {
@@ -130,7 +100,7 @@ class MediaPlaybackClient @Inject constructor(
 
                 override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                     currentIndex.value = controller.currentMediaItemIndex
-                    CoroutineScope(Dispatchers.Main).launch {
+                    CoroutineScope(mainDispatcher).launch {
                         updateQueue()
                     }
                 }
@@ -142,7 +112,7 @@ class MediaPlaybackClient @Inject constructor(
                 }
             }
         )
-        prepareClient()
+        launchCurrentPlayTimeUpdates()
     }
 
 
@@ -182,6 +152,7 @@ class MediaPlaybackClient @Inject constructor(
 
     /**
      * Load the supplied list of songs and the song to play into the current player.
+     * TODO this should take an index instead of an id
      */
     private fun preparePlaylist(
         mediaId: String,
@@ -203,19 +174,17 @@ class MediaPlaybackClient @Inject constructor(
         }
     }
 
-    suspend fun addToQueue(mediaIds: List<String>): Int {
-        return withContext(Dispatchers.Main) {
-            controller?.let { controllerNotNull ->
-                val tracks = trackRepository.getTracks(mediaIds).first().map { it.toMediaItem() }
-                val nextIndex = controllerNotNull.nextMediaItemIndex
-                if (nextIndex == C.INDEX_UNSET) {
-                    controllerNotNull.addMediaItems(tracks)
-                } else {
-                    controllerNotNull.addMediaItems(nextIndex, tracks)
-                }
-                nextIndex
-            } ?: -1
-        }
+    fun addToQueue(mediaItems: List<MediaItem>): Int {
+        return controller?.let { controllerNotNull ->
+            val nextIndex = controllerNotNull.nextMediaItemIndex
+            if (nextIndex == C.INDEX_UNSET) {
+                controllerNotNull.addMediaItems(mediaItems)
+            } else {
+                controllerNotNull.addMediaItems(nextIndex, mediaItems)
+            }
+            nextIndex
+        } ?: -1
+
     }
 
     fun seekToTrackPosition(position: Long) {
@@ -237,7 +206,7 @@ class MediaPlaybackClient @Inject constructor(
         val controllerNotNull = controller ?: return
         val currentIndex = controllerNotNull.currentMediaItemIndex
         val timeline = controllerNotNull.currentTimeline
-        withContext(Dispatchers.Main) {
+        withContext(defaultDispatcher) {
             val newQueue = (currentIndex until timeline.windowCount).map {
                 timeline.getWindow(it, Timeline.Window()).mediaItem.mediaId
             }

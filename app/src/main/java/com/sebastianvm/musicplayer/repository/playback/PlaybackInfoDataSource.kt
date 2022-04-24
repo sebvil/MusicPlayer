@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 
 interface PlaybackInfoDataSource {
-    suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)
-    fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
+    suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
+    fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
 }
