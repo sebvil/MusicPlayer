@@ -38,5 +38,17 @@ inline var MediaMetadata.Builder.duration: Long
         setExtras(bundleOf(KEY_TRACK_DURATION_MS to value))
     }
 
+inline var MediaMetadata.Builder.isPlayable: Boolean
+    get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
+    set(value) {
+        setIsPlayable(value)
+    }
+
+inline var MediaMetadata.Builder.folderType: Int
+    get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
+    set(value) {
+        setFolderType(value)
+    }
+
 const val KEY_TRACK_DURATION_MS =
     "com.sebastianvm.musicplayer.util.extensions.KEY_TRACK_DURATION_MS"

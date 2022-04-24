@@ -23,16 +23,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicPlayer">
+
         <service
             android:name=".player.MediaPlaybackService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
+
         <service
             android:name=".repository.LibraryScanService"
             android:exported="false">
@@ -45,15 +45,16 @@
                 <action android:name="com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE" />
             </intent-filter>
         </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!--Used by Android Auto-->
         <meta-data android:name="com.google.android.gms.car.notification.SmallIcon"
             android:resource="@mipmap/ic_launcher_round" />
