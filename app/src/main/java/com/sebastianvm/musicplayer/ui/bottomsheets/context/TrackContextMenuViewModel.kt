@@ -2,12 +2,10 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -25,6 +23,7 @@ data class TrackContextMenuState(
     val mediaId: String,
     val albumId: String,
     val mediaGroup: MediaGroup,
+    val trackIndex: Int
 ) : BaseContextMenuState(listItems, menuTitle)
 
 @InstallIn(ViewModelComponent::class)
@@ -37,12 +36,14 @@ object InitialTrackContextMenuStateModule {
         val mediaGroupType =
             MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
         val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID) ?: ""
+        val trackIndex = savedStateHandle.get<Int>(NavArgs.TRACK_INDEX) ?: 0
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
             albumId = "",
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
+            trackIndex = trackIndex
         )
     }
 }
@@ -51,8 +52,7 @@ object InitialTrackContextMenuStateModule {
 class TrackContextMenuViewModel @Inject constructor(
     initialState: TrackContextMenuState,
     trackRepository: TrackRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistName = ""
 
@@ -89,22 +89,39 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.Play -> {
                 with(state.value) {
                     viewModelScope.launch {
-                        mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                        mediaPlaybackRepository.playFromId(mediaId, mediaGroup)
+                        when (mediaGroup.mediaGroupType) {
+                            MediaGroupType.ALL_TRACKS -> {
+                                playbackManager.playAllTracks(trackIndex)
+                            }
+                            MediaGroupType.GENRE -> {
+                                playbackManager.playGenre(
+                                    genreName = mediaGroup.mediaId,
+                                    initialTrackIndex = trackIndex
+                                )
+                            }
+                            MediaGroupType.ALBUM -> {
+                                playbackManager.playAlbum(
+                                    albumId = mediaGroup.mediaId,
+                                    initialTrackIndex = trackIndex
+                                )
+                            }
+                            MediaGroupType.PLAYLIST -> {
+                                playbackManager.playPlaylist(
+                                    playlistName = mediaGroup.mediaId
+                                )
+                            }
+                            MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
+                            MediaGroupType.ARTIST, MediaGroupType.UNKNOWN -> throw IllegalStateException(
+                                "Unsupported media group type: ${mediaGroup.mediaGroupType}"
+                            )
+                        }
                         addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                     }
                 }
             }
             ContextMenuItem.AddToQueue -> {
                 viewModelScope.launch {
-                    val didAddToQueue =
-                        mediaQueueRepository.addToQueue(listOf(state.value.mediaId))
-                    addUiEvent(
-                        BaseContextMenuUiEvent.ShowToast(
-                            message = if (didAddToQueue) R.string.added_to_queue else R.string.no_queue_available,
-                            success = didAddToQueue
-                        )
-                    )
+                    playbackManager.addToQueue(listOf(state.value.mediaId))
                 }
             }
             ContextMenuItem.ViewAlbum -> {

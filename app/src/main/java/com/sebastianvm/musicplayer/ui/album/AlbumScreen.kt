@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +35,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumNavigationDelegate {
     fun navigateToPlayer() = Unit
-    fun openContextMenu(trackId: String, albumId: String) = Unit
+    fun openContextMenu(trackId: String, albumId: String, trackIndex: Int) = Unit
 }
 
 @Composable
@@ -51,25 +51,28 @@ fun AlbumScreen(
                     delegate.navigateToPlayer()
                 }
                 is AlbumUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(trackId = event.trackId, albumId = event.albumId)
+                    delegate.openContextMenu(trackId = event.trackId, albumId = event.albumId, trackIndex = event.trackIndex)
                 }
             }
         }) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
-            override fun onTrackClicked(trackId: String) {
-                screenVieModel.onTrackClicked(trackId = trackId)
+            override fun onTrackClicked(trackIndex: Int) {
+                screenVieModel.onTrackClicked(trackIndex = trackIndex)
             }
 
-            override fun onTrackOverflowMenuIconClicked(trackId: String) {
-                screenVieModel.onTrackOverflowMenuIconClicked(trackId = trackId)
+            override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
+                screenVieModel.onTrackOverflowMenuIconClicked(
+                    trackIndex = trackIndex,
+                    trackId = trackId
+                )
             }
         })
     }
 }
 
 interface AlbumScreenDelegate {
-    fun onTrackClicked(trackId: String) = Unit
-    fun onTrackOverflowMenuIconClicked(trackId: String) = Unit
+    fun onTrackClicked(trackIndex: Int) = Unit
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -122,7 +125,7 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                     )
                 }
             }
-            items(tracksList) { item ->
+            itemsIndexed(tracksList) { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = item.trackNumber?.toString() ?: "",
@@ -140,9 +143,14 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                     TrackRow(
                         state = item,
                         modifier = Modifier.clickable {
-                            delegate.onTrackClicked(trackId = item.trackId)
+                            delegate.onTrackClicked(trackIndex = index)
                         },
-                        onOverflowMenuIconClicked = { delegate.onTrackOverflowMenuIconClicked(item.trackId) }
+                        onOverflowMenuIconClicked = {
+                            delegate.onTrackOverflowMenuIconClicked(
+                                trackIndex = index,
+                                trackId = item.trackId
+                            )
+                        }
                     )
                 }
             }

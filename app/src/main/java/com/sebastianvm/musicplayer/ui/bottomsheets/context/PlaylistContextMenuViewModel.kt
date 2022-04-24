@@ -4,9 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
@@ -21,8 +20,7 @@ import javax.inject.Inject
 class PlaylistContextMenuViewModel @Inject constructor(
     initialState: PlaylistContextMenuState,
     private val playlistRepository: PlaylistRepository,
-    private val mediaQueueRepository: MediaQueueRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
     // TODO check if playlist has items before playing
@@ -30,10 +28,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
                 viewModelScope.launch {
-                    val mediaGroup =
-                        MediaGroup(MediaGroupType.PLAYLIST, state.value.playlistName)
-                    mediaQueueRepository.createQueue(mediaGroup = mediaGroup)
-                    mediaPlaybackRepository.playFromId(state.value.playlistName, mediaGroup)
+                    playbackManager.playPlaylist(state.value.playlistName)
                     addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
                 }
             }

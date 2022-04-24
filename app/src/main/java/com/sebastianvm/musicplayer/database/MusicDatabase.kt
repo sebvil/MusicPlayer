@@ -23,7 +23,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreFts
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.MediaQueue
+import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
@@ -37,8 +37,8 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         Artist::class,
         Album::class,
         Genre::class,
-        MediaQueue::class,
         Playlist::class,
+        MediaQueueItem::class,
         ArtistTrackCrossRef::class,
         GenreTrackCrossRef::class,
         AlbumsForArtist::class,
@@ -59,8 +59,8 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract val artistDao: ArtistDao
     abstract val albumDao: AlbumDao
     abstract val genreDao: GenreDao
-    abstract val mediaQueueDao: MediaQueueDao
     abstract val playlistDao: PlaylistDao
+    abstract val mediaQueueDao: MediaQueueDao
 
     abstract val trackFtsDao: TrackFtsDao
     abstract val artistFtsDao: ArtistFtsDao

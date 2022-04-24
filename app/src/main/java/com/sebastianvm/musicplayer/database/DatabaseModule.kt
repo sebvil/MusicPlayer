@@ -50,14 +50,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
-        return database.mediaQueueDao
+    fun providePlaylistDao(database: MusicDatabase): PlaylistDao {
+        return database.playlistDao
     }
 
     @Provides
     @Singleton
-    fun providePlaylistDao(database: MusicDatabase): PlaylistDao {
-        return database.playlistDao
+    fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
+        return database.mediaQueueDao
     }
 
     @Provides

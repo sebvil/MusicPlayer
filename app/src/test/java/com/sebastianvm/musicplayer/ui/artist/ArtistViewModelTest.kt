@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
 import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.repository.playback.mediaqueue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -28,7 +28,7 @@ class ArtistViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var albumRepository: AlbumRepository
-    private lateinit var artistRepository: ArtistRepository
+    private lateinit var artistRepository: MediaQueueRepository
 
     @Before
     fun setUp() {

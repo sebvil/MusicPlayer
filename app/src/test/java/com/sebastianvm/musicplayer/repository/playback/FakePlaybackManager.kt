@@ -1,17 +1,17 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeMediaPlaybackRepository(
+class FakePlaybackManager(
     playbackState: PlaybackState = PlaybackState(
         mediaItemMetadata = null,
         isPlaying = false,
         currentPlayTimeMs = 0
     )
-) : MediaPlaybackRepository {
+) : PlaybackManager {
 
     override val playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(playbackState)
     override val nowPlayingIndex: MutableStateFlow<Int> = MutableStateFlow(1)
@@ -39,12 +39,12 @@ class FakeMediaPlaybackRepository(
     override fun playQueueItem(index: Int) = Unit
     override fun seekToTrackPosition(position: Long) = Unit
 
-    override suspend fun addToQueue(mediaIds: List<String>): Int = 1
-    override suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo) {
+    override suspend fun addToQueue(mediaIds: List<String>) = 1
+    override suspend fun modifySavedPlaybackInfo(transform: (playbackInfo: PlaybackInfo) -> PlaybackInfo) {
         TODO("Not yet implemented")
     }
 
-    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
+    override fun getSavedPlaybackInfo(): Flow<PlaybackInfo> {
         TODO("Not yet implemented")
     }
 }

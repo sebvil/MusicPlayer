@@ -33,8 +33,8 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 screenViewModel.handle(QueueUserAction.DragEnded)
             }
 
-            override fun onTrackClicked(trackId: String) {
-                screenViewModel.handle(QueueUserAction.TrackClicked(trackId))
+            override fun onTrackClicked(trackIndex: Int) {
+                screenViewModel.handle(QueueUserAction.TrackClicked(trackIndex))
             }
         })
     }
@@ -51,7 +51,7 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
 }
 
 interface QueueScreenDelegate : DraggableListItemDelegate {
-    fun onTrackClicked(trackId: String) = Unit
+    fun onTrackClicked(trackIndex: Int) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
 }
 
@@ -71,7 +71,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
             TrackRow(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onTrackClicked(item.trackId)
+                    delegate.onTrackClicked(index)
                 },
                 onOverflowMenuIconClicked = { delegate.onContextMenuItemClicked(item.trackId) },
                 color = MaterialTheme.colorScheme.primary
@@ -80,7 +80,7 @@ fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
             TrackRow(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onTrackClicked(item.trackId)
+                    delegate.onTrackClicked(index)
                 },
                 onOverflowMenuIconClicked = { delegate.onContextMenuItemClicked(item.trackId) })
         }

@@ -11,6 +11,6 @@ private const val PLAYBACK_INFO_PREFERENCES_FILE = "playback_info"
 @InstallIn(SingletonComponent::class)
 abstract class MediaPlaybackRepositoryModule {
     @Binds
-    abstract fun bindMediaPlaybackRepository(mediaPlaybackRepository: MediaPlaybackRepositoryImpl): MediaPlaybackRepository
+    abstract fun bindMediaPlaybackRepository(mediaPlaybackRepository: PlaybackManagerImpl): PlaybackManager
 
 }

@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository.artist
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
+import com.sebastianvm.musicplayer.repository.playback.mediaqueue.MediaQueueRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -10,7 +11,7 @@ class FakeArtistRepository(
     private val artistsWithAlbums: List<ArtistWithAlbums> = listOf(),
     private val artistTrackCrossRef: List<ArtistTrackCrossRef> = listOf()
 ) :
-    ArtistRepository {
+    MediaQueueRepository {
 
     override fun getArtistsCount(): Flow<Int> = flow { emit(artistsWithAlbums.size) }
 

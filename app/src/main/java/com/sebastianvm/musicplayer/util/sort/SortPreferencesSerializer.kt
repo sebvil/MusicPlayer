@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.util.sort
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
@@ -21,7 +20,7 @@ object SortPreferencesSerializer : Serializer<SortPreferences> {
                 serializer, input.readBytes().decodeToString()
             )
         } catch (serialization: SerializationException) {
-            throw CorruptionException("Unable to read UserPrefs", serialization)
+            throw CorruptionException("Unable to read SortPreferences", serialization)
         }
     }
 

@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.net.Uri
-import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.MediaItemMetadata
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import io.mockk.spyk
@@ -20,12 +20,12 @@ class MusicPlayerViewModelTest {
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
 
-    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+    private lateinit var playbackManager: PlaybackManager
 
 
     private fun generateViewModel(isPlaying: Boolean = false): MusicPlayerViewModel {
-        mediaPlaybackRepository = spyk(
-            FakeMediaPlaybackRepository(
+        playbackManager = spyk(
+            FakePlaybackManager(
                 playbackState = PlaybackState(
                     mediaItemMetadata = MediaItemMetadata(
                         title = TRACK_NAME,
@@ -39,7 +39,7 @@ class MusicPlayerViewModelTest {
             )
         )
         return MusicPlayerViewModel(
-            mediaPlaybackRepository = mediaPlaybackRepository,
+            mediaPlaybackRepository = playbackManager,
             initialState = MusicPlayerState(
                 isPlaying = false,
                 trackName = null,
@@ -73,7 +73,7 @@ class MusicPlayerViewModelTest {
     fun `onPlayToggled while paused triggers playback`() {
         with(generateViewModel()) {
             onPlayToggled()
-            verify { mediaPlaybackRepository.play() }
+            verify { playbackManager.play() }
         }
     }
 
@@ -81,7 +81,7 @@ class MusicPlayerViewModelTest {
     fun `onPlayToggled while playing pauses playback`() {
         with(generateViewModel(isPlaying = true)) {
             onPlayToggled()
-            verify { mediaPlaybackRepository.pause() }
+            verify { playbackManager.pause() }
         }
     }
 
@@ -90,7 +90,7 @@ class MusicPlayerViewModelTest {
     fun `onPreviousTapped triggers prev call`() {
         with(generateViewModel()) {
             onPreviousTapped()
-            verify { mediaPlaybackRepository.prev() }
+            verify { playbackManager.prev() }
         }
     }
 
@@ -98,7 +98,7 @@ class MusicPlayerViewModelTest {
     fun `onNextTapped triggers next call`() {
         with(generateViewModel()) {
             onNextTapped()
-            verify { mediaPlaybackRepository.next() }
+            verify { playbackManager.next() }
         }
     }
 
@@ -106,7 +106,7 @@ class MusicPlayerViewModelTest {
     fun `onProgressTapped triggers seekToTrackPosition call`() {
         with(generateViewModel()) {
             onProgressTapped(50)
-            verify { mediaPlaybackRepository.seekToTrackPosition(TRACK_LENGTH / 2) }
+            verify { playbackManager.seekToTrackPosition(TRACK_LENGTH / 2) }
         }
     }
 

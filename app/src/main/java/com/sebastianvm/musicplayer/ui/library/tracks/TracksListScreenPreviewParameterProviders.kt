@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.util.sort.SortOptions
 class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {
     override val values = sequenceOf(
         TracksListState(
-            tracksListTitle = "Pop",
+            tracksListName = "Pop",
             tracksListType = TracksListType.GENRE,
             tracksList = listOf(
                 TrackRowState("0", "La Promesa", "Melendi", "Un alumno mas"),

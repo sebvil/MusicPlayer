@@ -5,7 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ interface TracksListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
     fun openSortMenu(mediaId: String)
-    fun openContextMenu(mediaId: String, mediaGroup: MediaGroup)
+    fun openContextMenu(mediaId: String, mediaGroup: MediaGroup, trackIndex: Int)
 }
 
 @Composable
@@ -47,7 +47,7 @@ fun TracksListScreen(
                     delegate.openSortMenu(mediaId = event.mediaId)
                 }
                 is TracksListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup)
+                    delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup, trackIndex = event.trackIndex)
                 }
                 is TracksListUiEvent.NavigateUp -> delegate.navigateUp()
                 is TracksListUiEvent.ScrollToTop -> listState.scrollToItem(0)
@@ -55,7 +55,7 @@ fun TracksListScreen(
         },
         topBar = { state ->
             LibraryTopBar(
-                title = state.tracksListTitle.takeUnless { it.isEmpty() }
+                title = state.tracksListName.takeUnless { it.isEmpty() }
                     ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
@@ -72,12 +72,12 @@ fun TracksListScreen(
             state = state,
             listState = listState,
             delegate = object : TracksListScreenDelegate {
-                override fun onTrackClicked(trackId: String) {
-                    screenViewModel.onTrackClicked(trackId)
+                override fun onTrackClicked(trackIndex: Int) {
+                    screenViewModel.onTrackClicked(trackIndex)
                 }
 
-                override fun onOverflowMenuIconClicked(trackId: String) {
-                    screenViewModel.onTrackOverflowMenuIconClicked(trackId)
+                override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
+                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
                 }
             })
     }
@@ -85,8 +85,8 @@ fun TracksListScreen(
 
 
 interface TracksListScreenDelegate {
-    fun onTrackClicked(trackId: String)
-    fun onOverflowMenuIconClicked(trackId: String) = Unit
+    fun onTrackClicked(trackIndex: Int) = Unit
+    fun onOverflowMenuIconClicked(trackIndex: Int, trackId: String) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -96,15 +96,14 @@ fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterPro
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
         LibraryTopBar(
-            title = state.tracksListTitle,
+            title = state.tracksListName,
             delegate = object : LibraryTopBarDelegate {})
     }) {
         TracksListLayout(
             state = state,
             listState = listState,
-            delegate = object : TracksListScreenDelegate {
-                override fun onTrackClicked(trackId: String) = Unit
-            })
+            delegate = object : TracksListScreenDelegate {}
+        )
     }
 }
 
@@ -116,15 +115,15 @@ fun TracksListLayout(
     delegate: TracksListScreenDelegate
 ) {
     LazyColumn(state = listState) {
-        items(state.tracksList, key = { it.trackId }) { item ->
+        itemsIndexed(state.tracksList, key = { _, item -> item.trackId }) { index, item ->
             TrackRow(
                 state = item,
                 modifier = Modifier
                     .animateItemPlacement()
                     .clickable {
-                        delegate.onTrackClicked(item.trackId)
+                        delegate.onTrackClicked(index)
                     },
-                onOverflowMenuIconClicked = { delegate.onOverflowMenuIconClicked(item.trackId) }
+                onOverflowMenuIconClicked = { delegate.onOverflowMenuIconClicked(index, item.trackId) }
             )
         }
     }

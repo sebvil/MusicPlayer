@@ -1,10 +1,8 @@
 package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.database.entities.MediaQueue
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -17,38 +15,29 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
-    private val tracksRepository: TrackRepository,
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
 ) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
 
     init {
         viewModelScope.launch {
-            mediaPlaybackRepository.getQueue().flatMapLatest { ids ->
-                tracksRepository.getTracks(ids).map { tracks ->
-                    tracks.sortedBy { track -> ids.indexOf(track.trackId) }
-                }
-            }.collect { tracks ->
+            playbackManager.getSavedPlaybackInfo().collect { savedPlaybackInfo ->
                 setState {
                     copy(
-                        queueItems = tracks.mapIndexed { index, track ->
+                        queueItems = savedPlaybackInfo.queuedTracks.mapIndexed { index, track ->
                             QueueItem(
                                 index,
                                 track.toTrackRowState(includeTrackNumber = false)
                             )
-                        }
+                        },
+                        nowPlayingTrackIndex = savedPlaybackInfo.nowPlayingIndex
                     )
                 }
             }
@@ -91,7 +80,7 @@ class QueueViewModel @Inject constructor(
                 with(state.value) {
                     draggedItem?.also {
                         val items = queueItems.toMutableList()
-                        mediaPlaybackRepository.moveQueueItem(
+                        playbackManager.moveQueueItem(
                             previousIndex = draggedItemStartingIndex,
                             newIndex = draggedItemFinalIndex
                         )
@@ -108,17 +97,7 @@ class QueueViewModel @Inject constructor(
                 }
             }
             is QueueUserAction.TrackClicked -> {
-                val index =
-                    state.value.queueItems.indexOfFirst { it.trackRowState.trackId == action.trackId }
-                if (index == -1) return
-                mediaPlaybackRepository.playQueueItem(index)
-            }
-            is QueueUserAction.DropdownMenuClicked -> {
-                setState {
-                    copy(
-                        dropdownExpanded = !dropdownExpanded
-                    )
-                }
+                playbackManager.playQueueItem(action.trackIndex)
             }
         }
     }
@@ -127,8 +106,6 @@ class QueueViewModel @Inject constructor(
 data class QueueItem(val queuePosition: Int, val trackRowState: TrackRowState)
 
 data class QueueState(
-    val queues: List<MediaQueue>,
-    val dropdownExpanded: Boolean,
     val mediaGroup: MediaGroup?,
     val queueItems: List<QueueItem>,
     val draggedItem: QueueItem?,
@@ -145,8 +122,6 @@ object InitialQueueStateModule {
     @ViewModelScoped
     fun initialQueueStateProvider(): QueueState {
         return QueueState(
-            queues = listOf(),
-            dropdownExpanded = false,
             mediaGroup = null,
             queueItems = listOf(),
             draggedItem = null,
@@ -159,8 +134,7 @@ sealed class QueueUserAction : UserAction {
     data class ItemDragged(val newIndex: Int) : QueueUserAction()
     data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
     object DragEnded : QueueUserAction()
-    data class TrackClicked(val trackId: String) : QueueUserAction()
-    object DropdownMenuClicked : QueueUserAction()
+    data class TrackClicked(val trackIndex: Int) : QueueUserAction()
 }
 
 sealed class QueueUiEvent : UiEvent

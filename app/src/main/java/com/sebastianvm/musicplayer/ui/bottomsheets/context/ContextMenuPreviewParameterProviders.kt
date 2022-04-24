@@ -5,7 +5,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseContextMenuState> {
     override val values = sequenceOf(
         AlbumContextMenuState(
-            mediaId = "1",
+            albumId = "1",
             menuTitle = "La Promesa",
             listItems = listOf(
                 ContextMenuItem.Play,

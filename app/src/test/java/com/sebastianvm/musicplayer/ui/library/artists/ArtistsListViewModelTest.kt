@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.artists
 
 import com.sebastianvm.musicplayer.database.entities.artistWithAlbums
-import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.repository.playback.mediaqueue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -21,7 +21,7 @@ class ArtistsListViewModelTest {
     @get:Rule
     val mainCoroutineRule = DispatcherSetUpRule()
 
-    private lateinit var artistRepository: ArtistRepository
+    private lateinit var artistRepository: MediaQueueRepository
     private lateinit var preferencesRepository: SortPreferencesRepository
 
 

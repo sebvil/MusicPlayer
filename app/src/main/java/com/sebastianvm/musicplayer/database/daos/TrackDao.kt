@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
@@ -50,21 +49,16 @@ interface TrackDao {
 
     @Transaction
     @Query(
-        """
-        SELECT Track.* FROM Track 
-        INNER JOIN ArtistTrackCrossRef ON Track.trackId = ArtistTrackCrossRef.trackId
-        WHERE ArtistTrackCrossRef.artistName=:artistName
-    """
+        "SELECT Track.* FROM Track " +
+                "INNER JOIN ArtistTrackCrossRef " +
+                "ON Track.trackId = ArtistTrackCrossRef.trackId " +
+                "WHERE ArtistTrackCrossRef.artistName=:artistName " +
+                "ORDER BY trackName COLLATE LOCALIZED ASC"
     )
     fun getTracksForArtist(artistName: String): Flow<List<Track>>
 
     @Transaction
-    @Query(
-        """
-        SELECT * FROM Track 
-        WHERE Track.albumId=:albumId
-    """
-    )
+    @Query("SELECT * FROM Track WHERE Track.albumId=:albumId ORDER BY trackNumber")
     fun getTracksForAlbum(albumId: String): Flow<List<Track>>
 
     @Transaction
@@ -95,17 +89,6 @@ interface TrackDao {
     """
     )
     fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
-
-    @Transaction
-    @Query(
-        """
-        SELECT Track.* FROM Track 
-        INNER JOIN MediaQueueTrackCrossRef ON Track.trackId = MediaQueueTrackCrossRef.trackId
-        WHERE MediaQueueTrackCrossRef.mediaGroupType=:mediaType AND MediaQueueTrackCrossRef.groupMediaId=:groupMediaId 
-        ORDER BY MediaQueueTrackCrossRef.trackIndex ASC
-    """
-    )
-    fun getTracksForQueue(mediaType: MediaGroupType, groupMediaId: String): Flow<List<Track>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

@@ -1,15 +1,14 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import android.net.Uri
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.SavedPlaybackInfo
+import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-interface MediaPlaybackRepository {
+interface PlaybackManager {
 
     val playbackState: MutableStateFlow<PlaybackState>
-    val nowPlayingIndex: MutableStateFlow<Int>
 
     fun connectToService()
     fun disconnectFromService()
@@ -17,14 +16,21 @@ interface MediaPlaybackRepository {
     fun pause()
     fun next()
     fun prev()
-    fun playFromId(mediaId: String, mediaGroup: MediaGroup)
+
+    suspend fun playAllTracks(initialTrackIndex: Int = 0)
+    suspend fun playGenre(genreName: String, initialTrackIndex: Int = 0)
+    suspend fun playAlbum(albumId: String,initialTrackIndex: Int = 0)
+    suspend fun playArtist(artistName: String)
+    suspend fun playPlaylist(playlistName: String, initialTrackIndex: Int = 0)
+    suspend fun playSingleTrack(trackId: String)
+
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)
-    suspend fun addToQueue(mediaIds: List<String>): Int
-    fun getQueue(): Flow<List<String>>
-    suspend fun modifySavedPlaybackInfo(transform: (savedPlaybackInfo: SavedPlaybackInfo) -> SavedPlaybackInfo)
-    fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo>
+    suspend fun addToQueue(mediaIds: List<String>)
+    fun getQueue(): Flow<List<Track>>
+    suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
+    fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
 
 }
 

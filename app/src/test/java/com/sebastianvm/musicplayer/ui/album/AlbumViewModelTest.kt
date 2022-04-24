@@ -9,8 +9,8 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.repository.playback.FakeMediaPlaybackRepository
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
 import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
@@ -32,7 +32,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class AlbumViewModelTest {
 
-    private lateinit var mediaPlaybackRepository: MediaPlaybackRepository
+    private lateinit var playbackManager: PlaybackManager
     private lateinit var mediaQueueRepository: MediaQueueRepository
     private lateinit var albumRepository: AlbumRepository
     private lateinit var trackRepository: TrackRepository
@@ -46,7 +46,7 @@ class AlbumViewModelTest {
 
     @Before
     fun setUp() {
-        mediaPlaybackRepository = spyk(FakeMediaPlaybackRepository())
+        playbackManager = spyk(FakePlaybackManager())
         mediaQueueRepository = spyk(FakeMediaQueueRepository())
         albumRepository = FakeAlbumRepository(
             fullAlbumInfo = listOf(
@@ -80,7 +80,7 @@ class AlbumViewModelTest {
 
     private fun generateViewModel(): AlbumViewModel {
         return AlbumViewModel(
-            mediaPlaybackRepository = mediaPlaybackRepository,
+            mediaPlaybackRepository = playbackManager,
             initialState = AlbumState(
                 albumId = ALBUM_ID,
                 tracksList = listOf(),
@@ -122,7 +122,7 @@ class AlbumViewModelTest {
             onTrackClicked(TRACK_ID)
             assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), events.value)
             verify {
-                mediaPlaybackRepository.playFromId(
+                playbackManager.playFromId(
                     TRACK_ID,
                     MediaGroup(
                         mediaGroupType = MediaGroupType.ALBUM,
@@ -131,15 +131,6 @@ class AlbumViewModelTest {
                 )
             }
 
-            coVerify {
-                mediaQueueRepository.createQueue(
-                    MediaGroup(
-                        mediaGroupType = MediaGroupType.ALBUM,
-                        mediaId = state.value.albumId
-                    ),
-                )
-
-            }
         }
     }
 

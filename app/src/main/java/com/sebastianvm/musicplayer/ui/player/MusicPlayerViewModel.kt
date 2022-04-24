@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.net.Uri
-import com.sebastianvm.musicplayer.repository.playback.MediaPlaybackRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -16,13 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
-    private val mediaPlaybackRepository: MediaPlaybackRepository,
+    private val playbackManager: PlaybackManager,
     initialState: MusicPlayerState,
 ) :
     BaseViewModel<MusicPlayerUiEvent, MusicPlayerState>(initialState) {
 
     init {
-        collect(mediaPlaybackRepository.playbackState) {
+        collect(playbackManager.playbackState) {
             setState {
                 copy(
                     trackName = it.mediaItemMetadata?.title,
@@ -38,23 +38,23 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun onPlayToggled() {
         if (state.value.isPlaying) {
-            mediaPlaybackRepository.pause()
+            playbackManager.pause()
         } else {
-            mediaPlaybackRepository.play()
+            playbackManager.play()
         }
     }
 
     fun onPreviousTapped() {
-        mediaPlaybackRepository.prev()
+        playbackManager.prev()
     }
 
     fun onNextTapped() {
-        mediaPlaybackRepository.next()
+        playbackManager.next()
     }
 
     fun onProgressTapped(position: Int) {
         val time: Long = (state.value.trackLengthMs ?: 0) * position / 100
-        mediaPlaybackRepository.seekToTrackPosition(time)
+        playbackManager.seekToTrackPosition(time)
     }
 }
 

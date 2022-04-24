@@ -29,6 +29,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             NavArgs.MEDIA_TYPE,
             NavArgs.MEDIA_GROUP_TYPE,
             NavArgs.MEDIA_GROUP_ID,
+            NavArgs.TRACK_INDEX
         ),
         arguments = listOf(
             navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
@@ -38,6 +39,10 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 type = NavType.StringType
                 nullable = true
             },
+            navArgument(NavArgs.TRACK_INDEX) {
+                type = NavType.IntType
+                defaultValue = 0
+            }
         )
     ) { backedStackEntry ->
         val sheetViewModel =
@@ -98,6 +103,7 @@ fun NavController.openContextMenu(
     mediaType: MediaType,
     mediaId: String,
     mediaGroup: MediaGroup,
+    trackIndex: Int? = null
 ) {
     navigateTo(
         NavRoutes.CONTEXT,
@@ -105,5 +111,6 @@ fun NavController.openContextMenu(
         NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
         NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaGroupType),
         NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
+        NavArgument(NavArgs.TRACK_INDEX, trackIndex),
     )
 }
