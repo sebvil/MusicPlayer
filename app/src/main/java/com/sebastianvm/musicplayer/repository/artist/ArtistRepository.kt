@@ -9,6 +9,7 @@ interface ArtistRepository {
     fun getArtistsCount(): Flow<Int>
     fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>>
     fun getArtist(artistName: String): Flow<ArtistWithAlbums>
+    fun getArtist(artistId: Long): Flow<ArtistWithAlbums>
     fun getArtistsForTrack(trackId: String): Flow<List<Artist>>
     fun getArtistsForAlbum(albumId: String): Flow<List<Artist>>
 }

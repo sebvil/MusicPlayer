@@ -73,12 +73,18 @@ class MusicRepositoryImpl @Inject constructor(
         val trackArtists = parseTag(artists)
         val artistTrackCrossRefs = trackArtists.map { artistName ->
             ArtistTrackCrossRef(
+                artistId = artistName.hashCode().toLong(),
                 artistName = artistName,
                 trackId = id,
                 trackName = title
             )
         }
-        val trackArtistsList = trackArtists.map { artistName -> Artist(artistName = artistName) }
+        val trackArtistsList = trackArtists.map { artistName ->
+            Artist(
+                artistId = artistName.hashCode().toLong(),
+                artistName = artistName
+            )
+        }
         val trackGenres = parseTag(genres).map { genreName -> Genre(genreName = genreName) }
         val genreTrackCrossRef = trackGenres.map { genre ->
             GenreTrackCrossRef(

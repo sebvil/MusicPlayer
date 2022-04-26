@@ -32,8 +32,8 @@ data class Track(
 
 @Fts4(
     contentEntity = ArtistTrackCrossRef::class,
-    notIndexed = ["trackId"],
+    notIndexed = ["trackId", "artistId"],
     tokenizer = FtsOptions.TOKENIZER_UNICODE61
 )
 @Entity
-data class TrackFts(val trackId: String, val trackName: String, val artistName: String)
+data class TrackFts(val trackId: String, val trackName: String, val artistId: Int, val artistName: String)
