@@ -63,7 +63,6 @@ class PlaybackManagerImpl @Inject constructor(
     ): Flow<PlaybackResult> = flow {
         emit(PlaybackResult.Loading)
         val mediaItems = withContext(ioDispatcher) {
-            delay(1000)
             tracksGetter()
         }
         if (mediaItems.isEmpty()) {
