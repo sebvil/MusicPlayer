@@ -30,6 +30,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -55,7 +57,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
-    HandleEvents(viewModel= sheetViewModel) { event ->
+    HandleEvents(viewModel = sheetViewModel) { event ->
         when (event) {
             is BaseContextMenuUiEvent.NavigateToPlayer -> {
                 delegate.navigateToPlayer()
@@ -110,7 +112,8 @@ fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterP
     }
 }
 
-interface ContextMenuDelegate : DeletePlaylistConfirmationDialogDelegate {
+interface ContextMenuDelegate : DeletePlaylistConfirmationDialogDelegate,
+    PlaybackStatusIndicatorDelegate {
     fun onRowClicked(contextMenuItem: ContextMenuItem) = Unit
 }
 
@@ -151,13 +154,17 @@ fun ContextMenuLayout(
     state: BaseContextMenuState,
     delegate: ContextMenuDelegate
 ) {
+    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
+
     if (state is PlaylistContextMenuState && state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
             playlistName = state.playlistName,
             delegate = delegate
         )
         // Need this to be able to dismiss bottom sheet after deleting playlist
-        Box(modifier = Modifier.fillMaxWidth().height(1.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp))
     } else {
         with(state) {
             Column(modifier = Modifier.fillMaxWidth()) {

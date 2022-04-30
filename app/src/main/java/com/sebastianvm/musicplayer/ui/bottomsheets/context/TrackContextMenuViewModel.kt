@@ -6,6 +6,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -14,17 +15,20 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class TrackContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
+    override val playbackResult: PlaybackResult? = null,
     val mediaId: String,
     val albumId: String,
     val mediaGroup: MediaGroup,
-    val trackIndex: Int
-) : BaseContextMenuState(listItems, menuTitle)
+    val trackIndex: Int,
+) : BaseContextMenuState(listItems, menuTitle, playbackResult)
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -57,7 +61,7 @@ class TrackContextMenuViewModel @Inject constructor(
     private var artistName = ""
 
     init {
-        collect(trackRepository.getTrack(state.value.mediaId)) {
+        trackRepository.getTrack(state.value.mediaId).onEach {
             if (it.artists.size == 1) {
                 artistName = it.artists[0]
             }
@@ -81,43 +85,53 @@ class TrackContextMenuViewModel @Inject constructor(
                     albumId = it.track.albumId,
                 )
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.Play -> {
                 with(state.value) {
-                    viewModelScope.launch {
-                        when (mediaGroup.mediaGroupType) {
-                            MediaGroupType.ALL_TRACKS -> {
-                                playbackManager.playAllTracks(trackIndex)
-                            }
-                            MediaGroupType.GENRE -> {
-                                playbackManager.playGenre(
-                                    genreName = mediaGroup.mediaId,
-                                    initialTrackIndex = trackIndex
-                                )
-                            }
-                            MediaGroupType.ALBUM -> {
-                                playbackManager.playAlbum(
-                                    albumId = mediaGroup.mediaId,
-                                    initialTrackIndex = trackIndex
-                                )
-                            }
-                            MediaGroupType.PLAYLIST -> {
-                                playbackManager.playPlaylist(
-                                    playlistName = mediaGroup.mediaId
-                                )
-                            }
-                            MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
-                            MediaGroupType.ARTIST, MediaGroupType.UNKNOWN -> throw IllegalStateException(
-                                "Unsupported media group type: ${mediaGroup.mediaGroupType}"
+                    val playMediaFlow = when (mediaGroup.mediaGroupType) {
+                        MediaGroupType.ALL_TRACKS -> {
+                            playbackManager.playAllTracks(trackIndex)
+                        }
+                        MediaGroupType.GENRE -> {
+                            playbackManager.playGenre(
+                                genreName = mediaGroup.mediaId,
+                                initialTrackIndex = trackIndex
                             )
                         }
-                        addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        MediaGroupType.ALBUM -> {
+                            playbackManager.playAlbum(
+                                albumId = mediaGroup.mediaId,
+                                initialTrackIndex = trackIndex
+                            )
+                        }
+                        MediaGroupType.PLAYLIST -> {
+                            playbackManager.playPlaylist(
+                                playlistName = mediaGroup.mediaId
+                            )
+                        }
+                        MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
+                        MediaGroupType.ARTIST, MediaGroupType.UNKNOWN -> throw IllegalStateException(
+                            "Unsupported media group type: ${mediaGroup.mediaGroupType}"
+                        )
                     }
+                    playMediaFlow.onEach {
+                        when (it) {
+                            is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
+                                copy(
+                                    playbackResult = it
+                                )
+                            }
+                            is PlaybackResult.Success -> {
+                                addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                            }
+                        }
+                    }.launchIn(viewModelScope)
                 }
+
             }
             ContextMenuItem.AddToQueue -> {
                 viewModelScope.launch {
@@ -142,5 +156,9 @@ class TrackContextMenuViewModel @Inject constructor(
             }
             else -> throw IllegalStateException("Invalid row for track context menu")
         }
+    }
+
+    override fun onPlaybackErrorDismissed() {
+        setState { copy(playbackResult = null) }
     }
 }

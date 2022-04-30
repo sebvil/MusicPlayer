@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -62,6 +63,7 @@ class PlaybackManagerImpl @Inject constructor(
     ): Flow<PlaybackResult> = flow {
         emit(PlaybackResult.Loading)
         val mediaItems = withContext(ioDispatcher) {
+            delay(1000)
             tracksGetter()
         }
         if (mediaItems.isEmpty()) {

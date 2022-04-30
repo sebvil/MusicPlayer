@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
@@ -13,6 +14,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,10 +30,16 @@ class PlaylistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                viewModelScope.launch {
-                    playbackManager.playPlaylist(state.value.playlistName)
-                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                }
+                playbackManager.playPlaylist(state.value.playlistName).onEach {
+                    when (it) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
+                            copy(
+                                playbackResult = it
+                            )
+                        }
+                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                    }
+                }.launchIn(viewModelScope)
             }
             is ContextMenuItem.ViewPlaylist -> {
                 addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistName = state.value.playlistName))
@@ -66,16 +75,21 @@ class PlaylistContextMenuViewModel @Inject constructor(
             )
         }
     }
+
+    override fun onPlaybackErrorDismissed() {
+        setState { copy(playbackResult = null) }
+    }
 }
 
 
 data class PlaylistContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
+    override val playbackResult: PlaybackResult? = null,
     val playlistName: String,
     val mediaGroup: MediaGroup,
     val showDeleteConfirmationDialog: Boolean,
-) : BaseContextMenuState(listItems, menuTitle)
+) : BaseContextMenuState(listItems, menuTitle, playbackResult = playbackResult)
 
 
 @InstallIn(ViewModelComponent::class)
