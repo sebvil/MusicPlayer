@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
@@ -13,7 +14,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,10 +27,16 @@ class GenreContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                viewModelScope.launch {
-                    playbackManager.playGenre(state.value.genreName)
-                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                }
+                playbackManager.playGenre(state.value.genreName).onEach {
+                    when (it) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
+                            copy(
+                                playbackResult = it
+                            )
+                        }
+                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                    }
+                }.launchIn(viewModelScope)
             }
             is ContextMenuItem.ViewGenre -> {
                 addUiEvent(BaseContextMenuUiEvent.NavigateToGenre(genreName = state.value.genreName))
@@ -36,11 +44,16 @@ class GenreContextMenuViewModel @Inject constructor(
             else -> throw IllegalStateException("Invalid row for genre context menu")
         }
     }
+
+    override fun onPlaybackErrorDismissed() {
+        setState { copy(playbackResult = null) }
+    }
 }
 
 data class GenreContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val menuTitle: String,
+    override val playbackResult: PlaybackResult? = null,
     val genreName: String,
     val mediaGroup: MediaGroup,
 ) : BaseContextMenuState(listItems, menuTitle)

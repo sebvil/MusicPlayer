@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
@@ -12,6 +13,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +29,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     private var artistIds: List<String> = listOf()
 
     init {
-        collect(albumRepository.getAlbum(state.value.albumId)) {
+        albumRepository.getAlbum(state.value.albumId).onEach {
             trackIds = it.tracks
             artistIds = it.artists
             setState {
@@ -40,16 +43,22 @@ class AlbumContextMenuViewModel @Inject constructor(
                     )
                 )
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayFromBeginning -> {
-                viewModelScope.launch {
-                    playbackManager.playAlbum(state.value.albumId)
-                    addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
-                }
+                playbackManager.playAlbum(state.value.albumId).onEach {
+                    when (it) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
+                            copy(
+                                playbackResult = it
+                            )
+                        }
+                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                    }
+                }.launchIn(viewModelScope)
             }
             is ContextMenuItem.AddToQueue -> {
                 viewModelScope.launch {
@@ -73,13 +82,18 @@ class AlbumContextMenuViewModel @Inject constructor(
             else -> throw IllegalStateException("Invalid row for album context menu")
         }
     }
+
+    override fun onPlaybackErrorDismissed() {
+        setState { copy(playbackResult = null) }
+    }
 }
 
 data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
+    override val playbackResult: PlaybackResult? = null,
     override val menuTitle: String,
     val albumId: String,
-) : BaseContextMenuState(listItems, menuTitle)
+) : BaseContextMenuState(listItems, menuTitle, playbackResult)
 
 @InstallIn(ViewModelComponent::class)
 @Module
