@@ -13,11 +13,14 @@ import coil.fetch.DrawableResult
 import coil.fetch.FetchResult
 import coil.fetch.Fetcher
 import coil.size.Size
-import kotlinx.coroutines.Dispatchers
+import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
+import javax.inject.Inject
 
-class ThumbnailFetcher(private val context: Context) : Fetcher<Uri> {
+class ThumbnailFetcher @Inject constructor(@ApplicationContext private val context: Context, @IODispatcher private val ioDispatcher: CoroutineDispatcher) : Fetcher<Uri> {
     @Suppress("BlockingMethodInNonBlockingContext")
     @RequiresApi(Build.VERSION_CODES.Q)
     override suspend fun fetch(
@@ -27,7 +30,7 @@ class ThumbnailFetcher(private val context: Context) : Fetcher<Uri> {
         options: Options
     ): FetchResult {
         val bitmap: Bitmap?
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             bitmap = try {
                 context.contentResolver.loadThumbnail(
                     data,

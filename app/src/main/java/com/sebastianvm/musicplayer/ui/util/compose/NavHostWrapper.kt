@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
@@ -16,15 +15,15 @@ import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import com.sebastianvm.musicplayer.ui.util.images.ThumbnailFetcher
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterialNavigationApi::class
-)
+@OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
-fun NavHostWrapper(navHost: @Composable (NavHostController) -> Unit) {
+fun NavHostWrapper(
+    thumbnailFetcher: ThumbnailFetcher? = null,
+    navHost: @Composable (NavHostController) -> Unit,
+) {
     CompositionLocalProvider(
         LocalImageLoader provides ImageLoader.Builder(LocalContext.current).componentRegistry {
-            add(ThumbnailFetcher(LocalContext.current, ))
+            thumbnailFetcher?.also { add(it) }
         }.build()
     ) {
         AppTheme {

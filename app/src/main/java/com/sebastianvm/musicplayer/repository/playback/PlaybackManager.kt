@@ -17,12 +17,12 @@ interface PlaybackManager {
     fun next()
     fun prev()
 
-    suspend fun playAllTracks(initialTrackIndex: Int = 0)
-    suspend fun playGenre(genreName: String, initialTrackIndex: Int = 0)
-    suspend fun playAlbum(albumId: String,initialTrackIndex: Int = 0)
-    suspend fun playArtist(artistName: String)
-    suspend fun playPlaylist(playlistName: String, initialTrackIndex: Int = 0)
-    suspend fun playSingleTrack(trackId: String)
+    fun playAllTracks(initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playGenre(genreName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playAlbum(albumId: String,initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playArtist(artistName: String): Flow<PlaybackResult>
+    fun playPlaylist(playlistName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playSingleTrack(trackId: String): Flow<PlaybackResult>
 
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)

@@ -6,17 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
+import com.sebastianvm.musicplayer.ui.util.images.ThumbnailFetcher
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var thumbnailFetcher: ThumbnailFetcher
 
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NavHostWrapper { navController ->
+            NavHostWrapper(thumbnailFetcher) { navController ->
                 AppNavHost(navController = navController)
             }
         }

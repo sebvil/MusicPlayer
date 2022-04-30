@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import coil.annotation.ExperimentalCoilApi
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
@@ -44,7 +43,6 @@ fun AlbumRowPreview(@PreviewParameter(AlbumRowStateProvider::class) state: Album
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun AlbumRow(
     state: AlbumRowState,

@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -54,63 +56,62 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.prev()
     }
 
-    // TODO use flow and Data/Loading/Error pattern to handle this
-    private suspend fun playTracks(
+    private fun playTracks(
         initialTrackIndex: Int = 0,
         tracksGetter: suspend () -> List<MediaItem>
-    ) {
+    ): Flow<PlaybackResult> = flow {
+        emit(PlaybackResult.Loading)
         val mediaItems = withContext(ioDispatcher) {
             tracksGetter()
         }
+        if (mediaItems.isEmpty()) {
+            emit(PlaybackResult.Error(R.string.error_collection_empty))
+            return@flow
+        }
         mediaPlaybackClient.playMediaItems(initialTrackIndex, mediaItems)
+        emit(PlaybackResult.Success)
     }
 
-    override suspend fun playAllTracks(
-        initialTrackIndex: Int
-    ) {
+
+    override fun playAllTracks(initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
             sortPreferencesRepository.getTracksListSortPreferences(TracksListType.ALL_TRACKS)
                 .flatMapLatest { mediaSortPreferences ->
                     trackRepository.getAllTracks(mediaSortPreferences)
                 }.first().map { it.toMediaItem() }
         }
-    }
 
-    override suspend fun playGenre(
+    override fun playGenre(
         genreName: String,
         initialTrackIndex: Int,
-    ) {
-        playTracks(initialTrackIndex) {
-            sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreName)
-                .flatMapLatest { mediaSortPreferences ->
-                    trackRepository.getTracksForGenre(genreName, mediaSortPreferences)
-                }.first().map { it.toMediaItem() }
-        }
+    ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
+        sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreName)
+            .flatMapLatest { mediaSortPreferences ->
+                trackRepository.getTracksForGenre(genreName, mediaSortPreferences)
+            }.first().map { it.toMediaItem() }
+
     }
 
-    override suspend fun playAlbum(albumId: String, initialTrackIndex: Int) {
+    override fun playAlbum(albumId: String, initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
             trackRepository.getTracksForAlbum(albumId).first().map { it.toMediaItem() }
         }
+
+
+    override fun playArtist(artistName: String): Flow<PlaybackResult> = playTracks {
+        trackRepository.getTracksForArtist(artistName).first().map { it.toMediaItem() }
     }
 
-    override suspend fun playArtist(artistName: String) {
-        playTracks {
-            trackRepository.getTracksForArtist(artistName).first().map { it.toMediaItem() }
-        }
-    }
-
-    override suspend fun playPlaylist(playlistName: String, initialTrackIndex: Int) {
+    override fun playPlaylist(playlistName: String, initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
             trackRepository.getTracksForPlaylist(playlistName).first().map { it.toMediaItem() }
         }
-    }
 
-    override suspend fun playSingleTrack(trackId: String) {
+
+    override fun playSingleTrack(trackId: String): Flow<PlaybackResult> =
         playTracks(initialTrackIndex = 0) {
             listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
         }
-    }
 
 
     override fun moveQueueItem(previousIndex: Int, newIndex: Int) {

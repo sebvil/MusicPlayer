@@ -17,6 +17,8 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -79,12 +81,16 @@ fun TracksListScreen(
                 override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
                     screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
                 }
+
+                override fun onDismissRequest() {
+                    screenViewModel.onClosePlaybackErrorDialog()
+                }
             })
     }
 }
 
 
-interface TracksListScreenDelegate {
+interface TracksListScreenDelegate : PlaybackStatusIndicatorDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
     fun onOverflowMenuIconClicked(trackIndex: Int, trackId: String) = Unit
 }
@@ -114,6 +120,7 @@ fun TracksListLayout(
     listState: LazyListState,
     delegate: TracksListScreenDelegate
 ) {
+    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
     LazyColumn(state = listState) {
         itemsIndexed(state.tracksList, key = { _, item -> item.trackId }) { index, item ->
             TrackRow(

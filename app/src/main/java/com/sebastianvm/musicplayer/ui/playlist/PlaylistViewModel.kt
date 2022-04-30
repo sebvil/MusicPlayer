@@ -16,8 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(initialState: PlaylistState) :
-    BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
-}
+    BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState)
 
 data class PlaylistState(val playlistName: String, val tracksList: List<TrackRowState>) : State
 
