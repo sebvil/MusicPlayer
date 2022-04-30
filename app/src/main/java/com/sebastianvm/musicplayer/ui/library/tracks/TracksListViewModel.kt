@@ -6,6 +6,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.TracksListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -24,6 +25,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,21 +81,28 @@ class TracksListViewModel @Inject constructor(
     }
 
     fun onTrackClicked(trackIndex: Int) {
-        viewModelScope.launch {
-            when (state.value.tracksListType) {
-                TracksListType.ALL_TRACKS -> {
-                    playbackManager.playAllTracks(initialTrackIndex = trackIndex)
-                }
-                TracksListType.GENRE -> {
-                    playbackManager.playGenre(
-                        state.value.tracksListName,
-                        initialTrackIndex = trackIndex,
-                    )
-
+        val playTracksFlow = when (state.value.tracksListType) {
+            TracksListType.ALL_TRACKS -> {
+                playbackManager.playAllTracks(initialTrackIndex = trackIndex)
+            }
+            TracksListType.GENRE -> {
+                playbackManager.playGenre(
+                    state.value.tracksListName,
+                    initialTrackIndex = trackIndex,
+                )
+            }
+        }
+        playTracksFlow.onEach {
+            when (it) {
+                is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
+                is PlaybackResult.Success -> {
+                    setState { copy(playbackResult = it) }
+                    addUiEvent(TracksListUiEvent.NavigateToPlayer)
                 }
             }
-            addUiEvent(TracksListUiEvent.NavigateToPlayer)
-        }
+        }.launchIn(viewModelScope)
+
+
     }
 
     fun onSortByClicked() {
@@ -114,6 +124,10 @@ class TracksListViewModel @Inject constructor(
         addUiEvent(TracksListUiEvent.NavigateUp)
     }
 
+    fun onClosePlaybackErrorDialog() {
+        setState { copy(playbackResult = null) }
+    }
+
     companion object {
         const val ALL_TRACKS = ""
     }
@@ -125,7 +139,8 @@ data class TracksListState(
     val tracksListName: String,
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
-    val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
+    val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
+    val playbackResult: PlaybackResult? = null
 ) : State
 
 
@@ -143,7 +158,7 @@ object InitialTracksListStateModule {
             tracksListName = listName,
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
-            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
+            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
         )
     }
 }
@@ -153,7 +168,11 @@ sealed class TracksListUiEvent : UiEvent {
     object NavigateToPlayer : TracksListUiEvent()
     data class ShowSortBottomSheet(val mediaId: String) : TracksListUiEvent()
     object NavigateUp : TracksListUiEvent()
-    data class OpenContextMenu(val trackId: String, val mediaGroup: MediaGroup, val trackIndex: Int) :
+    data class OpenContextMenu(
+        val trackId: String,
+        val mediaGroup: MediaGroup,
+        val trackIndex: Int
+    ) :
         TracksListUiEvent()
 }
 
