@@ -4,14 +4,14 @@ plugins {
     id "kotlin-kapt"
     id "dagger.hilt.android.plugin"
     id "kotlin-parcelize"
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
 
 }
 
 
 android {
     compileSdk 32
-    buildToolsVersion "32.0.0"
+    buildToolsVersion "32.1.0-rc1"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
@@ -75,7 +75,7 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     // Lifecycle
-    def lifecycle_version = '2.5.0-alpha06'
+    def lifecycle_version = '2.5.0-beta01'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
@@ -115,14 +115,14 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha09'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha10'
 
     // UI + tooling
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
 
     // Accompanist
-    def accompanist_version = '0.24.6-alpha'
+    def accompanist_version = '0.24.7-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
@@ -156,7 +156,7 @@ dependencies {
     // Coroutines tests
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1-native-mt'
 
-    testImplementation 'org.robolectric:robolectric:4.8-alpha-1'
+    testImplementation 'org.robolectric:robolectric:4.8'
     testImplementation "androidx.test:core-ktx:1.4.0"
     testImplementation "androidx.test:core:1.4.0"
 
