@@ -9,8 +9,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableListItemDelegate
+import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnIndexed
 import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnState
+import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnView
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -20,23 +22,40 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
         screenViewModel = screenViewModel,
         eventHandler = {},
     ) { state ->
-        QueueLayout(state = state, delegate = object : QueueScreenDelegate {
-            override fun onVerticalDrag(newIndex: Int) {
-                screenViewModel.handle(QueueUserAction.ItemDragged(newIndex))
+        NewQueueLayout(state = state, delegate = object : SortableLazyColumnDelegate {
+            override fun onMove(from: Int, to: Int) {
+                screenViewModel.onMove(from, to)
             }
 
-            override fun onDragStart(index: Int) {
-                screenViewModel.handle(QueueUserAction.ItemSelectedForDrag(index))
+            override fun onItemSelectedForDrag(position: Int) {
+                screenViewModel.itemSelectedForDrag(position = position)
             }
 
-            override fun onDragEnd() {
-                screenViewModel.handle(QueueUserAction.DragEnded)
+            override fun onDragEnded(initialPosition: Int, finalPosition: Int) {
+                screenViewModel.onDragEnded(
+                    initialPosition = initialPosition,
+                    finalPosition = finalPosition
+                )
             }
 
-            override fun onTrackClicked(trackIndex: Int) {
-                screenViewModel.handle(QueueUserAction.TrackClicked(trackIndex))
-            }
         })
+//        QueueLayout(state = state, delegate = object : QueueScreenDelegate {
+//            override fun onVerticalDrag(newIndex: Int) {
+//                screenViewModel.handle(QueueUserAction.ItemDragged(newIndex))
+//            }
+//
+//            override fun onDragStart(index: Int) {
+//                screenViewModel.handle(QueueUserAction.ItemSelectedForDrag(index))
+//            }
+//
+//            override fun onDragEnd() {
+//                screenViewModel.handle(QueueUserAction.DragEnded)
+//            }
+//
+//            override fun onTrackClicked(trackIndex: Int) {
+//                screenViewModel.handle(QueueUserAction.TrackClicked(trackIndex))
+//            }
+//        })
     }
 }
 
@@ -53,6 +72,11 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
 interface QueueScreenDelegate : DraggableListItemDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
+}
+
+@Composable
+fun NewQueueLayout(state: QueueState, delegate: SortableLazyColumnDelegate) {
+    SortableLazyColumnView(state.queueItems.map { it.trackRowState }, delegate = delegate)
 }
 
 @Composable

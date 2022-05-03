@@ -31,10 +31,7 @@ data class TrackRowState(
     val artists: String,
     val albumName: String,
     val trackNumber: Long? = null,
-) : ListItem {
-    override val id = trackId
-}
-
+)
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
