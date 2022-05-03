@@ -7,14 +7,15 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,11 +32,8 @@ class QueueViewModel @Inject constructor(
             playbackManager.getSavedPlaybackInfo().collect { savedPlaybackInfo ->
                 setState {
                     copy(
-                        queueItems = savedPlaybackInfo.queuedTracks.mapIndexed { index, track ->
-                            QueueItem(
-                                index,
-                                track.toTrackRowState(includeTrackNumber = false)
-                            )
+                        queueItems = savedPlaybackInfo.queuedTracks.map { track ->
+                            track.toTrackRowState(includeTrackNumber = false)
                         },
                         nowPlayingTrackIndex = savedPlaybackInfo.nowPlayingIndex
                     )
@@ -44,72 +42,45 @@ class QueueViewModel @Inject constructor(
         }
     }
 
-    fun <A : UserAction> handle(action: A) {
-        when (action) {
-            is QueueUserAction.ItemDragged -> {
-                val oldIndex = state.value.draggedItemFinalIndex
-                if (oldIndex != action.newIndex) {
-                    if (action.newIndex !in state.value.queueItems.indices || oldIndex !in state.value.queueItems.indices) {
-                        return
-                    }
-                    val items = state.value.queueItems.toMutableList()
-                    val item = items.removeAt(oldIndex)
-                    items.add(action.newIndex, item)
-                    setState {
-                        copy(
-                            queueItems = items,
-                            draggedItemFinalIndex = action.newIndex
-                        )
-                    }
-                }
-            }
-            is QueueUserAction.ItemSelectedForDrag -> {
-                val index = action.index
-                val items = state.value.queueItems.toMutableList()
-                val itemToDrag = items[index]
-                setState {
-                    copy(
-                        draggedItem = itemToDrag,
-                        draggedItemStartingIndex = index,
-                        draggedItemFinalIndex = index,
-                        queueItems = items
-                    )
-                }
-            }
-            is QueueUserAction.DragEnded -> {
-                with(state.value) {
-                    draggedItem?.also {
-                        val items = queueItems.toMutableList()
-                        playbackManager.moveQueueItem(
-                            previousIndex = draggedItemStartingIndex,
-                            newIndex = draggedItemFinalIndex
-                        )
-                        items[draggedItemFinalIndex] = it
-                        setState {
-                            copy(
-                                queueItems = items,
-                                draggedItemFinalIndex = -1,
-                                draggedItemStartingIndex = -1,
-                                draggedItem = null
-                            )
-                        }
-                    }
-                }
-            }
-            is QueueUserAction.TrackClicked -> {
-                playbackManager.playQueueItem(action.trackIndex)
-            }
+    fun onItemSelectedForDrag(position: Int) {
+        setState {
+            copy(
+                draggedItemFinalIndex = position
+            )
         }
     }
-}
 
-data class QueueItem(val queuePosition: Int, val trackRowState: TrackRowState)
+    fun onMove(to: Int) {
+        val oldIndex = state.value.draggedItemFinalIndex
+        if (oldIndex != to) {
+            val items = state.value.queueItems.toMutableList()
+            val item = items.removeAt(oldIndex)
+            items.add(to, item)
+            setState {
+                copy(
+                    queueItems = items,
+                    draggedItemFinalIndex = to
+                )
+            }
+        }
+
+    }
+
+    fun onDragEnded(initialPosition: Int, finalPosition: Int) {
+        playbackManager.moveQueueItem(initialPosition, finalPosition)
+        setState { copy(draggedItemFinalIndex = -1) }
+    }
+
+    fun onTrackClicked(trackIndex: Int) {}
+
+    fun onTrackOverflowMenuClicked(trackId: String) {}
+
+
+}
 
 data class QueueState(
     val mediaGroup: MediaGroup?,
-    val queueItems: List<QueueItem>,
-    val draggedItem: QueueItem?,
-    val draggedItemStartingIndex: Int = -1,
+    val queueItems: List<TrackRowState>,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int
 ) : State
@@ -124,17 +95,9 @@ object InitialQueueStateModule {
         return QueueState(
             mediaGroup = null,
             queueItems = listOf(),
-            draggedItem = null,
             nowPlayingTrackIndex = 0,
         )
     }
-}
-
-sealed class QueueUserAction : UserAction {
-    data class ItemDragged(val newIndex: Int) : QueueUserAction()
-    data class ItemSelectedForDrag(val index: Int) : QueueUserAction()
-    object DragEnded : QueueUserAction()
-    data class TrackClicked(val trackIndex: Int) : QueueUserAction()
 }
 
 sealed class QueueUiEvent : UiEvent
