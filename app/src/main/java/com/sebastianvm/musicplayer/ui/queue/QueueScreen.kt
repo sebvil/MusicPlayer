@@ -4,8 +4,8 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.SortableLazyColumnView
+import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
+import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -53,12 +53,12 @@ fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::cla
     }
 }
 
-interface QueueScreenDelegate : SortableLazyColumnDelegate {
+interface QueueScreenDelegate : DraggableColumnListDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
     fun onContextMenuItemClicked(trackId: String) = Unit
 }
 
 @Composable
 fun QueueLayout(state: QueueState, delegate: QueueScreenDelegate) {
-    SortableLazyColumnView(state.queueItems.map { it.trackRowState }, delegate = delegate)
+    DraggableColumnList(state.queueItems, delegate = delegate, listAdapter = QueueAdapter())
 }

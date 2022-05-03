@@ -1,24 +1,21 @@
-package com.sebastianvm.musicplayer.ui.components.lists.recyclerview
+package com.sebastianvm.musicplayer.ui.queue
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.recyclerview.widget.RecyclerView
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.databinding.ViewHolderSortableListBinding
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
 class TrackRowViewHolder(
@@ -29,9 +26,9 @@ class TrackRowViewHolder(
             context
         ), parent, false
     )
-) : RecyclerView.ViewHolder(binding.root) {
+) : DraggableListViewHolder<TrackRowState>(binding.root) {
 
-    fun bind(item: TrackRowState) {
+    override fun bind(item: TrackRowState) {
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -44,7 +41,8 @@ class TrackRowViewHolder(
                     TrackRow(
                         state = item,
                         onOverflowMenuIconClicked = { },
-                    )                }
+                    )
+                }
 
             }
         }

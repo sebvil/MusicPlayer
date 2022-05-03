@@ -23,7 +23,6 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val playbackManager: PlaybackManager,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<QueueUiEvent, QueueState>(
     initialState
 ) {
@@ -33,11 +32,8 @@ class QueueViewModel @Inject constructor(
             playbackManager.getSavedPlaybackInfo().collect { savedPlaybackInfo ->
                 setState {
                     copy(
-                        queueItems = savedPlaybackInfo.queuedTracks.mapIndexed { index, track ->
-                            QueueItem(
-                                index,
-                                track.toTrackRowState(includeTrackNumber = false)
-                            )
+                        queueItems = savedPlaybackInfo.queuedTracks.map { track ->
+                            track.toTrackRowState(includeTrackNumber = false)
                         },
                         nowPlayingTrackIndex = savedPlaybackInfo.nowPlayingIndex
                     )
@@ -82,13 +78,9 @@ class QueueViewModel @Inject constructor(
 
 }
 
-data class QueueItem(val queuePosition: Int, val trackRowState: TrackRowState)
-
 data class QueueState(
     val mediaGroup: MediaGroup?,
-    val queueItems: List<QueueItem>,
-    val draggedItem: QueueItem?,
-    val draggedItemStartingIndex: Int = -1,
+    val queueItems: List<TrackRowState>,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int
 ) : State
@@ -103,7 +95,6 @@ object InitialQueueStateModule {
         return QueueState(
             mediaGroup = null,
             queueItems = listOf(),
-            draggedItem = null,
             nowPlayingTrackIndex = 0,
         )
     }

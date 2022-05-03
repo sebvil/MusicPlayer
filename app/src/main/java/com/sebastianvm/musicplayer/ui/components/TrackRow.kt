@@ -18,10 +18,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -31,7 +31,13 @@ data class TrackRowState(
     val artists: String,
     val albumName: String,
     val trackNumber: Long? = null,
-)
+) : DraggableListItem() {
+
+    override val id: String = trackId
+    override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
+        return equals(other = otherItem)
+    }
+}
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
