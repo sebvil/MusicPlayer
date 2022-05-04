@@ -3,19 +3,17 @@ package com.sebastianvm.musicplayer.ui.queue
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.components.DraggableTrackRowState
+import com.sebastianvm.musicplayer.ui.components.toDraggableTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +31,7 @@ class QueueViewModel @Inject constructor(
                 setState {
                     copy(
                         queueItems = savedPlaybackInfo.queuedTracks.map { track ->
-                            track.toTrackRowState(includeTrackNumber = false)
+                            track.toDraggableTrackRowState(includeTrackNumber = false)
                         },
                         nowPlayingTrackIndex = savedPlaybackInfo.nowPlayingIndex
                     )
@@ -80,7 +78,7 @@ class QueueViewModel @Inject constructor(
 
 data class QueueState(
     val mediaGroup: MediaGroup?,
-    val queueItems: List<TrackRowState>,
+    val queueItems: List<DraggableTrackRowState>,
     val draggedItemFinalIndex: Int = -1,
     val nowPlayingTrackIndex: Int
 ) : State

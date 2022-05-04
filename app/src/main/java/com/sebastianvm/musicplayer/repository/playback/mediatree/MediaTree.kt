@@ -21,6 +21,7 @@ import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -36,6 +37,7 @@ class MediaTree @Inject constructor(
     private val rootKey =
         MediaKey(parentType = KeyType.UNKNOWN, parentId = 0, type = KeyType.ROOT, itemIndexOrId = 0)
 
+    // TODO unify builders
     private fun buildMediaItem(
         title: String,
         mediaId: MediaKey,
@@ -46,6 +48,7 @@ class MediaTree @Inject constructor(
         artist: String? = null,
         genre: String? = null,
         sourceUri: Uri? = null,
+        tag: String? = null
     ): MediaItem {
         val metadata =
             MediaMetadata.Builder()
@@ -62,6 +65,7 @@ class MediaTree @Inject constructor(
             .setMediaId(mediaId.toString())
             .setMediaMetadata(metadata)
             .setUri(sourceUri)
+            .setTag(tag)
             .build()
     }
 
@@ -80,6 +84,7 @@ class MediaTree @Inject constructor(
             artist = artists,
             genre = "",
             sourceUri = UriUtils.getTrackUri(trackId = trackId.toLong()),
+            tag = UUID.randomUUID().toString()
         )
     }
 
@@ -119,7 +124,7 @@ class MediaTree @Inject constructor(
         )
     }
 
-     fun getRoot(): MediaItem {
+    fun getRoot(): MediaItem {
         return buildMediaItem(
             title = "Root folder",
             mediaId = rootKey,

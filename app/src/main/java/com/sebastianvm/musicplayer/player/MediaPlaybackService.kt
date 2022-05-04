@@ -20,7 +20,7 @@ import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaKey
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
@@ -58,7 +58,7 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<Track>> = MutableStateFlow(listOf())
+    private val queue: MutableStateFlow<List<TrackWithQueueId>> = MutableStateFlow(listOf())
 
 
     override fun onCreate() {
@@ -197,7 +197,7 @@ class MediaPlaybackService : MediaLibraryService() {
             .setMediaItemFiller(CustomMediaItemFiller()).build()
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibraryService.MediaLibrarySession {
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
         return mediaSession
     }
 
@@ -223,7 +223,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 withContext(mainDispatcher) {
                     preparePlaylist(
                         initialWindowIndex = nowPlayingIndex,
-                        mediaItems = queuedTracks.map { it.toMediaItem() },
+                        mediaItems = queuedTracks.map { it.toTrack().toMediaItem() },
                         position = lastRecordedPosition
                     )
                 }
@@ -269,7 +269,13 @@ class MediaPlaybackService : MediaLibraryService() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
             val newQueue = (0 until timeline.windowCount).map {
-                Track.fromId(trackId = timeline.getWindow(it, Timeline.Window()).mediaItem.mediaId)
+                TrackWithQueueId.fromMediaItem(
+                    mediaItem = timeline.getWindow(
+                        it,
+                        Timeline.Window()
+                    ).mediaItem
+                )
+
             }
             queue.value = newQueue
         }

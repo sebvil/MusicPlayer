@@ -13,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.databinding.ViewHolderSortableListBinding
+import com.sebastianvm.musicplayer.ui.components.DraggableTrackRowState
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
@@ -26,9 +27,9 @@ class TrackRowViewHolder(
             context
         ), parent, false
     )
-) : DraggableListViewHolder<TrackRowState>(binding.root) {
+) : DraggableListViewHolder<DraggableTrackRowState>(binding.root) {
 
-    override fun bind(item: TrackRowState) {
+    override fun bind(item: DraggableTrackRowState) {
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
@@ -39,7 +40,7 @@ class TrackRowViewHolder(
                         modifier = Modifier.padding(start = AppDimensions.spacing.medium)
                     )
                     TrackRow(
-                        state = item,
+                        state = item.trackRowState,
                         onOverflowMenuIconClicked = { },
                     )
                 }

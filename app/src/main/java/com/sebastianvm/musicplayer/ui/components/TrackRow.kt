@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -31,13 +32,7 @@ data class TrackRowState(
     val artists: String,
     val albumName: String,
     val trackNumber: Long? = null,
-) : DraggableListItem() {
-
-    override val id: String = trackId
-    override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
-        return equals(other = otherItem)
-    }
-}
+)
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -107,4 +102,17 @@ fun Track.toTrackRowState(includeTrackNumber: Boolean): TrackRowState {
         albumName = albumName,
         trackNumber = if (includeTrackNumber) trackNumber else null
     )
+}
+
+data class DraggableTrackRowState(val uniqueId: String, val trackRowState: TrackRowState) :
+    DraggableListItem() {
+
+    override val id: String = uniqueId
+    override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
+        return equals(other = otherItem)
+    }
+}
+
+fun TrackWithQueueId.toDraggableTrackRowState(includeTrackNumber: Boolean): DraggableTrackRowState {
+    return DraggableTrackRowState(uniqueQueueItemId, toTrack().toTrackRowState(includeTrackNumber))
 }

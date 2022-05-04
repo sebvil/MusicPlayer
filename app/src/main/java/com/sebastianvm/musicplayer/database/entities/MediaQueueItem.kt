@@ -15,4 +15,4 @@ import androidx.room.PrimaryKey
             onUpdate = CASCADE
         )]
 )
-data class MediaQueueItem(val trackId: String, @PrimaryKey val position: Int)
+data class MediaQueueItem(val trackId: String, @PrimaryKey val position: Int, val uniqueQueueItemId: String)
