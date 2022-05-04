@@ -23,13 +23,14 @@ interface DraggableColumnListDelegate {
 fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
     items: List<DraggableListItem>,
     listAdapter: DraggableListAdapter<T, V>,
-    delegate: DraggableColumnListDelegate
+    delegate: DraggableColumnListDelegate,
+    layoutManager: LinearLayoutManager,
 ) {
     AndroidView(
         modifier = Modifier.fillMaxHeight(),
         factory = {
             RecyclerView(it).apply {
-                layoutManager = LinearLayoutManager(context)
+                this.layoutManager = layoutManager
                 adapter = listAdapter
                 ItemTouchHelper(object : ItemTouchHelper.Callback() {
                     private var initialPosition = -1

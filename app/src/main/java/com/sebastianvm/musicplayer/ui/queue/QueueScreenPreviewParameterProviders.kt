@@ -7,7 +7,7 @@ class QueueStatePreviewParameterProvider : PreviewParameterProvider<QueueState> 
         QueueState(
             mediaGroup = null,
             queueItems = listOf(),
-            nowPlayingTrackIndex = -1,
+            nowPlayingId = ""
         )
     )
 }

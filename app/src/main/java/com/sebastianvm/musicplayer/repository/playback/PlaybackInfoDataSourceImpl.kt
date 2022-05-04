@@ -23,7 +23,7 @@ class PlaybackInfoDataSourceImpl @Inject constructor(
         playbackInfoDataStore.edit { savedPrefs ->
             savedPrefs[PreferencesUtil.KEY_LAST_RECORDED_POSITION] =
                 newPlaybackInfo.lastRecordedPosition
-            savedPrefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] = newPlaybackInfo.nowPlayingIndex
+            savedPrefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] = newPlaybackInfo.nowPlayingId
         }
         withContext(ioDispatcher) {
             mediaQueueDao.saveQueue(newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
@@ -43,7 +43,7 @@ class PlaybackInfoDataSourceImpl @Inject constructor(
         ) { prefs, tracks ->
             PlaybackInfo(
                 queuedTracks = tracks,
-                nowPlayingIndex = prefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] ?: -1,
+                nowPlayingId = prefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] ?: "",
                 lastRecordedPosition = prefs[PreferencesUtil.KEY_LAST_RECORDED_POSITION] ?: 0
             )
         }

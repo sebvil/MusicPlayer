@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.database.entities
 
 import androidx.media3.common.MediaItem
+import com.sebastianvm.musicplayer.util.extensions.toMediaItem
+import com.sebastianvm.musicplayer.util.extensions.uniqueId
 
 data class TrackWithQueueId(
     val trackId: String,
@@ -15,6 +17,11 @@ data class TrackWithQueueId(
     fun toTrack(): Track =
         Track(trackId, trackName, trackNumber, trackDurationMs, albumName, albumId, artists)
 
+    fun toMediaItem(): MediaItem {
+        val item = toTrack().toMediaItem()
+        return item.buildUpon().setTag(uniqueQueueItemId).build()
+    }
+
     companion object {
         fun fromMediaItem(mediaItem: MediaItem): TrackWithQueueId = TrackWithQueueId(
             trackId = mediaItem.mediaId,
@@ -24,8 +31,7 @@ data class TrackWithQueueId(
             albumName = "",
             albumId = "",
             artists = "",
-            uniqueQueueItemId = mediaItem.localConfiguration?.tag?.toString() ?: ""
+            uniqueQueueItemId = mediaItem.uniqueId
         )
-
     }
 }
