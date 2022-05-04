@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.player.TracksListType
@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -130,7 +129,7 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.addToQueue(tracks)
     }
 
-    override fun getQueue(): Flow<List<Track>> {
+    override fun getQueue(): Flow<List<TrackWithQueueId>> {
         return playbackInfoDataSource.getSavedPlaybackInfo().map { it.queuedTracks }
     }
 
