@@ -34,6 +34,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.asListenableFuture
+import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -149,11 +150,11 @@ class MediaPlaybackService : MediaLibraryService() {
                     Log.i("000Player", "get item: $mediaId")
                     return mediaTree.getCachedMediaItem(mediaId)
                         ?.let { Futures.immediateFuture(LibraryResult.ofItem(it, null)) }
-                        ?: CoroutineScope(mainDispatcher).async {
+                        ?: CoroutineScope(mainDispatcher).future {
                             mediaTree.getItem(mediaId)?.let {
                                 LibraryResult.ofItem(it, null)
                             } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                        }.asListenableFuture()
+                        }
                 }
 
                 override fun onSetMediaUri(
@@ -209,7 +210,6 @@ class MediaPlaybackService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItem: MediaItem
         ): MediaItem {
-            val id = mediaItem.mediaMetadata.uniqueId
             return MediaItem.Builder()
                 .setUri(mediaItem.mediaMetadata.mediaUri)
                 .setMediaId(mediaItem.mediaId)

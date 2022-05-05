@@ -26,7 +26,6 @@ class PlaylistContextMenuViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
-    // TODO check if playlist has items before playing
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {

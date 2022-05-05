@@ -3,8 +3,7 @@ package com.sebastianvm.musicplayer.repository.music
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
-import androidx.annotation.WorkerThread
+import android.util.Log
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
@@ -23,11 +22,19 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.Tag
+import java.io.File
 import javax.inject.Inject
+
 
 class MusicRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -51,6 +58,7 @@ class MusicRepositoryImpl @Inject constructor(
 
     private fun insertTrack(
         id: String,
+        path: String,
         title: String,
         artists: String,
         genres: String,
@@ -68,7 +76,8 @@ class MusicRepositoryImpl @Inject constructor(
             trackDurationMs = duration,
             albumId = albumId,
             albumName = albumName,
-            artists = artists
+            artists = artists,
+            path = path
         )
         val trackArtists = parseTag(artists)
         val artistTrackCrossRefs = trackArtists.map { artistName ->
@@ -149,10 +158,7 @@ class MusicRepositoryImpl @Inject constructor(
         }.distinctUntilChanged()
     }
 
-
-    // TODO makes this work for API 29
-    @WorkerThread
-    @RequiresApi(Build.VERSION_CODES.R)
+    @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
         withContext(ioDispatcher) {
             musicDatabase.clearAllTables()
@@ -171,60 +177,59 @@ class MusicRepositoryImpl @Inject constructor(
                 val musicCursor = musicResolver.query(musicUri, null, selection, null, null)
 
                 if (musicCursor != null && musicCursor.moveToFirst()) {
+                    val totalCount = musicCursor.count
                     //get columns
-                    val titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
                     val idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID)
-                    val artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-                    val albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-                    val albumArtistColumn =
-                        musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ARTIST)
-                    val year = musicCursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
-                    val genres = musicCursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
-                    val trackNumber = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
-                    val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
+                    val dataColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+                    val durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                     val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-                    val relativePathColumn =
-                        musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
-                    val fileNameColumn =
-                        musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
+                    val trackNumberColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
+
+
                     //add songs to list
                     var count = 0
+                    val jobs = mutableListOf<Job>()
                     do {
-                        val thisId = musicCursor.getString(idColumn) ?: ""
-                        val thisTitle = musicCursor.getString(titleColumn) ?: "No title"
-                        val thisArtist = musicCursor.getString(artistColumn) ?: "No artist"
-                        val thisAlbum = musicCursor.getString(albumColumn) ?: "No album"
-                        val thisAlbumArtists =
-                            musicCursor.getString(albumArtistColumn) ?: "No album artists"
-                        val thisYear = musicCursor.getLong(year)
-                        val thisGenre = musicCursor.getString(genres) ?: "No genre"
-                        val thisTrackNumber = musicCursor.getLong(trackNumber)
-                        val thisDuration = musicCursor.getLong(duration)
+                        val id = musicCursor.getString(idColumn)
+                        val filePath = musicCursor.getString(dataColumn)
+                        val duration = musicCursor.getLong(durationColumn)
                         val albumId = musicCursor.getString(albumIdColumn)
-                        val relativePath = musicCursor.getString(relativePathColumn)
-                        val fileName = musicCursor.getString(fileNameColumn)
+                        val trackNumber = musicCursor.getLong(trackNumberColumn)
 
-                        count++
-                        messageCallback.updateProgress(
-                            musicCursor.count,
-                            count,
-                            relativePath + fileName
-                        )
+                        val job = launch {
+                            val file = File(filePath)
+                            try {
+                                val f = AudioFileIO.read(file)
+                                val tag: Tag = f.tag
+                                insertTrack(
+                                    id = id,
+                                    path = filePath,
+                                    title = tag.getFirst(FieldKey.TITLE),
+                                    artists = tag.getFirst(FieldKey.ARTISTS),
+                                    genres = tag.getFirst(FieldKey.GENRE),
+                                    albumName = tag.getFirst(FieldKey.ALBUM),
+                                    albumArtists = tag.getFirst(FieldKey.ALBUM_ARTIST),
+                                    year = tag.getFirst(FieldKey.YEAR).toLongOrNull() ?: 0,
+                                    trackNumber = trackNumber,
+                                    duration = duration,
+                                    albumId = albumId
+                                )
+                            } catch (e: Exception) {
+                                Log.e("FILE", "$filePath, $e")
+                            }
 
-                        insertTrack(
-                            thisId,
-                            thisTitle,
-                            thisArtist,
-                            thisGenre,
-                            thisAlbum,
-                            thisAlbumArtists,
-                            thisYear,
-                            thisTrackNumber,
-                            thisDuration,
-                            albumId
-                        )
+                            count++
+                            messageCallback.updateProgress(
+                                progressMax = totalCount,
+                                currentProgress = count,
+                                filePath = filePath
+                            )
+                        }
+
+                        jobs.add(job)
 
                     } while (musicCursor.moveToNext())
+                    jobs.joinAll()
                 }
                 musicCursor?.close()
                 trackRepository.insertAllTracks(

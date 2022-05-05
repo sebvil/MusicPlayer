@@ -12,10 +12,11 @@ data class TrackWithQueueId(
     val albumName: String,
     val albumId: String,
     val artists: String,
+    val path: String,
     val uniqueQueueItemId: String
 ) {
     fun toTrack(): Track =
-        Track(trackId, trackName, trackNumber, trackDurationMs, albumName, albumId, artists)
+        Track(trackId, trackName, trackNumber, trackDurationMs, albumName, albumId, artists, path)
 
     fun toMediaItem(): MediaItem {
         val item = toTrack().toMediaItem()
@@ -31,6 +32,7 @@ data class TrackWithQueueId(
             albumName = "",
             albumId = "",
             artists = "",
+            path = "",
             uniqueQueueItemId = mediaItem.uniqueId
         )
     }
