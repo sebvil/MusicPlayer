@@ -17,15 +17,20 @@ import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.MainActivity
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class LibraryScanService : Service() {
+
+    @Inject
+    @MainDispatcher
+    lateinit var mainDispatcher: CoroutineDispatcher
 
     private var isRunning = false
 
@@ -45,8 +50,12 @@ class LibraryScanService : Service() {
         }
 
         fun onFinished() {
-            isRunning = false
-            stopSelf(startId)
+            CoroutineScope(mainDispatcher).launch {
+                job?.join()
+                isRunning = false
+                stopSelf(startId)
+            }
+
         }
     }
 
@@ -103,7 +112,7 @@ class LibraryScanService : Service() {
         }
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
-        job = CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(mainDispatcher).launch {
             try {
                 musicRepository.getMusic(MessageCallback(startId = startId))
             } catch (e: Exception) {
@@ -118,10 +127,6 @@ class LibraryScanService : Service() {
         return null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        job?.cancel()
-    }
     companion object {
         private const val CHANNEL_ID = "com.sebastianvm.musicplayer.repository.SCAN"
         const val STOP_SCAN_SERVICE = "com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE"
