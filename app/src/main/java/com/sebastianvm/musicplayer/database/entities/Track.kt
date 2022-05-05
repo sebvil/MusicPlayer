@@ -15,20 +15,8 @@ data class Track(
     val albumName: String,
     val albumId: String,
     val artists: String,
-) {
-    companion object {
-        fun fromId(trackId: String): Track = Track(
-            trackId = trackId,
-            trackName = "",
-            trackNumber = 0,
-            trackDurationMs = 0,
-            albumName = "",
-            albumId = "",
-            artists = ""
-        )
-
-    }
-}
+    val path: String
+)
 
 @Fts4(
     contentEntity = ArtistTrackCrossRef::class,

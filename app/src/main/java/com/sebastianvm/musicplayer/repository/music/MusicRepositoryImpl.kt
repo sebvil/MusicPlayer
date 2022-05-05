@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.annotation.WorkerThread
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
@@ -59,6 +58,7 @@ class MusicRepositoryImpl @Inject constructor(
 
     private fun insertTrack(
         id: String,
+        path: String,
         title: String,
         artists: String,
         genres: String,
@@ -76,7 +76,8 @@ class MusicRepositoryImpl @Inject constructor(
             trackDurationMs = duration,
             albumId = albumId,
             albumName = albumName,
-            artists = artists
+            artists = artists,
+            path = path
         )
         val trackArtists = parseTag(artists)
         val artistTrackCrossRefs = trackArtists.map { artistName ->
@@ -157,8 +158,6 @@ class MusicRepositoryImpl @Inject constructor(
         }.distinctUntilChanged()
     }
 
-
-    @WorkerThread
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
         withContext(ioDispatcher) {
@@ -204,6 +203,7 @@ class MusicRepositoryImpl @Inject constructor(
                                 val tag: Tag = f.tag
                                 insertTrack(
                                     id = id,
+                                    path = filePath,
                                     title = tag.getFirst(FieldKey.TITLE),
                                     artists = tag.getFirst(FieldKey.ARTISTS),
                                     genres = tag.getFirst(FieldKey.GENRE),
