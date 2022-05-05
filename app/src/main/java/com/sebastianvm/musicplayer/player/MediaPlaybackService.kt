@@ -209,7 +209,6 @@ class MediaPlaybackService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItem: MediaItem
         ): MediaItem {
-            val id = mediaItem.mediaMetadata.uniqueId
             return MediaItem.Builder()
                 .setUri(mediaItem.mediaMetadata.mediaUri)
                 .setMediaId(mediaItem.mediaId)
