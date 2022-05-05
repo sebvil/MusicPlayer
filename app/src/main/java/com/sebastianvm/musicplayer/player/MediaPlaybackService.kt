@@ -26,7 +26,7 @@ import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaKey
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
+import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -78,12 +78,14 @@ class MediaPlaybackService : MediaLibraryService() {
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 CoroutineScope(mainDispatcher).launch {
+                    updateQueue()
                     savePlaybackInfo()
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 CoroutineScope(mainDispatcher).launch {
+                    updateQueue()
                     savePlaybackInfo()
                 }
             }
@@ -207,6 +209,7 @@ class MediaPlaybackService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             mediaItem: MediaItem
         ): MediaItem {
+            val id = mediaItem.mediaMetadata.uniqueId
             return MediaItem.Builder()
                 .setUri(mediaItem.mediaMetadata.mediaUri)
                 .setMediaId(mediaItem.mediaId)
@@ -222,8 +225,8 @@ class MediaPlaybackService : MediaLibraryService() {
                 }
                 withContext(mainDispatcher) {
                     preparePlaylist(
-                        initialWindowIndex = nowPlayingIndex,
-                        mediaItems = queuedTracks.map { it.toTrack().toMediaItem() },
+                        initialWindowIndex = queuedTracks.indexOfFirst { it.uniqueQueueItemId == nowPlayingId },
+                        mediaItems = queuedTracks.map { it.toMediaItem() },
                         position = lastRecordedPosition
                     )
                 }
@@ -254,12 +257,12 @@ class MediaPlaybackService : MediaLibraryService() {
     }
 
     suspend fun savePlaybackInfo() {
-        val index = player.currentMediaItemIndex
+        val id = player.currentMediaItem?.uniqueId ?: ""
         val contentPosition = player.contentPosition
         playbackManager.modifySavedPlaybackInfo(
             PlaybackInfo(
                 queuedTracks = queue.value,
-                nowPlayingIndex = index,
+                nowPlayingId = id,
                 lastRecordedPosition = contentPosition
             )
         )
@@ -275,11 +278,9 @@ class MediaPlaybackService : MediaLibraryService() {
                         Timeline.Window()
                     ).mediaItem
                 )
-
             }
             queue.value = newQueue
         }
     }
-
 
 }

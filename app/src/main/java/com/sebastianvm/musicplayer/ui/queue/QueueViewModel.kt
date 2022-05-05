@@ -33,11 +33,17 @@ class QueueViewModel @Inject constructor(
                         queueItems = savedPlaybackInfo.queuedTracks.map { track ->
                             track.toDraggableTrackRowState(includeTrackNumber = false)
                         },
-                        nowPlayingTrackIndex = savedPlaybackInfo.nowPlayingIndex
+                        nowPlayingId = savedPlaybackInfo.nowPlayingId
                     )
                 }
+
+                addUiEvent(
+                    QueueUiEvent.ScrollToNowPlayingItem(
+                        savedPlaybackInfo.queuedTracks.indexOfFirst { it.uniqueQueueItemId == savedPlaybackInfo.nowPlayingId })
+                )
             }
         }
+
     }
 
     fun onItemSelectedForDrag(position: Int) {
@@ -69,7 +75,9 @@ class QueueViewModel @Inject constructor(
         setState { copy(draggedItemFinalIndex = -1) }
     }
 
-    fun onTrackClicked(trackIndex: Int) {}
+    fun onTrackClicked(trackIndex: Int) {
+        playbackManager.playQueueItem(trackIndex)
+    }
 
     fun onTrackOverflowMenuClicked(trackId: String) {}
 
@@ -80,7 +88,7 @@ data class QueueState(
     val mediaGroup: MediaGroup?,
     val queueItems: List<DraggableTrackRowState>,
     val draggedItemFinalIndex: Int = -1,
-    val nowPlayingTrackIndex: Int
+    val nowPlayingId: String
 ) : State
 
 
@@ -93,9 +101,11 @@ object InitialQueueStateModule {
         return QueueState(
             mediaGroup = null,
             queueItems = listOf(),
-            nowPlayingTrackIndex = 0,
+            nowPlayingId = "",
         )
     }
 }
 
-sealed class QueueUiEvent : UiEvent
+sealed class QueueUiEvent : UiEvent {
+    data class ScrollToNowPlayingItem(val index: Int) : QueueUiEvent()
+}

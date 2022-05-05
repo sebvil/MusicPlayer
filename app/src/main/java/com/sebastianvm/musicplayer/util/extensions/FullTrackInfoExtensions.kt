@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.util.extensions
 
+import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_NONE
@@ -12,7 +13,6 @@ fun Track.toMediaItem(): MediaItem {
         id = trackId
         uri = UriUtils.getTrackUri(trackId = trackId.toLong())
         mediaMetadata = getMediaMetadata()
-        setTag(UUID.randomUUID())
     }.build()
 }
 
@@ -21,7 +21,10 @@ fun Track.getMediaMetadata(): MediaMetadata {
         title = trackName
         artist = artists
         uri = UriUtils.getTrackUri(trackId = trackId.toLong())
-        duration = trackDurationMs
+        extras = Bundle().apply {
+            duration = trackDurationMs
+            uniqueId = UUID.randomUUID().toString()
+        }
         isPlayable = true
         folderType = FOLDER_TYPE_NONE
     }.build()

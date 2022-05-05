@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -29,22 +30,11 @@ class TrackRowViewHolder(
     )
 ) : DraggableListViewHolder<DraggableTrackRowState>(binding.root) {
 
-    override fun bind(item: DraggableTrackRowState) {
+    override fun bind(viewRenderer: @Composable () -> Unit) {
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_drag),
-                        contentDescription = stringResource(R.string.drag),
-                        modifier = Modifier.padding(start = AppDimensions.spacing.medium)
-                    )
-                    TrackRow(
-                        state = item.trackRowState,
-                        onOverflowMenuIconClicked = { },
-                    )
-                }
-
+                viewRenderer()
             }
         }
     }
