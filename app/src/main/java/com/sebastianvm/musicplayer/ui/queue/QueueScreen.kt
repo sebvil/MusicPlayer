@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.queue
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -93,7 +94,7 @@ fun QueueLayout(
     DraggableColumnList(
         items = state.queueItems,
         delegate = delegate,
-        listAdapter = QueueAdapter { item ->
+        listAdapter = QueueAdapter { index, item ->
             val isNowPlayingItem = item.uniqueId == state.nowPlayingId
             val backgroundColor = if (isNowPlayingItem) {
                 MaterialTheme.colorScheme.primaryContainer
@@ -103,7 +104,7 @@ fun QueueLayout(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.background(color = backgroundColor)
+                modifier = Modifier.background(color = backgroundColor).clickable { delegate.onTrackClicked(index)}
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_drag),

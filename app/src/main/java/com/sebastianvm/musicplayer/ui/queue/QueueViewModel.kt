@@ -75,7 +75,9 @@ class QueueViewModel @Inject constructor(
         setState { copy(draggedItemFinalIndex = -1) }
     }
 
-    fun onTrackClicked(trackIndex: Int) {}
+    fun onTrackClicked(trackIndex: Int) {
+        playbackManager.playQueueItem(trackIndex)
+    }
 
     fun onTrackOverflowMenuClicked(trackId: String) {}
 
