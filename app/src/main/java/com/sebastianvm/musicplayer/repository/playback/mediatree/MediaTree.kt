@@ -8,6 +8,7 @@ import androidx.media3.common.MediaMetadata.FOLDER_TYPE_ARTISTS
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_MIXED
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_NONE
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_TITLES
+import com.sebastianvm.musicplayer.ArtworkProvider
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Track
@@ -21,7 +22,6 @@ import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import java.util.UUID
 import javax.inject.Inject
 
 
@@ -48,7 +48,7 @@ class MediaTree @Inject constructor(
         artist: String? = null,
         genre: String? = null,
         sourceUri: Uri? = null,
-        tag: String? = null
+        artworkUri: Uri? = null
     ): MediaItem {
         val metadata =
             MediaMetadata.Builder()
@@ -60,12 +60,12 @@ class MediaTree @Inject constructor(
                 .setFolderType(folderType)
                 .setIsPlayable(isPlayable)
                 .setMediaUri(sourceUri)
+                .setArtworkUri(artworkUri)
                 .build()
         return MediaItem.Builder()
             .setMediaId(mediaId.toString())
             .setMediaMetadata(metadata)
             .setUri(sourceUri)
-            .setTag(tag)
             .build()
     }
 
@@ -84,7 +84,7 @@ class MediaTree @Inject constructor(
             artist = artists,
             genre = "",
             sourceUri = UriUtils.getTrackUri(trackId = trackId.toLong()),
-            tag = UUID.randomUUID().toString()
+            artworkUri = ArtworkProvider.getUriForTrack(albumId.toLong())
         )
     }
 
@@ -103,6 +103,7 @@ class MediaTree @Inject constructor(
             artist = artists,
             genre = null,
             sourceUri = UriUtils.getAlbumUri(albumId = albumId.toLong()),
+            artworkUri = ArtworkProvider.getUriForAlbum(albumId.toLong())
         )
     }
 
