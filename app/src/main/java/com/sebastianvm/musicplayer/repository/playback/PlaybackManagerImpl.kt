@@ -82,12 +82,12 @@ class PlaybackManagerImpl @Inject constructor(
         }
 
     override fun playGenre(
-        genreName: String,
+        genreId: Long,
         initialTrackIndex: Int,
     ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
-        sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreName)
+        sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreId)
             .flatMapLatest { mediaSortPreferences ->
-                trackRepository.getTracksForGenre(genreName, mediaSortPreferences)
+                trackRepository.getTracksForGenre(genreId, mediaSortPreferences)
             }.first().map { it.toMediaItem() }
 
     }
@@ -98,17 +98,17 @@ class PlaybackManagerImpl @Inject constructor(
         }
 
 
-    override fun playArtist(artistName: String): Flow<PlaybackResult> = playTracks {
-        trackRepository.getTracksForArtist(artistName).first().map { it.toMediaItem() }
+    override fun playArtist(artistId: Long): Flow<PlaybackResult> = playTracks {
+        trackRepository.getTracksForArtist(artistId).first().map { it.toMediaItem() }
     }
 
-    override fun playPlaylist(playlistName: String, initialTrackIndex: Int): Flow<PlaybackResult> =
+    override fun playPlaylist(playlistId: Long, initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
-            trackRepository.getTracksForPlaylist(playlistName).first().map { it.toMediaItem() }
+            trackRepository.getTracksForPlaylist(playlistId).first().map { it.toMediaItem() }
         }
 
 
-    override fun playSingleTrack(trackId: String): Flow<PlaybackResult> =
+    override fun playSingleTrack(trackId: Long): Flow<PlaybackResult> =
         playTracks(initialTrackIndex = 0) {
             listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
         }
@@ -122,7 +122,7 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.playQueueItem(index)
     }
 
-    override suspend fun addToQueue(mediaIds: List<String>) {
+    override suspend fun addToQueue(mediaIds: List<Long>) {
         val tracks = withContext(ioDispatcher) {
             trackRepository.getTracks(tracksIds = mediaIds).first().map { it.toMediaItem() }
         }

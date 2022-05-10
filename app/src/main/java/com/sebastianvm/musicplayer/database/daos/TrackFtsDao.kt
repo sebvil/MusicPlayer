@@ -12,7 +12,7 @@ interface TrackFtsDao {
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT DISTINCT Track.* FROM Track " +
-            "JOIN TrackFts ON Track.trackId == TrackFts.trackId " +
+            "JOIN TrackFts ON Track.id == TrackFts.trackId " +
             "WHERE TrackFts MATCH :text ORDER BY Track.trackName" )
     fun tracksWithText(text: String): PagingSource<Int, FullTrackInfo>
 }

@@ -15,15 +15,15 @@ fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
     composable(NavRoutes.GENRES_ROOT) {
         val screenViewModel = hiltViewModel<GenresListViewModel>()
         GenresListScreen(screenViewModel, object : GenresListScreenNavigationDelegate {
-            override fun navigateToGenre(genreName: String) {
-                navController.navigateToGenre(genreName)
+            override fun navigateToGenre(genreId: Long) {
+                navController.navigateToGenre(genreId)
             }
 
-            override fun openContextMenu(genreName: String) {
+            override fun openContextMenu(genreId: Long) {
                 navController.openContextMenu(
                     mediaType = MediaType.GENRE,
-                    mediaId = genreName,
-                    mediaGroup = MediaGroup(MediaGroupType.GENRE, genreName),
+                    mediaId = genreId,
+                    mediaGroup = MediaGroup(MediaGroupType.GENRE, genreId),
                 )
             }
 

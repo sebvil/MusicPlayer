@@ -9,11 +9,11 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
     override val values = sequenceOf(
         ArtistsBottomSheetState(
             artistsList = listOf(
-                ArtistRowState(artistName = "Melendi", shouldShowContextMenu = false),
-                ArtistRowState(artistName = "Carlos Vives", shouldShowContextMenu = false)
+                ArtistRowState(artistId = 0, artistName = "Melendi", shouldShowContextMenu = false),
+                ArtistRowState(artistId = 1, artistName = "Carlos Vives", shouldShowContextMenu = false)
             ),
             mediaType = MediaType.TRACK,
-            mediaId = "123",
+            mediaId = 23,
         )
     )
 }

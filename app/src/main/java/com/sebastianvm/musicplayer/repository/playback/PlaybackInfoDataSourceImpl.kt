@@ -28,7 +28,7 @@ class PlaybackInfoDataSourceImpl @Inject constructor(
         withContext(ioDispatcher) {
             mediaQueueDao.saveQueue(newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
                 MediaQueueItem(
-                    track.trackId,
+                    track.id,
                     index,
                     track.uniqueQueueItemId
                 )

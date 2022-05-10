@@ -12,7 +12,7 @@ class AlbumBuilder {
 
     fun build(): Album {
         return Album(
-            albumId = albumId,
+            id = albumId,
             albumName = albumName,
             year = year,
             artists = artists
@@ -27,8 +27,8 @@ class AlbumBuilder {
 @AlbumDsl
 class FullAlbumInfoBuilder {
     var album  = AlbumBuilder.getDefaultInstance()
-    var artistIds: MutableList<String> = mutableListOf()
-    var trackIds: MutableList<String> = mutableListOf()
+    var artistIds: MutableList<Long> = mutableListOf()
+    private var trackIds: MutableList<Long> = mutableListOf()
 
     fun album(init: AlbumBuilder.() -> Unit): Album {
         val builder = AlbumBuilder()
@@ -37,12 +37,12 @@ class FullAlbumInfoBuilder {
         return album
     }
 
-    fun artistIds(init: MutableList<String>.() -> Unit) : MutableList<String> {
+    fun artistIds(init: MutableList<Long>.() -> Unit) : MutableList<Long> {
         artistIds.init()
         return artistIds
     }
 
-    fun trackIds(init: MutableList<String>.() -> Unit) : MutableList<String> {
+    fun trackIds(init: MutableList<Long>.() -> Unit) : MutableList<Long> {
         trackIds.init()
         return trackIds
     }

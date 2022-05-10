@@ -9,9 +9,10 @@ annotation class GenreDsl
 @GenreDsl
 class GenreBuilder {
     var genreName = ""
+    var id = 0L
 
     fun build(): Genre {
-        return Genre(genreName = genreName)
+        return Genre(id = id, genreName = genreName)
     }
 }
 

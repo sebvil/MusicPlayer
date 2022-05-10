@@ -35,16 +35,16 @@ class TrackRepositoryImpl @Inject constructor(
         ).distinctUntilChanged()
     }
 
-    override fun getTrack(trackId: String): Flow<FullTrackInfo> {
+    override fun getTrack(trackId: Long): Flow<FullTrackInfo> {
         return trackDao.getTrack(trackId).distinctUntilChanged()
     }
 
-    override fun getTracks(tracksIds: List<String>): Flow<List<Track>> {
+    override fun getTracks(tracksIds: List<Long>): Flow<List<Track>> {
         return trackDao.getTracks(tracksIds).distinctUntilChanged()
     }
 
-    override fun getTracksForArtist(artistName: String): Flow<List<Track>> {
-        return trackDao.getTracksForArtist(artistName).distinctUntilChanged()
+    override fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
+        return trackDao.getTracksForArtist(artistId).distinctUntilChanged()
     }
 
     override fun getTracksForAlbum(albumId: Long): Flow<List<Track>> {
@@ -52,18 +52,18 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getTracksForGenre(
-        genreName: String,
+        genreId: Long,
         mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
     ): Flow<List<Track>> {
         return trackDao.getTracksForGenre(
-            genreName = genreName,
+            genreId = genreId,
             sortOption = mediaSortPreferences.sortOption,
             sortOrder = mediaSortPreferences.sortOrder
         ).distinctUntilChanged()
     }
 
-    override fun getTracksForPlaylist(playlistName: String): Flow<List<Track>> {
-        return trackDao.getTracksForPlaylist(playlistName).distinctUntilChanged()
+    override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
+        return trackDao.getTracksForPlaylist(playlistId).distinctUntilChanged()
     }
 
     override suspend fun insertAllTracks(

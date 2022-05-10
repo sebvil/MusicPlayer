@@ -15,19 +15,19 @@ fun NavGraphBuilder.artistsNavDestination(navController: NavController) {
     composable(NavRoutes.ARTISTS_ROOT) {
         val screenViewModel = hiltViewModel<ArtistsListViewModel>()
         ArtistsListScreen(screenViewModel, object : ArtistsListScreenNavigationDelegate {
-            override fun navigateToArtist(artistName: String) {
-                navController.navigateToArtist(artistName)
+            override fun navigateToArtist(artistId: Long) {
+                navController.navigateToArtist(artistId)
             }
 
             override fun navigateUp() {
                 navController.navigateUp()
             }
 
-            override fun openContextMenu(artistName: String) {
+            override fun openContextMenu(artistId: Long) {
                 navController.openContextMenu(
                     MediaType.ARTIST,
-                    artistName,
-                    MediaGroup(MediaGroupType.ARTIST, mediaId = artistName),
+                    artistId,
+                    MediaGroup(MediaGroupType.ARTIST, mediaId = artistId),
                 )
             }
         })

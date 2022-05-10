@@ -25,11 +25,11 @@ class AlbumContextMenuViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
-    private var trackIds: List<String> = listOf()
-    private var artistIds: List<String> = listOf()
+    private var trackIds: List<Long> = listOf()
+    private var artistIds: List<Long> = listOf()
 
     init {
-        albumRepository.getAlbum(state.value.albumId).onEach {
+        albumRepository.getAlbum(state.value.mediaId).onEach {
             trackIds = it.tracks
             artistIds = it.artists
             setState {
@@ -49,7 +49,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayFromBeginning -> {
-                playbackManager.playAlbum(state.value.albumId).onEach {
+                playbackManager.playAlbum(state.value.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
@@ -66,12 +66,12 @@ class AlbumContextMenuViewModel @Inject constructor(
                 }
             }
             is ContextMenuItem.ViewAlbum -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.albumId))
+                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.mediaId))
             }
             is ContextMenuItem.ViewArtists -> {
                 addUiEvent(
                     BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                        state.value.albumId.toString(),
+                        state.value.mediaId,
                         MediaType.ALBUM
                     )
                 )
@@ -90,10 +90,10 @@ class AlbumContextMenuViewModel @Inject constructor(
 
 data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
-    override val playbackResult: PlaybackResult? = null,
+    override val mediaId: Long,
     override val menuTitle: String,
-    val albumId: Long,
-) : BaseContextMenuState(listItems, menuTitle, playbackResult)
+    override val playbackResult: PlaybackResult? = null,
+) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -103,7 +103,7 @@ object InitialAlbumContextMenuStateModule {
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
         val albumId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
         return AlbumContextMenuState(
-            albumId = albumId,
+            mediaId = albumId,
             menuTitle = "",
             listItems = listOf(),
         )

@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.util.AlbumType
 class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState> {
     override val values = sequenceOf(
         ArtistState(
+            artistId = 0,
             artistName = "Melendi",
             albumsForArtistItems = listOf(
                 ArtistScreenItem.SectionHeaderItem(

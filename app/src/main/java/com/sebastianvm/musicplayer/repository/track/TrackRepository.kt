@@ -19,17 +19,17 @@ interface TrackRepository {
 
     fun getAllTracks(mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 
-    fun getTrack(trackId: String): Flow<FullTrackInfo>
+    fun getTrack(trackId: Long): Flow<FullTrackInfo>
 
-    fun getTracks(tracksIds: List<String>): Flow<List<Track>>
+    fun getTracks(tracksIds: List<Long>): Flow<List<Track>>
 
-    fun getTracksForArtist(artistName: String): Flow<List<Track>>
+    fun getTracksForArtist(artistId: Long): Flow<List<Track>>
 
     fun getTracksForAlbum(albumId: Long): Flow<List<Track>>
 
-    fun getTracksForGenre(genreName: String, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
+    fun getTracksForGenre(genreId: Long, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 
-    fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
+    fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,

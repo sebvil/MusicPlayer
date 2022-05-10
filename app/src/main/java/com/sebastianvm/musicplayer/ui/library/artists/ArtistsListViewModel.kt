@@ -52,8 +52,8 @@ class ArtistsListViewModel @Inject constructor(
 
     }
 
-    fun onArtistClicked(artistName: String) {
-        addUiEvent(ArtistsListUiEvent.NavigateToArtist(artistName))
+    fun onArtistClicked(artistId: Long) {
+        addUiEvent(ArtistsListUiEvent.NavigateToArtist(artistId))
     }
 
     fun onSortByClicked() {
@@ -66,8 +66,8 @@ class ArtistsListViewModel @Inject constructor(
         addUiEvent(ArtistsListUiEvent.NavigateUp)
     }
 
-    fun onArtistOverflowMenuIconClicked(artistName: String) {
-        addUiEvent(ArtistsListUiEvent.OpenContextMenu(artistName))
+    fun onArtistOverflowMenuIconClicked(artistId: Long) {
+        addUiEvent(ArtistsListUiEvent.OpenContextMenu(artistId))
     }
 }
 
@@ -90,7 +90,7 @@ object InitialArtistsListStateModule {
 }
 
 sealed class ArtistsListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistName: String) : ArtistsListUiEvent()
+    data class NavigateToArtist(val artistId: Long) : ArtistsListUiEvent()
     object NavigateUp : ArtistsListUiEvent()
-    data class OpenContextMenu(val artistName: String) : ArtistsListUiEvent()
+    data class OpenContextMenu(val artistId: Long) : ArtistsListUiEvent()
 }

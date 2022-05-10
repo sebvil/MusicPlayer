@@ -8,10 +8,14 @@ class ArtistsListStatePreviewParameterProvider : PreviewParameterProvider<Artist
     override val values = sequenceOf(
         ArtistsListState(
             artistsList = listOf(
-                ArtistRowState(artistName = "Melendi", shouldShowContextMenu = true),
-                ArtistRowState(artistName = "Carlos Vives", shouldShowContextMenu = true),
-                ArtistRowState(artistName = "Morat", shouldShowContextMenu = true),
-                ArtistRowState("LongName".repeat(10), shouldShowContextMenu = true),
+                ArtistRowState(artistId = 0, artistName = "Melendi", shouldShowContextMenu = true),
+                ArtistRowState(
+                    artistId = 1,
+                    artistName = "Carlos Vives",
+                    shouldShowContextMenu = true
+                ),
+                ArtistRowState(artistId = 2, artistName = "Morat", shouldShowContextMenu = true),
+                ArtistRowState(artistId = 3, "LongName".repeat(10), shouldShowContextMenu = true),
             ),
             sortOrder = MediaSortOrder.ASCENDING,
         )

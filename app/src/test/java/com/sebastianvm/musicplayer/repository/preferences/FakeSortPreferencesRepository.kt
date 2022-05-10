@@ -17,14 +17,14 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
         tracksListType: TracksListType,
-        tracksListName: String
+        tracksListId: Long
     ) {
         TODO("Not yet implemented")
     }
 
     override fun getTracksListSortPreferences(
         tracksListType: TracksListType,
-        tracksListName: String
+        tracksListId: Long
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         TODO("Not yet implemented")
     }
@@ -63,13 +63,13 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
     }
 
     override suspend fun modifyPlaylistsSortPreferences(
-        playlistName: String,
+        playlistId: Long,
         newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
     ) {
         TODO("Not yet implemented")
     }
 
-    override fun getPlaylistSortPreferences(playlistName: String): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
+    override fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         TODO("Not yet implemented")
     }
 

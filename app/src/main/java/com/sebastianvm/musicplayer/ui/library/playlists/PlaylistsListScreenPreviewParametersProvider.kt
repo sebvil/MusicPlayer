@@ -9,20 +9,20 @@ class PlaylistsListStatePreviewParameterProvider :
     override val values = sequenceOf(
         PlaylistsListState(
             playlistsList = listOf(
-                Playlist("Pop"),
-                Playlist("Rock"),
-                Playlist("Tropipop"),
-                Playlist("Vallenato")
+                Playlist(id = 0, "Pop"),
+                Playlist(id = 1, "Rock"),
+                Playlist(id = 2, "Tropipop"),
+                Playlist(id = 3, "Vallenato")
             ),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false,
         ),
         PlaylistsListState(
             playlistsList = listOf(
-                Playlist("Pop"),
-                Playlist("Rock"),
-                Playlist("Tropipop"),
-                Playlist("Vallenato")
+                Playlist(id = 0, "Pop"),
+                Playlist(id = 1, "Rock"),
+                Playlist(id = 2, "Tropipop"),
+                Playlist(id = 3, "Vallenato")
             ),
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = true,

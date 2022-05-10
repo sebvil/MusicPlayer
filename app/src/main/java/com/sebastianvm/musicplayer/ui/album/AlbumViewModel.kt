@@ -39,7 +39,7 @@ class AlbumViewModel @Inject constructor(
                 }) { (album, tracks) ->
             setState {
                 copy(
-                    imageUri = UriUtils.getAlbumUri(album.albumId),
+                    imageUri = UriUtils.getAlbumUri(album.id),
                     albumName = album.albumName,
                     tracksList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
                 )
@@ -54,11 +54,11 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
         addUiEvent(
             AlbumUiEvent.OpenContextMenu(
                 trackId = trackId,
-                albumId = state.value.albumId.toString(),
+                albumId = state.value.albumId,
                 trackIndex = trackIndex
             )
         )
@@ -91,5 +91,5 @@ object InitialAlbumStateModule {
 
 sealed class AlbumUiEvent : UiEvent {
     object NavigateToPlayer : AlbumUiEvent()
-    data class OpenContextMenu(val trackId: String, val albumId: String, val trackIndex: Int) : AlbumUiEvent()
+    data class OpenContextMenu(val trackId: Long, val albumId: Long, val trackIndex: Int) : AlbumUiEvent()
 }

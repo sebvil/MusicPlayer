@@ -23,7 +23,7 @@ interface ArtistDao {
     fun getArtist(artistName: String): Flow<ArtistWithAlbums>
 
     @Transaction
-    @Query("SELECT * from Artist WHERE Artist.artistId=:artistId")
+    @Query("SELECT * from Artist WHERE Artist.id=:artistId")
     fun getArtist(artistId: Long): Flow<ArtistWithAlbums>
 
     @Query("SELECT COUNT(*) FROM Artist")
@@ -31,10 +31,10 @@ interface ArtistDao {
 
     @Query(
         "SELECT Artist.* FROM Artist " +
-                "JOIN ArtistTrackCrossRef ON Artist.artistId=ArtistTrackCrossRef.artistId " +
+                "JOIN ArtistTrackCrossRef ON Artist.id=ArtistTrackCrossRef.artistId " +
                 "WHERE ArtistTrackCrossRef.trackId=:trackId"
     )
-    fun getArtistsForTrack(trackId: String): Flow<List<Artist>>
+    fun getArtistsForTrack(trackId: Long): Flow<List<Artist>>
 
     @Query(
         "SELECT Artist.* FROM Artist " +

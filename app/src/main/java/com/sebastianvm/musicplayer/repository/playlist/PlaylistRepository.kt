@@ -8,5 +8,5 @@ interface PlaylistRepository {
     fun getPlaylistsCount(): Flow<Int>
     fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
     suspend fun createPlaylist(playlistName: String)
-    suspend fun deletePlaylist(playlistName: String)
+    suspend fun deletePlaylist(playlistId: Long)
 }

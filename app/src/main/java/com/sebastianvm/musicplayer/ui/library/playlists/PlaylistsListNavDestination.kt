@@ -14,15 +14,15 @@ fun NavGraphBuilder.playlistsListNavDestination(navController: NavController) {
     composable(NavRoutes.PLAYLISTS_ROOT) {
         val screenViewModel = hiltViewModel<PlaylistsListViewModel>()
         PlaylistsListScreen(screenViewModel, object : PlaylistsListScreenNavigationDelegate {
-            override fun navigateToPlaylist(playlistName: String) {
+            override fun navigateToPlaylist(playlistId: Long) {
 //                navController.navigateToPlaylist(playlistName)
             }
 
-            override fun openContextMenu(playlistName: String) {
+            override fun openContextMenu(playlistId: Long) {
                 navController.openContextMenu(
                     mediaType = MediaType.PLAYLIST,
-                    mediaId = playlistName,
-                    mediaGroup = MediaGroup(MediaGroupType.PLAYLIST, playlistName),
+                    mediaId = playlistId,
+                    mediaGroup = MediaGroup(MediaGroupType.PLAYLIST, playlistId),
                 )
             }
 

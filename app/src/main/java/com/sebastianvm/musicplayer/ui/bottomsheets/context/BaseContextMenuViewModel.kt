@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 
 abstract class BaseContextMenuState(
     open val listItems: List<ContextMenuItem>,
+    open val mediaId: Long,
     open val menuTitle: String,
     open val playbackResult: PlaybackResult? = null
 ) : State
@@ -17,12 +18,12 @@ abstract class BaseContextMenuState(
 sealed class BaseContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : BaseContextMenuUiEvent()
     data class NavigateToAlbum(val albumId: Long) : BaseContextMenuUiEvent()
-    data class NavigateToArtist(val artistName: String) : BaseContextMenuUiEvent()
-    data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
+    data class NavigateToArtist(val artistId: Long) : BaseContextMenuUiEvent()
+    data class NavigateToArtistsBottomSheet(val mediaId: Long, val mediaType: MediaType) :
         BaseContextMenuUiEvent()
 
-    data class NavigateToGenre(val genreName: String) : BaseContextMenuUiEvent()
-    data class NavigateToPlaylist(val playlistName: String) : BaseContextMenuUiEvent()
+    data class NavigateToGenre(val genreId: Long) : BaseContextMenuUiEvent()
+    data class NavigateToPlaylist(val playlistId: Long) : BaseContextMenuUiEvent()
     data class ShowToast(@StringRes val message: Int, val success: Boolean) :
         BaseContextMenuUiEvent()
 

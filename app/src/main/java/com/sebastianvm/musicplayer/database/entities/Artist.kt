@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Artist(
     @PrimaryKey
-    val artistId: Long = 0,
+    val id: Long = 0,
     val artistName: String,
 )
 

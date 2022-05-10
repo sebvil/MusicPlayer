@@ -52,9 +52,9 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface SearchNavigationDelegate {
     fun navigateToPlayer()
-    fun navigateToArtist(artistName: String)
+    fun navigateToArtist(artistId: Long)
     fun navigateToAlbum(albumId: Long)
-    fun navigateToGenre(genreName: String)
+    fun navigateToGenre(genreId: Long)
     fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup)
 }
 
@@ -67,9 +67,9 @@ fun SearchScreen(
     Screen(screenViewModel = screenViewModel, eventHandler = { event ->
         when (event) {
             is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
-            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
+            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
             is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
             is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
                 event.mediaType,
                 event.mediaGroup,
@@ -86,20 +86,20 @@ fun SearchScreen(
                 screenViewModel.handle(SearchUserAction.SearchTypeChanged(newType = newOption))
             }
 
-            override fun onTrackClicked(trackId: String) {
+            override fun onTrackClicked(trackId: Long) {
                 screenViewModel.handle(SearchUserAction.TrackRowClicked(trackId))
             }
 
-            override fun onTrackOverflowMenuClicked(trackId: String) {
+            override fun onTrackOverflowMenuClicked(trackId: Long) {
                 screenViewModel.handle(SearchUserAction.TrackOverflowMenuClicked(trackId))
             }
 
-            override fun onArtistClicked(artistName: String) {
-                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistName))
+            override fun onArtistClicked(artistId: Long) {
+                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistId))
             }
 
-            override fun onArtistOverflowMenuClicked(artistName: String) {
-                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistName))
+            override fun onArtistOverflowMenuClicked(artistId: Long) {
+                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistId))
             }
 
             override fun onAlbumClicked(albumId: Long) {
@@ -110,12 +110,12 @@ fun SearchScreen(
                 screenViewModel.handle(SearchUserAction.AlbumOverflowMenuClicked(albumId))
             }
 
-            override fun onGenreClicked(genreName: String) {
-                screenViewModel.handle(SearchUserAction.GenreRowClicked(genreName))
+            override fun onGenreClicked(genreId: Long) {
+                screenViewModel.handle(SearchUserAction.GenreRowClicked(genreId))
             }
 
-            override fun onGenreOverflowMenuClicked(genreName: String) {
-                screenViewModel.handle(SearchUserAction.GenreOverflowMenuClicked(genreName))
+            override fun onGenreOverflowMenuClicked(genreId: Long) {
+                screenViewModel.handle(SearchUserAction.GenreOverflowMenuClicked(genreId))
             }
         })
     }
@@ -133,14 +133,14 @@ fun SearchScreenPreview(@PreviewParameter(SearchStatePreviewParameterProvider::c
 interface SearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
     fun onOptionChosen(@StringRes newOption: Int) = Unit
-    fun onTrackClicked(trackId: String) = Unit
-    fun onTrackOverflowMenuClicked(trackId: String) = Unit
-    fun onArtistClicked(artistName: String) = Unit
-    fun onArtistOverflowMenuClicked(artistName: String) = Unit
+    fun onTrackClicked(trackId: Long) = Unit
+    fun onTrackOverflowMenuClicked(trackId: Long) = Unit
+    fun onArtistClicked(artistId: Long) = Unit
+    fun onArtistOverflowMenuClicked(artistId: Long) = Unit
     fun onAlbumClicked(albumId: Long) = Unit
     fun onAlbumOverflowMenuClicked(albumId: Long) = Unit
-    fun onGenreClicked(genreName: String) = Unit
-    fun onGenreOverflowMenuClicked(genreName: String) = Unit
+    fun onGenreClicked(genreId: Long) = Unit
+    fun onGenreOverflowMenuClicked(genreId: Long) = Unit
 }
 
 @Composable
@@ -233,10 +233,10 @@ fun SearchLayout(
                                     state = item,
                                     modifier = Modifier.clickable {
                                         delegate.onArtistClicked(
-                                            item.artistName
+                                            item.artistId
                                         )
                                     }) {
-                                    delegate.onArtistOverflowMenuClicked(item.artistName)
+                                    delegate.onArtistOverflowMenuClicked(item.artistId)
                                 }
                             }
                         }
@@ -266,14 +266,14 @@ fun SearchLayout(
                                 SingleLineListItem(
                                     modifier = Modifier.clickable {
                                         delegate.onGenreClicked(
-                                            genre.genreName
+                                            genre.id
                                         )
                                     },
                                     afterListContent = {
                                         IconButton(
                                             onClick = {
                                                 delegate.onGenreOverflowMenuClicked(
-                                                    genre.genreName
+                                                    genre.id
                                                 )
                                             },
                                             modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
