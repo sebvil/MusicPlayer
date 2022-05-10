@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.albumsListNavDestination
-import com.sebastianvm.musicplayer.ui.library.artists.artistsNavDestination
+import com.sebastianvm.musicplayer.ui.library.artistlist.artistsNavDestination
 import com.sebastianvm.musicplayer.ui.library.genres.genresListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination

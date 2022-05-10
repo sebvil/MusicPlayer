@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.artists
+package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -18,10 +18,10 @@ class ArtistsListScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private fun generateViewModel(): ArtistsListViewModel {
+    private fun generateViewModel(): ArtistListViewModel {
         return mockk(relaxed = true) {
             every { state } returns MutableStateFlow(
-                ArtistsListState(
+                ArtistListState(
                     listOf(
                         ArtistRowState("A", "A", shouldShowContextMenu = true),
                         ArtistRowState("B", "B", shouldShowContextMenu = true),

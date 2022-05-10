@@ -5,30 +5,31 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class FakeArtistRepository(
-    private val artistsWithAlbums: List<ArtistWithAlbums> = listOf(),
-    private val artistTrackCrossRef: List<ArtistTrackCrossRef> = listOf()
-) :
-    ArtistRepository {
+    artistsWithAlbums: List<ArtistWithAlbums> = listOf(),
+) : ArtistRepository {
 
-    override fun getArtistsCount(): Flow<Int> = flow { emit(artistsWithAlbums.size) }
+    private val artistWithAlbumsState = MutableStateFlow(artistsWithAlbums)
+
+
+    override fun getArtistsCount(): Flow<Int> = artistWithAlbumsState.map { it.size }
     override fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>> {
-        TODO("Not yet implemented")
+        return artistWithAlbumsState.map { artistsWithAlbums ->
+            when (sortOrder) {
+                MediaSortOrder.ASCENDING -> artistsWithAlbums.map { it.artist }
+                    .sortedBy { it.artistName }
+                MediaSortOrder.DESCENDING -> artistsWithAlbums.map { it.artist }
+                    .sortedByDescending { it.artistName }
+            }
+        }
     }
 
-    override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> =
-        flow { artistsWithAlbums.find { it.artist.id == artistId }?.also { emit(it) } }
+    override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> = TODO()
 
+    override fun getArtistsForTrack(trackId: Long): Flow<List<Artist>> = TODO()
 
-    override fun getArtistsForTrack(trackId: Long): Flow<List<Artist>> = flow {
-        emit(artistsWithAlbums.filter {
-            it.artist.artistName == artistTrackCrossRef.find { xref -> xref.trackId == trackId }?.artistName
-        }.map { it.artist })
-    }
-
-    override fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>> = flow {
-        emit(artistsWithAlbums.filter { albumId in it.artistAlbums }.map { it.artist })
-    }
+    override fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>> = TODO()
 }

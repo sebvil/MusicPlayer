@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -9,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
@@ -62,12 +60,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(
-            AlbumsListUiEvent.ShowSortBottomSheet(
-                sortOption = state.value.sortPreferences.sortOption.stringId,
-                sortOrder = state.value.sortPreferences.sortOrder
-            )
-        )
+        addUiEvent(AlbumsListUiEvent.ShowSortBottomSheet)
     }
 
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
@@ -97,10 +90,7 @@ object InitialAlbumsListStateModule {
 sealed class AlbumsListUiEvent : UiEvent {
     data class NavigateToAlbum(val albumId: Long) : AlbumsListUiEvent()
     object NavigateUp : AlbumsListUiEvent()
-    data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: MediaSortOrder) :
-        AlbumsListUiEvent()
-
+    object ShowSortBottomSheet : AlbumsListUiEvent()
     object ScrollToTop : AlbumsListUiEvent()
-
     data class OpenContextMenu(val albumId: Long) : AlbumsListUiEvent()
 }
