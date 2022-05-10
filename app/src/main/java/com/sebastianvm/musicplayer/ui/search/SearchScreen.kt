@@ -53,7 +53,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 interface SearchNavigationDelegate {
     fun navigateToPlayer()
     fun navigateToArtist(artistName: String)
-    fun navigateToAlbum(albumId: String)
+    fun navigateToAlbum(albumId: Long)
     fun navigateToGenre(genreName: String)
     fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup)
 }
@@ -102,11 +102,11 @@ fun SearchScreen(
                 screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistName))
             }
 
-            override fun onAlbumClicked(albumId: String) {
+            override fun onAlbumClicked(albumId: Long) {
                 screenViewModel.handle(SearchUserAction.AlbumRowClicked(albumId))
             }
 
-            override fun onAlbumOverflowMenuClicked(albumId: String) {
+            override fun onAlbumOverflowMenuClicked(albumId: Long) {
                 screenViewModel.handle(SearchUserAction.AlbumOverflowMenuClicked(albumId))
             }
 
@@ -137,8 +137,8 @@ interface SearchScreenDelegate {
     fun onTrackOverflowMenuClicked(trackId: String) = Unit
     fun onArtistClicked(artistName: String) = Unit
     fun onArtistOverflowMenuClicked(artistName: String) = Unit
-    fun onAlbumClicked(albumId: String) = Unit
-    fun onAlbumOverflowMenuClicked(albumId: String) = Unit
+    fun onAlbumClicked(albumId: Long) = Unit
+    fun onAlbumOverflowMenuClicked(albumId: Long) = Unit
     fun onGenreClicked(genreName: String) = Unit
     fun onGenreOverflowMenuClicked(genreName: String) = Unit
 }

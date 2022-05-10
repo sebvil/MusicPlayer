@@ -47,6 +47,6 @@ fun NavGraphBuilder.albumNavDestination(navController: NavController) {
     }
 }
 
-fun NavController.navigateToAlbum(albumId: String) {
+fun NavController.navigateToAlbum(albumId: Long) {
     navigateTo(NavRoutes.ALBUM, NavArgument(NavArgs.ALBUM_ID, albumId))
 }

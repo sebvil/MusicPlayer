@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class AlbumsListViewModel @Inject constructor(
+class AlbumListViewModel @Inject constructor(
     initialState: AlbumsListState,
     albumRepository: AlbumRepository,
     preferencesRepository: SortPreferencesRepository,
@@ -53,7 +53,7 @@ class AlbumsListViewModel @Inject constructor(
         }
     }
 
-    fun onAlbumClicked(albumId: String) {
+    fun onAlbumClicked(albumId: Long) {
         addUiEvent(AlbumsListUiEvent.NavigateToAlbum(albumId))
     }
 
@@ -70,7 +70,7 @@ class AlbumsListViewModel @Inject constructor(
         )
     }
 
-    fun onAlbumOverflowMenuIconClicked(albumId: String) {
+    fun onAlbumOverflowMenuIconClicked(albumId: Long) {
         addUiEvent(AlbumsListUiEvent.OpenContextMenu(albumId))
     }
 }
@@ -95,12 +95,12 @@ object InitialAlbumsListStateModule {
 }
 
 sealed class AlbumsListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: String) : AlbumsListUiEvent()
+    data class NavigateToAlbum(val albumId: Long) : AlbumsListUiEvent()
     object NavigateUp : AlbumsListUiEvent()
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: MediaSortOrder) :
         AlbumsListUiEvent()
 
     object ScrollToTop : AlbumsListUiEvent()
 
-    data class OpenContextMenu(val albumId: String) : AlbumsListUiEvent()
+    data class OpenContextMenu(val albumId: Long) : AlbumsListUiEvent()
 }

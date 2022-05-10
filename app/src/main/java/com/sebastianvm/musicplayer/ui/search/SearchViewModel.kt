@@ -136,7 +136,7 @@ class SearchViewModel @Inject constructor(
                         mediaType = MediaType.ALBUM,
                         mediaGroup = MediaGroup(
                             MediaGroupType.ALBUM,
-                            action.albumId
+                            action.albumId.toString()
                         ),
                     )
                 )
@@ -190,8 +190,8 @@ sealed class SearchUserAction : UserAction {
     data class TrackOverflowMenuClicked(val trackId: String) : SearchUserAction()
     data class ArtistRowClicked(val artistName: String) : SearchUserAction()
     data class ArtistOverflowMenuClicked(val artistName: String) : SearchUserAction()
-    data class AlbumRowClicked(val albumId: String) : SearchUserAction()
-    data class AlbumOverflowMenuClicked(val albumId: String) : SearchUserAction()
+    data class AlbumRowClicked(val albumId: Long) : SearchUserAction()
+    data class AlbumOverflowMenuClicked(val albumId: Long) : SearchUserAction()
     data class GenreRowClicked(val genreName: String) : SearchUserAction()
     data class GenreOverflowMenuClicked(val genreName: String) : SearchUserAction()
 }
@@ -199,7 +199,7 @@ sealed class SearchUserAction : UserAction {
 sealed class SearchUiEvent : UiEvent {
     object NavigateToPlayer : SearchUiEvent()
     data class NavigateToArtist(val artistName: String) : SearchUiEvent()
-    data class NavigateToAlbum(val albumId: String) : SearchUiEvent()
+    data class NavigateToAlbum(val albumId: Long) : SearchUiEvent()
     data class NavigateToGenre(val genreName: String) : SearchUiEvent()
     data class OpenContextMenu(val mediaType: MediaType, val mediaGroup: MediaGroup) :
         SearchUiEvent()

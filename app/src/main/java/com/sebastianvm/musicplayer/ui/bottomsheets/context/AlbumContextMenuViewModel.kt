@@ -71,7 +71,7 @@ class AlbumContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewArtists -> {
                 addUiEvent(
                     BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                        state.value.albumId,
+                        state.value.albumId.toString(),
                         MediaType.ALBUM
                     )
                 )
@@ -92,7 +92,7 @@ data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val playbackResult: PlaybackResult? = null,
     override val menuTitle: String,
-    val albumId: String,
+    val albumId: Long,
 ) : BaseContextMenuState(listItems, menuTitle, playbackResult)
 
 @InstallIn(ViewModelComponent::class)
@@ -101,7 +101,7 @@ object InitialAlbumContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
-        val albumId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
+        val albumId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
         return AlbumContextMenuState(
             albumId = albumId,
             menuTitle = "",

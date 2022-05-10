@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -20,16 +20,16 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumsListScreenNavigationDelegate {
-    fun navigateToAlbum(albumId: String)
+    fun navigateToAlbum(albumId: Long)
     fun navigateUp()
     fun openSortMenu()
-    fun openContextMenu(albumId: String)
+    fun openContextMenu(albumId: Long)
 }
 
 
 @Composable
 fun AlbumsListScreen(
-    screenViewModel: AlbumsListViewModel = viewModel(),
+    screenViewModel: AlbumListViewModel = viewModel(),
     delegate: AlbumsListScreenNavigationDelegate,
 ) {
     val listState = rememberLazyListState()
@@ -69,11 +69,11 @@ fun AlbumsListScreen(
             )
         }) { state ->
         AlbumsListLayout(state = state, listState = listState, object : AlbumsListScreenDelegate {
-            override fun onAlbumClicked(albumId: String) {
+            override fun onAlbumClicked(albumId: Long) {
                 screenViewModel.onAlbumClicked(albumId)
             }
 
-            override fun onAlbumOverflowMenuIconClicked(albumId: String) {
+            override fun onAlbumOverflowMenuIconClicked(albumId: Long) {
                 screenViewModel.onAlbumOverflowMenuIconClicked(albumId = albumId)
             }
         })
@@ -81,8 +81,8 @@ fun AlbumsListScreen(
 }
 
 interface AlbumsListScreenDelegate {
-    fun onAlbumClicked(albumId: String) = Unit
-    fun onAlbumOverflowMenuIconClicked(albumId: String) = Unit
+    fun onAlbumClicked(albumId: Long) = Unit
+    fun onAlbumOverflowMenuIconClicked(albumId: Long) = Unit
 }
 
 

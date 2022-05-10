@@ -29,8 +29,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 interface ArtistScreenNavigationDelegate {
-    fun navigateToAlbum(albumId: String)
-    fun openContextMenu(albumId: String)
+    fun navigateToAlbum(albumId: Long)
+    fun openContextMenu(albumId: Long)
     fun navigateUp()
 }
 
@@ -78,11 +78,11 @@ fun ArtistScreen(
         }
     ) { state ->
         ArtistLayout(state = state, delegate = object : ArtistScreenDelegate {
-            override fun albumRowClicked(albumId: String) {
+            override fun albumRowClicked(albumId: Long) {
                 screenViewModel.onAlbumClicked(albumId = albumId)
             }
 
-            override fun onAlbumOverflowMenuIconClicked(albumId: String) {
+            override fun onAlbumOverflowMenuIconClicked(albumId: Long) {
                 screenViewModel.onAlbumOverflowMenuIconClicked(albumId = albumId)
             }
         })
@@ -117,8 +117,8 @@ fun ArtistLayout(
 }
 
 interface ArtistScreenRowDelegate {
-    fun albumRowClicked(albumId: String) = Unit
-    fun onAlbumOverflowMenuIconClicked(albumId: String) = Unit
+    fun albumRowClicked(albumId: Long) = Unit
+    fun onAlbumOverflowMenuIconClicked(albumId: Long) = Unit
 }
 
 @Preview(showBackground = true)

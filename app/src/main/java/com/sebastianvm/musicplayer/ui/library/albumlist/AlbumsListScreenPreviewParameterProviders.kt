@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -11,21 +11,21 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
         AlbumsListState(
             albumsList = listOf(
                 AlbumRowState(
-                    albumId = "0",
+                    albumId = 0,
                     albumName = "Ahora",
                     imageUri = Uri.EMPTY,
                     artists = "Melendi",
                     year = 2017
                 ),
                 AlbumRowState(
-                    albumId = "1",
+                    albumId = 1,
                     albumName = "VIVES",
                     imageUri = Uri.EMPTY,
                     artists = "Carlos Vives",
                     year = 2018
                 ),
                 AlbumRowState(
-                    albumId = "2",
+                    albumId = 2,
                     albumName = "Balas perdidas",
                     imageUri = Uri.EMPTY,
                     artists = "Morat",
@@ -33,7 +33,7 @@ class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsL
 
                 ),
                 AlbumRowState(
-                    albumId = "3",
+                    albumId = 3,
                     albumName = "LongName".repeat(10),
                     imageUri = Uri.EMPTY,
                     artists = "LongName".repeat(10),

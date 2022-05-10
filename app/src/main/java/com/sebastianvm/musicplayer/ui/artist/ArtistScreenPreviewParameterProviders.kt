@@ -19,7 +19,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = "0",
+                            albumId = 0,
                             albumName = "Ahora",
                             imageUri = Uri.EMPTY,
                             year = 2017,
@@ -28,7 +28,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                     ),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = "1",
+                            albumId = 1,
                             albumName = "Ahora",
                             imageUri = Uri.EMPTY,
                             year = 2017,
@@ -46,7 +46,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                 listOf(
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = "2",
+                            albumId = 2,
                             albumName = "Ahora",
                             imageUri = Uri.EMPTY,
                             year = 2017,
@@ -55,7 +55,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                     ),
                     ArtistScreenItem.AlbumRowItem(
                         AlbumRowState(
-                            albumId = "3",
+                            albumId = 3,
                             albumName = "Ahora",
                             imageUri = Uri.EMPTY,
                             year = 2017,
@@ -73,7 +73,7 @@ class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {
         ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
         ArtistScreenItem.AlbumRowItem(
             AlbumRowState(
-                albumId = "0",
+                albumId = 0,
                 albumName = "Ahora",
                 imageUri = Uri.EMPTY,
                 year = 2017,

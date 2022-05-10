@@ -79,11 +79,11 @@ class ArtistViewModel @Inject constructor(
         return ArtistScreenItem.AlbumRowItem(this.toAlbumRowState())
     }
 
-    fun onAlbumClicked(albumId: String) {
+    fun onAlbumClicked(albumId: Long) {
         addUiEvent(ArtistUiEvent.NavigateToAlbum(albumId))
     }
 
-    fun onAlbumOverflowMenuIconClicked(albumId: String) {
+    fun onAlbumOverflowMenuIconClicked(albumId: Long) {
         addUiEvent(ArtistUiEvent.OpenContextMenu(albumId))
     }
 
@@ -117,7 +117,7 @@ object InitialArtistState {
 }
 
 sealed class ArtistUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: String) : ArtistUiEvent()
-    data class OpenContextMenu(val albumId: String) : ArtistUiEvent()
+    data class NavigateToAlbum(val albumId: Long) : ArtistUiEvent()
+    data class OpenContextMenu(val albumId: Long) : ArtistUiEvent()
     object NavigateUp : ArtistUiEvent()
 }

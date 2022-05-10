@@ -50,7 +50,7 @@ class LibraryViewModelTest {
 
 
     @Test
-    fun `RowClicked adds nav NavigateToScreen event`() {
+    fun `onRowClicked adds nav NavigateToScreen event`() {
         with(generateViewModel()) {
             onRowClicked(NavRoutes.TRACKS_ROOT)
             assertContains(

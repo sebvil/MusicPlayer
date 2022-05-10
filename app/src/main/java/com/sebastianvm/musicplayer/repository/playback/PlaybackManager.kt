@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import android.net.Uri
-import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +19,7 @@ interface PlaybackManager {
 
     fun playAllTracks(initialTrackIndex: Int = 0): Flow<PlaybackResult>
     fun playGenre(genreName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
-    fun playAlbum(albumId: String,initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playAlbum(albumId: Long, initialTrackIndex: Int = 0): Flow<PlaybackResult>
     fun playArtist(artistName: String): Flow<PlaybackResult>
     fun playPlaylist(playlistName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
     fun playSingleTrack(trackId: String): Flow<PlaybackResult>

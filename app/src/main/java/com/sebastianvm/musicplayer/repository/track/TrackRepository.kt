@@ -25,7 +25,7 @@ interface TrackRepository {
 
     fun getTracksForArtist(artistName: String): Flow<List<Track>>
 
-    fun getTracksForAlbum(albumId: String): Flow<List<Track>>
+    fun getTracksForAlbum(albumId: Long): Flow<List<Track>>
 
     fun getTracksForGenre(genreName: String, mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>>
 

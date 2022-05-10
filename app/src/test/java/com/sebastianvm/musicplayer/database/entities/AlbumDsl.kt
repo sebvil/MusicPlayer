@@ -5,7 +5,7 @@ annotation class AlbumDsl
 
 @AlbumDsl
 class AlbumBuilder {
-    var albumId = "0"
+    var albumId = 0L
     var albumName = ""
     var year = 0L
     var artists = ""

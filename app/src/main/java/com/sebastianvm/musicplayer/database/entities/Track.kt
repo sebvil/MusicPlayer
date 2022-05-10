@@ -13,7 +13,7 @@ data class Track(
     val trackNumber: Long,
     val trackDurationMs: Long,
     val albumName: String,
-    val albumId: String,
+    val albumId: Long,
     val artists: String,
     val path: String
 )

@@ -39,7 +39,7 @@ class AlbumViewModel @Inject constructor(
                 }) { (album, tracks) ->
             setState {
                 copy(
-                    imageUri = UriUtils.getAlbumUri(album.albumId.toLong()),
+                    imageUri = UriUtils.getAlbumUri(album.albumId),
                     albumName = album.albumName,
                     tracksList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
                 )
@@ -58,7 +58,7 @@ class AlbumViewModel @Inject constructor(
         addUiEvent(
             AlbumUiEvent.OpenContextMenu(
                 trackId = trackId,
-                albumId = state.value.albumId,
+                albumId = state.value.albumId.toString(),
                 trackIndex = trackIndex
             )
         )
@@ -66,7 +66,7 @@ class AlbumViewModel @Inject constructor(
 }
 
 data class AlbumState(
-    val albumId: String,
+    val albumId: Long,
     val imageUri: Uri,
     val albumName: String,
     val tracksList: List<TrackRowState>,
@@ -79,7 +79,7 @@ object InitialAlbumStateModule {
     @Provides
     @ViewModelScoped
     fun provideInitialAlbumState(savedHandle: SavedStateHandle): AlbumState {
-        val albumId = savedHandle.get<String>(NavArgs.ALBUM_ID)!!
+        val albumId = savedHandle.get<Long>(NavArgs.ALBUM_ID)!!
         return AlbumState(
             albumId = albumId,
             imageUri = Uri.EMPTY,

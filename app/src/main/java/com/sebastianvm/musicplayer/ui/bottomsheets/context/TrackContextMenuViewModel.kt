@@ -25,7 +25,7 @@ data class TrackContextMenuState(
     override val menuTitle: String,
     override val playbackResult: PlaybackResult? = null,
     val mediaId: String,
-    val albumId: String,
+    val albumId: Long,
     val mediaGroup: MediaGroup,
     val trackIndex: Int,
 ) : BaseContextMenuState(listItems, menuTitle, playbackResult)
@@ -44,7 +44,7 @@ object InitialTrackContextMenuStateModule {
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",
-            albumId = "",
+            albumId = 0,
             mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
             listItems = listOf(),
             trackIndex = trackIndex
@@ -104,7 +104,7 @@ class TrackContextMenuViewModel @Inject constructor(
                         }
                         MediaGroupType.ALBUM -> {
                             playbackManager.playAlbum(
-                                albumId = mediaGroup.mediaId,
+                                albumId = mediaGroup.mediaId.toLong(),
                                 initialTrackIndex = trackIndex
                             )
                         }
