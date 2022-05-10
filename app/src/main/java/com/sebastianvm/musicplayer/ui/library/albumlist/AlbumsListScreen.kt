@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ interface AlbumsListScreenNavigationDelegate {
 
 @Composable
 fun AlbumsListScreen(
-    screenViewModel: AlbumsListViewModel = viewModel(),
+    screenViewModel: AlbumListViewModel = viewModel(),
     delegate: AlbumsListScreenNavigationDelegate,
 ) {
     val listState = rememberLazyListState()

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 
 fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
     composable(NavRoutes.ALBUMS_ROOT) {
-        val screenViewModel = hiltViewModel<AlbumsListViewModel>()
+        val screenViewModel = hiltViewModel<AlbumListViewModel>()
         AlbumsListScreen(screenViewModel, object : AlbumsListScreenNavigationDelegate {
             override fun navigateUp() {
                 navController.navigateUp()

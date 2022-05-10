@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class AlbumsListViewModel @Inject constructor(
+class AlbumListViewModel @Inject constructor(
     initialState: AlbumsListState,
     albumRepository: AlbumRepository,
     preferencesRepository: SortPreferencesRepository,

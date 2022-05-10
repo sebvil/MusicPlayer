@@ -30,7 +30,7 @@ object C {
     // Years
     const val YEAR_2020 = 2020L
     const val YEAR_2021 = 2021L
-    const val YEAR_2022 = 2020L
+    const val YEAR_2022 = 2022L
 
 }
 

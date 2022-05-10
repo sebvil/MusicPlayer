@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.albums
+package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider

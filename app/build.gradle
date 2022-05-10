@@ -175,7 +175,7 @@ dependencies {
     def mockk_version = '1.12.3'
     testImplementation "io.mockk:mockk:$mockk_version"
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     implementation "net.jthink:jaudiotagger:3.0.1"
 
 }
