@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.util.uri.UriUtils
 
 
 data class AlbumRowState(
-    val albumId: String,
+    val albumId: Long,
     val albumName: String,
     val imageUri: Uri,
     val year: Long,
@@ -115,7 +115,7 @@ fun Album.toAlbumRowState(): AlbumRowState {
     return AlbumRowState(
         albumId = albumId,
         albumName = albumName,
-        imageUri = UriUtils.getAlbumUri(albumId = albumId.toLong()),
+        imageUri = UriUtils.getAlbumUri(albumId = albumId),
         year = year,
         artists = artists
     )
@@ -126,7 +126,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
     override val values =
         sequenceOf(
             AlbumRowState(
-                albumId = "1",
+                albumId = 1,
                 albumName = "Ahora",
                 imageUri = Uri.EMPTY,
                 year = 2017,
@@ -134,7 +134,7 @@ class AlbumRowStateProvider : PreviewParameterProvider<AlbumRowState> {
 
             ),
             AlbumRowState(
-                albumId = "2",
+                albumId = 2,
                 albumName = "VIVES",
                 imageUri = Uri.EMPTY,
                 year = 2017,

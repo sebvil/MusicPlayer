@@ -16,7 +16,7 @@ abstract class BaseContextMenuState(
 
 sealed class BaseContextMenuUiEvent : UiEvent {
     object NavigateToPlayer : BaseContextMenuUiEvent()
-    data class NavigateToAlbum(val albumId: String) : BaseContextMenuUiEvent()
+    data class NavigateToAlbum(val albumId: Long) : BaseContextMenuUiEvent()
     data class NavigateToArtist(val artistName: String) : BaseContextMenuUiEvent()
     data class NavigateToArtistsBottomSheet(val mediaId: String, val mediaType: MediaType) :
         BaseContextMenuUiEvent()

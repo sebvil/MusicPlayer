@@ -5,7 +5,8 @@ import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.AlbumType
 
-sealed class ArtistScreenItem : ListItem {
+sealed class ArtistScreenItem  {
+    abstract val id: Any
 
     data class AlbumRowItem(
         val state: AlbumRowState,

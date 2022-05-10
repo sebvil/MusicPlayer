@@ -70,7 +70,7 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                     }
                 }
 
-                override fun navigateToAlbum(albumId: String) {
+                override fun navigateToAlbum(albumId: Long) {
                     navController.navigateToAlbum(albumId)
                 }
 

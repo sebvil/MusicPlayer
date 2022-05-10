@@ -8,7 +8,7 @@ import androidx.room.Relation
 
 @Entity(primaryKeys = ["albumId", "artistName"])
 data class AlbumsForArtist(
-    val albumId: String,
+    val albumId: Long,
     @ColumnInfo(index = true)
     val artistName: String,
     val albumName: String,
@@ -16,7 +16,7 @@ data class AlbumsForArtist(
 
 @Entity(primaryKeys = ["albumId", "artistName"])
 data class AppearsOnForArtist(
-    val albumId: String,
+    val albumId: Long,
     @ColumnInfo(index = true)
     val artistName: String,
 )
@@ -27,9 +27,10 @@ data class ArtistWithAlbums(
         parentColumn = "artistName",
         entityColumn = "albumId",
         entity = Album::class,
-        projection = ["albumId"], associateBy = Junction(AlbumsForArtist::class),
+        projection = ["albumId"],
+        associateBy = Junction(AlbumsForArtist::class),
     )
-    val artistAlbums: List<String>,
+    val artistAlbums: List<Long>,
     @Relation(
         parentColumn = "artistName",
         entityColumn = "albumId",
@@ -37,7 +38,7 @@ data class ArtistWithAlbums(
         projection = ["albumId"],
         associateBy = Junction(AppearsOnForArtist::class),
     )
-    val artistAppearsOn: List<String>,
+    val artistAppearsOn: List<Long>,
 
 )
 

@@ -24,11 +24,11 @@ class AlbumRepositoryImpl @Inject constructor(
         return albumDao.getAllAlbums(sortOption = sortPreferences.sortOption, sortOrder = sortPreferences.sortOrder).distinctUntilChanged()
     }
 
-    override fun getAlbums(albumIds: List<String>): Flow<List<Album>> {
+    override fun getAlbums(albumIds: List<Long>): Flow<List<Album>> {
         return albumDao.getAlbums(albumIds = albumIds).distinctUntilChanged()
     }
 
-    override fun getAlbum(albumId: String): Flow<FullAlbumInfo> {
+    override fun getAlbum(albumId: Long): Flow<FullAlbumInfo> {
         return albumDao.getAlbum(albumId = albumId).distinctUntilChanged()
     }
 }

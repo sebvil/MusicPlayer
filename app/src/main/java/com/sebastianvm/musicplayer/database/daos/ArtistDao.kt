@@ -41,5 +41,5 @@ interface ArtistDao {
                 "JOIN AlbumsForArtist ON Artist.artistName=AlbumsForArtist.artistName " +
                 "WHERE AlbumsForArtist.albumId=:albumId"
     )
-    fun getArtistsForAlbum(albumId: String): Flow<List<Artist>>
+    fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>>
 }

@@ -9,6 +9,6 @@ import kotlinx.coroutines.flow.Flow
 interface AlbumRepository {
     fun getAlbumsCount(): Flow<Int>
     fun getAlbums(sortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>): Flow<List<Album>>
-    fun getAlbums(albumIds: List<String>): Flow<List<Album>>
-    fun getAlbum(albumId: String): Flow<FullAlbumInfo>
+    fun getAlbums(albumIds: List<Long>): Flow<List<Album>>
+    fun getAlbum(albumId: Long): Flow<FullAlbumInfo>
 }

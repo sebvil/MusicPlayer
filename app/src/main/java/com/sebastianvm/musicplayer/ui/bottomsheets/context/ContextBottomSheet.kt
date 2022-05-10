@@ -42,7 +42,7 @@ import kotlinx.coroutines.Dispatchers
 
 interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToPlayer() = Unit
-    fun navigateToAlbum(albumId: String) = Unit
+    fun navigateToAlbum(albumId: Long) = Unit
     fun navigateToArtist(artistName: String) = Unit
     fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
     fun navigateToGenre(genreName: String)

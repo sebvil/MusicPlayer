@@ -37,7 +37,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     }
                 }
                 MediaType.ALBUM -> {
-                    collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
+                    collect(artistRepository.getArtistsForAlbum(mediaId.toLong())) { artists ->
                         setState {
                             copy(
                                 artistsList = artists.map { it.toArtistRowState() }

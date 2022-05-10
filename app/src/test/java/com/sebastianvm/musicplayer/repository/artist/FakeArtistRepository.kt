@@ -31,7 +31,7 @@ class FakeArtistRepository(
         }.map { it.artist })
     }
 
-    override fun getArtistsForAlbum(albumId: String): Flow<List<Artist>> = flow {
+    override fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>> = flow {
         emit(artistsWithAlbums.filter { albumId in it.artistAlbums }.map { it.artist })
     }
 }

@@ -92,7 +92,7 @@ class PlaybackManagerImpl @Inject constructor(
 
     }
 
-    override fun playAlbum(albumId: String, initialTrackIndex: Int): Flow<PlaybackResult> =
+    override fun playAlbum(albumId: Long, initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
             trackRepository.getTracksForAlbum(albumId).first().map { it.toMediaItem() }
         }

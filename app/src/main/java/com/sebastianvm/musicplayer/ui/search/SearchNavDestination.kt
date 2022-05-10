@@ -25,7 +25,7 @@ fun NavGraphBuilder.searchNavDestination(navController: NavController) {
                 navController.navigateToArtist(artistName)
             }
 
-            override fun navigateToAlbum(albumId: String) {
+            override fun navigateToAlbum(albumId: Long) {
                 navController.navigateToAlbum(albumId)
             }
 

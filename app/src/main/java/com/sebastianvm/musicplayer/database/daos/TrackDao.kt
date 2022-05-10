@@ -59,7 +59,7 @@ interface TrackDao {
 
     @Transaction
     @Query("SELECT * FROM Track WHERE Track.albumId=:albumId ORDER BY trackNumber")
-    fun getTracksForAlbum(albumId: String): Flow<List<Track>>
+    fun getTracksForAlbum(albumId: Long): Flow<List<Track>>
 
     @Transaction
     @Query(

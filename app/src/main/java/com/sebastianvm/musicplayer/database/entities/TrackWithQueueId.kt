@@ -10,7 +10,7 @@ data class TrackWithQueueId(
     val trackNumber: Long,
     val trackDurationMs: Long,
     val albumName: String,
-    val albumId: String,
+    val albumId: Long,
     val artists: String,
     val path: String,
     val uniqueQueueItemId: String
@@ -30,7 +30,7 @@ data class TrackWithQueueId(
             trackNumber = 0,
             trackDurationMs = 0,
             albumName = "",
-            albumId = "",
+            albumId = 0,
             artists = "",
             path = "",
             uniqueQueueItemId = mediaItem.uniqueId

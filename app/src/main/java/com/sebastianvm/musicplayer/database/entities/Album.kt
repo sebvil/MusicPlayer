@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Album(
     @PrimaryKey
-    val albumId: String,
+    val albumId: Long,
     val albumName: String,
     val year: Long,
     val artists: String

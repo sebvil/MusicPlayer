@@ -53,7 +53,7 @@ class AlbumsListViewModel @Inject constructor(
         }
     }
 
-    fun onAlbumClicked(albumId: String) {
+    fun onAlbumClicked(albumId: Long) {
         addUiEvent(AlbumsListUiEvent.NavigateToAlbum(albumId))
     }
 
@@ -70,7 +70,7 @@ class AlbumsListViewModel @Inject constructor(
         )
     }
 
-    fun onAlbumOverflowMenuIconClicked(albumId: String) {
+    fun onAlbumOverflowMenuIconClicked(albumId: Long) {
         addUiEvent(AlbumsListUiEvent.OpenContextMenu(albumId))
     }
 }
@@ -95,12 +95,12 @@ object InitialAlbumsListStateModule {
 }
 
 sealed class AlbumsListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: String) : AlbumsListUiEvent()
+    data class NavigateToAlbum(val albumId: Long) : AlbumsListUiEvent()
     object NavigateUp : AlbumsListUiEvent()
     data class ShowSortBottomSheet(@StringRes val sortOption: Int, val sortOrder: MediaSortOrder) :
         AlbumsListUiEvent()
 
     object ScrollToTop : AlbumsListUiEvent()
 
-    data class OpenContextMenu(val albumId: String) : AlbumsListUiEvent()
+    data class OpenContextMenu(val albumId: Long) : AlbumsListUiEvent()
 }

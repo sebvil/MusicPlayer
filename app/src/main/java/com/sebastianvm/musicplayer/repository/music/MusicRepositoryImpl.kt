@@ -67,7 +67,7 @@ class MusicRepositoryImpl @Inject constructor(
         year: Long,
         trackNumber: Long,
         duration: Long,
-        albumId: String
+        albumId: Long
     ) {
         val track = Track(
             trackId = id,
@@ -193,7 +193,7 @@ class MusicRepositoryImpl @Inject constructor(
                         val id = musicCursor.getString(idColumn)
                         val filePath = musicCursor.getString(dataColumn)
                         val duration = musicCursor.getLong(durationColumn)
-                        val albumId = musicCursor.getString(albumIdColumn)
+                        val albumId = musicCursor.getLong(albumIdColumn)
                         val trackNumber = musicCursor.getLong(trackNumberColumn)
 
                         val job = launch {

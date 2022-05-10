@@ -22,9 +22,9 @@ class FakeAlbumRepository(
 
 
 
-    override fun getAlbums(albumIds: List<String>): Flow<List<Album>> = albumList.map { albums ->
+    override fun getAlbums(albumIds: List<Long>): Flow<List<Album>> = albumList.map { albums ->
         albums.mapNotNull { album -> album.takeIf { it.album.albumId in albumIds }?.album }.toList()
     }
 
-    override fun getAlbum(albumId: String): Flow<FullAlbumInfo> = albumList.mapNotNull { albums -> albums.find { it.album.albumId == albumId } }
+    override fun getAlbum(albumId: Long): Flow<FullAlbumInfo> = albumList.mapNotNull { albums -> albums.find { it.album.albumId == albumId } }
 }

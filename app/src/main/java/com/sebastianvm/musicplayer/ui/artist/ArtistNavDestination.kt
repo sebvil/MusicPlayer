@@ -22,15 +22,15 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     ) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
         ArtistScreen(screenViewModel, delegate = object : ArtistScreenNavigationDelegate {
-            override fun navigateToAlbum(albumId: String) {
+            override fun navigateToAlbum(albumId: Long) {
                 navController.navigateToAlbum(albumId)
             }
 
-            override fun openContextMenu(albumId: String) {
+            override fun openContextMenu(albumId: Long) {
                 navController.openContextMenu(
                     mediaType = MediaType.ALBUM,
-                    mediaId = albumId,
-                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
+                    mediaId = albumId.toString(),
+                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId.toString()),
                 )
             }
 
