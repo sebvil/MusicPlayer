@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.artists
+package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -24,11 +24,11 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class ArtistsListViewModel @Inject constructor(
-    initialState: ArtistsListState,
+class ArtistListViewModel @Inject constructor(
+    initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistsListUiEvent, ArtistsListState>(initialState) {
+) : BaseViewModel<ArtistListUiEvent, ArtistListState>(initialState) {
 
     init {
         viewModelScope.launch {
@@ -53,7 +53,7 @@ class ArtistsListViewModel @Inject constructor(
     }
 
     fun onArtistClicked(artistId: Long) {
-        addUiEvent(ArtistsListUiEvent.NavigateToArtist(artistId))
+        addUiEvent(ArtistListUiEvent.NavigateToArtist(artistId))
     }
 
     fun onSortByClicked() {
@@ -63,15 +63,15 @@ class ArtistsListViewModel @Inject constructor(
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(ArtistsListUiEvent.NavigateUp)
+        addUiEvent(ArtistListUiEvent.NavigateUp)
     }
 
     fun onArtistOverflowMenuIconClicked(artistId: Long) {
-        addUiEvent(ArtistsListUiEvent.OpenContextMenu(artistId))
+        addUiEvent(ArtistListUiEvent.OpenContextMenu(artistId))
     }
 }
 
-data class ArtistsListState(
+data class ArtistListState(
     val artistsList: List<ArtistRowState>,
     val sortOrder: MediaSortOrder,
 ) : State
@@ -81,16 +81,16 @@ data class ArtistsListState(
 object InitialArtistsListStateModule {
     @Provides
     @ViewModelScoped
-    fun initialArtistsListStateProvider(): ArtistsListState {
-        return ArtistsListState(
+    fun initialArtistsListStateProvider(): ArtistListState {
+        return ArtistListState(
             artistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
         )
     }
 }
 
-sealed class ArtistsListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: Long) : ArtistsListUiEvent()
-    object NavigateUp : ArtistsListUiEvent()
-    data class OpenContextMenu(val artistId: Long) : ArtistsListUiEvent()
+sealed class ArtistListUiEvent : UiEvent {
+    data class NavigateToArtist(val artistId: Long) : ArtistListUiEvent()
+    object NavigateUp : ArtistListUiEvent()
+    data class OpenContextMenu(val artistId: Long) : ArtistListUiEvent()
 }

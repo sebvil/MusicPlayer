@@ -39,11 +39,12 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
     }
 
     override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
-        TODO("Not yet implemented")
+        sortPreferencesState.value =
+            sortPreferencesState.value.copy(artistListSortOrder = mediaSortOrder)
     }
 
     override fun getArtistsListSortOrder(): Flow<MediaSortOrder> {
-        TODO("Not yet implemented")
+        return sortPreferencesState.map { it.artistListSortOrder }
     }
 
     override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {

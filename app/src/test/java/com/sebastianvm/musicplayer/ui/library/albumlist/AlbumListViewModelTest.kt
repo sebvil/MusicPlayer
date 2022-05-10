@@ -2,11 +2,8 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import android.content.ContentUris
 import android.provider.MediaStore
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.C
-import com.sebastianvm.musicplayer.database.entities.fullAlbumAlpaca
-import com.sebastianvm.musicplayer.database.entities.fullAlbumBobcat
-import com.sebastianvm.musicplayer.database.entities.fullAlbumCheetah
+import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
@@ -43,9 +40,9 @@ class AlbumListViewModelTest {
     fun setUp() {
         albumRepository = FakeAlbumRepository(
             fullAlbumInfo = listOf(
-                fullAlbumAlpaca,
-                fullAlbumBobcat,
-                fullAlbumCheetah,
+                Fixtures.fullAlbumAlpaca,
+                Fixtures.fullAlbumBobcat,
+                Fixtures.fullAlbumCheetah,
             )
         )
     }
@@ -91,7 +88,7 @@ class AlbumListViewModelTest {
             MediaSortPreferences(
                 SortOptions.AlbumListSortOptions.ALBUM,
                 MediaSortOrder.ASCENDING
-            ), 
+            ),
             albums
         )
 
@@ -161,15 +158,7 @@ class AlbumListViewModelTest {
     fun `SortByClicked adds ShowSortBottomSheet event`() {
         with(generateViewModel()) {
             onSortByClicked()
-            assertEquals(
-                listOf(
-                    AlbumsListUiEvent.ShowSortBottomSheet(
-                        sortOption = R.string.album_name,
-                        sortOrder = MediaSortOrder.ASCENDING
-                    )
-                ),
-                events.value
-            )
+            assertEquals(listOf(AlbumsListUiEvent.ShowSortBottomSheet), events.value)
         }
     }
 

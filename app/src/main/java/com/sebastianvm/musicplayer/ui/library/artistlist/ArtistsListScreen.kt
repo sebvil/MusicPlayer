@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.artists
+package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -25,18 +25,18 @@ interface ArtistsListScreenNavigationDelegate {
 
 @Composable
 fun ArtistsListScreen(
-    screenViewModel: ArtistsListViewModel = viewModel(),
+    screenViewModel: ArtistListViewModel = viewModel(),
     delegate: ArtistsListScreenNavigationDelegate
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is ArtistsListUiEvent.NavigateToArtist -> {
+                is ArtistListUiEvent.NavigateToArtist -> {
                     delegate.navigateToArtist(event.artistId)
                 }
-                is ArtistsListUiEvent.NavigateUp -> delegate.navigateUp()
-                is ArtistsListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
+                is ArtistListUiEvent.NavigateUp -> delegate.navigateUp()
+                is ArtistListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
             }
         },
         topBar = {
@@ -73,7 +73,7 @@ interface ArtistsListScreenDelegate {
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ArtistsListScreenPreview(@PreviewParameter(ArtistsListStatePreviewParameterProvider::class) state: ArtistsListState) {
+fun ArtistsListScreenPreview(@PreviewParameter(ArtistsListStatePreviewParameterProvider::class) state: ArtistListState) {
     ScreenPreview {
         ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {})
     }
@@ -81,7 +81,7 @@ fun ArtistsListScreenPreview(@PreviewParameter(ArtistsListStatePreviewParameterP
 
 @Composable
 fun ArtistsListLayout(
-    state: ArtistsListState,
+    state: ArtistListState,
     delegate: ArtistsListScreenDelegate
 ) {
     LazyColumn {
