@@ -18,16 +18,16 @@ interface PlaybackManager {
     fun prev()
 
     fun playAllTracks(initialTrackIndex: Int = 0): Flow<PlaybackResult>
-    fun playGenre(genreName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playGenre(genreId: Long, initialTrackIndex: Int = 0): Flow<PlaybackResult>
     fun playAlbum(albumId: Long, initialTrackIndex: Int = 0): Flow<PlaybackResult>
-    fun playArtist(artistName: String): Flow<PlaybackResult>
-    fun playPlaylist(playlistName: String, initialTrackIndex: Int = 0): Flow<PlaybackResult>
-    fun playSingleTrack(trackId: String): Flow<PlaybackResult>
+    fun playArtist(artistId: Long): Flow<PlaybackResult>
+    fun playPlaylist(playlistId: Long, initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    fun playSingleTrack(trackId: Long): Flow<PlaybackResult>
 
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
     fun seekToTrackPosition(position: Long)
-    suspend fun addToQueue(mediaIds: List<String>)
+    suspend fun addToQueue(mediaIds: List<Long>)
     fun getQueue(): Flow<List<TrackWithQueueId>>
     suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
     fun getSavedPlaybackInfo(): Flow<PlaybackInfo>

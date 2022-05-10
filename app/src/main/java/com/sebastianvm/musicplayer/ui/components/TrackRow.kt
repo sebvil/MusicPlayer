@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 data class TrackRowState(
-    val trackId: String,
+    val trackId: Long,
     val trackName: String,
     val artists: String,
     val albumName: String,
@@ -90,13 +90,13 @@ fun TrackRow(
 
 class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowState> {
     override val values = sequenceOf(
-        TrackRowState("0", "La Promesa", "Melendi", "Un alumno mas"),
+        TrackRowState(0, "La Promesa", "Melendi", "Un alumno mas"),
     )
 }
 
 fun Track.toTrackRowState(includeTrackNumber: Boolean): TrackRowState {
     return TrackRowState(
-        trackId = trackId,
+        trackId = id,
         trackName = trackName,
         artists = artists,
         albumName = albumName,

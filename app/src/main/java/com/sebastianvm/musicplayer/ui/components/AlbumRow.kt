@@ -113,9 +113,9 @@ fun AlbumRow(
 
 fun Album.toAlbumRowState(): AlbumRowState {
     return AlbumRowState(
-        albumId = albumId,
+        albumId = id,
         albumName = albumName,
-        imageUri = UriUtils.getAlbumUri(albumId = albumId),
+        imageUri = UriUtils.getAlbumUri(albumId = id),
         year = year,
         artists = artists
     )

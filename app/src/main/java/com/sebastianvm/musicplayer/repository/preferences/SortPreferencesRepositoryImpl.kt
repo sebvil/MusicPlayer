@@ -25,13 +25,13 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
 
     private suspend fun modifyGenreTracksListSortPreferences(
-        genreName: String,
+        genreId: Long,
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
                 genreTracksListSortPreferences = oldPreferences.genreTracksListSortPreferences.mutate {
-                    it[genreName] = newPreferences
+                    it[genreId] = newPreferences
                 }
             )
         }
@@ -40,14 +40,14 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
         tracksListType: TracksListType,
-        tracksListName: String,
+        tracksListId: Long,
     ) {
         when (tracksListType) {
             TracksListType.ALL_TRACKS -> modifyAllTracksListSortPreferences(
                 newPreferences
             )
             TracksListType.GENRE -> modifyGenreTracksListSortPreferences(
-                tracksListName,
+                tracksListId,
                 newPreferences
             )
         }
@@ -59,9 +59,9 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun getGenreTracksListSortPreferences(genreName: String): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+    private fun getGenreTracksListSortPreferences(genreId: Long): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
-            preferences.genreTracksListSortPreferences[genreName] ?: MediaSortPreferences(
+            preferences.genreTracksListSortPreferences[genreId] ?: MediaSortPreferences(
                 sortOption = SortOptions.TrackListSortOptions.TRACK,
                 sortOrder = MediaSortOrder.ASCENDING
             )
@@ -70,12 +70,12 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
     override fun getTracksListSortPreferences(
         tracksListType: TracksListType,
-        tracksListName: String
+        tracksListId: Long
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (tracksListType) {
             TracksListType.ALL_TRACKS -> getAllTracksListSortPreferences()
             TracksListType.GENRE -> getGenreTracksListSortPreferences(
-                tracksListName
+                tracksListId
             )
         }
     }
@@ -141,21 +141,21 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun modifyPlaylistsSortPreferences(
-        playlistName: String,
+        playlistId: Long,
         newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
                 playlistSortPreferences = oldPreferences.playlistSortPreferences.mutate {
-                    it[playlistName] = newPreferences
+                    it[playlistId] = newPreferences
                 }
             )
         }
     }
 
-    override fun getPlaylistSortPreferences(playlistName: String): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
+    override fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
-            preferences.playlistSortPreferences[playlistName] ?: MediaSortPreferences(
+            preferences.playlistSortPreferences[playlistId] ?: MediaSortPreferences(
                 sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
                 sortOrder = MediaSortOrder.ASCENDING
             )

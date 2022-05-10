@@ -23,11 +23,11 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
     composable(
         createNavRoute(
             NavRoutes.TRACKS_ROOT,
-            NavArgs.TRACK_LIST_NAME,
+            NavArgs.TRACK_LIST_ID,
             NavArgs.TRACKS_LIST_TYPE
         ),
         arguments = listOf(
-            navArgument(NavArgs.TRACK_LIST_NAME) {
+            navArgument(NavArgs.TRACK_LIST_ID) {
                 nullable = true
                 type = NavType.StringType
             },
@@ -48,11 +48,11 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
                     navController.navigateUp()
                 }
 
-                override fun openSortMenu(mediaId: String) {
+                override fun openSortMenu(mediaId: Long) {
                     navController.openSortBottomSheet(listType = SortableListType.TRACKS, mediaId = mediaId)
                 }
 
-                override fun openContextMenu(mediaId: String, mediaGroup: MediaGroup, trackIndex: Int) {
+                override fun openContextMenu(mediaId: Long, mediaGroup: MediaGroup, trackIndex: Int) {
                     navController.openContextMenu(
                         mediaType = MediaType.TRACK,
                         mediaId = mediaId,
@@ -72,10 +72,10 @@ fun NavController.navigateToTracksRoot() {
     )
 }
 
-fun NavController.navigateToGenre(genreName: String) {
+fun NavController.navigateToGenre(genreId: Long) {
     navigateTo(
         NavRoutes.TRACKS_ROOT,
-        NavArgument(NavArgs.TRACK_LIST_NAME, genreName),
+        NavArgument(NavArgs.TRACK_LIST_ID, genreId),
         NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.GENRE)
     )
 }

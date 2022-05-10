@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -29,7 +27,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playPlaylist(state.value.playlistName).onEach {
+                playbackManager.playPlaylist(state.value.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
@@ -41,7 +39,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
             is ContextMenuItem.ViewPlaylist -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistName = state.value.playlistName))
+                addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistId = state.value.mediaId))
             }
             is ContextMenuItem.DeletePlaylist -> {
                 setState {
@@ -56,7 +54,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
 
     fun onConfirmDeleteClicked() {
         viewModelScope.launch {
-            playlistRepository.deletePlaylist(state.value.playlistName)
+            playlistRepository.deletePlaylist(state.value.mediaId)
             setState {
                 copy(
                     showDeleteConfirmationDialog = false
@@ -83,12 +81,11 @@ class PlaylistContextMenuViewModel @Inject constructor(
 
 data class PlaylistContextMenuState(
     override val listItems: List<ContextMenuItem>,
+    override val mediaId: Long,
     override val menuTitle: String,
     override val playbackResult: PlaybackResult? = null,
-    val playlistName: String,
-    val mediaGroup: MediaGroup,
     val showDeleteConfirmationDialog: Boolean,
-) : BaseContextMenuState(listItems, menuTitle, playbackResult = playbackResult)
+) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
 
 
 @InstallIn(ViewModelComponent::class)
@@ -97,14 +94,10 @@ object InitialPlaylistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistContextMenuStateProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuState {
-        val playlistName = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
-        val mediaGroupType =
-            MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
-        val mediaGroupMediaId = savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_ID)!!
+        val playlistId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
         return PlaylistContextMenuState(
-            playlistName = playlistName,
-            menuTitle = playlistName,
-            mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
+            mediaId = playlistId,
+            menuTitle = "",
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewPlaylist,

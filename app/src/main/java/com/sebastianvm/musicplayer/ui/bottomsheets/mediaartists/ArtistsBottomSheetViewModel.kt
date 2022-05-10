@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -37,7 +36,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     }
                 }
                 MediaType.ALBUM -> {
-                    collect(artistRepository.getArtistsForAlbum(mediaId.toLong())) { artists ->
+                    collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
                         setState {
                             copy(
                                 artistsList = artists.map { it.toArtistRowState() }
@@ -51,18 +50,15 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 
     }
 
-    fun <A: UserAction> handle(action: A) {
-        when (action) {
-            is ArtistsBottomSheetUserAction.ArtistClicked -> {
-                addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(action.artistName))
-            }
-        }
+    fun onArtistClicked(artistId: Long) {
+        addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(artistId = artistId))
     }
+
 }
 
 data class ArtistsBottomSheetState(
     val mediaType: MediaType,
-    val mediaId: String,
+    val mediaId: Long,
     val artistsList: List<ArtistRowState>,
 ) : State
 
@@ -73,7 +69,7 @@ object InitialArtistsBottomSheetStateModule {
     @ViewModelScoped
     fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
         val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
-        val mediaId = savedStateHandle.get<String>(NavArgs.MEDIA_ID)!!
+        val mediaId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
         return ArtistsBottomSheetState(
             mediaId = mediaId,
             mediaType = mediaType,
@@ -82,10 +78,6 @@ object InitialArtistsBottomSheetStateModule {
     }
 }
 
-sealed class ArtistsBottomSheetUserAction : UserAction {
-    data class ArtistClicked(val artistName: String) : ArtistsBottomSheetUserAction()
-}
-
 sealed class ArtistsBottomSheetUiEvent : UiEvent {
-    data class NavigateToArtist(val artistName: String) : ArtistsBottomSheetUiEvent()
+    data class NavigateToArtist(val artistId: Long) : ArtistsBottomSheetUiEvent()
 }

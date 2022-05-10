@@ -34,7 +34,7 @@ fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) 
     }
 }
 
-fun NavController.openSortBottomSheet(listType: SortableListType, mediaId: String = "") {
+fun NavController.openSortBottomSheet(listType: SortableListType, mediaId: Long = 0) {
     navigateTo(
         NavRoutes.SORT,
         NavArgument(NavArgs.SORTABLE_LIST_TYPE, listType),

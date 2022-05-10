@@ -25,13 +25,13 @@ class PlaylistRepositoryImpl @Inject constructor(
 
     override suspend fun createPlaylist(playlistName: String) {
         withContext(ioDispatcher) {
-            playlistDao.createPlaylist(Playlist(playlistName = playlistName))
+            playlistDao.createPlaylist(Playlist(id = 0, playlistName = playlistName))
         }
     }
 
-    override suspend fun deletePlaylist(playlistName: String) {
+    override suspend fun deletePlaylist(playlistId: Long) {
         withContext(ioDispatcher) {
-            playlistDao.deletePlaylist(Playlist(playlistName = playlistName))
+            playlistDao.deletePlaylist(Playlist(id = playlistId, playlistName = ""))
         }
     }
 }

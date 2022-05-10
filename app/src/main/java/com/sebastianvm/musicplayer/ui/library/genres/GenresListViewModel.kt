@@ -47,8 +47,8 @@ class GenresListViewModel @Inject constructor(
         }
     }
 
-    fun onGenreClicked(genreName: String) {
-        addUiEvent(GenresListUiEvent.NavigateToGenre(genreName))
+    fun onGenreClicked(genreId: Long) {
+        addUiEvent(GenresListUiEvent.NavigateToGenre(genreId))
     }
 
     fun onSortByClicked() {
@@ -61,8 +61,8 @@ class GenresListViewModel @Inject constructor(
         addUiEvent(GenresListUiEvent.NavigateUp)
     }
 
-    fun onGenreOverflowMenuIconClicked(genreName: String) {
-        addUiEvent(GenresListUiEvent.OpenContextMenu(genreName))
+    fun onGenreOverflowMenuIconClicked(genreId: Long) {
+        addUiEvent(GenresListUiEvent.OpenContextMenu(genreId))
     }
 }
 
@@ -86,7 +86,7 @@ object InitialGenresListStateModule {
 }
 
 sealed class GenresListUiEvent : UiEvent {
-    data class NavigateToGenre(val genreName: String) : GenresListUiEvent()
+    data class NavigateToGenre(val genreId: Long) : GenresListUiEvent()
     object NavigateUp : GenresListUiEvent()
-    data class OpenContextMenu(val genreName: String) : GenresListUiEvent()
+    data class OpenContextMenu(val genreId: Long) : GenresListUiEvent()
 }

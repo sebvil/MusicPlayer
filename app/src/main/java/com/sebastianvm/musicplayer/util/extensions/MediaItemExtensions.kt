@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 
-inline var MediaItem.Builder.id: String
+inline var MediaItem.Builder.id: Long
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {
-        setMediaId(value)
+        setMediaId(value.toString())
     }
 
 inline var MediaItem.Builder.uri: Uri

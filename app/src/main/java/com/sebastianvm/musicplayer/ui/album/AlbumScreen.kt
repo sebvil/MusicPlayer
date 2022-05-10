@@ -35,7 +35,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumNavigationDelegate {
     fun navigateToPlayer() = Unit
-    fun openContextMenu(trackId: String, albumId: String, trackIndex: Int) = Unit
+    fun openContextMenu(trackId: Long, albumId: Long, trackIndex: Int) = Unit
 }
 
 @Composable
@@ -60,7 +60,7 @@ fun AlbumScreen(
                 screenVieModel.onTrackClicked(trackIndex = trackIndex)
             }
 
-            override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
+            override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
                 screenVieModel.onTrackOverflowMenuIconClicked(
                     trackIndex = trackIndex,
                     trackId = trackId
@@ -72,7 +72,7 @@ fun AlbumScreen(
 
 interface AlbumScreenDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) = Unit
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
 @Preview(showSystemUi = true)

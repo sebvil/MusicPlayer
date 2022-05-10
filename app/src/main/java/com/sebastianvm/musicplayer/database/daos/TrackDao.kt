@@ -40,22 +40,22 @@ interface TrackDao {
     ): Flow<List<Track>>
 
     @Transaction
-    @Query("SELECT * FROM Track WHERE trackId in (:trackIds)")
-    fun getTracks(trackIds: List<String>): Flow<List<Track>>
+    @Query("SELECT * FROM Track WHERE id in (:trackIds)")
+    fun getTracks(trackIds: List<Long>): Flow<List<Track>>
 
     @Transaction
-    @Query("SELECT * FROM Track WHERE trackId=:trackId")
-    fun getTrack(trackId: String): Flow<FullTrackInfo>
+    @Query("SELECT * FROM Track WHERE id=:trackId")
+    fun getTrack(trackId: Long): Flow<FullTrackInfo>
 
     @Transaction
     @Query(
         "SELECT Track.* FROM Track " +
                 "INNER JOIN ArtistTrackCrossRef " +
-                "ON Track.trackId = ArtistTrackCrossRef.trackId " +
-                "WHERE ArtistTrackCrossRef.artistName=:artistName " +
+                "ON Track.id = ArtistTrackCrossRef.trackId " +
+                "WHERE ArtistTrackCrossRef.artistId=:artistId " +
                 "ORDER BY trackName COLLATE LOCALIZED ASC"
     )
-    fun getTracksForArtist(artistName: String): Flow<List<Track>>
+    fun getTracksForArtist(artistId: Long): Flow<List<Track>>
 
     @Transaction
     @Query("SELECT * FROM Track WHERE Track.albumId=:albumId ORDER BY trackNumber")
@@ -65,8 +65,8 @@ interface TrackDao {
     @Query(
         "SELECT Track.* FROM Track " +
                 "INNER JOIN GenreTrackCrossRef " +
-                "ON Track.trackId = GenreTrackCrossRef.trackId " +
-                "WHERE GenreTrackCrossRef.genreName=:genreName ORDER BY " +
+                "ON Track.id = GenreTrackCrossRef.trackId " +
+                "WHERE GenreTrackCrossRef.genreId=:genreId ORDER BY " +
                 "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
                 "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
                 "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
@@ -75,7 +75,7 @@ interface TrackDao {
                 "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
     fun getTracksForGenre(
-        genreName: String,
+        genreId: Long,
         sortOption: SortOptions.TrackListSortOptions,
         sortOrder: MediaSortOrder
     ): Flow<List<Track>>
@@ -84,11 +84,11 @@ interface TrackDao {
     @Query(
         """
         SELECT Track.* FROM Track 
-        INNER JOIN PlaylistTrackCrossRef ON Track.trackId = PlaylistTrackCrossRef.trackId
-        WHERE PlaylistTrackCrossRef.playlistName=:playlistName
+        INNER JOIN PlaylistTrackCrossRef ON Track.id = PlaylistTrackCrossRef.trackId
+        WHERE PlaylistTrackCrossRef.playlistId=:playlistId
     """
     )
-    fun getTracksForPlaylist(playlistName: String): Flow<List<Track>>
+    fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

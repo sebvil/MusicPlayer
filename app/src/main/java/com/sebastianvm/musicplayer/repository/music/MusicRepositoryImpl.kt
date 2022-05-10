@@ -57,7 +57,7 @@ class MusicRepositoryImpl @Inject constructor(
     private val appearsOnForArtistSet = mutableSetOf<AppearsOnForArtist>()
 
     private fun insertTrack(
-        id: String,
+        id: Long,
         path: String,
         title: String,
         artists: String,
@@ -70,7 +70,7 @@ class MusicRepositoryImpl @Inject constructor(
         albumId: Long
     ) {
         val track = Track(
-            trackId = id,
+            id = id,
             trackName = title,
             trackNumber = trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
             trackDurationMs = duration,
@@ -88,34 +88,40 @@ class MusicRepositoryImpl @Inject constructor(
                 trackName = title
             )
         }
-        val trackArtistsList = trackArtists.map { artistName ->
+        val trackArtistsList = artistTrackCrossRefs.map { artistTrackCrossRef ->
             Artist(
-                artistId = artistName.hashCode().toLong(),
-                artistName = artistName
+                id = artistTrackCrossRef.artistId,
+                artistName = artistTrackCrossRef.artistName
             )
         }
-        val trackGenres = parseTag(genres).map { genreName -> Genre(genreName = genreName) }
+        val trackGenres = parseTag(genres).map { genreName ->
+            Genre(
+                id = genreName.hashCode().toLong(),
+                genreName = genreName
+            )
+        }
         val genreTrackCrossRef = trackGenres.map { genre ->
             GenreTrackCrossRef(
-                genreName = genre.genreName,
+                genreId = genre.id,
                 trackId = id
             )
         }
         val albumArtistsList =
             parseTag(albumArtists).map { artistName -> Artist(artistName = artistName) }
         val album = Album(
-            albumId = albumId,
+            id = albumId,
             albumName = albumName,
             year = year,
             artists = albumArtistsList.joinToString(", ") { it.artistName })
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
-        trackArtists.forEach { artistName ->
-            if (artistName in albumArtistsList.map { artist -> artist.artistName }) {
+        trackArtistsList.forEach { artist ->
+            if (artist.artistName in albumArtistsList.map { it.artistName }) {
                 albumForArtists.add(
                     AlbumsForArtist(
                         albumId = albumId,
-                        artistName = artistName,
+                        artistId = artist.id,
+                        artistName = artist.artistName,
                         albumName = albumName
                     )
                 )
@@ -123,7 +129,7 @@ class MusicRepositoryImpl @Inject constructor(
                 appearsOnForArtists.add(
                     AppearsOnForArtist(
                         albumId = albumId,
-                        artistName = artistName
+                        artistId = artist.id
                     )
                 )
             }
@@ -181,7 +187,6 @@ class MusicRepositoryImpl @Inject constructor(
                     //get columns
                     val idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID)
                     val dataColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA)
-                    val durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                     val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
                     val trackNumberColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
 
@@ -190,9 +195,8 @@ class MusicRepositoryImpl @Inject constructor(
                     var count = 0
                     val jobs = mutableListOf<Job>()
                     do {
-                        val id = musicCursor.getString(idColumn)
+                        val id = musicCursor.getLong(idColumn)
                         val filePath = musicCursor.getString(dataColumn)
-                        val duration = musicCursor.getLong(durationColumn)
                         val albumId = musicCursor.getLong(albumIdColumn)
                         val trackNumber = musicCursor.getLong(trackNumberColumn)
 
@@ -211,7 +215,7 @@ class MusicRepositoryImpl @Inject constructor(
                                     albumArtists = tag.getFirst(FieldKey.ALBUM_ARTIST),
                                     year = tag.getFirst(FieldKey.YEAR).toLongOrNull() ?: 0,
                                     trackNumber = trackNumber,
-                                    duration = duration,
+                                    duration = f.audioHeader.trackLength.toLong() * 1_000,
                                     albumId = albumId
                                 )
                             } catch (e: Exception) {

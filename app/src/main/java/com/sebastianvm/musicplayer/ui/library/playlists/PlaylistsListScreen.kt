@@ -35,8 +35,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface PlaylistsListScreenNavigationDelegate {
     fun navigateUp()
-    fun navigateToPlaylist(playlistName: String)
-    fun openContextMenu(playlistName: String)
+    fun navigateToPlaylist(playlistId: Long)
+    fun openContextMenu(playlistId: Long)
 }
 
 @Composable
@@ -49,11 +49,11 @@ fun PlaylistsListScreen(
         eventHandler = { event ->
             when (event) {
                 is PlaylistsListUiEvent.NavigateToPlaylist -> {
-                    delegate.navigateToPlaylist(event.playlistName)
+                    delegate.navigateToPlaylist(event.playlistId)
                 }
                 is PlaylistsListUiEvent.NavigateUp -> delegate.navigateUp()
                 is PlaylistsListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.playlistName)
+                    delegate.openContextMenu(event.playlistId)
                 }
             }
         },
@@ -82,14 +82,14 @@ fun PlaylistsListScreen(
                 })
         }) { state ->
         PlaylistsListLayout(state = state, object : PlaylistsListScreenDelegate {
-            override fun onPlaylistClicked(playlistName: String) {
-                screenViewModel.handle(action = PlaylistsListUserAction.PlaylistClicked(playlistName = playlistName))
+            override fun onPlaylistClicked(playlistId: Long) {
+                screenViewModel.handle(action = PlaylistsListUserAction.PlaylistClicked(playlistId = playlistId))
             }
 
-            override fun onContextMenuIconClicked(playlistName: String) {
+            override fun onContextMenuIconClicked(playlistId: Long) {
                 screenViewModel.handle(
                     action = PlaylistsListUserAction.OverflowMenuIconClicked(
-                        playlistName = playlistName
+                        playlistId = playlistId
                     )
                 )
             }
@@ -106,8 +106,8 @@ fun PlaylistsListScreen(
 }
 
 interface PlaylistsListScreenDelegate : PlaylistDialogDelegate {
-    fun onPlaylistClicked(playlistName: String) = Unit
-    fun onContextMenuIconClicked(playlistName: String) = Unit
+    fun onPlaylistClicked(playlistId: Long) = Unit
+    fun onContextMenuIconClicked(playlistId: Long) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -118,7 +118,7 @@ fun PlaylistsListScreenPreview(
 ) {
     ScreenPreview {
         PlaylistsListLayout(state = state, object : PlaylistsListScreenDelegate {
-            override fun onPlaylistClicked(playlistName: String) = Unit
+            override fun onPlaylistClicked(playlistId: Long) = Unit
         })
     }
 }
@@ -169,10 +169,10 @@ fun PlaylistsListLayout(
     LazyColumn {
         items(state.playlistsList) { item ->
             SingleLineListItem(
-                modifier = Modifier.clickable { delegate.onPlaylistClicked(item.playlistName) },
+                modifier = Modifier.clickable { delegate.onPlaylistClicked(item.id) },
                 afterListContent = {
                     IconButton(
-                        onClick = { delegate.onContextMenuIconClicked(playlistName = item.playlistName) },
+                        onClick = { delegate.onContextMenuIconClicked(playlistId = item.id) },
                         modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                     ) {
                         Icon(

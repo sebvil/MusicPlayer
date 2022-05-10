@@ -42,6 +42,7 @@ class TracksListViewModel @Inject constructor(
     initialState
 ) {
 
+    // TODO get genre name
     init {
         val tracksListFlow = when (state.value.tracksListType) {
             TracksListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
@@ -51,7 +52,7 @@ class TracksListViewModel @Inject constructor(
             }
             TracksListType.GENRE -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
                 trackRepository.getTracksForGenre(
-                    genreName = state.value.tracksListName,
+                    genreId = state.value.tracksListId,
                     mediaSortPreferences = sortPreferences
                 )
             }
@@ -60,7 +61,7 @@ class TracksListViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesRepository.getTracksListSortPreferences(
                 tracksListType = state.value.tracksListType,
-                tracksListName = state.value.tracksListName
+                tracksListId = state.value.tracksListId
             ).flatMapLatest {
                 setState {
                     copy(
@@ -87,7 +88,7 @@ class TracksListViewModel @Inject constructor(
             }
             TracksListType.GENRE -> {
                 playbackManager.playGenre(
-                    state.value.tracksListName,
+                    state.value.tracksListId,
                     initialTrackIndex = trackIndex,
                 )
             }
@@ -106,16 +107,16 @@ class TracksListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListName))
+        addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListId))
     }
 
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: String) {
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
         val mediaGroup = MediaGroup(
             mediaGroupType = when (state.value.tracksListType) {
                 TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                 TracksListType.GENRE -> MediaGroupType.GENRE
             },
-            mediaId = state.value.tracksListName.ifEmpty { ALL_TRACKS }
+            mediaId = state.value.tracksListId
         )
         addUiEvent(TracksListUiEvent.OpenContextMenu(trackId, mediaGroup, trackIndex))
     }
@@ -129,13 +130,14 @@ class TracksListViewModel @Inject constructor(
     }
 
     companion object {
-        const val ALL_TRACKS = ""
+        const val ALL_TRACKS = 0L
     }
 
 }
 
 
 data class TracksListState(
+    val tracksListId: Long,
     val tracksListName: String,
     val tracksListType: TracksListType,
     val tracksList: List<TrackRowState>,
@@ -151,11 +153,11 @@ object InitialTracksListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listName =
-            savedStateHandle[NavArgs.TRACK_LIST_NAME] ?: TracksListViewModel.ALL_TRACKS
+        val listId: Long = savedStateHandle[NavArgs.TRACK_LIST_ID] ?: TracksListViewModel.ALL_TRACKS
         val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
         return TracksListState(
-            tracksListName = listName,
+            tracksListId = listId,
+            tracksListName = "",
             tracksList = listOf(),
             tracksListType = TracksListType.valueOf(listGroupType),
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
@@ -166,10 +168,10 @@ object InitialTracksListStateModule {
 sealed class TracksListUiEvent : UiEvent {
     object ScrollToTop : TracksListUiEvent()
     object NavigateToPlayer : TracksListUiEvent()
-    data class ShowSortBottomSheet(val mediaId: String) : TracksListUiEvent()
+    data class ShowSortBottomSheet(val mediaId: Long) : TracksListUiEvent()
     object NavigateUp : TracksListUiEvent()
     data class OpenContextMenu(
-        val trackId: String,
+        val trackId: Long,
         val mediaGroup: MediaGroup,
         val trackIndex: Int
     ) :

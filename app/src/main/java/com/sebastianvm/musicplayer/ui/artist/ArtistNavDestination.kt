@@ -29,8 +29,8 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
             override fun openContextMenu(albumId: Long) {
                 navController.openContextMenu(
                     mediaType = MediaType.ALBUM,
-                    mediaId = albumId.toString(),
-                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId.toString()),
+                    mediaId = albumId,
+                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
                 )
             }
 
@@ -42,6 +42,6 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
     }
 }
 
-fun NavController.navigateToArtist(artistName: String) {
-    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_ID, artistName))
+fun NavController.navigateToArtist(artistId: Long) {
+    navigateTo(NavRoutes.ARTIST, NavArgument(NavArgs.ARTIST_ID, artistId))
 }

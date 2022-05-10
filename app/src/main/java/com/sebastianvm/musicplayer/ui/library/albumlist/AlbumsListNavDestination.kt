@@ -33,8 +33,8 @@ fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
             override fun openContextMenu(albumId: Long) {
                 navController.openContextMenu(
                     mediaType = MediaType.ALBUM,
-                    mediaId = albumId.toString(),
-                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId.toString()),
+                    mediaId = albumId,
+                    mediaGroup = MediaGroup(MediaGroupType.ALBUM, albumId),
                 )
             }
         })

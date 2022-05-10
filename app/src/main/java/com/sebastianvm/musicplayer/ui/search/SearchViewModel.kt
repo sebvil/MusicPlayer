@@ -105,9 +105,9 @@ class SearchViewModel @Inject constructor(
                     addUiEvent(SearchUiEvent.NavigateToPlayer)
                 }
             }
-            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistName))
+            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistId))
             is SearchUserAction.AlbumRowClicked -> addUiEvent(SearchUiEvent.NavigateToAlbum(action.albumId))
-            is SearchUserAction.GenreRowClicked -> addUiEvent(SearchUiEvent.NavigateToGenre(action.genreName))
+            is SearchUserAction.GenreRowClicked -> addUiEvent(SearchUiEvent.NavigateToGenre(action.genreId))
             is SearchUserAction.TrackOverflowMenuClicked -> {
                 addUiEvent(
                     SearchUiEvent.OpenContextMenu(
@@ -125,7 +125,7 @@ class SearchViewModel @Inject constructor(
                         mediaType = MediaType.ARTIST,
                         mediaGroup = MediaGroup(
                             MediaGroupType.ARTIST,
-                            action.artistName
+                            action.artistId
                         ),
                     )
                 )
@@ -136,7 +136,7 @@ class SearchViewModel @Inject constructor(
                         mediaType = MediaType.ALBUM,
                         mediaGroup = MediaGroup(
                             MediaGroupType.ALBUM,
-                            action.albumId.toString()
+                            action.albumId
                         ),
                     )
                 )
@@ -147,7 +147,7 @@ class SearchViewModel @Inject constructor(
                         mediaType = MediaType.GENRE,
                         mediaGroup = MediaGroup(
                             MediaGroupType.GENRE,
-                            action.genreName
+                            action.genreId
                         ),
                     )
                 )
@@ -186,21 +186,21 @@ object InitialSearchStateModule {
 sealed class SearchUserAction : UserAction {
     data class OnTextChanged(val newText: String) : SearchUserAction()
     data class SearchTypeChanged(@StringRes val newType: Int) : SearchUserAction()
-    data class TrackRowClicked(val trackId: String) : SearchUserAction()
-    data class TrackOverflowMenuClicked(val trackId: String) : SearchUserAction()
-    data class ArtistRowClicked(val artistName: String) : SearchUserAction()
-    data class ArtistOverflowMenuClicked(val artistName: String) : SearchUserAction()
+    data class TrackRowClicked(val trackId: Long) : SearchUserAction()
+    data class TrackOverflowMenuClicked(val trackId: Long) : SearchUserAction()
+    data class ArtistRowClicked(val artistId: Long) : SearchUserAction()
+    data class ArtistOverflowMenuClicked(val artistId: Long) : SearchUserAction()
     data class AlbumRowClicked(val albumId: Long) : SearchUserAction()
     data class AlbumOverflowMenuClicked(val albumId: Long) : SearchUserAction()
-    data class GenreRowClicked(val genreName: String) : SearchUserAction()
-    data class GenreOverflowMenuClicked(val genreName: String) : SearchUserAction()
+    data class GenreRowClicked(val genreId: Long) : SearchUserAction()
+    data class GenreOverflowMenuClicked(val genreId: Long) : SearchUserAction()
 }
 
 sealed class SearchUiEvent : UiEvent {
     object NavigateToPlayer : SearchUiEvent()
-    data class NavigateToArtist(val artistName: String) : SearchUiEvent()
+    data class NavigateToArtist(val artistId: Long) : SearchUiEvent()
     data class NavigateToAlbum(val albumId: Long) : SearchUiEvent()
-    data class NavigateToGenre(val genreName: String) : SearchUiEvent()
+    data class NavigateToGenre(val genreId: Long) : SearchUiEvent()
     data class OpenContextMenu(val mediaType: MediaType, val mediaGroup: MediaGroup) :
         SearchUiEvent()
 

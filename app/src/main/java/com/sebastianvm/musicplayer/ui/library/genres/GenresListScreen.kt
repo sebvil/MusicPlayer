@@ -27,8 +27,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface GenresListScreenNavigationDelegate {
     fun navigateUp()
-    fun navigateToGenre(genreName: String)
-    fun openContextMenu(genreName: String)
+    fun navigateToGenre(genreId: Long)
+    fun openContextMenu(genreId: Long)
 }
 
 @Composable
@@ -41,11 +41,11 @@ fun GenresListScreen(
         eventHandler = { event ->
             when (event) {
                 is GenresListUiEvent.NavigateToGenre -> {
-                    delegate.navigateToGenre(event.genreName)
+                    delegate.navigateToGenre(event.genreId)
                 }
                 is GenresListUiEvent.NavigateUp -> delegate.navigateUp()
                 is GenresListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.genreName)
+                    delegate.openContextMenu(event.genreId)
                 }
             }
         },
@@ -63,20 +63,20 @@ fun GenresListScreen(
                 })
         }) { state ->
         GenresListLayout(state = state, object : GenresListScreenDelegate {
-            override fun onGenreClicked(genreName: String) {
-                screenViewModel.onGenreClicked(genreName)
+            override fun onGenreClicked(genreId: Long) {
+                screenViewModel.onGenreClicked(genreId)
             }
 
-            override fun onContextMenuIconClicked(genreName: String) {
-                screenViewModel.onGenreOverflowMenuIconClicked(genreName)
+            override fun onContextMenuIconClicked(genreId: Long) {
+                screenViewModel.onGenreOverflowMenuIconClicked(genreId)
             }
         })
     }
 }
 
 interface GenresListScreenDelegate {
-    fun onGenreClicked(genreName: String) = Unit
-    fun onContextMenuIconClicked(genreName: String) = Unit
+    fun onGenreClicked(genreId: Long) = Unit
+    fun onContextMenuIconClicked(genreId: Long) = Unit
 }
 
 @Preview(showSystemUi = true)
@@ -87,7 +87,7 @@ fun GenresListScreenPreview(
 ) {
     ScreenPreview {
         GenresListLayout(state = state, object : GenresListScreenDelegate {
-            override fun onGenreClicked(genreName: String) = Unit
+            override fun onGenreClicked(genreId: Long) = Unit
         })
     }
 }
@@ -101,10 +101,10 @@ fun GenresListLayout(
     LazyColumn {
         items(state.genresList) { item ->
             SingleLineListItem(
-                modifier = Modifier.clickable { delegate.onGenreClicked(item.genreName) },
+                modifier = Modifier.clickable { delegate.onGenreClicked(item.id) },
                 afterListContent = {
                     IconButton(
-                        onClick = { delegate.onContextMenuIconClicked(genreName = item.genreName) },
+                        onClick = { delegate.onContextMenuIconClicked(item.id) },
                         modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                     ) {
                         Icon(

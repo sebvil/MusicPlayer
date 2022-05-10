@@ -83,7 +83,7 @@ class MediaTree @Inject constructor(
             subtitle = artists,
             artist = artists,
             genre = "",
-            sourceUri = UriUtils.getTrackUri(trackId = trackId.toLong()),
+            sourceUri = UriUtils.getTrackUri(trackId = id),
             artworkUri = ArtworkProvider.getUriForTrack(albumId)
         )
     }
@@ -94,7 +94,7 @@ class MediaTree @Inject constructor(
             mediaId = MediaKey.fromParent(
                 parent = parent,
                 keyType = KeyType.ALBUM,
-                itemIndexOrId = albumId
+                itemIndexOrId = id
             ),
             isPlayable = false,
             folderType = FOLDER_TYPE_TITLES,
@@ -102,8 +102,8 @@ class MediaTree @Inject constructor(
             album = albumName,
             artist = artists,
             genre = null,
-            sourceUri = UriUtils.getAlbumUri(albumId = albumId),
-            artworkUri = ArtworkProvider.getUriForAlbum(albumId)
+            sourceUri = UriUtils.getAlbumUri(albumId = id),
+            artworkUri = ArtworkProvider.getUriForAlbum(id)
         )
     }
 
@@ -113,7 +113,7 @@ class MediaTree @Inject constructor(
             mediaId = MediaKey.fromParent(
                 parent = parent,
                 keyType = KeyType.ARTIST,
-                itemIndexOrId = artistId
+                itemIndexOrId = id
             ),
             isPlayable = false,
             folderType = FOLDER_TYPE_ALBUMS,
@@ -224,7 +224,7 @@ class MediaTree @Inject constructor(
         val mediaKey = MediaKey.fromString(mediaId)
         val mediaItem = when (mediaKey.type) {
             KeyType.TRACK -> {
-                trackRepository.getTrack(mediaId).first().track.buildMediaItem(
+                trackRepository.getTrack(mediaKey.itemIndexOrId).first().track.buildMediaItem(
                     parent = rootKey,
                     index = 0
                 )

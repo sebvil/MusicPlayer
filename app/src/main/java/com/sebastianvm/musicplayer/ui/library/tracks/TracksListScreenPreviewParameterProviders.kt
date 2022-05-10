@@ -9,13 +9,14 @@ import com.sebastianvm.musicplayer.util.sort.SortOptions
 class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {
     override val values = sequenceOf(
         TracksListState(
+            tracksListId = 0,
             tracksListName = "Pop",
             tracksListType = TracksListType.GENRE,
             tracksList = listOf(
-                TrackRowState("0", "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState("1", "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState("2", "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState("3", "La Promesa", "Melendi", "Un alumno mas")
+                TrackRowState(0, "La Promesa", "Melendi", "Un alumno mas"),
+                TrackRowState(1, "La Promesa", "Melendi", "Un alumno mas"),
+                TrackRowState(2, "La Promesa", "Melendi", "Un alumno mas"),
+                TrackRowState(3, "La Promesa", "Melendi", "Un alumno mas")
             ),
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )

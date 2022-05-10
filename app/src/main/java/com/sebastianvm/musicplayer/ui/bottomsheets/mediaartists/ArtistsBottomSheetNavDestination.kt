@@ -32,15 +32,15 @@ fun NavGraphBuilder.artistsBottomSheetNavDestination(navController: NavControlle
         ArtistsBottomSheet(
             sheetViewModel = sheetViewModel,
             delegate = object : ArtistsBottomSheetNavigationDelegate {
-                override fun navigateToArtist(artistName: String) {
-                    navController.navigateToArtist(artistName)
+                override fun navigateToArtist(artistId: Long) {
+                    navController.navigateToArtist(artistId)
                 }
             }
         )
     }
 }
 
-fun NavController.navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) {
+fun NavController.navigateToArtistsBottomSheet(mediaId: Long, mediaType: MediaType) {
     navigateTo(
         NavRoutes.MEDIA_ARTISTS,
         NavArgument(NavArgs.MEDIA_ID, mediaId),

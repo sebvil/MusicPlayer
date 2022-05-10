@@ -6,48 +6,55 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
 
-@Entity(primaryKeys = ["albumId", "artistName"])
+@Entity(primaryKeys = ["albumId", "artistId"])
 data class AlbumsForArtist(
     val albumId: Long,
-    @ColumnInfo(index = true)
+    val artistId: Long,
     val artistName: String,
     val albumName: String,
 )
 
-@Entity(primaryKeys = ["albumId", "artistName"])
+@Entity(primaryKeys = ["albumId", "artistId"])
 data class AppearsOnForArtist(
     val albumId: Long,
-    @ColumnInfo(index = true)
-    val artistName: String,
+    val artistId: Long,
 )
 
 data class ArtistWithAlbums(
     @Embedded val artist: Artist,
     @Relation(
-        parentColumn = "artistName",
-        entityColumn = "albumId",
+        parentColumn = "id",
+        entityColumn = "id",
         entity = Album::class,
-        projection = ["albumId"],
-        associateBy = Junction(AlbumsForArtist::class),
+        projection = ["id"],
+        associateBy = Junction(
+            AlbumsForArtist::class,
+            parentColumn = "albumId",
+            entityColumn = "artistId"
+        ),
     )
     val artistAlbums: List<Long>,
     @Relation(
-        parentColumn = "artistName",
-        entityColumn = "albumId",
+        parentColumn = "id",
+        entityColumn = "id",
         entity = Album::class,
-        projection = ["albumId"],
-        associateBy = Junction(AppearsOnForArtist::class),
+        projection = ["id"],
+        associateBy = Junction(
+            AppearsOnForArtist::class,
+            parentColumn = "albumId",
+            entityColumn = "artistId"
+        )
     )
     val artistAppearsOn: List<Long>,
 
-)
+    )
 
 data class AlbumWithArtists(
     @Embedded val album: Album,
     @Relation(
-        parentColumn = "albumId",
-        entityColumn = "artistName",
-        associateBy = Junction(AlbumsForArtist::class),
+        parentColumn = "id",
+        entityColumn = "id",
+        associateBy = Junction(AlbumsForArtist::class, parentColumn = "albumId", entityColumn = "artistId"),
     )
     val artists: List<Artist>
 )

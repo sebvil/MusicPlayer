@@ -52,7 +52,7 @@ class PlaylistsListViewModel @Inject constructor(
     fun <A : UserAction> handle(action: A) {
         when (action) {
             is PlaylistsListUserAction.PlaylistClicked -> {
-                addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistName = action.playlistName))
+                addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistId = action.playlistId))
             }
             is PlaylistsListUserAction.SortByClicked -> {
                 viewModelScope.launch {
@@ -61,7 +61,7 @@ class PlaylistsListViewModel @Inject constructor(
             }
             is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
             is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                addUiEvent(PlaylistsListUiEvent.OpenContextMenu(action.playlistName))
+                addUiEvent(PlaylistsListUiEvent.OpenContextMenu(action.playlistId))
             }
             is PlaylistsListUserAction.FabClicked -> {
                 setState {
@@ -107,17 +107,17 @@ object InitialPlaylistsListStateModule {
 }
 
 sealed class PlaylistsListUserAction : UserAction {
-    data class PlaylistClicked(val playlistName: String) : PlaylistsListUserAction()
+    data class PlaylistClicked(val playlistId: Long) : PlaylistsListUserAction()
     object UpButtonClicked : PlaylistsListUserAction()
     object SortByClicked : PlaylistsListUserAction()
-    data class OverflowMenuIconClicked(val playlistName: String) : PlaylistsListUserAction()
+    data class OverflowMenuIconClicked(val playlistId: Long) : PlaylistsListUserAction()
     object FabClicked : PlaylistsListUserAction()
     object DialogDismissed : PlaylistsListUserAction()
     data class PlaylistCreated(val playlistName: String) : PlaylistsListUserAction()
 }
 
 sealed class PlaylistsListUiEvent : UiEvent {
-    data class NavigateToPlaylist(val playlistName: String) : PlaylistsListUiEvent()
+    data class NavigateToPlaylist(val playlistId: Long) : PlaylistsListUiEvent()
     object NavigateUp : PlaylistsListUiEvent()
-    data class OpenContextMenu(val playlistName: String) : PlaylistsListUiEvent()
+    data class OpenContextMenu(val playlistId: Long) : PlaylistsListUiEvent()
 }

@@ -21,16 +21,16 @@ fun NavGraphBuilder.searchNavDestination(navController: NavController) {
                 navController.navigateToPlayer()
             }
 
-            override fun navigateToArtist(artistName: String) {
-                navController.navigateToArtist(artistName)
+            override fun navigateToArtist(artistId: Long) {
+                navController.navigateToArtist(artistId)
             }
 
             override fun navigateToAlbum(albumId: Long) {
                 navController.navigateToAlbum(albumId)
             }
 
-            override fun navigateToGenre(genreName: String) {
-                navController.navigateToGenre(genreName)
+            override fun navigateToGenre(genreId: Long) {
+                navController.navigateToGenre(genreId)
             }
 
             override fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup) {

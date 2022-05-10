@@ -18,14 +18,11 @@ class FakeArtistRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getArtist(artistName: String): Flow<ArtistWithAlbums> =
-        flow { artistsWithAlbums.find { it.artist.artistName == artistName }?.also { emit(it) } }
+    override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> =
+        flow { artistsWithAlbums.find { it.artist.id == artistId }?.also { emit(it) } }
 
-    override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> {
-        TODO("Not yet implemented")
-    }
 
-    override fun getArtistsForTrack(trackId: String): Flow<List<Artist>> = flow {
+    override fun getArtistsForTrack(trackId: Long): Flow<List<Artist>> = flow {
         emit(artistsWithAlbums.filter {
             it.artist.artistName == artistTrackCrossRef.find { xref -> xref.trackId == trackId }?.artistName
         }.map { it.artist })

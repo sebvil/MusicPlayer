@@ -37,14 +37,14 @@ class SortBottomSheetViewModel @Inject constructor(
                 is SortOptions.TrackListSortOptions -> {
                     sortPreferencesRepository.getTracksListSortPreferences(
                         tracksListType = TracksListType.ALL_TRACKS,
-                        tracksListName = state.value.mediaId
+                        tracksListId = state.value.mediaId
                     )
                 }
                 is SortOptions.AlbumListSortOptions -> {
                     sortPreferencesRepository.getAlbumsListSortPreferences()
                 }
                 is SortOptions.PlaylistSortOptions -> {
-                    sortPreferencesRepository.getPlaylistSortPreferences(playlistName = state.value.mediaId)
+                    sortPreferencesRepository.getPlaylistSortPreferences(playlistId = state.value.mediaId)
                 }
             }.first()
             setState {
@@ -71,7 +71,7 @@ class SortBottomSheetViewModel @Inject constructor(
                             sortOrder = newSortOrder
                         ),
                         tracksListType = TracksListType.ALL_TRACKS,
-                        tracksListName = state.value.mediaId
+                        tracksListId = state.value.mediaId
                     )
                 }
                 is SortOptions.AlbumListSortOptions -> {
@@ -88,7 +88,7 @@ class SortBottomSheetViewModel @Inject constructor(
                             sortOption = newSortOption,
                             sortOrder = newSortOrder
                         ),
-                        playlistName = state.value.mediaId
+                        playlistId = state.value.mediaId
                     )
                 }
             }
@@ -98,7 +98,7 @@ class SortBottomSheetViewModel @Inject constructor(
 }
 
 data class SortBottomSheetState(
-    val mediaId: String,
+    val mediaId: Long,
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,
     val sortOrder: MediaSortOrder,
@@ -112,7 +112,7 @@ object InitialSortBottomSheetState {
     fun initialSortBottomSheetStateProvider(savedStateHandle: SavedStateHandle): SortBottomSheetState {
         // We should always pass these
         val listType = SortableListType.valueOf(savedStateHandle[NavArgs.SORTABLE_LIST_TYPE]!!)
-        val mediaId: String = savedStateHandle[NavArgs.MEDIA_ID] ?: ""
+        val mediaId: Long = savedStateHandle[NavArgs.MEDIA_ID] ?: 0L
         val sortOptions = getSortOptionsForScreen(listType)
         return SortBottomSheetState(
             mediaId = mediaId,

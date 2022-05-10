@@ -33,7 +33,7 @@ class ArtistViewModel @Inject constructor(
 ) {
     init {
         collect(
-            artistRepository.getArtist(state.value.artistName).flatMapLatest { artistWithAlbums ->
+            artistRepository.getArtist(state.value.artistId).flatMapLatest { artistWithAlbums ->
                 val albumsForArtist = artistWithAlbums.artistAlbums.let { albums ->
                     albumRepository.getAlbums(albums)
                 }
@@ -94,6 +94,7 @@ class ArtistViewModel @Inject constructor(
 }
 
 data class ArtistState(
+    val artistId: Long,
     val artistName: String,
     val albumsForArtistItems: List<ArtistScreenItem>?,
     val appearsOnForArtistItems: List<ArtistScreenItem>?
@@ -106,10 +107,11 @@ object InitialArtistState {
     @Provides
     @ViewModelScoped
     fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        val artistName =
-            savedStateHandle.get<String>(NavArgs.ARTIST_ID)!! // We should not get here without an id
+        // We should not get here without an id
+        val artistId = savedStateHandle.get<Long>(NavArgs.ARTIST_ID)!!
         return ArtistState(
-            artistName = artistName,
+            artistId = artistId,
+            artistName = "",
             albumsForArtistItems = null,
             appearsOnForArtistItems = null,
         )

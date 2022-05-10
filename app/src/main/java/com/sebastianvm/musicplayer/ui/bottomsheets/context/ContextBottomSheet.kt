@@ -43,10 +43,10 @@ import kotlinx.coroutines.Dispatchers
 interface ContextBottomSheetDialogNavigationDelegate {
     fun navigateToPlayer() = Unit
     fun navigateToAlbum(albumId: Long) = Unit
-    fun navigateToArtist(artistName: String) = Unit
-    fun navigateToArtistsBottomSheet(mediaId: String, mediaType: MediaType) = Unit
-    fun navigateToGenre(genreName: String)
-    fun navigateToPlaylist(playlistName: String)
+    fun navigateToArtist(artistId: Long) = Unit
+    fun navigateToArtistsBottomSheet(mediaId: Long, mediaType: MediaType) = Unit
+    fun navigateToGenre(genreId: Long)
+    fun navigateToPlaylist(playlistId: Long)
     fun hideBottomSheet()
 }
 
@@ -63,12 +63,12 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                 delegate.navigateToPlayer()
             }
             is BaseContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is BaseContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistName)
+            is BaseContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
             is BaseContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
                 event.mediaId,
                 event.mediaType
             )
-            is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreName)
+            is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
             is BaseContextMenuUiEvent.ShowToast -> {
                 Toast.makeText(
                     context,
@@ -79,7 +79,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                     delegate.hideBottomSheet()
                 }
             }
-            is BaseContextMenuUiEvent.NavigateToPlaylist -> delegate.navigateToPlaylist(event.playlistName)
+            is BaseContextMenuUiEvent.NavigateToPlaylist -> delegate.navigateToPlaylist(event.playlistId)
             is BaseContextMenuUiEvent.HideBottomSheet -> {
                 delegate.hideBottomSheet()
             }
@@ -158,7 +158,7 @@ fun ContextMenuLayout(
 
     if (state is PlaylistContextMenuState && state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
-            playlistName = state.playlistName,
+            playlistName = state.menuTitle,
             delegate = delegate
         )
         // Need this to be able to dismiss bottom sheet after deleting playlist

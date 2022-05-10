@@ -34,12 +34,12 @@ sealed interface SortOptions {
 @Serializable
 data class SortPreferences(
     val allTracksListSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
-    val genreTracksListSortPreferences: PersistentMap<String, MediaSortPreferences<SortOptions.TrackListSortOptions>> = persistentMapOf(),
+    val genreTracksListSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> = persistentMapOf(),
     val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM),
     val artistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     val genreListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     val playlistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
-    val playlistSortPreferences: PersistentMap<String, MediaSortPreferences<SortOptions.PlaylistSortOptions>> = persistentMapOf()
+    val playlistSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> = persistentMapOf()
 )
 
 @Serializable

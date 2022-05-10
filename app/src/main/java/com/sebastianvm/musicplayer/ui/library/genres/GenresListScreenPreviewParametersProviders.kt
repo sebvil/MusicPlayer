@@ -9,10 +9,10 @@ class GenresListStatePreviewParameterProvider :
     override val values = sequenceOf(
         GenresListState(
             genresList = listOf(
-                Genre("Pop"),
-                Genre("Rock"),
-                Genre("Tropipop"),
-                Genre("Vallenato")
+                Genre(id = 0, "Pop"),
+                Genre(id = 1,"Rock"),
+                Genre(id = 2,"Tropipop"),
+                Genre(id = 3,"Vallenato")
             ),
             sortOrder = MediaSortOrder.ASCENDING,
         )

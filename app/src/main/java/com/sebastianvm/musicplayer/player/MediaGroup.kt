@@ -16,4 +16,4 @@ enum class TracksListType {
     GENRE,
 }
 
-data class MediaGroup(val mediaGroupType: MediaGroupType, val mediaId: String)
+data class MediaGroup(val mediaGroupType: MediaGroupType, val mediaId: Long)

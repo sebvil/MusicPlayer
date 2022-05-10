@@ -14,19 +14,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.commons.util.ListItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-data class ArtistRowState(val artistName: String, val shouldShowContextMenu: Boolean) : ListItem {
-    override val id = artistName
-}
+data class ArtistRowState(
+    val artistId: Long,
+    val artistName: String,
+    val shouldShowContextMenu: Boolean
+)
 
 fun Artist.toArtistRowState(shouldShowContextMenu: Boolean = false): ArtistRowState {
-    return ArtistRowState(artistName = artistName, shouldShowContextMenu = shouldShowContextMenu)
+    return ArtistRowState(
+        artistId = id,
+        artistName = artistName,
+        shouldShowContextMenu = shouldShowContextMenu
+    )
 }
 
 @Preview(showBackground = true)
@@ -73,7 +78,7 @@ fun ArtistRow(
 class ArtistRowStatePreviewParameterProvider :
     PreviewParameterProvider<ArtistRowState> {
     override val values = sequenceOf(
-        ArtistRowState(artistName = "Melendi", shouldShowContextMenu = true),
-        ArtistRowState(artistName = "Morat", shouldShowContextMenu = false)
+        ArtistRowState(artistId = 0, artistName = "Melendi", shouldShowContextMenu = true),
+        ArtistRowState(artistId = 1, artistName = "Morat", shouldShowContextMenu = false)
     )
 }
