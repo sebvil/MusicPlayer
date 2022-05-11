@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistRepository {
     fun getPlaylistsCount(): Flow<Int>
     fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
+    fun getPlaylist(playlistId: Long): Flow<Playlist?>
     suspend fun createPlaylist(playlistName: String)
     suspend fun deletePlaylist(playlistId: Long)
 }

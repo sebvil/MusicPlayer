@@ -24,6 +24,17 @@ class PlaylistContextMenuViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
+    init {
+        playlistRepository.getPlaylist(state.value.mediaId).onEach {
+            it?.also {
+                setState {
+                    copy(menuTitle = it.playlistName)
+                }
+            }
+
+        }.launchIn(viewModelScope)
+    }
+
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {

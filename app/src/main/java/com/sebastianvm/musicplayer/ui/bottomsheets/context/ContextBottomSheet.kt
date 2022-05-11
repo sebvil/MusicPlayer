@@ -97,6 +97,10 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
         override fun onSubmit() {
             (sheetViewModel as? PlaylistContextMenuViewModel)?.onConfirmDeleteClicked()
         }
+
+        override fun onDismissRequest() {
+            sheetViewModel.onPlaybackErrorDismissed()
+        }
     })
 }
 

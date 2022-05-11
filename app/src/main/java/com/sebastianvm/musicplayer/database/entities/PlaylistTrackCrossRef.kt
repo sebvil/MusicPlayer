@@ -9,6 +9,7 @@ import androidx.room.Relation
 @Entity(primaryKeys = ["playlistId", "trackId"])
 data class PlaylistTrackCrossRef(
     val playlistId: Long,
+    @ColumnInfo(index = true)
     val trackId: Long,
 )
 

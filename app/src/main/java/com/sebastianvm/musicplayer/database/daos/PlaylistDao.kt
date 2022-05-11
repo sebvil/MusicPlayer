@@ -30,6 +30,11 @@ interface PlaylistDao {
     )
     fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
 
+    @Query(
+        "SELECT * FROM Playlist WHERE Playlist.id=:playlistId"
+    )
+    fun getPlaylist(playlistId: Long): Flow<Playlist?>
+
     @Insert
     suspend fun createPlaylist(playlist: Playlist)
 
