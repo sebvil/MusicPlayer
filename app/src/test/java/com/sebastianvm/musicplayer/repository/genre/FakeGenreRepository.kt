@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-class FakeGenreRepository(genresList: List<Genre>) : GenreRepository {
-    private val genresState = MutableStateFlow(genresList)
+class FakeGenreRepository(genreList: List<Genre>) : GenreRepository {
+    private val genresState = MutableStateFlow(genreList)
 
     override fun getGenresCount(): Flow<Int> {
         return genresState.map { it.count() }

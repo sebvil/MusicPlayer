@@ -41,7 +41,7 @@ class AlbumViewModel @Inject constructor(
                 copy(
                     imageUri = UriUtils.getAlbumUri(album.id),
                     albumName = album.albumName,
-                    tracksList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
+                    trackList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
                 )
             }
         }
@@ -69,7 +69,7 @@ data class AlbumState(
     val albumId: Long,
     val imageUri: Uri,
     val albumName: String,
-    val tracksList: List<TrackRowState>,
+    val trackList: List<TrackRowState>,
 ) : State
 
 
@@ -84,7 +84,7 @@ object InitialAlbumStateModule {
             albumId = albumId,
             imageUri = Uri.EMPTY,
             albumName = "",
-            tracksList = emptyList(),
+            trackList = emptyList(),
         )
     }
 }

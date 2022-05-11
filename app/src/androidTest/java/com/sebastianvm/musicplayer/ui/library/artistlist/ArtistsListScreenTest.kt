@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 
 
-class ArtistsListScreenTest {
+class ArtistListScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -39,7 +39,7 @@ class ArtistsListScreenTest {
         // Start the app
         val screenViewModel = generateViewModel()
         composeTestRule.setContent {
-            ArtistsListScreen(
+            ArtistListScreen(
                 screenViewModel = screenViewModel,
                 delegate = mockk()
             )
@@ -56,14 +56,14 @@ class ArtistsListScreenTest {
         // Start the app
         val screenViewModel = generateViewModel()
         composeTestRule.setContent {
-            ArtistsListScreen(
+            ArtistListScreen(
                 screenViewModel = screenViewModel,
                 delegate = mockk()
             )
         }
         composeTestRule.onNodeWithText("A").performClick()
         verify {
-            screenViewModel.handle(ArtistsListUserAction.ArtistClicked("A"))
+            screenViewModel.handle(ArtistListUserAction.ArtistClicked("A"))
         }
     }
 

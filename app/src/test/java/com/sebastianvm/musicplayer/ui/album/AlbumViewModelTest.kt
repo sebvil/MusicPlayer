@@ -83,7 +83,7 @@
 //            mediaPlaybackRepository = playbackManager,
 //            initialState = AlbumState(
 //                albumId = ALBUM_ID,
-//                tracksList = listOf(),
+//                trackList = listOf(),
 //                albumName = "",
 //                imageUri = Uri.EMPTY,
 //            ),
@@ -95,7 +95,7 @@
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
-//    fun `init sets albumHeaderItem and tracksList`() = runTest {
+//    fun `init sets albumHeaderItem and trackList`() = runTest {
 //        with(generateViewModel()) {
 //            assertEquals(ALBUM_NAME, state.value.albumName)
 //            assertEquals(
@@ -111,7 +111,7 @@
 //                        albumName = ALBUM_NAME,
 //                        trackNumber = TRACK_NUMBER
 //                    )
-//                ), state.value.tracksList
+//                ), state.value.trackList
 //            )
 //        }
 //    }

@@ -45,7 +45,7 @@ class ArtistListViewModelTest {
             FakeSortPreferencesRepository(SortPreferences(artistListSortOrder = artistListSortOrder))
         return ArtistListViewModel(
             initialState = ArtistListState(
-                artistsList = listOf(),
+                artistList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING,
             ),
             artistRepository = artistRepository,
@@ -77,7 +77,7 @@ class ArtistListViewModelTest {
                         shouldShowContextMenu = true
                     ),
                 ),
-                state.value.artistsList
+                state.value.artistList
             )
         }
 
@@ -102,7 +102,7 @@ class ArtistListViewModelTest {
                         shouldShowContextMenu = true
                     ),
                 ),
-                state.value.artistsList
+                state.value.artistList
             )
         }
     }
@@ -149,7 +149,7 @@ class ArtistListViewModelTest {
                         shouldShowContextMenu = true
                     ),
                 ),
-                state.value.artistsList
+                state.value.artistList
             )
         }
     }

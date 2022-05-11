@@ -1,18 +1,18 @@
 package com.sebastianvm.musicplayer.ui.library.tracks
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 
-class TracksListStatePreviewParameterProvider : PreviewParameterProvider<TracksListState> {
+class TrackListStatePreviewParameterProvider : PreviewParameterProvider<TrackListState> {
     override val values = sequenceOf(
-        TracksListState(
-            tracksListId = 0,
-            tracksListName = "Pop",
-            tracksListType = TracksListType.GENRE,
-            tracksList = listOf(
+        TrackListState(
+            trackListId = 0,
+            trackListName = "Pop",
+            trackListType = TrackListType.GENRE,
+            trackList = listOf(
                 TrackRowState(0, "La Promesa", "Melendi", "Un alumno mas"),
                 TrackRowState(1, "La Promesa", "Melendi", "Un alumno mas"),
                 TrackRowState(2, "La Promesa", "Melendi", "Un alumno mas"),

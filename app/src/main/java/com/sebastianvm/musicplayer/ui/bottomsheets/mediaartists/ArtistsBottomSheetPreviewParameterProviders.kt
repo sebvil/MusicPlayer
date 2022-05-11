@@ -8,7 +8,7 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
     PreviewParameterProvider<ArtistsBottomSheetState> {
     override val values = sequenceOf(
         ArtistsBottomSheetState(
-            artistsList = listOf(
+            artistList = listOf(
                 ArtistRowState(artistId = 0, artistName = "Melendi", shouldShowContextMenu = false),
                 ArtistRowState(artistId = 1, artistName = "Carlos Vives", shouldShowContextMenu = false)
             ),

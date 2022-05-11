@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -33,62 +33,62 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class TracksListViewModel @Inject constructor(
-    initialState: TracksListState,
+class TrackListViewModel @Inject constructor(
+    initialState: TrackListState,
     trackRepository: TrackRepository,
     preferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<TracksListUiEvent, TracksListState>(
+) : BaseViewModel<TrackListUiEvent, TrackListState>(
     initialState
 ) {
 
     // TODO get genre name
     init {
-        val tracksListFlow = when (state.value.tracksListType) {
-            TracksListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
+        val trackListFlow = when (state.value.trackListType) {
+            TrackListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
                 trackRepository.getAllTracks(
                     sortPreferences
                 )
             }
-            TracksListType.GENRE -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
+            TrackListType.GENRE -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
                 trackRepository.getTracksForGenre(
-                    genreId = state.value.tracksListId,
+                    genreId = state.value.trackListId,
                     mediaSortPreferences = sortPreferences
                 )
             }
         }
 
         viewModelScope.launch {
-            preferencesRepository.getTracksListSortPreferences(
-                tracksListType = state.value.tracksListType,
-                tracksListId = state.value.tracksListId
+            preferencesRepository.getTrackListSortPreferences(
+                trackListType = state.value.trackListType,
+                trackListId = state.value.trackListId
             ).flatMapLatest {
                 setState {
                     copy(
                         sortPreferences = it
                     )
                 }
-                tracksListFlow(it)
-            }.collect { newTracksList ->
+                trackListFlow(it)
+            }.collect { newTrackList ->
                 setState {
                     copy(
-                        tracksList = newTracksList.map { it.toTrackRowState(includeTrackNumber = false) },
+                        trackList = newTrackList.map { it.toTrackRowState(includeTrackNumber = false) },
                     )
                 }
-                addUiEvent(TracksListUiEvent.ScrollToTop)
+                addUiEvent(TrackListUiEvent.ScrollToTop)
             }
         }
 
     }
 
     fun onTrackClicked(trackIndex: Int) {
-        val playTracksFlow = when (state.value.tracksListType) {
-            TracksListType.ALL_TRACKS -> {
+        val playTracksFlow = when (state.value.trackListType) {
+            TrackListType.ALL_TRACKS -> {
                 playbackManager.playAllTracks(initialTrackIndex = trackIndex)
             }
-            TracksListType.GENRE -> {
+            TrackListType.GENRE -> {
                 playbackManager.playGenre(
-                    state.value.tracksListId,
+                    state.value.trackListId,
                     initialTrackIndex = trackIndex,
                 )
             }
@@ -98,7 +98,7 @@ class TracksListViewModel @Inject constructor(
                 is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
                 is PlaybackResult.Success -> {
                     setState { copy(playbackResult = it) }
-                    addUiEvent(TracksListUiEvent.NavigateToPlayer)
+                    addUiEvent(TrackListUiEvent.NavigateToPlayer)
                 }
             }
         }.launchIn(viewModelScope)
@@ -107,22 +107,22 @@ class TracksListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(TracksListUiEvent.ShowSortBottomSheet(mediaId = state.value.tracksListId))
+        addUiEvent(TrackListUiEvent.ShowSortBottomSheet(mediaId = state.value.trackListId))
     }
 
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
         val mediaGroup = MediaGroup(
-            mediaGroupType = when (state.value.tracksListType) {
-                TracksListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
-                TracksListType.GENRE -> MediaGroupType.GENRE
+            mediaGroupType = when (state.value.trackListType) {
+                TrackListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+                TrackListType.GENRE -> MediaGroupType.GENRE
             },
-            mediaId = state.value.tracksListId
+            mediaId = state.value.trackListId
         )
-        addUiEvent(TracksListUiEvent.OpenContextMenu(trackId, mediaGroup, trackIndex))
+        addUiEvent(TrackListUiEvent.OpenContextMenu(trackId, mediaGroup, trackIndex))
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(TracksListUiEvent.NavigateUp)
+        addUiEvent(TrackListUiEvent.NavigateUp)
     }
 
     fun onClosePlaybackErrorDialog() {
@@ -136,11 +136,11 @@ class TracksListViewModel @Inject constructor(
 }
 
 
-data class TracksListState(
-    val tracksListId: Long,
-    val tracksListName: String,
-    val tracksListType: TracksListType,
-    val tracksList: List<TrackRowState>,
+data class TrackListState(
+    val trackListId: Long,
+    val trackListName: String,
+    val trackListType: TrackListType,
+    val trackList: List<TrackRowState>,
     val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
     val playbackResult: PlaybackResult? = null
 ) : State
@@ -148,33 +148,33 @@ data class TracksListState(
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialTracksListStateModule {
+object InitialTrackListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTracksListStateProvider(savedStateHandle: SavedStateHandle): TracksListState {
-        val listId: Long = savedStateHandle[NavArgs.TRACK_LIST_ID] ?: TracksListViewModel.ALL_TRACKS
+    fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
+        val listId: Long = savedStateHandle[NavArgs.TRACK_LIST_ID] ?: TrackListViewModel.ALL_TRACKS
         val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
-        return TracksListState(
-            tracksListId = listId,
-            tracksListName = "",
-            tracksList = listOf(),
-            tracksListType = TracksListType.valueOf(listGroupType),
+        return TrackListState(
+            trackListId = listId,
+            trackListName = "",
+            trackList = listOf(),
+            trackListType = TrackListType.valueOf(listGroupType),
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
         )
     }
 }
 
-sealed class TracksListUiEvent : UiEvent {
-    object ScrollToTop : TracksListUiEvent()
-    object NavigateToPlayer : TracksListUiEvent()
-    data class ShowSortBottomSheet(val mediaId: Long) : TracksListUiEvent()
-    object NavigateUp : TracksListUiEvent()
+sealed class TrackListUiEvent : UiEvent {
+    object ScrollToTop : TrackListUiEvent()
+    object NavigateToPlayer : TrackListUiEvent()
+    data class ShowSortBottomSheet(val mediaId: Long) : TrackListUiEvent()
+    object NavigateUp : TrackListUiEvent()
     data class OpenContextMenu(
         val trackId: Long,
         val mediaGroup: MediaGroup,
         val trackIndex: Int
     ) :
-        TracksListUiEvent()
+        TrackListUiEvent()
 }
 

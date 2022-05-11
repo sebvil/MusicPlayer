@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
@@ -75,7 +75,7 @@ class PlaybackManagerImpl @Inject constructor(
 
     override fun playAllTracks(initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
-            sortPreferencesRepository.getTracksListSortPreferences(TracksListType.ALL_TRACKS)
+            sortPreferencesRepository.getTrackListSortPreferences(TrackListType.ALL_TRACKS)
                 .flatMapLatest { mediaSortPreferences ->
                     trackRepository.getAllTracks(mediaSortPreferences)
                 }.first().map { it.toMediaItem() }
@@ -85,7 +85,7 @@ class PlaybackManagerImpl @Inject constructor(
         genreId: Long,
         initialTrackIndex: Int,
     ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
-        sortPreferencesRepository.getTracksListSortPreferences(TracksListType.GENRE, genreId)
+        sortPreferencesRepository.getTrackListSortPreferences(TrackListType.GENRE, genreId)
             .flatMapLatest { mediaSortPreferences ->
                 trackRepository.getTracksForGenre(genreId, mediaSortPreferences)
             }.first().map { it.toMediaItem() }

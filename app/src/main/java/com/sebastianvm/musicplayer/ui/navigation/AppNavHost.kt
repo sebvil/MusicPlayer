@@ -15,12 +15,12 @@ import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
-import com.sebastianvm.musicplayer.ui.library.albumlist.albumsListNavDestination
+import com.sebastianvm.musicplayer.ui.library.albumlist.albumListNavDestination
 import com.sebastianvm.musicplayer.ui.library.artistlist.artistsNavDestination
-import com.sebastianvm.musicplayer.ui.library.genres.genresListNavDestination
+import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
-import com.sebastianvm.musicplayer.ui.library.tracks.tracksListNavDestination
+import com.sebastianvm.musicplayer.ui.library.tracks.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
@@ -54,10 +54,10 @@ fun NavGraphBuilder.libraryGraph(
     navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
         libraryNavDestination(navController)
 
-        tracksListNavDestination(navController)
+        trackListNavDestination(navController)
         artistsNavDestination(navController)
-        albumsListNavDestination(navController)
-        genresListNavDestination(navController)
+        albumListNavDestination(navController)
+        genreListNavDestination(navController)
         playlistsListNavDestination(navController)
 
         artistNavDestination(navController)

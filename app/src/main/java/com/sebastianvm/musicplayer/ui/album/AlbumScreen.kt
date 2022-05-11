@@ -125,7 +125,7 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                     )
                 }
             }
-            itemsIndexed(tracksList) { index, item ->
+            itemsIndexed(trackList) { index, item ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = item.trackNumber?.toString() ?: "",

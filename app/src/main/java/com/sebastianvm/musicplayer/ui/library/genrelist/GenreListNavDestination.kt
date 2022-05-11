@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.genres
+package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -11,10 +11,10 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 
-fun NavGraphBuilder.genresListNavDestination(navController: NavController) {
+fun NavGraphBuilder.genreListNavDestination(navController: NavController) {
     composable(NavRoutes.GENRES_ROOT) {
-        val screenViewModel = hiltViewModel<GenresListViewModel>()
-        GenresListScreen(screenViewModel, object : GenresListScreenNavigationDelegate {
+        val screenViewModel = hiltViewModel<GenreListViewModel>()
+        GenreListScreen(screenViewModel, object : GenreListScreenNavigationDelegate {
             override fun navigateToGenre(genreId: Long) {
                 navController.navigateToGenre(genreId)
             }

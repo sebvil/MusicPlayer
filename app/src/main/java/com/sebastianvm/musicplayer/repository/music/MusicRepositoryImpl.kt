@@ -88,7 +88,7 @@ class MusicRepositoryImpl @Inject constructor(
                 trackName = title
             )
         }
-        val trackArtistsList = artistTrackCrossRefs.map { artistTrackCrossRef ->
+        val trackArtistList = artistTrackCrossRefs.map { artistTrackCrossRef ->
             Artist(
                 id = artistTrackCrossRef.artistId,
                 artistName = artistTrackCrossRef.artistName
@@ -106,17 +106,17 @@ class MusicRepositoryImpl @Inject constructor(
                 trackId = id
             )
         }
-        val albumArtistsList =
+        val albumArtistList =
             parseTag(albumArtists).map { artistName -> Artist(artistName = artistName) }
         val album = Album(
             id = albumId,
             albumName = albumName,
             year = year,
-            artists = albumArtistsList.joinToString(", ") { it.artistName })
+            artists = albumArtistList.joinToString(", ") { it.artistName })
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
-        trackArtistsList.forEach { artist ->
-            if (artist.artistName in albumArtistsList.map { it.artistName }) {
+        trackArtistList.forEach { artist ->
+            if (artist.artistName in albumArtistList.map { it.artistName }) {
                 albumForArtists.add(
                     AlbumsForArtist(
                         albumId = albumId,
@@ -138,7 +138,7 @@ class MusicRepositoryImpl @Inject constructor(
         trackSet.add(track)
         artistTrackCrossRefsSet.addAll(artistTrackCrossRefs)
         genreTrackCrossRefsSet.addAll(genreTrackCrossRef)
-        artistsSet.addAll(trackArtistsList.plus(albumArtistsList))
+        artistsSet.addAll(trackArtistList.plus(albumArtistList))
         genresSet.addAll(trackGenres)
         albumSet.add(album)
         albumForArtistsSet.addAll(albumForArtists)

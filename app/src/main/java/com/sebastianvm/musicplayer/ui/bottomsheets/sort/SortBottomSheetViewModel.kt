@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -35,13 +35,13 @@ class SortBottomSheetViewModel @Inject constructor(
         viewModelScope.launch {
             val sortPreferences = when (state.value.selectedSort) {
                 is SortOptions.TrackListSortOptions -> {
-                    sortPreferencesRepository.getTracksListSortPreferences(
-                        tracksListType = TracksListType.ALL_TRACKS,
-                        tracksListId = state.value.mediaId
+                    sortPreferencesRepository.getTrackListSortPreferences(
+                        trackListType = TrackListType.ALL_TRACKS,
+                        trackListId = state.value.mediaId
                     )
                 }
                 is SortOptions.AlbumListSortOptions -> {
-                    sortPreferencesRepository.getAlbumsListSortPreferences()
+                    sortPreferencesRepository.getAlbumListSortPreferences()
                 }
                 is SortOptions.PlaylistSortOptions -> {
                     sortPreferencesRepository.getPlaylistSortPreferences(playlistId = state.value.mediaId)
@@ -70,12 +70,12 @@ class SortBottomSheetViewModel @Inject constructor(
                             sortOption = newSortOption,
                             sortOrder = newSortOrder
                         ),
-                        tracksListType = TracksListType.ALL_TRACKS,
-                        tracksListId = state.value.mediaId
+                        trackListType = TrackListType.ALL_TRACKS,
+                        trackListId = state.value.mediaId
                     )
                 }
                 is SortOptions.AlbumListSortOptions -> {
-                    sortPreferencesRepository.modifyAlbumsListSortPreferences(
+                    sortPreferencesRepository.modifyAlbumListSortPreferences(
                         newPreferences = MediaSortPreferences(
                             sortOption = newSortOption,
                             sortOrder = newSortOrder

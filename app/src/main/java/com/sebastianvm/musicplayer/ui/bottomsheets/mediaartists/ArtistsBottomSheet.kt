@@ -92,7 +92,7 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
             }
             Divider(modifier = Modifier.fillMaxWidth())
         }
-        items(state.artistsList) { item ->
+        items(state.artistList) { item ->
             ArtistRow(state = item, modifier = Modifier.clickable {
                 delegate.onArtistRowClicked(item.artistId)
             })

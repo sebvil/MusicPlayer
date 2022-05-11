@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.genres
+package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
@@ -19,7 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GenresListViewModelTest {
+class GenreListViewModelTest {
 
     @get:Rule
     val dispatcherSetUpRule = DispatcherSetUpRule()
@@ -38,12 +38,12 @@ class GenresListViewModelTest {
 
     }
 
-    private fun generateViewModel(genresListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING): GenresListViewModel {
+    private fun generateViewModel(genreListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING): GenreListViewModel {
         preferencesRepository =
-            FakeSortPreferencesRepository(SortPreferences(genreListSortOrder = genresListSortOrder))
-        return GenresListViewModel(
-            initialState = GenresListState(
-                genresList = listOf(),
+            FakeSortPreferencesRepository(SortPreferences(genreListSortOrder = genreListSortOrder))
+        return GenreListViewModel(
+            initialState = GenreListState(
+                genreList = listOf(),
                 sortOrder = MediaSortOrder.DESCENDING,
             ),
             genreRepository = genreRepository,
@@ -53,21 +53,21 @@ class GenresListViewModelTest {
 
     @Test
     fun `init sets initial state`() = runTest {
-        with(generateViewModel(genresListSortOrder = MediaSortOrder.ASCENDING)) {
+        with(generateViewModel(genreListSortOrder = MediaSortOrder.ASCENDING)) {
             advanceUntilIdle()
             assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 genres.sortedBy { it.genreName },
-                state.value.genresList
+                state.value.genreList
             )
         }
 
-        with(generateViewModel(genresListSortOrder = MediaSortOrder.DESCENDING)) {
+        with(generateViewModel(genreListSortOrder = MediaSortOrder.DESCENDING)) {
             advanceUntilIdle()
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 genres.sortedByDescending { it.genreName },
-                state.value.genresList
+                state.value.genreList
             )
         }
     }
@@ -77,7 +77,7 @@ class GenresListViewModelTest {
         with(generateViewModel()) {
             onGenreClicked(genreId = C.ID_ONE)
             assertEquals(
-                listOf(GenresListUiEvent.NavigateToGenre(genreId = C.ID_ONE)),
+                listOf(GenreListUiEvent.NavigateToGenre(genreId = C.ID_ONE)),
                 events.value
             )
         }
@@ -87,7 +87,7 @@ class GenresListViewModelTest {
     fun `UpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
             onUpButtonClicked()
-            assertEquals(listOf(GenresListUiEvent.NavigateUp), events.value)
+            assertEquals(listOf(GenreListUiEvent.NavigateUp), events.value)
         }
     }
 
@@ -100,7 +100,7 @@ class GenresListViewModelTest {
             assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 genres.sortedByDescending { it.genreName },
-                state.value.genresList
+                state.value.genreList
             )
         }
     }
@@ -110,7 +110,7 @@ class GenresListViewModelTest {
         with(generateViewModel()) {
             onGenreOverflowMenuIconClicked(genreId = C.ID_ONE)
             assertEquals(
-                listOf(GenresListUiEvent.OpenContextMenu(genreId = C.ID_ONE)),
+                listOf(GenreListUiEvent.OpenContextMenu(genreId = C.ID_ONE)),
                 events.value
             )
         }

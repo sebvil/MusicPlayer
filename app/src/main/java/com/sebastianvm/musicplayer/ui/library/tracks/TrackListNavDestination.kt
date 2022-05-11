@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
 
-fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
+fun NavGraphBuilder.trackListNavDestination(navController: NavController) {
     composable(
         createNavRoute(
             NavRoutes.TRACKS_ROOT,
@@ -36,10 +36,10 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
             },
         )
     ) {
-        val screenViewModel = hiltViewModel<TracksListViewModel>()
-        TracksListScreen(
+        val screenViewModel = hiltViewModel<TrackListViewModel>()
+        TrackListScreen(
             screenViewModel,
-            object : TracksListScreenNavigationDelegate {
+            object : TrackListScreenNavigationDelegate {
                 override fun navigateToPlayer() {
                     navController.navigateToPlayer()
                 }
@@ -68,7 +68,7 @@ fun NavGraphBuilder.tracksListNavDestination(navController: NavController) {
 fun NavController.navigateToTracksRoot() {
     navigateTo(
         NavRoutes.TRACKS_ROOT,
-        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.ALL_TRACKS)
+        NavArgument(NavArgs.TRACKS_LIST_TYPE, TrackListType.ALL_TRACKS)
     )
 }
 
@@ -76,6 +76,6 @@ fun NavController.navigateToGenre(genreId: Long) {
     navigateTo(
         NavRoutes.TRACKS_ROOT,
         NavArgument(NavArgs.TRACK_LIST_ID, genreId),
-        NavArgument(NavArgs.TRACKS_LIST_TYPE, TracksListType.GENRE)
+        NavArgument(NavArgs.TRACKS_LIST_TYPE, TrackListType.GENRE)
     )
 }

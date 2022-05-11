@@ -57,8 +57,8 @@ class AlbumListViewModelTest {
             FakeSortPreferencesRepository(SortPreferences(albumListSortPreferences = initialSortPreferences))
 
         return AlbumListViewModel(
-            initialState = AlbumsListState(
-                albumsList = listOf(),
+            initialState = AlbumListState(
+                albumList = listOf(),
                 sortPreferences = MediaSortPreferences(
                     SortOptions.AlbumListSortOptions.ALBUM,
                     MediaSortOrder.ASCENDING
@@ -75,7 +75,7 @@ class AlbumListViewModelTest {
     ) {
         with(generateViewModel(initialSortPreferences = initialSortPreferences)) {
             advanceUntilIdle()
-            assertEquals(expectedAlbums, state.value.albumsList)
+            assertEquals(expectedAlbums, state.value.albumList)
             assertEquals(initialSortPreferences, state.value.sortPreferences)
 
         }
@@ -137,7 +137,7 @@ class AlbumListViewModelTest {
         with(generateViewModel()) {
             onAlbumClicked(C.ID_ONE)
             assertEquals(
-                listOf(AlbumsListUiEvent.NavigateToAlbum(albumId = C.ID_ONE)),
+                listOf(AlbumListUiEvent.NavigateToAlbum(albumId = C.ID_ONE)),
                 events.value,
             )
         }
@@ -148,7 +148,7 @@ class AlbumListViewModelTest {
         with(generateViewModel()) {
             onUpButtonClicked()
             assertEquals(
-                listOf(AlbumsListUiEvent.NavigateUp),
+                listOf(AlbumListUiEvent.NavigateUp),
                 events.value,
             )
         }
@@ -158,7 +158,7 @@ class AlbumListViewModelTest {
     fun `SortByClicked adds ShowSortBottomSheet event`() {
         with(generateViewModel()) {
             onSortByClicked()
-            assertEquals(listOf(AlbumsListUiEvent.ShowSortBottomSheet), events.value)
+            assertEquals(listOf(AlbumListUiEvent.ShowSortBottomSheet), events.value)
         }
     }
 
@@ -168,7 +168,7 @@ class AlbumListViewModelTest {
         with(generateViewModel()) {
             onAlbumOverflowMenuIconClicked(albumId = C.ID_ONE)
             assertEquals(
-                listOf(AlbumsListUiEvent.OpenContextMenu(albumId = C.ID_ONE)),
+                listOf(AlbumListUiEvent.OpenContextMenu(albumId = C.ID_ONE)),
                 events.value
             )
         }
@@ -180,10 +180,10 @@ class AlbumListViewModelTest {
         expectedAlbums: List<AlbumRowState>
     ) {
         with(viewModel) {
-            preferencesRepository.modifyAlbumsListSortPreferences(sortPreferences)
+            preferencesRepository.modifyAlbumListSortPreferences(sortPreferences)
             advanceUntilIdle()
             assertEquals(sortPreferences, state.value.sortPreferences)
-            assertEquals(expectedAlbums, state.value.albumsList)
+            assertEquals(expectedAlbums, state.value.albumList)
         }
 
     }

@@ -18,7 +18,7 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(initialState: PlaylistState) :
     BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState)
 
-data class PlaylistState(val playlistName: String, val tracksList: List<TrackRowState>) : State
+data class PlaylistState(val playlistName: String, val trackList: List<TrackRowState>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -26,7 +26,7 @@ object InitialPlaylistStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistStateProvider(savedStateHandle: SavedStateHandle): PlaylistState {
-        return PlaylistState(playlistName = "", tracksList = listOf())
+        return PlaylistState(playlistName = "", trackList = listOf())
     }
 }
 

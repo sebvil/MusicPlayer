@@ -17,16 +17,16 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface ArtistsListScreenNavigationDelegate {
+interface ArtistListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToArtist(artistId: Long)
     fun openContextMenu(artistId: Long)
 }
 
 @Composable
-fun ArtistsListScreen(
+fun ArtistListScreen(
     screenViewModel: ArtistListViewModel = viewModel(),
-    delegate: ArtistsListScreenNavigationDelegate
+    delegate: ArtistListScreenNavigationDelegate
 ) {
     Screen(
         screenViewModel = screenViewModel,
@@ -53,7 +53,7 @@ fun ArtistsListScreen(
                 })
         }
     ) { state ->
-        ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {
+        ArtistListLayout(state = state, delegate = object : ArtistListScreenDelegate {
             override fun onArtistRowClicked(artistId: Long) {
                 screenViewModel.onArtistClicked(artistId = artistId)
             }
@@ -65,7 +65,7 @@ fun ArtistsListScreen(
     }
 }
 
-interface ArtistsListScreenDelegate {
+interface ArtistListScreenDelegate {
     fun onArtistRowClicked(artistId: Long) = Unit
     fun onArtistOverflowMenuIconClicked(artistId: Long) = Unit
 }
@@ -73,19 +73,19 @@ interface ArtistsListScreenDelegate {
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ArtistsListScreenPreview(@PreviewParameter(ArtistsListStatePreviewParameterProvider::class) state: ArtistListState) {
+fun ArtistListScreenPreview(@PreviewParameter(ArtistListStatePreviewParameterProvider::class) state: ArtistListState) {
     ScreenPreview {
-        ArtistsListLayout(state = state, delegate = object : ArtistsListScreenDelegate {})
+        ArtistListLayout(state = state, delegate = object : ArtistListScreenDelegate {})
     }
 }
 
 @Composable
-fun ArtistsListLayout(
+fun ArtistListLayout(
     state: ArtistListState,
-    delegate: ArtistsListScreenDelegate
+    delegate: ArtistListScreenDelegate
 ) {
     LazyColumn {
-        items(state.artistsList) { item ->
+        items(state.artistList) { item ->
             ArtistRow(
                 state = item,
                 modifier = Modifier.clickable {
