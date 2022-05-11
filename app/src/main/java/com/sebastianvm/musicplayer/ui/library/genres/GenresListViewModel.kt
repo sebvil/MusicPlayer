@@ -17,6 +17,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,22 +31,20 @@ class GenresListViewModel @Inject constructor(
 ) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getGenresListSortOrder().flatMapLatest {
-                setState {
-                    copy(
-                        sortOrder = it
-                    )
-                }
-                genreRepository.getGenres(sortOrder = it)
-            }.collect {  genresList ->
-                setState {
-                    copy(
-                        genresList = genresList,
-                    )
-                }
+        preferencesRepository.getGenresListSortOrder().flatMapLatest {
+            setState {
+                copy(
+                    sortOrder = it
+                )
             }
-        }
+            genreRepository.getGenres(sortOrder = it)
+        }.onEach { genresList ->
+            setState {
+                copy(
+                    genresList = genresList,
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onGenreClicked(genreId: Long) {
