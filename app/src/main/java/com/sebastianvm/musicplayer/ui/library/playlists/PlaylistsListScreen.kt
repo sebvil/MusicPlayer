@@ -60,7 +60,7 @@ fun PlaylistsListScreen(
         fab = {
             ExtendedFloatingActionButton(
                 text = { Text(text = stringResource(id = R.string.new_playlist)) },
-                onClick = { screenViewModel.handle(PlaylistsListUserAction.FabClicked) },
+                onClick = { screenViewModel.onFabClicked() },
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_plus),
@@ -73,33 +73,29 @@ fun PlaylistsListScreen(
                 title = stringResource(id = R.string.playlists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.handle(PlaylistsListUserAction.SortByClicked)
+                        screenViewModel.onSortByClicked()
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.handle(PlaylistsListUserAction.UpButtonClicked)
+                        screenViewModel.onUpButtonClicked()
                     }
                 })
         }) { state ->
         PlaylistsListLayout(state = state, object : PlaylistsListScreenDelegate {
             override fun onPlaylistClicked(playlistId: Long) {
-                screenViewModel.handle(action = PlaylistsListUserAction.PlaylistClicked(playlistId = playlistId))
+                screenViewModel.onPlaylistClicked(playlistId = playlistId)
             }
 
             override fun onContextMenuIconClicked(playlistId: Long) {
-                screenViewModel.handle(
-                    action = PlaylistsListUserAction.OverflowMenuIconClicked(
-                        playlistId = playlistId
-                    )
-                )
+                screenViewModel.onOverflowMenuIconClicked(playlistId = playlistId)
             }
 
             override fun onDismissDialog() {
-                screenViewModel.handle(PlaylistsListUserAction.DialogDismissed)
+                screenViewModel.onDialogDismissed()
             }
 
             override fun onSubmit(playlistName: String) {
-                screenViewModel.handle(PlaylistsListUserAction.PlaylistCreated(playlistName))
+                screenViewModel.onPlaylistCreated(playlistName)
             }
         })
     }

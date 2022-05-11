@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.not
@@ -49,38 +48,42 @@ class PlaylistsListViewModel @Inject constructor(
         }
     }
 
-    fun <A : UserAction> handle(action: A) {
-        when (action) {
-            is PlaylistsListUserAction.PlaylistClicked -> {
-                addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistId = action.playlistId))
-            }
-            is PlaylistsListUserAction.SortByClicked -> {
-                viewModelScope.launch {
-                    preferencesRepository.modifyPlaylistsListSortOrder(!state.value.sortOrder)
-                }
-            }
-            is PlaylistsListUserAction.UpButtonClicked -> addUiEvent(PlaylistsListUiEvent.NavigateUp)
-            is PlaylistsListUserAction.OverflowMenuIconClicked -> {
-                addUiEvent(PlaylistsListUiEvent.OpenContextMenu(action.playlistId))
-            }
-            is PlaylistsListUserAction.FabClicked -> {
-                setState {
-                    copy(isDialogOpen = true)
-                }
-            }
-            is PlaylistsListUserAction.DialogDismissed -> {
-                setState {
-                    copy(isDialogOpen = false)
-                }
-            }
-            is PlaylistsListUserAction.PlaylistCreated -> {
-                viewModelScope.launch {
-                    playlistRepository.createPlaylist(action.playlistName)
-                }
-                setState {
-                    copy(isDialogOpen = false)
-                }
-            }
+    fun onPlaylistClicked(playlistId: Long) {
+        addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistId = playlistId))
+    }
+
+    fun onSortByClicked() {
+        viewModelScope.launch {
+            preferencesRepository.modifyPlaylistsListSortOrder(!state.value.sortOrder)
+        }
+    }
+
+    fun onUpButtonClicked() {
+        addUiEvent(PlaylistsListUiEvent.NavigateUp)
+    }
+
+    fun onOverflowMenuIconClicked(playlistId: Long) {
+        addUiEvent(PlaylistsListUiEvent.OpenContextMenu(playlistId))
+    }
+
+    fun onFabClicked() {
+        setState {
+            copy(isDialogOpen = true)
+        }
+    }
+
+    fun onPlaylistCreated(playlistName: String) {
+        viewModelScope.launch {
+            playlistRepository.createPlaylist(playlistName)
+        }
+        setState {
+            copy(isDialogOpen = false)
+        }
+    }
+
+    fun onDialogDismissed() {
+        setState {
+            copy(isDialogOpen = false)
         }
     }
 }
@@ -104,16 +107,6 @@ object InitialPlaylistsListStateModule {
             sortOrder = MediaSortOrder.ASCENDING,
             isDialogOpen = false,
         )
-}
-
-sealed class PlaylistsListUserAction : UserAction {
-    data class PlaylistClicked(val playlistId: Long) : PlaylistsListUserAction()
-    object UpButtonClicked : PlaylistsListUserAction()
-    object SortByClicked : PlaylistsListUserAction()
-    data class OverflowMenuIconClicked(val playlistId: Long) : PlaylistsListUserAction()
-    object FabClicked : PlaylistsListUserAction()
-    object DialogDismissed : PlaylistsListUserAction()
-    data class PlaylistCreated(val playlistName: String) : PlaylistsListUserAction()
 }
 
 sealed class PlaylistsListUiEvent : UiEvent {

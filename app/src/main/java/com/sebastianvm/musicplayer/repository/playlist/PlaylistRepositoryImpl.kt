@@ -23,6 +23,10 @@ class PlaylistRepositoryImpl @Inject constructor(
         return playlistDao.getPlaylists(sortOrder = sortOrder).distinctUntilChanged()
     }
 
+    override fun getPlaylist(playlistId: Long): Flow<Playlist?> {
+        return playlistDao.getPlaylist(playlistId)
+    }
+
     override suspend fun createPlaylist(playlistName: String) {
         withContext(ioDispatcher) {
             playlistDao.createPlaylist(Playlist(id = 0, playlistName = playlistName))

@@ -32,12 +32,12 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
             NavArgs.TRACK_INDEX
         ),
         arguments = listOf(
-            navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
+            navArgument(NavArgs.MEDIA_ID) { type = NavType.LongType },
             navArgument(NavArgs.MEDIA_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_TYPE) { type = NavType.StringType },
             navArgument(NavArgs.MEDIA_GROUP_ID) {
-                type = NavType.StringType
-                nullable = true
+                type = NavType.LongType
+                defaultValue = -1
             },
             navArgument(NavArgs.TRACK_INDEX) {
                 type = NavType.IntType
