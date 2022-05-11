@@ -4,10 +4,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-class ArtistsListStatePreviewParameterProvider : PreviewParameterProvider<ArtistListState> {
+class ArtistListStatePreviewParameterProvider : PreviewParameterProvider<ArtistListState> {
     override val values = sequenceOf(
         ArtistListState(
-            artistsList = listOf(
+            artistList = listOf(
                 ArtistRowState(artistId = 0, artistName = "Melendi", shouldShowContextMenu = true),
                 ArtistRowState(
                     artistId = 1,

@@ -11,7 +11,7 @@ enum class MediaGroupType {
 }
 
 // used for MediaGroups that are TrackLists
-enum class TracksListType {
+enum class TrackListType {
     ALL_TRACKS,
     GENRE,
 }

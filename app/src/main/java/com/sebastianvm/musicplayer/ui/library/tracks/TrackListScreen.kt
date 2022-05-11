@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 
-interface TracksListScreenNavigationDelegate {
+interface TrackListScreenNavigationDelegate {
     fun navigateToPlayer()
     fun navigateUp()
     fun openSortMenu(mediaId: Long)
@@ -32,9 +32,9 @@ interface TracksListScreenNavigationDelegate {
 }
 
 @Composable
-fun TracksListScreen(
-    screenViewModel: TracksListViewModel = viewModel(),
-    delegate: TracksListScreenNavigationDelegate
+fun TrackListScreen(
+    screenViewModel: TrackListViewModel = viewModel(),
+    delegate: TrackListScreenNavigationDelegate
 ) {
     val listState = rememberLazyListState()
 
@@ -42,22 +42,22 @@ fun TracksListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is TracksListUiEvent.NavigateToPlayer -> {
+                is TrackListUiEvent.NavigateToPlayer -> {
                     delegate.navigateToPlayer()
                 }
-                is TracksListUiEvent.ShowSortBottomSheet -> {
+                is TrackListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu(mediaId = event.mediaId)
                 }
-                is TracksListUiEvent.OpenContextMenu -> {
+                is TrackListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(mediaId = event.trackId, mediaGroup = event.mediaGroup, trackIndex = event.trackIndex)
                 }
-                is TracksListUiEvent.NavigateUp -> delegate.navigateUp()
-                is TracksListUiEvent.ScrollToTop -> listState.scrollToItem(0)
+                is TrackListUiEvent.NavigateUp -> delegate.navigateUp()
+                is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
             }
         },
         topBar = { state ->
             LibraryTopBar(
-                title = state.tracksListName.takeUnless { it.isEmpty() }
+                title = state.trackListName.takeUnless { it.isEmpty() }
                     ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
@@ -70,10 +70,10 @@ fun TracksListScreen(
                 })
         },
     ) { state ->
-        TracksListLayout(
+        TrackListLayout(
             state = state,
             listState = listState,
-            delegate = object : TracksListScreenDelegate {
+            delegate = object : TrackListScreenDelegate {
                 override fun onTrackClicked(trackIndex: Int) {
                     screenViewModel.onTrackClicked(trackIndex)
                 }
@@ -90,7 +90,7 @@ fun TracksListScreen(
 }
 
 
-interface TracksListScreenDelegate : PlaybackStatusIndicatorDelegate {
+interface TrackListScreenDelegate : PlaybackStatusIndicatorDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
     fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
@@ -98,31 +98,31 @@ interface TracksListScreenDelegate : PlaybackStatusIndicatorDelegate {
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TracksListScreenPreview(@PreviewParameter(TracksListStatePreviewParameterProvider::class) state: TracksListState) {
+fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParameterProvider::class) state: TrackListState) {
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
         LibraryTopBar(
-            title = state.tracksListName,
+            title = state.trackListName,
             delegate = object : LibraryTopBarDelegate {})
     }) {
-        TracksListLayout(
+        TrackListLayout(
             state = state,
             listState = listState,
-            delegate = object : TracksListScreenDelegate {}
+            delegate = object : TrackListScreenDelegate {}
         )
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TracksListLayout(
-    state: TracksListState,
+fun TrackListLayout(
+    state: TrackListState,
     listState: LazyListState,
-    delegate: TracksListScreenDelegate
+    delegate: TrackListScreenDelegate
 ) {
     PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
     LazyColumn(state = listState) {
-        itemsIndexed(state.tracksList, key = { _, item -> item.trackId }) { index, item ->
+        itemsIndexed(state.trackList, key = { _, item -> item.trackId }) { index, item ->
             TrackRow(
                 state = item,
                 modifier = Modifier

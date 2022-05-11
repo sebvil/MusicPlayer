@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface AlbumsListScreenNavigationDelegate {
+interface AlbumListScreenNavigationDelegate {
     fun navigateToAlbum(albumId: Long)
     fun navigateUp()
     fun openSortMenu()
@@ -28,28 +28,28 @@ interface AlbumsListScreenNavigationDelegate {
 
 
 @Composable
-fun AlbumsListScreen(
+fun AlbumListScreen(
     screenViewModel: AlbumListViewModel = viewModel(),
-    delegate: AlbumsListScreenNavigationDelegate,
+    delegate: AlbumListScreenNavigationDelegate,
 ) {
     val listState = rememberLazyListState()
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumsListUiEvent.NavigateToAlbum -> {
+                is AlbumListUiEvent.NavigateToAlbum -> {
                     delegate.navigateToAlbum(event.albumId)
                 }
-                is AlbumsListUiEvent.NavigateUp -> {
+                is AlbumListUiEvent.NavigateUp -> {
                     delegate.navigateUp()
                 }
-                is AlbumsListUiEvent.ShowSortBottomSheet -> {
+                is AlbumListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu()
                 }
-                is AlbumsListUiEvent.ScrollToTop -> {
+                is AlbumListUiEvent.ScrollToTop -> {
                     listState.scrollToItem(0)
                 }
-                is AlbumsListUiEvent.OpenContextMenu -> {
+                is AlbumListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(event.albumId)
                 }
             }
@@ -68,7 +68,7 @@ fun AlbumsListScreen(
                 }
             )
         }) { state ->
-        AlbumsListLayout(state = state, listState = listState, object : AlbumsListScreenDelegate {
+        AlbumListLayout(state = state, listState = listState, object : AlbumListScreenDelegate {
             override fun onAlbumClicked(albumId: Long) {
                 screenViewModel.onAlbumClicked(albumId)
             }
@@ -80,7 +80,7 @@ fun AlbumsListScreen(
     }
 }
 
-interface AlbumsListScreenDelegate {
+interface AlbumListScreenDelegate {
     fun onAlbumClicked(albumId: Long) = Unit
     fun onAlbumOverflowMenuIconClicked(albumId: Long) = Unit
 }
@@ -89,24 +89,24 @@ interface AlbumsListScreenDelegate {
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun AlbumsListScreenPreview(@PreviewParameter(AlbumsListStatePreviewParameterProvider::class) state: AlbumsListState) {
+fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParameterProvider::class) state: AlbumListState) {
     val lazyListState = rememberLazyListState()
     ScreenPreview {
-        AlbumsListLayout(
+        AlbumListLayout(
             state = state,
             listState = lazyListState,
-            object : AlbumsListScreenDelegate {})
+            object : AlbumListScreenDelegate {})
     }
 }
 
 @Composable
-fun AlbumsListLayout(
-    state: AlbumsListState,
+fun AlbumListLayout(
+    state: AlbumListState,
     listState: LazyListState,
-    delegate: AlbumsListScreenDelegate
+    delegate: AlbumListScreenDelegate
 ) {
     LazyColumn(state = listState) {
-        items(state.albumsList) { item ->
+        items(state.albumList) { item ->
             AlbumRow(
                 state = item,
                 modifier = Modifier.clickable {

@@ -32,7 +32,7 @@ class ArtistListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            preferencesRepository.getArtistsListSortOrder().flatMapLatest {
+            preferencesRepository.getArtistListSortOrder().flatMapLatest {
                 setState {
                     copy(
                         sortOrder = it
@@ -42,7 +42,7 @@ class ArtistListViewModel @Inject constructor(
             }.collect { artists ->
                 setState {
                     copy(
-                        artistsList = artists.map { artist ->
+                        artistList = artists.map { artist ->
                             artist.toArtistRowState(shouldShowContextMenu = true)
                         }
                     )
@@ -58,7 +58,7 @@ class ArtistListViewModel @Inject constructor(
 
     fun onSortByClicked() {
         viewModelScope.launch {
-            preferencesRepository.modifyArtistsListSortOrder(!state.value.sortOrder)
+            preferencesRepository.modifyArtistListSortOrder(!state.value.sortOrder)
         }
     }
 
@@ -72,18 +72,18 @@ class ArtistListViewModel @Inject constructor(
 }
 
 data class ArtistListState(
-    val artistsList: List<ArtistRowState>,
+    val artistList: List<ArtistRowState>,
     val sortOrder: MediaSortOrder,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialArtistsListStateModule {
+object InitialArtistListStateModule {
     @Provides
     @ViewModelScoped
-    fun initialArtistsListStateProvider(): ArtistListState {
+    fun initialArtistListStateProvider(): ArtistListState {
         return ArtistListState(
-            artistsList = listOf(),
+            artistList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
         )
     }

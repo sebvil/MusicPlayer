@@ -1,14 +1,14 @@
-package com.sebastianvm.musicplayer.ui.library.genres
+package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-class GenresListStatePreviewParameterProvider :
-    PreviewParameterProvider<GenresListState> {
+class GenreListStatePreviewParameterProvider :
+    PreviewParameterProvider<GenreListState> {
     override val values = sequenceOf(
-        GenresListState(
-            genresList = listOf(
+        GenreListState(
+            genreList = listOf(
                 Genre(id = 0, "Pop"),
                 Genre(id = 1,"Rock"),
                 Genre(id = 2,"Tropipop"),

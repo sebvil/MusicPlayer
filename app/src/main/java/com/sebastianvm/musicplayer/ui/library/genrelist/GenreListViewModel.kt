@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.genres
+package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
@@ -17,76 +17,76 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class GenresListViewModel @Inject constructor(
-    initialState: GenresListState,
+class GenreListViewModel @Inject constructor(
+    initialState: GenreListState,
     genreRepository: GenreRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<GenresListUiEvent, GenresListState>(initialState) {
+) : BaseViewModel<GenreListUiEvent, GenreListState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getGenresListSortOrder().flatMapLatest {
-                setState {
-                    copy(
-                        sortOrder = it
-                    )
-                }
-                genreRepository.getGenres(sortOrder = it)
-            }.collect {  genresList ->
-                setState {
-                    copy(
-                        genresList = genresList,
-                    )
-                }
+        preferencesRepository.getGenreListSortOrder().flatMapLatest {
+            setState {
+                copy(
+                    sortOrder = it
+                )
             }
-        }
+            genreRepository.getGenres(sortOrder = it)
+        }.onEach { genreList ->
+            setState {
+                copy(
+                    genreList = genreList,
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onGenreClicked(genreId: Long) {
-        addUiEvent(GenresListUiEvent.NavigateToGenre(genreId))
+        addUiEvent(GenreListUiEvent.NavigateToGenre(genreId))
     }
 
     fun onSortByClicked() {
         viewModelScope.launch {
-            preferencesRepository.modifyGenresListSortOrder(!state.value.sortOrder)
+            preferencesRepository.modifyGenreListSortOrder(!state.value.sortOrder)
         }
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(GenresListUiEvent.NavigateUp)
+        addUiEvent(GenreListUiEvent.NavigateUp)
     }
 
     fun onGenreOverflowMenuIconClicked(genreId: Long) {
-        addUiEvent(GenresListUiEvent.OpenContextMenu(genreId))
+        addUiEvent(GenreListUiEvent.OpenContextMenu(genreId))
     }
 }
 
-data class GenresListState(
-    val genresList: List<Genre>,
+data class GenreListState(
+    val genreList: List<Genre>,
     val sortOrder: MediaSortOrder
 ) : State
 
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialGenresListStateModule {
+object InitialGenreListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialGenresListStateProvider() =
-        GenresListState(
-            genresList = listOf(),
+    fun initialGenreListStateProvider() =
+        GenreListState(
+            genreList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
         )
 }
 
-sealed class GenresListUiEvent : UiEvent {
-    data class NavigateToGenre(val genreId: Long) : GenresListUiEvent()
-    object NavigateUp : GenresListUiEvent()
-    data class OpenContextMenu(val genreId: Long) : GenresListUiEvent()
+sealed class GenreListUiEvent : UiEvent {
+    data class NavigateToGenre(val genreId: Long) : GenreListUiEvent()
+    object NavigateUp : GenreListUiEvent()
+    data class OpenContextMenu(val genreId: Long) : GenreListUiEvent()
 }

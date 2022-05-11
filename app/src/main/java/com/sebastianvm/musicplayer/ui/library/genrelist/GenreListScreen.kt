@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.genres
+package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -25,26 +25,26 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface GenresListScreenNavigationDelegate {
+interface GenreListScreenNavigationDelegate {
     fun navigateUp()
     fun navigateToGenre(genreId: Long)
     fun openContextMenu(genreId: Long)
 }
 
 @Composable
-fun GenresListScreen(
-    screenViewModel: GenresListViewModel = viewModel(),
-    delegate: GenresListScreenNavigationDelegate,
+fun GenreListScreen(
+    screenViewModel: GenreListViewModel = viewModel(),
+    delegate: GenreListScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is GenresListUiEvent.NavigateToGenre -> {
+                is GenreListUiEvent.NavigateToGenre -> {
                     delegate.navigateToGenre(event.genreId)
                 }
-                is GenresListUiEvent.NavigateUp -> delegate.navigateUp()
-                is GenresListUiEvent.OpenContextMenu -> {
+                is GenreListUiEvent.NavigateUp -> delegate.navigateUp()
+                is GenreListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(event.genreId)
                 }
             }
@@ -62,7 +62,7 @@ fun GenresListScreen(
                     }
                 })
         }) { state ->
-        GenresListLayout(state = state, object : GenresListScreenDelegate {
+        GenreListLayout(state = state, object : GenreListScreenDelegate {
             override fun onGenreClicked(genreId: Long) {
                 screenViewModel.onGenreClicked(genreId)
             }
@@ -74,7 +74,7 @@ fun GenresListScreen(
     }
 }
 
-interface GenresListScreenDelegate {
+interface GenreListScreenDelegate {
     fun onGenreClicked(genreId: Long) = Unit
     fun onContextMenuIconClicked(genreId: Long) = Unit
 }
@@ -82,11 +82,11 @@ interface GenresListScreenDelegate {
 @Preview(showSystemUi = true)
 @Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun GenresListScreenPreview(
-    @PreviewParameter(GenresListStatePreviewParameterProvider::class) state: GenresListState
+fun GenreListScreenPreview(
+    @PreviewParameter(GenreListStatePreviewParameterProvider::class) state: GenreListState
 ) {
     ScreenPreview {
-        GenresListLayout(state = state, object : GenresListScreenDelegate {
+        GenreListLayout(state = state, object : GenreListScreenDelegate {
             override fun onGenreClicked(genreId: Long) = Unit
         })
     }
@@ -94,12 +94,12 @@ fun GenresListScreenPreview(
 
 
 @Composable
-fun GenresListLayout(
-    state: GenresListState,
-    delegate: GenresListScreenDelegate
+fun GenreListLayout(
+    state: GenreListState,
+    delegate: GenreListScreenDelegate
 ) {
     LazyColumn {
-        items(state.genresList) { item ->
+        items(state.genreList) { item ->
             SingleLineListItem(
                 modifier = Modifier.clickable { delegate.onGenreClicked(item.id) },
                 afterListContent = {

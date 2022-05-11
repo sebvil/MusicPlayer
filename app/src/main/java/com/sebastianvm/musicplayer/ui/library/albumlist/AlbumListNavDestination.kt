@@ -14,10 +14,10 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 
 
-fun NavGraphBuilder.albumsListNavDestination(navController: NavController) {
+fun NavGraphBuilder.albumListNavDestination(navController: NavController) {
     composable(NavRoutes.ALBUMS_ROOT) {
         val screenViewModel = hiltViewModel<AlbumListViewModel>()
-        AlbumsListScreen(screenViewModel, object : AlbumsListScreenNavigationDelegate {
+        AlbumListScreen(screenViewModel, object : AlbumListScreenNavigationDelegate {
             override fun navigateUp() {
                 navController.navigateUp()
             }

@@ -30,7 +30,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     collect(artistRepository.getArtistsForTrack(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistsList = artists.map { it.toArtistRowState() }
+                                artistList = artists.map { it.toArtistRowState() }
                             )
                         }
                     }
@@ -39,7 +39,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistsList = artists.map { it.toArtistRowState() }
+                                artistList = artists.map { it.toArtistRowState() }
                             )
                         }
                     }
@@ -59,7 +59,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 data class ArtistsBottomSheetState(
     val mediaType: MediaType,
     val mediaId: Long,
-    val artistsList: List<ArtistRowState>,
+    val artistList: List<ArtistRowState>,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -73,7 +73,7 @@ object InitialArtistsBottomSheetStateModule {
         return ArtistsBottomSheetState(
             mediaId = mediaId,
             mediaType = mediaType,
-            artistsList = listOf(),
+            artistList = listOf(),
         )
     }
 }

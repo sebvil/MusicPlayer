@@ -25,14 +25,14 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
-    initialState: AlbumsListState,
+    initialState: AlbumListState,
     albumRepository: AlbumRepository,
     preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<AlbumsListUiEvent, AlbumsListState>(initialState) {
+) : BaseViewModel<AlbumListUiEvent, AlbumListState>(initialState) {
 
     init {
         viewModelScope.launch {
-            preferencesRepository.getAlbumsListSortPreferences().flatMapLatest {
+            preferencesRepository.getAlbumListSortPreferences().flatMapLatest {
                 setState {
                     copy(
                         sortPreferences = it
@@ -42,7 +42,7 @@ class AlbumListViewModel @Inject constructor(
             }.collect { albums ->
                 setState {
                     copy(
-                        albumsList = albums.map { album ->
+                        albumList = albums.map { album ->
                             album.toAlbumRowState()
                         }
                     )
@@ -52,45 +52,45 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onAlbumClicked(albumId: Long) {
-        addUiEvent(AlbumsListUiEvent.NavigateToAlbum(albumId))
+        addUiEvent(AlbumListUiEvent.NavigateToAlbum(albumId))
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(AlbumsListUiEvent.NavigateUp)
+        addUiEvent(AlbumListUiEvent.NavigateUp)
     }
 
     fun onSortByClicked() {
-        addUiEvent(AlbumsListUiEvent.ShowSortBottomSheet)
+        addUiEvent(AlbumListUiEvent.ShowSortBottomSheet)
     }
 
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
-        addUiEvent(AlbumsListUiEvent.OpenContextMenu(albumId))
+        addUiEvent(AlbumListUiEvent.OpenContextMenu(albumId))
     }
 }
 
-data class AlbumsListState(
-    val albumsList: List<AlbumRowState>,
+data class AlbumListState(
+    val albumList: List<AlbumRowState>,
     val sortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
 ) : State
 
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialAlbumsListStateModule {
+object InitialAlbumListStateModule {
     @Provides
     @ViewModelScoped
-    fun initialAlbumsStateProvider(): AlbumsListState {
-        return AlbumsListState(
-            albumsList = listOf(),
+    fun initialAlbumsStateProvider(): AlbumListState {
+        return AlbumListState(
+            albumList = listOf(),
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM)
         )
     }
 }
 
-sealed class AlbumsListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: Long) : AlbumsListUiEvent()
-    object NavigateUp : AlbumsListUiEvent()
-    object ShowSortBottomSheet : AlbumsListUiEvent()
-    object ScrollToTop : AlbumsListUiEvent()
-    data class OpenContextMenu(val albumId: Long) : AlbumsListUiEvent()
+sealed class AlbumListUiEvent : UiEvent {
+    data class NavigateToAlbum(val albumId: Long) : AlbumListUiEvent()
+    object NavigateUp : AlbumListUiEvent()
+    object ShowSortBottomSheet : AlbumListUiEvent()
+    object ScrollToTop : AlbumListUiEvent()
+    data class OpenContextMenu(val albumId: Long) : AlbumListUiEvent()
 }

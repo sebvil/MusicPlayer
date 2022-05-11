@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
-import com.sebastianvm.musicplayer.player.TracksListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -16,43 +16,44 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
 
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        tracksListType: TracksListType,
-        tracksListId: Long
+        trackListType: TrackListType,
+        trackListId: Long
     ) {
         TODO("Not yet implemented")
     }
 
-    override fun getTracksListSortPreferences(
-        tracksListType: TracksListType,
-        tracksListId: Long
+    override fun getTrackListSortPreferences(
+        trackListType: TrackListType,
+        trackListId: Long
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun modifyAlbumsListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>) {
+    override suspend fun modifyAlbumListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>) {
         sortPreferencesState.value =
             sortPreferencesState.value.copy(albumListSortPreferences = newPreferences)
     }
 
-    override fun getAlbumsListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
+    override fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
         return sortPreferencesState.map { it.albumListSortPreferences }
     }
 
-    override suspend fun modifyArtistsListSortOrder(mediaSortOrder: MediaSortOrder) {
+    override suspend fun modifyArtistListSortOrder(mediaSortOrder: MediaSortOrder) {
         sortPreferencesState.value =
             sortPreferencesState.value.copy(artistListSortOrder = mediaSortOrder)
     }
 
-    override fun getArtistsListSortOrder(): Flow<MediaSortOrder> {
+    override fun getArtistListSortOrder(): Flow<MediaSortOrder> {
         return sortPreferencesState.map { it.artistListSortOrder }
     }
 
-    override suspend fun modifyGenresListSortOrder(mediaSortOrder: MediaSortOrder) {
-        TODO("Not yet implemented")
+    override suspend fun modifyGenreListSortOrder(mediaSortOrder: MediaSortOrder) {
+        sortPreferencesState.value =
+            sortPreferencesState.value.copy(genreListSortOrder = mediaSortOrder)
     }
 
-    override fun getGenresListSortOrder(): Flow<MediaSortOrder> {
-        TODO("Not yet implemented")
+    override fun getGenreListSortOrder(): Flow<MediaSortOrder> {
+        return sortPreferencesState.map { it.genreListSortOrder }
     }
 
     override suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder) {

@@ -3,7 +3,7 @@
 //import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
 //import com.sebastianvm.musicplayer.player.MediaGroup
 //import com.sebastianvm.musicplayer.player.MediaGroupType
-//import com.sebastianvm.musicplayer.player.TracksListType
+//import com.sebastianvm.musicplayer.player.TrackListType
 //import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 //import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 //import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
@@ -31,7 +31,7 @@
 //
 //@OptIn(ExperimentalCoroutinesApi::class)
 //@RunWith(RobolectricTestRunner::class)
-//class TracksListViewModelTest {
+//class TrackListViewModelTest {
 //
 //    @get:Rule
 //    val dispatcherSetUpRule = DispatcherSetUpRule()
@@ -73,15 +73,15 @@
 //    }
 //
 //    private fun generateViewModel(
-//        listGroupType: TracksListType = TracksListType.ALL_TRACKS,
-//        tracksListTitle: String = TracksListViewModel.ALL_TRACKS,
-//    ): TracksListViewModel {
-//        return TracksListViewModel(
+//        listGroupType: TrackListType = TrackListType.ALL_TRACKS,
+//        trackListTitle: String = TrackListViewModel.ALL_TRACKS,
+//    ): TrackListViewModel {
+//        return TrackListViewModel(
 //            mediaPlaybackRepository = playbackManager,
-//            initialState = TracksListState(
-//                tracksListName = tracksListTitle,
-//                tracksListType = listGroupType,
-//                tracksList = listOf(),
+//            initialState = TrackListState(
+//                trackListName = trackListTitle,
+//                trackListType = listGroupType,
+//                trackList = listOf(),
 //                currentSort = MediaSortOption.ARTIST,
 //                sortOrder = MediaSortOrder.DESCENDING,
 //            ),
@@ -96,7 +96,7 @@
 //        with(generateViewModel()) {
 //            advanceUntilIdle()
 //            with(state.value) {
-//                assertEquals(TracksListViewModel.ALL_TRACKS, tracksListName)
+//                assertEquals(TrackListViewModel.ALL_TRACKS, trackListName)
 //                assertEquals(
 //                    listOf(
 //                        TrackRowState(
@@ -113,7 +113,7 @@
 //                            albumName = TRACK_ALBUM_1,
 //                            trackNumber = null
 //                        ),
-//                    ), tracksList
+//                    ), trackList
 //                )
 //                assertEquals(MediaSortOption.TRACK, currentSort)
 //                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
@@ -125,13 +125,13 @@
 //    fun `init for genre sets initial state`() = runTest {
 //        with(
 //            generateViewModel(
-//                listGroupType = TracksListType.GENRE,
-//                tracksListTitle = TRACK_GENRE_0
+//                listGroupType = TrackListType.GENRE,
+//                trackListTitle = TRACK_GENRE_0
 //            )
 //        ) {
 //            advanceUntilIdle()
 //            with(state.value) {
-//                assertEquals(TRACK_GENRE_0, tracksListName)
+//                assertEquals(TRACK_GENRE_0, trackListName)
 //                assertEquals(
 //                    listOf(
 //                        TrackRowState(
@@ -141,7 +141,7 @@
 //                            albumName = TRACK_ALBUM_0,
 //                            trackNumber = null
 //                        ),
-//                    ), tracksList
+//                    ), trackList
 //                )
 //                assertEquals(MediaSortOption.TRACK, currentSort)
 //                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
@@ -151,10 +151,10 @@
 //
 //    @Test
 //    fun `init for playlist sets initial state`() = runTest {
-//        with(generateViewModel(listGroupType = TracksListType.PLAYLIST, tracksListTitle = TRACK_PLAYLIST_1)) {
+//        with(generateViewModel(listGroupType = TrackListType.PLAYLIST, trackListTitle = TRACK_PLAYLIST_1)) {
 //            advanceUntilIdle()
 //            with(state.value) {
-//                assertEquals(TRACK_PLAYLIST_1, tracksListName)
+//                assertEquals(TRACK_PLAYLIST_1, trackListName)
 //                assertEquals(
 //                    listOf(
 //                        TrackRowState(
@@ -164,7 +164,7 @@
 //                            albumName = TRACK_ALBUM_1,
 //                            trackNumber = null
 //                        ),
-//                    ), tracksList
+//                    ), trackList
 //                )
 //                assertEquals(MediaSortOption.TRACK, currentSort)
 //                assertEquals(MediaSortOrder.ASCENDING, sortOrder)
@@ -177,7 +177,7 @@
 //        with(generateViewModel()) {
 //            onTrackClicked(TRACK_ID_0)
 //            advanceUntilIdle()
-//            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
+//            assertEquals(listOf(TrackListUiEvent.NavigateToPlayer), events.value)
 //            verify {
 //                playbackManager.playFromId(
 //                    TRACK_ID_0,
@@ -191,13 +191,13 @@
 //    fun `onTrackClicked for genre triggers playback, adds nav to player event`() = runTest{
 //        with(
 //            generateViewModel(
-//                listGroupType = TracksListType.GENRE,
-//                tracksListTitle = TRACK_GENRE_0
+//                listGroupType = TrackListType.GENRE,
+//                trackListTitle = TRACK_GENRE_0
 //            )
 //        ) {
 //            onTrackClicked(TRACK_ID_0)
 //            advanceUntilIdle()
-//            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
+//            assertEquals(listOf(TrackListUiEvent.NavigateToPlayer), events.value)
 //            verify {
 //                playbackManager.playFromId(
 //                    TRACK_ID_0,
@@ -214,13 +214,13 @@
 //    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() = runTest {
 //        with(
 //            generateViewModel(
-//                listGroupType = TracksListType.PLAYLIST,
-//                tracksListTitle = TRACK_PLAYLIST_1
+//                listGroupType = TrackListType.PLAYLIST,
+//                trackListTitle = TRACK_PLAYLIST_1
 //            )
 //        ) {
 //            onTrackClicked(TRACK_ID_1)
 //            advanceUntilIdle()
-//            assertEquals(listOf(TracksListUiEvent.NavigateToPlayer), events.value)
+//            assertEquals(listOf(TrackListUiEvent.NavigateToPlayer), events.value)
 //            verify {
 //                playbackManager.playFromId(
 //                    TRACK_ID_1,
@@ -238,7 +238,7 @@
 //    fun `onSortByClicked adds ShowSortBottomSheet UiEvent`() {
 //        with(generateViewModel()) {
 //            onSortByClicked()
-//            assertContains(events.value, TracksListUiEvent.ShowSortBottomSheet)
+//            assertContains(events.value, TrackListUiEvent.ShowSortBottomSheet)
 //        }
 //    }
 //
@@ -247,7 +247,7 @@
 //        with(generateViewModel()) {
 //            onTrackOverflowMenuIconClicked(TRACK_ID_0)
 //            assertContains(
-//                events.value, TracksListUiEvent.OpenContextMenu(
+//                events.value, TrackListUiEvent.OpenContextMenu(
 //                    trackId = TRACK_ID_0,
 //                    mediaGroup = MediaGroup(
 //                        mediaGroupType = MediaGroupType.ALL_TRACKS,
@@ -262,13 +262,13 @@
 //    fun `onTrackOverflowMenuIconClicked for genre adds OpenContextMenu UiEvent`() {
 //        with(
 //            generateViewModel(
-//                listGroupType = TracksListType.GENRE,
-//                tracksListTitle = TRACK_GENRE_0
+//                listGroupType = TrackListType.GENRE,
+//                trackListTitle = TRACK_GENRE_0
 //            )
 //        ) {
 //            onTrackOverflowMenuIconClicked(TRACK_ID_0)
 //            assertContains(
-//                events.value, TracksListUiEvent.OpenContextMenu(
+//                events.value, TrackListUiEvent.OpenContextMenu(
 //                    trackId = TRACK_ID_0,
 //                    mediaGroup = MediaGroup(
 //                        mediaGroupType = MediaGroupType.GENRE,
@@ -283,13 +283,13 @@
 //    fun `onTrackOverflowMenuIconClicked for playlist adds OpenContextMenu UiEvent`() {
 //        with(
 //            generateViewModel(
-//                listGroupType = TracksListType.PLAYLIST,
-//                tracksListTitle = TRACK_PLAYLIST_1
+//                listGroupType = TrackListType.PLAYLIST,
+//                trackListTitle = TRACK_PLAYLIST_1
 //            )
 //        ) {
 //            onTrackOverflowMenuIconClicked(TRACK_ID_1)
 //            assertContains(
-//                events.value, TracksListUiEvent.OpenContextMenu(
+//                events.value, TrackListUiEvent.OpenContextMenu(
 //                    trackId = TRACK_ID_1,
 //                    mediaGroup = MediaGroup(
 //                        mediaGroupType = MediaGroupType.PLAYLIST,
@@ -307,8 +307,8 @@
 //            advanceUntilIdle()
 //            preferencesRepository.modifyTrackListSortOptions(
 //                ,
-//                tracksListType = TracksListType.ALL_TRACKS,
-//                tracksListName = TracksListViewModel.ALL_TRACKS
+//                trackListType = TrackListType.ALL_TRACKS,
+//                trackListName = TrackListViewModel.ALL_TRACKS
 //            )
 //            advanceUntilIdle()
 //            assertEquals(MediaSortOption.TRACK, state.value.currentSort)
@@ -317,8 +317,8 @@
 //
 //            preferencesRepository.modifyTrackListSortOptions(
 //                ,
-//                tracksListType = TracksListType.ALL_TRACKS,
-//                tracksListName = ""
+//                trackListType = TrackListType.ALL_TRACKS,
+//                trackListName = ""
 //            )
 //            advanceUntilIdle()
 //            assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
@@ -326,8 +326,8 @@
 //
 //            preferencesRepository.modifyTrackListSortOptions(
 //                ,
-//                tracksListType = TracksListType.ALL_TRACKS,
-//                tracksListName = ""
+//                trackListType = TrackListType.ALL_TRACKS,
+//                trackListName = ""
 //            )
 //            advanceUntilIdle()
 //            assertEquals(MediaSortOption.ALBUM, state.value.currentSort)
@@ -335,8 +335,8 @@
 //
 //            preferencesRepository.modifyTrackListSortOptions(
 //                ,
-//                tracksListType = TracksListType.ALL_TRACKS,
-//                tracksListName = ""
+//                trackListType = TrackListType.ALL_TRACKS,
+//                trackListName = ""
 //            )
 //            advanceUntilIdle()
 //            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
@@ -345,8 +345,8 @@
 //
 //            preferencesRepository.modifyTrackListSortOptions(
 //                ,
-//                tracksListType = TracksListType.ALL_TRACKS,
-//                tracksListName = ""
+//                trackListType = TrackListType.ALL_TRACKS,
+//                trackListName = ""
 //            )
 //            advanceUntilIdle()
 //            assertEquals(MediaSortOption.ARTIST, state.value.currentSort)
@@ -358,7 +358,7 @@
 //    fun `onUpButtonClicked adds NavigateUp event`() {
 //        with(generateViewModel()) {
 //            onUpButtonClicked()
-//            assertContains(events.value, TracksListUiEvent.NavigateUp)
+//            assertContains(events.value, TrackListUiEvent.NavigateUp)
 //        }
 //    }
 //

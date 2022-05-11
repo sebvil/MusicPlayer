@@ -56,4 +56,8 @@ object Fixtures {
         album = albumCheetah
     }
 
+    val genreAlpha = Genre(id = C.ID_ONE, genreName = C.GENRE_ALPHA)
+    val genreBeta = Genre(id = C.ID_TWO, genreName = C.GENRE_BETA)
+    val genreCharlie = Genre(id = C.ID_THREE, genreName = C.GENRE_CHARLIE)
+
 }

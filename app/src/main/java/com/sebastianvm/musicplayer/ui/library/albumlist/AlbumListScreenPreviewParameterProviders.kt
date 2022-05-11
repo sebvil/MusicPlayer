@@ -6,10 +6,10 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 
-class AlbumsListStatePreviewParameterProvider : PreviewParameterProvider<AlbumsListState> {
+class AlbumListStatePreviewParameterProvider : PreviewParameterProvider<AlbumListState> {
     override val values = sequenceOf(
-        AlbumsListState(
-            albumsList = listOf(
+        AlbumListState(
+            albumList = listOf(
                 AlbumRowState(
                     albumId = 0,
                     albumName = "Ahora",
