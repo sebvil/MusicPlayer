@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sebastianvm.musicplayer.R
@@ -22,6 +20,7 @@ import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -67,8 +66,7 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
 }
 
 
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComposePreviews
 @Composable
 fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::class) state: QueueState) {
     ScreenPreview {
@@ -104,7 +102,9 @@ fun QueueLayout(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.background(color = backgroundColor).clickable { delegate.onTrackClicked(index)}
+                modifier = Modifier
+                    .background(color = backgroundColor)
+                    .clickable { delegate.onTrackClicked(index) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_drag),
