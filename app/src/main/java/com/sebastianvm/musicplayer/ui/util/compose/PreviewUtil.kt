@@ -67,3 +67,5 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 
 }
 
+@ComposePreviews
+annotation class ComposePreviews

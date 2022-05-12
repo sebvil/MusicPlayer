@@ -6,6 +6,7 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackFtsDao {
@@ -14,5 +15,12 @@ interface TrackFtsDao {
     @Query("SELECT DISTINCT Track.* FROM Track " +
             "JOIN TrackFts ON Track.id == TrackFts.trackId " +
             "WHERE TrackFts MATCH :text ORDER BY Track.trackName" )
-    fun tracksWithText(text: String): PagingSource<Int, FullTrackInfo>
+    fun tracksWithTextPaged(text: String): PagingSource<Int, FullTrackInfo>
+
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT DISTINCT Track.* FROM Track " +
+            "JOIN TrackFts ON Track.id == TrackFts.trackId " +
+            "WHERE TrackFts MATCH :text ORDER BY Track.trackName" )
+    fun tracksWithText(text: String): Flow<List<FullTrackInfo>>
 }

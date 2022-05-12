@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +23,11 @@ class FullTextSearchRepository @Inject constructor(
 ) {
 
 
-    fun searchTracks(text: String): PagingSource<Int, FullTrackInfo> {
+    fun searchTracksPaged(text: String): PagingSource<Int, FullTrackInfo> {
+        return trackFtsDao.tracksWithTextPaged(text = "\"$text*\"")
+    }
+
+    fun searchTracks(text: String): Flow<List<FullTrackInfo>> {
         return trackFtsDao.tracksWithText(text = "\"$text*\"")
     }
 

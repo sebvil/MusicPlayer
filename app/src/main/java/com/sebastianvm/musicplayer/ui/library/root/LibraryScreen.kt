@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import android.Manifest
 import android.content.Intent
-import android.content.res.Configuration
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -13,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,6 +24,7 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
+import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -142,8 +141,7 @@ fun LibraryScreen(
 }
 
 @Composable
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComposePreviews
 fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
     ScreenPreview {
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {

@@ -31,6 +31,7 @@ import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
+import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -60,8 +61,7 @@ fun MusicPlayerScreen(
     }
 }
 
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComposePreviews
 @Composable
 fun MusicPlayerScreenPreview(@PreviewParameter(MusicPlayerStatePreviewParameterProvider::class) state: MusicPlayerState) {
     ScreenPreview {

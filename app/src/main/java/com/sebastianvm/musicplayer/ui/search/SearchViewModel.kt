@@ -54,7 +54,7 @@ class SearchViewModel @Inject constructor(
             copy(
                 trackSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchTracks(it)
+                        ftsRepository.searchTracksPaged(it)
                     }.flow.mapLatest { pagingData ->
                         pagingData.map { it.track.toTrackRowState(includeTrackNumber = false) }
                     }

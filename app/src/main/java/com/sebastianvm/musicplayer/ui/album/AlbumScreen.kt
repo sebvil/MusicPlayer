@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.album
 
-import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,13 +22,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -51,7 +50,11 @@ fun AlbumScreen(
                     delegate.navigateToPlayer()
                 }
                 is AlbumUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(trackId = event.trackId, albumId = event.albumId, trackIndex = event.trackIndex)
+                    delegate.openContextMenu(
+                        trackId = event.trackId,
+                        albumId = event.albumId,
+                        trackIndex = event.trackIndex
+                    )
                 }
             }
         }) { state ->
@@ -75,8 +78,7 @@ interface AlbumScreenDelegate {
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
-@Preview(showSystemUi = true)
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComposePreviews
 @Composable
 fun AlbumScreenPreview(
     @PreviewParameter(AlbumStatePreviewParameterProvider::class) state: AlbumState
