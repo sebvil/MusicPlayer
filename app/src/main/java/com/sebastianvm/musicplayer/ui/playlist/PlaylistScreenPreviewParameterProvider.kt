@@ -4,6 +4,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class PlaylistStatePreviewParameterProvider : PreviewParameterProvider<PlaylistState> {
     override val values = sequenceOf(
-        PlaylistState(playlistId = 0, playlistName = "", listOf())
+        PlaylistState(playlistId = 0, playlistName = "My playlist", listOf())
     )
 }

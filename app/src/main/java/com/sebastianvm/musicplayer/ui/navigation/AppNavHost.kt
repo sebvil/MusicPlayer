@@ -9,7 +9,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
@@ -47,10 +46,7 @@ fun AppNavHost(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.libraryGraph(
-    navController: NavHostController,
-) {
+fun NavGraphBuilder.libraryGraph(navController: NavHostController) {
 
     navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
         libraryNavDestination(navController)
@@ -63,7 +59,7 @@ fun NavGraphBuilder.libraryGraph(
 
         artistNavDestination(navController)
         albumNavDestination(navController)
-        playlistNavDestination()
+        playlistNavDestination(navController)
 
         sortBottomSheetNavDestination(navController)
         contextBottomSheet(navController)

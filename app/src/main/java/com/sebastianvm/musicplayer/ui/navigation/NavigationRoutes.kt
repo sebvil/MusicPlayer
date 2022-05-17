@@ -15,6 +15,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+const val ARGS = "ARGS"
+
 object NavRoutes {
     const val LIBRARY = "LIBRARY"
     const val LIBRARY_ROOT = "LIBRARY_ROOT"
@@ -67,10 +69,6 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
     this.navigate(navRoute)
 }
 
-fun createNavRoute(route: String): String {
-    return "$route/{args}"
-}
-
 inline fun <reified T : Parcelable> NavController.navigateTo(route: String, arguments: T) {
     val encodedArgs = Uri.encode(Json.encodeToString(arguments))
     val navRoute = "$route/$encodedArgs"
@@ -99,8 +97,8 @@ inline fun <reified VM : ViewModel, reified T : Parcelable> NavGraphBuilder.scre
     crossinline screen: @Composable (VM) -> Unit
 ) {
     composable(
-        createNavRoute(name),
-        arguments = listOf(navArgument("args") {
+        route = "$name/{$ARGS}",
+        arguments = listOf(navArgument(ARGS) {
             type = getArgumentsType<T>()
         })
     ) {

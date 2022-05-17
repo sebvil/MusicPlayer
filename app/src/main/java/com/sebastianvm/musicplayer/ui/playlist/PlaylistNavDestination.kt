@@ -7,15 +7,23 @@ import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 
-@kotlinx.serialization.Serializable
+@Serializable
 @Parcelize
 data class PlaylistArguments(val playlistId: Long) : Parcelable
 
-fun NavGraphBuilder.playlistNavDestination() {
+fun NavGraphBuilder.playlistNavDestination(navController: NavController) {
     screenDestination<PlaylistViewModel, PlaylistArguments>(NavRoutes.PLAYLIST) { viewModel ->
-        PlaylistScreen(screenViewModel = viewModel)
+        PlaylistScreen(
+            screenViewModel = viewModel,
+            delegate = object : PlaylistScreenNavigationDelegate {
+                override fun navigateUp() {
+                    navController.navigateUp()
+                }
+            }
+        )
     }
 }
 

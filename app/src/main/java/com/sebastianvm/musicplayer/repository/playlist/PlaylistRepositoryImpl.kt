@@ -2,11 +2,13 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -37,5 +39,10 @@ class PlaylistRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) {
             playlistDao.deletePlaylist(Playlist(id = playlistId, playlistName = ""))
         }
+    }
+
+    override fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks> {
+        return playlistDao.getPlaylistWithTracks(playlistId = playlistId).distinctUntilChanged()
+            .mapNotNull { it }
     }
 }
