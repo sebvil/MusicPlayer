@@ -22,12 +22,13 @@ import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestinat
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracks.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
+import com.sebastianvm.musicplayer.ui.playlist.playlistNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(navController: NavHostController, ) {
+fun AppNavHost(navController: NavHostController) {
     val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
     Scaffold(bottomBar = bottomNavBar) { paddingValues ->
         NavHost(
@@ -62,6 +63,7 @@ fun NavGraphBuilder.libraryGraph(
 
         artistNavDestination(navController)
         albumNavDestination(navController)
+        playlistNavDestination()
 
         sortBottomSheetNavDestination(navController)
         contextBottomSheet(navController)

@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +19,11 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(initialState: PlaylistState) :
     BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState)
 
-data class PlaylistState(val playlistName: String, val trackList: List<TrackRowState>) : State
+data class PlaylistState(
+    val playlistId: Long,
+    val playlistName: String,
+    val trackList: List<TrackRowState>
+) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -26,7 +31,12 @@ object InitialPlaylistStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistStateProvider(savedStateHandle: SavedStateHandle): PlaylistState {
-        return PlaylistState(playlistName = "", trackList = listOf())
+        val arguments = savedStateHandle.getArgs<PlaylistArguments>()
+        return PlaylistState(
+            playlistId = arguments.playlistId,
+            playlistName = "",
+            trackList = listOf()
+        )
     }
 }
 
