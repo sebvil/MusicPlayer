@@ -9,7 +9,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.sebastianvm.musicplayer.ui.album.albumNavDestination
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
@@ -22,12 +21,13 @@ import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestinat
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracks.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
+import com.sebastianvm.musicplayer.ui.playlist.playlistNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(navController: NavHostController, ) {
+fun AppNavHost(navController: NavHostController) {
     val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
     Scaffold(bottomBar = bottomNavBar) { paddingValues ->
         NavHost(
@@ -46,10 +46,7 @@ fun AppNavHost(navController: NavHostController, ) {
     }
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.libraryGraph(
-    navController: NavHostController,
-) {
+fun NavGraphBuilder.libraryGraph(navController: NavHostController) {
 
     navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
         libraryNavDestination(navController)
@@ -62,6 +59,7 @@ fun NavGraphBuilder.libraryGraph(
 
         artistNavDestination(navController)
         albumNavDestination(navController)
+        playlistNavDestination(navController)
 
         sortBottomSheetNavDestination(navController)
         contextBottomSheet(navController)

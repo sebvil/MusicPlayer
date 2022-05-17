@@ -9,13 +9,15 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
+import com.sebastianvm.musicplayer.ui.playlist.navigateToPlaylist
 
 fun NavGraphBuilder.playlistsListNavDestination(navController: NavController) {
     composable(NavRoutes.PLAYLISTS_ROOT) {
         val screenViewModel = hiltViewModel<PlaylistsListViewModel>()
         PlaylistsListScreen(screenViewModel, object : PlaylistsListScreenNavigationDelegate {
             override fun navigateToPlaylist(playlistId: Long) {
-//                navController.navigateToPlaylist(playlistName)
+                navController.navigateToPlaylist(PlaylistArguments(playlistId = playlistId))
             }
 
             override fun openContextMenu(playlistId: Long) {
