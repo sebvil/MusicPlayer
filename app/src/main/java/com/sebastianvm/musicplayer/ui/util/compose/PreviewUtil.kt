@@ -1,7 +1,8 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
@@ -11,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
@@ -35,8 +37,6 @@ fun ThemedPreview(
     }
 }
 
-// TODO fix this
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenPreview(
@@ -49,8 +49,10 @@ fun ScreenPreview(
             topBar = topBar,
             bottomBar = { BottomNavBar(navController = navController) },
             floatingActionButton = fab
-        ) {
-            screen()
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                screen()
+            }
         }
     }
 }

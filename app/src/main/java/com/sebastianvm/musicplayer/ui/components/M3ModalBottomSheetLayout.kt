@@ -55,7 +55,6 @@ fun M3ModalBottomSheetLayout(
 }
 
 @ExperimentalMaterialNavigationApi
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun M3ModalBottomSheetLayout(
     bottomSheetNavigator: BottomSheetNavigator,
