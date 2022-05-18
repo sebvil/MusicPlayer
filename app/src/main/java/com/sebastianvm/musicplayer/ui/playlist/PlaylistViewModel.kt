@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -22,27 +23,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
-    initialState: PlaylistState,
-    playlistRepository: PlaylistRepository
-) :
-    BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
+    initialState: PlaylistState, playlistRepository: PlaylistRepository
+) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
 
     init {
         playlistRepository.getPlaylistWithTracks(state.value.playlistId).onEach {
             setState {
-                copy(
-                    playlistName = it.playlist.playlistName,
-                    trackList = it.tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) }
-                )
+                copy(playlistName = it.playlist.playlistName,
+                    trackList = it.tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) })
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun onAddTracksClicked() {
+        addUiEvent(
+            PlaylistUiEvent.NavEvent(
+                NavigationDestination.TrackSearchDestination(
+                    TrackSearchArguments(state.value.playlistId)
+                )
+            )
+        )
     }
 }
 
 data class PlaylistState(
-    val playlistId: Long,
-    val playlistName: String,
-    val trackList: List<TrackRowState>
+    val playlistId: Long, val playlistName: String, val trackList: List<TrackRowState>
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -53,12 +58,12 @@ object InitialPlaylistStateModule {
     fun initialPlaylistStateProvider(savedStateHandle: SavedStateHandle): PlaylistState {
         val arguments = savedStateHandle.getArgs<PlaylistArguments>()
         return PlaylistState(
-            playlistId = arguments.playlistId,
-            playlistName = "",
-            trackList = listOf()
+            playlistId = arguments.playlistId, playlistName = "", trackList = listOf()
         )
     }
 }
 
-sealed class PlaylistUiEvent : UiEvent
+sealed class PlaylistUiEvent : UiEvent {
+    data class NavEvent(val navigationDestination: NavigationDestination) : PlaylistUiEvent()
+}
 

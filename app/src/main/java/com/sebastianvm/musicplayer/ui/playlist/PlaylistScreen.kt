@@ -10,24 +10,26 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface PlaylistScreenNavigationDelegate {
-    fun navigateUp()
-}
 
 @Composable
-fun PlaylistScreen(screenViewModel: PlaylistViewModel, delegate: PlaylistScreenNavigationDelegate) {
+fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: NavigationDelegate) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = {},
+        eventHandler = { event ->
+            when (event) {
+                is PlaylistUiEvent.NavEvent -> navigationDelegate.navigateToScreen(event.navigationDestination)
+            }
+        },
         topBar = {
             LibraryTopBar(title = it.playlistName,
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        delegate.navigateUp()
+                        navigationDelegate.navigateUp()
                     }
                 })
         },
@@ -40,7 +42,7 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, delegate: PlaylistScreenN
                         contentDescription = "Plus"
                     )
                 },
-                onClick = { /*TODO*/ })
+                onClick = { screenViewModel.onAddTracksClicked() })
         }) { state ->
         PlaylistLayout(state = state)
     }

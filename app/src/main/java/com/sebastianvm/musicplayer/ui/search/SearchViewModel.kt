@@ -31,9 +31,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,8 +48,9 @@ class SearchViewModel @Inject constructor(
 ) :
     BaseViewModel<SearchUiEvent, SearchState>(initialState) {
 
+    private val searchTerm = MutableStateFlow("")
+
     init {
-        val searchTerm = state.map { it.searchTerm }
         setState {
             copy(
                 trackSearchResults = searchTerm.flatMapLatest {
@@ -86,11 +87,7 @@ class SearchViewModel @Inject constructor(
     fun <A : UserAction> handle(action: A) {
         when (action) {
             is SearchUserAction.OnTextChanged -> {
-                setState {
-                    copy(
-                        searchTerm = action.newText,
-                    )
-                }
+                searchTerm.value = action.newText
             }
             is SearchUserAction.SearchTypeChanged -> {
                 setState {
@@ -159,7 +156,6 @@ class SearchViewModel @Inject constructor(
 
 data class SearchState(
     @StringRes val selectedOption: Int,
-    val searchTerm: String = "",
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
     val albumSearchResults: Flow<PagingData<AlbumRowState>>,
