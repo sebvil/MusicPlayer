@@ -11,12 +11,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class PlaylistArguments(val playlistId: Long) : NavigationArguments
+data class TrackSearchArguments(val playlistId: Long) : NavigationArguments
 
-fun NavGraphBuilder.playlistNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<PlaylistViewModel>(NavigationRoute.PLAYLIST) { viewModel ->
-        PlaylistScreen(
-            screenViewModel = viewModel, navigationDelegate = navigationDelegate
-        )
+fun NavGraphBuilder.trackSearchNavDestination(navigationDelegate: NavigationDelegate) {
+    screenDestination<TrackSearchViewModel>(
+        NavigationRoute.TRACK_SEARCH
+    ) { viewModel ->
+        TrackSearchScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }
+

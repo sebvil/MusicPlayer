@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -101,7 +102,7 @@ object InitialPlaylistsListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialPlaylistsListStateProvider() =
+    fun initialPlaylistsListStateProvider(savedStateHandle: SavedStateHandle) =
         PlaylistsListState(
             playlistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,

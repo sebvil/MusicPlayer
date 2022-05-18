@@ -56,14 +56,6 @@ android {
             includeAndroidResources = true
         }
 
-//        unitTests.all {
-//            kover {
-//                disabled = false
-//                binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
-//                includes = ['com.sebastianvm.*']
-//            }
-//
-//        }
     }
 
     composeOptions {
@@ -160,13 +152,14 @@ dependencies {
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.1'
 
+    
     // TESTING
 
     // Junit
     testImplementation "junit:junit:4.13.2"
 
     // Coroutines tests
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1-native-mt'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
 
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "androidx.test:core-ktx:1.4.0"
