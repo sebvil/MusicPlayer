@@ -8,10 +8,11 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.Module
 import dagger.Provides
@@ -20,6 +21,8 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,11 +35,12 @@ class AlbumViewModel @Inject constructor(
 ) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState) {
 
     init {
-        collect(
-            albumRepository.getAlbum(state.value.albumId)
-                .combine(trackRepository.getTracksForAlbum(albumId = state.value.albumId)) { albumInfo, tracks ->
-                    Pair(albumInfo.album, tracks)
-                }) { (album, tracks) ->
+        combine(
+            albumRepository.getAlbum(state.value.albumId),
+            trackRepository.getTracksForAlbum(state.value.albumId)
+        ) { albumInfo, tracks ->
+            Pair(albumInfo.album, tracks)
+        }.onEach { (album, tracks) ->
             setState {
                 copy(
                     imageUri = UriUtils.getAlbumUri(album.id),
@@ -44,13 +48,13 @@ class AlbumViewModel @Inject constructor(
                     trackList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
                 )
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun onTrackClicked(trackIndex: Int) {
         viewModelScope.launch {
             playbackManager.playAlbum(albumId = state.value.albumId, initialTrackIndex = trackIndex)
-            addUiEvent(AlbumUiEvent.NavigateToPlayer)
+            addUiEvent(AlbumUiEvent.NavEvent(NavigationDestination.MusicPlayerDestination))
         }
     }
 
@@ -78,10 +82,10 @@ data class AlbumState(
 object InitialAlbumStateModule {
     @Provides
     @ViewModelScoped
-    fun provideInitialAlbumState(savedHandle: SavedStateHandle): AlbumState {
-        val albumId = savedHandle.get<Long>(NavArgs.ALBUM_ID)!!
+    fun provideInitialAlbumState(savedStateHandle: SavedStateHandle): AlbumState {
+        val args = savedStateHandle.getArgs<AlbumArguments>()
         return AlbumState(
-            albumId = albumId,
+            albumId = args.albumId,
             imageUri = Uri.EMPTY,
             albumName = "",
             trackList = emptyList(),
@@ -90,6 +94,7 @@ object InitialAlbumStateModule {
 }
 
 sealed class AlbumUiEvent : UiEvent {
-    object NavigateToPlayer : AlbumUiEvent()
-    data class OpenContextMenu(val trackId: Long, val albumId: Long, val trackIndex: Int) : AlbumUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : AlbumUiEvent()
+    data class OpenContextMenu(val trackId: Long, val albumId: Long, val trackIndex: Int) :
+        AlbumUiEvent()
 }

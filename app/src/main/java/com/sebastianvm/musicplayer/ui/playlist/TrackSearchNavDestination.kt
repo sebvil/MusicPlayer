@@ -15,7 +15,7 @@ data class TrackSearchArguments(val playlistId: Long) : NavigationArguments
 
 fun NavGraphBuilder.trackSearchNavDestination(navigationDelegate: NavigationDelegate) {
     screenDestination<TrackSearchViewModel>(
-        NavigationRoute.TRACK_SEARCH
+        NavigationRoute.TrackSearch
     ) { viewModel ->
         TrackSearchScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
     }

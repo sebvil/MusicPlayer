@@ -8,9 +8,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.serialization.decodeFromString
@@ -30,7 +32,6 @@ object NavRoutes {
     const val ALBUMS_ROOT = "ALBUMS_ROOT"
     const val GENRES_ROOT = "GENRES_ROOT"
     const val PLAYLISTS_ROOT = "PLAYLISTS_ROOT"
-    const val PLAYLIST = "PLAYLIST"
     const val ALBUM = "ALBUM"
     const val ARTIST = "ARTIST"
     const val PLAYER = "PLAYER"
@@ -42,20 +43,29 @@ object NavRoutes {
 }
 
 enum class NavigationRoute {
-    TRACK_SEARCH, PLAYLIST,
+    LibraryRoot,
+    Album,
+    TrackSearch,
+    Playlist,
+    Player,
 }
 
 
 interface NavigationArguments : Parcelable
 
 sealed class NavigationDestination(
-    val navigationRoute: NavigationRoute, open val arguments: NavigationArguments
+    val navigationRoute: NavigationRoute, open val arguments: NavigationArguments?
 ) {
     data class PlaylistDestination(override val arguments: PlaylistArguments) :
-        NavigationDestination(NavigationRoute.PLAYLIST, arguments)
+        NavigationDestination(NavigationRoute.Playlist, arguments)
 
     data class TrackSearchDestination(override val arguments: TrackSearchArguments) :
-        NavigationDestination(NavigationRoute.TRACK_SEARCH, arguments)
+        NavigationDestination(NavigationRoute.TrackSearch, arguments)
+
+    object MusicPlayerDestination : NavigationDestination(NavigationRoute.Player, null)
+
+    data class AlbumDestination(override val arguments: AlbumArguments) :
+        NavigationDestination(NavigationRoute.Album, arguments)
 }
 
 object NavArgs {
@@ -76,6 +86,7 @@ private val module = SerializersModule {
     polymorphic(NavigationArguments::class) {
         subclass(PlaylistArguments::class)
         subclass(TrackSearchArguments::class)
+        subclass(AlbumArguments::class)
     }
 }
 
@@ -101,24 +112,27 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
 }
 
 
-fun NavController.navigateTo(destination: NavigationDestination) {
+fun NavController.navigateTo(
+    destination: NavigationDestination,
+    builder: NavOptionsBuilder.() -> Unit = {}
+) {
     val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
-    val navRoute = "${destination.navigationRoute.name}/$encodedArgs"
-    navigate(navRoute)
+    val navRoute = "${destination.navigationRoute.name}/args=$encodedArgs"
+    navigate(navRoute, builder)
 }
 
 
-fun getArgumentsType(): NavType<NavigationArguments> =
-    object : NavType<NavigationArguments>(false) {
-        override fun put(bundle: Bundle, key: String, value: NavigationArguments) {
+fun getArgumentsType(): NavType<NavigationArguments?> =
+    object : NavType<NavigationArguments?>(true) {
+        override fun put(bundle: Bundle, key: String, value: NavigationArguments?) {
             bundle.putParcelable(key, value)
         }
 
-        override fun get(bundle: Bundle, key: String): NavigationArguments {
-            return bundle.getParcelable(key)!!
+        override fun get(bundle: Bundle, key: String): NavigationArguments? {
+            return bundle.getParcelable(key)
         }
 
-        override fun parseValue(value: String): NavigationArguments {
+        override fun parseValue(value: String): NavigationArguments? {
             return json.decodeFromString(value)
         }
 
@@ -129,11 +143,13 @@ inline fun <reified VM : ViewModel> NavGraphBuilder.screenDestination(
     destination: NavigationRoute, crossinline screen: @Composable (VM) -> Unit
 ) {
     composable(
-        route = "${destination.name}/{$ARGS}", arguments = listOf(navArgument(ARGS) {
+        route = "${destination.name}/args={$ARGS}", arguments = listOf(navArgument(ARGS) {
             type = getArgumentsType()
+            nullable = true
         })
     ) {
         val screenViewModel = hiltViewModel<VM>()
         screen(screenViewModel)
     }
 }
+

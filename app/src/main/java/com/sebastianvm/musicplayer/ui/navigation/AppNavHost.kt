@@ -60,7 +60,7 @@ fun NavGraphBuilder.libraryGraph(navController: NavHostController) {
         playlistsListNavDestination(navController)
 
         artistNavDestination(navController)
-        albumNavDestination(navController)
+        albumNavDestination(navigationDelegate, navController)
         playlistNavDestination(navigationDelegate)
 
         trackSearchNavDestination(navigationDelegate)

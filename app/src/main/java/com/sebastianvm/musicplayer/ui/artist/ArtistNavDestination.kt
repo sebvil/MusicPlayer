@@ -7,11 +7,13 @@ import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 
@@ -23,7 +25,11 @@ fun NavGraphBuilder.artistNavDestination(navController: NavController) {
         val screenViewModel = hiltViewModel<ArtistViewModel>()
         ArtistScreen(screenViewModel, delegate = object : ArtistScreenNavigationDelegate {
             override fun navigateToAlbum(albumId: Long) {
-                navController.navigateToAlbum(albumId)
+                NavigationDelegate(navController).navigateToScreen(
+                    NavigationDestination.AlbumDestination(
+                        AlbumArguments(albumId)
+                    )
+                )
             }
 
             override fun openContextMenu(albumId: Long) {

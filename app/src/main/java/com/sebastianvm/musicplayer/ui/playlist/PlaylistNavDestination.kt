@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 data class PlaylistArguments(val playlistId: Long) : NavigationArguments
 
 fun NavGraphBuilder.playlistNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<PlaylistViewModel>(NavigationRoute.PLAYLIST) { viewModel ->
+    screenDestination<PlaylistViewModel>(NavigationRoute.Playlist) { viewModel ->
         PlaylistScreen(
             screenViewModel = viewModel, navigationDelegate = navigationDelegate
         )

@@ -15,9 +15,10 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.openSortBottomSheet
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
-import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
 
 fun NavGraphBuilder.trackListNavDestination(navController: NavController) {
     composable(
@@ -41,7 +42,9 @@ fun NavGraphBuilder.trackListNavDestination(navController: NavController) {
             screenViewModel,
             object : TrackListScreenNavigationDelegate {
                 override fun navigateToPlayer() {
-                    navController.navigateToPlayer()
+                    NavigationDelegate(navController).navigateToScreen(
+                        NavigationDestination.MusicPlayerDestination
+                    )
                 }
 
                 override fun navigateUp() {
@@ -49,10 +52,17 @@ fun NavGraphBuilder.trackListNavDestination(navController: NavController) {
                 }
 
                 override fun openSortMenu(mediaId: Long) {
-                    navController.openSortBottomSheet(listType = SortableListType.TRACKS, mediaId = mediaId)
+                    navController.openSortBottomSheet(
+                        listType = SortableListType.TRACKS,
+                        mediaId = mediaId
+                    )
                 }
 
-                override fun openContextMenu(mediaId: Long, mediaGroup: MediaGroup, trackIndex: Int) {
+                override fun openContextMenu(
+                    mediaId: Long,
+                    mediaGroup: MediaGroup,
+                    trackIndex: Int
+                ) {
                     navController.openContextMenu(
                         mediaType = MediaType.TRACK,
                         mediaId = mediaId,

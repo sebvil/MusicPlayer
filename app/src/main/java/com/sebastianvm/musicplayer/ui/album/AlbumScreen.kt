@@ -27,27 +27,28 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumNavigationDelegate {
-    fun navigateToPlayer() = Unit
     fun openContextMenu(trackId: Long, albumId: Long, trackIndex: Int) = Unit
 }
 
 @Composable
 fun AlbumScreen(
-    screenVieModel: AlbumViewModel,
+    screenViewModel: AlbumViewModel,
+    navigationDelegate: NavigationDelegate,
     delegate: AlbumNavigationDelegate
 ) {
     Screen(
-        screenViewModel = screenVieModel,
+        screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumUiEvent.NavigateToPlayer -> {
-                    delegate.navigateToPlayer()
+                is AlbumUiEvent.NavEvent -> {
+                    navigationDelegate.navigateToScreen(event.navigationDestination)
                 }
                 is AlbumUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(
@@ -60,11 +61,11 @@ fun AlbumScreen(
         }) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
             override fun onTrackClicked(trackIndex: Int) {
-                screenVieModel.onTrackClicked(trackIndex = trackIndex)
+                screenViewModel.onTrackClicked(trackIndex = trackIndex)
             }
 
             override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                screenVieModel.onTrackOverflowMenuIconClicked(
+                screenViewModel.onTrackOverflowMenuIconClicked(
                     trackIndex = trackIndex,
                     trackId = trackId
                 )

@@ -6,19 +6,22 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.album.navigateToAlbum
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.ui.player.navigateToPlayer
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 
 fun NavGraphBuilder.searchNavDestination(navController: NavController) {
     composable(NavRoutes.SEARCH) {
         val screenViewModel = hiltViewModel<SearchViewModel>()
         SearchScreen(screenViewModel, delegate = object : SearchNavigationDelegate {
             override fun navigateToPlayer() {
-                navController.navigateToPlayer()
+                NavigationDelegate(navController).navigateToScreen(
+                    NavigationDestination.MusicPlayerDestination
+                )
             }
 
             override fun navigateToArtist(artistId: Long) {
@@ -26,7 +29,11 @@ fun NavGraphBuilder.searchNavDestination(navController: NavController) {
             }
 
             override fun navigateToAlbum(albumId: Long) {
-                navController.navigateToAlbum(albumId)
+                NavigationDelegate(navController).navigateToScreen(
+                    NavigationDestination.AlbumDestination(
+                        AlbumArguments(albumId)
+                    )
+                )
             }
 
             override fun navigateToGenre(genreId: Long) {
