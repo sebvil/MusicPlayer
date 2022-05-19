@@ -42,12 +42,13 @@ object NavRoutes {
     const val QUEUE = "QUEUE"
 }
 
-enum class NavigationRoute {
-    LibraryRoot,
-    Album,
-    TrackSearch,
-    Playlist,
-    Player,
+enum class NavigationRoute(val hasArgs: Boolean) {
+    Library(hasArgs = false),
+    LibraryRoot(hasArgs = false),
+    Album(hasArgs = true),
+    TrackSearch(hasArgs = true),
+    Playlist(hasArgs = true),
+    Player(hasArgs = false),
 }
 
 
@@ -116,8 +117,12 @@ fun NavController.navigateTo(
     destination: NavigationDestination,
     builder: NavOptionsBuilder.() -> Unit = {}
 ) {
-    val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
-    val navRoute = "${destination.navigationRoute.name}/args=$encodedArgs"
+    val navRoute = if (destination.navigationRoute.hasArgs) {
+        val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
+        "${destination.navigationRoute.name}/args=$encodedArgs"
+    } else {
+        destination.navigationRoute.name
+    }
     navigate(navRoute, builder)
 }
 
@@ -135,19 +140,20 @@ fun getArgumentsType(): NavType<NavigationArguments?> =
         override fun parseValue(value: String): NavigationArguments? {
             return json.decodeFromString(value)
         }
-
-
     }
 
 inline fun <reified VM : ViewModel> NavGraphBuilder.screenDestination(
     destination: NavigationRoute, crossinline screen: @Composable (VM) -> Unit
 ) {
-    composable(
-        route = "${destination.name}/args={$ARGS}", arguments = listOf(navArgument(ARGS) {
-            type = getArgumentsType()
-            nullable = true
-        })
-    ) {
+    val route = if (destination.hasArgs) {
+        "${destination.name}/args={$ARGS}"
+    } else {
+        destination.name
+    }
+    val args = if (destination.hasArgs) listOf(navArgument(ARGS) {
+        type = getArgumentsType()
+    }) else listOf()
+    composable(route = route, arguments = args) {
         val screenViewModel = hiltViewModel<VM>()
         screen(screenViewModel)
     }

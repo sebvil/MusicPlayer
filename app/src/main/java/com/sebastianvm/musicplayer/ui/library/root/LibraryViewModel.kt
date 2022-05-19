@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -70,4 +71,5 @@ sealed class LibraryUiEvent : UiEvent {
     object StartGetMusicService : LibraryUiEvent()
     object RequestPermission : LibraryUiEvent()
     data class NavigateToScreen(val rowId: String) : LibraryUiEvent()
+    data class NavEvent(val destination: NavigationDestination) : LibraryUiEvent()
 }

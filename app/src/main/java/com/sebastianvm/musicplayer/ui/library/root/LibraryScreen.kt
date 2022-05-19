@@ -24,6 +24,7 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -37,6 +38,7 @@ interface LibraryScreenNavigationDelegate {
 @Composable
 fun LibraryScreen(
     screenViewModel: LibraryViewModel = viewModel(),
+    navigationDelegate: NavigationDelegate,
     delegate: LibraryScreenNavigationDelegate
 ) {
     val context = LocalContext.current
@@ -96,6 +98,9 @@ fun LibraryScreen(
                 }
                 is LibraryUiEvent.RequestPermission -> {
                     storagePermissionState.launchPermissionRequest()
+                }
+                is LibraryUiEvent.NavEvent -> {
+                    navigationDelegate.navigateToScreen(event.destination)
                 }
             }
         },
