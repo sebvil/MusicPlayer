@@ -3,8 +3,10 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -52,7 +54,13 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onAlbumClicked(albumId: Long) {
-        addUiEvent(AlbumListUiEvent.NavigateToAlbum(albumId))
+        addUiEvent(
+            AlbumListUiEvent.NavEvent(
+                NavigationDestination.AlbumDestination(
+                    AlbumArguments(albumId)
+                )
+            )
+        )
     }
 
     fun onUpButtonClicked() {
@@ -88,7 +96,7 @@ object InitialAlbumListStateModule {
 }
 
 sealed class AlbumListUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: Long) : AlbumListUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : AlbumListUiEvent()
     object NavigateUp : AlbumListUiEvent()
     object ShowSortBottomSheet : AlbumListUiEvent()
     object ScrollToTop : AlbumListUiEvent()

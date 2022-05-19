@@ -57,13 +57,13 @@ fun NavGraphBuilder.libraryGraph(
         startDestination = NavigationRoute.LibraryRoot.name,
         route = NavigationRoute.Library.name
     ) {
-        libraryNavDestination(navigationDelegate, navController)
+        libraryNavDestination(navigationDelegate)
 
         trackListNavDestination(navigationDelegate, navController)
         artistListNavDestination(navigationDelegate, navController)
-        albumListNavDestination(navController)
+        albumListNavDestination(navigationDelegate, navController)
         genreListNavDestination(navigationDelegate, navController)
-        playlistsListNavDestination(navController)
+        playlistsListNavDestination(navigationDelegate, navController)
 
         artistNavDestination(navController)
         albumNavDestination(navigationDelegate, navController)

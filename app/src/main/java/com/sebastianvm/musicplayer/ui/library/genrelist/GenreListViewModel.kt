@@ -2,8 +2,11 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -48,7 +51,16 @@ class GenreListViewModel @Inject constructor(
     }
 
     fun onGenreClicked(genreId: Long) {
-        addUiEvent(GenreListUiEvent.NavigateToGenre(genreId))
+        addUiEvent(
+            GenreListUiEvent.NavEvent(
+                NavigationDestination.TrackListDestination(
+                    TrackListArguments(
+                        trackListId = genreId,
+                        trackListType = TrackListType.GENRE
+                    )
+                )
+            )
+        )
     }
 
     fun onSortByClicked() {
@@ -86,7 +98,7 @@ object InitialGenreListStateModule {
 }
 
 sealed class GenreListUiEvent : UiEvent {
-    data class NavigateToGenre(val genreId: Long) : GenreListUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : GenreListUiEvent()
     object NavigateUp : GenreListUiEvent()
     data class OpenContextMenu(val genreId: Long) : GenreListUiEvent()
 }

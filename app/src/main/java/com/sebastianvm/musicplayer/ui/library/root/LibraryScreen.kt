@@ -25,21 +25,17 @@ import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-
-interface LibraryScreenNavigationDelegate {
-    fun navigateToLibraryScreen(route: String)
-}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LibraryScreen(
     screenViewModel: LibraryViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: LibraryScreenNavigationDelegate
 ) {
     val context = LocalContext.current
     val showPermissionDeniedDialog = remember {
@@ -93,9 +89,6 @@ fun LibraryScreen(
                         startForegroundService(context, intent)
                     }
                 }
-                is LibraryUiEvent.NavigateToScreen -> {
-                    delegate.navigateToLibraryScreen(event.rowId)
-                }
                 is LibraryUiEvent.RequestPermission -> {
                     storagePermissionState.launchPermissionRequest()
                 }
@@ -137,7 +130,7 @@ fun LibraryScreen(
         LibraryLayout(
             state = state,
             object : LibraryScreenDelegate {
-                override fun onRowClicked(rowId: String) {
+                override fun onRowClicked(rowId: NavigationRoute) {
                     screenViewModel.onRowClicked(rowId = rowId)
                 }
             }
@@ -150,7 +143,7 @@ fun LibraryScreen(
 fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
     ScreenPreview {
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {
-            override fun onRowClicked(rowId: String) = Unit
+            override fun onRowClicked(rowId: NavigationRoute) = Unit
         })
     }
 }

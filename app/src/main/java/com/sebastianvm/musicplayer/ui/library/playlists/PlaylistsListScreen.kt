@@ -27,30 +27,30 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface PlaylistsListScreenNavigationDelegate {
-    fun navigateUp()
-    fun navigateToPlaylist(playlistId: Long)
     fun openContextMenu(playlistId: Long)
 }
 
 @Composable
 fun PlaylistsListScreen(
     screenViewModel: PlaylistsListViewModel = viewModel(),
+    navigationDelegate: NavigationDelegate,
     delegate: PlaylistsListScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is PlaylistsListUiEvent.NavigateToPlaylist -> {
-                    delegate.navigateToPlaylist(event.playlistId)
+                is PlaylistsListUiEvent.NavEvent -> {
+                    navigationDelegate.navigateToScreen(event.navigationDestination)
                 }
-                is PlaylistsListUiEvent.NavigateUp -> delegate.navigateUp()
+                is PlaylistsListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
                 is PlaylistsListUiEvent.OpenContextMenu -> {
                     delegate.openContextMenu(event.playlistId)
                 }

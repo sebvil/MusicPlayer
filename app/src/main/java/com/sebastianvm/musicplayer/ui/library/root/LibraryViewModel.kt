@@ -44,9 +44,9 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun onRowClicked(rowId: String) {
+    fun onRowClicked(rowId: NavigationRoute) {
         when (rowId) {
-            NavigationRoute.TrackList.name -> addUiEvent(
+            NavigationRoute.TrackList -> addUiEvent(
                 LibraryUiEvent.NavEvent(
                     NavigationDestination.TrackListDestination(
                         TrackListArguments(
@@ -56,12 +56,27 @@ class LibraryViewModel @Inject constructor(
                     )
                 )
             )
-            NavigationRoute.ArtistsRoot.name -> addUiEvent(
+            NavigationRoute.ArtistsRoot -> addUiEvent(
                 LibraryUiEvent.NavEvent(
                     NavigationDestination.ArtistsRoot
                 )
             )
-            else -> addUiEvent(LibraryUiEvent.NavigateToScreen(rowId))
+            NavigationRoute.AlbumsRoot -> addUiEvent(
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.AlbumsRoot
+                )
+            )
+            NavigationRoute.GenresRoot -> addUiEvent(
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.GenresRoot
+                )
+            )
+            NavigationRoute.PlaylistsRoot -> addUiEvent(
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.PlaylistsRoot
+                )
+            )
+            else -> Unit
         }
     }
 
@@ -89,6 +104,5 @@ object InitialLibraryStateModule {
 sealed class LibraryUiEvent : UiEvent {
     object StartGetMusicService : LibraryUiEvent()
     object RequestPermission : LibraryUiEvent()
-    data class NavigateToScreen(val rowId: String) : LibraryUiEvent()
     data class NavEvent(val destination: NavigationDestination) : LibraryUiEvent()
 }

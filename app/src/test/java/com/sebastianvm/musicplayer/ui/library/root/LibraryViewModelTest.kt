@@ -1,7 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListViewModel
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -52,10 +56,17 @@ class LibraryViewModelTest {
     @Test
     fun `onRowClicked adds nav NavigateToScreen event`() {
         with(generateViewModel()) {
-            onRowClicked(NavRoutes.TRACKS_ROOT)
+            onRowClicked(NavigationRoute.TrackList)
             assertContains(
                 events.value,
-                LibraryUiEvent.NavigateToScreen(rowId = NavRoutes.TRACKS_ROOT)
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.TrackListDestination(
+                        TrackListArguments(
+                            trackListType = TrackListType.ALL_TRACKS,
+                            trackListId = TrackListViewModel.ALL_TRACKS
+                        )
+                    )
+                )
             )
         }
     }

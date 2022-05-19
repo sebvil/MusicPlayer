@@ -26,12 +26,6 @@ import kotlinx.serialization.modules.subclass
 const val ARGS = "ARGS"
 
 object NavRoutes {
-    const val TRACKS_ROOT = "TRACKS_ROOT"
-    const val ARTISTS_ROOT = "ARTISTS_ROOT"
-    const val ALBUMS_ROOT = "ALBUMS_ROOT"
-    const val GENRES_ROOT = "GENRES_ROOT"
-    const val PLAYLISTS_ROOT = "PLAYLISTS_ROOT"
-    const val ALBUM = "ALBUM"
     const val ARTIST = "ARTIST"
     const val PLAYER = "PLAYER"
     const val SEARCH = "SEARCH"
@@ -45,6 +39,9 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     Library(hasArgs = false),
     LibraryRoot(hasArgs = false),
     ArtistsRoot(hasArgs = false),
+    AlbumsRoot(hasArgs = false),
+    GenresRoot(hasArgs = false),
+    PlaylistsRoot(hasArgs = false),
     Album(hasArgs = true),
     TrackSearch(hasArgs = true),
     Playlist(hasArgs = true),
@@ -73,6 +70,9 @@ sealed class NavigationDestination(
         NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
 
     object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
+    object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
+    object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
+    object PlaylistsRoot : NavigationDestination(NavigationRoute.PlaylistsRoot, arguments = null)
 }
 
 object NavArgs {

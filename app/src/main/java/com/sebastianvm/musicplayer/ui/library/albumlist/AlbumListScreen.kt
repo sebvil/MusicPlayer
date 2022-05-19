@@ -14,13 +14,12 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumListScreenNavigationDelegate {
-    fun navigateToAlbum(albumId: Long)
-    fun navigateUp()
     fun openSortMenu()
     fun openContextMenu(albumId: Long)
 }
@@ -29,6 +28,7 @@ interface AlbumListScreenNavigationDelegate {
 @Composable
 fun AlbumListScreen(
     screenViewModel: AlbumListViewModel = viewModel(),
+    navigationDelegate: NavigationDelegate,
     delegate: AlbumListScreenNavigationDelegate,
 ) {
     val listState = rememberLazyListState()
@@ -36,11 +36,11 @@ fun AlbumListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumListUiEvent.NavigateToAlbum -> {
-                    delegate.navigateToAlbum(event.albumId)
+                is AlbumListUiEvent.NavEvent -> {
+                    navigationDelegate.navigateToScreen(destination = event.navigationDestination)
                 }
                 is AlbumListUiEvent.NavigateUp -> {
-                    delegate.navigateUp()
+                    navigationDelegate.navigateUp()
                 }
                 is AlbumListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu()

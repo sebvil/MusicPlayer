@@ -18,11 +18,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
 
 interface LibraryScreenDelegate {
-    fun onRowClicked(rowId: String)
+    fun onRowClicked(rowId: NavigationRoute)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
