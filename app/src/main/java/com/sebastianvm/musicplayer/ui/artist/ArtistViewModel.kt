@@ -5,12 +5,14 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.AlbumType
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +33,7 @@ class ArtistViewModel @Inject constructor(
 ) : BaseViewModel<ArtistUiEvent, ArtistState>(
     initialState
 ) {
+    // TODO this is broken
     init {
         collect(
             artistRepository.getArtist(state.value.artistId).flatMapLatest { artistWithAlbums ->
@@ -80,7 +83,15 @@ class ArtistViewModel @Inject constructor(
     }
 
     fun onAlbumClicked(albumId: Long) {
-        addUiEvent(ArtistUiEvent.NavigateToAlbum(albumId))
+        addUiEvent(
+            ArtistUiEvent.NavEvent(
+                NavigationDestination.AlbumDestination(
+                    AlbumArguments(
+                        albumId = albumId
+                    )
+                )
+            )
+        )
     }
 
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
@@ -107,10 +118,9 @@ object InitialArtistState {
     @Provides
     @ViewModelScoped
     fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        // We should not get here without an id
-        val artistId = savedStateHandle.get<Long>(NavArgs.ARTIST_ID)!!
+        val args = savedStateHandle.getArgs<ArtistArguments>()
         return ArtistState(
-            artistId = artistId,
+            artistId = args.artistId,
             artistName = "",
             albumsForArtistItems = null,
             appearsOnForArtistItems = null,
@@ -119,7 +129,7 @@ object InitialArtistState {
 }
 
 sealed class ArtistUiEvent : UiEvent {
-    data class NavigateToAlbum(val albumId: Long) : ArtistUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : ArtistUiEvent()
     data class OpenContextMenu(val albumId: Long) : ArtistUiEvent()
     object NavigateUp : ArtistUiEvent()
 }

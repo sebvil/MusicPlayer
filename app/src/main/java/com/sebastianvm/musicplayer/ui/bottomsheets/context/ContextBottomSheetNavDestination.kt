@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
-import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
@@ -85,7 +85,11 @@ fun NavGraphBuilder.contextBottomSheet(
                 }
 
                 override fun navigateToArtist(artistId: Long) {
-                    navController.navigateToArtist(artistId)
+                    NavigationDelegate(navController).navigateToScreen(
+                        NavigationDestination.ArtistDestination(
+                            ArtistArguments(artistId = artistId)
+                        )
+                    )
                 }
 
                 override fun navigateToArtistsBottomSheet(mediaId: Long, mediaType: MediaType) {

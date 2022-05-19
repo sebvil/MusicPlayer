@@ -5,7 +5,6 @@ import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
@@ -20,10 +19,6 @@ fun NavGraphBuilder.artistListNavDestination(
             viewModel,
             navigationDelegate = navigationDelegate,
             object : ArtistListScreenNavigationDelegate {
-                override fun navigateToArtist(artistId: Long) {
-                    navController.navigateToArtist(artistId)
-                }
-
                 override fun openContextMenu(artistId: Long) {
                     navController.openContextMenu(
                         MediaType.ARTIST,

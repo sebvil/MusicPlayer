@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface ArtistListScreenNavigationDelegate {
-    fun navigateToArtist(artistId: Long)
     fun openContextMenu(artistId: Long)
 }
 
@@ -32,9 +31,6 @@ fun ArtistListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is ArtistListUiEvent.NavigateToArtist -> {
-                    delegate.navigateToArtist(event.artistId)
-                }
                 is ArtistListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
                 is ArtistListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
                 is ArtistListUiEvent.NavEvent -> navigationDelegate.navigateToScreen(event.navigationDestination)

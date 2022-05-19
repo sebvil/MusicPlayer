@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
@@ -36,17 +37,14 @@ object NavRoutes {
 }
 
 enum class NavigationRoute(val hasArgs: Boolean) {
-    Library(hasArgs = false),
-    LibraryRoot(hasArgs = false),
-    ArtistsRoot(hasArgs = false),
-    AlbumsRoot(hasArgs = false),
-    GenresRoot(hasArgs = false),
-    PlaylistsRoot(hasArgs = false),
-    Album(hasArgs = true),
-    TrackSearch(hasArgs = true),
-    Playlist(hasArgs = true),
-    Player(hasArgs = false),
-    TrackList(hasArgs = true),
+    Library(hasArgs = false), Player(hasArgs = false), LibraryRoot(hasArgs = false), ArtistsRoot(
+        hasArgs = false
+    ),
+    AlbumsRoot(hasArgs = false), GenresRoot(hasArgs = false), PlaylistsRoot(hasArgs = false), Artist(
+        hasArgs = true
+    ),
+    Album(hasArgs = true), Playlist(hasArgs = true), TrackList(hasArgs = true), TrackSearch(hasArgs = true),
+
 }
 
 
@@ -55,24 +53,27 @@ interface NavigationArguments : Parcelable
 sealed class NavigationDestination(
     val navigationRoute: NavigationRoute, open val arguments: NavigationArguments?
 ) {
+    object MusicPlayerDestination : NavigationDestination(NavigationRoute.Player, arguments = null)
+    object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
+    object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
+    object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
+    object PlaylistsRoot : NavigationDestination(NavigationRoute.PlaylistsRoot, arguments = null)
+    data class TrackListDestination(override val arguments: TrackListArguments) :
+        NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
+
+    data class AlbumDestination(override val arguments: AlbumArguments) :
+        NavigationDestination(NavigationRoute.Album, arguments)
+
+
     data class PlaylistDestination(override val arguments: PlaylistArguments) :
         NavigationDestination(NavigationRoute.Playlist, arguments)
 
     data class TrackSearchDestination(override val arguments: TrackSearchArguments) :
         NavigationDestination(NavigationRoute.TrackSearch, arguments)
 
-    object MusicPlayerDestination : NavigationDestination(NavigationRoute.Player, arguments = null)
+    data class ArtistDestination(override val arguments: ArtistArguments) :
+        NavigationDestination(NavigationRoute.Artist, arguments = arguments)
 
-    data class AlbumDestination(override val arguments: AlbumArguments) :
-        NavigationDestination(NavigationRoute.Album, arguments)
-
-    data class TrackListDestination(override val arguments: TrackListArguments) :
-        NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
-
-    object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
-    object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
-    object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
-    object PlaylistsRoot : NavigationDestination(NavigationRoute.PlaylistsRoot, arguments = null)
 }
 
 object NavArgs {
@@ -92,6 +93,7 @@ private val module = SerializersModule {
         subclass(TrackSearchArguments::class)
         subclass(AlbumArguments::class)
         subclass(TrackListArguments::class)
+        subclass(ArtistArguments::class)
     }
 }
 
@@ -118,8 +120,7 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
 
 
 fun NavController.navigateTo(
-    destination: NavigationDestination,
-    builder: NavOptionsBuilder.() -> Unit = {}
+    destination: NavigationDestination, builder: NavOptionsBuilder.() -> Unit = {}
 ) {
     val navRoute = if (destination.navigationRoute.hasArgs) {
         val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))

@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.artistlist
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -54,7 +55,13 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onArtistClicked(artistId: Long) {
-        addUiEvent(ArtistListUiEvent.NavigateToArtist(artistId))
+        addUiEvent(
+            ArtistListUiEvent.NavEvent(
+                NavigationDestination.ArtistDestination(
+                    ArtistArguments(artistId = artistId)
+                )
+            )
+        )
     }
 
     fun onSortByClicked() {
@@ -91,7 +98,6 @@ object InitialArtistListStateModule {
 }
 
 sealed class ArtistListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: Long) : ArtistListUiEvent()
     object NavigateUp : ArtistListUiEvent()
     data class OpenContextMenu(val artistId: Long) : ArtistListUiEvent()
     data class NavEvent(val navigationDestination: NavigationDestination) : ArtistListUiEvent()
