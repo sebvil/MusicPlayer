@@ -5,6 +5,7 @@ import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 
 sealed class LibraryItem(
     val rowId: String,
@@ -14,7 +15,7 @@ sealed class LibraryItem(
     open val count: Int
 ) {
     data class Tracks(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.TRACKS_ROOT,
+        rowId = NavigationRoute.TrackList.name,
         rowName = R.string.all_songs,
         icon = R.drawable.ic_song,
         countString = R.plurals.number_of_tracks,
@@ -22,7 +23,7 @@ sealed class LibraryItem(
     )
 
     data class Artists(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.ARTISTS_ROOT,
+        rowId = NavigationRoute.ArtistsRoot.name,
         rowName = R.string.artists,
         icon = R.drawable.ic_artist,
         countString = R.plurals.number_of_artists,

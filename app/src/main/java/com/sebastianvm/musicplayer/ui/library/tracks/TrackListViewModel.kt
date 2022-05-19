@@ -11,10 +11,11 @@ import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesReposit
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
@@ -98,7 +99,7 @@ class TrackListViewModel @Inject constructor(
                 is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
                 is PlaybackResult.Success -> {
                     setState { copy(playbackResult = it) }
-                    addUiEvent(TrackListUiEvent.NavigateToPlayer)
+                    addUiEvent(TrackListUiEvent.NavEvent(NavigationDestination.MusicPlayerDestination))
                 }
             }
         }.launchIn(viewModelScope)
@@ -153,13 +154,12 @@ object InitialTrackListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val listId: Long = savedStateHandle[NavArgs.TRACK_LIST_ID] ?: TrackListViewModel.ALL_TRACKS
-        val listGroupType = savedStateHandle.get<String>(NavArgs.TRACKS_LIST_TYPE)!!
+        val args = savedStateHandle.getArgs<TrackListArguments>()
         return TrackListState(
-            trackListId = listId,
+            trackListId = args.trackListId,
             trackListName = "",
             trackList = listOf(),
-            trackListType = TrackListType.valueOf(listGroupType),
+            trackListType = args.trackListType,
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
         )
     }
@@ -167,14 +167,15 @@ object InitialTrackListStateModule {
 
 sealed class TrackListUiEvent : UiEvent {
     object ScrollToTop : TrackListUiEvent()
-    object NavigateToPlayer : TrackListUiEvent()
     data class ShowSortBottomSheet(val mediaId: Long) : TrackListUiEvent()
-    object NavigateUp : TrackListUiEvent()
     data class OpenContextMenu(
         val trackId: Long,
         val mediaGroup: MediaGroup,
         val trackIndex: Int
-    ) :
-        TrackListUiEvent()
+    ) : TrackListUiEvent()
+
+    object NavigateUp : TrackListUiEvent()
+
+    data class NavEvent(val destination: NavigationDestination) : TrackListUiEvent()
 }
 

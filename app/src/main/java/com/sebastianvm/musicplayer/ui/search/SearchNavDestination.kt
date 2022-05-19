@@ -6,15 +6,18 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
-import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 
-fun NavGraphBuilder.searchNavDestination(navController: NavController) {
+fun NavGraphBuilder.searchNavDestination(
+    navigationDelegate: NavigationDelegate, navController: NavController
+) {
     composable(NavRoutes.SEARCH) {
         val screenViewModel = hiltViewModel<SearchViewModel>()
         SearchScreen(screenViewModel, delegate = object : SearchNavigationDelegate {
@@ -37,7 +40,13 @@ fun NavGraphBuilder.searchNavDestination(navController: NavController) {
             }
 
             override fun navigateToGenre(genreId: Long) {
-                navController.navigateToGenre(genreId)
+                navigationDelegate.navigateToScreen(
+                    NavigationDestination.TrackListDestination(
+                        TrackListArguments(
+                            trackListId = genreId, trackListType = TrackListType.GENRE
+                        )
+                    )
+                )
             }
 
             override fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup) {

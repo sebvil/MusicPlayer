@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -93,4 +94,5 @@ sealed class ArtistListUiEvent : UiEvent {
     data class NavigateToArtist(val artistId: Long) : ArtistListUiEvent()
     object NavigateUp : ArtistListUiEvent()
     data class OpenContextMenu(val artistId: Long) : ArtistListUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : ArtistListUiEvent()
 }

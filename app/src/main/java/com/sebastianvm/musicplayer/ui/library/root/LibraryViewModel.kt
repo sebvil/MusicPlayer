@@ -1,8 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -25,17 +29,15 @@ class LibraryViewModel @Inject constructor(
         viewModelScope.launch {
             musicRepository.getCounts().collect { counts ->
                 setState {
-                    copy(
-                        libraryItems = libraryItems.map { item ->
-                            when (item) {
-                                is LibraryItem.Tracks -> item.copy(count = counts.tracks)
-                                is LibraryItem.Artists -> item.copy(count = counts.artists)
-                                is LibraryItem.Albums -> item.copy(count = counts.albums)
-                                is LibraryItem.Genres -> item.copy(count = counts.genres)
-                                is LibraryItem.Playlists -> item.copy(count = counts.playlists)
-                            }
+                    copy(libraryItems = libraryItems.map { item ->
+                        when (item) {
+                            is LibraryItem.Tracks -> item.copy(count = counts.tracks)
+                            is LibraryItem.Artists -> item.copy(count = counts.artists)
+                            is LibraryItem.Albums -> item.copy(count = counts.albums)
+                            is LibraryItem.Genres -> item.copy(count = counts.genres)
+                            is LibraryItem.Playlists -> item.copy(count = counts.playlists)
                         }
-                    )
+                    })
                 }
 
             }
@@ -43,7 +45,24 @@ class LibraryViewModel @Inject constructor(
     }
 
     fun onRowClicked(rowId: String) {
-        addUiEvent(LibraryUiEvent.NavigateToScreen(rowId))
+        when (rowId) {
+            NavigationRoute.TrackList.name -> addUiEvent(
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.TrackListDestination(
+                        TrackListArguments(
+                            trackListId = TrackListViewModel.ALL_TRACKS,
+                            trackListType = TrackListType.ALL_TRACKS
+                        )
+                    )
+                )
+            )
+            NavigationRoute.ArtistsRoot.name -> addUiEvent(
+                LibraryUiEvent.NavEvent(
+                    NavigationDestination.ArtistsRoot
+                )
+            )
+            else -> addUiEvent(LibraryUiEvent.NavigateToScreen(rowId))
+        }
     }
 
 }

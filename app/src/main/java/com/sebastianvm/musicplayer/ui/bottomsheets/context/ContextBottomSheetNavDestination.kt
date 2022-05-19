@@ -10,10 +10,11 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.navigateToArtist
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
-import com.sebastianvm.musicplayer.ui.library.tracks.navigateToGenre
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
@@ -23,7 +24,10 @@ import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
 import com.sebastianvm.musicplayer.ui.navigation.navigateTo
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
+fun NavGraphBuilder.contextBottomSheet(
+    navigationDelegate: NavigationDelegate,
+    navController: NavController
+) {
     bottomSheet(
         route = createNavRoute(
             NavRoutes.CONTEXT,
@@ -90,7 +94,14 @@ fun NavGraphBuilder.contextBottomSheet(navController: NavController) {
                 }
 
                 override fun navigateToGenre(genreId: Long) {
-                    navController.navigateToGenre(genreId)
+                    navigationDelegate.navigateToScreen(
+                        NavigationDestination.TrackListDestination(
+                            TrackListArguments(
+                                trackListId = genreId,
+                                trackListType = TrackListType.GENRE
+                            )
+                        )
+                    )
                 }
 
                 override fun navigateToPlaylist(playlistId: Long) {

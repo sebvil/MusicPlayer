@@ -6,6 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 
 class NavigationDelegate(private val navController: NavController) {
 
+    // TODO this is broken
     fun navigateToScreen(destination: NavigationDestination) {
         val navBackStackEntry = navController.currentBackStackEntry
         val currentDestination = navBackStackEntry?.destination

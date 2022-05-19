@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.albumListNavDestination
-import com.sebastianvm.musicplayer.ui.library.artistlist.artistsNavDestination
+import com.sebastianvm.musicplayer.ui.library.artistlist.artistListNavDestination
 import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
@@ -43,7 +43,7 @@ fun AppNavHost(navController: NavHostController) {
             queueNavDestination()
             musicPlayerNavDestination()
 
-            searchNavDestination(navController)
+            searchNavDestination(navigationDelegate, navController)
         }
     }
 }
@@ -59,10 +59,10 @@ fun NavGraphBuilder.libraryGraph(
     ) {
         libraryNavDestination(navigationDelegate, navController)
 
-        trackListNavDestination(navController)
-        artistsNavDestination(navController)
+        trackListNavDestination(navigationDelegate, navController)
+        artistListNavDestination(navigationDelegate, navController)
         albumListNavDestination(navController)
-        genreListNavDestination(navController)
+        genreListNavDestination(navigationDelegate, navController)
         playlistsListNavDestination(navController)
 
         artistNavDestination(navController)
@@ -72,7 +72,7 @@ fun NavGraphBuilder.libraryGraph(
         trackSearchNavDestination(navigationDelegate)
 
         sortBottomSheetNavDestination(navController)
-        contextBottomSheet(navController)
+        contextBottomSheet(navigationDelegate, navController)
         artistsBottomSheetNavDestination(navController)
     }
 }

@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.serialization.decodeFromString
@@ -25,8 +26,6 @@ import kotlinx.serialization.modules.subclass
 const val ARGS = "ARGS"
 
 object NavRoutes {
-    const val LIBRARY = "LIBRARY"
-    const val LIBRARY_ROOT = "LIBRARY_ROOT"
     const val TRACKS_ROOT = "TRACKS_ROOT"
     const val ARTISTS_ROOT = "ARTISTS_ROOT"
     const val ALBUMS_ROOT = "ALBUMS_ROOT"
@@ -45,10 +44,12 @@ object NavRoutes {
 enum class NavigationRoute(val hasArgs: Boolean) {
     Library(hasArgs = false),
     LibraryRoot(hasArgs = false),
+    ArtistsRoot(hasArgs = false),
     Album(hasArgs = true),
     TrackSearch(hasArgs = true),
     Playlist(hasArgs = true),
     Player(hasArgs = false),
+    TrackList(hasArgs = true),
 }
 
 
@@ -63,21 +64,23 @@ sealed class NavigationDestination(
     data class TrackSearchDestination(override val arguments: TrackSearchArguments) :
         NavigationDestination(NavigationRoute.TrackSearch, arguments)
 
-    object MusicPlayerDestination : NavigationDestination(NavigationRoute.Player, null)
+    object MusicPlayerDestination : NavigationDestination(NavigationRoute.Player, arguments = null)
 
     data class AlbumDestination(override val arguments: AlbumArguments) :
         NavigationDestination(NavigationRoute.Album, arguments)
+
+    data class TrackListDestination(override val arguments: TrackListArguments) :
+        NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
+
+    object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
 }
 
 object NavArgs {
-    const val TRACK_LIST_ID = "trackListId"
-    const val ALBUM_ID = "albumId"
     const val ARTIST_ID = "artistName"
     const val MEDIA_ID = "mediaId"
     const val MEDIA_TYPE = "mediaType"
     const val MEDIA_GROUP_ID = "mediaGroupId"
     const val MEDIA_GROUP_TYPE = "mediaGroupType"
-    const val TRACKS_LIST_TYPE = "trackListType"
     const val SORTABLE_LIST_TYPE = "sortableListType"
     const val TRACK_INDEX = "trackIndex"
 }
@@ -88,6 +91,7 @@ private val module = SerializersModule {
         subclass(PlaylistArguments::class)
         subclass(TrackSearchArguments::class)
         subclass(AlbumArguments::class)
+        subclass(TrackListArguments::class)
     }
 }
 
@@ -127,17 +131,17 @@ fun NavController.navigateTo(
 }
 
 
-fun getArgumentsType(): NavType<NavigationArguments?> =
-    object : NavType<NavigationArguments?>(true) {
-        override fun put(bundle: Bundle, key: String, value: NavigationArguments?) {
+fun getArgumentsType(): NavType<NavigationArguments> =
+    object : NavType<NavigationArguments>(false) {
+        override fun put(bundle: Bundle, key: String, value: NavigationArguments) {
             bundle.putParcelable(key, value)
         }
 
-        override fun get(bundle: Bundle, key: String): NavigationArguments? {
-            return bundle.getParcelable(key)
+        override fun get(bundle: Bundle, key: String): NavigationArguments {
+            return bundle.getParcelable(key)!!
         }
 
-        override fun parseValue(value: String): NavigationArguments? {
+        override fun parseValue(value: String): NavigationArguments {
             return json.decodeFromString(value)
         }
     }
