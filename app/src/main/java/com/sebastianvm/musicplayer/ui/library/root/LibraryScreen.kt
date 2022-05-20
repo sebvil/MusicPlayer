@@ -92,11 +92,9 @@ fun LibraryScreen(
                 is LibraryUiEvent.RequestPermission -> {
                     storagePermissionState.launchPermissionRequest()
                 }
-                is LibraryUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(event.destination)
-                }
             }
         },
+        navigationDelegate = navigationDelegate,
         fab = {
             ExtendedFloatingActionButton(
                 text = {

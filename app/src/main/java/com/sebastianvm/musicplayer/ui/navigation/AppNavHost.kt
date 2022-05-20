@@ -60,13 +60,13 @@ fun NavGraphBuilder.libraryGraph(
         libraryNavDestination(navigationDelegate)
 
         trackListNavDestination(navigationDelegate, navController)
-        artistListNavDestination(navigationDelegate, navController)
+        artistListNavDestination(navigationDelegate)
         albumListNavDestination(navigationDelegate, navController)
-        genreListNavDestination(navigationDelegate, navController)
-        playlistsListNavDestination(navigationDelegate, navController)
+        genreListNavDestination(navigationDelegate)
+        playlistsListNavDestination(navigationDelegate)
 
-        artistNavDestination(navigationDelegate, navController)
-        albumNavDestination(navigationDelegate, navController)
+        artistNavDestination(navigationDelegate)
+        albumNavDestination(navigationDelegate)
         playlistNavDestination(navigationDelegate)
 
         trackSearchNavDestination(navigationDelegate)

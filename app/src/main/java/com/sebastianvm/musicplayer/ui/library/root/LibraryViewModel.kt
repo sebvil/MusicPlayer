@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.ui.library.tracks.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -46,9 +47,9 @@ class LibraryViewModel @Inject constructor(
 
     fun onRowClicked(rowId: NavigationRoute) {
         when (rowId) {
-            NavigationRoute.TrackList -> addUiEvent(
-                LibraryUiEvent.NavEvent(
-                    NavigationDestination.TrackListDestination(
+            NavigationRoute.TrackList -> addNavEvent(
+                NavEvent.NavigateToScreen(
+                    NavigationDestination.TrackList(
                         TrackListArguments(
                             trackListId = TrackListViewModel.ALL_TRACKS,
                             trackListType = TrackListType.ALL_TRACKS
@@ -56,23 +57,23 @@ class LibraryViewModel @Inject constructor(
                     )
                 )
             )
-            NavigationRoute.ArtistsRoot -> addUiEvent(
-                LibraryUiEvent.NavEvent(
+            NavigationRoute.ArtistsRoot -> addNavEvent(
+                NavEvent.NavigateToScreen(
                     NavigationDestination.ArtistsRoot
                 )
             )
-            NavigationRoute.AlbumsRoot -> addUiEvent(
-                LibraryUiEvent.NavEvent(
+            NavigationRoute.AlbumsRoot -> addNavEvent(
+                NavEvent.NavigateToScreen(
                     NavigationDestination.AlbumsRoot
                 )
             )
-            NavigationRoute.GenresRoot -> addUiEvent(
-                LibraryUiEvent.NavEvent(
+            NavigationRoute.GenresRoot -> addNavEvent(
+                NavEvent.NavigateToScreen(
                     NavigationDestination.GenresRoot
                 )
             )
-            NavigationRoute.PlaylistsRoot -> addUiEvent(
-                LibraryUiEvent.NavEvent(
+            NavigationRoute.PlaylistsRoot -> addNavEvent(
+                NavEvent.NavigateToScreen(
                     NavigationDestination.PlaylistsRoot
                 )
             )
@@ -104,5 +105,4 @@ object InitialLibraryStateModule {
 sealed class LibraryUiEvent : UiEvent {
     object StartGetMusicService : LibraryUiEvent()
     object RequestPermission : LibraryUiEvent()
-    data class NavEvent(val destination: NavigationDestination) : LibraryUiEvent()
 }

@@ -1,9 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -75,7 +77,16 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onArtistOverflowMenuIconClicked(artistId: Long) {
-        addUiEvent(ArtistListUiEvent.OpenContextMenu(artistId))
+        addUiEvent(
+            ArtistListUiEvent.NavEvent(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = artistId,
+                        mediaType = MediaType.ARTIST
+                    )
+                )
+            )
+        )
     }
 }
 
@@ -99,6 +110,5 @@ object InitialArtistListStateModule {
 
 sealed class ArtistListUiEvent : UiEvent {
     object NavigateUp : ArtistListUiEvent()
-    data class OpenContextMenu(val artistId: Long) : ArtistListUiEvent()
     data class NavEvent(val navigationDestination: NavigationDestination) : ArtistListUiEvent()
 }

@@ -60,7 +60,7 @@ class LibraryViewModelTest {
             assertContains(
                 events.value,
                 LibraryUiEvent.NavEvent(
-                    NavigationDestination.TrackListDestination(
+                    NavigationDestination.TrackList(
                         TrackListArguments(
                             trackListType = TrackListType.ALL_TRACKS,
                             trackListId = TrackListViewModel.ALL_TRACKS

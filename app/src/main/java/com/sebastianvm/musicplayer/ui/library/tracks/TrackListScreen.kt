@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
@@ -26,7 +25,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface TrackListScreenNavigationDelegate {
     fun openSortMenu(mediaId: Long)
-    fun openContextMenu(mediaId: Long, mediaGroup: MediaGroup, trackIndex: Int)
 }
 
 @Composable
@@ -44,18 +42,10 @@ fun TrackListScreen(
                 is TrackListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu(mediaId = event.mediaId)
                 }
-                is TrackListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(
-                        mediaId = event.trackId,
-                        mediaGroup = event.mediaGroup,
-                        trackIndex = event.trackIndex
-                    )
-                }
-                is TrackListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
                 is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
-                is TrackListUiEvent.NavEvent -> navigationDelegate.navigateToScreen(event.destination)
             }
         },
+        navigationDelegate = navigationDelegate,
         topBar = { state ->
             LibraryTopBar(
                 title = state.trackListName.takeUnless { it.isEmpty() }

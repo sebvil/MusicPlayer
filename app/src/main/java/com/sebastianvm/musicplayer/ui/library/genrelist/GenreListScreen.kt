@@ -25,29 +25,15 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface GenreListScreenNavigationDelegate {
-    fun openContextMenu(genreId: Long)
-}
-
 @Composable
 fun GenreListScreen(
     screenViewModel: GenreListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: GenreListScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is GenreListUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(event.navigationDestination)
-                }
-                is GenreListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
-                is GenreListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.genreId)
-                }
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.genres),

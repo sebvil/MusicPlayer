@@ -4,15 +4,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -99,7 +102,7 @@ class TrackListViewModel @Inject constructor(
                 is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
                 is PlaybackResult.Success -> {
                     setState { copy(playbackResult = it) }
-                    addUiEvent(TrackListUiEvent.NavEvent(NavigationDestination.MusicPlayerDestination))
+                    addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
                 }
             }
         }.launchIn(viewModelScope)
@@ -119,11 +122,22 @@ class TrackListViewModel @Inject constructor(
             },
             mediaId = state.value.trackListId
         )
-        addUiEvent(TrackListUiEvent.OpenContextMenu(trackId, mediaGroup, trackIndex))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = trackId,
+                        mediaType = MediaType.TRACK,
+                        mediaGroup = mediaGroup,
+                        trackIndex = trackIndex
+                    )
+                )
+            )
+        )
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(TrackListUiEvent.NavigateUp)
+        addNavEvent(NavEvent.NavigateUp)
     }
 
     fun onClosePlaybackErrorDialog() {
@@ -168,14 +182,5 @@ object InitialTrackListStateModule {
 sealed class TrackListUiEvent : UiEvent {
     object ScrollToTop : TrackListUiEvent()
     data class ShowSortBottomSheet(val mediaId: Long) : TrackListUiEvent()
-    data class OpenContextMenu(
-        val trackId: Long,
-        val mediaGroup: MediaGroup,
-        val trackIndex: Int
-    ) : TrackListUiEvent()
-
-    object NavigateUp : TrackListUiEvent()
-
-    data class NavEvent(val destination: NavigationDestination) : TrackListUiEvent()
 }
 

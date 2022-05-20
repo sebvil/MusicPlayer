@@ -36,6 +36,7 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 }
             }
         },
+        navigationDelegate = null
     ) { state ->
         QueueLayout(state = state, delegate = object : QueueScreenDelegate {
             override fun onMove(from: Int, to: Int) {

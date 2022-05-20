@@ -1,31 +1,19 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.openContextMenu
+import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 
-fun NavGraphBuilder.playlistsListNavDestination(
-    navigationDelegate: NavigationDelegate,
-    navController: NavController
-) {
-    screenDestination<PlaylistsListViewModel>(NavigationRoute.PlaylistsRoot) { viewModel ->
+fun NavGraphBuilder.playlistsListNavDestination(navigationDelegate: NavigationDelegate) {
+    screenDestination<PlaylistsListViewModel>(
+        destination = NavigationRoute.PlaylistsRoot,
+        destinationType = DestinationType.Screen
+    ) { viewModel ->
         PlaylistsListScreen(
-            viewModel,
-            navigationDelegate = navigationDelegate,
-            object : PlaylistsListScreenNavigationDelegate {
-                override fun openContextMenu(playlistId: Long) {
-                    navController.openContextMenu(
-                        mediaType = MediaType.PLAYLIST,
-                        mediaId = playlistId,
-                        mediaGroup = MediaGroup(MediaGroupType.PLAYLIST, playlistId),
-                    )
-                }
-            })
+            screenViewModel = viewModel,
+            navigationDelegate = navigationDelegate
+        )
     }
 }

@@ -63,18 +63,22 @@ fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
     delegate: SearchNavigationDelegate
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
-        when (event) {
-            is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
-            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
-            is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
-            is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
-                event.mediaType,
-                event.mediaGroup,
-            )
-        }
-    }) { state ->
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
+                is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
+                is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
+                is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
+                is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
+                    event.mediaType,
+                    event.mediaGroup,
+                )
+            }
+        },
+        navigationDelegate = null
+    ) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 Log.i("SEARCH", "New text: $newText")

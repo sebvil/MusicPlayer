@@ -7,10 +7,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.EventHandler
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
@@ -19,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 fun <E : UiEvent, S : State> Screen(
     screenViewModel: BaseViewModel<E, S>,
     eventHandler: EventHandler<E>,
+    navigationDelegate: NavigationDelegate?,
     modifier: Modifier = Modifier,
     topBar: @Composable (S) -> Unit = {},
     fab: @Composable (S) -> Unit = {},
@@ -26,6 +29,9 @@ fun <E : UiEvent, S : State> Screen(
 ) {
     val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
+    navigationDelegate?.also {
+        HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+    }
 
     Scaffold(
         modifier = modifier,

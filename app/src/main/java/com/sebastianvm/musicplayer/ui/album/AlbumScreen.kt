@@ -33,32 +33,16 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface AlbumNavigationDelegate {
-    fun openContextMenu(trackId: Long, albumId: Long, trackIndex: Int) = Unit
-}
-
 @Composable
 fun AlbumScreen(
     screenViewModel: AlbumViewModel,
     navigationDelegate: NavigationDelegate,
-    delegate: AlbumNavigationDelegate
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is AlbumUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(event.navigationDestination)
-                }
-                is AlbumUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(
-                        trackId = event.trackId,
-                        albumId = event.albumId,
-                        trackIndex = event.trackIndex
-                    )
-                }
-            }
-        }) { state ->
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
             override fun onTrackClicked(trackIndex: Int) {
                 screenViewModel.onTrackClicked(trackIndex = trackIndex)

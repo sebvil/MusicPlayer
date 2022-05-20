@@ -3,11 +3,19 @@ package com.sebastianvm.musicplayer.ui.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 
 class NavigationDelegate(private val navController: NavController) {
 
+    fun handleNavEvent(navEvent: NavEvent) {
+        when (navEvent) {
+            is NavEvent.NavigateUp -> navigateUp()
+            is NavEvent.NavigateToScreen -> navigateToScreen(navEvent.destination)
+        }
+    }
+
     // TODO this is broken
-    fun navigateToScreen(destination: NavigationDestination) {
+    private fun navigateToScreen(destination: NavigationDestination) {
         val navBackStackEntry = navController.currentBackStackEntry
         val currentDestination = navBackStackEntry?.destination
 
@@ -30,7 +38,7 @@ class NavigationDelegate(private val navController: NavController) {
         }
     }
 
-    fun navigateUp() {
+    private fun navigateUp() {
         navController.navigateUp()
     }
 

@@ -17,25 +17,15 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface ArtistListScreenNavigationDelegate {
-    fun openContextMenu(artistId: Long)
-}
-
 @Composable
 fun ArtistListScreen(
     screenViewModel: ArtistListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: ArtistListScreenNavigationDelegate
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is ArtistListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
-                is ArtistListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
-                is ArtistListUiEvent.NavEvent -> navigationDelegate.navigateToScreen(event.navigationDestination)
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.artists),

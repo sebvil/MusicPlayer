@@ -2,9 +2,11 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -53,7 +55,7 @@ class GenreListViewModel @Inject constructor(
     fun onGenreClicked(genreId: Long) {
         addUiEvent(
             GenreListUiEvent.NavEvent(
-                NavigationDestination.TrackListDestination(
+                NavigationDestination.TrackList(
                     TrackListArguments(
                         trackListId = genreId,
                         trackListType = TrackListType.GENRE
@@ -74,7 +76,16 @@ class GenreListViewModel @Inject constructor(
     }
 
     fun onGenreOverflowMenuIconClicked(genreId: Long) {
-        addUiEvent(GenreListUiEvent.OpenContextMenu(genreId))
+        addUiEvent(
+            GenreListUiEvent.NavEvent(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = genreId,
+                        mediaType = MediaType.GENRE,
+                    )
+                )
+            )
+        )
     }
 }
 
@@ -100,5 +111,4 @@ object InitialGenreListStateModule {
 sealed class GenreListUiEvent : UiEvent {
     data class NavEvent(val navigationDestination: NavigationDestination) : GenreListUiEvent()
     object NavigateUp : GenreListUiEvent()
-    data class OpenContextMenu(val genreId: Long) : GenreListUiEvent()
 }

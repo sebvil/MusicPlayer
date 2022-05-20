@@ -14,22 +14,20 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 
 
 @Composable
 fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: NavigationDelegate) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is PlaylistUiEvent.NavEvent -> navigationDelegate.navigateToScreen(event.navigationDestination)
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(title = it.playlistName,
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        navigationDelegate.navigateUp()
+                        navigationDelegate.handleNavEvent(NavEvent.NavigateUp)
                     }
                 })
         },

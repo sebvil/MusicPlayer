@@ -10,18 +10,24 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.navigateToArtistsBottomSheet
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.navigation.NavArgument
 import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
-import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+
+@Serializable
+@Parcelize
+data class ContextMenuArguments(
+    val mediaId: Long,
+    val mediaType: MediaType,
+    val mediaGroup: MediaGroup? = null,
+    val trackIndex: Int = 0
+) : NavigationArguments
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.contextBottomSheet(
@@ -77,19 +83,19 @@ fun NavGraphBuilder.contextBottomSheet(
                 }
 
                 override fun navigateToAlbum(albumId: Long) {
-                    NavigationDelegate(navController).navigateToScreen(
-                        NavigationDestination.AlbumDestination(
-                            AlbumArguments(albumId)
-                        )
-                    )
+//                    NavigationDelegate(navController).navigateToScreen(
+//                        NavigationDestination.AlbumDestination(
+//                            AlbumArguments(albumId)
+//                        )
+//                    )
                 }
 
                 override fun navigateToArtist(artistId: Long) {
-                    NavigationDelegate(navController).navigateToScreen(
-                        NavigationDestination.ArtistDestination(
-                            ArtistArguments(artistId = artistId)
-                        )
-                    )
+//                    NavigationDelegate(navController).navigateToScreen(
+//                        NavigationDestination.ArtistDestination(
+//                            ArtistArguments(artistId = artistId)
+//                        )
+//                    )
                 }
 
                 override fun navigateToArtistsBottomSheet(mediaId: Long, mediaType: MediaType) {
@@ -98,14 +104,14 @@ fun NavGraphBuilder.contextBottomSheet(
                 }
 
                 override fun navigateToGenre(genreId: Long) {
-                    navigationDelegate.navigateToScreen(
-                        NavigationDestination.TrackListDestination(
-                            TrackListArguments(
-                                trackListId = genreId,
-                                trackListType = TrackListType.GENRE
-                            )
-                        )
-                    )
+//                    navigationDelegate.navigateToScreen(
+//                        NavigationDestination.TrackList(
+//                            TrackListArguments(
+//                                trackListId = genreId,
+//                                trackListType = TrackListType.GENRE
+//                            )
+//                        )
+//                    )
                 }
 
                 override fun navigateToPlaylist(playlistId: Long) {
@@ -118,20 +124,4 @@ fun NavGraphBuilder.contextBottomSheet(
             }
         )
     }
-}
-
-fun NavController.openContextMenu(
-    mediaType: MediaType,
-    mediaId: Long,
-    mediaGroup: MediaGroup,
-    trackIndex: Int? = null
-) {
-    navigateTo(
-        NavRoutes.CONTEXT,
-        NavArgument(NavArgs.MEDIA_ID, mediaId),
-        NavArgument(NavArgs.MEDIA_TYPE, mediaType.name),
-        NavArgument(NavArgs.MEDIA_GROUP_TYPE, mediaGroup.mediaGroupType),
-        NavArgument(NavArgs.MEDIA_GROUP_ID, mediaGroup.mediaId),
-        NavArgument(NavArgs.TRACK_INDEX, trackIndex),
-    )
 }

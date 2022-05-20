@@ -30,16 +30,11 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-interface ArtistScreenNavigationDelegate {
-    fun openContextMenu(albumId: Long)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
     navigationDelegate: NavigationDelegate,
-    delegate: ArtistScreenNavigationDelegate,
 ) {
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = remember(decayAnimationSpec) {
@@ -48,19 +43,8 @@ fun ArtistScreen(
 
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is ArtistUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(event.navigationDestination)
-                }
-                is ArtistUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.albumId)
-                }
-                is ArtistUiEvent.NavigateUp -> {
-                    navigationDelegate.navigateUp()
-                }
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { state ->
             LargeTopAppBar(

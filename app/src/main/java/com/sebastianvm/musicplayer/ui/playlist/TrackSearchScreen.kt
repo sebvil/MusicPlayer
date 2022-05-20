@@ -40,7 +40,11 @@ fun TrackSearchScreen(
     screenViewModel: TrackSearchViewModel = viewModel(),
     navigationDelegate: NavigationDelegate
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = { }) { state ->
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state ->
         TrackSearchLayout(state = state, delegate = object : TrackSearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 screenViewModel.onTextChanged(newText = newText)

@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 interface AlbumListScreenNavigationDelegate {
     fun openSortMenu()
-    fun openContextMenu(albumId: Long)
 }
 
 
@@ -36,23 +35,15 @@ fun AlbumListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumListUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(destination = event.navigationDestination)
-                }
-                is AlbumListUiEvent.NavigateUp -> {
-                    navigationDelegate.navigateUp()
-                }
                 is AlbumListUiEvent.ShowSortBottomSheet -> {
                     delegate.openSortMenu()
                 }
                 is AlbumListUiEvent.ScrollToTop -> {
                     listState.scrollToItem(0)
                 }
-                is AlbumListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.albumId)
-                }
             }
         },
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.albums),

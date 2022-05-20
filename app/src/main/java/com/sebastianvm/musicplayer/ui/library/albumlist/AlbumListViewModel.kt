@@ -1,13 +1,16 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -54,8 +57,8 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onAlbumClicked(albumId: Long) {
-        addUiEvent(
-            AlbumListUiEvent.NavEvent(
+        addNavEvent(
+            NavEvent.NavigateToScreen(
                 NavigationDestination.AlbumDestination(
                     AlbumArguments(albumId)
                 )
@@ -64,7 +67,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(AlbumListUiEvent.NavigateUp)
+        addNavEvent(NavEvent.NavigateUp)
     }
 
     fun onSortByClicked() {
@@ -72,7 +75,16 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
-        addUiEvent(AlbumListUiEvent.OpenContextMenu(albumId))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = albumId,
+                        mediaType = MediaType.ALBUM
+                    )
+                )
+            )
+        )
     }
 }
 
@@ -96,9 +108,6 @@ object InitialAlbumListStateModule {
 }
 
 sealed class AlbumListUiEvent : UiEvent {
-    data class NavEvent(val navigationDestination: NavigationDestination) : AlbumListUiEvent()
-    object NavigateUp : AlbumListUiEvent()
     object ShowSortBottomSheet : AlbumListUiEvent()
     object ScrollToTop : AlbumListUiEvent()
-    data class OpenContextMenu(val albumId: Long) : AlbumListUiEvent()
 }

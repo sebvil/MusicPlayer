@@ -33,29 +33,15 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface PlaylistsListScreenNavigationDelegate {
-    fun openContextMenu(playlistId: Long)
-}
-
 @Composable
 fun PlaylistsListScreen(
     screenViewModel: PlaylistsListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: PlaylistsListScreenNavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is PlaylistsListUiEvent.NavEvent -> {
-                    navigationDelegate.navigateToScreen(event.navigationDestination)
-                }
-                is PlaylistsListUiEvent.NavigateUp -> navigationDelegate.navigateUp()
-                is PlaylistsListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.playlistId)
-                }
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         fab = {
             ExtendedFloatingActionButton(
                 text = { Text(text = stringResource(id = R.string.new_playlist)) },

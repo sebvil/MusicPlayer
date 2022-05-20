@@ -3,9 +3,13 @@ package com.sebastianvm.musicplayer.ui.album
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -54,16 +58,24 @@ class AlbumViewModel @Inject constructor(
     fun onTrackClicked(trackIndex: Int) {
         viewModelScope.launch {
             playbackManager.playAlbum(albumId = state.value.albumId, initialTrackIndex = trackIndex)
-            addUiEvent(AlbumUiEvent.NavEvent(NavigationDestination.MusicPlayerDestination))
+            addUiEvent(AlbumUiEvent.NavEvent(NavigationDestination.MusicPlayer))
         }
     }
 
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
         addUiEvent(
-            AlbumUiEvent.OpenContextMenu(
-                trackId = trackId,
-                albumId = state.value.albumId,
-                trackIndex = trackIndex
+            AlbumUiEvent.NavEvent(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = trackId,
+                        mediaType = MediaType.TRACK,
+                        mediaGroup = MediaGroup(
+                            mediaId = state.value.albumId,
+                            mediaGroupType = MediaGroupType.ALBUM
+                        ),
+                        trackIndex = trackIndex
+                    )
+                )
             )
         )
     }
@@ -95,6 +107,4 @@ object InitialAlbumStateModule {
 
 sealed class AlbumUiEvent : UiEvent {
     data class NavEvent(val navigationDestination: NavigationDestination) : AlbumUiEvent()
-    data class OpenContextMenu(val trackId: Long, val albumId: Long, val trackIndex: Int) :
-        AlbumUiEvent()
 }
