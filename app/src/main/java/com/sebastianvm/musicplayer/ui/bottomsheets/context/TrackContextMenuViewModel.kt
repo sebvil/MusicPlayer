@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,11 +35,10 @@ object InitialTrackContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackContextMenuStateProvider(savedStateHandle: SavedStateHandle): TrackContextMenuState {
-        val mediaId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
-        val mediaGroupType =
-            MediaGroupType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_GROUP_TYPE)!!)
-        val mediaGroupMediaId = savedStateHandle.get<Long>(NavArgs.MEDIA_GROUP_ID) ?: 0
-        val trackIndex = savedStateHandle.get<Int>(NavArgs.TRACK_INDEX) ?: 0
+        val mediaId = 0L
+        val mediaGroupType = MediaGroupType.SINGLE_TRACK
+        val mediaGroupMediaId = 0L
+        val trackIndex = 0
         return TrackContextMenuState(
             mediaId = mediaId,
             menuTitle = "",

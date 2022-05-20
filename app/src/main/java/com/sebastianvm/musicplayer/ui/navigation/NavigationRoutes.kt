@@ -17,6 +17,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
@@ -30,18 +31,11 @@ import kotlinx.serialization.modules.subclass
 
 const val ARGS = "ARGS"
 
-object NavRoutes {
-    const val PLAYER = "PLAYER"
-    const val SEARCH = "SEARCH"
-    const val SORT = "SORT"
-    const val CONTEXT = "CONTEXT"
-    const val MEDIA_ARTISTS = "MEDIA_ARTISTS"
-    const val QUEUE = "QUEUE"
-}
-
 enum class NavigationRoute(val hasArgs: Boolean) {
     Library(hasArgs = false),
     Player(hasArgs = false),
+    Queue(hasArgs = false),
+    Search(hasArgs = false),
     LibraryRoot(hasArgs = false),
     ArtistsRoot(hasArgs = false),
     AlbumsRoot(hasArgs = false),
@@ -53,7 +47,8 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     TrackList(hasArgs = true),
     TrackSearch(hasArgs = true),
     ContextMenu(hasArgs = true),
-    SortMenu(hasArgs = true)
+    SortMenu(hasArgs = true),
+    ArtistsMenu(hasArgs = true)
 }
 
 
@@ -63,6 +58,10 @@ sealed class NavigationDestination(
     val navigationRoute: NavigationRoute, open val arguments: NavigationArguments?
 ) {
     object MusicPlayer : NavigationDestination(NavigationRoute.Player, arguments = null)
+    object Search : NavigationDestination(NavigationRoute.Search, arguments = null)
+    object Queue : NavigationDestination(NavigationRoute.Queue, arguments = null)
+    object LibraryRoot : NavigationDestination(NavigationRoute.Queue, arguments = null)
+    object Library : NavigationDestination(NavigationRoute.Library, arguments = null)
     object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
     object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
     object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
@@ -89,15 +88,9 @@ sealed class NavigationDestination(
     data class SortMenu(override val arguments: SortMenuArguments) :
         NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
 
-}
+    data class ArtistsMenu(override val arguments: ArtistsMenuArguments) :
+        NavigationDestination(NavigationRoute.ArtistsMenu, arguments = arguments)
 
-object NavArgs {
-    const val MEDIA_ID = "mediaId"
-    const val MEDIA_TYPE = "mediaType"
-    const val MEDIA_GROUP_ID = "mediaGroupId"
-    const val MEDIA_GROUP_TYPE = "mediaGroupType"
-    const val SORTABLE_LIST_TYPE = "sortableListType"
-    const val TRACK_INDEX = "trackIndex"
 }
 
 

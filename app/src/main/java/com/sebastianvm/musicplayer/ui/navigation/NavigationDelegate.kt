@@ -14,12 +14,18 @@ class NavigationDelegate(private val navController: NavController) {
         }
     }
 
+    fun isRouteInGraph(navigationRoute: NavigationRoute): Boolean {
+        val navBackStackEntry = navController.currentBackStackEntry
+        val currentDestination = navBackStackEntry?.destination
+        return currentDestination?.hierarchy?.any { it.route == navigationRoute.name } == true
+    }
+
     // TODO this is broken
     private fun navigateToScreen(destination: NavigationDestination) {
         val navBackStackEntry = navController.currentBackStackEntry
         val currentDestination = navBackStackEntry?.destination
 
-        if (currentDestination?.hierarchy?.any { it.route == destination.navigationRoute.name } == true) {
+        if (isRouteInGraph(destination.navigationRoute)) {
             navController.navigateTo(destination)
         } else {
             navController.navigateTo(destination) {

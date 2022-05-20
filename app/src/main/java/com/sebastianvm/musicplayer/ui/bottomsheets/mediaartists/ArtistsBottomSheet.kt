@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,28 +22,21 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
-
-interface ArtistsBottomSheetNavigationDelegate {
-    fun navigateToArtist(artistId: Long) = Unit
-}
 
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
-    delegate: ArtistsBottomSheetNavigationDelegate
+    navigationDelegate: NavigationDelegate
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
-    HandleEvents(viewModel = sheetViewModel) { event ->
-        when (event) {
-            is ArtistsBottomSheetUiEvent.NavigateToArtist -> {
-                delegate.navigateToArtist(artistId = event.artistId)
-            }
-        }
-    }
+    HandleEvents(viewModel = sheetViewModel) {}
+    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
     ArtistsBottomSheetLayout(state = state.value, delegate = object : ArtistsBottomSheetDelegate {
         override fun onArtistRowClicked(artistId: Long) {
             sheetViewModel.onArtistClicked(artistId)

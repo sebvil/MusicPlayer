@@ -29,29 +29,25 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
     val navigationDelegate = NavigationDelegate(navController)
-    Scaffold(bottomBar = bottomNavBar) { paddingValues ->
+    Scaffold(bottomBar = { BottomNavBar(navigationDelegate) }) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = NavigationRoute.Library.name,
             modifier = Modifier.padding(paddingValues)
         ) {
 
-            libraryGraph(navigationDelegate = navigationDelegate, navController = navController)
+            libraryGraph(navigationDelegate)
 
-            queueNavDestination()
+            queueNavDestination(navigationDelegate)
             musicPlayerNavDestination()
 
-            searchNavDestination(navigationDelegate, navController)
+            searchNavDestination(navigationDelegate)
         }
     }
 }
 
-fun NavGraphBuilder.libraryGraph(
-    navigationDelegate: NavigationDelegate,
-    navController: NavHostController
-) {
+fun NavGraphBuilder.libraryGraph(navigationDelegate: NavigationDelegate) {
 
     navigation(
         startDestination = NavigationRoute.LibraryRoot.name,
@@ -72,7 +68,7 @@ fun NavGraphBuilder.libraryGraph(
         trackSearchNavDestination(navigationDelegate)
 
         sortBottomSheetNavDestination(navigationDelegate)
-        contextBottomSheet(navigationDelegate, navController)
-        artistsBottomSheetNavDestination(navController)
+        contextBottomSheet(navigationDelegate)
+        artistsBottomSheetNavDestination(navigationDelegate)
     }
 }

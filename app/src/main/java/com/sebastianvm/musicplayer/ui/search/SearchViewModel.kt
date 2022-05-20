@@ -11,17 +11,23 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -35,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,8 +52,7 @@ class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-) :
-    BaseViewModel<SearchUiEvent, SearchState>(initialState) {
+) : BaseViewModel<SearchUiEvent, SearchState>(initialState) {
 
     private val searchTerm = MutableStateFlow("")
 
@@ -84,73 +90,121 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun <A : UserAction> handle(action: A) {
-        when (action) {
-            is SearchUserAction.OnTextChanged -> {
-                searchTerm.value = action.newText
-            }
-            is SearchUserAction.SearchTypeChanged -> {
-                setState {
-                    copy(
-                        selectedOption = action.newType
-                    )
-                }
-            }
-            is SearchUserAction.TrackRowClicked -> {
-                viewModelScope.launch {
-                    playbackManager.playSingleTrack(action.trackId)
-                    addUiEvent(SearchUiEvent.NavigateToPlayer)
-                }
-            }
-            is SearchUserAction.ArtistRowClicked -> addUiEvent(SearchUiEvent.NavigateToArtist(action.artistId))
-            is SearchUserAction.AlbumRowClicked -> addUiEvent(SearchUiEvent.NavigateToAlbum(action.albumId))
-            is SearchUserAction.GenreRowClicked -> addUiEvent(SearchUiEvent.NavigateToGenre(action.genreId))
-            is SearchUserAction.TrackOverflowMenuClicked -> {
-                addUiEvent(
-                    SearchUiEvent.OpenContextMenu(
+    fun onTextChanged(newText: String) {
+        searchTerm.update { newText }
+    }
+
+    fun onSearchTypeChanged(newType: Int) {
+        setState {
+            copy(
+                selectedOption = newType
+            )
+        }
+    }
+
+    fun onTrackRowClicked(trackId: Long) {
+        viewModelScope.launch {
+            playbackManager.playSingleTrack(trackId)
+            addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+        }
+    }
+
+    fun onArtistRowClicked(artistId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ArtistDestination(
+                    ArtistArguments(artistId = artistId)
+                )
+            )
+        )
+    }
+
+    fun onAlbumRowClicked(albumId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.AlbumDestination(
+                    AlbumArguments(albumId = albumId)
+                )
+            )
+        )
+    }
+
+    fun onGenreRowClicked(genreId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.TrackList(
+                    TrackListArguments(trackListType = TrackListType.GENRE, trackListId = genreId)
+                )
+            )
+        )
+    }
+
+    fun onTrackOverflowMenuClicked(trackId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = trackId,
                         mediaType = MediaType.TRACK,
                         mediaGroup = MediaGroup(
-                            MediaGroupType.SINGLE_TRACK,
-                            action.trackId
-                        ),
+                            mediaId = trackId,
+                            mediaGroupType = MediaGroupType.SINGLE_TRACK
+                        )
                     )
                 )
-            }
-            is SearchUserAction.ArtistOverflowMenuClicked -> {
-                addUiEvent(
-                    SearchUiEvent.OpenContextMenu(
+            )
+        )
+    }
+
+    fun onArtistOverflowMenuClicked(artistId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = artistId,
                         mediaType = MediaType.ARTIST,
                         mediaGroup = MediaGroup(
-                            MediaGroupType.ARTIST,
-                            action.artistId
-                        ),
+                            mediaId = artistId,
+                            mediaGroupType = MediaGroupType.ARTIST
+                        )
                     )
                 )
-            }
-            is SearchUserAction.AlbumOverflowMenuClicked -> {
-                addUiEvent(
-                    SearchUiEvent.OpenContextMenu(
+            )
+        )
+    }
+
+    fun onAlbumOverflowMenuClicked(albumId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = albumId,
                         mediaType = MediaType.ALBUM,
                         mediaGroup = MediaGroup(
-                            MediaGroupType.ALBUM,
-                            action.albumId
-                        ),
+                            mediaId = albumId,
+                            mediaGroupType = MediaGroupType.ALBUM
+                        )
                     )
                 )
-            }
-            is SearchUserAction.GenreOverflowMenuClicked -> {
-                addUiEvent(
-                    SearchUiEvent.OpenContextMenu(
+            )
+        )
+    }
+
+    fun onGenreOverflowMenuClicked(genreId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = genreId,
                         mediaType = MediaType.GENRE,
                         mediaGroup = MediaGroup(
-                            MediaGroupType.GENRE,
-                            action.genreId
-                        ),
+                            mediaId = genreId,
+                            mediaGroupType = MediaGroupType.GENRE
+                        )
                     )
                 )
-            }
-
-        }
+            )
+        )
     }
 }
 
@@ -179,25 +233,4 @@ object InitialSearchStateModule {
     }
 }
 
-sealed class SearchUserAction : UserAction {
-    data class OnTextChanged(val newText: String) : SearchUserAction()
-    data class SearchTypeChanged(@StringRes val newType: Int) : SearchUserAction()
-    data class TrackRowClicked(val trackId: Long) : SearchUserAction()
-    data class TrackOverflowMenuClicked(val trackId: Long) : SearchUserAction()
-    data class ArtistRowClicked(val artistId: Long) : SearchUserAction()
-    data class ArtistOverflowMenuClicked(val artistId: Long) : SearchUserAction()
-    data class AlbumRowClicked(val albumId: Long) : SearchUserAction()
-    data class AlbumOverflowMenuClicked(val albumId: Long) : SearchUserAction()
-    data class GenreRowClicked(val genreId: Long) : SearchUserAction()
-    data class GenreOverflowMenuClicked(val genreId: Long) : SearchUserAction()
-}
-
-sealed class SearchUiEvent : UiEvent {
-    object NavigateToPlayer : SearchUiEvent()
-    data class NavigateToArtist(val artistId: Long) : SearchUiEvent()
-    data class NavigateToAlbum(val albumId: Long) : SearchUiEvent()
-    data class NavigateToGenre(val genreId: Long) : SearchUiEvent()
-    data class OpenContextMenu(val mediaType: MediaType, val mediaGroup: MediaGroup) :
-        SearchUiEvent()
-
-}
+sealed class SearchUiEvent : UiEvent

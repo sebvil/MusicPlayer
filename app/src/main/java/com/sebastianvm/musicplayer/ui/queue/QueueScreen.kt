@@ -19,13 +19,14 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
-fun QueueScreen(screenViewModel: QueueViewModel) {
+fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationDelegate) {
     val layoutManager = LinearLayoutManager(LocalContext.current)
     Screen(
         screenViewModel = screenViewModel,
@@ -36,7 +37,7 @@ fun QueueScreen(screenViewModel: QueueViewModel) {
                 }
             }
         },
-        navigationDelegate = null
+        navigationDelegate = navigationDelegate
     ) { state ->
         QueueLayout(state = state, delegate = object : QueueScreenDelegate {
             override fun onMove(from: Int, to: Int) {
