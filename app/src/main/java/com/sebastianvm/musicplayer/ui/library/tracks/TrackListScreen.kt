@@ -23,15 +23,10 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 
-interface TrackListScreenNavigationDelegate {
-    fun openSortMenu(mediaId: Long)
-}
-
 @Composable
 fun TrackListScreen(
     screenViewModel: TrackListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: TrackListScreenNavigationDelegate
 ) {
     val listState = rememberLazyListState()
 
@@ -39,9 +34,6 @@ fun TrackListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is TrackListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu(mediaId = event.mediaId)
-                }
                 is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
             }
         },

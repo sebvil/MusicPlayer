@@ -1,43 +1,24 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
-import com.sebastianvm.musicplayer.ui.navigation.NavArgument
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
-import com.sebastianvm.musicplayer.ui.navigation.createNavRoute
-import com.sebastianvm.musicplayer.ui.navigation.navigateTo
+import com.sebastianvm.musicplayer.ui.navigation.DestinationType
+import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
+import com.sebastianvm.musicplayer.ui.navigation.screenDestination
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.sortBottomSheetNavDestination(navController: NavController) {
-    bottomSheet(
-        route = createNavRoute(NavRoutes.SORT, NavArgs.SORTABLE_LIST_TYPE, NavArgs.MEDIA_ID),
-        arguments = listOf(
-            navArgument(NavArgs.SORTABLE_LIST_TYPE) { type = NavType.StringType },
-            navArgument(NavArgs.MEDIA_ID) { type = NavType.StringType },
-        )
-    ) {
-        val sheetViewModel = hiltViewModel<SortBottomSheetViewModel>()
-        SortBottomSheet(
-            sheetViewModel = sheetViewModel,
-            delegate = object : SortBottomSheetDelegate {
-                override fun popBackStack() {
-                    navController.popBackStack()
-                }
-            }
-        )
+@Serializable
+@Parcelize
+data class SortMenuArguments(val listType: SortableListType, val mediaId: Long = 0) :
+    NavigationArguments
+
+fun NavGraphBuilder.sortBottomSheetNavDestination(navigationDelegate: NavigationDelegate) {
+    screenDestination<SortBottomSheetViewModel>(
+        NavigationRoute.SortMenu,
+        destinationType = DestinationType.BottomSheet
+    ) { viewModel ->
+        SortBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
     }
-}
-
-fun NavController.openSortBottomSheet(listType: SortableListType, mediaId: Long = 0) {
-    navigateTo(
-        NavRoutes.SORT,
-        NavArgument(NavArgs.SORTABLE_LIST_TYPE, listType),
-        NavArgument(NavArgs.MEDIA_ID, mediaId)
-    )
 }

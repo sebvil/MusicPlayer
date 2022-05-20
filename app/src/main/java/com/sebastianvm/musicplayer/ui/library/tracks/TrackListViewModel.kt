@@ -11,6 +11,8 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -111,7 +113,16 @@ class TrackListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(TrackListUiEvent.ShowSortBottomSheet(mediaId = state.value.trackListId))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.SortMenu(
+                    SortMenuArguments(
+                        SortableListType.TRACKS,
+                        mediaId = state.value.trackListId
+                    )
+                )
+            )
+        )
     }
 
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
@@ -181,6 +192,5 @@ object InitialTrackListStateModule {
 
 sealed class TrackListUiEvent : UiEvent {
     object ScrollToTop : TrackListUiEvent()
-    data class ShowSortBottomSheet(val mediaId: Long) : TrackListUiEvent()
 }
 

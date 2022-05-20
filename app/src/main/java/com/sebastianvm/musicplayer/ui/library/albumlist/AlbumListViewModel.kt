@@ -6,6 +6,8 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -71,7 +73,15 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun onSortByClicked() {
-        addUiEvent(AlbumListUiEvent.ShowSortBottomSheet)
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.SortMenu(
+                    SortMenuArguments(
+                        listType = SortableListType.ALBUMS
+                    )
+                )
+            )
+        )
     }
 
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
@@ -108,6 +118,5 @@ object InitialAlbumListStateModule {
 }
 
 sealed class AlbumListUiEvent : UiEvent {
-    object ShowSortBottomSheet : AlbumListUiEvent()
     object ScrollToTop : AlbumListUiEvent()
 }

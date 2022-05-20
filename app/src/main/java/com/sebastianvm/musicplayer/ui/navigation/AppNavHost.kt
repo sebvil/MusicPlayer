@@ -59,9 +59,9 @@ fun NavGraphBuilder.libraryGraph(
     ) {
         libraryNavDestination(navigationDelegate)
 
-        trackListNavDestination(navigationDelegate, navController)
+        trackListNavDestination(navigationDelegate)
         artistListNavDestination(navigationDelegate)
-        albumListNavDestination(navigationDelegate, navController)
+        albumListNavDestination(navigationDelegate)
         genreListNavDestination(navigationDelegate)
         playlistsListNavDestination(navigationDelegate)
 
@@ -71,7 +71,7 @@ fun NavGraphBuilder.libraryGraph(
 
         trackSearchNavDestination(navigationDelegate)
 
-        sortBottomSheetNavDestination(navController)
+        sortBottomSheetNavDestination(navigationDelegate)
         contextBottomSheet(navigationDelegate, navController)
         artistsBottomSheetNavDestination(navController)
     }

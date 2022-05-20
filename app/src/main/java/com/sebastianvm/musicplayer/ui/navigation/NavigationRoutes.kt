@@ -17,6 +17,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
@@ -51,7 +52,8 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     Playlist(hasArgs = true),
     TrackList(hasArgs = true),
     TrackSearch(hasArgs = true),
-    ContextMenu(hasArgs = true)
+    ContextMenu(hasArgs = true),
+    SortMenu(hasArgs = true)
 }
 
 
@@ -84,6 +86,9 @@ sealed class NavigationDestination(
     data class ContextMenu(override val arguments: ContextMenuArguments) :
         NavigationDestination(NavigationRoute.ContextMenu, arguments = arguments)
 
+    data class SortMenu(override val arguments: SortMenuArguments) :
+        NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
+
 }
 
 object NavArgs {
@@ -103,6 +108,8 @@ private val module = SerializersModule {
         subclass(AlbumArguments::class)
         subclass(TrackListArguments::class)
         subclass(ArtistArguments::class)
+        subclass(ContextMenuArguments::class)
+        subclass(SortMenuArguments::class)
     }
 }
 

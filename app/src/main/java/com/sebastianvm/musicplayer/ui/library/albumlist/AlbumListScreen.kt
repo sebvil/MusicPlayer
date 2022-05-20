@@ -19,25 +19,16 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface AlbumListScreenNavigationDelegate {
-    fun openSortMenu()
-}
-
-
 @Composable
 fun AlbumListScreen(
     screenViewModel: AlbumListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
-    delegate: AlbumListScreenNavigationDelegate,
 ) {
     val listState = rememberLazyListState()
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu()
-                }
                 is AlbumListUiEvent.ScrollToTop -> {
                     listState.scrollToItem(0)
                 }

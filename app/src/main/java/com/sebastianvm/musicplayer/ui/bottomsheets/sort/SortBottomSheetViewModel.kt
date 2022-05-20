@@ -4,10 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -26,10 +27,7 @@ import javax.inject.Inject
 class SortBottomSheetViewModel @Inject constructor(
     initialState: SortBottomSheetState,
     private val sortPreferencesRepository: SortPreferencesRepository
-) :
-    BaseViewModel<SortBottomSheetUiEvent, SortBottomSheetState>(
-        initialState
-    ) {
+) : BaseViewModel<SortBottomSheetUiEvent, SortBottomSheetState>(initialState) {
 
     init {
         viewModelScope.launch {
@@ -92,7 +90,7 @@ class SortBottomSheetViewModel @Inject constructor(
                     )
                 }
             }
-            addUiEvent(SortBottomSheetUiEvent.CloseBottomSheet)
+            addNavEvent(NavEvent.NavigateUp)
         }
     }
 }
@@ -110,12 +108,10 @@ object InitialSortBottomSheetState {
     @Provides
     @ViewModelScoped
     fun initialSortBottomSheetStateProvider(savedStateHandle: SavedStateHandle): SortBottomSheetState {
-        // We should always pass these
-        val listType = SortableListType.valueOf(savedStateHandle[NavArgs.SORTABLE_LIST_TYPE]!!)
-        val mediaId: Long = savedStateHandle[NavArgs.MEDIA_ID] ?: 0L
-        val sortOptions = getSortOptionsForScreen(listType)
+        val args = savedStateHandle.getArgs<SortMenuArguments>()
+        val sortOptions = getSortOptionsForScreen(args.listType)
         return SortBottomSheetState(
-            mediaId = mediaId,
+            mediaId = args.mediaId,
             sortOptions = sortOptions,
             selectedSort = sortOptions[0],
             sortOrder = MediaSortOrder.ASCENDING,
@@ -143,7 +139,4 @@ enum class SortableListType {
     PLAYLIST
 }
 
-sealed class SortBottomSheetUiEvent : UiEvent {
-    object CloseBottomSheet : SortBottomSheetUiEvent()
-}
-
+sealed class SortBottomSheetUiEvent : UiEvent

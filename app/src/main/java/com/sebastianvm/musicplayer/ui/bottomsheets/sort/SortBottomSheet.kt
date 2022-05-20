@@ -23,29 +23,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.Dispatchers
 
 
-interface SortBottomSheetDelegate {
-    fun popBackStack()
-}
-
 @Composable
 fun SortBottomSheet(
     sheetViewModel: SortBottomSheetViewModel = viewModel(),
-    delegate: SortBottomSheetDelegate
+    navigationDelegate: NavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
-    HandleEvents(viewModel = sheetViewModel) { event ->
-        when (event) {
-            is SortBottomSheetUiEvent.CloseBottomSheet -> {
-                delegate.popBackStack()
-            }
-        }
-    }
+    HandleEvents(viewModel = sheetViewModel) {}
+    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
 
     val rowModifier = Modifier
         .fillMaxWidth()
