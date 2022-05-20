@@ -25,14 +25,14 @@ data class AppearsOnForArtist(
 data class ArtistWithAlbums(
     @Embedded val artist: Artist,
     @Relation(
+        entity = Album::class,
         parentColumn = "id",
         entityColumn = "id",
-        entity = Album::class,
         projection = ["id"],
         associateBy = Junction(
             AlbumsForArtist::class,
-            parentColumn = "albumId",
-            entityColumn = "artistId"
+            parentColumn = "artistId",
+            entityColumn = "albumId"
         ),
     )
     val artistAlbums: List<Long>,
@@ -43,13 +43,12 @@ data class ArtistWithAlbums(
         projection = ["id"],
         associateBy = Junction(
             AppearsOnForArtist::class,
-            parentColumn = "albumId",
-            entityColumn = "artistId"
+            parentColumn = "artistId",
+            entityColumn = "albumId"
         )
     )
     val artistAppearsOn: List<Long>,
-
-    )
+)
 
 data class AlbumWithArtists(
     @Embedded val album: Album,

@@ -16,5 +16,4 @@ fun NavGraphBuilder.artistListNavDestination(navigationDelegate: NavigationDeleg
             navigationDelegate = navigationDelegate,
         )
     }
-
 }

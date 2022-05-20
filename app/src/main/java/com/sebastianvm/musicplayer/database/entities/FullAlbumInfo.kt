@@ -12,7 +12,11 @@ data class FullAlbumInfo(
         entityColumn = "id",
         entity = Artist::class,
         projection = ["id"],
-        associateBy = Junction(AlbumsForArtist::class, parentColumn = "albumId", entityColumn = "artistId")
+        associateBy = Junction(
+            AlbumsForArtist::class,
+            parentColumn = "albumId",
+            entityColumn = "artistId"
+        )
     )
     val artists: List<Long>,
     @Relation(

@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -57,8 +58,8 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onArtistClicked(artistId: Long) {
-        addUiEvent(
-            ArtistListUiEvent.NavEvent(
+        addNavEvent(
+            NavEvent.NavigateToScreen(
                 NavigationDestination.ArtistDestination(
                     ArtistArguments(artistId = artistId)
                 )
@@ -73,12 +74,12 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(ArtistListUiEvent.NavigateUp)
+        addNavEvent(NavEvent.NavigateUp)
     }
 
     fun onArtistOverflowMenuIconClicked(artistId: Long) {
-        addUiEvent(
-            ArtistListUiEvent.NavEvent(
+        addNavEvent(
+            NavEvent.NavigateToScreen(
                 NavigationDestination.ContextMenu(
                     ContextMenuArguments(
                         mediaId = artistId,
@@ -108,7 +109,4 @@ object InitialArtistListStateModule {
     }
 }
 
-sealed class ArtistListUiEvent : UiEvent {
-    object NavigateUp : ArtistListUiEvent()
-    data class NavEvent(val navigationDestination: NavigationDestination) : ArtistListUiEvent()
-}
+sealed class ArtistListUiEvent : UiEvent
