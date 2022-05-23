@@ -14,45 +14,27 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface AlbumListScreenNavigationDelegate {
-    fun navigateToAlbum(albumId: Long)
-    fun navigateUp()
-    fun openSortMenu()
-    fun openContextMenu(albumId: Long)
-}
-
-
 @Composable
 fun AlbumListScreen(
     screenViewModel: AlbumListViewModel = viewModel(),
-    delegate: AlbumListScreenNavigationDelegate,
+    navigationDelegate: NavigationDelegate,
 ) {
     val listState = rememberLazyListState()
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is AlbumListUiEvent.NavigateToAlbum -> {
-                    delegate.navigateToAlbum(event.albumId)
-                }
-                is AlbumListUiEvent.NavigateUp -> {
-                    delegate.navigateUp()
-                }
-                is AlbumListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu()
-                }
                 is AlbumListUiEvent.ScrollToTop -> {
                     listState.scrollToItem(0)
                 }
-                is AlbumListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.albumId)
-                }
             }
         },
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.albums),

@@ -19,35 +19,21 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface GenreListScreenNavigationDelegate {
-    fun navigateUp()
-    fun navigateToGenre(genreId: Long)
-    fun openContextMenu(genreId: Long)
-}
-
 @Composable
 fun GenreListScreen(
     screenViewModel: GenreListViewModel = viewModel(),
-    delegate: GenreListScreenNavigationDelegate,
+    navigationDelegate: NavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is GenreListUiEvent.NavigateToGenre -> {
-                    delegate.navigateToGenre(event.genreId)
-                }
-                is GenreListUiEvent.NavigateUp -> delegate.navigateUp()
-                is GenreListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.genreId)
-                }
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.genres),

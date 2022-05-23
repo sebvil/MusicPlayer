@@ -12,28 +12,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 
-interface TrackListScreenNavigationDelegate {
-    fun navigateToPlayer()
-    fun navigateUp()
-    fun openSortMenu(mediaId: Long)
-    fun openContextMenu(mediaId: Long, mediaGroup: MediaGroup, trackIndex: Int)
-}
-
 @Composable
 fun TrackListScreen(
     screenViewModel: TrackListViewModel = viewModel(),
-    delegate: TrackListScreenNavigationDelegate
+    navigationDelegate: NavigationDelegate,
 ) {
     val listState = rememberLazyListState()
 
@@ -41,23 +34,10 @@ fun TrackListScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is TrackListUiEvent.NavigateToPlayer -> {
-                    delegate.navigateToPlayer()
-                }
-                is TrackListUiEvent.ShowSortBottomSheet -> {
-                    delegate.openSortMenu(mediaId = event.mediaId)
-                }
-                is TrackListUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(
-                        mediaId = event.trackId,
-                        mediaGroup = event.mediaGroup,
-                        trackIndex = event.trackIndex
-                    )
-                }
-                is TrackListUiEvent.NavigateUp -> delegate.navigateUp()
                 is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
             }
         },
+        navigationDelegate = navigationDelegate,
         topBar = { state ->
             LibraryTopBar(
                 title = state.trackListName.takeUnless { it.isEmpty() }

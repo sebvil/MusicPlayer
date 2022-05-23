@@ -107,7 +107,12 @@ class MusicRepositoryImpl @Inject constructor(
             )
         }
         val albumArtistList =
-            parseTag(albumArtists).map { artistName -> Artist(artistName = artistName) }
+            parseTag(albumArtists).map { artistName ->
+                Artist(
+                    id = artistName.hashCode().toLong(),
+                    artistName = artistName
+                )
+            }
         val album = Album(
             id = albumId,
             albumName = albumName,

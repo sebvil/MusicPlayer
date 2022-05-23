@@ -12,32 +12,20 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface ArtistListScreenNavigationDelegate {
-    fun navigateUp()
-    fun navigateToArtist(artistId: Long)
-    fun openContextMenu(artistId: Long)
-}
-
 @Composable
 fun ArtistListScreen(
     screenViewModel: ArtistListViewModel = viewModel(),
-    delegate: ArtistListScreenNavigationDelegate
+    navigationDelegate: NavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is ArtistListUiEvent.NavigateToArtist -> {
-                    delegate.navigateToArtist(event.artistId)
-                }
-                is ArtistListUiEvent.NavigateUp -> delegate.navigateUp()
-                is ArtistListUiEvent.OpenContextMenu -> delegate.openContextMenu(event.artistId)
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.artists),

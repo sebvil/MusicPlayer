@@ -1,11 +1,16 @@
 package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -53,7 +58,13 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onArtistClicked(artistId: Long) {
-        addUiEvent(ArtistListUiEvent.NavigateToArtist(artistId))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ArtistDestination(
+                    ArtistArguments(artistId = artistId)
+                )
+            )
+        )
     }
 
     fun onSortByClicked() {
@@ -63,11 +74,20 @@ class ArtistListViewModel @Inject constructor(
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(ArtistListUiEvent.NavigateUp)
+        addNavEvent(NavEvent.NavigateUp)
     }
 
     fun onArtistOverflowMenuIconClicked(artistId: Long) {
-        addUiEvent(ArtistListUiEvent.OpenContextMenu(artistId))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.ContextMenu(
+                    ContextMenuArguments(
+                        mediaId = artistId,
+                        mediaType = MediaType.ARTIST
+                    )
+                )
+            )
+        )
     }
 }
 
@@ -89,8 +109,4 @@ object InitialArtistListStateModule {
     }
 }
 
-sealed class ArtistListUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: Long) : ArtistListUiEvent()
-    object NavigateUp : ArtistListUiEvent()
-    data class OpenContextMenu(val artistId: Long) : ArtistListUiEvent()
-}
+sealed class ArtistListUiEvent : UiEvent

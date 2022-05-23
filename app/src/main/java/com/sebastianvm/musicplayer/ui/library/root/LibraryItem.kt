@@ -4,17 +4,17 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 
 sealed class LibraryItem(
-    val rowId: String,
+    val rowId: NavigationRoute,
     @StringRes val rowName: Int,
     @DrawableRes val icon: Int,
     @PluralsRes val countString: Int,
     open val count: Int
 ) {
     data class Tracks(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.TRACKS_ROOT,
+        rowId = NavigationRoute.TrackList,
         rowName = R.string.all_songs,
         icon = R.drawable.ic_song,
         countString = R.plurals.number_of_tracks,
@@ -22,7 +22,7 @@ sealed class LibraryItem(
     )
 
     data class Artists(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.ARTISTS_ROOT,
+        rowId = NavigationRoute.ArtistsRoot,
         rowName = R.string.artists,
         icon = R.drawable.ic_artist,
         countString = R.plurals.number_of_artists,
@@ -30,7 +30,7 @@ sealed class LibraryItem(
     )
 
     data class Albums(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.ALBUMS_ROOT,
+        rowId = NavigationRoute.AlbumsRoot,
         rowName = R.string.albums,
         icon = R.drawable.ic_album,
         countString = R.plurals.number_of_albums,
@@ -38,7 +38,7 @@ sealed class LibraryItem(
     )
 
     data class Genres(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.GENRES_ROOT,
+        rowId = NavigationRoute.GenresRoot,
         rowName = R.string.genres,
         icon = R.drawable.ic_genre,
         countString = R.plurals.number_of_genres,
@@ -46,7 +46,7 @@ sealed class LibraryItem(
     )
 
     data class Playlists(override val count: Int) : LibraryItem(
-        rowId = NavRoutes.PLAYLISTS_ROOT,
+        rowId = NavigationRoute.PlaylistsRoot,
         rowName = R.string.playlists,
         icon = R.drawable.ic_playlist,
         countString = R.plurals.number_of_playlists,

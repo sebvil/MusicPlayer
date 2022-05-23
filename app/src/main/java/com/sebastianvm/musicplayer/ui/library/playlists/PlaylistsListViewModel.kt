@@ -1,10 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -50,7 +51,13 @@ class PlaylistsListViewModel @Inject constructor(
     }
 
     fun onPlaylistClicked(playlistId: Long) {
-        addUiEvent(PlaylistsListUiEvent.NavigateToPlaylist(playlistId = playlistId))
+        addUiEvent(
+            PlaylistsListUiEvent.NavEvent(
+                NavigationDestination.PlaylistDestination(
+                    PlaylistArguments(playlistId = playlistId)
+                )
+            )
+        )
     }
 
     fun onSortByClicked() {
@@ -102,7 +109,7 @@ object InitialPlaylistsListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialPlaylistsListStateProvider(savedStateHandle: SavedStateHandle) =
+    fun initialPlaylistsListStateProvider() =
         PlaylistsListState(
             playlistsList = listOf(),
             sortOrder = MediaSortOrder.ASCENDING,
@@ -111,7 +118,7 @@ object InitialPlaylistsListStateModule {
 }
 
 sealed class PlaylistsListUiEvent : UiEvent {
-    data class NavigateToPlaylist(val playlistId: Long) : PlaylistsListUiEvent()
+    data class NavEvent(val navigationDestination: NavigationDestination) : PlaylistsListUiEvent()
     object NavigateUp : PlaylistsListUiEvent()
     data class OpenContextMenu(val playlistId: Long) : PlaylistsListUiEvent()
 }

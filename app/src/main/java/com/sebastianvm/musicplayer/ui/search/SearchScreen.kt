@@ -37,84 +37,67 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface SearchNavigationDelegate {
-    fun navigateToPlayer()
-    fun navigateToArtist(artistId: Long)
-    fun navigateToAlbum(albumId: Long)
-    fun navigateToGenre(genreId: Long)
-    fun openContextMenu(mediaType: MediaType, mediaGroup: MediaGroup)
-}
-
-
 @Composable
 fun SearchScreen(
     screenViewModel: SearchViewModel = viewModel(),
-    delegate: SearchNavigationDelegate
+    navigationDelegate: NavigationDelegate
 ) {
-    Screen(screenViewModel = screenViewModel, eventHandler = { event ->
-        when (event) {
-            is SearchUiEvent.NavigateToPlayer -> delegate.navigateToPlayer()
-            is SearchUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
-            is SearchUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is SearchUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
-            is SearchUiEvent.OpenContextMenu -> delegate.openContextMenu(
-                event.mediaType,
-                event.mediaGroup,
-            )
-        }
-    }) { state ->
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 Log.i("SEARCH", "New text: $newText")
-                screenViewModel.handle(SearchUserAction.OnTextChanged(newText = newText))
+                screenViewModel.onTextChanged(newText = newText)
             }
 
             override fun onOptionChosen(@StringRes newOption: Int) {
-                screenViewModel.handle(SearchUserAction.SearchTypeChanged(newType = newOption))
+                screenViewModel.onSearchTypeChanged(newType = newOption)
             }
 
             override fun onTrackClicked(trackId: Long) {
-                screenViewModel.handle(SearchUserAction.TrackRowClicked(trackId))
+                screenViewModel.onTrackRowClicked(trackId)
             }
 
             override fun onTrackOverflowMenuClicked(trackId: Long) {
-                screenViewModel.handle(SearchUserAction.TrackOverflowMenuClicked(trackId))
+                screenViewModel.onTrackOverflowMenuClicked(trackId)
             }
 
             override fun onArtistClicked(artistId: Long) {
-                screenViewModel.handle(SearchUserAction.ArtistRowClicked(artistId))
+                screenViewModel.onArtistRowClicked(artistId)
             }
 
             override fun onArtistOverflowMenuClicked(artistId: Long) {
-                screenViewModel.handle(SearchUserAction.ArtistOverflowMenuClicked(artistId))
+                screenViewModel.onArtistOverflowMenuClicked(artistId)
             }
 
             override fun onAlbumClicked(albumId: Long) {
-                screenViewModel.handle(SearchUserAction.AlbumRowClicked(albumId))
+                screenViewModel.onAlbumRowClicked(albumId)
             }
 
             override fun onAlbumOverflowMenuClicked(albumId: Long) {
-                screenViewModel.handle(SearchUserAction.AlbumOverflowMenuClicked(albumId))
+                screenViewModel.onAlbumOverflowMenuClicked(albumId)
             }
 
             override fun onGenreClicked(genreId: Long) {
-                screenViewModel.handle(SearchUserAction.GenreRowClicked(genreId))
+                screenViewModel.onGenreRowClicked(genreId)
             }
 
             override fun onGenreOverflowMenuClicked(genreId: Long) {
-                screenViewModel.handle(SearchUserAction.GenreOverflowMenuClicked(genreId))
+                screenViewModel.onGenreOverflowMenuClicked(genreId)
             }
         })
     }

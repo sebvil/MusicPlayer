@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
@@ -47,7 +48,7 @@ fun ScreenPreview(
     NavHostWrapper { navController ->
         Scaffold(
             topBar = topBar,
-            bottomBar = { BottomNavBar(navController = navController) },
+            bottomBar = { BottomNavBar(NavigationDelegate(navController)) },
             floatingActionButton = fab
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {

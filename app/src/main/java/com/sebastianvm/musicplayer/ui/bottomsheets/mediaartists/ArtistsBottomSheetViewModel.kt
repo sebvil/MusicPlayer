@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -68,8 +67,8 @@ object InitialArtistsBottomSheetStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
-        val mediaType = MediaType.valueOf(savedStateHandle.get<String>(NavArgs.MEDIA_TYPE)!!)
-        val mediaId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
+        val mediaType = MediaType.ARTIST
+        val mediaId = 0L
         return ArtistsBottomSheetState(
             mediaId = mediaId,
             mediaType = mediaType,

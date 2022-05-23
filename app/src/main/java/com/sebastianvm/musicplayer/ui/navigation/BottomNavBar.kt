@@ -10,24 +10,24 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, @DrawableRes val icon: Int) {
-    object Library : Screen(NavRoutes.LIBRARY, R.string.library, R.drawable.ic_song)
-    object Queue : Screen(NavRoutes.QUEUE, R.string.queue, R.drawable.ic_queue)
-    object Player : Screen(NavRoutes.PLAYER, R.string.player, R.drawable.ic_play)
-    object Search : Screen(NavRoutes.SEARCH, R.string.search, R.drawable.ic_search)
+sealed class Screen(
+    val destination: NavigationDestination,
+    @StringRes val resourceId: Int,
+    @DrawableRes val icon: Int
+) {
+    object Library : Screen(NavigationDestination.LibraryRoot, R.string.library, R.drawable.ic_song)
+    object Queue : Screen(NavigationDestination.Queue, R.string.queue, R.drawable.ic_queue)
+    object Player : Screen(NavigationDestination.MusicPlayer, R.string.player, R.drawable.ic_play)
+    object Search : Screen(NavigationDestination.Search, R.string.search, R.drawable.ic_search)
 }
 
 val items = listOf(
@@ -38,11 +38,9 @@ val items = listOf(
 )
 
 @Composable
-fun BottomNavBar(navController: NavHostController) {
+fun BottomNavBar(navigationDelegate: NavigationDelegate) {
     CompositionLocalProvider(LocalRippleTheme provides LocalRippleTheme.current) {
         NavigationBar {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
             items.forEach { screen ->
                 NavigationBarItem(
                     icon = {
@@ -52,30 +50,8 @@ fun BottomNavBar(navController: NavHostController) {
                         )
                     },
                     label = { Text(text = stringResource(screen.resourceId)) },
-                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                    onClick = {
-                        if (currentDestination?.hierarchy?.any { it.route == screen.route } == true) {
-                            navController.popBackStack(
-                                navController.graph.findStartDestination().id,
-                                inclusive = false
-                            )
-
-                        } else {
-                            navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
-                            }
-                        }
-                    }
+                    selected = navigationDelegate.isRouteInGraph(screen.destination.navigationRoute),
+                    onClick = { navigationDelegate.handleNavEvent(NavEvent.NavigateToScreen(screen.destination)) }
                 )
             }
         }
@@ -88,6 +64,6 @@ fun BottomNavBar(navController: NavHostController) {
 fun BottomNavBarPreview() {
     ThemedPreview {
         val navController = rememberNavController()
-        BottomNavBar(navController)
+        BottomNavBar(NavigationDelegate(navController))
     }
 }

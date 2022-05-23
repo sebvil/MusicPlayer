@@ -8,9 +8,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.serialization.decodeFromString
@@ -22,53 +31,66 @@ import kotlinx.serialization.modules.subclass
 
 const val ARGS = "ARGS"
 
-object NavRoutes {
-    const val LIBRARY = "LIBRARY"
-    const val LIBRARY_ROOT = "LIBRARY_ROOT"
-    const val TRACKS_ROOT = "TRACKS_ROOT"
-    const val ARTISTS_ROOT = "ARTISTS_ROOT"
-    const val ALBUMS_ROOT = "ALBUMS_ROOT"
-    const val GENRES_ROOT = "GENRES_ROOT"
-    const val PLAYLISTS_ROOT = "PLAYLISTS_ROOT"
-    const val PLAYLIST = "PLAYLIST"
-    const val ALBUM = "ALBUM"
-    const val ARTIST = "ARTIST"
-    const val PLAYER = "PLAYER"
-    const val SEARCH = "SEARCH"
-    const val SORT = "SORT"
-    const val CONTEXT = "CONTEXT"
-    const val MEDIA_ARTISTS = "MEDIA_ARTISTS"
-    const val QUEUE = "QUEUE"
-}
-
-enum class NavigationRoute {
-    TRACK_SEARCH, PLAYLIST,
+enum class NavigationRoute(val hasArgs: Boolean) {
+    Library(hasArgs = false),
+    Player(hasArgs = false),
+    Queue(hasArgs = false),
+    Search(hasArgs = false),
+    LibraryRoot(hasArgs = false),
+    ArtistsRoot(hasArgs = false),
+    AlbumsRoot(hasArgs = false),
+    GenresRoot(hasArgs = false),
+    PlaylistsRoot(hasArgs = false),
+    Artist(hasArgs = true),
+    Album(hasArgs = true),
+    Playlist(hasArgs = true),
+    TrackList(hasArgs = true),
+    TrackSearch(hasArgs = true),
+    ContextMenu(hasArgs = true),
+    SortMenu(hasArgs = true),
+    ArtistsMenu(hasArgs = true)
 }
 
 
 interface NavigationArguments : Parcelable
 
 sealed class NavigationDestination(
-    val navigationRoute: NavigationRoute, open val arguments: NavigationArguments
+    val navigationRoute: NavigationRoute, open val arguments: NavigationArguments?
 ) {
+    object MusicPlayer : NavigationDestination(NavigationRoute.Player, arguments = null)
+    object Search : NavigationDestination(NavigationRoute.Search, arguments = null)
+    object Queue : NavigationDestination(NavigationRoute.Queue, arguments = null)
+    object LibraryRoot : NavigationDestination(NavigationRoute.Queue, arguments = null)
+    object Library : NavigationDestination(NavigationRoute.Library, arguments = null)
+    object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
+    object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
+    object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
+    object PlaylistsRoot : NavigationDestination(NavigationRoute.PlaylistsRoot, arguments = null)
+    data class TrackList(override val arguments: TrackListArguments) :
+        NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
+
+    data class AlbumDestination(override val arguments: AlbumArguments) :
+        NavigationDestination(NavigationRoute.Album, arguments)
+
+
     data class PlaylistDestination(override val arguments: PlaylistArguments) :
-        NavigationDestination(NavigationRoute.PLAYLIST, arguments)
+        NavigationDestination(NavigationRoute.Playlist, arguments)
 
     data class TrackSearchDestination(override val arguments: TrackSearchArguments) :
-        NavigationDestination(NavigationRoute.TRACK_SEARCH, arguments)
-}
+        NavigationDestination(NavigationRoute.TrackSearch, arguments)
 
-object NavArgs {
-    const val TRACK_LIST_ID = "trackListId"
-    const val ALBUM_ID = "albumId"
-    const val ARTIST_ID = "artistName"
-    const val MEDIA_ID = "mediaId"
-    const val MEDIA_TYPE = "mediaType"
-    const val MEDIA_GROUP_ID = "mediaGroupId"
-    const val MEDIA_GROUP_TYPE = "mediaGroupType"
-    const val TRACKS_LIST_TYPE = "trackListType"
-    const val SORTABLE_LIST_TYPE = "sortableListType"
-    const val TRACK_INDEX = "trackIndex"
+    data class ArtistDestination(override val arguments: ArtistArguments) :
+        NavigationDestination(NavigationRoute.Artist, arguments = arguments)
+
+    data class ContextMenu(override val arguments: ContextMenuArguments) :
+        NavigationDestination(NavigationRoute.ContextMenu, arguments = arguments)
+
+    data class SortMenu(override val arguments: SortMenuArguments) :
+        NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
+
+    data class ArtistsMenu(override val arguments: ArtistsMenuArguments) :
+        NavigationDestination(NavigationRoute.ArtistsMenu, arguments = arguments)
+
 }
 
 
@@ -76,6 +98,11 @@ private val module = SerializersModule {
     polymorphic(NavigationArguments::class) {
         subclass(PlaylistArguments::class)
         subclass(TrackSearchArguments::class)
+        subclass(AlbumArguments::class)
+        subclass(TrackListArguments::class)
+        subclass(ArtistArguments::class)
+        subclass(ContextMenuArguments::class)
+        subclass(SortMenuArguments::class)
     }
 }
 
@@ -101,10 +128,16 @@ fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
 }
 
 
-fun NavController.navigateTo(destination: NavigationDestination) {
-    val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
-    val navRoute = "${destination.navigationRoute.name}/$encodedArgs"
-    navigate(navRoute)
+fun NavController.navigateTo(
+    destination: NavigationDestination, builder: NavOptionsBuilder.() -> Unit = {}
+) {
+    val navRoute = if (destination.navigationRoute.hasArgs) {
+        val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
+        "${destination.navigationRoute.name}/args=$encodedArgs"
+    } else {
+        destination.navigationRoute.name
+    }
+    navigate(navRoute, builder)
 }
 
 
@@ -121,19 +154,35 @@ fun getArgumentsType(): NavType<NavigationArguments> =
         override fun parseValue(value: String): NavigationArguments {
             return json.decodeFromString(value)
         }
-
-
     }
 
+enum class DestinationType { Screen, BottomSheet }
+
+@OptIn(ExperimentalMaterialNavigationApi::class)
 inline fun <reified VM : ViewModel> NavGraphBuilder.screenDestination(
-    destination: NavigationRoute, crossinline screen: @Composable (VM) -> Unit
+    destination: NavigationRoute,
+    destinationType: DestinationType,
+    crossinline screen: @Composable (VM) -> Unit
 ) {
-    composable(
-        route = "${destination.name}/{$ARGS}", arguments = listOf(navArgument(ARGS) {
-            type = getArgumentsType()
-        })
-    ) {
-        val screenViewModel = hiltViewModel<VM>()
-        screen(screenViewModel)
+    val route = if (destination.hasArgs) {
+        "${destination.name}/args={$ARGS}"
+    } else {
+        destination.name
     }
+    val args = if (destination.hasArgs) listOf(navArgument(ARGS) {
+        type = getArgumentsType()
+    }) else listOf()
+
+    when (destinationType) {
+        DestinationType.Screen -> composable(route = route, arguments = args) {
+            val screenViewModel = hiltViewModel<VM>()
+            screen(screenViewModel)
+        }
+        DestinationType.BottomSheet -> bottomSheet(route = route, arguments = args) {
+            val screenViewModel = hiltViewModel<VM>()
+            screen(screenViewModel)
+        }
+    }
+
 }
+

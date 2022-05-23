@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,7 +71,7 @@ object InitialArtistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistContextMenuStateProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuState {
-        val artistId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
+        val artistId = 0L
         return ArtistContextMenuState(
             mediaId = artistId,
             menuTitle = "",

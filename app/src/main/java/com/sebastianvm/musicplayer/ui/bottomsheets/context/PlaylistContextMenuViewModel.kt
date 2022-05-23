@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -105,7 +104,7 @@ object InitialPlaylistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistContextMenuStateProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuState {
-        val playlistId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
+        val playlistId = 0L
         return PlaylistContextMenuState(
             mediaId = playlistId,
             menuTitle = "",

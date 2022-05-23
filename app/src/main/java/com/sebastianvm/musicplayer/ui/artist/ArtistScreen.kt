@@ -23,23 +23,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRow
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-interface ArtistScreenNavigationDelegate {
-    fun navigateToAlbum(albumId: Long)
-    fun openContextMenu(albumId: Long)
-    fun navigateUp()
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
     screenViewModel: ArtistViewModel,
-    delegate: ArtistScreenNavigationDelegate,
+    navigationDelegate: NavigationDelegate,
 ) {
     val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = remember(decayAnimationSpec) {
@@ -48,19 +43,8 @@ fun ArtistScreen(
 
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is ArtistUiEvent.NavigateToAlbum -> {
-                    delegate.navigateToAlbum(event.albumId)
-                }
-                is ArtistUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(event.albumId)
-                }
-                is ArtistUiEvent.NavigateUp -> {
-                    delegate.navigateUp()
-                }
-            }
-        },
+        eventHandler = {},
+        navigationDelegate = navigationDelegate,
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { state ->
             LargeTopAppBar(

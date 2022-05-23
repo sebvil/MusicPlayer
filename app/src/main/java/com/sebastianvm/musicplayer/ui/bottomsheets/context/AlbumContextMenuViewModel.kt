@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.navigation.NavArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,7 +100,7 @@ object InitialAlbumContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
-        val albumId = savedStateHandle.get<Long>(NavArgs.MEDIA_ID)!!
+        val albumId = 0L
         return AlbumContextMenuState(
             mediaId = albumId,
             menuTitle = "",

@@ -27,44 +27,29 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-interface AlbumNavigationDelegate {
-    fun navigateToPlayer() = Unit
-    fun openContextMenu(trackId: Long, albumId: Long, trackIndex: Int) = Unit
-}
-
 @Composable
 fun AlbumScreen(
-    screenVieModel: AlbumViewModel,
-    delegate: AlbumNavigationDelegate
+    screenViewModel: AlbumViewModel,
+    navigationDelegate: NavigationDelegate,
 ) {
     Screen(
-        screenViewModel = screenVieModel,
-        eventHandler = { event ->
-            when (event) {
-                is AlbumUiEvent.NavigateToPlayer -> {
-                    delegate.navigateToPlayer()
-                }
-                is AlbumUiEvent.OpenContextMenu -> {
-                    delegate.openContextMenu(
-                        trackId = event.trackId,
-                        albumId = event.albumId,
-                        trackIndex = event.trackIndex
-                    )
-                }
-            }
-        }) { state ->
+        screenViewModel = screenViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state ->
         AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
             override fun onTrackClicked(trackIndex: Int) {
-                screenVieModel.onTrackClicked(trackIndex = trackIndex)
+                screenViewModel.onTrackClicked(trackIndex = trackIndex)
             }
 
             override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                screenVieModel.onTrackOverflowMenuIconClicked(
+                screenViewModel.onTrackOverflowMenuIconClicked(
                     trackIndex = trackIndex,
                     trackId = trackId
                 )

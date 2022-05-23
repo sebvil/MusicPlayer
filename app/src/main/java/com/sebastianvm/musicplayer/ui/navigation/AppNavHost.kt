@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheet
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.albumListNavDestination
-import com.sebastianvm.musicplayer.ui.library.artistlist.artistsNavDestination
+import com.sebastianvm.musicplayer.ui.library.artistlist.artistListNavDestination
 import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlists.playlistsListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
@@ -29,44 +29,46 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    val bottomNavBar = @Composable { BottomNavBar(navController = navController) }
-    Scaffold(bottomBar = bottomNavBar) { paddingValues ->
+    val navigationDelegate = NavigationDelegate(navController)
+    Scaffold(bottomBar = { BottomNavBar(navigationDelegate) }) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.LIBRARY,
+            startDestination = NavigationRoute.Library.name,
             modifier = Modifier.padding(paddingValues)
         ) {
 
-            libraryGraph(navController = navController)
+            libraryGraph(navigationDelegate)
 
-            queueNavDestination()
+            queueNavDestination(navigationDelegate)
             musicPlayerNavDestination()
 
-            searchNavDestination(navController)
+            searchNavDestination(navigationDelegate)
         }
     }
 }
 
-fun NavGraphBuilder.libraryGraph(navController: NavHostController) {
-    val navigationDelegate = NavigationDelegate(navController)
+fun NavGraphBuilder.libraryGraph(navigationDelegate: NavigationDelegate) {
 
-    navigation(startDestination = NavRoutes.LIBRARY_ROOT, route = NavRoutes.LIBRARY) {
-        libraryNavDestination(navController)
+    navigation(
+        startDestination = NavigationRoute.LibraryRoot.name,
+        route = NavigationRoute.Library.name
+    ) {
+        libraryNavDestination(navigationDelegate)
 
-        trackListNavDestination(navController)
-        artistsNavDestination(navController)
-        albumListNavDestination(navController)
-        genreListNavDestination(navController)
-        playlistsListNavDestination(navController)
+        trackListNavDestination(navigationDelegate)
+        artistListNavDestination(navigationDelegate)
+        albumListNavDestination(navigationDelegate)
+        genreListNavDestination(navigationDelegate)
+        playlistsListNavDestination(navigationDelegate)
 
-        artistNavDestination(navController)
-        albumNavDestination(navController)
+        artistNavDestination(navigationDelegate)
+        albumNavDestination(navigationDelegate)
         playlistNavDestination(navigationDelegate)
 
         trackSearchNavDestination(navigationDelegate)
 
-        sortBottomSheetNavDestination(navController)
-        contextBottomSheet(navController)
-        artistsBottomSheetNavDestination(navController)
+        sortBottomSheetNavDestination(navigationDelegate)
+        contextBottomSheet(navigationDelegate)
+        artistsBottomSheetNavDestination(navigationDelegate)
     }
 }

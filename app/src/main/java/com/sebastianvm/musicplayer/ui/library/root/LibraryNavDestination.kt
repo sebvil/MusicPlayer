@@ -1,28 +1,22 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import com.sebastianvm.musicplayer.ui.library.tracks.navigateToTracksRoot
-import com.sebastianvm.musicplayer.ui.navigation.NavRoutes
+import com.sebastianvm.musicplayer.ui.navigation.DestinationType
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
+import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 
 
-fun NavGraphBuilder.libraryNavDestination(navController: NavController) {
-    composable(NavRoutes.LIBRARY_ROOT) {
-        val screenViewModel = hiltViewModel<LibraryViewModel>()
+fun NavGraphBuilder.libraryNavDestination(
+    navigationDelegate: NavigationDelegate,
+) {
+    screenDestination<LibraryViewModel>(
+        destination = NavigationRoute.LibraryRoot,
+        destinationType = DestinationType.Screen
+    ) { viewModel ->
         LibraryScreen(
-            screenViewModel = screenViewModel,
-            delegate = object : LibraryScreenNavigationDelegate {
-
-                override fun navigateToLibraryScreen(route: String) {
-                    if (route == NavRoutes.TRACKS_ROOT) {
-                        navController.navigateToTracksRoot()
-                        return
-                    }
-                    navController.navigate(route = route)
-                }
-
-            })
+            screenViewModel = viewModel,
+            navigationDelegate = navigationDelegate,
+        )
     }
 }
