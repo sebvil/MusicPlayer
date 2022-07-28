@@ -70,6 +70,7 @@ dependencies {
 
     // Kotlin
     implementation "androidx.core:core-ktx:1.9.0-alpha05"
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
 
     // Room
     def room_version = '2.5.0-alpha02'
@@ -79,7 +80,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     // Lifecycle
-    def lifecycle_version = '2.5.0-rc01'
+    // TODO collectStateWithLifecycle
+    def lifecycle_version = '2.6.0-alpha01'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
@@ -92,12 +94,8 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
-    // Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-
     // Paging
-    def paging_version = '3.1.1'
+    def paging_version = '3.2.0-alpha01'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Glide
@@ -109,7 +107,6 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     // Integration with activities
-    //noinspection GradleDependency - 1.6 breaks previews.
     implementation 'androidx.activity:activity-compose:1.6.0-alpha05'
     // Integration with ViewModels
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
@@ -126,12 +123,12 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
 
     // Accompanist
-    def accompanist_version = '0.24.8-beta'
+    def accompanist_version = '0.25.0'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
     // Paging
-    implementation "androidx.paging:paging-compose:1.0.0-alpha14"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha15"
 
     // Glide
     implementation "io.coil-kt:coil-compose:$coil_version"
@@ -140,7 +137,7 @@ dependencies {
 
 
     // Media 3
-    def media3_version = '1.0.0-alpha03'
+    def media3_version = '1.0.0-beta02'
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-session:$media3_version"
 
@@ -159,7 +156,7 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
 
     // Coroutines tests
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.5'
 
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "androidx.test:core-ktx:1.4.0"

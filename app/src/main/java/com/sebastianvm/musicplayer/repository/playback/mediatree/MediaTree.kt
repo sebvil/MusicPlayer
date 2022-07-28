@@ -59,7 +59,6 @@ class MediaTree @Inject constructor(
                 .setGenre(genre)
                 .setFolderType(folderType)
                 .setIsPlayable(isPlayable)
-                .setMediaUri(sourceUri)
                 .setArtworkUri(artworkUri)
                 .build()
         return MediaItem.Builder()
