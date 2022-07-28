@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -66,6 +67,7 @@ interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
