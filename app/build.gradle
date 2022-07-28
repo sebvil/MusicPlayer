@@ -9,13 +9,13 @@ plugins {
 
 
 android {
-    compileSdk 32
-    buildToolsVersion "32.1.0-rc1"
+    compileSdk 33
+    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
         minSdkVersion 25
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -156,7 +156,7 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
 
     // Coroutines tests
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.5'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.2'
 
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "androidx.test:core-ktx:1.4.0"
