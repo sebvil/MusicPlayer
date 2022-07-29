@@ -147,7 +147,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.2'
 
 
     // TESTING
@@ -167,6 +167,5 @@ dependencies {
     testImplementation "io.mockk:mockk:$mockk_version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    implementation "net.jthink:jaudiotagger:3.0.1"
 
 }

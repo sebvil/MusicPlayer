@@ -80,7 +80,6 @@ class LibraryViewModel @Inject constructor(
             else -> Unit
         }
     }
-
 }
 
 data class LibraryState(val libraryItems: List<LibraryItem>) : State
@@ -103,6 +102,5 @@ object InitialLibraryStateModule {
 }
 
 sealed class LibraryUiEvent : UiEvent {
-    object StartGetMusicService : LibraryUiEvent()
     object RequestPermission : LibraryUiEvent()
 }
