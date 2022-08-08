@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -77,7 +76,7 @@ interface TrackListScreenDelegate : PlaybackStatusIndicatorDelegate {
     fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParameterProvider::class) state: TrackListState) {
     val listState = rememberLazyListState()

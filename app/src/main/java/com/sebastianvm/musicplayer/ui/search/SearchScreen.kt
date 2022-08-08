@@ -45,7 +45,6 @@ import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGrou
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -104,7 +103,7 @@ fun SearchScreen(
     }
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun SearchScreenPreview(@PreviewParameter(SearchStatePreviewParameterProvider::class) state: SearchState) {
     ScreenPreview {

@@ -29,7 +29,6 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -63,7 +62,7 @@ interface AlbumScreenDelegate {
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun AlbumScreenPreview(
     @PreviewParameter(AlbumStatePreviewParameterProvider::class) state: AlbumState

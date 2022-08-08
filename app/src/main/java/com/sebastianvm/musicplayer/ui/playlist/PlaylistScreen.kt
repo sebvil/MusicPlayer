@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
@@ -47,7 +46,7 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
 }
 
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun PlaylistScreenPreview(@PreviewParameter(PlaylistStatePreviewParameterProvider::class) state: PlaylistState) {
     ScreenPreview(topBar = {
@@ -61,7 +60,7 @@ fun PlaylistScreenPreview(@PreviewParameter(PlaylistStatePreviewParameterProvide
                     contentDescription = "Plus"
                 )
             },
-            onClick = { /*TODO*/ })
+            onClick = { })
     }) {
         PlaylistLayout(state = state)
     }

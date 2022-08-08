@@ -4,9 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -19,6 +21,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,27 +36,25 @@ class PlaylistsListViewModel @Inject constructor(
     BaseViewModel<PlaylistsListUiEvent, PlaylistsListState>(initialState) {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getPlaylistsListSortOrder().flatMapLatest {
-                setState {
-                    copy(
-                        sortOrder = it
-                    )
-                }
-                playlistRepository.getPlaylists(it)
-            }.collect { playlists ->
-                setState {
-                    copy(
-                        playlistsList = playlists,
-                    )
-                }
+        preferencesRepository.getPlaylistsListSortOrder().flatMapLatest {
+            setState {
+                copy(
+                    sortOrder = it
+                )
             }
-        }
+            playlistRepository.getPlaylists(it)
+        }.onEach { playlists ->
+            setState {
+                copy(
+                    playlistsList = playlists,
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onPlaylistClicked(playlistId: Long) {
-        addUiEvent(
-            PlaylistsListUiEvent.NavEvent(
+        addNavEvent(
+            NavEvent.NavigateToScreen(
                 NavigationDestination.Playlist(
                     PlaylistArguments(playlistId = playlistId)
                 )
@@ -67,11 +69,17 @@ class PlaylistsListViewModel @Inject constructor(
     }
 
     fun onUpButtonClicked() {
-        addUiEvent(PlaylistsListUiEvent.NavigateUp)
+        addNavEvent(NavEvent.NavigateUp)
     }
 
     fun onOverflowMenuIconClicked(playlistId: Long) {
-        addUiEvent(PlaylistsListUiEvent.OpenContextMenu(playlistId))
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.PlaylistContextMenu(
+                    PlaylistContextMenuArguments(playlistId = playlistId)
+                )
+            )
+        )
     }
 
     fun onFabClicked() {
@@ -117,8 +125,4 @@ object InitialPlaylistsListStateModule {
         )
 }
 
-sealed class PlaylistsListUiEvent : UiEvent {
-    data class NavEvent(val navigationDestination: NavigationDestination) : PlaylistsListUiEvent()
-    object NavigateUp : PlaylistsListUiEvent()
-    data class OpenContextMenu(val playlistId: Long) : PlaylistsListUiEvent()
-}
+sealed class PlaylistsListUiEvent : UiEvent
