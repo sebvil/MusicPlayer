@@ -11,7 +11,7 @@ import java.util.UUID
 fun Track.toMediaItem(): MediaItem {
     return MediaItem.Builder().apply {
         id = this@toMediaItem.id
-        uri = UriUtils.getTrackUri(trackId = this@toMediaItem.id.toLong())
+        uri = UriUtils.getTrackUri(trackId = this@toMediaItem.id)
         mediaMetadata = getMediaMetadata()
     }.build()
 }
@@ -20,7 +20,7 @@ fun Track.getMediaMetadata(): MediaMetadata {
     return MediaMetadata.Builder().apply {
         title = trackName
         artist = artists
-        uri = UriUtils.getTrackUri(trackId = id.toLong())
+        uri = UriUtils.getTrackUri(trackId = id)
         extras = Bundle().apply {
             duration = trackDurationMs
             uniqueId = UUID.randomUUID().toString()

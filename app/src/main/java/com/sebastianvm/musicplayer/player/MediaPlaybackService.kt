@@ -22,6 +22,8 @@ import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
+import com.sebastianvm.musicplayer.util.extensions.uri
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -156,48 +158,13 @@ class MediaPlaybackService : MediaLibraryService() {
                     controller: MediaSession.ControllerInfo,
                     mediaItems: MutableList<MediaItem>
                 ): ListenableFuture<MutableList<MediaItem>> {
-                    return super.onAddMediaItems(mediaSession, controller, mediaItems)
+                    val newMediaItems = mediaItems.map {
+                        it.buildUpon().apply {
+                            uri = UriUtils.getTrackUri(it.mediaId.toLong())
+                        }.build()
+                    }.toMutableList()
+                    return Futures.immediateFuture(newMediaItems)
                 }
-
-//                override fun onSetMediaUri(
-//                    session: MediaSession,
-//                    controller: MediaSession.ControllerInfo,
-//                    uri: Uri,
-//                    extras: Bundle
-//                ): Int {
-//                    Log.i("000Player", "$uri, $extras")
-//                    return runBlocking {
-//                        val keyString =
-//                            uri.getQueryParameter("id")
-//                                ?: return@runBlocking SessionResult.RESULT_ERROR_BAD_VALUE
-//                        val mediaKey =
-//                            MediaKey.fromString(
-//                                keyString
-//                            )
-//                        val mediaItems =
-//                            mediaTree.getCachedChildren(MediaKey.fromChild(mediaKey).toString())
-//                                ?: mediaTree.getChildren(MediaKey.fromChild(mediaKey).toString())
-//                        mediaItems?.let { items ->
-//                            Log.i("000Player", "Playing: $items")
-//                            preparePlaylist(
-//                                mediaKey.itemIndexOrId.toInt(),
-//                                mediaItems = items.map {
-//                                    it.buildUpon()
-//                                        .setMediaId(it.mediaMetadata.mediaUri?.let { uri ->
-//                                            ContentUris.parseId(uri)
-//                                        }?.toString() ?: "")
-//                                        .build()
-//                                },
-//                                position = 0
-//                            )
-//                            SessionResult.RESULT_SUCCESS
-//                        } ?: kotlin.run {
-//                            Log.i("000Player", "$mediaKey, $mediaItems")
-//                            SessionResult.RESULT_ERROR_BAD_VALUE
-//                        }
-//                    }
-//                }
-
             }).build()
     }
 
