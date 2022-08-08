@@ -98,7 +98,7 @@ dependencies {
     def paging_version = '3.2.0-alpha01'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
-    // Glide
+    // Coil
     def coil_version = '1.4.0'
     implementation "io.coil-kt:coil:$coil_version"
 
@@ -147,7 +147,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4'
 
 
     // TESTING
@@ -156,14 +156,14 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
 
     // Coroutines tests
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "androidx.test:core-ktx:1.4.0"
     testImplementation "androidx.test:core:1.4.0"
 
     // Mockk
-    def mockk_version = '1.12.4'
+    def mockk_version = '1.12.5'
     testImplementation "io.mockk:mockk:$mockk_version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"

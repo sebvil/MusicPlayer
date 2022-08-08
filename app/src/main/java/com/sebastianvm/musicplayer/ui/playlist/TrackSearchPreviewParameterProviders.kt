@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.emptyFlow
 class TrackSearchStatePreviewParameterProvider : PreviewParameterProvider<TrackSearchState> {
     override val values = sequenceOf(
         TrackSearchState(
+            playlistId = 0,
             trackSearchResults = emptyFlow(),
         ),
     )
