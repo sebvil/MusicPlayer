@@ -2,11 +2,10 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -78,11 +77,8 @@ class GenreListViewModel @Inject constructor(
     fun onGenreOverflowMenuIconClicked(genreId: Long) {
         addUiEvent(
             GenreListUiEvent.NavEvent(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = genreId,
-                        mediaType = MediaType.GENRE,
-                    )
+                NavigationDestination.GenreContextMenu(
+                    GenreContextMenuArguments(genreId = genreId)
                 )
             )
         )

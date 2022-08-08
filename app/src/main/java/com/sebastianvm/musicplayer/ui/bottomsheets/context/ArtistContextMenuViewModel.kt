@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +31,7 @@ class ArtistContextMenuViewModel @Inject constructor(
             setState {
                 copy(menuTitle = it.artist.artistName)
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     override fun onRowClicked(row: ContextMenuItem) {
@@ -40,13 +44,25 @@ class ArtistContextMenuViewModel @Inject constructor(
                                 playbackResult = it
                             )
                         }
-                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        is PlaybackResult.Success -> addNavEvent(
+                            NavEvent.NavigateToScreen(
+                                NavigationDestination.MusicPlayer
+                            )
+                        )
                     }
                 }.launchIn(viewModelScope)
 
             }
             is ContextMenuItem.ViewArtist -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(state.value.mediaId))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Artist(
+                            ArtistArguments(
+                                artistId = state.value.mediaId
+                            )
+                        )
+                    )
+                )
             }
             else -> throw IllegalStateException("Invalid row for artist context menu")
         }
@@ -71,9 +87,9 @@ object InitialArtistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistContextMenuStateProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuState {
-        val artistId = 0L
+        val args = savedStateHandle.getArgs<ArtistContextMenuArguments>()
         return ArtistContextMenuState(
-            mediaId = artistId,
+            mediaId = args.artistId,
             menuTitle = "",
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,

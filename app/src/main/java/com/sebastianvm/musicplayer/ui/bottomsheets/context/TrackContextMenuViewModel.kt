@@ -8,6 +8,12 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,17 +41,14 @@ object InitialTrackContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackContextMenuStateProvider(savedStateHandle: SavedStateHandle): TrackContextMenuState {
-        val mediaId = 0L
-        val mediaGroupType = MediaGroupType.SINGLE_TRACK
-        val mediaGroupMediaId = 0L
-        val trackIndex = 0
+        val args = savedStateHandle.getArgs<TrackContextMenuArguments>()
         return TrackContextMenuState(
-            mediaId = mediaId,
+            mediaId = args.trackId,
             menuTitle = "",
             albumId = 0,
-            mediaGroup = MediaGroup(mediaGroupType, mediaGroupMediaId),
+            mediaGroup = args.mediaGroup,
             listItems = listOf(),
-            trackIndex = trackIndex
+            trackIndex = args.trackIndex
         )
     }
 }
@@ -56,12 +59,12 @@ class TrackContextMenuViewModel @Inject constructor(
     trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
-    private var artistName = ""
+    private var artistId: Long = 0
 
     init {
         trackRepository.getTrack(state.value.mediaId).onEach {
             if (it.artists.size == 1) {
-                artistName = it.artists[0]
+                artistId = it.artists[0]
             }
             setState {
                 copy(
@@ -124,7 +127,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 )
                             }
                             is PlaybackResult.Success -> {
-                                addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                                addNavEvent(NavEvent.NavigateToScreen(destination = NavigationDestination.MusicPlayer))
                             }
                         }
                     }.launchIn(viewModelScope)
@@ -137,18 +140,32 @@ class TrackContextMenuViewModel @Inject constructor(
                 }
             }
             ContextMenuItem.ViewAlbum -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.albumId))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        destination = NavigationDestination.Album(
+                            arguments = AlbumArguments(albumId = state.value.albumId)
+                        )
+                    )
+                )
             }
             ContextMenuItem.ViewArtist -> {
-                addUiEvent(
-                    BaseContextMenuUiEvent.NavigateToArtist(state.value.mediaId)
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        destination = NavigationDestination.Artist(
+                            arguments = ArtistArguments(artistId = artistId)
+                        )
+                    )
                 )
             }
             ContextMenuItem.ViewArtists -> {
-                addUiEvent(
-                    BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                        state.value.mediaId,
-                        MediaType.TRACK
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        destination = NavigationDestination.ArtistsMenu(
+                            arguments = ArtistsMenuArguments(
+                                mediaId = state.value.mediaId,
+                                mediaType = MediaType.TRACK
+                            )
+                        )
                     )
                 )
             }

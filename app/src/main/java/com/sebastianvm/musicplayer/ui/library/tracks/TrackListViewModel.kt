@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -135,9 +135,9 @@ class TrackListViewModel @Inject constructor(
         )
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = trackId,
+                NavigationDestination.TrackContextMenu(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
                         mediaType = MediaType.TRACK,
                         mediaGroup = mediaGroup,
                         trackIndex = trackIndex

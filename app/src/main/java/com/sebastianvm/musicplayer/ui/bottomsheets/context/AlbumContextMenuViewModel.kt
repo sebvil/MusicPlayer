@@ -6,6 +6,12 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.ui.album.AlbumArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,19 +31,21 @@ class AlbumContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
     private var trackIds: List<Long> = listOf()
-    private var artistIds: List<Long> = listOf()
+    private var artistId: Long = 0
 
     init {
         albumRepository.getAlbum(state.value.mediaId).onEach {
+            if (it.artists.size == 1) {
+                artistId = it.artists[0]
+            }
             trackIds = it.tracks
-            artistIds = it.artists
             setState {
                 copy(
                     menuTitle = it.album.albumName,
                     listItems = listOf(
                         ContextMenuItem.PlayFromBeginning,
                         ContextMenuItem.AddToQueue,
-                        if (artistIds.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                        if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                         ContextMenuItem.ViewAlbum
                     )
                 )
@@ -55,7 +63,11 @@ class AlbumContextMenuViewModel @Inject constructor(
                                 playbackResult = it
                             )
                         }
-                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        is PlaybackResult.Success -> addNavEvent(
+                            NavEvent.NavigateToScreen(
+                                NavigationDestination.MusicPlayer
+                            )
+                        )
                     }
                 }.launchIn(viewModelScope)
             }
@@ -65,18 +77,38 @@ class AlbumContextMenuViewModel @Inject constructor(
                 }
             }
             is ContextMenuItem.ViewAlbum -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToAlbum(state.value.mediaId))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Album(
+                            AlbumArguments(
+                                albumId = state.value.mediaId
+                            )
+                        )
+                    )
+                )
             }
             is ContextMenuItem.ViewArtists -> {
-                addUiEvent(
-                    BaseContextMenuUiEvent.NavigateToArtistsBottomSheet(
-                        state.value.mediaId,
-                        MediaType.ALBUM
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.ArtistsMenu(
+                            ArtistsMenuArguments(
+                                mediaType = MediaType.ALBUM,
+                                mediaId = state.value.mediaId
+                            )
+                        )
                     )
                 )
             }
             is ContextMenuItem.ViewArtist -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToArtist(artistIds[0]))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Artist(
+                            ArtistArguments(
+                                artistId = artistId
+                            )
+                        )
+                    )
+                )
             }
             else -> throw IllegalStateException("Invalid row for album context menu")
         }
@@ -100,9 +132,9 @@ object InitialAlbumContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
-        val albumId = 0L
+        val args = savedStateHandle.getArgs<AlbumContextMenuArguments>()
         return AlbumContextMenuState(
-            mediaId = albumId,
+            mediaId = args.albumId,
             menuTitle = "",
             listItems = listOf(),
         )

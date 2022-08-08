@@ -38,7 +38,7 @@ class PlaylistViewModel @Inject constructor(
     fun onAddTracksClicked() {
         addUiEvent(
             PlaylistUiEvent.NavEvent(
-                NavigationDestination.TrackSearchDestination(
+                NavigationDestination.TrackSearch(
                     TrackSearchArguments(state.value.playlistId)
                 )
             )

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -17,15 +18,13 @@ class NavigationDelegate(private val navController: NavController) {
     fun isRouteInGraph(navigationRoute: NavigationRoute): Boolean {
         val navBackStackEntry = navController.currentBackStackEntry
         val currentDestination = navBackStackEntry?.destination
+        Log.i("Nav", "${currentDestination?.hierarchy?.map { it.route }}")
+        Log.i("Nav", "${navigationRoute.name}")
         return currentDestination?.hierarchy?.any { it.route == navigationRoute.name } == true
     }
 
-    // TODO this is broken
     private fun navigateToScreen(destination: NavigationDestination) {
-        val navBackStackEntry = navController.currentBackStackEntry
-        val currentDestination = navBackStackEntry?.destination
-
-        if (isRouteInGraph(destination.navigationRoute)) {
+        if (!destination.isBottomNavDestination) {
             navController.navigateTo(destination)
         } else {
             navController.navigateTo(destination) {

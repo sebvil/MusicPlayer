@@ -11,14 +11,14 @@ data class FullTrackInfo(
         parentColumn = "id",
         entityColumn = "id",
         entity = Artist::class,
-        projection = ["artistName"],
+        projection = ["id"],
         associateBy = Junction(
             ArtistTrackCrossRef::class,
             parentColumn = "trackId",
             entityColumn = "artistId"
         )
     )
-    val artists: List<String>,
+    val artists: List<Long>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",

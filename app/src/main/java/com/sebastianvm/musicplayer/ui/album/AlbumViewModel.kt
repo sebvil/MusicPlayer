@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -67,9 +67,9 @@ class AlbumViewModel @Inject constructor(
     fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
         addUiEvent(
             AlbumUiEvent.NavEvent(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = trackId,
+                NavigationDestination.TrackContextMenu(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
                         mediaType = MediaType.TRACK,
                         mediaGroup = MediaGroup(
                             mediaId = state.value.albumId,

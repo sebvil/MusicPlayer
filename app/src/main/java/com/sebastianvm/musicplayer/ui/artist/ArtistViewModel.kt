@@ -4,11 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -91,7 +90,7 @@ class ArtistViewModel @Inject constructor(
     fun onAlbumClicked(albumId: Long) {
         addUiEvent(
             ArtistUiEvent.NavEvent(
-                NavigationDestination.AlbumDestination(
+                NavigationDestination.Album(
                     AlbumArguments(
                         albumId = albumId
                     )
@@ -103,11 +102,8 @@ class ArtistViewModel @Inject constructor(
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = albumId,
-                        mediaType = MediaType.ALBUM
-                    )
+                NavigationDestination.AlbumContextMenu(
+                    AlbumContextMenuArguments(albumId = albumId)
                 )
             )
         )

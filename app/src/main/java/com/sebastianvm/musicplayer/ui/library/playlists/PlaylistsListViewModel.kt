@@ -53,7 +53,7 @@ class PlaylistsListViewModel @Inject constructor(
     fun onPlaylistClicked(playlistId: Long) {
         addUiEvent(
             PlaylistsListUiEvent.NavEvent(
-                NavigationDestination.PlaylistDestination(
+                NavigationDestination.Playlist(
                     PlaylistArguments(playlistId = playlistId)
                 )
             )
