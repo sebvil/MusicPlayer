@@ -21,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 fun <E : UiEvent, S : State> Screen(
     screenViewModel: BaseViewModel<E, S>,
     eventHandler: EventHandler<E>,
-    navigationDelegate: NavigationDelegate?,
+    navigationDelegate: NavigationDelegate,
     modifier: Modifier = Modifier,
     topBar: @Composable (S) -> Unit = {},
     fab: @Composable (S) -> Unit = {},
@@ -29,9 +29,8 @@ fun <E : UiEvent, S : State> Screen(
 ) {
     val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
     HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
-    navigationDelegate?.also {
-        HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    }
+    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+
 
     Scaffold(
         modifier = modifier,

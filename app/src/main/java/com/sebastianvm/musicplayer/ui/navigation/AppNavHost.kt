@@ -40,7 +40,7 @@ fun AppNavHost(navController: NavHostController) {
             libraryGraph(navigationDelegate)
 
             queueNavDestination(navigationDelegate)
-            musicPlayerNavDestination()
+            musicPlayerNavDestination(navigationDelegate)
 
             searchNavDestination(navigationDelegate)
         }

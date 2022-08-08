@@ -32,7 +32,6 @@ fun NavHostWrapper(
                 val navController = rememberNavController(bottomSheetNavigator)
 
 //            // TODO: wait until this is a bit more mature
-                // TODO Hide action bar
 //            val systemUiController = rememberSystemUiController()
 //            val surfaceColor = MaterialTheme.colorScheme.surface
 //
