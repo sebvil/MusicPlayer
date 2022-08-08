@@ -1,10 +1,12 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.R
@@ -24,6 +25,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 data class TrackRowState(
@@ -34,12 +36,24 @@ data class TrackRowState(
     val trackNumber: Long? = null,
 )
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComponentPreview
 @Composable
 fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::class) state: TrackRowState) {
     ThemedPreview {
-        TrackRow(state = state) {}
+        Column {
+            TrackRow(state = state) {}
+            TrackRow(state = state, trailingContent = {
+                IconButton(
+                    onClick = {},
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_overflow),
+                        contentDescription = stringResource(R.string.more),
+                    )
+                }
+            })
+        }
+
     }
 }
 
@@ -48,7 +62,7 @@ fun TrackRow(
     state: TrackRowState,
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
-    onOverflowMenuIconClicked: () -> Unit
+    onOverflowMenuIconClicked: () -> Unit,
 ) {
     DoubleLineListItem(
         modifier = modifier,
@@ -87,6 +101,33 @@ fun TrackRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrackRow(
+    state: TrackRowState,
+    modifier: Modifier = Modifier,
+    trailingContent: @Composable (() -> Unit)? = null
+) {
+    ListItem(
+        headlineText = {
+            Text(
+                text = state.trackName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        modifier = modifier,
+        supportingText = {
+            Text(
+                text = state.artists,
+                modifier = Modifier.alpha(alpha = 0.8f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        trailingContent = trailingContent
+    )
+}
 
 class TrackRowStatePreviewParameterProvider : PreviewParameterProvider<TrackRowState> {
     override val values = sequenceOf(

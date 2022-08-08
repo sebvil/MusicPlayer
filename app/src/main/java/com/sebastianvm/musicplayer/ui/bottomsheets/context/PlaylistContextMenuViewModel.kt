@@ -5,6 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,12 +48,24 @@ class PlaylistContextMenuViewModel @Inject constructor(
                                 playbackResult = it
                             )
                         }
-                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        is PlaybackResult.Success -> addNavEvent(
+                            navEvent = NavEvent.NavigateToScreen(
+                                NavigationDestination.MusicPlayer
+                            )
+                        )
                     }
                 }.launchIn(viewModelScope)
             }
             is ContextMenuItem.ViewPlaylist -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToPlaylist(playlistId = state.value.mediaId))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Playlist(
+                            arguments = PlaylistArguments(
+                                playlistId = state.value.mediaId
+                            )
+                        )
+                    )
+                )
             }
             is ContextMenuItem.DeletePlaylist -> {
                 setState {
@@ -71,7 +87,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
                 )
             }
         }.invokeOnCompletion {
-            addUiEvent(BaseContextMenuUiEvent.HideBottomSheet)
+            addNavEvent(NavEvent.NavigateUp)
         }
     }
 
@@ -104,9 +120,9 @@ object InitialPlaylistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistContextMenuStateProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuState {
-        val playlistId = 0L
+        val args = savedStateHandle.getArgs<PlaylistContextMenuArguments>()
         return PlaylistContextMenuState(
-            mediaId = playlistId,
+            mediaId = args.playlistId,
             menuTitle = "",
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,

@@ -29,9 +29,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -39,11 +39,12 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 @Composable
 fun MusicPlayerScreen(
     screenViewModel: MusicPlayerViewModel = viewModel(),
+    navigationDelegate: NavigationDelegate,
 ) {
     Screen(
         screenViewModel = screenViewModel,
         eventHandler = {},
-        navigationDelegate = null
+        navigationDelegate = navigationDelegate
     ) { state ->
         MusicPlayerLayout(state = state, playerDelegate = object : PlayerDelegate() {
             override fun togglePlay() {
@@ -65,7 +66,7 @@ fun MusicPlayerScreen(
     }
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun MusicPlayerScreenPreview(@PreviewParameter(MusicPlayerStatePreviewParameterProvider::class) state: MusicPlayerState) {
     ScreenPreview {

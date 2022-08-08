@@ -1,8 +1,5 @@
 package com.sebastianvm.musicplayer.player
 
-import android.content.ContentUris
-import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -16,17 +13,17 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.LibraryResult.RESULT_ERROR_BAD_VALUE
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaKey
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
+import com.sebastianvm.musicplayer.util.extensions.uri
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +33,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -66,11 +62,11 @@ class MediaPlaybackService : MediaLibraryService() {
         super.onCreate()
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
-            .setContentType(C.CONTENT_TYPE_MUSIC)
+            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL)
             .build()
         player = ExoPlayer.Builder(this)
-            .setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true).build()
+            .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true).build()
 
         CoroutineScope(mainDispatcher).launch {
             initializeQueue()
@@ -107,7 +103,7 @@ class MediaPlaybackService : MediaLibraryService() {
         mediaSession = MediaLibrarySession.Builder(
             this,
             player,
-            object : MediaLibrarySession.MediaLibrarySessionCallback {
+            object : MediaLibrarySession.Callback {
                 override fun onGetLibraryRoot(
                     session: MediaLibrarySession,
                     browser: MediaSession.ControllerInfo,
@@ -157,65 +153,25 @@ class MediaPlaybackService : MediaLibraryService() {
                         }
                 }
 
-                override fun onSetMediaUri(
-                    session: MediaSession,
+                override fun onAddMediaItems(
+                    mediaSession: MediaSession,
                     controller: MediaSession.ControllerInfo,
-                    uri: Uri,
-                    extras: Bundle
-                ): Int {
-                    Log.i("000Player", "$uri, $extras")
-                    return runBlocking {
-                        val keyString =
-                            uri.getQueryParameter("id")
-                                ?: return@runBlocking SessionResult.RESULT_ERROR_BAD_VALUE
-                        val mediaKey =
-                            MediaKey.fromString(
-                                keyString
-                            )
-                        val mediaItems =
-                            mediaTree.getCachedChildren(MediaKey.fromChild(mediaKey).toString())
-                                ?: mediaTree.getChildren(MediaKey.fromChild(mediaKey).toString())
-                        mediaItems?.let { items ->
-                            Log.i("000Player", "Playing: $items")
-                            preparePlaylist(
-                                mediaKey.itemIndexOrId.toInt(),
-                                mediaItems = items.map {
-                                    it.buildUpon()
-                                        .setMediaId(it.mediaMetadata.mediaUri?.let { uri ->
-                                            ContentUris.parseId(uri)
-                                        }?.toString() ?: "")
-                                        .build()
-                                },
-                                position = 0
-                            )
-                            SessionResult.RESULT_SUCCESS
-                        } ?: kotlin.run {
-                            Log.i("000Player", "$mediaKey, $mediaItems")
-                            SessionResult.RESULT_ERROR_BAD_VALUE
-                        }
-                    }
+                    mediaItems: MutableList<MediaItem>
+                ): ListenableFuture<MutableList<MediaItem>> {
+                    val newMediaItems = mediaItems.map {
+                        it.buildUpon().apply {
+                            uri = UriUtils.getTrackUri(it.mediaId.toLong())
+                        }.build()
+                    }.toMutableList()
+                    return Futures.immediateFuture(newMediaItems)
                 }
-
-            })
-            .setMediaItemFiller(CustomMediaItemFiller()).build()
+            }).build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
         return mediaSession
     }
 
-    private class CustomMediaItemFiller : MediaSession.MediaItemFiller {
-        override fun fillInLocalConfiguration(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo,
-            mediaItem: MediaItem
-        ): MediaItem {
-            return MediaItem.Builder()
-                .setUri(mediaItem.mediaMetadata.mediaUri)
-                .setMediaId(mediaItem.mediaId)
-                .setMediaMetadata(mediaItem.mediaMetadata).build()
-        }
-    }
 
     private suspend fun initializeQueue() {
         withContext(defaultDispatcher) {

@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -36,9 +37,9 @@ class PlaylistViewModel @Inject constructor(
     }
 
     fun onAddTracksClicked() {
-        addUiEvent(
-            PlaylistUiEvent.NavEvent(
-                NavigationDestination.TrackSearchDestination(
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.TrackSearch(
                     TrackSearchArguments(state.value.playlistId)
                 )
             )
@@ -63,7 +64,4 @@ object InitialPlaylistStateModule {
     }
 }
 
-sealed class PlaylistUiEvent : UiEvent {
-    data class NavEvent(val navigationDestination: NavigationDestination) : PlaylistUiEvent()
-}
-
+sealed class PlaylistUiEvent : UiEvent

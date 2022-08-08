@@ -3,8 +3,13 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,12 +36,25 @@ class GenreContextMenuViewModel @Inject constructor(
                                 playbackResult = it
                             )
                         }
-                        is PlaybackResult.Success -> addUiEvent(BaseContextMenuUiEvent.NavigateToPlayer)
+                        is PlaybackResult.Success -> addNavEvent(
+                            NavEvent.NavigateToScreen(
+                                NavigationDestination.MusicPlayer
+                            )
+                        )
                     }
                 }.launchIn(viewModelScope)
             }
             is ContextMenuItem.ViewGenre -> {
-                addUiEvent(BaseContextMenuUiEvent.NavigateToGenre(genreId = state.value.mediaId))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListId = state.value.mediaId,
+                                trackListType = TrackListType.GENRE
+                            )
+                        )
+                    )
+                )
             }
             else -> throw IllegalStateException("Invalid row for genre context menu")
         }
@@ -61,10 +79,9 @@ object InitialGenreContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialGenreContextMenuStateProvider(savedStateHandle: SavedStateHandle): GenreContextMenuState {
-        val genreId = 0L
-
+        val args = savedStateHandle.getArgs<GenreContextMenuArguments>()
         return GenreContextMenuState(
-            mediaId = genreId,
+            mediaId = args.genreId,
             menuTitle = "",
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,

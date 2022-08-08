@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -64,7 +63,7 @@ interface GenreListScreenDelegate {
     fun onContextMenuIconClicked(genreId: Long) = Unit
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun GenreListScreenPreview(
     @PreviewParameter(GenreListStatePreviewParameterProvider::class) state: GenreListState

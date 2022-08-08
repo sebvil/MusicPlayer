@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -68,7 +67,7 @@ fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationD
 }
 
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::class) state: QueueState) {
     ScreenPreview {

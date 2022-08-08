@@ -13,6 +13,10 @@ class GenreRepositoryImpl @Inject constructor(private val genreDao: GenreDao) : 
     }
 
     override fun getGenres(sortOrder: MediaSortOrder): Flow<List<Genre>> {
-        return genreDao.getGenres(sortOrder = sortOrder)
+        return genreDao.getGenres(sortOrder = sortOrder).distinctUntilChanged()
+    }
+
+    override fun getGenre(genreId: Long): Flow<Genre> {
+        return genreDao.getGenre(genreId = genreId).distinctUntilChanged()
     }
 }

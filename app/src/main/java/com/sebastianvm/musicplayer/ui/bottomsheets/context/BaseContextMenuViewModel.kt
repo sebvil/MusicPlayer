@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -16,18 +15,9 @@ abstract class BaseContextMenuState(
 ) : State
 
 sealed class BaseContextMenuUiEvent : UiEvent {
-    object NavigateToPlayer : BaseContextMenuUiEvent()
-    data class NavigateToAlbum(val albumId: Long) : BaseContextMenuUiEvent()
-    data class NavigateToArtist(val artistId: Long) : BaseContextMenuUiEvent()
-    data class NavigateToArtistsBottomSheet(val mediaId: Long, val mediaType: MediaType) :
-        BaseContextMenuUiEvent()
-
-    data class NavigateToGenre(val genreId: Long) : BaseContextMenuUiEvent()
-    data class NavigateToPlaylist(val playlistId: Long) : BaseContextMenuUiEvent()
     data class ShowToast(@StringRes val message: Int, val success: Boolean) :
         BaseContextMenuUiEvent()
 
-    object HideBottomSheet : BaseContextMenuUiEvent()
 }
 
 abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(

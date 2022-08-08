@@ -29,59 +29,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
-
-
-interface ContextBottomSheetDialogNavigationDelegate {
-    fun navigateToPlayer() = Unit
-    fun navigateToAlbum(albumId: Long) = Unit
-    fun navigateToArtist(artistId: Long) = Unit
-    fun navigateToArtistsBottomSheet(mediaId: Long, mediaType: MediaType) = Unit
-    fun navigateToGenre(genreId: Long)
-    fun navigateToPlaylist(playlistId: Long)
-    fun hideBottomSheet()
-}
 
 @Composable
 fun <S : BaseContextMenuState> ContextBottomSheet(
     sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
-    delegate: ContextBottomSheetDialogNavigationDelegate,
+    navigationDelegate: NavigationDelegate,
 ) {
     val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
+    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
     HandleEvents(viewModel = sheetViewModel) { event ->
         when (event) {
-            is BaseContextMenuUiEvent.NavigateToPlayer -> {
-                delegate.navigateToPlayer()
-            }
-            is BaseContextMenuUiEvent.NavigateToAlbum -> delegate.navigateToAlbum(event.albumId)
-            is BaseContextMenuUiEvent.NavigateToArtist -> delegate.navigateToArtist(event.artistId)
-            is BaseContextMenuUiEvent.NavigateToArtistsBottomSheet -> delegate.navigateToArtistsBottomSheet(
-                event.mediaId,
-                event.mediaType
-            )
-            is BaseContextMenuUiEvent.NavigateToGenre -> delegate.navigateToGenre(event.genreId)
             is BaseContextMenuUiEvent.ShowToast -> {
                 Toast.makeText(
                     context,
                     event.message,
                     Toast.LENGTH_SHORT
                 ).show()
-                if (event.success) {
-                    delegate.hideBottomSheet()
-                }
-            }
-            is BaseContextMenuUiEvent.NavigateToPlaylist -> delegate.navigateToPlaylist(event.playlistId)
-            is BaseContextMenuUiEvent.HideBottomSheet -> {
-                delegate.hideBottomSheet()
+//                if (event.success) {
+//                    delegate.hideBottomSheet()
+//                }
             }
         }
     }
@@ -166,9 +143,11 @@ fun ContextMenuLayout(
             delegate = delegate
         )
         // Need this to be able to dismiss bottom sheet after deleting playlist
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+        )
     } else {
         with(state) {
             Column(modifier = Modifier.fillMaxWidth()) {

@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -24,13 +24,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -54,7 +56,7 @@ fun TrackSearchScreen(
     }
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterProvider::class) state: TrackSearchState) {
     ScreenPreview {
@@ -66,6 +68,7 @@ interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
@@ -124,15 +127,24 @@ fun TrackSearchLayout(
             modifier = Modifier.fillMaxWidth()
         )
 
-        LazyColumn {
-            items(state.trackSearchResults) { item ->
-                item.also {
-                    TrackRow(
-                        state = it,
-                    ) {}
+        state.trackSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+            LazyColumn {
+                items(lazyPagingItems) { item ->
+                    item?.also {
+                        TrackRow(
+                            state = it,
+                            modifier = Modifier.clickable { /* TODO */ },
+                            trailingContent = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_plus),
+                                    contentDescription = stringResource(R.string.more),
+                                )
+                            })
+                    }
                 }
             }
         }
     }
 }
+
 

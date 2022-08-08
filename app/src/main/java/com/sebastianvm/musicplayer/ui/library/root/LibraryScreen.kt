@@ -26,7 +26,6 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -46,9 +45,10 @@ fun LibraryScreen(
         permission = Manifest.permission.READ_EXTERNAL_STORAGE,
         onPermissionResult = { isGranted ->
             if (isGranted) {
-                Intent(context, LibraryScanService::class.java).also { intent ->
-                    startForegroundService(context, intent)
-                }
+                startForegroundService(
+                    context,
+                    Intent(context, LibraryScanService::class.java)
+                )
                 showPermissionDeniedDialog.value = false
             } else {
                 showPermissionDeniedDialog.value = true
@@ -84,11 +84,6 @@ fun LibraryScreen(
         screenViewModel = screenViewModel,
         eventHandler = { event ->
             when (event) {
-                is LibraryUiEvent.StartGetMusicService -> {
-                    Intent(context, LibraryScanService::class.java).also { intent ->
-                        startForegroundService(context, intent)
-                    }
-                }
                 is LibraryUiEvent.RequestPermission -> {
                     storagePermissionState.launchPermissionRequest()
                 }
@@ -105,9 +100,10 @@ fun LibraryScreen(
                 onClick = {
                     when (storagePermissionState.status) {
                         is PermissionStatus.Granted -> {
-                            Intent(context, LibraryScanService::class.java).also { intent ->
-                                startForegroundService(context, intent)
-                            }
+                            startForegroundService(
+                                context,
+                                Intent(context, LibraryScanService::class.java)
+                            )
                         }
                         is PermissionStatus.Denied -> {
                             if (storagePermissionState.status.shouldShowRationale) {
@@ -137,7 +133,7 @@ fun LibraryScreen(
 }
 
 @Composable
-@ComposePreviews
+@ScreenPreview
 fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
     ScreenPreview {
         LibraryLayout(state = libraryState, delegate = object : LibraryScreenDelegate {

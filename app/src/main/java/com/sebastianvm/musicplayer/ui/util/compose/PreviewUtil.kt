@@ -76,4 +76,8 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-annotation class ComposePreviews
+annotation class ScreenPreview
+
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+annotation class ComponentPreview

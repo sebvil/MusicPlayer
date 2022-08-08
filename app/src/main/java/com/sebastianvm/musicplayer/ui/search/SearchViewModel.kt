@@ -16,7 +16,10 @@ import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -112,7 +115,7 @@ class SearchViewModel @Inject constructor(
     fun onArtistRowClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ArtistDestination(
+                NavigationDestination.Artist(
                     ArtistArguments(artistId = artistId)
                 )
             )
@@ -122,7 +125,7 @@ class SearchViewModel @Inject constructor(
     fun onAlbumRowClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumDestination(
+                NavigationDestination.Album(
                     AlbumArguments(albumId = albumId)
                 )
             )
@@ -142,9 +145,9 @@ class SearchViewModel @Inject constructor(
     fun onTrackOverflowMenuClicked(trackId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = trackId,
+                NavigationDestination.TrackContextMenu(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
                         mediaType = MediaType.TRACK,
                         mediaGroup = MediaGroup(
                             mediaId = trackId,
@@ -159,15 +162,8 @@ class SearchViewModel @Inject constructor(
     fun onArtistOverflowMenuClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = artistId,
-                        mediaType = MediaType.ARTIST,
-                        mediaGroup = MediaGroup(
-                            mediaId = artistId,
-                            mediaGroupType = MediaGroupType.ARTIST
-                        )
-                    )
+                NavigationDestination.ArtistContextMenu(
+                    ArtistContextMenuArguments(artistId = artistId)
                 )
             )
         )
@@ -176,15 +172,8 @@ class SearchViewModel @Inject constructor(
     fun onAlbumOverflowMenuClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = albumId,
-                        mediaType = MediaType.ALBUM,
-                        mediaGroup = MediaGroup(
-                            mediaId = albumId,
-                            mediaGroupType = MediaGroupType.ALBUM
-                        )
-                    )
+                NavigationDestination.AlbumContextMenu(
+                    AlbumContextMenuArguments(albumId = albumId)
                 )
             )
         )
@@ -193,15 +182,8 @@ class SearchViewModel @Inject constructor(
     fun onGenreOverflowMenuClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = genreId,
-                        mediaType = MediaType.GENRE,
-                        mediaGroup = MediaGroup(
-                            mediaId = genreId,
-                            mediaGroupType = MediaGroupType.GENRE
-                        )
-                    )
+                NavigationDestination.GenreContextMenu(
+                    GenreContextMenuArguments(genreId = genreId)
                 )
             )
         )

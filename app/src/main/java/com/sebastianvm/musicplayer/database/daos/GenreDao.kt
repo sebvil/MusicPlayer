@@ -17,4 +17,7 @@ interface GenreDao {
                 "CASE WHEN :sortOrder='DESCENDING' THEN genreName END COLLATE LOCALIZED DESC"
     )
     fun getGenres(sortOrder: MediaSortOrder): Flow<List<Genre>>
+
+    @Query("SELECT * FROM Genre WHERE Genre.id=:genreId")
+    fun getGenre(genreId: Long): Flow<Genre>
 }

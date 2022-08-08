@@ -25,7 +25,6 @@ inline var MediaMetadata.Builder.genre: String
 inline var MediaMetadata.Builder.uri: Uri
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {
-        setMediaUri(value)
         setArtworkUri(value)
     }
 

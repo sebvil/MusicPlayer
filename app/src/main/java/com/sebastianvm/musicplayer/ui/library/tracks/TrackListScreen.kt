@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -40,8 +39,7 @@ fun TrackListScreen(
         navigationDelegate = navigationDelegate,
         topBar = { state ->
             LibraryTopBar(
-                title = state.trackListName.takeUnless { it.isEmpty() }
-                    ?: stringResource(id = R.string.all_songs),
+                title = state.trackListName ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
                         screenViewModel.onUpButtonClicked()
@@ -78,13 +76,13 @@ interface TrackListScreenDelegate : PlaybackStatusIndicatorDelegate {
     fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParameterProvider::class) state: TrackListState) {
     val listState = rememberLazyListState()
     ScreenPreview(topBar = {
         LibraryTopBar(
-            title = state.trackListName,
+            title = state.trackListName ?: stringResource(id = R.string.all_songs),
             delegate = object : LibraryTopBarDelegate {})
     }) {
         TrackListLayout(

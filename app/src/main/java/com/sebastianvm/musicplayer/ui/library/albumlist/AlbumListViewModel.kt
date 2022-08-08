@@ -1,11 +1,10 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -61,7 +60,7 @@ class AlbumListViewModel @Inject constructor(
     fun onAlbumClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumDestination(
+                NavigationDestination.Album(
                     AlbumArguments(albumId)
                 )
             )
@@ -87,11 +86,8 @@ class AlbumListViewModel @Inject constructor(
     fun onAlbumOverflowMenuIconClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = albumId,
-                        mediaType = MediaType.ALBUM
-                    )
+                NavigationDestination.AlbumContextMenu(
+                    AlbumContextMenuArguments(albumId = albumId)
                 )
             )
         )

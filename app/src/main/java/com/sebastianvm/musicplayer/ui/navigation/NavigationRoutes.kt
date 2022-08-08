@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
@@ -16,7 +17,11 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
@@ -46,7 +51,11 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     Playlist(hasArgs = true),
     TrackList(hasArgs = true),
     TrackSearch(hasArgs = true),
-    ContextMenu(hasArgs = true),
+    TrackContextMenu(hasArgs = true),
+    ArtistContextMenu(hasArgs = true),
+    AlbumContextMenu(hasArgs = true),
+    GenreContextMenu(hasArgs = true),
+    PlaylistContextMenu(hasArgs = true),
     SortMenu(hasArgs = true),
     ArtistsMenu(hasArgs = true)
 }
@@ -55,13 +64,34 @@ enum class NavigationRoute(val hasArgs: Boolean) {
 interface NavigationArguments : Parcelable
 
 sealed class NavigationDestination(
-    val navigationRoute: NavigationRoute, open val arguments: NavigationArguments?
+    val navigationRoute: NavigationRoute,
+    open val arguments: NavigationArguments?,
+    val isBottomNavDestination: Boolean = false
 ) {
-    object MusicPlayer : NavigationDestination(NavigationRoute.Player, arguments = null)
-    object Search : NavigationDestination(NavigationRoute.Search, arguments = null)
-    object Queue : NavigationDestination(NavigationRoute.Queue, arguments = null)
-    object LibraryRoot : NavigationDestination(NavigationRoute.Queue, arguments = null)
-    object Library : NavigationDestination(NavigationRoute.Library, arguments = null)
+    object MusicPlayer : NavigationDestination(
+        NavigationRoute.Player,
+        arguments = null,
+        isBottomNavDestination = true
+    )
+
+    object Search : NavigationDestination(
+        NavigationRoute.Search,
+        arguments = null,
+        isBottomNavDestination = true
+    )
+
+    object Queue : NavigationDestination(
+        NavigationRoute.Queue,
+        arguments = null,
+        isBottomNavDestination = true
+    )
+
+    object LibraryRoot : NavigationDestination(
+        NavigationRoute.Library,
+        arguments = null,
+        isBottomNavDestination = true
+    )
+
     object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
     object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
     object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
@@ -69,21 +99,33 @@ sealed class NavigationDestination(
     data class TrackList(override val arguments: TrackListArguments) :
         NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
 
-    data class AlbumDestination(override val arguments: AlbumArguments) :
+    data class Album(override val arguments: AlbumArguments) :
         NavigationDestination(NavigationRoute.Album, arguments)
 
 
-    data class PlaylistDestination(override val arguments: PlaylistArguments) :
+    data class Playlist(override val arguments: PlaylistArguments) :
         NavigationDestination(NavigationRoute.Playlist, arguments)
 
-    data class TrackSearchDestination(override val arguments: TrackSearchArguments) :
+    data class TrackSearch(override val arguments: TrackSearchArguments) :
         NavigationDestination(NavigationRoute.TrackSearch, arguments)
 
-    data class ArtistDestination(override val arguments: ArtistArguments) :
+    data class Artist(override val arguments: ArtistArguments) :
         NavigationDestination(NavigationRoute.Artist, arguments = arguments)
 
-    data class ContextMenu(override val arguments: ContextMenuArguments) :
-        NavigationDestination(NavigationRoute.ContextMenu, arguments = arguments)
+    data class TrackContextMenu(override val arguments: TrackContextMenuArguments) :
+        NavigationDestination(NavigationRoute.TrackContextMenu, arguments = arguments)
+
+    data class ArtistContextMenu(override val arguments: ArtistContextMenuArguments) :
+        NavigationDestination(NavigationRoute.ArtistContextMenu, arguments = arguments)
+
+    data class AlbumContextMenu(override val arguments: AlbumContextMenuArguments) :
+        NavigationDestination(NavigationRoute.AlbumContextMenu, arguments = arguments)
+
+    data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
+        NavigationDestination(NavigationRoute.GenreContextMenu, arguments = arguments)
+
+    data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArguments) :
+        NavigationDestination(NavigationRoute.PlaylistContextMenu, arguments = arguments)
 
     data class SortMenu(override val arguments: SortMenuArguments) :
         NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
@@ -101,32 +143,16 @@ private val module = SerializersModule {
         subclass(AlbumArguments::class)
         subclass(TrackListArguments::class)
         subclass(ArtistArguments::class)
-        subclass(ContextMenuArguments::class)
+        subclass(TrackContextMenuArguments::class)
+        subclass(ArtistContextMenuArguments::class)
+        subclass(AlbumContextMenuArguments::class)
+        subclass(GenreContextMenuArguments::class)
+        subclass(PlaylistContextMenuArguments::class)
         subclass(SortMenuArguments::class)
     }
 }
 
 private val json = Json { serializersModule = module }
-
-fun createNavRoute(route: String, vararg parameters: String): String {
-    return if (parameters.isEmpty()) {
-        route
-    } else {
-        "$route?" + parameters.joinToString("&") { s -> "$s={$s}" }
-    }
-}
-
-data class NavArgument<T>(val parameterName: String, val value: T)
-
-fun NavController.navigateTo(route: String, vararg parameters: NavArgument<*>) {
-    val navRoute = if (parameters.isEmpty()) {
-        route
-    } else {
-        "$route?" + parameters.joinToString("&") { s -> "${s.parameterName}=${s.value}" }
-    }
-    this.navigate(navRoute)
-}
-
 
 fun NavController.navigateTo(
     destination: NavigationDestination, builder: NavOptionsBuilder.() -> Unit = {}
@@ -148,7 +174,12 @@ fun getArgumentsType(): NavType<NavigationArguments> =
         }
 
         override fun get(bundle: Bundle, key: String): NavigationArguments {
-            return bundle.getParcelable(key)!!
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getParcelable(key, NavigationArguments::class.java)!!
+            } else {
+                @Suppress("deprecation")
+                bundle.getParcelable(key)!!
+            }
         }
 
         override fun parseValue(value: String): NavigationArguments {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -44,7 +45,6 @@ import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGrou
 import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComposePreviews
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -103,7 +103,7 @@ fun SearchScreen(
     }
 }
 
-@ComposePreviews
+@ScreenPreview
 @Composable
 fun SearchScreenPreview(@PreviewParameter(SearchStatePreviewParameterProvider::class) state: SearchState) {
     ScreenPreview {
@@ -124,6 +124,7 @@ interface SearchScreenDelegate {
     fun onGenreOverflowMenuClicked(genreId: Long) = Unit
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchLayout(
     state: SearchState,

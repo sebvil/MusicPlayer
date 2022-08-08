@@ -6,11 +6,12 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
@@ -30,10 +31,13 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -42,13 +46,13 @@ import javax.inject.Inject
 class TrackListViewModel @Inject constructor(
     initialState: TrackListState,
     trackRepository: TrackRepository,
+    genreRepository: GenreRepository,
     preferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseViewModel<TrackListUiEvent, TrackListState>(
     initialState
 ) {
 
-    // TODO get genre name
     init {
         val trackListFlow = when (state.value.trackListType) {
             TrackListType.ALL_TRACKS -> { sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> ->
@@ -64,26 +68,33 @@ class TrackListViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            preferencesRepository.getTrackListSortPreferences(
-                trackListType = state.value.trackListType,
-                trackListId = state.value.trackListId
-            ).flatMapLatest {
-                setState {
-                    copy(
-                        sortPreferences = it
-                    )
-                }
-                trackListFlow(it)
-            }.collect { newTrackList ->
-                setState {
-                    copy(
-                        trackList = newTrackList.map { it.toTrackRowState(includeTrackNumber = false) },
-                    )
-                }
-                addUiEvent(TrackListUiEvent.ScrollToTop)
-            }
+        val listNameFlow: Flow<String?> = when (state.value.trackListType) {
+            TrackListType.ALL_TRACKS -> flow { emit(null) }
+            TrackListType.GENRE -> genreRepository.getGenre(state.value.trackListId)
+                .map { it.genreName }
         }
+
+        preferencesRepository.getTrackListSortPreferences(
+            trackListType = state.value.trackListType,
+            trackListId = state.value.trackListId
+        ).flatMapLatest {
+            setState {
+                copy(
+                    sortPreferences = it
+                )
+            }
+            combine(trackListFlow(it), listNameFlow) { tracks, listName ->
+                Pair(tracks, listName)
+            }
+        }.onEach { (newTrackList, listName) ->
+            setState {
+                copy(
+                    trackListName = listName,
+                    trackList = newTrackList.map { it.toTrackRowState(includeTrackNumber = false) },
+                )
+            }
+            addUiEvent(TrackListUiEvent.ScrollToTop)
+        }.launchIn(viewModelScope)
 
     }
 
@@ -135,9 +146,9 @@ class TrackListViewModel @Inject constructor(
         )
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ContextMenu(
-                    ContextMenuArguments(
-                        mediaId = trackId,
+                NavigationDestination.TrackContextMenu(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
                         mediaType = MediaType.TRACK,
                         mediaGroup = mediaGroup,
                         trackIndex = trackIndex
@@ -164,7 +175,7 @@ class TrackListViewModel @Inject constructor(
 
 data class TrackListState(
     val trackListId: Long,
-    val trackListName: String,
+    val trackListName: String?,
     val trackListType: TrackListType,
     val trackList: List<TrackRowState>,
     val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
@@ -182,7 +193,7 @@ object InitialTrackListStateModule {
         val args = savedStateHandle.getArgs<TrackListArguments>()
         return TrackListState(
             trackListId = args.trackListId,
-            trackListName = "",
+            trackListName = null,
             trackList = listOf(),
             trackListType = args.trackListType,
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
