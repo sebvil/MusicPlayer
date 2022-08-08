@@ -2,7 +2,15 @@ package com.sebastianvm.musicplayer.ui.playlist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -24,7 +32,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
-    initialState: PlaylistState, playlistRepository: PlaylistRepository
+    initialState: PlaylistState,
+    playlistRepository: PlaylistRepository,
+    private val playbackManager: PlaybackManager
 ) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
 
     init {
@@ -45,10 +55,67 @@ class PlaylistViewModel @Inject constructor(
             )
         )
     }
+
+    fun onTrackClicked(trackIndex: Int) {
+        val playTracksFlow =
+            playbackManager.playPlaylist(state.value.playlistId, initialTrackIndex = trackIndex)
+        playTracksFlow.onEach {
+            when (it) {
+                is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
+                is PlaybackResult.Success -> {
+                    setState { copy(playbackResult = it) }
+                    addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+                }
+            }
+        }.launchIn(viewModelScope)
+
+    }
+
+    fun onSortByClicked() {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.SortMenu(
+                    SortMenuArguments(
+                        listType = SortableListType.PLAYLIST,
+                        mediaId = state.value.playlistId
+                    )
+                )
+            )
+        )
+    }
+
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.TrackContextMenu(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
+                        mediaType = MediaType.TRACK,
+                        mediaGroup = MediaGroup(
+                            mediaGroupType = MediaGroupType.PLAYLIST,
+                            mediaId = state.value.playlistId
+                        ),
+                        trackIndex = trackIndex
+                    )
+                )
+            )
+        )
+    }
+
+    fun onUpButtonClicked() {
+        addNavEvent(NavEvent.NavigateUp)
+    }
+
+    fun onClosePlaybackErrorDialog() {
+        setState { copy(playbackResult = null) }
+    }
 }
 
 data class PlaylistState(
-    val playlistId: Long, val playlistName: String, val trackList: List<TrackRowState>
+    val playlistId: Long,
+    val playlistName: String,
+    val trackList: List<TrackRowState>,
+    val playbackResult: PlaybackResult?
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -59,7 +126,10 @@ object InitialPlaylistStateModule {
     fun initialPlaylistStateProvider(savedStateHandle: SavedStateHandle): PlaylistState {
         val arguments = savedStateHandle.getArgs<PlaylistArguments>()
         return PlaylistState(
-            playlistId = arguments.playlistId, playlistName = "", trackList = listOf()
+            playlistId = arguments.playlistId,
+            playlistName = "",
+            trackList = listOf(),
+            playbackResult = null
         )
     }
 }

@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -44,5 +45,11 @@ class PlaylistRepositoryImpl @Inject constructor(
     override fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks> {
         return playlistDao.getPlaylistWithTracks(playlistId = playlistId).distinctUntilChanged()
             .mapNotNull { it }
+    }
+
+    override suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef) {
+        withContext(ioDispatcher) {
+            playlistDao.addTrackToPlaylist(playlistTrackCrossRef)
+        }
     }
 }

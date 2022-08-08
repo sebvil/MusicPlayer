@@ -52,6 +52,10 @@ fun TrackSearchScreen(
                 screenViewModel.onTextChanged(newText = newText)
             }
 
+            override fun onTrackClicked(trackId: Long) {
+                screenViewModel.onTrackClicked(trackId = trackId)
+            }
+
         })
     }
 }
@@ -66,6 +70,7 @@ fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterP
 
 interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
+    fun onTrackClicked(trackId: Long) = Unit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,7 +138,7 @@ fun TrackSearchLayout(
                     item?.also {
                         TrackRow(
                             state = it,
-                            modifier = Modifier.clickable { /* TODO */ },
+                            modifier = Modifier.clickable { delegate.onTrackClicked(it.trackId) },
                             trailingContent = {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_plus),

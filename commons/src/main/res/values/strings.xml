@@ -75,7 +75,7 @@
     <string name="error_collection_empty">This collection is empty!</string>
     <string name="ok">OK</string>
     <string name="playback_error">Playback error</string>
-    <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'+\'</string>
+    <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'Add tracks\'</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

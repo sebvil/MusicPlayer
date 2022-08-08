@@ -6,7 +6,7 @@ import androidx.room.FtsOptions
 import androidx.room.PrimaryKey
 
 @Entity
-data class Playlist(@PrimaryKey val id: Long, val playlistName: String)
+data class Playlist(@PrimaryKey(autoGenerate = true) val id: Long, val playlistName: String)
 
 
 @Fts4(contentEntity = Playlist::class, tokenizer = FtsOptions.TOKENIZER_UNICODE61)

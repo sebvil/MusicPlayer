@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
@@ -42,4 +43,7 @@ interface PlaylistDao {
 
     @Delete
     suspend fun deletePlaylist(playlist: Playlist)
+
+    @Insert
+    suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef)
 }
