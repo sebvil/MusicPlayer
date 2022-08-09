@@ -56,9 +56,6 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
                     event.message,
                     Toast.LENGTH_SHORT
                 ).show()
-//                if (event.success) {
-//                    delegate.hideBottomSheet()
-//                }
             }
         }
     }

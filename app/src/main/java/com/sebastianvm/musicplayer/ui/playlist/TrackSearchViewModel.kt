@@ -79,7 +79,7 @@ class TrackSearchViewModel @Inject constructor(
         query.update { newText }
     }
 
-    fun onTrackClicked(trackId: Long) {
+    fun onTrackClicked(trackId: Long, trackName: String) {
         playlistSize.update { it + 1 }
         viewModelScope.launch {
             playlistRepository.addTrackToPlaylist(
@@ -89,6 +89,7 @@ class TrackSearchViewModel @Inject constructor(
                     position = playlistSize.value
                 )
             )
+            addUiEvent(TrackSearchUiEvent.ShowConfirmationToast(trackName))
         }
     }
 }
@@ -114,4 +115,6 @@ object InitialTrackSearchStateModule {
     }
 }
 
-sealed class TrackSearchUiEvent : UiEvent
+sealed class TrackSearchUiEvent : UiEvent {
+    data class ShowConfirmationToast(val trackName: String) : TrackSearchUiEvent()
+}

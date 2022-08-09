@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,12 +27,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -44,9 +47,24 @@ fun TrackSearchScreen(
     screenViewModel: TrackSearchViewModel = viewModel(),
     navigationDelegate: NavigationDelegate
 ) {
+    val context = LocalContext.current
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = {},
+        eventHandler = { event ->
+            when (event) {
+                is TrackSearchUiEvent.ShowConfirmationToast -> {
+                    Toast.makeText(
+                        context,
+                        ResUtil.getString(
+                            context,
+                            R.string.track_added_to_playlist,
+                            event.trackName
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        },
         navigationDelegate = navigationDelegate
     ) { state ->
         TrackSearchLayout(state = state, delegate = object : TrackSearchScreenDelegate {
@@ -54,8 +72,8 @@ fun TrackSearchScreen(
                 screenViewModel.onTextChanged(newText = newText)
             }
 
-            override fun onTrackClicked(trackId: Long) {
-                screenViewModel.onTrackClicked(trackId = trackId)
+            override fun onTrackClicked(trackId: Long, trackName: String) {
+                screenViewModel.onTrackClicked(trackId = trackId, trackName)
             }
 
         })
@@ -72,7 +90,7 @@ fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterP
 
 interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
-    fun onTrackClicked(trackId: Long) = Unit
+    fun onTrackClicked(trackId: Long, trackName: String) = Unit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +158,12 @@ fun TrackSearchLayout(
                     item?.also {
                         TrackRow(
                             state = it,
-                            modifier = Modifier.clickable { delegate.onTrackClicked(it.trackId) },
+                            modifier = Modifier.clickable {
+                                delegate.onTrackClicked(
+                                    it.trackId,
+                                    it.trackName
+                                )
+                            },
                             trailingContent = {
                                 if (it.id in state.playlistTrackIds) {
                                     Icon(

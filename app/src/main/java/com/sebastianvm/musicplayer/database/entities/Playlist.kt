@@ -5,6 +5,7 @@ import androidx.room.Fts4
 import androidx.room.FtsOptions
 import androidx.room.PrimaryKey
 
+// TODO use playlist name hash to generate id
 @Entity
 data class Playlist(@PrimaryKey(autoGenerate = true) val id: Long, val playlistName: String)
 
