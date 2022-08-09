@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,9 +32,16 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
 fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = {},
+        eventHandler = { event ->
+            when (event) {
+                is PlaylistUiEvent.ScrollToTop -> {
+                    listState.animateScrollToItem(0)
+                }
+            }
+        },
         navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(title = it.playlistName,
@@ -57,21 +66,24 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
                 },
                 onClick = { screenViewModel.onAddTracksClicked() })
         }) { state ->
-        PlaylistLayout(state = state, delegate = object : PlaylistScreenDelegate {
+        PlaylistLayout(
+            state = state,
+            listState = listState,
+            delegate = object : PlaylistScreenDelegate {
 
-            override fun onTrackClicked(trackIndex: Int) {
-                screenViewModel.onTrackClicked(trackIndex)
-            }
+                override fun onTrackClicked(trackIndex: Int) {
+                    screenViewModel.onTrackClicked(trackIndex)
+                }
 
-            override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
-            }
+                override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
+                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
+                }
 
-            override fun onDismissRequest() {
-                screenViewModel.onClosePlaybackErrorDialog()
-            }
+                override fun onDismissRequest() {
+                    screenViewModel.onClosePlaybackErrorDialog()
+                }
 
-        })
+            })
     }
 }
 
@@ -92,7 +104,10 @@ fun PlaylistScreenPreview(@PreviewParameter(PlaylistStatePreviewParameterProvide
             },
             onClick = { })
     }) {
-        PlaylistLayout(state = state, delegate = object : PlaylistScreenDelegate {})
+        PlaylistLayout(
+            state = state,
+            listState = rememberLazyListState(),
+            delegate = object : PlaylistScreenDelegate {})
     }
 }
 
@@ -102,8 +117,13 @@ interface PlaylistScreenDelegate : PlaybackStatusIndicatorDelegate {
 }
 
 @Composable
-fun PlaylistLayout(state: PlaylistState, delegate: PlaylistScreenDelegate) {
+fun PlaylistLayout(
+    state: PlaylistState,
+    listState: LazyListState,
+    delegate: PlaylistScreenDelegate
+) {
     PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
+
     if (state.trackList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Text(
@@ -118,8 +138,8 @@ fun PlaylistLayout(state: PlaylistState, delegate: PlaylistScreenDelegate) {
         }
 
     } else {
-        LazyColumn {
-            itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
+        LazyColumn(state = listState) {
+            itemsIndexed(state.trackList) { index, item ->
                 TrackRow(
                     state = item,
                     modifier = Modifier

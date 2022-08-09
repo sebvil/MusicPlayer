@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
@@ -24,23 +25,36 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     initialState: PlaylistState,
     playlistRepository: PlaylistRepository,
-    private val playbackManager: PlaybackManager
+    private val playbackManager: PlaybackManager,
+    sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
 
     init {
+        val trackListFlow =
+            sortPreferencesRepository.getPlaylistSortPreferences(playlistId = state.value.playlistId)
+                .flatMapLatest {
+                    playlistRepository.getTracksInPlaylist(
+                        playlistId = state.value.playlistId,
+                        sortPreferences = it
+                    )
+                }
+
         combine(
             playlistRepository.getPlaylist(playlistId = state.value.playlistId),
-            playlistRepository.getTracksInPlaylist(playlistId = state.value.playlistId)
+            trackListFlow
         ) { playlist, tracks ->
             requireNotNull(playlist)
             Pair(playlist, tracks)
@@ -58,6 +72,7 @@ class PlaylistViewModel @Inject constructor(
                     }
                 )
             }
+            addUiEvent(PlaylistUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -149,4 +164,6 @@ object InitialPlaylistStateModule {
     }
 }
 
-sealed class PlaylistUiEvent : UiEvent
+sealed class PlaylistUiEvent : UiEvent {
+    object ScrollToTop : PlaylistUiEvent()
+}

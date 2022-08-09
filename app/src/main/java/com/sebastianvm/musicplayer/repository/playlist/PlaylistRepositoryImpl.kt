@@ -8,6 +8,8 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -21,8 +23,7 @@ class PlaylistRepositoryImpl @Inject constructor(
     private val playlistDao: PlaylistDao,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) :
-    PlaylistRepository {
+) : PlaylistRepository {
     override fun getPlaylistsCount(): Flow<Int> {
         return playlistDao.getPlaylistsCount().distinctUntilChanged()
     }
@@ -67,7 +68,14 @@ class PlaylistRepositoryImpl @Inject constructor(
             .flowOn(defaultDispatcher).distinctUntilChanged()
     }
 
-    override fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>> {
-        return playlistDao.getTracksInPlaylist(playlistId = playlistId).distinctUntilChanged()
+    override fun getTracksInPlaylist(
+        playlistId: Long,
+        sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
+    ): Flow<List<TrackWithPlaylistPositionView>> {
+        return playlistDao.getTracksInPlaylist(
+            playlistId = playlistId,
+            sortOption = sortPreferences.sortOption,
+            sortOrder = sortPreferences.sortOrder
+        ).distinctUntilChanged()
     }
 }
