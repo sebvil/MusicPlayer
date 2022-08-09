@@ -76,7 +76,7 @@ class PlaylistViewModel @Inject constructor(
             NavEvent.NavigateToScreen(
                 NavigationDestination.SortMenu(
                     SortMenuArguments(
-                        listType = SortableListType.PLAYLIST,
+                        listType = SortableListType.Playlist,
                         mediaId = state.value.playlistId
                     )
                 )
