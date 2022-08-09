@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.filter
 import androidx.paging.map
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
@@ -14,6 +15,7 @@ import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -45,16 +48,21 @@ class TrackSearchViewModel @Inject constructor(
     BaseViewModel<TrackSearchUiEvent, TrackSearchState>(initialState) {
 
     private val query = MutableStateFlow("")
+    private val queryUpdater = combineToPair(query, state.map { it.hideTracksInPlaylist })
     private val playlistSize = MutableStateFlow(0L)
 
     init {
         setState {
             copy(
-                trackSearchResults = query.flatMapLatest {
+                trackSearchResults = queryUpdater.flatMapLatest { (query, hideTracksInPlaylist) ->
                     Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchTracksPaged(it)
+                        ftsRepository.searchTracksPaged(query)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.track.toTrackRowState(includeTrackNumber = false) }
+                        pagingData.map {
+                            it.track.toTrackRowState(includeTrackNumber = false)
+                        }.filter {
+                            !hideTracksInPlaylist || (it.id !in state.value.playlistTrackIds)
+                        }
                     }
                 },
             )
@@ -111,6 +119,10 @@ class TrackSearchViewModel @Inject constructor(
         }
     }
 
+    fun onHideTracksCheckedToggle() {
+        setState { copy(hideTracksInPlaylist = !hideTracksInPlaylist) }
+    }
+
     private fun addTrackToPlaylist(trackId: Long, trackName: String) {
         // We do this so the behavior is still the same in case the user presses on tracks very fast
         // and the db is not updated fast enough
@@ -138,6 +150,7 @@ data class TrackSearchState(
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
     val playlistTrackIds: Set<Long> = setOf(),
     val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
+    val hideTracksInPlaylist: Boolean = true
 ) : State
 
 
