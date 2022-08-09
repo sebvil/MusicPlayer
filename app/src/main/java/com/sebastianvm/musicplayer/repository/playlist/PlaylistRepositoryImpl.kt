@@ -78,4 +78,10 @@ class PlaylistRepositoryImpl @Inject constructor(
             sortOrder = sortPreferences.sortOrder
         ).distinctUntilChanged()
     }
+
+    override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
+        withContext(ioDispatcher) {
+            playlistDao.removeItemFromPlaylist(playlistId = playlistId, position = position)
+        }
+    }
 }

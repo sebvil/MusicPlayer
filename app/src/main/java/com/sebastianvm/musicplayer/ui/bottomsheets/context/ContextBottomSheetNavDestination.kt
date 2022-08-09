@@ -17,7 +17,8 @@ data class TrackContextMenuArguments(
     val trackId: Long,
     val mediaType: MediaType,
     val mediaGroup: MediaGroup,
-    val trackIndex: Int = 0
+    val trackIndex: Int = 0,
+    val positionInPlaylist: Long? = null
 ) : NavigationArguments
 
 @Serializable

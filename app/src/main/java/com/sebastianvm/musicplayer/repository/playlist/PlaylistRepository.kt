@@ -24,5 +24,5 @@ interface PlaylistRepository {
         sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
     ): Flow<List<TrackWithPlaylistPositionView>>
 
-
+    suspend fun removeItemFromPlaylist(playlistId: Long, position: Long)
 }

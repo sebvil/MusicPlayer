@@ -28,3 +28,6 @@ data class PlaylistWithTracks(
     )
     val tracks: List<Track>
 )
+
+
+data class PlaylistTrackCrossRefKeys(val playlistId: Long, val position: Long)

@@ -75,8 +75,12 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
                     screenViewModel.onTrackClicked(trackIndex)
                 }
 
-                override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
+                override fun onOverflowMenuIconClicked(
+                    trackIndex: Int,
+                    trackId: Long,
+                    position: Long
+                ) {
+                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId, position)
                 }
 
                 override fun onDismissRequest() {
@@ -113,7 +117,7 @@ fun PlaylistScreenPreview(@PreviewParameter(PlaylistStatePreviewParameterProvide
 
 interface PlaylistScreenDelegate : PlaybackStatusIndicatorDelegate {
     fun onTrackClicked(trackIndex: Int) = Unit
-    fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
+    fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long, position: Long) = Unit
 }
 
 @Composable
@@ -149,7 +153,8 @@ fun PlaylistLayout(
                     onOverflowMenuIconClicked = {
                         delegate.onOverflowMenuIconClicked(
                             index,
-                            item.trackId
+                            item.trackId,
+                            item.id
                         )
                     }
                 )

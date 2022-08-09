@@ -114,7 +114,7 @@ class PlaylistViewModel @Inject constructor(
         )
     }
 
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
+    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long, position: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackContextMenu(
@@ -125,7 +125,8 @@ class PlaylistViewModel @Inject constructor(
                             mediaGroupType = MediaGroupType.PLAYLIST,
                             mediaId = state.value.playlistId
                         ),
-                        trackIndex = trackIndex
+                        trackIndex = trackIndex,
+                        positionInPlaylist = position
                     )
                 )
             )

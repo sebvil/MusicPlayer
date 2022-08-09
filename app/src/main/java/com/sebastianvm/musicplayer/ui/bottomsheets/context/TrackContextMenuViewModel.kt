@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
@@ -30,9 +31,9 @@ data class TrackContextMenuState(
     override val mediaId: Long,
     override val menuTitle: String,
     override val playbackResult: PlaybackResult? = null,
-    val albumId: Long,
     val mediaGroup: MediaGroup,
     val trackIndex: Int,
+    val positionInPlaylist: Long? = null
 ) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
 
 @InstallIn(ViewModelComponent::class)
@@ -45,10 +46,10 @@ object InitialTrackContextMenuStateModule {
         return TrackContextMenuState(
             mediaId = args.trackId,
             menuTitle = "",
-            albumId = 0,
             mediaGroup = args.mediaGroup,
             listItems = listOf(),
-            trackIndex = args.trackIndex
+            trackIndex = args.trackIndex,
+            positionInPlaylist = args.positionInPlaylist
         )
     }
 }
@@ -58,6 +59,7 @@ class TrackContextMenuViewModel @Inject constructor(
     initialState: TrackContextMenuState,
     trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
+    private val playlistRepository: PlaylistRepository
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistId: Long = 0
 
@@ -69,21 +71,32 @@ class TrackContextMenuViewModel @Inject constructor(
             setState {
                 copy(
                     menuTitle = it.track.trackName,
-                    listItems = if (state.value.mediaGroup.mediaGroupType == MediaGroupType.ALBUM) {
-                        listOf(
-                            ContextMenuItem.Play,
-                            ContextMenuItem.AddToQueue,
-                            if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
-                        )
-                    } else {
-                        listOf(
-                            ContextMenuItem.Play,
-                            ContextMenuItem.AddToQueue,
-                            if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
-                            ContextMenuItem.ViewAlbum
-                        )
+                    listItems = when (state.value.mediaGroup.mediaGroupType) {
+                        MediaGroupType.ALBUM -> {
+                            listOf(
+                                ContextMenuItem.Play,
+                                ContextMenuItem.AddToQueue,
+                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                            )
+                        }
+                        MediaGroupType.PLAYLIST -> {
+                            listOf(
+                                ContextMenuItem.Play,
+                                ContextMenuItem.AddToQueue,
+                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                ContextMenuItem.ViewAlbum,
+                                ContextMenuItem.RemoveFromPlaylist
+                            )
+                        }
+                        else -> {
+                            listOf(
+                                ContextMenuItem.Play,
+                                ContextMenuItem.AddToQueue,
+                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                ContextMenuItem.ViewAlbum
+                            )
+                        }
                     },
-                    albumId = it.track.albumId,
                 )
             }
         }.launchIn(viewModelScope)
@@ -143,7 +156,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         destination = NavigationDestination.Album(
-                            arguments = AlbumArguments(albumId = state.value.albumId)
+                            arguments = AlbumArguments(albumId = state.value.mediaGroup.mediaId)
                         )
                     )
                 )
@@ -168,6 +181,18 @@ class TrackContextMenuViewModel @Inject constructor(
                         )
                     )
                 )
+            }
+            ContextMenuItem.RemoveFromPlaylist -> {
+                state.value.positionInPlaylist?.also {
+                    viewModelScope.launch {
+                        playlistRepository.removeItemFromPlaylist(
+                            playlistId = state.value.mediaGroup.mediaId,
+                            position = it
+                        )
+                    }
+                }
+                addNavEvent(NavEvent.NavigateUp)
+
             }
             else -> throw IllegalStateException("Invalid row for track context menu")
         }
