@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +20,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +78,17 @@ fun TrackSearchScreen(
                 screenViewModel.onTrackClicked(trackId = trackId, trackName)
             }
 
+            override fun onCancelAddTrackToPlaylist() {
+                screenViewModel.onCancelAddTrackToPlaylist()
+            }
+
+            override fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) {
+                screenViewModel.onConfirmAddTrackToPlaylist(
+                    trackId = trackId,
+                    trackName = trackName
+                )
+            }
+
         })
     }
 }
@@ -91,6 +104,8 @@ fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterP
 interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
     fun onTrackClicked(trackId: Long, trackName: String) = Unit
+    fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) = Unit
+    fun onCancelAddTrackToPlaylist() = Unit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,6 +119,38 @@ fun TrackSearchLayout(
     }
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
+    state.addTrackConfirmationDialogState?.also {
+        AlertDialog(
+            onDismissRequest = {
+                delegate.onCancelAddTrackToPlaylist()
+            },
+            title = {
+                Text(text = "Add to playlist?")
+            },
+            text = {
+                Text(text = "${it.trackName} is already in the playlist. Are you sure you want to add it again?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        delegate.onConfirmAddTrackToPlaylist(it.trackId, it.trackName)
+                    }
+                ) {
+                    Text("Add to playist")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        delegate.onCancelAddTrackToPlaylist()
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+
+    }
     Column(
         modifier = Modifier
             .fillMaxHeight()

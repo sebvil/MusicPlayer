@@ -80,7 +80,46 @@ class TrackSearchViewModel @Inject constructor(
     }
 
     fun onTrackClicked(trackId: Long, trackName: String) {
+        if (trackId in state.value.playlistTrackIds) {
+            setState {
+                copy(
+                    addTrackConfirmationDialogState = AddTrackConfirmationDialogState(
+                        trackId = trackId,
+                        trackName = trackName
+                    )
+                )
+            }
+            return
+        }
+        addTrackToPlaylist(trackId = trackId, trackName = trackName)
+    }
+
+    fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) {
+        setState {
+            copy(
+                addTrackConfirmationDialogState = null
+            )
+        }
+        addTrackToPlaylist(trackId = trackId, trackName = trackName)
+    }
+
+    fun onCancelAddTrackToPlaylist() {
+        setState {
+            copy(
+                addTrackConfirmationDialogState = null
+            )
+        }
+    }
+
+    private fun addTrackToPlaylist(trackId: Long, trackName: String) {
+        // We do this so the behavior is still the same in case the user presses on tracks very fast
+        // and the db is not updated fast enough
         playlistSize.update { it + 1 }
+        setState {
+            copy(
+                playlistTrackIds = playlistTrackIds.toMutableSet().plus(trackId)
+            )
+        }
         viewModelScope.launch {
             playlistRepository.addTrackToPlaylist(
                 PlaylistTrackCrossRef(
@@ -97,7 +136,8 @@ class TrackSearchViewModel @Inject constructor(
 data class TrackSearchState(
     val playlistId: Long,
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
-    val playlistTrackIds: Set<Long> = setOf()
+    val playlistTrackIds: Set<Long> = setOf(),
+    val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
 ) : State
 
 
@@ -118,3 +158,5 @@ object InitialTrackSearchStateModule {
 sealed class TrackSearchUiEvent : UiEvent {
     data class ShowConfirmationToast(val trackName: String) : TrackSearchUiEvent()
 }
+
+data class AddTrackConfirmationDialogState(val trackId: Long, val trackName: String)
