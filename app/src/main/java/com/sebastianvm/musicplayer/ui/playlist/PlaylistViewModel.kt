@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
@@ -25,6 +24,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -38,10 +38,25 @@ class PlaylistViewModel @Inject constructor(
 ) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
 
     init {
-        playlistRepository.getPlaylistWithTracks(state.value.playlistId).onEach {
+        combine(
+            playlistRepository.getPlaylist(playlistId = state.value.playlistId),
+            playlistRepository.getTracksInPlaylist(playlistId = state.value.playlistId)
+        ) { playlist, tracks ->
+            requireNotNull(playlist)
+            Pair(playlist, tracks)
+        }.onEach { (playlist, tracks) ->
             setState {
-                copy(playlistName = it.playlist.playlistName,
-                    trackList = it.tracks.map { track -> track.toTrackRowState(includeTrackNumber = false) })
+                copy(
+                    playlistName = playlist.playlistName,
+                    trackList = tracks.map { track ->
+                        TrackRowState(
+                            id = track.position,
+                            trackId = track.id,
+                            artists = track.artists,
+                            trackName = track.trackName
+                        )
+                    }
+                )
             }
         }.launchIn(viewModelScope)
     }

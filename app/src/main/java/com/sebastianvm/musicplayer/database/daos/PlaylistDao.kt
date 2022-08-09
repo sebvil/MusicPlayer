@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
+import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
 
@@ -46,4 +47,14 @@ interface PlaylistDao {
 
     @Insert
     suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef)
+
+    @Query("SELECT COUNT(*) FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId")
+    fun getPlaylistSize(playlistId: Long): Flow<Long>
+
+    @Query("SELECT DISTINCT PlaylistTrackCrossRef.trackId FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId")
+    fun getTrackIdsInPlaylist(playlistId: Long): Flow<List<Long>>
+
+    @Query("SELECT * FROM TrackWithPlaylistPositionView WHERE TrackWithPlaylistPositionView.playlistId=:playlistId")
+    fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>>
+
 }

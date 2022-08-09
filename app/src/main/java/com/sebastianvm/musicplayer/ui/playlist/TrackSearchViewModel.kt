@@ -24,9 +24,12 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,6 +58,20 @@ class TrackSearchViewModel @Inject constructor(
                 },
             )
         }
+        combine(
+            playlistRepository.getPlaylistSize(state.value.playlistId),
+            playlistRepository.getTrackIdsInPlaylist(state.value.playlistId)
+        ) { size, trackIds ->
+            Pair(size, trackIds)
+        }.onEach { (size, trackIds) ->
+            setState {
+                copy(
+                    playlistSize = size,
+                    playlistTrackIds = trackIds
+                )
+            }
+        }.launchIn(viewModelScope)
+
     }
 
     fun onTextChanged(newText: String) {
@@ -66,7 +83,8 @@ class TrackSearchViewModel @Inject constructor(
             playlistRepository.addTrackToPlaylist(
                 PlaylistTrackCrossRef(
                     playlistId = state.value.playlistId,
-                    trackId = trackId
+                    trackId = trackId,
+                    position = state.value.playlistSize
                 )
             )
         }
@@ -76,6 +94,8 @@ class TrackSearchViewModel @Inject constructor(
 data class TrackSearchState(
     val playlistId: Long,
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
+    val playlistSize: Long = 0,
+    val playlistTrackIds: Set<Long> = setOf()
 ) : State
 
 

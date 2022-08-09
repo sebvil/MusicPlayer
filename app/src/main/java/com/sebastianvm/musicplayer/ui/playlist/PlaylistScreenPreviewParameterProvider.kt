@@ -16,10 +16,10 @@ class PlaylistStatePreviewParameterProvider : PreviewParameterProvider<PlaylistS
             playlistName = "My playlist",
             listOf(
                 TrackRowState(
+                    id = 0,
                     trackId = 0,
                     trackName = "Track",
                     artists = "Artist",
-                    albumName = "Album"
                 )
             ),
             playbackResult = null

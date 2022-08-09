@@ -119,7 +119,7 @@ fun PlaylistLayout(state: PlaylistState, delegate: PlaylistScreenDelegate) {
 
     } else {
         LazyColumn {
-            itemsIndexed(state.trackList, key = { _, item -> item.trackId }) { index, item ->
+            itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
                 TrackRow(
                     state = item,
                     modifier = Modifier

@@ -4,18 +4,23 @@ import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
+import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
+import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PlaylistRepositoryImpl @Inject constructor(
     private val playlistDao: PlaylistDao,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) :
     PlaylistRepository {
     override fun getPlaylistsCount(): Flow<Int> {
@@ -51,5 +56,18 @@ class PlaylistRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) {
             playlistDao.addTrackToPlaylist(playlistTrackCrossRef)
         }
+    }
+
+    override fun getPlaylistSize(playlistId: Long): Flow<Long> {
+        return playlistDao.getPlaylistSize(playlistId = playlistId).distinctUntilChanged()
+    }
+
+    override fun getTrackIdsInPlaylist(playlistId: Long): Flow<Set<Long>> {
+        return playlistDao.getTrackIdsInPlaylist(playlistId = playlistId).map { it.toSet() }
+            .flowOn(defaultDispatcher).distinctUntilChanged()
+    }
+
+    override fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>> {
+        return playlistDao.getTracksInPlaylist(playlistId = playlistId).distinctUntilChanged()
     }
 }
