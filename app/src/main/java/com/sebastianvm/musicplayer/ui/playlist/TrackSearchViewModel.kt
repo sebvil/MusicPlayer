@@ -45,6 +45,7 @@ class TrackSearchViewModel @Inject constructor(
     BaseViewModel<TrackSearchUiEvent, TrackSearchState>(initialState) {
 
     private val query = MutableStateFlow("")
+    private val playlistSize = MutableStateFlow(0L)
 
     init {
         setState {
@@ -66,10 +67,10 @@ class TrackSearchViewModel @Inject constructor(
         }.onEach { (size, trackIds) ->
             setState {
                 copy(
-                    playlistSize = size,
                     playlistTrackIds = trackIds
                 )
             }
+            playlistSize.update { size }
         }.launchIn(viewModelScope)
 
     }
@@ -79,12 +80,13 @@ class TrackSearchViewModel @Inject constructor(
     }
 
     fun onTrackClicked(trackId: Long) {
+        playlistSize.update { it + 1 }
         viewModelScope.launch {
             playlistRepository.addTrackToPlaylist(
                 PlaylistTrackCrossRef(
                     playlistId = state.value.playlistId,
                     trackId = trackId,
-                    position = state.value.playlistSize
+                    position = playlistSize.value
                 )
             )
         }
@@ -94,7 +96,6 @@ class TrackSearchViewModel @Inject constructor(
 data class TrackSearchState(
     val playlistId: Long,
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
-    val playlistSize: Long = 0,
     val playlistTrackIds: Set<Long> = setOf()
 ) : State
 
