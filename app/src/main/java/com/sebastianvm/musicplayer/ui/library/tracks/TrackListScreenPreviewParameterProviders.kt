@@ -13,10 +13,10 @@ class TrackListStatePreviewParameterProvider : PreviewParameterProvider<TrackLis
             trackListName = "Pop",
             trackListType = TrackListType.GENRE,
             trackList = listOf(
-                TrackRowState(0, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(1, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(2, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(3, "La Promesa", "Melendi", "Un alumno mas")
+                TrackRowState(0, 0, "La Promesa", "Melendi"),
+                TrackRowState(1, 1, "La Promesa", "Melendi"),
+                TrackRowState(2, 2, "La Promesa", "Melendi"),
+                TrackRowState(3, 3, "La Promesa", "Melendi")
             ),
             sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )

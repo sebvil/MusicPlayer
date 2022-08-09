@@ -10,11 +10,12 @@ class AlbumStatePreviewParameterProvider :
         AlbumState(
             albumId = 0,
             imageUri = Uri.EMPTY,
-            albumName = "10:20:40", listOf(
-                TrackRowState(0, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(1, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(2, "La Promesa", "Melendi", "Un alumno mas"),
-                TrackRowState(3, "La Promesa", "Melendi", "Un alumno mas")
+            albumName = "10:20:40",
+            listOf(
+                TrackRowState(0, 0, "La Promesa", "Melendi"),
+                TrackRowState(1, 1, "La Promesa", "Melendi"),
+                TrackRowState(2, 2, "La Promesa", "Melendi"),
+                TrackRowState(3, 3, "La Promesa", "Melendi")
             ),
         )
     )

@@ -30,6 +30,7 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistFts
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackFts
+import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 
 @Database(
     entities = [
@@ -51,6 +52,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
         GenreFts::class,
         PlaylistFts::class,
     ],
+    views = [TrackWithPlaylistPositionView::class],
     version = 1,
     exportSchema = false
 )

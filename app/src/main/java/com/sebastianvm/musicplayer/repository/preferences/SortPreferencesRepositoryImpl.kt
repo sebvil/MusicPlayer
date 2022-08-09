@@ -74,9 +74,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackListType) {
             TrackListType.ALL_TRACKS -> getAllTrackListSortPreferences()
-            TrackListType.GENRE -> getGenreTrackListSortPreferences(
-                trackListId
-            )
+            TrackListType.GENRE -> getGenreTrackListSortPreferences(trackListId)
         }
     }
 

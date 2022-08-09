@@ -72,10 +72,12 @@
     <string name="no_queue_available">No queue available</string>
     <string name="added_to_queue">Added to queue</string>
     <string name="delete_playlist">Delete playlist</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
     <string name="error_collection_empty">This collection is empty!</string>
     <string name="ok">OK</string>
     <string name="playback_error">Playback error</string>
-    <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'+\'</string>
+    <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'Add tracks\'</string>
+    <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

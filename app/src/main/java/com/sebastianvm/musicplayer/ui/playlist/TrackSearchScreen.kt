@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,14 +9,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -24,12 +29,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -42,14 +49,44 @@ fun TrackSearchScreen(
     screenViewModel: TrackSearchViewModel = viewModel(),
     navigationDelegate: NavigationDelegate
 ) {
+    val context = LocalContext.current
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = {},
+        eventHandler = { event ->
+            when (event) {
+                is TrackSearchUiEvent.ShowConfirmationToast -> {
+                    Toast.makeText(
+                        context,
+                        ResUtil.getString(
+                            context,
+                            R.string.track_added_to_playlist,
+                            event.trackName
+                        ),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        },
         navigationDelegate = navigationDelegate
     ) { state ->
         TrackSearchLayout(state = state, delegate = object : TrackSearchScreenDelegate {
             override fun onTextChanged(newText: String) {
                 screenViewModel.onTextChanged(newText = newText)
+            }
+
+            override fun onTrackClicked(trackId: Long, trackName: String) {
+                screenViewModel.onTrackClicked(trackId = trackId, trackName)
+            }
+
+            override fun onCancelAddTrackToPlaylist() {
+                screenViewModel.onCancelAddTrackToPlaylist()
+            }
+
+            override fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) {
+                screenViewModel.onConfirmAddTrackToPlaylist(
+                    trackId = trackId,
+                    trackName = trackName
+                )
             }
 
         })
@@ -66,6 +103,9 @@ fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterP
 
 interface TrackSearchScreenDelegate {
     fun onTextChanged(newText: String) = Unit
+    fun onTrackClicked(trackId: Long, trackName: String) = Unit
+    fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) = Unit
+    fun onCancelAddTrackToPlaylist() = Unit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +119,38 @@ fun TrackSearchLayout(
     }
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
+    state.addTrackConfirmationDialogState?.also {
+        AlertDialog(
+            onDismissRequest = {
+                delegate.onCancelAddTrackToPlaylist()
+            },
+            title = {
+                Text(text = "Add to playlist?")
+            },
+            text = {
+                Text(text = "${it.trackName} is already in the playlist. Are you sure you want to add it again?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        delegate.onConfirmAddTrackToPlaylist(it.trackId, it.trackName)
+                    }
+                ) {
+                    Text("Add to playist")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        delegate.onCancelAddTrackToPlaylist()
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+
+    }
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -133,12 +205,27 @@ fun TrackSearchLayout(
                     item?.also {
                         TrackRow(
                             state = it,
-                            modifier = Modifier.clickable { /* TODO */ },
-                            trailingContent = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_plus),
-                                    contentDescription = stringResource(R.string.more),
+                            modifier = Modifier.clickable {
+                                delegate.onTrackClicked(
+                                    it.trackId,
+                                    it.trackName
                                 )
+                            },
+                            trailingContent = {
+                                if (it.id in state.playlistTrackIds) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = stringResource(
+                                            id = R.string.search
+                                        ),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_plus),
+                                        contentDescription = stringResource(R.string.more),
+                                    )
+                                }
                             })
                     }
                 }

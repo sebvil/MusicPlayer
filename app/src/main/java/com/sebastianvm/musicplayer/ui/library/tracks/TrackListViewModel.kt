@@ -128,7 +128,7 @@ class TrackListViewModel @Inject constructor(
             NavEvent.NavigateToScreen(
                 NavigationDestination.SortMenu(
                     SortMenuArguments(
-                        SortableListType.TRACKS,
+                        listType = SortableListType.Tracks(state.value.trackListType),
                         mediaId = state.value.trackListId
                     )
                 )

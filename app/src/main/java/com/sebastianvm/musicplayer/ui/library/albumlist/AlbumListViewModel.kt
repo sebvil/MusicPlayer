@@ -76,7 +76,7 @@ class AlbumListViewModel @Inject constructor(
             NavEvent.NavigateToScreen(
                 NavigationDestination.SortMenu(
                     SortMenuArguments(
-                        listType = SortableListType.ALBUMS
+                        listType = SortableListType.Albums
                     )
                 )
             )
