@@ -217,7 +217,7 @@ fun TrackSearchLayout(
                 checked = state.hideTracksInPlaylist,
                 onCheckedChange = { delegate.onHideTracksCheckedToggle() })
             Text(
-                text = "Hide tracks in playlist",
+                text = stringResource(R.string.hide_tracks_in_playlist),
                 modifier = Modifier.padding(start = AppDimensions.spacing.large)
             )
         }
