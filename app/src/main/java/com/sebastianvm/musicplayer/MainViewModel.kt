@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -17,18 +16,16 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val playbackManager: PlaybackManager
-) :
-    BaseViewModel<MainActivityUiEvent, MainActivityState>(initialState) {
-    fun <A: UserAction> handle(action: A) {
-        when (action) {
-            is MainActivityUserAction.ConnectToMusicService -> {
-                playbackManager.connectToService()
-            }
-            is MainActivityUserAction.DisconnectFromMusicService -> {
-                playbackManager.disconnectFromService()
-            }
-        }
+) : BaseViewModel<MainActivityUiEvent, MainActivityState>(initialState) {
+
+    fun connectToMusicService() {
+        playbackManager.connectToService()
     }
+
+    fun disconnectFromMusicService() {
+        playbackManager.disconnectFromService()
+    }
+
 }
 
 
@@ -40,11 +37,6 @@ object InitialMainActivityStateModule {
     @Provides
     @ViewModelScoped
     fun initialMainActivityStateProvider(): MainActivityState = MainActivityState
-}
-
-sealed class MainActivityUserAction : UserAction {
-    object ConnectToMusicService : MainActivityUserAction()
-    object DisconnectFromMusicService : MainActivityUserAction()
 }
 
 sealed class MainActivityUiEvent : UiEvent

@@ -18,7 +18,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Size
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat

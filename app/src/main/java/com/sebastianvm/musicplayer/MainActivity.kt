@@ -39,11 +39,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.handle(MainActivityUserAction.ConnectToMusicService)
+        viewModel.connectToMusicService()
     }
 
     override fun onStop() {
         super.onStop()
-        viewModel.handle(MainActivityUserAction.DisconnectFromMusicService)
+        viewModel.disconnectFromMusicService()
     }
 }
