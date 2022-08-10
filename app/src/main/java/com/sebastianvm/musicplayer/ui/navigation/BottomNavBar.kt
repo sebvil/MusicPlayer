@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 
 
 sealed class Screen(

@@ -6,7 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import kotlinx.coroutines.flow.map
 
 class NavigationDelegate(private val navController: NavController) {

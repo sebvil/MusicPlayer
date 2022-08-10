@@ -1,15 +1,13 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -24,7 +22,8 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState,
-) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState) {
+) : BaseViewModel<LibraryUiEvent, LibraryState>(initialState),
+    ViewModelInterface<LibraryState, LibraryUserAction> {
 
     init {
         viewModelScope.launch {
@@ -45,39 +44,11 @@ class LibraryViewModel @Inject constructor(
         }
     }
 
-    fun onRowClicked(rowId: NavigationRoute) {
-        when (rowId) {
-            NavigationRoute.TrackList -> addNavEvent(
-                NavEvent.NavigateToScreen(
-                    NavigationDestination.TrackList(
-                        TrackListArguments(
-                            trackListId = TrackListViewModel.ALL_TRACKS,
-                            trackListType = TrackListType.ALL_TRACKS
-                        )
-                    )
-                )
-            )
-            NavigationRoute.ArtistsRoot -> addNavEvent(
-                NavEvent.NavigateToScreen(
-                    NavigationDestination.ArtistsRoot
-                )
-            )
-            NavigationRoute.AlbumsRoot -> addNavEvent(
-                NavEvent.NavigateToScreen(
-                    NavigationDestination.AlbumsRoot
-                )
-            )
-            NavigationRoute.GenresRoot -> addNavEvent(
-                NavEvent.NavigateToScreen(
-                    NavigationDestination.GenresRoot
-                )
-            )
-            NavigationRoute.PlaylistsRoot -> addNavEvent(
-                NavEvent.NavigateToScreen(
-                    NavigationDestination.PlaylistsRoot
-                )
-            )
-            else -> Unit
+    override fun handle(action: LibraryUserAction) {
+        when (action) {
+            is LibraryUserAction.RowClicked -> {
+                addNavEvent(NavEvent.NavigateToScreen(action.destination))
+            }
         }
     }
 }
@@ -103,4 +74,8 @@ object InitialLibraryStateModule {
 
 sealed class LibraryUiEvent : UiEvent {
     object RequestPermission : LibraryUiEvent()
+}
+
+sealed class LibraryUserAction : UserAction {
+    data class RowClicked(val destination: NavigationDestination) : LibraryUserAction()
 }
