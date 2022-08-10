@@ -22,4 +22,8 @@ class FakeGenreRepository(genreList: List<Genre>) : GenreRepository {
         }
     }
 
+    override fun getGenre(genreId: Long): Flow<Genre> {
+        TODO("Not yet implemented")
+    }
+
 }
