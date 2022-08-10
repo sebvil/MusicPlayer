@@ -99,7 +99,7 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Coil
-    def coil_version = '1.4.0'
+    def coil_version = '2.1.0'
     implementation "io.coil-kt:coil:$coil_version"
 
     // Start Jetpack Compose
