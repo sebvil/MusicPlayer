@@ -19,7 +19,7 @@ class MainViewModelTest {
     @Test
     fun `connectToMusicService connects to music service`() {
         with(MainViewModel(MainActivityState, playbackManager)) {
-            connectToMusicService()
+            handle(MainActivityUserAction.ConnectToMusicService)
             verify {
                 playbackManager.connectToService()
             }
@@ -30,7 +30,7 @@ class MainViewModelTest {
     @Test
     fun `disconnectFromMusicService disconnects from music service`() {
         with(MainViewModel(MainActivityState, playbackManager)) {
-            disconnectFromMusicService()
+            handle(MainActivityUserAction.DisconnectFromMusicService)
             verify {
                 playbackManager.disconnectFromService()
             }
