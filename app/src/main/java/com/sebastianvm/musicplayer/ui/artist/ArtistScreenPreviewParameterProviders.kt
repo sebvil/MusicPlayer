@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
@@ -22,7 +21,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = 0,
                             albumName = "Ahora",
-                            imageUri = Uri.EMPTY,
+                            imageUri = "",
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -31,7 +30,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = 1,
                             albumName = "Ahora",
-                            imageUri = Uri.EMPTY,
+                            imageUri = "",
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -49,7 +48,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = 2,
                             albumName = "Ahora",
-                            imageUri = Uri.EMPTY,
+                            imageUri = "",
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -58,7 +57,7 @@ class ArtistStatePreviewParameterProvider : PreviewParameterProvider<ArtistState
                         AlbumRowState(
                             albumId = 3,
                             albumName = "Ahora",
-                            imageUri = Uri.EMPTY,
+                            imageUri = "",
                             year = 2017,
                             artists = "Melendi"
                         ),
@@ -76,7 +75,7 @@ class ArtistViewItemProvider : PreviewParameterProvider<ArtistScreenItem> {
             AlbumRowState(
                 albumId = 0,
                 albumName = "Ahora",
-                imageUri = Uri.EMPTY,
+                imageUri = "",
                 year = 2017,
                 artists = "Melendi"
             ),

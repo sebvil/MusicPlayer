@@ -10,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertContains
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LibraryViewModelTest {
@@ -55,8 +54,8 @@ class LibraryViewModelTest {
     fun `RowClicked adds nav NavigateToScreen event`() {
         with(generateViewModel()) {
             handle(LibraryUserAction.RowClicked(NavigationDestination.GenresRoot))
-            assertContains(
-                navEvents.value,
+            assertEquals(
+                navEvents.value.first(),
                 NavEvent.NavigateToScreen(NavigationDestination.GenresRoot)
             )
         }

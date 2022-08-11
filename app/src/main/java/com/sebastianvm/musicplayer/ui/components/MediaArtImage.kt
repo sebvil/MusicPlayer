@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 fun MediaArtImagePreview() {
     ThemedPreview {
         MediaArtImage(
-            uri = Uri.EMPTY,
+            uri = "",
             contentDescription = "",
             backupResource = R.drawable.ic_song,
             backupContentDescription = R.string.placeholder_album_art
@@ -35,12 +35,37 @@ fun MediaArtImagePreview() {
     }
 }
 
+@Composable
+fun MediaArtImage(
+    uri: Uri,
+    contentDescription: String,
+    @DrawableRes backupResource: Int,
+    @StringRes backupContentDescription: Int,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    alpha: Float = DefaultAlpha,
+) {
+    MediaArtImage(
+        uri = uri.toString(),
+        contentDescription = contentDescription,
+        backupResource = backupResource,
+        backupContentDescription = backupContentDescription,
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+    )
+}
+
 /**
  * Wrapper around the Image composable that takes in a DisplayableImage as the image input.
  */
 @Composable
 fun MediaArtImage(
-    uri: Uri,
+    uri: String,
     contentDescription: String,
     @DrawableRes backupResource: Int,
     @StringRes backupContentDescription: Int,
