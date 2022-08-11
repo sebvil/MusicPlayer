@@ -3,8 +3,6 @@ package com.sebastianvm.musicplayer.ui.util.mvvm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-interface UserAction
-
 interface ViewModelInterface<S : State, A : UserAction> {
     val state: StateFlow<S>
     fun handle(action: A)
