@@ -3,20 +3,21 @@ package com.sebastianvm.musicplayer.ui.components
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.sebastianvm.commons.R
-import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -49,24 +50,27 @@ fun MediaArtImage(
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,
 ) {
-    val description = mutableStateOf(contentDescription)
-    val context = LocalContext.current
+    val painter = rememberAsyncImagePainter(model = uri)
     Surface(
         color = backgroundColor,
         modifier = modifier
     ) {
-        AsyncImage(
-            model = uri,
-            contentDescription = description.value,
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
             alignment = alignment,
             contentScale = contentScale,
             alpha = alpha,
-            placeholder = painterResource(id = backupResource),
-            error = painterResource(id = backupResource),
-            fallback = painterResource(id = backupResource),
-            onError = {
-                description.value = ResUtil.getString(context, backupContentDescription)
-            }
         )
+
+        when (painter.state) {
+            is AsyncImagePainter.State.Loading, is AsyncImagePainter.State.Error, is AsyncImagePainter.State.Empty -> {
+                Icon(
+                    painter = painterResource(id = backupResource),
+                    contentDescription = stringResource(id = backupContentDescription),
+                )
+            }
+            else -> Unit
+        }
     }
 }

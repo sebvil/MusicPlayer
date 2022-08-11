@@ -12,6 +12,8 @@ import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -34,7 +36,8 @@ class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,
     albumRepository: AlbumRepository,
     preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<AlbumListUiEvent, AlbumListState>(initialState) {
+) : BaseViewModel<AlbumListUiEvent, AlbumListState>(initialState),
+    ViewModelInterface<AlbumListState, AlbumListUserAction> {
 
     init {
         viewModelScope.launch {
@@ -57,40 +60,39 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    fun onAlbumClicked(albumId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.Album(
-                    AlbumArguments(albumId)
-                )
-            )
-        )
-    }
-
-    fun onUpButtonClicked() {
-        addNavEvent(NavEvent.NavigateUp)
-    }
-
-    fun onSortByClicked() {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.SortMenu(
-                    SortMenuArguments(
-                        listType = SortableListType.Albums
+    override fun handle(action: AlbumListUserAction) {
+        when (action) {
+            is AlbumListUserAction.AlbumClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Album(
+                            AlbumArguments(action.albumId)
+                        )
                     )
                 )
-            )
-        )
-    }
-
-    fun onAlbumOverflowMenuIconClicked(albumId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumContextMenu(
-                    AlbumContextMenuArguments(albumId = albumId)
+            }
+            is AlbumListUserAction.AlbumOverflowIconClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.AlbumContextMenu(
+                            AlbumContextMenuArguments(action.albumId)
+                        )
+                    )
                 )
-            )
-        )
+            }
+            AlbumListUserAction.SortByClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = SortableListType.Albums
+                            )
+                        )
+                    )
+                )
+            }
+            AlbumListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+        }
     }
 }
 
@@ -115,4 +117,11 @@ object InitialAlbumListStateModule {
 
 sealed class AlbumListUiEvent : UiEvent {
     object ScrollToTop : AlbumListUiEvent()
+}
+
+sealed interface AlbumListUserAction : UserAction {
+    data class AlbumClicked(val albumId: Long) : AlbumListUserAction
+    object UpButtonClicked : AlbumListUserAction
+    object SortByClicked : AlbumListUserAction
+    data class AlbumOverflowIconClicked(val albumId: Long) : AlbumListUserAction
 }
