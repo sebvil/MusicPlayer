@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +21,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,13 +39,8 @@ class ArtistListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             preferencesRepository.getArtistListSortOrder().flatMapLatest {
-                setState {
-                    copy(
-                        sortOrder = it
-                    )
-                }
                 artistRepository.getArtists(it)
-            }.collect { artists ->
+            }.collectLatest { artists ->
                 setState {
                     copy(
                         artistList = artists.map { artist ->
@@ -88,10 +83,7 @@ class ArtistListViewModel @Inject constructor(
     }
 }
 
-data class ArtistListState(
-    val artistList: List<ArtistRowState>,
-    val sortOrder: MediaSortOrder,
-) : State
+data class ArtistListState(val artistList: List<ArtistRowState>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -99,10 +91,7 @@ object InitialArtistListStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistListStateProvider(): ArtistListState {
-        return ArtistListState(
-            artistList = listOf(),
-            sortOrder = MediaSortOrder.ASCENDING,
-        )
+        return ArtistListState(artistList = listOf())
     }
 }
 
