@@ -19,7 +19,6 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
@@ -60,9 +59,9 @@ fun AlbumListScreen(
 @Composable
 fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParameterProvider::class) state: AlbumListState) {
     val lazyListState = rememberLazyListState()
-    ScreenPreview {
+    ScreenPreview(state) { vm ->
         AlbumListLayout(
-            viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state),
+            viewModel = vm,
             listState = lazyListState
         )
     }

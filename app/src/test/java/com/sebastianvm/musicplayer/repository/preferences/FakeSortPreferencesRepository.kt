@@ -38,7 +38,7 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
         return sortPreferencesState.map { it.albumListSortPreferences }
     }
 
-    override suspend fun modifyArtistListSortOrder(mediaSortOrder: MediaSortOrder) {
+    override suspend fun toggleArtistListSortOrder() {
         sortPreferencesState.value =
             sortPreferencesState.value.copy(artistListSortOrder = mediaSortOrder)
     }

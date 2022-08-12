@@ -42,7 +42,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 
@@ -143,9 +142,9 @@ fun LibraryScreen(
 
 @Composable
 @ScreenPreview
-fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) libraryState: LibraryState) {
-    ScreenPreview {
-        LibraryLayout(DefaultViewModelInterfaceProvider.getDefaultInstance(libraryState))
+fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) state: LibraryState) {
+    ScreenPreview(state) { vm ->
+        LibraryLayout(viewModel = vm)
     }
 }
 

@@ -6,6 +6,7 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.SortPreferences
+import com.sebastianvm.musicplayer.util.sort.not
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -92,10 +93,10 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun modifyArtistListSortOrder(mediaSortOrder: MediaSortOrder) {
+    override suspend fun toggleArtistListSortOrder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
-                artistListSortOrder = mediaSortOrder
+                artistListSortOrder = !oldPreferences.artistListSortOrder
             )
         }
     }
