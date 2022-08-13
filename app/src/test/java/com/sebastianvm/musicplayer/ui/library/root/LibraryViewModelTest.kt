@@ -1,11 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -13,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertContains
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LibraryViewModelTest {
@@ -47,26 +43,20 @@ class LibraryViewModelTest {
                     LibraryItem.Albums(count = FakeMusicRepository.FAKE_ALBUM_COUNTS),
                     LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
                     LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
-                ), state.value.libraryItems
+                ),
+                state.value.libraryItems
             )
         }
     }
 
 
     @Test
-    fun `onRowClicked adds nav NavigateToScreen event`() {
+    fun `RowClicked adds nav NavigateToScreen event`() {
         with(generateViewModel()) {
-            onRowClicked(NavigationRoute.TrackList)
-            assertContains(
-                events.value,
-                LibraryUiEvent.NavEvent(
-                    NavigationDestination.TrackList(
-                        TrackListArguments(
-                            trackListType = TrackListType.ALL_TRACKS,
-                            trackListId = TrackListViewModel.ALL_TRACKS
-                        )
-                    )
-                )
+            handle(LibraryUserAction.RowClicked(NavigationDestination.GenresRoot))
+            assertEquals(
+                navEvents.value.first(),
+                NavEvent.NavigateToScreen(NavigationDestination.GenresRoot)
             )
         }
     }

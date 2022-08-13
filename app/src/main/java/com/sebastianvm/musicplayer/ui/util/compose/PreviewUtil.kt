@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
 import android.content.res.Configuration
+import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,10 @@ import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 
 @Composable
@@ -58,6 +63,28 @@ fun ScreenPreview(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <S: State, A: UserAction> ScreenPreview(
+    state: S,
+    topBar: @Composable () -> Unit = {},
+    fab: @Composable () -> Unit = {},
+    screen: @Composable (ViewModelInterface<S,A>) -> Unit
+) {
+    NavHostWrapper { navController ->
+        Scaffold(
+            topBar = topBar,
+            bottomBar = { BottomNavBar(NavigationDelegate(navController)) },
+            floatingActionButton = fab
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                val viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance<S,A>(state)
+                screen(viewModel)
+            }
+        }
+    }
+}
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {

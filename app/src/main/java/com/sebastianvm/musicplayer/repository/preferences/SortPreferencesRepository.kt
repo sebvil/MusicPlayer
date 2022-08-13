@@ -21,15 +21,19 @@ interface SortPreferencesRepository {
     suspend fun modifyAlbumListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>)
     fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>>
 
-    suspend fun modifyArtistListSortOrder(mediaSortOrder: MediaSortOrder)
+    suspend fun toggleArtistListSortOrder()
     fun getArtistListSortOrder(): Flow<MediaSortOrder>
 
-    suspend fun modifyGenreListSortOrder(mediaSortOrder: MediaSortOrder)
+    suspend fun modifyGenreListSortOrder()
     fun getGenreListSortOrder(): Flow<MediaSortOrder>
 
     suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder)
     fun getPlaylistsListSortOrder(): Flow<MediaSortOrder>
 
-    suspend fun modifyPlaylistsSortPreferences(playlistId: Long, newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>)
+    suspend fun modifyPlaylistsSortPreferences(
+        playlistId: Long,
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
+    )
+
     fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>>
 }

@@ -1,10 +1,13 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
+import kotlinx.coroutines.flow.map
 
 class NavigationDelegate(private val navController: NavController) {
 
@@ -15,12 +18,13 @@ class NavigationDelegate(private val navController: NavController) {
         }
     }
 
-    fun isRouteInGraph(navigationRoute: NavigationRoute): Boolean {
-        val navBackStackEntry = navController.currentBackStackEntry
-        val currentDestination = navBackStackEntry?.destination
-        Log.i("Nav", "${currentDestination?.hierarchy?.map { it.route }}")
-        Log.i("Nav", "${navigationRoute.name}")
-        return currentDestination?.hierarchy?.any { it.route == navigationRoute.name } == true
+
+    @Composable
+    fun isRouteInGraphAsState(navigationRoute: NavigationRoute): State<Boolean> {
+        return navController.currentBackStackEntryFlow.map { backStackEntry ->
+            val currentDestination = backStackEntry.destination
+            currentDestination.hierarchy.any { it.route == navigationRoute.name }
+        }.collectAsState(initial = false)
     }
 
     private fun navigateToScreen(destination: NavigationDestination) {

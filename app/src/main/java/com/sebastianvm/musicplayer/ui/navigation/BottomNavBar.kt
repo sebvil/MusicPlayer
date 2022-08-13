@@ -10,13 +10,14 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 
 
 sealed class Screen(
@@ -42,6 +43,7 @@ fun BottomNavBar(navigationDelegate: NavigationDelegate) {
     CompositionLocalProvider(LocalRippleTheme provides LocalRippleTheme.current) {
         NavigationBar {
             items.forEach { screen ->
+                val isSelected by navigationDelegate.isRouteInGraphAsState(screen.destination.navigationRoute)
                 NavigationBarItem(
                     icon = {
                         Icon(
@@ -50,7 +52,7 @@ fun BottomNavBar(navigationDelegate: NavigationDelegate) {
                         )
                     },
                     label = { Text(text = stringResource(screen.resourceId)) },
-                    selected = navigationDelegate.isRouteInGraph(screen.destination.navigationRoute),
+                    selected = isSelected,
                     onClick = { navigationDelegate.handleNavEvent(NavEvent.NavigateToScreen(screen.destination)) }
                 )
             }

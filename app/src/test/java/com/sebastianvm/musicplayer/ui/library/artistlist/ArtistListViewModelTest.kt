@@ -6,7 +6,11 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortPreferences
@@ -44,10 +48,7 @@ class ArtistListViewModelTest {
         preferencesRepository =
             FakeSortPreferencesRepository(SortPreferences(artistListSortOrder = artistListSortOrder))
         return ArtistListViewModel(
-            initialState = ArtistListState(
-                artistList = listOf(),
-                sortOrder = MediaSortOrder.DESCENDING,
-            ),
+            initialState = ArtistListState(artistList = listOf()),
             artistRepository = artistRepository,
             preferencesRepository = preferencesRepository,
         )
@@ -58,7 +59,6 @@ class ArtistListViewModelTest {
     fun `init sets initial state`() = runTest {
         with(generateViewModel(MediaSortOrder.ASCENDING)) {
             advanceUntilIdle()
-            assertEquals(MediaSortOrder.ASCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     ArtistRowState(
@@ -83,7 +83,6 @@ class ArtistListViewModelTest {
 
         with(generateViewModel(MediaSortOrder.DESCENDING)) {
             advanceUntilIdle()
-            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     ArtistRowState(
@@ -110,16 +109,25 @@ class ArtistListViewModelTest {
     @Test
     fun `onArtistClicked adds NavigateToArtist event`() {
         with(generateViewModel()) {
-            onArtistClicked(C.ID_ONE)
-            assertEquals(listOf(ArtistListUiEvent.NavigateToArtist(C.ID_ONE)), events.value)
+            handle(ArtistListUserAction.ArtistRowClicked(C.ID_ONE))
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Artist(
+                            ArtistArguments(artistId = C.ID_ONE)
+                        )
+                    )
+                ),
+                navEvents.value
+            )
         }
     }
 
     @Test
     fun `onUpButtonClicked adds NavigateUp event`() {
         with(generateViewModel()) {
-            onUpButtonClicked()
-            assertEquals(listOf(ArtistListUiEvent.NavigateUp), events.value)
+            handle(ArtistListUserAction.UpButtonClicked)
+            assertEquals(listOf(NavEvent.NavigateUp), navEvents.value)
         }
     }
 
@@ -128,9 +136,8 @@ class ArtistListViewModelTest {
     fun `SortByClicked changes sortOrder`() = runTest {
         with(generateViewModel()) {
             advanceUntilIdle()
-            onSortByClicked()
+            handle(ArtistListUserAction.SortByButtonClicked)
             advanceUntilIdle()
-            assertEquals(MediaSortOrder.DESCENDING, state.value.sortOrder)
             assertEquals(
                 listOf(
                     ArtistRowState(
@@ -157,10 +164,16 @@ class ArtistListViewModelTest {
     @Test
     fun `ContextMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
-            onArtistOverflowMenuIconClicked(artistId = C.ID_ONE)
+            handle(ArtistListUserAction.ArtistOverflowMenuIconClicked(artistId = C.ID_ONE))
             assertEquals(
-                listOf(ArtistListUiEvent.OpenContextMenu(artistId = C.ID_ONE)),
-                events.value
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.ArtistContextMenu(
+                            ArtistContextMenuArguments(artistId = C.ID_ONE)
+                        )
+                    )
+                ),
+                navEvents.value
             )
         }
     }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -15,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
 fun ArtistListScreen(
@@ -30,53 +33,40 @@ fun ArtistListScreen(
                 title = stringResource(id = R.string.artists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(ArtistListUserAction.SortByButtonClicked)
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(ArtistListUserAction.UpButtonClicked)
                     }
                 })
         }
-    ) { state ->
-        ArtistListLayout(state = state, delegate = object : ArtistListScreenDelegate {
-            override fun onArtistRowClicked(artistId: Long) {
-                screenViewModel.onArtistClicked(artistId = artistId)
-            }
-
-            override fun onArtistOverflowMenuIconClicked(artistId: Long) {
-                screenViewModel.onArtistOverflowMenuIconClicked(artistId)
-            }
-        })
+    ) {
+        ArtistListLayout(screenViewModel)
     }
-}
-
-interface ArtistListScreenDelegate {
-    fun onArtistRowClicked(artistId: Long) = Unit
-    fun onArtistOverflowMenuIconClicked(artistId: Long) = Unit
 }
 
 @ScreenPreview
 @Composable
 fun ArtistListScreenPreview(@PreviewParameter(ArtistListStatePreviewParameterProvider::class) state: ArtistListState) {
-    ScreenPreview {
-        ArtistListLayout(state = state, delegate = object : ArtistListScreenDelegate {})
+    ScreenPreview(state) { vm ->
+        ArtistListLayout(viewModel = vm)
     }
 }
 
 @Composable
-fun ArtistListLayout(
-    state: ArtistListState,
-    delegate: ArtistListScreenDelegate
-) {
+fun ArtistListLayout(viewModel: ViewModelInterface<ArtistListState, ArtistListUserAction>) {
+    val state by viewModel.state.collectAsState()
     LazyColumn {
         items(state.artistList) { item ->
             ArtistRow(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onArtistRowClicked(item.artistId)
+                    viewModel.handle(ArtistListUserAction.ArtistRowClicked(item.artistId))
                 },
-                onOverflowMenuIconClicked = { delegate.onArtistOverflowMenuIconClicked(item.artistId) }
+                onOverflowMenuIconClicked = {
+                    viewModel.handle(ArtistListUserAction.ArtistOverflowMenuIconClicked(item.artistId))
+                }
             )
         }
     }

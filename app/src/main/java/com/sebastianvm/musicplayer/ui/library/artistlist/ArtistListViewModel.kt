@@ -9,11 +9,11 @@ import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.not
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +21,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,18 +33,14 @@ class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistListUiEvent, ArtistListState>(initialState) {
+) : BaseViewModel<ArtistListUiEvent, ArtistListState>(initialState),
+    ViewModelInterface<ArtistListState, ArtistListUserAction> {
 
     init {
         viewModelScope.launch {
             preferencesRepository.getArtistListSortOrder().flatMapLatest {
-                setState {
-                    copy(
-                        sortOrder = it
-                    )
-                }
                 artistRepository.getArtists(it)
-            }.collect { artists ->
+            }.collectLatest { artists ->
                 setState {
                     copy(
                         artistList = artists.map { artist ->
@@ -53,44 +50,40 @@ class ArtistListViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
-    fun onArtistClicked(artistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.Artist(
-                    ArtistArguments(artistId = artistId)
+    override fun handle(action: ArtistListUserAction) {
+        when (action) {
+            is ArtistListUserAction.ArtistRowClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Artist(
+                            ArtistArguments(artistId = action.artistId)
+                        )
+                    )
                 )
-            )
-        )
-    }
+            }
+            is ArtistListUserAction.ArtistOverflowMenuIconClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.ArtistContextMenu(
+                            ArtistContextMenuArguments(artistId = action.artistId)
+                        )
+                    )
+                )
+            }
+            ArtistListUserAction.SortByButtonClicked -> {
+                viewModelScope.launch {
+                    preferencesRepository.toggleArtistListSortOrder()
+                }
+            }
+            ArtistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
-    fun onSortByClicked() {
-        viewModelScope.launch {
-            preferencesRepository.modifyArtistListSortOrder(!state.value.sortOrder)
         }
-    }
-
-    fun onUpButtonClicked() {
-        addNavEvent(NavEvent.NavigateUp)
-    }
-
-    fun onArtistOverflowMenuIconClicked(artistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.ArtistContextMenu(
-                    ArtistContextMenuArguments(artistId = artistId)
-                )
-            )
-        )
     }
 }
 
-data class ArtistListState(
-    val artistList: List<ArtistRowState>,
-    val sortOrder: MediaSortOrder,
-) : State
+data class ArtistListState(val artistList: List<ArtistRowState>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -98,11 +91,15 @@ object InitialArtistListStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistListStateProvider(): ArtistListState {
-        return ArtistListState(
-            artistList = listOf(),
-            sortOrder = MediaSortOrder.ASCENDING,
-        )
+        return ArtistListState(artistList = listOf())
     }
 }
 
-sealed class ArtistListUiEvent : UiEvent
+sealed interface ArtistListUiEvent : UiEvent
+
+sealed interface ArtistListUserAction : UserAction {
+    data class ArtistRowClicked(val artistId: Long) : ArtistListUserAction
+    data class ArtistOverflowMenuIconClicked(val artistId: Long) : ArtistListUserAction
+    object UpButtonClicked : ArtistListUserAction
+    object SortByButtonClicked : ArtistListUserAction
+}

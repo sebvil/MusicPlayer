@@ -23,7 +23,7 @@ fun <E : UiEvent, S : State> HandleEvents(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
-    LaunchedEffect(key1 = viewModel.state) {
+    LaunchedEffect(key1 = viewModel.events) {
         viewModel.events.onEach { events ->
             val event = events.firstOrNull()
             if (event != null) {
@@ -41,7 +41,7 @@ fun <E : UiEvent, S : State> HandleNavEvents(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     navigationDelegate: NavigationDelegate,
 ) {
-    LaunchedEffect(key1 = viewModel.state) {
+    LaunchedEffect(key1 = viewModel.navEvents) {
         viewModel.navEvents.onEach { events ->
             val event = events.firstOrNull()
             if (event != null) {
