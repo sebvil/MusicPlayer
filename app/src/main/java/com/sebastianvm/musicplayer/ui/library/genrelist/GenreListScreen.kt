@@ -9,6 +9,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +25,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
 fun GenreListScreen(
@@ -38,56 +42,49 @@ fun GenreListScreen(
                 title = stringResource(id = R.string.genres),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(GenreListUserAction.SortByClicked)
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(GenreListUserAction.UpButtonClicked)
                     }
                 })
-        }) { state ->
-        GenreListLayout(state = state, object : GenreListScreenDelegate {
-            override fun onGenreClicked(genreId: Long) {
-                screenViewModel.onGenreClicked(genreId)
-            }
-
-            override fun onContextMenuIconClicked(genreId: Long) {
-                screenViewModel.onGenreOverflowMenuIconClicked(genreId)
-            }
-        })
+        }) {
+        GenreListLayout(screenViewModel)
     }
-}
-
-interface GenreListScreenDelegate {
-    fun onGenreClicked(genreId: Long) = Unit
-    fun onContextMenuIconClicked(genreId: Long) = Unit
 }
 
 @ScreenPreview
 @Composable
-fun GenreListScreenPreview(
-    @PreviewParameter(GenreListStatePreviewParameterProvider::class) state: GenreListState
-) {
+fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParameterProvider::class) state: GenreListState) {
     ScreenPreview {
-        GenreListLayout(state = state, object : GenreListScreenDelegate {
-            override fun onGenreClicked(genreId: Long) = Unit
-        })
+        GenreListLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
     }
 }
 
 
 @Composable
-fun GenreListLayout(
-    state: GenreListState,
-    delegate: GenreListScreenDelegate
-) {
+fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserAction>) {
+    val state by viewModel.state.collectAsState()
     LazyColumn {
         items(state.genreList) { item ->
             SingleLineListItem(
-                modifier = Modifier.clickable { delegate.onGenreClicked(item.id) },
+                modifier = Modifier.clickable {
+                    viewModel.handle(
+                        GenreListUserAction.GenreRowClicked(
+                            item.id
+                        )
+                    )
+                },
                 afterListContent = {
                     IconButton(
-                        onClick = { delegate.onContextMenuIconClicked(item.id) },
+                        onClick = {
+                            viewModel.handle(
+                                GenreListUserAction.GenreOverflowMenuIconClicked(
+                                    item.id
+                                )
+                            )
+                        },
                         modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                     ) {
                         Icon(

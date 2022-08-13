@@ -108,10 +108,10 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun modifyGenreListSortOrder(mediaSortOrder: MediaSortOrder) {
+    override suspend fun modifyGenreListSortOrder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
-                genreListSortOrder = mediaSortOrder
+                genreListSortOrder = !oldPreferences.genreListSortOrder
             )
         }
 
