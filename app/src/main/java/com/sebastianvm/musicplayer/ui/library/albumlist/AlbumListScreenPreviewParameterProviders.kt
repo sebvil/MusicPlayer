@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 
 class AlbumListStatePreviewParameterProvider : PreviewParameterProvider<AlbumListState> {
     override val values = sequenceOf(
@@ -39,7 +37,6 @@ class AlbumListStatePreviewParameterProvider : PreviewParameterProvider<AlbumLis
                     year = 2014
                 ),
             ),
-            sortPreferences = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM)
         )
     )
 }

@@ -16,8 +16,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,11 +40,6 @@ class AlbumListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             preferencesRepository.getAlbumListSortPreferences().flatMapLatest {
-                setState {
-                    copy(
-                        sortPreferences = it
-                    )
-                }
                 albumRepository.getAlbums(sortPreferences = it)
             }.collect { albums ->
                 setState {
@@ -96,10 +89,7 @@ class AlbumListViewModel @Inject constructor(
     }
 }
 
-data class AlbumListState(
-    val albumList: List<AlbumRowState>,
-    val sortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
-) : State
+data class AlbumListState(val albumList: List<AlbumRowState>) : State
 
 
 @InstallIn(ViewModelComponent::class)
@@ -108,10 +98,7 @@ object InitialAlbumListStateModule {
     @Provides
     @ViewModelScoped
     fun initialAlbumsStateProvider(): AlbumListState {
-        return AlbumListState(
-            albumList = listOf(),
-            sortPreferences = MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM)
-        )
+        return AlbumListState(albumList = listOf())
     }
 }
 
