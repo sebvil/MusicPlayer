@@ -62,10 +62,6 @@ class AlbumListViewModelTest {
         return AlbumListViewModel(
             initialState = AlbumListState(
                 albumList = listOf(),
-                sortPreferences = MediaSortPreferences(
-                    SortOptions.AlbumListSortOptions.ALBUM,
-                    MediaSortOrder.ASCENDING
-                )
             ),
             albumRepository = albumRepository,
             preferencesRepository = preferencesRepository
@@ -79,7 +75,6 @@ class AlbumListViewModelTest {
         with(generateViewModel(initialSortPreferences = initialSortPreferences)) {
             advanceUntilIdle()
             assertEquals(expectedAlbums, state.value.albumList)
-            assertEquals(initialSortPreferences, state.value.sortPreferences)
 
         }
     }
@@ -253,7 +248,6 @@ class AlbumListViewModelTest {
         with(viewModel) {
             preferencesRepository.modifyAlbumListSortPreferences(sortPreferences)
             advanceUntilIdle()
-            assertEquals(sortPreferences, state.value.sortPreferences)
             assertEquals(expectedAlbums, state.value.albumList)
         }
 
