@@ -3,13 +3,15 @@ package com.sebastianvm.musicplayer.ui.search
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -22,15 +24,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -124,24 +132,28 @@ interface SearchScreenDelegate {
     fun onGenreOverflowMenuClicked(genreId: Long) = Unit
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchLayout(
     state: SearchState,
     delegate: SearchScreenDelegate = object : SearchScreenDelegate {},
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
     val input = rememberSaveable {
         mutableStateOf("")
     }
     val focusRequester = remember { FocusRequester() }
-    val interactionSource = remember { MutableInteractionSource() }
+
+    LaunchedEffect(key1 = true) {
+        focusRequester.requestFocus()
+    }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .focusRequester(focusRequester)
-            .focusable(enabled = true, interactionSource)
-            .clickable { focusRequester.requestFocus() }) {
+    ) {
         TextField(
             value = input.value,
             onValueChange = {
@@ -180,15 +192,23 @@ fun SearchLayout(
                     }
                 }
             },
-            interactionSource = interactionSource,
-            modifier = Modifier.fillMaxWidth()
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onAny = { keyboardController?.hide() },
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
         SingleSelectFilterChipGroup(
             options = listOf(R.string.songs, R.string.artists, R.string.albums, R.string.genres),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = AppDimensions.spacing.medium),
             getDisplayName = { ResUtil.getString(context, this) },
-            onNewOptionSelected = { newOption -> delegate.onOptionChosen(newOption) }
+            onNewOptionSelected = { newOption ->
+                focusManager.clearFocus()
+                delegate.onOptionChosen(newOption)
+            }
         )
         when (state.selectedOption) {
             R.string.songs -> {
@@ -198,7 +218,19 @@ fun SearchLayout(
                             item?.also {
                                 TrackRow(
                                     state = it,
-                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onTrackClicked(item.trackId)
+                                        }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        }) {
                                     delegate.onTrackOverflowMenuClicked(item.trackId)
                                 }
                             }
@@ -213,11 +245,22 @@ fun SearchLayout(
                             item?.also {
                                 ArtistRow(
                                     state = item,
-                                    modifier = Modifier.clickable {
-                                        delegate.onArtistClicked(
-                                            item.artistId
-                                        )
-                                    }) {
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onArtistClicked(
+                                                item.artistId
+                                            )
+                                        }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        }
+                                ) {
                                     delegate.onArtistOverflowMenuClicked(item.artistId)
                                 }
                             }
@@ -232,7 +275,17 @@ fun SearchLayout(
                             item?.also {
                                 AlbumRow(
                                     state = it,
-                                    modifier = Modifier.clickable { delegate.onAlbumClicked(it.albumId) }) {
+                                    modifier = Modifier
+                                        .clickable { delegate.onAlbumClicked(it.albumId) }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        }) {
                                     delegate.onAlbumOverflowMenuClicked(it.albumId)
                                 }
                             }
@@ -246,11 +299,21 @@ fun SearchLayout(
                         items(lazyPagingItems) { item ->
                             item?.also { genre ->
                                 SingleLineListItem(
-                                    modifier = Modifier.clickable {
-                                        delegate.onGenreClicked(
-                                            genre.id
-                                        )
-                                    },
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onGenreClicked(
+                                                genre.id
+                                            )
+                                        }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        },
                                     afterListContent = {
                                         IconButton(
                                             onClick = {
