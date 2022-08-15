@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -9,6 +8,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,9 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -139,6 +137,7 @@ fun CreatePlaylistDialog(delegate: PlaylistDialogDelegate) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistsListLayout(
     state: PlaylistsListState,
@@ -149,12 +148,19 @@ fun PlaylistsListLayout(
     }
     LazyColumn {
         items(state.playlistsList) { item ->
-            SingleLineListItem(
+            ListItem(
+                headlineText = {
+                    Text(
+                        text = item.playlistName,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 modifier = Modifier.clickable { delegate.onPlaylistClicked(item.id) },
-                afterListContent = {
+                trailingContent = {
                     IconButton(
                         onClick = { delegate.onContextMenuIconClicked(playlistId = item.id) },
-                        modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_overflow),
@@ -162,15 +168,7 @@ fun PlaylistsListLayout(
                         )
                     }
                 }
-            ) {
-                Text(
-                    text = item.playlistName,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            )
 
         }
     }

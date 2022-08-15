@@ -1,11 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,9 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
@@ -63,12 +62,21 @@ fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParameterProvi
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserAction>) {
     val state by viewModel.state.collectAsState()
     LazyColumn {
         items(state.genreList) { item ->
-            SingleLineListItem(
+            ListItem(
+                headlineText = {
+                    Text(
+                        text = item.genreName,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 modifier = Modifier.clickable {
                     viewModel.handle(
                         GenreListUserAction.GenreRowClicked(
@@ -76,7 +84,7 @@ fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserA
                         )
                     )
                 },
-                afterListContent = {
+                trailingContent = {
                     IconButton(
                         onClick = {
                             viewModel.handle(
@@ -85,24 +93,14 @@ fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserA
                                 )
                             )
                         },
-                        modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_overflow),
                             contentDescription = stringResource(R.string.more)
                         )
                     }
-                }
-            ) {
-                Text(
-                    text = item.genreName,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
+                },
+            )
         }
     }
 }
