@@ -98,7 +98,9 @@ fun TrackRow(
         colors = ListItemDefaults.colors(
             containerColor = backgroundColor,
             headlineColor = textColor,
-            supportingColor = textColor
+            supportingColor = textColor,
+            trailingIconColor = textColor,
+            leadingIconColor = textColor
         )
     )
 }
