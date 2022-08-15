@@ -69,7 +69,7 @@ dependencies {
     implementation project(path: ":commons")
 
     // Kotlin
-    implementation "androidx.core:core-ktx:1.9.0-alpha05"
+    implementation "androidx.core:core-ktx:1.9.0-beta01"
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
 
     // Room
@@ -95,7 +95,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Paging
-    def paging_version = '3.2.0-alpha01'
+    def paging_version = '3.2.0-alpha02'
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Coil
@@ -107,14 +107,14 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     // Integration with activities
-    implementation 'androidx.activity:activity-compose:1.6.0-alpha05'
+    implementation 'androidx.activity:activity-compose:1.6.0-beta01'
 
     // Hilt navigation
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha15'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha16'
 
     // UI + tooling
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -126,7 +126,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
     // Paging
-    implementation "androidx.paging:paging-compose:1.0.0-alpha15"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha16"
 
     // Glide
     implementation "io.coil-kt:coil-compose:$coil_version"

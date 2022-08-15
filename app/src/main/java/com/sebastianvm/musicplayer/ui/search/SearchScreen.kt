@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,6 @@ import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -196,11 +196,22 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                TrackRow(
-                                    state = it,
-                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
-                                    delegate.onTrackOverflowMenuClicked(item.trackId)
-                                }
+                                TrackRow(state = item, modifier = Modifier
+                                    .clickable {
+                                        delegate.onTrackClicked(it.id)
+                                    },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onTrackOverflowMenuClicked(item.trackId)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_overflow),
+                                                contentDescription = stringResource(R.string.more),
+                                            )
+                                        }
+                                    })
                             }
                         }
                     }
@@ -245,20 +256,28 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also { genre ->
-                                SingleLineListItem(
+                                ListItem(
+                                    headlineText = {
+                                        Text(
+                                            text = genre.genreName,
+                                            modifier = Modifier.weight(1f),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    },
                                     modifier = Modifier.clickable {
                                         delegate.onGenreClicked(
                                             genre.id
                                         )
                                     },
-                                    afterListContent = {
+                                    trailingContent = {
                                         IconButton(
                                             onClick = {
                                                 delegate.onGenreOverflowMenuClicked(
                                                     genre.id
                                                 )
                                             },
-                                            modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.ic_overflow),
@@ -266,15 +285,7 @@ fun SearchLayout(
                                             )
                                         }
                                     }
-                                ) {
-                                    Text(
-                                        text = genre.genreName,
-                                        modifier = Modifier.weight(1f),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
+                                )
                             }
                         }
                     }

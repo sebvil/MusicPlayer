@@ -6,8 +6,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -103,20 +106,26 @@ fun TrackListLayout(
     PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
     LazyColumn(state = listState) {
         itemsIndexed(state.trackList, key = { _, item -> item.trackId }) { index, item ->
-            TrackRow(
-                state = item,
-                modifier = Modifier
-                    .animateItemPlacement()
-                    .clickable {
-                        delegate.onTrackClicked(index)
-                    },
-                onOverflowMenuIconClicked = {
-                    delegate.onOverflowMenuIconClicked(
-                        index,
-                        item.trackId
-                    )
-                }
-            )
+            TrackRow(state = item, modifier = Modifier
+                .animateItemPlacement()
+                .clickable {
+                    delegate.onTrackClicked(index)
+                },
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            delegate.onOverflowMenuIconClicked(
+                                index,
+                                item.trackId
+                            )
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(R.string.more),
+                        )
+                    }
+                })
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +77,7 @@ fun AlbumScreenPreview(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
     val minWidth = remember {
@@ -126,18 +131,26 @@ fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
                                 }
                             }
                     )
-                    TrackRow(
-                        state = item,
-                        modifier = Modifier.clickable {
-                            delegate.onTrackClicked(trackIndex = index)
+                    TrackRow(state = item, modifier = Modifier
+                        .animateItemPlacement()
+                        .clickable {
+                            delegate.onTrackClicked(index)
                         },
-                        onOverflowMenuIconClicked = {
-                            delegate.onTrackOverflowMenuIconClicked(
-                                trackIndex = index,
-                                trackId = item.trackId
-                            )
-                        }
-                    )
+                        trailingContent = {
+                            IconButton(
+                                onClick = {
+                                    delegate.onTrackOverflowMenuIconClicked(
+                                        index,
+                                        item.trackId
+                                    )
+                                },
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_overflow),
+                                    contentDescription = stringResource(R.string.more),
+                                )
+                            }
+                        })
                 }
             }
         }

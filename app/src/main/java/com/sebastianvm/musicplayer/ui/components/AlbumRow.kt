@@ -1,25 +1,21 @@
 package com.sebastianvm.musicplayer.ui.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.ui.components.lists.DoubleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
+import com.sebastianvm.musicplayer.ui.components.lists.ListItem
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.util.uri.UriUtils
@@ -50,9 +46,15 @@ fun AlbumRow(
 ) {
 
     with(state) {
-        DoubleLineListItem(
+        ListItem(
+            headlineText = albumName,
+            supportingText = if (year != 0L) {
+                "$year $artists"
+            } else {
+                artists
+            },
             modifier = modifier,
-            supportingImage = { imageModifier ->
+            leadingContent = {
                 MediaArtImage(
                     uri = imageUri,
                     contentDescription = stringResource(
@@ -61,11 +63,10 @@ fun AlbumRow(
                     ),
                     backupResource = R.drawable.ic_album,
                     backupContentDescription = R.string.placeholder_album_art,
-                    modifier = imageModifier
+                    modifier = Modifier.size(56.dp)
                 )
             },
-            supportingImageType = SupportingImageType.LARGE,
-            afterListContent = {
+            trailingContent = {
                 IconButton(
                     onClick = onOverflowMenuIconClicked,
                     modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
@@ -75,37 +76,8 @@ fun AlbumRow(
                         contentDescription = stringResource(id = R.string.more)
                     )
                 }
-            },
-            secondaryText = {
-                Row {
-                    if (year != 0L) {
-                        Text(
-                            text = year.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .paddingFromBaseline(top = AppDimensions.spacing.mediumLarge)
-                                .padding(end = AppDimensions.spacing.small)
-                        )
-                    }
-                    Text(
-                        text = artists,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.mediumLarge)
-                    )
-                }
-            }) {
-            Text(
-                text = albumName,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.paddingFromBaseline(top = AppDimensions.spacing.xxLarge)
-            )
-        }
+            }
+        )
     }
 }
 
