@@ -39,10 +39,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -241,11 +241,24 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                AlbumRow(
-                                    state = it,
-                                    modifier = Modifier.clickable { delegate.onAlbumClicked(it.albumId) }) {
-                                    delegate.onAlbumOverflowMenuClicked(it.albumId)
-                                }
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier.clickable {
+                                        delegate.onAlbumClicked(it.id)
+                                    },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onAlbumOverflowMenuClicked(it.id)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
+                                        }
+                                    }
+                                )
                             }
                         }
                     }

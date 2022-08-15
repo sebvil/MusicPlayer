@@ -20,10 +20,10 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
 import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.components.toArtistRowState
 import com.sebastianvm.musicplayer.ui.components.toTrackRowState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
@@ -80,7 +80,7 @@ class SearchViewModel @Inject constructor(
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchAlbums(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.album.toAlbumRowState() }
+                        pagingData.map { it.album.toModelListItemState() }
                     }
                 },
                 genreSearchResults = searchTerm.flatMapLatest {
@@ -194,7 +194,7 @@ data class SearchState(
     @StringRes val selectedOption: Int,
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
     val artistSearchResults: Flow<PagingData<ArtistRowState>>,
-    val albumSearchResults: Flow<PagingData<AlbumRowState>>,
+    val albumSearchResults: Flow<PagingData<ModelListItemState>>,
     val genreSearchResults: Flow<PagingData<Genre>>
 ) : State
 
