@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,19 +36,32 @@ data class TrackRowState(
 @Composable
 fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::class) state: TrackRowState) {
     ThemedPreview {
-        Column {
-            TrackRow(state = state,
-                trailingContent = {
-                    IconButton(
-                        onClick = {},
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_overflow),
-                            contentDescription = stringResource(R.string.more),
-                        )
-                    }
-                })
-        }
+        TrackRow(
+            state = state,
+            trailingContent = {
+                IconButton(
+                    onClick = {},
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_overflow),
+                        contentDescription = stringResource(R.string.more),
+                    )
+                }
+            })
+        TrackRow(
+            state = state,
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            trailingContent = {
+                IconButton(
+                    onClick = {},
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_overflow),
+                        contentDescription = stringResource(R.string.more),
+                    )
+                }
+            })
+
 
     }
 }

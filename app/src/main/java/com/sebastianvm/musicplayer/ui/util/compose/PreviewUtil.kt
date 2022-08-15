@@ -1,8 +1,9 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
 import android.content.res.Configuration
-import android.view.View
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -29,15 +30,15 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
 fun ThemedPreview(
-    getBackgroundColor: @Composable () -> Color = { MaterialTheme.colorScheme.background },
-    content: @Composable () -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     AppTheme {
         M3AppTheme {
             Surface(
-                color = getBackgroundColor()
             ) {
-                content()
+                Column {
+                    content()
+                }
             }
         }
     }
@@ -66,11 +67,11 @@ fun ScreenPreview(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <S: State, A: UserAction> ScreenPreview(
+fun <S : State, A : UserAction> ScreenPreview(
     state: S,
     topBar: @Composable () -> Unit = {},
     fab: @Composable () -> Unit = {},
-    screen: @Composable (ViewModelInterface<S,A>) -> Unit
+    screen: @Composable (ViewModelInterface<S, A>) -> Unit
 ) {
     NavHostWrapper { navController ->
         Scaffold(
@@ -79,12 +80,13 @@ fun <S: State, A: UserAction> ScreenPreview(
             floatingActionButton = fab
         ) { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                val viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance<S,A>(state)
+                val viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance<S, A>(state)
                 screen(viewModel)
             }
         }
     }
 }
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
