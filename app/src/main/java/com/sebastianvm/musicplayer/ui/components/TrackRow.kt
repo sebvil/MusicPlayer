@@ -1,25 +1,19 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.ui.components.lists.ListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
@@ -66,7 +60,6 @@ fun TrackRowPreview(@PreviewParameter(TrackRowStatePreviewParameterProvider::cla
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackRow(
     state: TrackRowState,
@@ -75,33 +68,13 @@ fun TrackRow(
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null
 ) {
-    val textColor = contentColorFor(backgroundColor = backgroundColor)
     ListItem(
-        headlineText = {
-            Text(
-                text = state.trackName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
+        headlineText = state.trackName,
         modifier = modifier,
-        supportingText = {
-            Text(
-                text = state.artists,
-                modifier = Modifier.alpha(alpha = 0.8f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
+        supportingText = state.artists,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
-        colors = ListItemDefaults.colors(
-            containerColor = backgroundColor,
-            headlineColor = textColor,
-            supportingColor = textColor,
-            trailingIconColor = textColor,
-            leadingIconColor = textColor
-        )
+        backgroundColor = backgroundColor
     )
 }
 
