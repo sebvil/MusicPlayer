@@ -16,10 +16,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,7 +30,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -277,32 +274,20 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also { genre ->
-                                ListItem(
-                                    headlineText = {
-                                        Text(
-                                            text = genre.genreName,
-                                            modifier = Modifier.weight(1f),
-                                            style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                    },
+                                ModelListItem(
+                                    state = item,
                                     modifier = Modifier.clickable {
-                                        delegate.onGenreClicked(
-                                            genre.id
-                                        )
+                                        delegate.onGenreClicked(genre.id)
                                     },
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
-                                                delegate.onGenreOverflowMenuClicked(
-                                                    genre.id
-                                                )
+                                                delegate.onGenreOverflowMenuClicked(genre.id)
                                             },
                                         ) {
                                             Icon(
-                                                painter = painterResource(id = R.drawable.ic_overflow),
-                                                contentDescription = stringResource(R.string.more)
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
                                             )
                                         }
                                     }

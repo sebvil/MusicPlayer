@@ -7,7 +7,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -84,7 +83,9 @@ class SearchViewModel @Inject constructor(
                 genreSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchGenres(it)
-                    }.flow
+                    }.flow.mapLatest { pagingData ->
+                        pagingData.map { it.toModelListItemState() }
+                    }
                 },
             )
 
@@ -193,7 +194,7 @@ data class SearchState(
     val trackSearchResults: Flow<PagingData<TrackRowState>>,
     val artistSearchResults: Flow<PagingData<ModelListItemState>>,
     val albumSearchResults: Flow<PagingData<ModelListItemState>>,
-    val genreSearchResults: Flow<PagingData<Genre>>
+    val genreSearchResults: Flow<PagingData<ModelListItemState>>
 ) : State
 
 

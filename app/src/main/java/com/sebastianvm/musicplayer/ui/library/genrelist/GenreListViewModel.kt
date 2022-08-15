@@ -1,11 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -42,7 +43,7 @@ class GenreListViewModel @Inject constructor(
         }.onEach { genreList ->
             setState {
                 copy(
-                    genreList = genreList,
+                    genreList = genreList.map { it.toModelListItemState() },
                 )
             }
         }.launchIn(viewModelScope)
@@ -86,7 +87,7 @@ class GenreListViewModel @Inject constructor(
 
 }
 
-data class GenreListState(val genreList: List<Genre>) : State
+data class GenreListState(val genreList: List<ModelListItemState>) : State
 
 
 @InstallIn(ViewModelComponent::class)
