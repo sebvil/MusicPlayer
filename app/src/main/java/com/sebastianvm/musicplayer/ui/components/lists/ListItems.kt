@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.components.lists
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ enum class SupportingImageType(val imageSize: Dp, val paddingEnd: Dp) {
     LARGE(56.dp, 16.dp)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SingleLineListItem(
     modifier: Modifier = Modifier,
@@ -63,7 +61,6 @@ fun SingleLineListItem(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DoubleLineListItem(
     modifier: Modifier = Modifier,

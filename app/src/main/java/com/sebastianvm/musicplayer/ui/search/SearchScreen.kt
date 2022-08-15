@@ -196,11 +196,22 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                TrackRow(
-                                    state = it,
-                                    modifier = Modifier.clickable { delegate.onTrackClicked(item.trackId) }) {
-                                    delegate.onTrackOverflowMenuClicked(item.trackId)
-                                }
+                                TrackRow(state = item, modifier = Modifier
+                                    .clickable {
+                                        delegate.onTrackClicked(it.id)
+                                    },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onTrackOverflowMenuClicked(item.trackId)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_overflow),
+                                                contentDescription = stringResource(R.string.more),
+                                            )
+                                        }
+                                    })
                             }
                         }
                     }

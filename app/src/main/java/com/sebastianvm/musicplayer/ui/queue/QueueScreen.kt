@@ -2,13 +2,12 @@ package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -100,24 +99,31 @@ fun QueueLayout(
             } else {
                 MaterialTheme.colorScheme.surface
             }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            TrackRow(
+                state = item.trackRowState,
                 modifier = Modifier
-                    .background(color = backgroundColor)
-                    .clickable { delegate.onTrackClicked(index) }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_drag),
-                    contentDescription = stringResource(R.string.drag),
-                    modifier = Modifier.padding(start = AppDimensions.spacing.medium)
-                )
-                TrackRow(
-                    state = item.trackRowState,
-                    color = contentColorFor(backgroundColor = backgroundColor),
-                    onOverflowMenuIconClicked = { },
-                )
-            }
+                    .clickable {
+                        delegate.onTrackClicked(index)
+                    },
+//                    .background(backgroundColor),
+                backgroundColor =  backgroundColor,
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_drag),
+                        contentDescription = stringResource(R.string.drag),
+                        modifier = Modifier.padding(start = AppDimensions.spacing.medium)
+                    )
+                },
+                trailingContent = {
+                    IconButton(
+                        onClick = { /* TODO */ },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(R.string.more),
+                        )
+                    }
+                })
         },
         layoutManager = layoutManager
     )
