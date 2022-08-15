@@ -16,6 +16,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
@@ -111,5 +114,26 @@ fun Album.toModelListItemState(): ModelListItemState {
             backupContentDescription = R.string.placeholder_album_art,
             args = listOf(albumName)
         )
+    )
+}
+
+fun Artist.toModelListItemState(): ModelListItemState {
+    return ModelListItemState(
+        id = id,
+        headlineText = artistName,
+    )
+}
+
+fun Genre.toModelListItemState(): ModelListItemState {
+    return ModelListItemState(
+        id = id,
+        headlineText = genreName,
+    )
+}
+
+fun Playlist.toModelListItemState(): ModelListItemState {
+    return ModelListItemState(
+        id = id,
+        headlineText = playlistName,
     )
 }

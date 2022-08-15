@@ -39,7 +39,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.ArtistRow
 import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
@@ -222,15 +221,24 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                ArtistRow(
+                                ModelListItem(
                                     state = item,
                                     modifier = Modifier.clickable {
-                                        delegate.onArtistClicked(
-                                            item.artistId
-                                        )
-                                    }) {
-                                    delegate.onArtistOverflowMenuClicked(item.artistId)
-                                }
+                                        delegate.onArtistClicked(it.id)
+                                    },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onArtistOverflowMenuClicked(it.id)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
+                                        }
+                                    }
+                                )
                             }
                         }
                     }

@@ -149,6 +149,7 @@ private val module = SerializersModule {
         subclass(GenreContextMenuArguments::class)
         subclass(PlaylistContextMenuArguments::class)
         subclass(SortMenuArguments::class)
+        subclass(ArtistsMenuArguments::class)
     }
 }
 
