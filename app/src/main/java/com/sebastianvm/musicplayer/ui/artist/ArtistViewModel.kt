@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -84,7 +84,7 @@ class ArtistViewModel @Inject constructor(
     }
 
     private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
-        return ArtistScreenItem.AlbumRowItem(this.toAlbumRowState())
+        return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
     }
 
     fun onAlbumClicked(albumId: Long) {

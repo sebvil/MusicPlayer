@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.util.uri.UriUtils
 
 
 data class ModelListItemState(
@@ -106,7 +105,7 @@ fun Album.toModelListItemState(): ModelListItemState {
         headlineText = albumName,
         supportingText = supportingText,
         mediaArtImageState = MediaArtImageState(
-            imageUri = UriUtils.getAlbumUriString(albumId = id),
+            imageUri = imageUri,
             contentDescription = R.string.album_art_for_album,
             backupResource = R.drawable.ic_album,
             backupContentDescription = R.string.placeholder_album_art,
