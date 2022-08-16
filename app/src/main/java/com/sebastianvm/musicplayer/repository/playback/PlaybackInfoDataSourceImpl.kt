@@ -43,7 +43,7 @@ class PlaybackInfoDataSourceImpl @Inject constructor(
         ) { prefs, tracks ->
             PlaybackInfo(
                 queuedTracks = tracks,
-                nowPlayingId = prefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] ?: "",
+                nowPlayingId = prefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] ?: 0L,
                 lastRecordedPosition = prefs[PreferencesUtil.KEY_LAST_RECORDED_POSITION] ?: 0
             )
         }

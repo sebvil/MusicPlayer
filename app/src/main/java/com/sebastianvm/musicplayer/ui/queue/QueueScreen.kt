@@ -89,14 +89,14 @@ fun QueueLayout(
         items = state.queueItems,
         delegate = delegate,
         listAdapter = QueueAdapter { index, item ->
-            val isNowPlayingItem = item.uniqueId == state.nowPlayingId
+            val isNowPlayingItem = item.id == state.nowPlayingId
             val backgroundColor = if (isNowPlayingItem) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surface
             }
             ModelListItem(
-                state = item.trackRowState,
+                state = item.modelListItemState,
                 modifier = Modifier
                     .clickable {
                         delegate.onTrackClicked(index)

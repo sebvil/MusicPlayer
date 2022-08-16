@@ -21,8 +21,10 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
+import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
+import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 
 
 data class ModelListItemState(
@@ -35,7 +37,15 @@ data class ModelListItemState(
 data class ModelListItemStateWithPosition(
     val position: Long,
     val modelListItemState: ModelListItemState
-)
+) : DraggableListItem() {
+    override val id: Long
+        get() = position
+
+    override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
+        return otherItem is ModelListItemStateWithPosition && otherItem == this
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,3 +170,13 @@ fun TrackWithPlaylistPositionView.toModelListItemStateWithPosition(): ModelListI
     )
 }
 
+fun TrackWithQueueId.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
+    return ModelListItemStateWithPosition(
+        position = this.uniqueQueueItemId,
+        modelListItemState = ModelListItemState(
+            id = id,
+            headlineText = trackName,
+            supportingText = artists
+        )
+    )
+}

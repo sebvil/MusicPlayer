@@ -50,13 +50,13 @@ inline var Bundle.duration: Long
         putLong(KEY_TRACK_DURATION_MS, value)
     }
 
-inline val MediaMetadata.uniqueId: String
-    get() = extras?.getString(KEY_UNIQUE_ID) ?: ""
+inline val MediaMetadata.uniqueId: Long
+    get() = extras?.getLong(KEY_UNIQUE_ID) ?: 0L
 
-inline var Bundle.uniqueId: String
+inline var Bundle.uniqueId: Long
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {
-        putString(KEY_UNIQUE_ID, value)
+        putLong(KEY_UNIQUE_ID, value)
     }
 
 inline var MediaMetadata.Builder.extras: Bundle

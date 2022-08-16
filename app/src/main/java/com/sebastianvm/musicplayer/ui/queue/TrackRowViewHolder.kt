@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.sebastianvm.musicplayer.databinding.ViewHolderSortableListBinding
-import com.sebastianvm.musicplayer.ui.components.DraggableTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
 
 class TrackRowViewHolder(
@@ -17,7 +17,7 @@ class TrackRowViewHolder(
             context
         ), parent, false
     )
-) : DraggableListViewHolder<DraggableTrackRowState>(binding.root) {
+) : DraggableListViewHolder<ModelListItemStateWithPosition>(binding.root) {
 
     override fun bind(viewRenderer: @Composable () -> Unit) {
         binding.composeView.apply {
