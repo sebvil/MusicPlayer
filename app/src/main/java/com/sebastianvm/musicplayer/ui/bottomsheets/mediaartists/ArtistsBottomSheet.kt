@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,8 +29,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
-
-// TODO fix bottom sheet colors
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
@@ -71,17 +70,17 @@ fun ArtistsBottomSheetLayoutPreview(
 fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBottomSheetDelegate) {
     LazyColumn {
         stickyHeader {
-            Surface(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(AppDimensions.bottomSheet.rowHeight)
-                    .padding(start = AppDimensions.bottomSheet.startPadding)
+                    .padding(start = AppDimensions.bottomSheet.startPadding),
             ) {
 
                 Text(
                     text = stringResource(id = R.string.artists),
                     modifier = Modifier.paddingFromBaseline(top = 36.dp),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
             Divider(modifier = Modifier.fillMaxWidth())

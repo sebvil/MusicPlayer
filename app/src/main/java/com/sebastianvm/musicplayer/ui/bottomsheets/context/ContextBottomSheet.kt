@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,17 +17,18 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +36,8 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
@@ -82,11 +83,10 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
 /**
  * The Android Studio Preview cannot handle this, but it can be run in device for preview
  */
-@Preview
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@ComponentPreview
 @Composable
 fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
-    BottomSheetPreview {
+    ThemedPreview {
         ContextMenuLayout(state = state, object : ContextMenuDelegate {})
     }
 }
@@ -179,9 +179,12 @@ fun ContextMenuLayout(
                                 Icon(
                                     painter = painterResource(id = it.icon),
                                     contentDescription = stringResource(id = it.text),
-                                    modifier = Modifier.size(40.dp),
+                                    modifier = Modifier.size(24.dp),
                                 )
                             },
+                            colors = ListItemDefaults.colors(
+                                containerColor = Color.Transparent
+                            )
                         )
                     }
                 }
