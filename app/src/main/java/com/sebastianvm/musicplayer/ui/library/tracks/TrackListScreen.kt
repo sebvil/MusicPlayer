@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -105,18 +105,20 @@ fun TrackListLayout(
 ) {
     PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
     LazyColumn(state = listState) {
-        itemsIndexed(state.trackList, key = { _, item -> item.trackId }) { index, item ->
-            TrackRow(state = item, modifier = Modifier
-                .animateItemPlacement()
-                .clickable {
-                    delegate.onTrackClicked(index)
-                },
+        itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
+            ModelListItem(
+                state = item,
+                modifier = Modifier
+                    .animateItemPlacement()
+                    .clickable {
+                        delegate.onTrackClicked(index)
+                    },
                 trailingContent = {
                     IconButton(
                         onClick = {
                             delegate.onOverflowMenuIconClicked(
                                 index,
-                                item.trackId
+                                item.id
                             )
                         },
                     ) {
@@ -125,7 +127,8 @@ fun TrackListLayout(
                             contentDescription = stringResource(R.string.more),
                         )
                     }
-                })
+                }
+            )
         }
     }
 }

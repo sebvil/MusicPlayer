@@ -19,6 +19,8 @@ import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
@@ -28,6 +30,11 @@ data class ModelListItemState(
     val headlineText: String,
     val supportingText: String? = null,
     val mediaArtImageState: MediaArtImageState? = null
+)
+
+data class ModelListItemStateWithPosition(
+    val position: Long,
+    val modelListItemState: ModelListItemState
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,3 +144,19 @@ fun Playlist.toModelListItemState(): ModelListItemState {
         headlineText = playlistName,
     )
 }
+
+fun Track.toModelListItemState(): ModelListItemState {
+    return ModelListItemState(id = id, headlineText = trackName, supportingText = artists)
+}
+
+fun TrackWithPlaylistPositionView.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
+    return ModelListItemStateWithPosition(
+        position = position,
+        modelListItemState = ModelListItemState(
+            id = id,
+            headlineText = trackName,
+            supportingText = artists
+        )
+    )
+}
+

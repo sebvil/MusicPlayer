@@ -14,8 +14,8 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -90,7 +90,7 @@ class TrackListViewModel @Inject constructor(
             setState {
                 copy(
                     trackListName = listName,
-                    trackList = newTrackList.map { it.toTrackRowState(includeTrackNumber = false) },
+                    trackList = newTrackList.map { it.toModelListItemState() },
                 )
             }
             addUiEvent(TrackListUiEvent.ScrollToTop)
@@ -177,7 +177,7 @@ data class TrackListState(
     val trackListId: Long,
     val trackListName: String?,
     val trackListType: TrackListType,
-    val trackList: List<TrackRowState>,
+    val trackList: List<ModelListItemState>,
     val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
     val playbackResult: PlaybackResult? = null
 ) : State

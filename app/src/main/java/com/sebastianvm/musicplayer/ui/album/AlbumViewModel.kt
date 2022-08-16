@@ -11,8 +11,8 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -51,7 +51,7 @@ class AlbumViewModel @Inject constructor(
                 copy(
                     imageUri = UriUtils.getAlbumUri(album.id),
                     albumName = album.albumName,
-                    trackList = tracks.map { it.toTrackRowState(includeTrackNumber = true) }
+                    trackList = tracks.map { it.toModelListItemState() }
                 )
             }
         }.launchIn(viewModelScope)
@@ -87,7 +87,7 @@ data class AlbumState(
     val albumId: Long,
     val imageUri: Uri,
     val albumName: String,
-    val trackList: List<TrackRowState>,
+    val trackList: List<ModelListItemState>,
 ) : State
 
 

@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.album
 
 import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 
 class AlbumStatePreviewParameterProvider :
     PreviewParameterProvider<AlbumState> {
@@ -12,10 +12,10 @@ class AlbumStatePreviewParameterProvider :
             imageUri = Uri.EMPTY,
             albumName = "10:20:40",
             listOf(
-                TrackRowState(0, 0, "La Promesa", "Melendi"),
-                TrackRowState(1, 1, "La Promesa", "Melendi"),
-                TrackRowState(2, 2, "La Promesa", "Melendi"),
-                TrackRowState(3, 3, "La Promesa", "Melendi")
+                ModelListItemState(id = 0, headlineText = "La Promesa", supportingText = "Melendi"),
+                ModelListItemState(id = 1, headlineText = "La Promesa", supportingText = "Melendi"),
+                ModelListItemState(id = 2, headlineText = "La Promesa", supportingText = "Melendi"),
+                ModelListItemState(id = 3, headlineText = "La Promesa", supportingText = "Melendi")
             ),
         )
     )

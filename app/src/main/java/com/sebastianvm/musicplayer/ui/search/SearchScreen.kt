@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -36,7 +35,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -56,7 +54,6 @@ fun SearchScreen(
     ) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
-                Log.i("SEARCH", "New text: $newText")
                 screenViewModel.onTextChanged(newText = newText)
             }
 
@@ -192,22 +189,24 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                TrackRow(state = item, modifier = Modifier
-                                    .clickable {
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier.clickable {
                                         delegate.onTrackClicked(it.id)
                                     },
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
-                                                delegate.onTrackOverflowMenuClicked(item.trackId)
+                                                delegate.onTrackOverflowMenuClicked(it.id)
                                             },
                                         ) {
                                             Icon(
-                                                painter = painterResource(id = R.drawable.ic_overflow),
-                                                contentDescription = stringResource(R.string.more),
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
                                             )
                                         }
-                                    })
+                                    }
+                                )
                             }
                         }
                     }

@@ -31,7 +31,7 @@ class QueueViewModel @Inject constructor(
                 setState {
                     copy(
                         queueItems = savedPlaybackInfo.queuedTracks.map { track ->
-                            track.toDraggableTrackRowState(includeTrackNumber = false)
+                            track.toDraggableTrackRowState()
                         },
                         nowPlayingId = savedPlaybackInfo.nowPlayingId
                     )

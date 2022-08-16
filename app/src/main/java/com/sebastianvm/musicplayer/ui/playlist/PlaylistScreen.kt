@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -145,17 +145,19 @@ fun PlaylistLayout(
     } else {
         LazyColumn(state = listState) {
             itemsIndexed(state.trackList) { index, item ->
-                TrackRow(state = item, modifier = Modifier
-                    .clickable {
-                        delegate.onTrackClicked(index)
-                    },
+                ModelListItem(
+                    state = item.modelListItemState,
+                    modifier = Modifier
+                        .clickable {
+                            delegate.onTrackClicked(index)
+                        },
                     trailingContent = {
                         IconButton(
                             onClick = {
                                 delegate.onOverflowMenuIconClicked(
                                     index,
-                                    item.trackId,
-                                    item.id
+                                    item.modelListItemState.id,
+                                    item.position
                                 )
                             },
                         ) {
@@ -164,9 +166,9 @@ fun PlaylistLayout(
                                 contentDescription = stringResource(R.string.more),
                             )
                         }
-                    })
+                    }
+                )
             }
         }
-
     }
 }

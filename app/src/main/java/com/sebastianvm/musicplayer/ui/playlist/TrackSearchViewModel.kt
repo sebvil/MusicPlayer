@@ -10,8 +10,8 @@ import androidx.paging.map
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -59,7 +59,7 @@ class TrackSearchViewModel @Inject constructor(
                         ftsRepository.searchTracksPaged(query)
                     }.flow.mapLatest { pagingData ->
                         pagingData.map {
-                            it.track.toTrackRowState(includeTrackNumber = false)
+                            it.track.toModelListItemState()
                         }.filter {
                             !hideTracksInPlaylist || (it.id !in state.value.playlistTrackIds)
                         }
@@ -147,7 +147,7 @@ class TrackSearchViewModel @Inject constructor(
 
 data class TrackSearchState(
     val playlistId: Long,
-    val trackSearchResults: Flow<PagingData<TrackRowState>>,
+    val trackSearchResults: Flow<PagingData<ModelListItemState>>,
     val playlistTrackIds: Set<Long> = setOf(),
     val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
     val hideTracksInPlaylist: Boolean = true
