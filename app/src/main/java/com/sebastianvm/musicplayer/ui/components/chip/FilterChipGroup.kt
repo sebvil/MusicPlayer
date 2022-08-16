@@ -17,7 +17,7 @@ fun <T> SingleSelectFilterChipGroup(
     options: List<T>,
     selectedOption: T?,
     modifier: Modifier = Modifier,
-    getDisplayName: T.() -> String,
+    getDisplayName: @Composable T.() -> String,
     onNewOptionSelected: (T) -> Unit
 ) {
     LazyRow(

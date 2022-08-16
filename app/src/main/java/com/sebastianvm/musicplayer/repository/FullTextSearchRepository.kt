@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.repository
 
+import androidx.annotation.StringRes
 import androidx.paging.PagingSource
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.AlbumFtsDao
 import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
@@ -31,15 +33,22 @@ class FullTextSearchRepository @Inject constructor(
         return trackFtsDao.tracksWithText(text = "\"$text*\"")
     }
 
-    fun searchArtists(text: String): PagingSource<Int, Artist> {
+    fun searchArtists(text: String): Flow<List<Artist>> {
         return artistFtsDao.artistsWithText(text = "{\"$text*\"}")
     }
 
-    fun searchAlbums(text: String): PagingSource<Int, AlbumWithArtists> {
+    fun searchAlbums(text: String): Flow<List<AlbumWithArtists>> {
         return albumFtsDao.albumsWithText(text = "{\"$text*\"}")
     }
 
-    fun searchGenres(text: String): PagingSource<Int, Genre> {
+    fun searchGenres(text: String): Flow<List<Genre>> {
         return genreFtsDao.genresWithText(text = "{\"$text*\"}")
     }
+}
+
+enum class SearchMode(@StringRes val res: Int) {
+    SONGS(R.string.songs),
+    ARTISTS(R.string.artists),
+    ALBUMS(R.string.albums),
+    GENRES(R.string.genres)
 }

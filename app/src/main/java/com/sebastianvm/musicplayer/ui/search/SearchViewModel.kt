@@ -1,17 +1,12 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.map
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
@@ -25,91 +20,74 @@ import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class SearchQueryState(val term: String, val mode: SearchMode)
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<SearchUiEvent, SearchState>(initialState) {
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+) : BaseViewModel<SearchUiEvent, SearchState>(initialState),
+    ViewModelInterface<SearchState, SearchUserAction> {
 
-    private val searchTerm = MutableStateFlow("")
+    private val query =
+        MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))
+
 
     init {
-        setState {
-            copy(
-                trackSearchResults = searchTerm.flatMapLatest {
-                    Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchTracksPaged(it)
-                    }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.track.toModelListItemState() }
-                    }
-                },
-                artistSearchResults = searchTerm.flatMapLatest {
-                    Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchArtists(it)
-                    }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.toModelListItemState() }
-                    }
-                },
-                albumSearchResults = searchTerm.flatMapLatest {
-                    Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchAlbums(it)
-                    }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.album.toModelListItemState() }
-                    }
-                },
-                genreSearchResults = searchTerm.flatMapLatest {
-                    Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchGenres(it)
-                    }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.toModelListItemState() }
-                    }
-                },
-            )
-
-        }
+        query.debounce(50).flatMapLatest { newQuery ->
+            when (newQuery.mode) {
+                SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
+                    .map { tracks -> tracks.map { it.track.toModelListItemState() } }
+                SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
+                    .map { artists -> artists.map { it.toModelListItemState() } }
+                SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
+                    .map { albums -> albums.map { it.album.toModelListItemState() } }
+                SearchMode.GENRES -> ftsRepository.searchGenres(newQuery.term)
+                    .map { genres -> genres.map { it.toModelListItemState() } }
+            }
+        }.flowOn(defaultDispatcher).onEach {
+            setState {
+                copy(searchResults = it)
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun onTextChanged(newText: String) {
-        searchTerm.update { newText }
-    }
-
-    fun onSearchTypeChanged(newType: Int) {
-        setState {
-            copy(
-                selectedOption = newType
-            )
-        }
-    }
-
-    fun onTrackRowClicked(trackId: Long) {
+    private fun onTrackSearchResultClicked(trackId: Long) {
         viewModelScope.launch {
             playbackManager.playSingleTrack(trackId)
             addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
         }
     }
 
-    fun onArtistRowClicked(artistId: Long) {
+    private fun onArtistSearchResultClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.Artist(
@@ -119,7 +97,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onAlbumRowClicked(albumId: Long) {
+    private fun onAlbumSearchResultClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.Album(
@@ -129,7 +107,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onGenreRowClicked(genreId: Long) {
+    private fun onGenreSearchResultClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackList(
@@ -139,7 +117,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onTrackOverflowMenuClicked(trackId: Long) {
+    private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackContextMenu(
@@ -156,7 +134,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onArtistOverflowMenuClicked(artistId: Long) {
+    private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.ArtistContextMenu(
@@ -166,7 +144,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onAlbumOverflowMenuClicked(albumId: Long) {
+    private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.AlbumContextMenu(
@@ -176,7 +154,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun onGenreOverflowMenuClicked(genreId: Long) {
+    private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.GenreContextMenu(
@@ -185,14 +163,34 @@ class SearchViewModel @Inject constructor(
             )
         )
     }
+
+    override fun handle(action: SearchUserAction) {
+        when (action) {
+            is SearchUserAction.SearchResultClicked -> {
+                when (state.value.selectedOption) {
+                    SearchMode.SONGS -> onTrackSearchResultClicked(action.id)
+                    SearchMode.ARTISTS -> onArtistSearchResultClicked(action.id)
+                    SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
+                    SearchMode.GENRES -> onGenreSearchResultClicked(action.id)
+                }
+            }
+            is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
+                when (state.value.selectedOption) {
+                    SearchMode.SONGS -> onTrackSearchResultOverflowMenuIconClicked(action.id)
+                    SearchMode.ARTISTS -> onArtistSearchResultOverflowMenuIconClicked(action.id)
+                    SearchMode.ALBUMS -> onAlbumSearchResultOverflowMenuIconClicked(action.id)
+                    SearchMode.GENRES -> onGenreSearchResultOverflowMenuIconClicked(action.id)
+                }
+            }
+            is SearchUserAction.SearchModeChanged -> query.update { it.copy(mode = action.newMode) }
+            is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
+        }
+    }
 }
 
 data class SearchState(
-    @StringRes val selectedOption: Int,
-    val trackSearchResults: Flow<PagingData<ModelListItemState>>,
-    val artistSearchResults: Flow<PagingData<ModelListItemState>>,
-    val albumSearchResults: Flow<PagingData<ModelListItemState>>,
-    val genreSearchResults: Flow<PagingData<ModelListItemState>>
+    val selectedOption: SearchMode,
+    val searchResults: List<ModelListItemState>
 ) : State
 
 
@@ -203,13 +201,17 @@ object InitialSearchStateModule {
     @ViewModelScoped
     fun initialSearchStateProvider(): SearchState {
         return SearchState(
-            selectedOption = R.string.songs,
-            trackSearchResults = flow {},
-            artistSearchResults = flow {},
-            albumSearchResults = flow {},
-            genreSearchResults = flow {},
+            selectedOption = SearchMode.SONGS,
+            searchResults = listOf()
         )
     }
 }
 
 sealed class SearchUiEvent : UiEvent
+
+sealed interface SearchUserAction : UserAction {
+    data class SearchResultClicked(val id: Long) : SearchUserAction
+    data class SearchResultOverflowMenuIconClicked(val id: Long) : SearchUserAction
+    data class TextChanged(val newText: String) : SearchUserAction
+    data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
+}
