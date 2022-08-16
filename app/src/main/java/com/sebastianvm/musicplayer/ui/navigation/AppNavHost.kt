@@ -41,8 +41,6 @@ fun AppNavHost(navController: NavHostController) {
 
             queueNavDestination(navigationDelegate)
             musicPlayerNavDestination(navigationDelegate)
-
-            searchNavDestination(navigationDelegate)
         }
     }
 }
@@ -54,6 +52,8 @@ fun NavGraphBuilder.libraryGraph(navigationDelegate: NavigationDelegate) {
         route = NavigationRoute.Library.name
     ) {
         libraryNavDestination(navigationDelegate)
+
+        searchNavDestination(navigationDelegate)
 
         trackListNavDestination(navigationDelegate)
         artistListNavDestination(navigationDelegate)

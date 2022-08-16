@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.util.compose
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -16,10 +15,10 @@ import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 fun NavHostWrapper(
     navHost: @Composable (NavHostController) -> Unit,
 ) {
-        AppTheme {
-            M3AppTheme {
-                val bottomSheetNavigator = rememberBottomSheetNavigator()
-                val navController = rememberNavController(bottomSheetNavigator)
+    AppTheme {
+        M3AppTheme {
+            val bottomSheetNavigator = rememberBottomSheetNavigator()
+            val navController = rememberNavController(bottomSheetNavigator)
 
 //            // TODO: wait until this is a bit more mature
 //            val systemUiController = rememberSystemUiController()
@@ -29,15 +28,15 @@ fun NavHostWrapper(
 //                systemUiController.setStatusBarColor(surfaceColor)
 //            }
 
-                M3ModalBottomSheetLayout(
-                    bottomSheetNavigator = bottomSheetNavigator,
-                    sheetShape = RoundedCornerShape(
-                        topStart = AppDimensions.bottomSheet.cornerRadius,
-                        topEnd = AppDimensions.bottomSheet.cornerRadius
-                    )
-                ) {
-                    navHost(navController)
-                }
+            M3ModalBottomSheetLayout(
+                bottomSheetNavigator = bottomSheetNavigator,
+                sheetShape = RoundedCornerShape(
+                    topStart = AppDimensions.bottomSheet.cornerRadius,
+                    topEnd = AppDimensions.bottomSheet.cornerRadius
+                )
+            ) {
+                navHost(navController)
             }
         }
+    }
 }

@@ -51,7 +51,7 @@ class LibraryViewModelTest {
 
 
     @Test
-    fun `RowClicked adds nav NavigateToScreen event`() {
+    fun `RowClicked adds NavigateToScreen event`() {
         with(generateViewModel()) {
             handle(LibraryUserAction.RowClicked(NavigationDestination.GenresRoot))
             assertEquals(
@@ -60,5 +60,17 @@ class LibraryViewModelTest {
             )
         }
     }
+
+    @Test
+    fun `SearchBoxClicked navigates to search screen`() {
+        with(generateViewModel()) {
+            handle(LibraryUserAction.SearchBoxClicked)
+            assertEquals(
+                navEvents.value.first(),
+                NavEvent.NavigateToScreen(NavigationDestination.Search)
+            )
+        }
+    }
+
 
 }

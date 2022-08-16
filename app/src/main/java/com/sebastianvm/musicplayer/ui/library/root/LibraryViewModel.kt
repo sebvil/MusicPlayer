@@ -49,6 +49,9 @@ class LibraryViewModel @Inject constructor(
             is LibraryUserAction.RowClicked -> {
                 addNavEvent(NavEvent.NavigateToScreen(action.destination))
             }
+            is LibraryUserAction.SearchBoxClicked -> {
+                addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.Search))
+            }
         }
     }
 }
@@ -78,4 +81,5 @@ sealed class LibraryUiEvent : UiEvent {
 
 sealed class LibraryUserAction : UserAction {
     data class RowClicked(val destination: NavigationDestination) : LibraryUserAction()
+    object SearchBoxClicked : LibraryUserAction()
 }

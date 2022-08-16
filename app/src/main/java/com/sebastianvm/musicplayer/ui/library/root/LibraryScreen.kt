@@ -3,11 +3,15 @@ package com.sebastianvm.musicplayer.ui.library.root
 import android.Manifest
 import android.content.Intent
 import android.os.Build
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,6 +47,7 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
@@ -152,19 +157,46 @@ fun LibraryScreenPreview(@PreviewParameter(LibraryStateProvider::class) state: L
 }
 
 
+@ComponentPreview
+@Composable
+fun SearchBox(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(AppDimensions.spacing.small)
+            )
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search),
+            contentDescription = stringResource(id = R.string.search),
+            modifier = Modifier.padding(all = AppDimensions.spacing.small),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryLayout(viewModel: ViewModelInterface<LibraryState, LibraryUserAction>) {
     val state by viewModel.state.collectAsState()
     val libraryItems = state.libraryItems
+
     LazyColumn {
+        item {
+            SearchBox(modifier = Modifier
+                .padding(all = AppDimensions.spacing.medium)
+                .clickable {
+                    viewModel.handle(LibraryUserAction.SearchBoxClicked)
+                })
+        }
         item {
             Text(
                 text = stringResource(id = R.string.library),
                 style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Medium),
                 modifier = Modifier.padding(
                     start = AppDimensions.spacing.mediumLarge,
-                    top = AppDimensions.spacing.mediumLarge,
                     bottom = AppDimensions.spacing.medium
                 )
             )

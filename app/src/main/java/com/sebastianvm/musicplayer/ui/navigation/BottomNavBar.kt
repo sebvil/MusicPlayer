@@ -28,14 +28,12 @@ sealed class Screen(
     object Library : Screen(NavigationDestination.LibraryRoot, R.string.library, R.drawable.ic_song)
     object Queue : Screen(NavigationDestination.Queue, R.string.queue, R.drawable.ic_queue)
     object Player : Screen(NavigationDestination.MusicPlayer, R.string.player, R.drawable.ic_play)
-    object Search : Screen(NavigationDestination.Search, R.string.search, R.drawable.ic_search)
 }
 
 val items = listOf(
     Screen.Library,
     Screen.Queue,
     Screen.Player,
-    Screen.Search
 )
 
 @Composable

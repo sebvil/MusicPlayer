@@ -2,13 +2,15 @@ package com.sebastianvm.musicplayer.ui.search
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -20,15 +22,22 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -41,6 +50,18 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+
+
+fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
+    this.pointerInput(key1 = null) {
+        forEachGesture {
+            awaitPointerEventScope {
+                awaitFirstDown(requireUnconsumed = true)
+                focusManager.clearFocus()
+            }
+
+        }
+    }
 
 @Composable
 fun SearchScreen(
@@ -117,24 +138,28 @@ interface SearchScreenDelegate {
     fun onGenreOverflowMenuClicked(genreId: Long) = Unit
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchLayout(
     state: SearchState,
     delegate: SearchScreenDelegate = object : SearchScreenDelegate {},
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
     val input = rememberSaveable {
         mutableStateOf("")
     }
     val focusRequester = remember { FocusRequester() }
-    val interactionSource = remember { MutableInteractionSource() }
+
+    LaunchedEffect(key1 = true) {
+        focusRequester.requestFocus()
+    }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .focusRequester(focusRequester)
-            .focusable(enabled = true, interactionSource)
-            .clickable { focusRequester.requestFocus() }) {
+    ) {
         TextField(
             value = input.value,
             onValueChange = {
@@ -173,15 +198,23 @@ fun SearchLayout(
                     }
                 }
             },
-            interactionSource = interactionSource,
-            modifier = Modifier.fillMaxWidth()
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onAny = { keyboardController?.hide() },
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
         SingleSelectFilterChipGroup(
             options = listOf(R.string.songs, R.string.artists, R.string.albums, R.string.genres),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = AppDimensions.spacing.medium),
             getDisplayName = { ResUtil.getString(context, this) },
-            onNewOptionSelected = { newOption -> delegate.onOptionChosen(newOption) }
+            onNewOptionSelected = { newOption ->
+                focusManager.clearFocus()
+                delegate.onOptionChosen(newOption)
+            }
         )
         when (state.selectedOption) {
             R.string.songs -> {
@@ -191,14 +224,18 @@ fun SearchLayout(
                             item?.also {
                                 ModelListItem(
                                     state = item,
-                                    modifier = Modifier.clickable {
-                                        delegate.onTrackClicked(it.id)
-                                    },
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onTrackClicked(it.id)
+                                        }
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onTrackOverflowMenuClicked(it.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
@@ -219,14 +256,20 @@ fun SearchLayout(
                             item?.also {
                                 ModelListItem(
                                     state = item,
-                                    modifier = Modifier.clickable {
-                                        delegate.onArtistClicked(it.id)
-                                    },
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onArtistClicked(
+                                                item.id
+                                            )
+                                        }
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onArtistOverflowMenuClicked(it.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
@@ -242,31 +285,34 @@ fun SearchLayout(
             }
             R.string.albums -> {
                 state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-                    LazyColumn {
-                        items(lazyPagingItems) { item ->
-                            item?.also {
-                                ModelListItem(
-                                    state = item,
-                                    modifier = Modifier.clickable {
+                    items(lazyPagingItems) { item ->
+                        item?.also {
+                            ModelListItem(
+                                state = item,
+                                modifier = Modifier
+                                    .clickable {
                                         delegate.onAlbumClicked(it.id)
-                                    },
-                                    trailingContent = {
-                                        IconButton(
-                                            onClick = {
-                                                delegate.onAlbumOverflowMenuClicked(it.id)
-                                            },
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
-                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
-                                            )
-                                        }
                                     }
-                                )
-                            }
+                                    .clearFocusOnTouch(focusManager),
+                                trailingContent = {
+                                    IconButton(
+                                        onClick = {
+                                            focusManager.clearFocus()
+                                            delegate.onAlbumOverflowMenuClicked(it.id)
+                                        },
+                                        modifier = Modifier.clearFocusOnTouch(focusManager)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                        )
+                                    }
+                                }
+                            )
                         }
                     }
                 }
+
             }
             R.string.genres -> {
                 state.genreSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
@@ -275,14 +321,18 @@ fun SearchLayout(
                             item?.also { genre ->
                                 ModelListItem(
                                     state = item,
-                                    modifier = Modifier.clickable {
-                                        delegate.onGenreClicked(genre.id)
-                                    },
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onGenreClicked(genre.id)
+                                        }
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onGenreOverflowMenuClicked(genre.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
