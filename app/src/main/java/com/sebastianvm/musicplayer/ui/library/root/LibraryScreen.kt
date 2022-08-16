@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,7 +60,7 @@ fun LibraryScreen(
     }
 
     val storagePermissionState = rememberPermissionState(
-        permission = Manifest.permission.READ_EXTERNAL_STORAGE,
+        permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
         onPermissionResult = { isGranted ->
             if (isGranted) {
                 startForegroundService(
