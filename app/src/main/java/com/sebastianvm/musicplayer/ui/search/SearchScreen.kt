@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
@@ -49,6 +50,18 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+
+
+fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
+    this.pointerInput(key1 = null) {
+        forEachGesture {
+            awaitPointerEventScope {
+                awaitFirstDown(requireUnconsumed = true)
+                focusManager.clearFocus()
+            }
+
+        }
+    }
 
 @Composable
 fun SearchScreen(
@@ -211,14 +224,18 @@ fun SearchLayout(
                             item?.also {
                                 ModelListItem(
                                     state = item,
-                                    modifier = Modifier.clickable {
-                                        delegate.onTrackClicked(it.id)
-                                    },
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onTrackClicked(it.id)
+                                        }
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onTrackOverflowMenuClicked(it.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
@@ -245,20 +262,14 @@ fun SearchLayout(
                                                 item.id
                                             )
                                         }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        },
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onArtistOverflowMenuClicked(it.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
@@ -274,42 +285,34 @@ fun SearchLayout(
             }
             R.string.albums -> {
                 state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-                    LazyColumn {
-                        items(lazyPagingItems) { item ->
-                            item?.also {
-
-                                ModelListItem(
-                                    state = item,
-                                    modifier = Modifier
-                                        .clickable {
-                                            delegate.onAlbumClicked(it.id)
-                                        }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        },
-                                    trailingContent = {
-                                        IconButton(
-                                            onClick = {
-                                                delegate.onAlbumOverflowMenuClicked(it.id)
-                                            },
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
-                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
-                                            )
-                                        }
+                    items(lazyPagingItems) { item ->
+                        item?.also {
+                            ModelListItem(
+                                state = item,
+                                modifier = Modifier
+                                    .clickable {
+                                        delegate.onAlbumClicked(it.id)
                                     }
-                                )
-                            }
+                                    .clearFocusOnTouch(focusManager),
+                                trailingContent = {
+                                    IconButton(
+                                        onClick = {
+                                            focusManager.clearFocus()
+                                            delegate.onAlbumOverflowMenuClicked(it.id)
+                                        },
+                                        modifier = Modifier.clearFocusOnTouch(focusManager)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                        )
+                                    }
+                                }
+                            )
                         }
                     }
                 }
+
             }
             R.string.genres -> {
                 state.genreSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
@@ -322,20 +325,14 @@ fun SearchLayout(
                                         .clickable {
                                             delegate.onGenreClicked(genre.id)
                                         }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        },
+                                        .clearFocusOnTouch(focusManager),
                                     trailingContent = {
                                         IconButton(
                                             onClick = {
+                                                focusManager.clearFocus()
                                                 delegate.onGenreOverflowMenuClicked(genre.id)
                                             },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
