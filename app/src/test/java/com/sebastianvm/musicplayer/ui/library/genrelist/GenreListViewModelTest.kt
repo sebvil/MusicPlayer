@@ -2,13 +2,13 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
-import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -31,15 +31,21 @@ class GenreListViewModelTest {
 
     private lateinit var genreRepository: GenreRepository
     private lateinit var preferencesRepository: SortPreferencesRepository
-    private val genres: List<Genre> = listOf(
-        Fixtures.genreAlpha,
-        Fixtures.genreBeta,
-        Fixtures.genreCharlie
+    private val genres: List<ModelListItemState> = listOf(
+        ModelListItemState(id = C.ID_ONE, headlineText = C.GENRE_ALPHA),
+        ModelListItemState(id = C.ID_TWO, headlineText = C.GENRE_BRAVO),
+        ModelListItemState(id = C.ID_THREE, headlineText = C.GENRE_CHARLIE),
     )
 
     @Before
     fun setUp() {
-        genreRepository = FakeGenreRepository(genres)
+        genreRepository = FakeGenreRepository(
+            listOf(
+                Fixtures.genreAlpha,
+                Fixtures.genreBravo,
+                Fixtures.genreCharlie
+            )
+        )
 
     }
 
@@ -58,7 +64,7 @@ class GenreListViewModelTest {
         with(generateViewModel(genreListSortOrder = MediaSortOrder.ASCENDING)) {
             advanceUntilIdle()
             assertEquals(
-                genres.sortedBy { it.genreName },
+                genres.sortedBy { it.headlineText },
                 state.value.genreList
             )
         }
@@ -66,7 +72,7 @@ class GenreListViewModelTest {
         with(generateViewModel(genreListSortOrder = MediaSortOrder.DESCENDING)) {
             advanceUntilIdle()
             assertEquals(
-                genres.sortedByDescending { it.genreName },
+                genres.sortedByDescending { it.headlineText },
                 state.value.genreList
             )
         }
@@ -107,7 +113,7 @@ class GenreListViewModelTest {
             handle(GenreListUserAction.SortByClicked)
             advanceUntilIdle()
             assertEquals(
-                genres.sortedByDescending { it.genreName },
+                genres.sortedByDescending { it.headlineText },
                 state.value.genreList
             )
         }
