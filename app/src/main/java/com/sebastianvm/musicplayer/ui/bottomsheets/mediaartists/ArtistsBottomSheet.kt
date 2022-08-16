@@ -29,8 +29,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
-
-// TODO fix bottom sheet colors
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
