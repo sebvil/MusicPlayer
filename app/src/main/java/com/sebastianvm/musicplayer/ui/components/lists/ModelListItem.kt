@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -54,7 +53,7 @@ fun ModelListItem(
     modifier: Modifier = Modifier,
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
-    backgroundColor: Color = MaterialTheme.colorScheme.background
+    backgroundColor: Color = Color.Transparent
 ) {
     val textColor = contentColorFor(backgroundColor = backgroundColor)
     with(state) {
@@ -95,7 +94,7 @@ fun ModelListItem(
     state: ModelListItemState,
     modifier: Modifier = Modifier,
     trailingContent: @Composable (() -> Unit)? = null,
-    backgroundColor: Color = MaterialTheme.colorScheme.background
+    backgroundColor: Color = Color.Transparent
 ) {
     ModelListItem(
         state = state,
