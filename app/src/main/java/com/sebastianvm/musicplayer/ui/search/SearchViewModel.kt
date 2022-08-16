@@ -184,6 +184,7 @@ class SearchViewModel @Inject constructor(
             }
             is SearchUserAction.SearchModeChanged -> query.update { it.copy(mode = action.newMode) }
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
+            is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
         }
     }
 }
@@ -214,4 +215,5 @@ sealed interface SearchUserAction : UserAction {
     data class SearchResultOverflowMenuIconClicked(val id: Long) : SearchUserAction
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
+    object UpButtonClicked : SearchUserAction
 }

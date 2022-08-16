@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,15 +119,19 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
                     color = LocalContentColor.current
                 )
             },
-            leadingIcon = input.value.takeIf { it.isEmpty() }?.let {
-                {
+            leadingIcon =
+            {
+                IconButton(onClick = {
+                   viewModel.handle(SearchUserAction.UpButtonClicked)
+                }) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = stringResource(
                             id = R.string.search
                         )
                     )
                 }
+
             },
             trailingIcon = input.value.takeUnless { it.isEmpty() }?.let {
                 {
