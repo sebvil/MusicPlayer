@@ -285,30 +285,32 @@ fun SearchLayout(
             }
             R.string.albums -> {
                 state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-                    items(lazyPagingItems) { item ->
-                        item?.also {
-                            ModelListItem(
-                                state = item,
-                                modifier = Modifier
-                                    .clickable {
-                                        delegate.onAlbumClicked(it.id)
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.also {
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onAlbumClicked(it.id)
+                                        }
+                                        .clearFocusOnTouch(focusManager),
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                focusManager.clearFocus()
+                                                delegate.onAlbumOverflowMenuClicked(it.id)
+                                            },
+                                            modifier = Modifier.clearFocusOnTouch(focusManager)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
+                                        }
                                     }
-                                    .clearFocusOnTouch(focusManager),
-                                trailingContent = {
-                                    IconButton(
-                                        onClick = {
-                                            focusManager.clearFocus()
-                                            delegate.onAlbumOverflowMenuClicked(it.id)
-                                        },
-                                        modifier = Modifier.clearFocusOnTouch(focusManager)
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
-                                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
-                                        )
-                                    }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
