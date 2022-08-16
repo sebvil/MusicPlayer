@@ -213,7 +213,7 @@ class MediaPlaybackService : MediaLibraryService() {
     }
 
     suspend fun savePlaybackInfo() {
-        val id = player.currentMediaItem?.uniqueId ?: ""
+        val id = player.currentMediaItem?.uniqueId ?: 0L
         val contentPosition = player.contentPosition
         playbackManager.modifySavedPlaybackInfo(
             PlaybackInfo(

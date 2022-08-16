@@ -23,7 +23,7 @@ fun Track.getMediaMetadata(): MediaMetadata {
         uri = UriUtils.getTrackUri(trackId = id)
         extras = Bundle().apply {
             duration = trackDurationMs
-            uniqueId = UUID.randomUUID().toString()
+            uniqueId = UUID.randomUUID().mostSignificantBits
         }
         isPlayable = true
         folderType = FOLDER_TYPE_NONE

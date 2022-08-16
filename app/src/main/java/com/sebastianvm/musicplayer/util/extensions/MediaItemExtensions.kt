@@ -22,5 +22,5 @@ inline var MediaItem.Builder.mediaMetadata: MediaMetadata
         setMediaMetadata(value)
     }
 
-inline val MediaItem.uniqueId: String
+inline val MediaItem.uniqueId: Long
     get() = mediaMetadata.uniqueId

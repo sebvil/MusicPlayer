@@ -3,11 +3,12 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.components.ArtistRowState
-import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +30,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     collect(artistRepository.getArtistsForTrack(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistList = artists.map { it.toArtistRowState() }
+                                artistList = artists.map { it.toModelListItemState() }
                             )
                         }
                     }
@@ -38,7 +39,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
                     collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
                         setState {
                             copy(
-                                artistList = artists.map { it.toArtistRowState() }
+                                artistList = artists.map { it.toModelListItemState() }
                             )
                         }
                     }
@@ -58,7 +59,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 data class ArtistsBottomSheetState(
     val mediaType: MediaType,
     val mediaId: Long,
-    val artistList: List<ArtistRowState>,
+    val artistList: List<ModelListItemState>,
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -67,11 +68,10 @@ object InitialArtistsBottomSheetStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
-        val mediaType = MediaType.ARTIST
-        val mediaId = 0L
+        val args = savedStateHandle.getArgs<ArtistsMenuArguments>()
         return ArtistsBottomSheetState(
-            mediaId = mediaId,
-            mediaType = mediaType,
+            mediaId = args.mediaId,
+            mediaType = args.mediaType,
             artistList = listOf(),
         )
     }

@@ -42,7 +42,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -135,10 +135,10 @@ fun TrackSearchLayout(
                 delegate.onCancelAddTrackToPlaylist()
             },
             title = {
-                Text(text = "Add to playlist?")
+                Text(text = stringResource(R.string.add_to_playlist_question))
             },
             text = {
-                Text(text = "${it.trackName} is already in the playlist. Are you sure you want to add it again?")
+                Text(text = stringResource(id = R.string.song_already_in_playlist, it.trackName))
             },
             confirmButton = {
                 TextButton(
@@ -146,7 +146,7 @@ fun TrackSearchLayout(
                         delegate.onConfirmAddTrackToPlaylist(it.trackId, it.trackName)
                     }
                 ) {
-                    Text("Add to playist")
+                    Text(stringResource(R.string.add_to_playlist))
                 }
             },
             dismissButton = {
@@ -226,14 +226,15 @@ fun TrackSearchLayout(
             LazyColumn {
                 items(lazyPagingItems) { item ->
                     item?.also {
-                        TrackRow(
-                            state = it,
-                            modifier = Modifier.clickable {
-                                delegate.onTrackClicked(
-                                    it.trackId,
-                                    it.trackName
-                                )
-                            },
+                        ModelListItem(
+                            state = item,
+                            modifier = Modifier
+                                .clickable {
+                                    delegate.onTrackClicked(
+                                        trackId = item.id,
+                                        trackName = item.headlineText
+                                    )
+                                },
                             trailingContent = {
                                 if (it.id in state.playlistTrackIds) {
                                     Icon(
@@ -249,7 +250,8 @@ fun TrackSearchLayout(
                                         contentDescription = stringResource(R.string.more),
                                     )
                                 }
-                            })
+                            }
+                        )
                     }
                 }
             }

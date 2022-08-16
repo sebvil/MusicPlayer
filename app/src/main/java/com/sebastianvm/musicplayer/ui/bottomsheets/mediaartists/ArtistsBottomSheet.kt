@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.ArtistRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
@@ -29,6 +29,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
 
+// TODO fix bottom sheet colors
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
@@ -86,9 +87,13 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
             Divider(modifier = Modifier.fillMaxWidth())
         }
         items(state.artistList) { item ->
-            ArtistRow(state = item, modifier = Modifier.clickable {
-                delegate.onArtistRowClicked(item.artistId)
-            })
+            ModelListItem(
+                state = item,
+                modifier = Modifier.clickable {
+                    delegate.onArtistRowClicked(item.id)
+                }
+            )
+
         }
     }
 }

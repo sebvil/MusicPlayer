@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.ui.queue
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.ui.components.DraggableTrackRowState
-import com.sebastianvm.musicplayer.ui.components.toDraggableTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
@@ -31,7 +31,7 @@ class QueueViewModel @Inject constructor(
                 setState {
                     copy(
                         queueItems = savedPlaybackInfo.queuedTracks.map { track ->
-                            track.toDraggableTrackRowState(includeTrackNumber = false)
+                            track.toModelListItemStateWithPosition()
                         },
                         nowPlayingId = savedPlaybackInfo.nowPlayingId
                     )
@@ -86,9 +86,9 @@ class QueueViewModel @Inject constructor(
 
 data class QueueState(
     val mediaGroup: MediaGroup?,
-    val queueItems: List<DraggableTrackRowState>,
+    val queueItems: List<ModelListItemStateWithPosition>,
     val draggedItemFinalIndex: Int = -1,
-    val nowPlayingId: String
+    val nowPlayingId: Long
 ) : State
 
 
@@ -101,7 +101,7 @@ object InitialQueueStateModule {
         return QueueState(
             mediaGroup = null,
             queueItems = listOf(),
-            nowPlayingId = "",
+            nowPlayingId = 0L,
         )
     }
 }

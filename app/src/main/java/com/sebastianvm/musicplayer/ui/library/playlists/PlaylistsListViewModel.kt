@@ -1,10 +1,11 @@
 package com.sebastianvm.musicplayer.ui.library.playlists
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -46,7 +47,7 @@ class PlaylistsListViewModel @Inject constructor(
         }.onEach { playlists ->
             setState {
                 copy(
-                    playlistsList = playlists,
+                    playlistsList = playlists.map { it.toModelListItemState() },
                 )
             }
         }.launchIn(viewModelScope)
@@ -105,7 +106,7 @@ class PlaylistsListViewModel @Inject constructor(
 }
 
 data class PlaylistsListState(
-    val playlistsList: List<Playlist>,
+    val playlistsList: List<ModelListItemState>,
     val isDialogOpen: Boolean,
     val sortOrder: MediaSortOrder
 ) : State

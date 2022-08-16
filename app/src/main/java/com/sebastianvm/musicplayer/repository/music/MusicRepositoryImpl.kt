@@ -21,6 +21,7 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -110,7 +111,9 @@ class MusicRepositoryImpl @Inject constructor(
             id = albumId,
             albumName = albumName,
             year = year,
-            artists = albumArtistList.joinToString(", ") { it.artistName })
+            artists = albumArtistList.joinToString(", ") { it.artistName },
+            imageUri = UriUtils.getAlbumUriString(albumId)
+        )
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtistList.forEach { artist ->

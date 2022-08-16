@@ -1,22 +1,27 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AlbumRow
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
@@ -75,13 +80,26 @@ fun AlbumListLayout(
     val state by viewModel.state.collectAsState()
     LazyColumn(state = listState) {
         items(state.albumList) { item ->
-            AlbumRow(
+            ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    viewModel.handle(AlbumListUserAction.AlbumClicked(item.albumId))
+                    viewModel.handle(AlbumListUserAction.AlbumClicked(item.id))
                 },
-                onOverflowMenuIconClicked = {
-                    viewModel.handle(AlbumListUserAction.AlbumOverflowIconClicked(item.albumId))
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            viewModel.handle(
+                                AlbumListUserAction.AlbumOverflowIconClicked(
+                                    item.id
+                                )
+                            )
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                        )
+                    }
                 }
             )
         }
