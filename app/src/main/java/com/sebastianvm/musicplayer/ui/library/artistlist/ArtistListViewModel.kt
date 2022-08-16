@@ -5,8 +5,8 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.ArtistRowState
-import com.sebastianvm.musicplayer.ui.components.toArtistRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -44,7 +44,7 @@ class ArtistListViewModel @Inject constructor(
                 setState {
                     copy(
                         artistList = artists.map { artist ->
-                            artist.toArtistRowState(shouldShowContextMenu = true)
+                            artist.toModelListItemState()
                         }
                     )
                 }
@@ -83,7 +83,7 @@ class ArtistListViewModel @Inject constructor(
     }
 }
 
-data class ArtistListState(val artistList: List<ArtistRowState>) : State
+data class ArtistListState(val artistList: List<ModelListItemState>) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module

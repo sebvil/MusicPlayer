@@ -13,9 +13,9 @@ data class TrackWithQueueId(
     val albumId: Long,
     val artists: String,
     val path: String,
-    val uniqueQueueItemId: String
+    val uniqueQueueItemId: Long
 ) {
-    fun toTrack(): Track =
+    private fun toTrack(): Track =
         Track(id, trackName, trackNumber, trackDurationMs, albumName, albumId, artists, path)
 
     fun toMediaItem(): MediaItem {

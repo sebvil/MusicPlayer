@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -144,22 +145,30 @@ fun PlaylistLayout(
     } else {
         LazyColumn(state = listState) {
             itemsIndexed(state.trackList) { index, item ->
-                TrackRow(
-                    state = item,
+                ModelListItem(
+                    state = item.modelListItemState,
                     modifier = Modifier
                         .clickable {
                             delegate.onTrackClicked(index)
                         },
-                    onOverflowMenuIconClicked = {
-                        delegate.onOverflowMenuIconClicked(
-                            index,
-                            item.trackId,
-                            item.id
-                        )
+                    trailingContent = {
+                        IconButton(
+                            onClick = {
+                                delegate.onOverflowMenuIconClicked(
+                                    index,
+                                    item.modelListItemState.id,
+                                    item.position
+                                )
+                            },
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_overflow),
+                                contentDescription = stringResource(R.string.more),
+                            )
+                        }
                     }
                 )
             }
         }
-
     }
 }

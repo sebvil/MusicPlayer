@@ -6,8 +6,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -16,7 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.TrackRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -102,19 +105,28 @@ fun TrackListLayout(
 ) {
     PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
     LazyColumn(state = listState) {
-        itemsIndexed(state.trackList, key = { _, item -> item.trackId }) { index, item ->
-            TrackRow(
+        itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
+            ModelListItem(
                 state = item,
                 modifier = Modifier
                     .animateItemPlacement()
                     .clickable {
                         delegate.onTrackClicked(index)
                     },
-                onOverflowMenuIconClicked = {
-                    delegate.onOverflowMenuIconClicked(
-                        index,
-                        item.trackId
-                    )
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            delegate.onOverflowMenuIconClicked(
+                                index,
+                                item.id
+                            )
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(R.string.more),
+                        )
+                    }
                 }
             )
         }

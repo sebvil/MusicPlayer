@@ -24,13 +24,17 @@ object C {
 
     // Genres
     const val GENRE_ALPHA = "Alpha"
-    const val GENRE_BETA = "Beta"
+    const val GENRE_BRAVO = "Bravo"
     const val GENRE_CHARLIE = "Charlie"
 
     // Years
     const val YEAR_2020 = 2020L
     const val YEAR_2021 = 2021L
     const val YEAR_2022 = 2022L
+
+    const val IMAGE_URI_1 = "path/to/image/1"
+    const val IMAGE_URI_2 = "path/to/image/2"
+    const val IMAGE_URI_3 = "path/to/image/3"
 
 }
 

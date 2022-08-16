@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AlbumRow
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -134,10 +134,22 @@ fun ArtistScreenRow(
             )
         }
         is ArtistScreenItem.AlbumRowItem -> {
-            AlbumRow(
+            ModelListItem(
                 state = item.state,
-                modifier = Modifier.clickable { delegate.albumRowClicked(item.state.albumId) },
-                onOverflowMenuIconClicked = { delegate.onAlbumOverflowMenuIconClicked(item.state.albumId) }
+                modifier = Modifier.clickable {
+                    delegate.albumRowClicked(item.state.id)                },
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            delegate.onAlbumOverflowMenuIconClicked(item.state.id)
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                        )
+                    }
+                }
             )
         }
     }

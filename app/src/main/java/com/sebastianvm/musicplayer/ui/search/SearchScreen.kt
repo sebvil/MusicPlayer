@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.search
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -20,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -39,18 +37,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AlbumRow
-import com.sebastianvm.musicplayer.ui.components.ArtistRow
-import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -68,7 +62,6 @@ fun SearchScreen(
     ) { state ->
         SearchLayout(state = state, delegate = object : SearchScreenDelegate {
             override fun onTextChanged(newText: String) {
-                Log.i("SEARCH", "New text: $newText")
                 screenViewModel.onTextChanged(newText = newText)
             }
 
@@ -216,23 +209,24 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                TrackRow(
-                                    state = it,
-                                    modifier = Modifier
-                                        .clickable {
-                                            delegate.onTrackClicked(item.trackId)
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier.clickable {
+                                        delegate.onTrackClicked(it.id)
+                                    },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onTrackOverflowMenuClicked(it.id)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
                                         }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        }) {
-                                    delegate.onTrackOverflowMenuClicked(item.trackId)
-                                }
+                                    }
+                                )
                             }
                         }
                     }
@@ -243,66 +237,12 @@ fun SearchLayout(
                     LazyColumn {
                         items(lazyPagingItems) { item ->
                             item?.also {
-                                ArtistRow(
+                                ModelListItem(
                                     state = item,
                                     modifier = Modifier
                                         .clickable {
                                             delegate.onArtistClicked(
-                                                item.artistId
-                                            )
-                                        }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        }
-                                ) {
-                                    delegate.onArtistOverflowMenuClicked(item.artistId)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            R.string.albums -> {
-                state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-                    LazyColumn {
-                        items(lazyPagingItems) { item ->
-                            item?.also {
-                                AlbumRow(
-                                    state = it,
-                                    modifier = Modifier
-                                        .clickable { delegate.onAlbumClicked(it.albumId) }
-                                        .pointerInput(key1 = null) {
-                                            forEachGesture {
-                                                awaitPointerEventScope {
-                                                    awaitFirstDown(requireUnconsumed = true)
-                                                    focusManager.clearFocus()
-                                                }
-
-                                            }
-                                        }) {
-                                    delegate.onAlbumOverflowMenuClicked(it.albumId)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            R.string.genres -> {
-                state.genreSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-                    LazyColumn {
-                        items(lazyPagingItems) { item ->
-                            item?.also { genre ->
-                                SingleLineListItem(
-                                    modifier = Modifier
-                                        .clickable {
-                                            delegate.onGenreClicked(
-                                                genre.id
+                                                item.id
                                             )
                                         }
                                         .pointerInput(key1 = null) {
@@ -314,30 +254,96 @@ fun SearchLayout(
 
                                             }
                                         },
-                                    afterListContent = {
+                                    trailingContent = {
                                         IconButton(
                                             onClick = {
-                                                delegate.onGenreOverflowMenuClicked(
-                                                    genre.id
-                                                )
+                                                delegate.onArtistOverflowMenuClicked(it.id)
                                             },
-                                            modifier = Modifier.padding(end = AppDimensions.spacing.xSmall)
                                         ) {
                                             Icon(
-                                                painter = painterResource(id = R.drawable.ic_overflow),
-                                                contentDescription = stringResource(R.string.more)
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
                                             )
                                         }
                                     }
-                                ) {
-                                    Text(
-                                        text = genre.genreName,
-                                        modifier = Modifier.weight(1f),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            R.string.albums -> {
+                state.albumSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.also {
+
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onAlbumClicked(it.id)
+                                        }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onAlbumOverflowMenuClicked(it.id)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            R.string.genres -> {
+                state.genreSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
+                    LazyColumn {
+                        items(lazyPagingItems) { item ->
+                            item?.also { genre ->
+                                ModelListItem(
+                                    state = item,
+                                    modifier = Modifier
+                                        .clickable {
+                                            delegate.onGenreClicked(genre.id)
+                                        }
+                                        .pointerInput(key1 = null) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown(requireUnconsumed = true)
+                                                    focusManager.clearFocus()
+                                                }
+
+                                            }
+                                        },
+                                    trailingContent = {
+                                        IconButton(
+                                            onClick = {
+                                                delegate.onGenreOverflowMenuClicked(genre.id)
+                                            },
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
+                                                contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                                            )
+                                        }
+                                    }
+                                )
                             }
                         }
                     }

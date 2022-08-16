@@ -7,8 +7,8 @@ import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -45,7 +45,7 @@ class AlbumListViewModel @Inject constructor(
                 setState {
                     copy(
                         albumList = albums.map { album ->
-                            album.toAlbumRowState()
+                            album.toModelListItemState()
                         }
                     )
                 }
@@ -89,7 +89,7 @@ class AlbumListViewModel @Inject constructor(
     }
 }
 
-data class AlbumListState(val albumList: List<AlbumRowState>) : State
+data class AlbumListState(val albumList: List<ModelListItemState>) : State
 
 
 @InstallIn(ViewModelComponent::class)

@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,8 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
@@ -127,6 +128,7 @@ fun DeletePlaylistConfirmationDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContextMenuLayout(
     state: BaseContextMenuState,
@@ -163,25 +165,24 @@ fun ContextMenuLayout(
                 Divider(modifier = Modifier.fillMaxWidth())
                 LazyColumn {
                     items(listItems, key = { it.text }) {
-                        SingleLineListItem(
+                        ListItem(
+                            headlineText = {
+                                Text(
+                                    text = stringResource(id = it.text),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            },
                             modifier = Modifier.clickable { delegate.onRowClicked(it) },
-                            supportingImage = { iconModifier ->
+                            leadingContent = {
                                 Icon(
                                     painter = painterResource(id = it.icon),
                                     contentDescription = stringResource(id = it.text),
-                                    modifier = iconModifier,
+                                    modifier = Modifier.size(40.dp),
                                 )
                             },
-                            supportingImageType = SupportingImageType.ICON,
-                        ) {
-                            Text(
-                                text = stringResource(id = it.text),
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
+                        )
                     }
                 }
             }

@@ -21,6 +21,15 @@ import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
+data class MediaArtImageState(
+    val imageUri: String,
+    @StringRes val contentDescription: Int,
+    @DrawableRes val backupResource: Int,
+    @StringRes val backupContentDescription: Int,
+    val args: List<Any> = listOf()
+)
+
+
 
 @ComponentPreview
 @Composable

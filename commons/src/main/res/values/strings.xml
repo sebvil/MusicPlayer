@@ -79,6 +79,9 @@
     <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'Add tracks\'</string>
     <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
     <string name="hide_tracks_in_playlist">Hide tracks in playlist</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="add_to_playlist_question">Add to playlist?</string>
+    <string name="song_already_in_playlist"><b>%1$s</b> is already in the playlist. Are you sure you want to add it again?"</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d tracks</item>

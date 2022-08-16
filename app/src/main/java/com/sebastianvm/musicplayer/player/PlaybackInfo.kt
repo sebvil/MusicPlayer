@@ -4,6 +4,6 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 
 data class PlaybackInfo(
     val queuedTracks: List<TrackWithQueueId>,
-    val nowPlayingId: String,
+    val nowPlayingId: Long,
     val lastRecordedPosition: Long
 )

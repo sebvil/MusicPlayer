@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
@@ -61,20 +61,18 @@ class ArtistListViewModelTest {
             advanceUntilIdle()
             assertEquals(
                 listOf(
-                    ArtistRowState(
-                        artistId = C.ID_ONE,
-                        artistName = C.ARTIST_ANA,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_ONE,
+                        headlineText = C.ARTIST_ANA,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_TWO,
-                        artistName = C.ARTIST_BOB,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_TWO,
+                        headlineText = C.ARTIST_BOB,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_THREE,
-                        artistName = C.ARTIST_CAMILO,
-                        shouldShowContextMenu = true
+
+                    ModelListItemState(
+                        id = C.ID_THREE,
+                        headlineText = C.ARTIST_CAMILO,
                     ),
                 ),
                 state.value.artistList
@@ -85,20 +83,17 @@ class ArtistListViewModelTest {
             advanceUntilIdle()
             assertEquals(
                 listOf(
-                    ArtistRowState(
-                        artistId = C.ID_THREE,
-                        artistName = C.ARTIST_CAMILO,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_THREE,
+                        headlineText = C.ARTIST_CAMILO,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_TWO,
-                        artistName = C.ARTIST_BOB,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_TWO,
+                        headlineText = C.ARTIST_BOB,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_ONE,
-                        artistName = C.ARTIST_ANA,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_ONE,
+                        headlineText = C.ARTIST_ANA,
                     ),
                 ),
                 state.value.artistList
@@ -140,20 +135,17 @@ class ArtistListViewModelTest {
             advanceUntilIdle()
             assertEquals(
                 listOf(
-                    ArtistRowState(
-                        artistId = C.ID_THREE,
-                        artistName = C.ARTIST_CAMILO,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_THREE,
+                        headlineText = C.ARTIST_CAMILO,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_TWO,
-                        artistName = C.ARTIST_BOB,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_TWO,
+                        headlineText = C.ARTIST_BOB,
                     ),
-                    ArtistRowState(
-                        artistId = C.ID_ONE,
-                        artistName = C.ARTIST_ANA,
-                        shouldShowContextMenu = true
+                    ModelListItemState(
+                        id = C.ID_ONE,
+                        headlineText = C.ARTIST_ANA,
                     ),
                 ),
                 state.value.artistList

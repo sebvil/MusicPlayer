@@ -2,16 +2,20 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import android.Manifest
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -40,8 +45,6 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
-import com.sebastianvm.musicplayer.ui.components.lists.SingleLineListItem
-import com.sebastianvm.musicplayer.ui.components.lists.SupportingImageType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
@@ -62,7 +65,7 @@ fun LibraryScreen(
     }
 
     val storagePermissionState = rememberPermissionState(
-        permission = Manifest.permission.READ_EXTERNAL_STORAGE,
+        permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
         onPermissionResult = { isGranted ->
             if (isGranted) {
                 startForegroundService(
@@ -174,7 +177,7 @@ fun SearchBox(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryLayout(viewModel: ViewModelInterface<LibraryState, LibraryUserAction>) {
     val state by viewModel.state.collectAsState()
@@ -199,20 +202,28 @@ fun LibraryLayout(viewModel: ViewModelInterface<LibraryState, LibraryUserAction>
             )
         }
         items(libraryItems) { item ->
-            SingleLineListItem(
+            ListItem(
+                headlineText = {
+                    Text(
+                        text = stringResource(id = item.rowName),
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+
                 modifier = Modifier.clickable {
                     viewModel.handle(LibraryUserAction.RowClicked(item.destination))
                 },
-                supportingImage =
-                { iconModifier ->
+                leadingContent =
+                {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = stringResource(id = item.rowName),
-                        modifier = iconModifier,
+                        modifier = Modifier.size(40.dp),
                     )
                 },
-                supportingImageType = SupportingImageType.AVATAR,
-                afterListContent = {
+                trailingContent = {
                     Text(
                         text = pluralStringResource(
                             id = item.countString,
@@ -225,15 +236,7 @@ fun LibraryLayout(viewModel: ViewModelInterface<LibraryState, LibraryUserAction>
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
-            ) {
-                Text(
-                    text = stringResource(id = item.rowName),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            )
         }
     }
 }

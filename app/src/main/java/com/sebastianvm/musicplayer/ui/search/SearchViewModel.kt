@@ -7,7 +7,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -20,12 +19,8 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.AlbumRowState
-import com.sebastianvm.musicplayer.ui.components.ArtistRowState
-import com.sebastianvm.musicplayer.ui.components.TrackRowState
-import com.sebastianvm.musicplayer.ui.components.toAlbumRowState
-import com.sebastianvm.musicplayer.ui.components.toArtistRowState
-import com.sebastianvm.musicplayer.ui.components.toTrackRowState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -66,27 +61,29 @@ class SearchViewModel @Inject constructor(
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchTracksPaged(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.track.toTrackRowState(includeTrackNumber = false) }
+                        pagingData.map { it.track.toModelListItemState() }
                     }
                 },
                 artistSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchArtists(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.toArtistRowState(shouldShowContextMenu = true) }
+                        pagingData.map { it.toModelListItemState() }
                     }
                 },
                 albumSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchAlbums(it)
                     }.flow.mapLatest { pagingData ->
-                        pagingData.map { it.album.toAlbumRowState() }
+                        pagingData.map { it.album.toModelListItemState() }
                     }
                 },
                 genreSearchResults = searchTerm.flatMapLatest {
                     Pager(PagingConfig(pageSize = 20)) {
                         ftsRepository.searchGenres(it)
-                    }.flow
+                    }.flow.mapLatest { pagingData ->
+                        pagingData.map { it.toModelListItemState() }
+                    }
                 },
             )
 
@@ -192,10 +189,10 @@ class SearchViewModel @Inject constructor(
 
 data class SearchState(
     @StringRes val selectedOption: Int,
-    val trackSearchResults: Flow<PagingData<TrackRowState>>,
-    val artistSearchResults: Flow<PagingData<ArtistRowState>>,
-    val albumSearchResults: Flow<PagingData<AlbumRowState>>,
-    val genreSearchResults: Flow<PagingData<Genre>>
+    val trackSearchResults: Flow<PagingData<ModelListItemState>>,
+    val artistSearchResults: Flow<PagingData<ModelListItemState>>,
+    val albumSearchResults: Flow<PagingData<ModelListItemState>>,
+    val genreSearchResults: Flow<PagingData<ModelListItemState>>
 ) : State
 
 

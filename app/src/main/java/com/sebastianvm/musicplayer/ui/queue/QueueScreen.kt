@@ -1,14 +1,10 @@
 package com.sebastianvm.musicplayer.ui.queue
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -16,11 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.TrackRow
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
@@ -94,30 +89,35 @@ fun QueueLayout(
         items = state.queueItems,
         delegate = delegate,
         listAdapter = QueueAdapter { index, item ->
-            val isNowPlayingItem = item.uniqueId == state.nowPlayingId
+            val isNowPlayingItem = item.id == state.nowPlayingId
             val backgroundColor = if (isNowPlayingItem) {
                 MaterialTheme.colorScheme.primaryContainer
             } else {
                 MaterialTheme.colorScheme.surface
             }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            ModelListItem(
+                state = item.modelListItemState,
                 modifier = Modifier
-                    .background(color = backgroundColor)
-                    .clickable { delegate.onTrackClicked(index) }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_drag),
-                    contentDescription = stringResource(R.string.drag),
-                    modifier = Modifier.padding(start = AppDimensions.spacing.medium)
-                )
-                TrackRow(
-                    state = item.trackRowState,
-                    color = contentColorFor(backgroundColor = backgroundColor),
-                    onOverflowMenuIconClicked = { },
-                )
-            }
+                    .clickable {
+                        delegate.onTrackClicked(index)
+                    },
+                backgroundColor = backgroundColor,
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_drag),
+                        contentDescription = stringResource(R.string.drag),
+                    )
+                },
+                trailingContent = {
+                    IconButton(
+                        onClick = { /* TODO */ },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(R.string.more),
+                        )
+                    }
+                })
         },
         layoutManager = layoutManager
     )

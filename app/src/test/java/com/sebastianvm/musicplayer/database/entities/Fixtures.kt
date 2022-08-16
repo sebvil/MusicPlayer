@@ -1,30 +1,33 @@
 package com.sebastianvm.musicplayer.database.entities
 
 object Fixtures {
-    val albumAlpaca = Album(
+    private val albumAlpaca = Album(
         id = C.ID_ONE,
         albumName = C.ALBUM_ALPACA,
         year = C.YEAR_2021,
-        artists = C.ARTIST_CAMILO
+        artists = C.ARTIST_CAMILO,
+        imageUri = C.IMAGE_URI_1
     )
 
-    val albumBobcat = Album(
+    private val albumBobcat = Album(
         id = C.ID_TWO,
         albumName = C.ALBUM_BOBCAT,
         year = C.YEAR_2022,
-        artists = C.ARTIST_ANA
+        artists = C.ARTIST_ANA,
+        imageUri = C.IMAGE_URI_2
     )
 
-    val albumCheetah = Album(
+    private val albumCheetah = Album(
         id = C.ID_THREE,
         albumName = C.ALBUM_CHEETAH,
         year = C.YEAR_2020,
-        artists = C.ARTIST_BOB
+        artists = C.ARTIST_BOB,
+        imageUri = C.IMAGE_URI_3
     )
 
-    val artistAna = Artist(id = C.ID_ONE, artistName = C.ARTIST_ANA)
-    val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
-    val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
+    private val artistAna = Artist(id = C.ID_ONE, artistName = C.ARTIST_ANA)
+    private val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
+    private val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
 
     val artistWithAlbumsAna = ArtistWithAlbums(
         artist = artistAna,
@@ -57,7 +60,7 @@ object Fixtures {
     }
 
     val genreAlpha = Genre(id = C.ID_ONE, genreName = C.GENRE_ALPHA)
-    val genreBeta = Genre(id = C.ID_TWO, genreName = C.GENRE_BETA)
+    val genreBravo = Genre(id = C.ID_TWO, genreName = C.GENRE_BRAVO)
     val genreCharlie = Genre(id = C.ID_THREE, genreName = C.GENRE_CHARLIE)
 
 }
