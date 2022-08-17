@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.database.entities
 
 object Fixtures {
-    private val albumAlpaca = Album(
+    val albumAlpaca = Album(
         id = C.ID_ONE,
         albumName = C.ALBUM_ALPACA,
         year = C.YEAR_2021,
@@ -25,7 +25,7 @@ object Fixtures {
         imageUri = C.IMAGE_URI_3
     )
 
-    private val artistAna = Artist(id = C.ID_ONE, artistName = C.ARTIST_ANA)
+    val artistAna = Artist(id = C.ID_ONE, artistName = C.ARTIST_ANA)
     private val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
     private val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
 
@@ -62,5 +62,19 @@ object Fixtures {
     val genreAlpha = Genre(id = C.ID_ONE, genreName = C.GENRE_ALPHA)
     val genreBravo = Genre(id = C.ID_TWO, genreName = C.GENRE_BRAVO)
     val genreCharlie = Genre(id = C.ID_THREE, genreName = C.GENRE_CHARLIE)
+
+    val trackArgentina = Track(
+        id = C.ID_ONE,
+        trackName = C.TRACK_ARGENTINA,
+        albumId = C.ID_ONE,
+        albumName = C.ALBUM_ALPACA,
+        artists = C.ARTIST_ANA,
+        trackDurationMs = 0,
+        trackNumber = 0,
+        path = ""
+    )
+
+    val playlistApple = Playlist(id = C.ID_ONE, playlistName = C.PLAYLIST_APPLE)
+
 
 }

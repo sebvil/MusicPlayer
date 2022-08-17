@@ -6,11 +6,12 @@ import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
+import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.Track
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,7 +31,7 @@ class FullTextSearchRepositoryImpl @Inject constructor(
         return trackFtsDao.tracksWithTextPaged(text = searchString(text))
     }
 
-    override fun searchTracks(text: String): Flow<List<FullTrackInfo>> {
+    override fun searchTracks(text: String): Flow<List<Track>> {
         return trackFtsDao.tracksWithText(searchString(text))
     }
 
@@ -38,7 +39,7 @@ class FullTextSearchRepositoryImpl @Inject constructor(
         return artistFtsDao.artistsWithText(searchString(text))
     }
 
-    override fun searchAlbums(text: String): Flow<List<AlbumWithArtists>> {
+    override fun searchAlbums(text: String): Flow<List<Album>> {
         return albumFtsDao.albumsWithText(searchString(text))
     }
 

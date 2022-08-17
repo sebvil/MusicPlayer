@@ -44,7 +44,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SearchQueryState(val term: String, val mode: SearchMode)
@@ -67,11 +66,11 @@ class SearchViewModel @Inject constructor(
         query.debounce(500).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
-                    .map { tracks -> tracks.map { it.track.toModelListItemState() } }
+                    .map { tracks -> tracks.map { it.toModelListItemState() } }
                 SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
                     .map { artists -> artists.map { it.toModelListItemState() } }
                 SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
-                    .map { albums -> albums.map { it.album.toModelListItemState() } }
+                    .map { albums -> albums.map { it.toModelListItemState() } }
                 SearchMode.GENRES -> ftsRepository.searchGenres(newQuery.term)
                     .map { genres -> genres.map { it.toModelListItemState() } }
                 SearchMode.PLAYLISTS -> ftsRepository.searchPlaylists(newQuery.term)
@@ -85,10 +84,9 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        viewModelScope.launch {
-            playbackManager.playSingleTrack(trackId)
-            addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
-        }
+        // TODO handle result
+        playbackManager.playSingleTrack(trackId)
+        addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {

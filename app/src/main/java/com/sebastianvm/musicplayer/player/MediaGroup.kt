@@ -20,6 +20,8 @@ enum class TrackListType {
     GENRE,
 }
 
+
+// TODO? use sealed class
 @Serializable
 @Parcelize
 data class MediaGroup(val mediaGroupType: MediaGroupType, val mediaId: Long) : Parcelable
