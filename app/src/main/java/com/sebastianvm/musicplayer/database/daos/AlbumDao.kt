@@ -19,6 +19,7 @@ interface AlbumDao {
     @Query("SELECT * from Album WHERE Album.id IN (:albumIds)")
     fun getAlbums(albumIds: List<Long>): Flow<List<Album>>
 
+    @Transaction
     @Query("SELECT * from Album WHERE Album.id=:albumId")
     fun getAlbum(albumId: Long): Flow<FullAlbumInfo>
 
