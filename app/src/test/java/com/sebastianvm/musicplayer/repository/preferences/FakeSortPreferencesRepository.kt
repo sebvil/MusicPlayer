@@ -48,7 +48,7 @@ class FakeSortPreferencesRepository(sortPreferences: SortPreferences = SortPrefe
         return sortPreferencesState.map { it.artistListSortOrder }
     }
 
-    override suspend fun modifyGenreListSortOrder() {
+    override suspend fun toggleGenreListSortOrder() {
         sortPreferencesState.value =
             sortPreferencesState.value.copy(genreListSortOrder = !sortPreferencesState.value.genreListSortOrder)
     }

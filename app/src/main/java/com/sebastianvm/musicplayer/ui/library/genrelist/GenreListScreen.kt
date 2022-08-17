@@ -37,7 +37,7 @@ fun GenreListScreen(
                 title = stringResource(id = R.string.genres),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.handle(GenreListUserAction.SortByClicked)
+                        screenViewModel.handle(GenreListUserAction.SortByButtonClicked)
                     }
 
                     override fun upButtonClicked() {
