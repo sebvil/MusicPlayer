@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
@@ -8,7 +9,7 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-class MainViewModelTest {
+class MainViewModelTest : BaseTest() {
 
     @MockK
     private lateinit var playbackManager: PlaybackManager

@@ -3,19 +3,14 @@ package com.sebastianvm.musicplayer.ui.library.root
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.BaseTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LibraryViewModelTest {
-
-    @get:Rule
-    val dispatcherSetUpRule = DispatcherSetUpRule()
+class LibraryViewModelTest : BaseTest() {
 
     private fun generateViewModel(): LibraryViewModel {
         return LibraryViewModel(
@@ -33,7 +28,7 @@ class LibraryViewModelTest {
     }
 
     @Test
-    fun `init updates counts`() = runTest {
+    fun `init updates counts`() = testScope.runReliableTest {
         with(generateViewModel()) {
             advanceUntilIdle()
             assertEquals(

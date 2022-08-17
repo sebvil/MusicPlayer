@@ -41,5 +41,8 @@ interface AlbumDao {
                 "CASE WHEN:sortOption='YEAR' AND :sortOrder='ASCENDING' THEN year END COLLATE LOCALIZED ASC, " +
                 "CASE WHEN:sortOption='YEAR' AND :sortOrder='DESCENDING' THEN year END COLLATE LOCALIZED DESC"
     )
-    fun getAllAlbums(sortOption: SortOptions.AlbumListSortOptions, sortOrder: MediaSortOrder): Flow<List<Album>>
+    fun getAllAlbums(
+        sortOption: SortOptions.AlbumListSortOptions,
+        sortOrder: MediaSortOrder
+    ): Flow<List<Album>>
 }

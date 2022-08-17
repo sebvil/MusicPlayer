@@ -3,50 +3,49 @@ package com.sebastianvm.musicplayer.ui.library.artistlist
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.SortPreferences
+import com.sebastianvm.musicplayer.util.BaseTest
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
-class ArtistListViewModelTest {
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @get:Rule
-    val mainCoroutineRule = DispatcherSetUpRule()
+@OptIn(ExperimentalCoroutinesApi::class)
+class ArtistListViewModelTest : BaseTest() {
 
     private lateinit var artistRepository: ArtistRepository
     private lateinit var preferencesRepository: SortPreferencesRepository
 
+    private val artists = listOf(
+        Fixtures.artistAna,
+        Fixtures.artistBob,
+        Fixtures.artistCamilo,
+    )
+    private val modelListItemStatesAscending = artists.map { it.toModelListItemState() }
+    private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
 
     @Before
     fun setUp() {
-        artistRepository = FakeArtistRepository(
-            artistsWithAlbums = listOf(
-                Fixtures.artistWithAlbumsAna,
-                Fixtures.artistWithAlbumsBob,
-                Fixtures.artistWithAlbumsCamilo
-            )
-        )
+        artistRepository = mockk {
+            every { getArtists() } returns emptyFlow()
+        }
+
+        preferencesRepository = mockk(relaxUnitFun = true)
 
     }
 
-    private fun generateViewModel(artistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING): ArtistListViewModel {
-        preferencesRepository =
-            FakeSortPreferencesRepository(SortPreferences(artistListSortOrder = artistListSortOrder))
+    private fun generateViewModel(): ArtistListViewModel {
         return ArtistListViewModel(
             initialState = ArtistListState(artistList = listOf()),
             artistRepository = artistRepository,
@@ -54,52 +53,19 @@ class ArtistListViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init sets initial state`() = runTest {
-        with(generateViewModel(MediaSortOrder.ASCENDING)) {
-            advanceUntilIdle()
-            assertEquals(
-                listOf(
-                    ModelListItemState(
-                        id = C.ID_ONE,
-                        headlineText = C.ARTIST_ANA,
-                    ),
-                    ModelListItemState(
-                        id = C.ID_TWO,
-                        headlineText = C.ARTIST_BOB,
-                    ),
-
-                    ModelListItemState(
-                        id = C.ID_THREE,
-                        headlineText = C.ARTIST_CAMILO,
-                    ),
-                ),
-                state.value.artistList
-            )
+    fun `init sets initial state and updates state on change to artist list`() =
+        testScope.runReliableTest {
+            val artistsFlow = MutableStateFlow(artists)
+            every { artistRepository.getArtists() } returns artistsFlow
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesAscending, state.value.artistList)
+                artistsFlow.value = artists.reversed()
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesDescending, state.value.artistList)
+            }
         }
-
-        with(generateViewModel(MediaSortOrder.DESCENDING)) {
-            advanceUntilIdle()
-            assertEquals(
-                listOf(
-                    ModelListItemState(
-                        id = C.ID_THREE,
-                        headlineText = C.ARTIST_CAMILO,
-                    ),
-                    ModelListItemState(
-                        id = C.ID_TWO,
-                        headlineText = C.ARTIST_BOB,
-                    ),
-                    ModelListItemState(
-                        id = C.ID_ONE,
-                        headlineText = C.ARTIST_ANA,
-                    ),
-                ),
-                state.value.artistList
-            )
-        }
-    }
 
     @Test
     fun `onArtistClicked adds NavigateToArtist event`() {
@@ -126,30 +92,12 @@ class ArtistListViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `SortByClicked changes sortOrder`() = runTest {
+    fun `SortByClicked toggles artist list sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
-            advanceUntilIdle()
             handle(ArtistListUserAction.SortByButtonClicked)
             advanceUntilIdle()
-            assertEquals(
-                listOf(
-                    ModelListItemState(
-                        id = C.ID_THREE,
-                        headlineText = C.ARTIST_CAMILO,
-                    ),
-                    ModelListItemState(
-                        id = C.ID_TWO,
-                        headlineText = C.ARTIST_BOB,
-                    ),
-                    ModelListItemState(
-                        id = C.ID_ONE,
-                        headlineText = C.ARTIST_ANA,
-                    ),
-                ),
-                state.value.artistList
-            )
+            coVerify { preferencesRepository.toggleArtistListSortOrder() }
         }
     }
 

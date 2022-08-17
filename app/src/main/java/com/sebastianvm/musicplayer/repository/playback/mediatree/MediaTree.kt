@@ -184,17 +184,12 @@ class MediaTree @Inject constructor(
                 }
             }
             KeyType.ALBUMS_ROOT -> {
-                albumRepository.getAlbums(
-                    MediaSortPreferences(
-                        SortOptions.AlbumListSortOptions.ALBUM,
-                        MediaSortOrder.ASCENDING
-                    )
-                ).first().map {
+                albumRepository.getAlbums().first().map {
                     it.buildMediaItem(parentKey)
                 }
             }
             KeyType.ARTISTS_ROOT -> {
-                artistRepository.getArtists(MediaSortOrder.ASCENDING).first()
+                artistRepository.getArtists().first()
                     .map { it.buildMediaItem(parentKey) }
             }
             KeyType.GENRES_ROOT -> null

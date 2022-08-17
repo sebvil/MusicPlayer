@@ -20,14 +20,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
@@ -37,20 +35,17 @@ class ArtistListViewModel @Inject constructor(
     ViewModelInterface<ArtistListState, ArtistListUserAction> {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getArtistListSortOrder().flatMapLatest {
-                artistRepository.getArtists(it)
-            }.collectLatest { artists ->
-                setState {
-                    copy(
-                        artistList = artists.map { artist ->
-                            artist.toModelListItemState()
-                        }
-                    )
-                }
+        artistRepository.getArtists().onEach { artists ->
+            setState {
+                copy(
+                    artistList = artists.map { artist ->
+                        artist.toModelListItemState()
+                    }
+                )
             }
-        }
+        }.launchIn(viewModelScope)
     }
+
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
@@ -72,12 +67,12 @@ class ArtistListViewModel @Inject constructor(
                     )
                 )
             }
-            ArtistListUserAction.SortByButtonClicked -> {
+            is ArtistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
                     preferencesRepository.toggleArtistListSortOrder()
                 }
             }
-            ArtistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is ArtistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
         }
     }

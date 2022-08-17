@@ -22,7 +22,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -38,9 +37,8 @@ class GenreListViewModel @Inject constructor(
     ViewModelInterface<GenreListState, GenreListUserAction> {
 
     init {
-        preferencesRepository.getGenreListSortOrder().flatMapLatest {
-            genreRepository.getGenres(sortOrder = it)
-        }.onEach { genreList ->
+
+        genreRepository.getGenres().onEach { genreList ->
             setState {
                 copy(
                     genreList = genreList.map { it.toModelListItemState() },
@@ -75,9 +73,9 @@ class GenreListViewModel @Inject constructor(
                 )
             }
 
-            is GenreListUserAction.SortByClicked -> {
+            is GenreListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
-                    preferencesRepository.modifyGenreListSortOrder()
+                    preferencesRepository.toggleGenreListSortOrder()
                 }
             }
             GenreListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
@@ -105,6 +103,6 @@ sealed interface GenreListUserAction : UserAction {
     data class GenreRowClicked(val genreId: Long) : GenreListUserAction
     data class GenreOverflowMenuIconClicked(val genreId: Long) : GenreListUserAction
     object UpButtonClicked : GenreListUserAction
-    object SortByClicked : GenreListUserAction
+    object SortByButtonClicked : GenreListUserAction
 }
 

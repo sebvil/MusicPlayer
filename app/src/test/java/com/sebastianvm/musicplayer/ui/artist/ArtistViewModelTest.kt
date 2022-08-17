@@ -21,7 +21,7 @@
 //import org.junit.Test
 //
 //
-//class ArtistViewModelTest {
+//class ArtistViewModelTest : BaseTest() {
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @get:Rule
@@ -80,7 +80,7 @@
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
-//    fun `init sets initial state values`() = runTest {
+//    fun `init sets initial state values`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            assertEquals(
 //                listOf(
