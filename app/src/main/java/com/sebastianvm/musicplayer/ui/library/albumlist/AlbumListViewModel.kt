@@ -21,13 +21,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,

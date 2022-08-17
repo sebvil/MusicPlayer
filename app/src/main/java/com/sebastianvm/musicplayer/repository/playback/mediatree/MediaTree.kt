@@ -189,7 +189,7 @@ class MediaTree @Inject constructor(
                 }
             }
             KeyType.ARTISTS_ROOT -> {
-                artistRepository.getArtists(MediaSortOrder.ASCENDING).first()
+                artistRepository.getArtists().first()
                     .map { it.buildMediaItem(parentKey) }
             }
             KeyType.GENRES_ROOT -> null

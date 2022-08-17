@@ -26,8 +26,8 @@ object Fixtures {
     )
 
     val artistAna = Artist(id = C.ID_ONE, artistName = C.ARTIST_ANA)
-    private val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
-    private val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
+    val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
+    val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
 
     val artistWithAlbumsAna = ArtistWithAlbums(
         artist = artistAna,
