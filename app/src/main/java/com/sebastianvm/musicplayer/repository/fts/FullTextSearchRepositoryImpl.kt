@@ -1,8 +1,6 @@
-package com.sebastianvm.musicplayer.repository
+package com.sebastianvm.musicplayer.repository.fts
 
-import androidx.annotation.StringRes
 import androidx.paging.PagingSource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.AlbumFtsDao
 import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
@@ -17,47 +15,38 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
-class FullTextSearchRepository @Inject constructor(
+class FullTextSearchRepositoryImpl @Inject constructor(
     private val trackFtsDao: TrackFtsDao,
     private val artistFtsDao: ArtistFtsDao,
     private val albumFtsDao: AlbumFtsDao,
     private val genreFtsDao: GenreFtsDao,
     private val playlistFtsDao: PlaylistFtsDao
-) {
+) : FullTextSearchRepository {
 
-    fun searchString(text: String) = "\"$text*\""
+    private fun searchString(text: String) = "\"$text*\""
 
-    fun searchTracksPaged(text: String): PagingSource<Int, FullTrackInfo> {
+    override fun searchTracksPaged(text: String): PagingSource<Int, FullTrackInfo> {
         return trackFtsDao.tracksWithTextPaged(text = searchString(text))
     }
 
-    fun searchTracks(text: String): Flow<List<FullTrackInfo>> {
+    override fun searchTracks(text: String): Flow<List<FullTrackInfo>> {
         return trackFtsDao.tracksWithText(searchString(text))
     }
 
-    fun searchArtists(text: String): Flow<List<Artist>> {
+    override fun searchArtists(text: String): Flow<List<Artist>> {
         return artistFtsDao.artistsWithText(searchString(text))
     }
 
-    fun searchAlbums(text: String): Flow<List<AlbumWithArtists>> {
+    override fun searchAlbums(text: String): Flow<List<AlbumWithArtists>> {
         return albumFtsDao.albumsWithText(searchString(text))
     }
 
-    fun searchGenres(text: String): Flow<List<Genre>> {
+    override fun searchGenres(text: String): Flow<List<Genre>> {
         return genreFtsDao.genresWithText(searchString(text))
     }
 
-    fun searchPlaylists(text: String): Flow<List<Playlist>> {
+    override fun searchPlaylists(text: String): Flow<List<Playlist>> {
         return playlistFtsDao.playlistsWithText(searchString(text))
     }
-}
-
-enum class SearchMode(@StringRes val res: Int) {
-    SONGS(R.string.songs),
-    ARTISTS(R.string.artists),
-    ALBUMS(R.string.albums),
-    GENRES(R.string.genres),
-    PLAYLISTS(R.string.playlists)
 }

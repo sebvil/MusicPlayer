@@ -5,8 +5,8 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
-import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.SearchMode
+import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
