@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -19,17 +19,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GenreListViewModelTest {
-
-    @get:Rule
-    val dispatcherSetUpRule = DispatcherSetUpRule()
+class GenreListViewModelTest : BaseTest() {
 
     private lateinit var genreRepository: GenreRepository
     private lateinit var preferencesRepository: SortPreferencesRepository
@@ -59,17 +54,18 @@ class GenreListViewModelTest {
     }
 
     @Test
-    fun `init sets initial state and updates state on change to genres list`() = runTest {
-        val genresFlow = MutableStateFlow(genres)
-        every { genreRepository.getGenres() } returns genresFlow
-        with(generateViewModel()) {
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesAscending, state.value.genreList)
-            genresFlow.value = genres.reversed()
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesDescending, state.value.genreList)
+    fun `init sets initial state and updates state on change to genres list`() =
+        testScope.runReliableTest {
+            val genresFlow = MutableStateFlow(genres)
+            every { genreRepository.getGenres() } returns genresFlow
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesAscending, state.value.genreList)
+                genresFlow.value = genres.reversed()
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesDescending, state.value.genreList)
+            }
         }
-    }
 
     @Test
     fun `GenreClicked adds NavigateToGenre event`() {
@@ -100,7 +96,7 @@ class GenreListViewModelTest {
     }
 
     @Test
-    fun `SortByClicked toggles artist list sort order`() = runTest {
+    fun `SortByClicked toggles artist list sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
             handle(GenreListUserAction.SortByButtonClicked)
             advanceUntilIdle()

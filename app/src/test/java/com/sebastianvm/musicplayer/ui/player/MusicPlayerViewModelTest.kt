@@ -14,7 +14,7 @@
 //import org.junit.Rule
 //import org.junit.Test
 //
-//class MusicPlayerViewModelTest {
+//class MusicPlayerViewModelTest : BaseTest() {
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @get:Rule
@@ -53,7 +53,7 @@
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
-//    fun `init sets initial state`() = runTest {
+//    fun `init sets initial state`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            assertEquals(
 //                MusicPlayerState(

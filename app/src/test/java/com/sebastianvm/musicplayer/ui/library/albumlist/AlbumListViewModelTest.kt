@@ -10,25 +10,20 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AlbumListViewModelTest {
-
-    @get:Rule
-    val mainCoroutineRule = DispatcherSetUpRule()
+class AlbumListViewModelTest : BaseTest() {
 
     private lateinit var albumRepository: AlbumRepository
     private val albums = listOf(
@@ -56,17 +51,18 @@ class AlbumListViewModelTest {
     }
 
     @Test
-    fun `init sets initial state and updates state on change to album list`() = runTest {
-        val albumsFlow = MutableStateFlow(albums)
-        every { albumRepository.getAlbums() } returns albumsFlow
-        with(generateViewModel()) {
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesAscending, state.value.albumList)
-            albumsFlow.value = albums.reversed()
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesDescending, state.value.albumList)
+    fun `init sets initial state and updates state on change to album list`() =
+        testScope.runReliableTest {
+            val albumsFlow = MutableStateFlow(albums)
+            every { albumRepository.getAlbums() } returns albumsFlow
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesAscending, state.value.albumList)
+                albumsFlow.value = albums.reversed()
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesDescending, state.value.albumList)
+            }
         }
-    }
 
     @Test
     fun `AlbumClicked adds NavigateToAlbum event`() {

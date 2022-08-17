@@ -21,7 +21,7 @@ import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -29,18 +29,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SearchViewModelTest {
-
-    @get:Rule
-    val dispatcherSetUpRule = DispatcherSetUpRule()
+class SearchViewModelTest : BaseTest() {
 
     private lateinit var ftsRepository: FullTextSearchRepository
     private lateinit var playbackManager: PlaybackManager
@@ -68,7 +63,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `TextChanged changes results when searching for songs`() = runTest {
+    fun `TextChanged changes results when searching for songs`() = testScope.runReliableTest {
         every { ftsRepository.searchTracks("a") } returns flowOf(listOf(Fixtures.trackArgentina))
         every { ftsRepository.searchTracks("") } returns flowOf(listOf())
         with(generateViewModel()) {
@@ -84,7 +79,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `TextChanged changes results when searching for artists`() = runTest {
+    fun `TextChanged changes results when searching for artists`() = testScope.runReliableTest {
         every { ftsRepository.searchArtists("a") } returns flowOf(listOf(Fixtures.artistAna))
         every { ftsRepository.searchArtists("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.ARTISTS)) {
@@ -100,7 +95,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `TextChanged changes results when searching for albums`() = runTest {
+    fun `TextChanged changes results when searching for albums`() = testScope.runReliableTest {
         every { ftsRepository.searchAlbums("a") } returns flowOf(listOf(Fixtures.albumAlpaca))
         every { ftsRepository.searchAlbums("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.ALBUMS)) {
@@ -116,7 +111,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `TextChanged changes results when searching for genres`() = runTest {
+    fun `TextChanged changes results when searching for genres`() = testScope.runReliableTest {
         every { ftsRepository.searchGenres("a") } returns flowOf(listOf(Fixtures.genreAlpha))
         every { ftsRepository.searchGenres("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.GENRES)) {
@@ -133,7 +128,7 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `TextChanged changes results when searching for playlists`() = runTest {
+    fun `TextChanged changes results when searching for playlists`() = testScope.runReliableTest {
         every { ftsRepository.searchPlaylists("a") } returns flowOf(listOf(Fixtures.playlistApple))
         every { ftsRepository.searchPlaylists("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.PLAYLISTS)) {
@@ -149,66 +144,68 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `SearchModeChanged updates selectedOptions and changes results`() = runTest {
-        every { ftsRepository.searchTracks(any()) } returns flowOf(listOf(Fixtures.trackArgentina))
-        every { ftsRepository.searchArtists(any()) } returns flowOf(listOf(Fixtures.artistAna))
-        every { ftsRepository.searchAlbums(any()) } returns flowOf(listOf(Fixtures.albumAlpaca))
-        every { ftsRepository.searchGenres(any()) } returns flowOf(listOf(Fixtures.genreAlpha))
-        every { ftsRepository.searchPlaylists(any()) } returns flowOf(listOf(Fixtures.playlistApple))
+    fun `SearchModeChanged updates selectedOptions and changes results`() =
+        testScope.runReliableTest {
+            every { ftsRepository.searchTracks(any()) } returns flowOf(listOf(Fixtures.trackArgentina))
+            every { ftsRepository.searchArtists(any()) } returns flowOf(listOf(Fixtures.artistAna))
+            every { ftsRepository.searchAlbums(any()) } returns flowOf(listOf(Fixtures.albumAlpaca))
+            every { ftsRepository.searchGenres(any()) } returns flowOf(listOf(Fixtures.genreAlpha))
+            every { ftsRepository.searchPlaylists(any()) } returns flowOf(listOf(Fixtures.playlistApple))
 
-        with(generateViewModel()) {
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.trackArgentina.toModelListItemState()),
-                state.value.searchResults
-            )
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.trackArgentina.toModelListItemState()),
+                    state.value.searchResults
+                )
 
-            handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ARTISTS))
-            assertEquals(SearchMode.ARTISTS, state.value.selectedOption)
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.artistAna.toModelListItemState()),
-                state.value.searchResults
-            )
+                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ARTISTS))
+                assertEquals(SearchMode.ARTISTS, state.value.selectedOption)
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.artistAna.toModelListItemState()),
+                    state.value.searchResults
+                )
 
-            handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ALBUMS))
-            assertEquals(SearchMode.ALBUMS, state.value.selectedOption)
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.albumAlpaca.toModelListItemState()),
-                state.value.searchResults
-            )
+                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ALBUMS))
+                assertEquals(SearchMode.ALBUMS, state.value.selectedOption)
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.albumAlpaca.toModelListItemState()),
+                    state.value.searchResults
+                )
 
-            handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.GENRES))
-            assertEquals(SearchMode.GENRES, state.value.selectedOption)
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.genreAlpha.toModelListItemState()),
-                state.value.searchResults
-            )
+                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.GENRES))
+                assertEquals(SearchMode.GENRES, state.value.selectedOption)
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.genreAlpha.toModelListItemState()),
+                    state.value.searchResults
+                )
 
-            handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.PLAYLISTS))
-            assertEquals(SearchMode.PLAYLISTS, state.value.selectedOption)
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.playlistApple.toModelListItemState()),
-                state.value.searchResults
-            )
+                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.PLAYLISTS))
+                assertEquals(SearchMode.PLAYLISTS, state.value.selectedOption)
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.playlistApple.toModelListItemState()),
+                    state.value.searchResults
+                )
 
-            handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.SONGS))
-            assertEquals(SearchMode.SONGS, state.value.selectedOption)
-            advanceUntilIdle()
-            assertEquals(
-                listOf(Fixtures.trackArgentina.toModelListItemState()),
-                state.value.searchResults
-            )
+                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.SONGS))
+                assertEquals(SearchMode.SONGS, state.value.selectedOption)
+                advanceUntilIdle()
+                assertEquals(
+                    listOf(Fixtures.trackArgentina.toModelListItemState()),
+                    state.value.searchResults
+                )
+            }
         }
-    }
 
 
     @Test
     fun `SearchResultClicked triggers playback and on success navigates to player when searching for tracks`() =
-        runTest {
+        testScope.runReliableTest {
+            every { ftsRepository.searchTracks(any()) } returns flowOf(listOf())
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
             every { playbackManager.playSingleTrack(0) } returns result
             with(generateViewModel()) {
@@ -227,7 +224,8 @@ class SearchViewModelTest {
 
     @Test
     fun `SearchResultClicked triggers playback and on failure sets playback result when searching for tracks`() =
-        runTest {
+        testScope.runReliableTest {
+            every { ftsRepository.searchTracks(any()) } returns flowOf(listOf())
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
             every { playbackManager.playSingleTrack(0) } returns result
             with(generateViewModel()) {

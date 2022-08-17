@@ -31,7 +31,7 @@
 //
 //@OptIn(ExperimentalCoroutinesApi::class)
 //@RunWith(RobolectricTestRunner::class)
-//class TrackListViewModelTest {
+//class TrackListViewModelTest : BaseTest() {
 //
 //    @get:Rule
 //    val dispatcherSetUpRule = DispatcherSetUpRule()
@@ -92,7 +92,7 @@
 //    }
 //
 //    @Test
-//    fun `init for all tracks sets initial state`() = runTest {
+//    fun `init for all tracks sets initial state`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            advanceUntilIdle()
 //            with(state.value) {
@@ -122,7 +122,7 @@
 //    }
 //
 //    @Test
-//    fun `init for genre sets initial state`() = runTest {
+//    fun `init for genre sets initial state`() = testScope.runReliableTest {
 //        with(
 //            generateViewModel(
 //                listGroupType = TrackListType.GENRE,
@@ -150,7 +150,7 @@
 //    }
 //
 //    @Test
-//    fun `init for playlist sets initial state`() = runTest {
+//    fun `init for playlist sets initial state`() = testScope.runReliableTest {
 //        with(generateViewModel(listGroupType = TrackListType.PLAYLIST, trackListTitle = TRACK_PLAYLIST_1)) {
 //            advanceUntilIdle()
 //            with(state.value) {
@@ -173,7 +173,7 @@
 //    }
 //
 //    @Test
-//    fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = runTest {
+//    fun `onTrackClicked for all tracks triggers playback, adds nav to player event`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            onTrackClicked(TRACK_ID_0)
 //            advanceUntilIdle()
@@ -188,7 +188,7 @@
 //    }
 //
 //    @Test
-//    fun `onTrackClicked for genre triggers playback, adds nav to player event`() = runTest{
+//    fun `onTrackClicked for genre triggers playback, adds nav to player event`() = testScope.runReliableTest{
 //        with(
 //            generateViewModel(
 //                listGroupType = TrackListType.GENRE,
@@ -211,7 +211,7 @@
 //    }
 //
 //    @Test
-//    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() = runTest {
+//    fun `onTrackClicked for playlist triggers playback, adds nav to player event`() = testScope.runReliableTest {
 //        with(
 //            generateViewModel(
 //                listGroupType = TrackListType.PLAYLIST,
@@ -302,7 +302,7 @@
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
-//    fun `modifying sortOption changes order`() = runTest {
+//    fun `modifying sortOption changes order`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            advanceUntilIdle()
 //            preferencesRepository.modifyTrackListSortOptions(

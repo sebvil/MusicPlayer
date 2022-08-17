@@ -30,7 +30,7 @@
 //import org.robolectric.RobolectricTestRunner
 //
 //@RunWith(RobolectricTestRunner::class)
-//class AlbumViewModelTest {
+//class AlbumViewModelTest : BaseTest() {
 //
 //    private lateinit var playbackManager: PlaybackManager
 //    private lateinit var mediaQueueRepository: MediaQueueRepository
@@ -95,7 +95,7 @@
 //
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    @Test
-//    fun `init sets albumHeaderItem and trackList`() = runTest {
+//    fun `init sets albumHeaderItem and trackList`() = testScope.runReliableTest {
 //        with(generateViewModel()) {
 //            assertEquals(ALBUM_NAME, state.value.albumName)
 //            assertEquals(

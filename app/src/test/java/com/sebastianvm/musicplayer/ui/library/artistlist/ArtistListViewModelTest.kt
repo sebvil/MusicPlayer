@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArgu
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
+import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -17,18 +17,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ArtistListViewModelTest {
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @get:Rule
-    val mainCoroutineRule = DispatcherSetUpRule()
+class ArtistListViewModelTest : BaseTest() {
 
     private lateinit var artistRepository: ArtistRepository
     private lateinit var preferencesRepository: SortPreferencesRepository
@@ -60,17 +54,18 @@ class ArtistListViewModelTest {
     }
 
     @Test
-    fun `init sets initial state and updates state on change to artist list`() = runTest {
-        val artistsFlow = MutableStateFlow(artists)
-        every { artistRepository.getArtists() } returns artistsFlow
-        with(generateViewModel()) {
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesAscending, state.value.artistList)
-            artistsFlow.value = artists.reversed()
-            advanceUntilIdle()
-            assertEquals(modelListItemStatesDescending, state.value.artistList)
+    fun `init sets initial state and updates state on change to artist list`() =
+        testScope.runReliableTest {
+            val artistsFlow = MutableStateFlow(artists)
+            every { artistRepository.getArtists() } returns artistsFlow
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesAscending, state.value.artistList)
+                artistsFlow.value = artists.reversed()
+                advanceUntilIdle()
+                assertEquals(modelListItemStatesDescending, state.value.artistList)
+            }
         }
-    }
 
     @Test
     fun `onArtistClicked adds NavigateToArtist event`() {
@@ -98,7 +93,7 @@ class ArtistListViewModelTest {
     }
 
     @Test
-    fun `SortByClicked toggles artist list sort order`() = runTest {
+    fun `SortByClicked toggles artist list sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
             handle(ArtistListUserAction.SortByButtonClicked)
             advanceUntilIdle()
