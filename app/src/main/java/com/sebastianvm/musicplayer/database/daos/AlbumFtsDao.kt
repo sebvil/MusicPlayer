@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
+import com.sebastianvm.musicplayer.database.entities.Album
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,5 +16,5 @@ interface AlbumFtsDao {
                 "JOIN AlbumFts ON Album.id == AlbumFts.albumId " +
                 "WHERE AlbumFts MATCH :text ORDER BY Album.albumName"
     )
-    fun albumsWithText(text: String): Flow<List<AlbumWithArtists>>
+    fun albumsWithText(text: String): Flow<List<Album>>
 }

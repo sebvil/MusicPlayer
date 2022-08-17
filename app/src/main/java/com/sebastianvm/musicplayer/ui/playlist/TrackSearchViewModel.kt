@@ -8,7 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState

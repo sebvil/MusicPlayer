@@ -5,19 +5,22 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
-import com.sebastianvm.musicplayer.repository.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.SearchMode
+import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -42,7 +45,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SearchQueryState(val term: String, val mode: SearchMode)
@@ -62,16 +64,18 @@ class SearchViewModel @Inject constructor(
 
 
     init {
-        query.debounce(50).flatMapLatest { newQuery ->
+        query.debounce(500).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
-                    .map { tracks -> tracks.map { it.track.toModelListItemState() } }
+                    .map { tracks -> tracks.map { it.toModelListItemState() } }
                 SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
                     .map { artists -> artists.map { it.toModelListItemState() } }
                 SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
-                    .map { albums -> albums.map { it.album.toModelListItemState() } }
+                    .map { albums -> albums.map { it.toModelListItemState() } }
                 SearchMode.GENRES -> ftsRepository.searchGenres(newQuery.term)
                     .map { genres -> genres.map { it.toModelListItemState() } }
+                SearchMode.PLAYLISTS -> ftsRepository.searchPlaylists(newQuery.term)
+                    .map { playlists -> playlists.map { it.toModelListItemState() } }
             }
         }.flowOn(defaultDispatcher).onEach {
             setState {
@@ -81,10 +85,16 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        viewModelScope.launch {
-            playbackManager.playSingleTrack(trackId)
-            addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
-        }
+
+        playbackManager.playSingleTrack(trackId).onEach {
+            when (it) {
+                is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
+                is PlaybackResult.Success -> {
+                    setState { copy(playbackResult = null) }
+                    addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
@@ -112,6 +122,16 @@ class SearchViewModel @Inject constructor(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackList(
                     TrackListArguments(trackListType = TrackListType.GENRE, trackListId = genreId)
+                )
+            )
+        )
+    }
+
+    private fun onPlaylistSearchResultClicked(playlistId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.Playlist(
+                    PlaylistArguments(playlistId = playlistId)
                 )
             )
         )
@@ -164,6 +184,16 @@ class SearchViewModel @Inject constructor(
         )
     }
 
+    private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                NavigationDestination.PlaylistContextMenu(
+                    PlaylistContextMenuArguments(playlistId = playlistId)
+                )
+            )
+        )
+    }
+
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {
@@ -172,6 +202,7 @@ class SearchViewModel @Inject constructor(
                     SearchMode.ARTISTS -> onArtistSearchResultClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
                     SearchMode.GENRES -> onGenreSearchResultClicked(action.id)
+                    SearchMode.PLAYLISTS -> onPlaylistSearchResultClicked(action.id)
                 }
             }
             is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
@@ -180,17 +211,24 @@ class SearchViewModel @Inject constructor(
                     SearchMode.ARTISTS -> onArtistSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.GENRES -> onGenreSearchResultOverflowMenuIconClicked(action.id)
+                    SearchMode.PLAYLISTS -> onPlaylistSearchResultOverflowMenuIconClicked(action.id)
                 }
             }
-            is SearchUserAction.SearchModeChanged -> query.update { it.copy(mode = action.newMode) }
+            is SearchUserAction.SearchModeChanged -> {
+                setState { copy(selectedOption = action.newMode) }
+                query.update { it.copy(mode = action.newMode) }
+            }
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
+            is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is SearchUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
         }
     }
 }
 
 data class SearchState(
     val selectedOption: SearchMode,
-    val searchResults: List<ModelListItemState>
+    val searchResults: List<ModelListItemState>,
+    val playbackResult: PlaybackResult? = null
 ) : State
 
 
@@ -214,4 +252,6 @@ sealed interface SearchUserAction : UserAction {
     data class SearchResultOverflowMenuIconClicked(val id: Long) : SearchUserAction
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
+    object UpButtonClicked : SearchUserAction
+    object DismissPlaybackErrorDialog : SearchUserAction
 }

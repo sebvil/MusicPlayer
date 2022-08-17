@@ -36,5 +36,6 @@ object C {
     const val IMAGE_URI_2 = "path/to/image/2"
     const val IMAGE_URI_3 = "path/to/image/3"
 
+    const val PLAYLIST_APPLE = "Apple"
 }
 
