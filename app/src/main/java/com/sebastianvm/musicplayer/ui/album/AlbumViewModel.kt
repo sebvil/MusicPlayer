@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.album
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -44,7 +43,6 @@ class AlbumViewModel @Inject constructor(
             albumRepository.getAlbum(state.value.albumId),
             trackRepository.getTracksForAlbum(state.value.albumId)
         ) { albumInfo, tracks ->
-            Log.i("Album", albumInfo.tracks.toString())
             Pair(albumInfo.album, tracks)
         }.onEach { (album, tracks) ->
             setState {

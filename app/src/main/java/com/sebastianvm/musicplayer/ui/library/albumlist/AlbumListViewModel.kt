@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
@@ -23,8 +22,8 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 
@@ -33,24 +32,19 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,
     albumRepository: AlbumRepository,
-    preferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<AlbumListUiEvent, AlbumListState>(initialState),
     ViewModelInterface<AlbumListState, AlbumListUserAction> {
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.getAlbumListSortPreferences().flatMapLatest {
-                albumRepository.getAlbums(sortPreferences = it)
-            }.collect { albums ->
-                setState {
-                    copy(
-                        albumList = albums.map { album ->
-                            album.toModelListItemState()
-                        }
-                    )
-                }
+        albumRepository.getAlbums().onEach { albums ->
+            setState {
+                copy(
+                    albumList = albums.map { album ->
+                        album.toModelListItemState()
+                    }
+                )
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     override fun handle(action: AlbumListUserAction) {

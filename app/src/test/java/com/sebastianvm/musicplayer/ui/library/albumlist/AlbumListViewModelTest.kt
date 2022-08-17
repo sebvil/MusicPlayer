@@ -1,27 +1,21 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
-import com.sebastianvm.musicplayer.util.sort.SortPreferences
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -37,97 +31,41 @@ class AlbumListViewModelTest {
     val mainCoroutineRule = DispatcherSetUpRule()
 
     private lateinit var albumRepository: AlbumRepository
-    private lateinit var preferencesRepository: SortPreferencesRepository
+    private val albums = listOf(
+        Fixtures.albumAlpaca,
+        Fixtures.albumBobcat,
+        Fixtures.albumCheetah,
+    )
+    private val modelListItemStatesAscending = albums.map { it.toModelListItemState() }
+    private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
 
 
     @Before
     fun setUp() {
-        albumRepository = FakeAlbumRepository(
-            fullAlbumInfo = listOf(
-                Fixtures.fullAlbumAlpaca,
-                Fixtures.fullAlbumBobcat,
-                Fixtures.fullAlbumCheetah,
-            )
-        )
-    }
-
-    private fun generateViewModel(
-        initialSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> = MediaSortPreferences(
-            SortOptions.AlbumListSortOptions.ALBUM,
-            MediaSortOrder.ASCENDING
-        )
-    ): AlbumListViewModel {
-        preferencesRepository =
-            FakeSortPreferencesRepository(SortPreferences(albumListSortPreferences = initialSortPreferences))
-
-        return AlbumListViewModel(
-            initialState = AlbumListState(
-                albumList = listOf(),
-            ),
-            albumRepository = albumRepository,
-            preferencesRepository = preferencesRepository
-        )
-    }
-
-    private fun TestScope.checkInitialValuesWithInitialSortPreferences(
-        initialSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>,
-        expectedAlbums: List<ModelListItemState>
-    ) {
-        with(generateViewModel(initialSortPreferences = initialSortPreferences)) {
-            advanceUntilIdle()
-            assertEquals(expectedAlbums, state.value.albumList)
-
+        albumRepository = mockk {
+            every { getAlbums() } returns emptyFlow()
         }
     }
 
+    private fun generateViewModel(): AlbumListViewModel {
+
+        return AlbumListViewModel(
+            initialState = AlbumListState(albumList = listOf()),
+            albumRepository = albumRepository,
+        )
+    }
+
     @Test
-    fun `init sets initial state values`() = runTest {
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                SortOptions.AlbumListSortOptions.ALBUM,
-                MediaSortOrder.ASCENDING
-            ),
-            listOf(albumRowAlpaca, albumRowBobcat, albumRowCheetah)
-        )
-
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                sortOrder = MediaSortOrder.DESCENDING
-            ),
-            listOf(albumRowCheetah, albumRowBobcat, albumRowAlpaca)
-        )
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.YEAR,
-                sortOrder = MediaSortOrder.ASCENDING
-            ),
-            listOf(albumRowCheetah, albumRowAlpaca, albumRowBobcat)
-        )
-
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.YEAR,
-                sortOrder = MediaSortOrder.DESCENDING
-            ),
-            listOf(albumRowBobcat, albumRowAlpaca, albumRowCheetah)
-        )
-
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                sortOrder = MediaSortOrder.DESCENDING
-            ),
-            listOf(albumRowAlpaca, albumRowCheetah, albumRowBobcat)
-        )
-
-        checkInitialValuesWithInitialSortPreferences(
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                sortOrder = MediaSortOrder.ASCENDING
-            ),
-            listOf(albumRowBobcat, albumRowCheetah, albumRowAlpaca)
-        )
+    fun `init sets initial state and updates state on change to album list`() = runTest {
+        val albumsFlow = MutableStateFlow(albums)
+        every { albumRepository.getAlbums() } returns albumsFlow
+        with(generateViewModel()) {
+            advanceUntilIdle()
+            assertEquals(modelListItemStatesAscending, state.value.albumList)
+            albumsFlow.value = albums.reversed()
+            advanceUntilIdle()
+            assertEquals(modelListItemStatesDescending, state.value.albumList)
+        }
     }
 
     @Test
@@ -188,111 +126,4 @@ class AlbumListViewModelTest {
         }
     }
 
-    @Test
-    fun `modifying sortOption changes order`() = runTest {
-        with(generateViewModel()) {
-            advanceUntilIdle()
-            checkStateWhenSortPrefsModified(
-                this,
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                    sortOrder = MediaSortOrder.DESCENDING
-                ),
-                listOf(albumRowCheetah, albumRowBobcat, albumRowAlpaca)
-            )
-            checkStateWhenSortPrefsModified(
-                this,
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.YEAR,
-                    sortOrder = MediaSortOrder.ASCENDING
-                ),
-                listOf(albumRowCheetah, albumRowAlpaca, albumRowBobcat)
-            )
-
-            checkStateWhenSortPrefsModified(
-                this,
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.YEAR,
-                    sortOrder = MediaSortOrder.DESCENDING
-                ),
-                listOf(albumRowBobcat, albumRowAlpaca, albumRowCheetah)
-            )
-
-            checkStateWhenSortPrefsModified(
-                this,
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                    sortOrder = MediaSortOrder.DESCENDING
-                ),
-                listOf(albumRowAlpaca, albumRowCheetah, albumRowBobcat)
-            )
-
-            checkStateWhenSortPrefsModified(
-                this,
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                    sortOrder = MediaSortOrder.ASCENDING
-                ),
-                listOf(albumRowBobcat, albumRowCheetah, albumRowAlpaca)
-            )
-
-        }
-    }
-
-    private suspend fun TestScope.checkStateWhenSortPrefsModified(
-        viewModel: AlbumListViewModel,
-        sortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>,
-        expectedAlbums: List<ModelListItemState>
-    ) {
-        with(viewModel) {
-            preferencesRepository.modifyAlbumListSortPreferences(sortPreferences)
-            advanceUntilIdle()
-            assertEquals(expectedAlbums, state.value.albumList)
-        }
-
-    }
-
-    companion object {
-        private val albumRowAlpaca = ModelListItemState(
-            id = C.ID_ONE,
-            headlineText = C.ALBUM_ALPACA,
-            supportingText = "${C.YEAR_2021} ${C.ARTIST_CAMILO}",
-            mediaArtImageState = MediaArtImageState(
-                imageUri = C.IMAGE_URI_1,
-                contentDescription = R.string.album_art_for_album,
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = R.string.placeholder_album_art,
-                args = listOf(C.ALBUM_ALPACA)
-            )
-        )
-
-
-        private val albumRowBobcat = ModelListItemState(
-            id = C.ID_TWO,
-            headlineText = C.ALBUM_BOBCAT,
-            supportingText = "${C.YEAR_2022} ${C.ARTIST_ANA}",
-            mediaArtImageState = MediaArtImageState(
-                imageUri = C.IMAGE_URI_2,
-                contentDescription = R.string.album_art_for_album,
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = R.string.placeholder_album_art,
-                args = listOf(C.ALBUM_BOBCAT)
-            )
-        )
-
-
-        private val albumRowCheetah = ModelListItemState(
-            id = C.ID_THREE,
-            headlineText = C.ALBUM_CHEETAH,
-            supportingText = "${C.YEAR_2020} ${C.ARTIST_BOB}",
-            mediaArtImageState = MediaArtImageState(
-                imageUri = C.IMAGE_URI_3,
-                contentDescription = R.string.album_art_for_album,
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = R.string.placeholder_album_art,
-                args = listOf(C.ALBUM_CHEETAH)
-            )
-        )
-
-    }
 }

@@ -19,7 +19,6 @@ interface AlbumDao {
     @Query("SELECT * from Album WHERE Album.id IN (:albumIds)")
     fun getAlbums(albumIds: List<Long>): Flow<List<Album>>
 
-    @Transaction
     @Query("SELECT * from Album WHERE Album.id=:albumId")
     fun getAlbum(albumId: Long): Flow<FullAlbumInfo>
 
@@ -41,5 +40,8 @@ interface AlbumDao {
                 "CASE WHEN:sortOption='YEAR' AND :sortOrder='ASCENDING' THEN year END COLLATE LOCALIZED ASC, " +
                 "CASE WHEN:sortOption='YEAR' AND :sortOrder='DESCENDING' THEN year END COLLATE LOCALIZED DESC"
     )
-    fun getAllAlbums(sortOption: SortOptions.AlbumListSortOptions, sortOrder: MediaSortOrder): Flow<List<Album>>
+    fun getAllAlbums(
+        sortOption: SortOptions.AlbumListSortOptions,
+        sortOrder: MediaSortOrder
+    ): Flow<List<Album>>
 }
