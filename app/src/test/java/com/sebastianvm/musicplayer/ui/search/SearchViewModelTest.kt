@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
@@ -25,6 +26,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -32,6 +34,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModelTest {
@@ -42,11 +45,15 @@ class SearchViewModelTest {
     private lateinit var ftsRepository: FullTextSearchRepository
     private lateinit var playbackManager: PlaybackManager
 
-    private fun generateViewModel(searchMode: SearchMode = SearchMode.SONGS): SearchViewModel {
+    private fun generateViewModel(
+        searchMode: SearchMode = SearchMode.SONGS,
+        playbackResult: PlaybackResult? = null
+    ): SearchViewModel {
         return SearchViewModel(
             initialState = SearchState(
                 selectedOption = searchMode,
-                searchResults = listOf()
+                searchResults = listOf(),
+                playbackResult = playbackResult
             ),
             ftsRepository = ftsRepository,
             playbackManager = playbackManager,
@@ -197,6 +204,42 @@ class SearchViewModelTest {
             )
         }
     }
+
+
+    @Test
+    fun `SearchResultClicked triggers playback and on success navigates to player when searching for tracks`() =
+        runTest {
+            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            every { playbackManager.playSingleTrack(0) } returns result
+            with(generateViewModel()) {
+                handle(SearchUserAction.SearchResultClicked(id = 0))
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                result.value = PlaybackResult.Success
+                advanceUntilIdle()
+                assertNull(state.value.playbackResult)
+                assertEquals(
+                    listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
+                    navEvents.value
+                )
+            }
+        }
+
+    @Test
+    fun `SearchResultClicked triggers playback and on failure sets playback result when searching for tracks`() =
+        runTest {
+            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            every { playbackManager.playSingleTrack(0) } returns result
+            with(generateViewModel()) {
+                handle(SearchUserAction.SearchResultClicked(id = 0))
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                result.value = PlaybackResult.Error(0)
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Error(0), state.value.playbackResult)
+                assertEquals(listOf(), navEvents.value)
+            }
+        }
 
     @Test
     fun `SearchResultClicked navigates to artist screen when searching for artists`() {
@@ -364,6 +407,14 @@ class SearchViewModelTest {
         with(generateViewModel()) {
             handle(SearchUserAction.UpButtonClicked)
             assertEquals(listOf(NavEvent.NavigateUp), navEvents.value)
+        }
+    }
+
+    @Test
+    fun `DismissPlaybackErrorDialog resets playback status state`() {
+        with(generateViewModel(playbackResult = PlaybackResult.Error(0))) {
+            handle(SearchUserAction.DismissPlaybackErrorDialog)
+            assertNull(state.value.playbackResult)
         }
     }
 

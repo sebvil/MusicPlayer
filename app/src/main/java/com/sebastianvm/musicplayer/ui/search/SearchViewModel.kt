@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
@@ -84,9 +85,16 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        // TODO handle result
-        playbackManager.playSingleTrack(trackId)
-        addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+
+        playbackManager.playSingleTrack(trackId).onEach {
+            when (it) {
+                is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
+                is PlaybackResult.Success -> {
+                    setState { copy(playbackResult = null) }
+                    addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
@@ -212,13 +220,15 @@ class SearchViewModel @Inject constructor(
             }
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is SearchUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
         }
     }
 }
 
 data class SearchState(
     val selectedOption: SearchMode,
-    val searchResults: List<ModelListItemState>
+    val searchResults: List<ModelListItemState>,
+    val playbackResult: PlaybackResult? = null
 ) : State
 
 
@@ -243,4 +253,5 @@ sealed interface SearchUserAction : UserAction {
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
     object UpButtonClicked : SearchUserAction
+    object DismissPlaybackErrorDialog : SearchUserAction
 }

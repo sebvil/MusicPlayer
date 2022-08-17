@@ -43,6 +43,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
+import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -95,11 +97,17 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
         mutableStateOf("")
     }
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         focusRequester.requestFocus()
     }
-    val focusManager = LocalFocusManager.current
+
+    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = object : PlaybackStatusIndicatorDelegate {
+        override fun onDismissRequest() {
+            viewModel.handle(SearchUserAction.DismissPlaybackErrorDialog)
+        }
+    })
 
     Column(
         modifier = Modifier
