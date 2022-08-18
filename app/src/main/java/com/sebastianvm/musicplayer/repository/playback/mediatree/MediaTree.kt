@@ -15,9 +15,6 @@ import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -174,12 +171,7 @@ class MediaTree @Inject constructor(
                 )
             )
             KeyType.ALL_TRACKS -> {
-                trackRepository.getAllTracks(
-                    mediaSortPreferences = MediaSortPreferences(
-                        SortOptions.TrackListSortOptions.TRACK,
-                        MediaSortOrder.ASCENDING
-                    )
-                ).first().mapIndexed { index, track ->
+                trackRepository.getAllTracks().first().mapIndexed { index, track ->
                     track.buildMediaItem(parent = parentKey, index = index.toLong())
                 }
             }

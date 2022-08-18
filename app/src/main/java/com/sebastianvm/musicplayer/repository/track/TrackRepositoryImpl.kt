@@ -10,17 +10,21 @@ import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TrackRepositoryImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     private val trackDao: TrackDao
 ) : TrackRepository {
 
@@ -28,11 +32,14 @@ class TrackRepositoryImpl @Inject constructor(
         return trackDao.getTracksCount().distinctUntilChanged()
     }
 
-    override fun getAllTracks(mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>): Flow<List<Track>> {
-        return trackDao.getAllTracks(
-            sortOption = mediaSortPreferences.sortOption,
-            sortOrder = mediaSortPreferences.sortOrder
-        ).distinctUntilChanged()
+    override fun getAllTracks(): Flow<List<Track>> {
+        return sortPreferencesRepository.getTrackListSortPreferences(trackListType = TrackListType.ALL_TRACKS)
+            .flatMapLatest { mediaSortPreferences ->
+                trackDao.getAllTracks(
+                    sortOption = mediaSortPreferences.sortOption,
+                    sortOrder = mediaSortPreferences.sortOrder
+                )
+            }.distinctUntilChanged()
     }
 
     override fun getTrack(trackId: Long): Flow<FullTrackInfo> {
@@ -51,15 +58,15 @@ class TrackRepositoryImpl @Inject constructor(
         return trackDao.getTracksForAlbum(albumId).distinctUntilChanged()
     }
 
-    override fun getTracksForGenre(
-        genreId: Long,
-        mediaSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
-    ): Flow<List<Track>> {
-        return trackDao.getTracksForGenre(
-            genreId = genreId,
-            sortOption = mediaSortPreferences.sortOption,
-            sortOrder = mediaSortPreferences.sortOrder
-        ).distinctUntilChanged()
+    override fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
+        return sortPreferencesRepository.getTrackListSortPreferences(trackListType = TrackListType.GENRE)
+            .flatMapLatest { mediaSortPreferences ->
+                trackDao.getTracksForGenre(
+                    genreId = genreId,
+                    sortOption = mediaSortPreferences.sortOption,
+                    sortOrder = mediaSortPreferences.sortOrder
+                )
+            }.distinctUntilChanged()
     }
 
     override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
