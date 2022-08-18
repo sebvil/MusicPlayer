@@ -19,8 +19,8 @@ object C {
 
     // Tracks
     const val TRACK_ARGENTINA = "Argentina"
-//    const val TRACK_BELGIUM = "Belgium"
-//    const val TRACK_COLOMBIA = "Colombia"
+    const val TRACK_BELGIUM = "Belgium"
+    const val TRACK_COLOMBIA = "Colombia"
 
     // Genres
     const val GENRE_ALPHA = "Alpha"

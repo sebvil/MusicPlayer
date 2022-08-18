@@ -23,8 +23,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -100,7 +98,7 @@ class TrackListViewModel @Inject constructor(
                             )
                         }
                         is PlaybackResult.Success -> {
-                            setState { copy(playbackResult = it) }
+                            setState { copy(playbackResult = null) }
                             addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
                         }
                     }
@@ -155,7 +153,6 @@ data class TrackListState(
     val trackListName: String?,
     val trackListType: TrackListType,
     val trackList: List<ModelListItemState>,
-    val sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
     val playbackResult: PlaybackResult? = null
 ) : State
 
@@ -173,7 +170,6 @@ object InitialTrackListStateModule {
             trackListName = null,
             trackList = listOf(),
             trackListType = args.trackListType,
-            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
         )
     }
 }

@@ -3,8 +3,6 @@ package com.sebastianvm.musicplayer.ui.library.tracks
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 
 class TrackListStatePreviewParameterProvider : PreviewParameterProvider<TrackListState> {
     override val values = sequenceOf(
@@ -18,7 +16,6 @@ class TrackListStatePreviewParameterProvider : PreviewParameterProvider<TrackLis
                 ModelListItemState(id = 2, headlineText = "La Promesa", supportingText = "Melendi"),
                 ModelListItemState(id = 3, headlineText = "La Promesa", supportingText = "Melendi")
             ),
-            sortPreferences = MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK)
         )
     )
 }
