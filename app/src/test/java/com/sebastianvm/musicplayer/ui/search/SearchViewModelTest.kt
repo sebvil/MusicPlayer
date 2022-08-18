@@ -308,7 +308,7 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultOverflowMenuIconClicked navigates to track screen when searching for songs`() {
+    fun `SearchResultOverflowMenuIconClicked navigates to track context menu when searching for songs`() {
         with(generateViewModel()) {
             handle(SearchUserAction.SearchResultOverflowMenuIconClicked(id = 0))
             assertEquals(
@@ -332,7 +332,7 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultOverflowMenuIconClicked navigates to artist screen when searching for artists`() {
+    fun `SearchResultOverflowMenuIconClicked navigates to artist context menu when searching for artists`() {
         with(generateViewModel(searchMode = SearchMode.ARTISTS)) {
             handle(SearchUserAction.SearchResultOverflowMenuIconClicked(id = 0))
             assertEquals(
@@ -349,7 +349,7 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultOverflowMenuIconClicked navigates to album screen when searching for albums`() {
+    fun `SearchResultOverflowMenuIconClicked navigates to album context menu when searching for albums`() {
         with(generateViewModel(searchMode = SearchMode.ALBUMS)) {
             handle(SearchUserAction.SearchResultOverflowMenuIconClicked(id = 0))
             assertEquals(
@@ -366,7 +366,7 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultOverflowMenuIconClicked navigates to genre screen when searching for artists`() {
+    fun `SearchResultOverflowMenuIconClicked navigates to genre context menu when searching for artists`() {
         with(generateViewModel(searchMode = SearchMode.GENRES)) {
             handle(SearchUserAction.SearchResultOverflowMenuIconClicked(id = 0))
             assertEquals(
@@ -383,7 +383,7 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultOverflowMenuIconClicked navigates to playlist screen when searching for artists`() {
+    fun `SearchResultOverflowMenuIconClicked navigates to playlist context menu when searching for artists`() {
         with(generateViewModel(searchMode = SearchMode.PLAYLISTS)) {
             handle(SearchUserAction.SearchResultOverflowMenuIconClicked(id = 0))
             assertEquals(

@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +25,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 
 @Composable
@@ -45,39 +49,22 @@ fun TrackListScreen(
                 title = state.trackListName ?: stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(TrackListUserAction.UpButtonClicked)
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(TrackListUserAction.SortByButtonClicked)
                     }
                 })
         },
-    ) { state ->
+    ) {
         TrackListLayout(
-            state = state,
-            listState = listState,
-            delegate = object : TrackListScreenDelegate {
-                override fun onTrackClicked(trackIndex: Int) {
-                    screenViewModel.onTrackClicked(trackIndex)
-                }
-
-                override fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId)
-                }
-
-                override fun onDismissRequest() {
-                    screenViewModel.onClosePlaybackErrorDialog()
-                }
-            })
+            viewModel = screenViewModel,
+            listState = listState
+        )
     }
 }
 
-
-interface TrackListScreenDelegate : PlaybackStatusIndicatorDelegate {
-    fun onTrackClicked(trackIndex: Int) = Unit
-    fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
-}
 
 @ScreenPreview
 @Composable
@@ -89,9 +76,8 @@ fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParameterProvi
             delegate = object : LibraryTopBarDelegate {})
     }) {
         TrackListLayout(
-            state = state,
-            listState = listState,
-            delegate = object : TrackListScreenDelegate {}
+            viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state),
+            listState = listState
         )
     }
 }
@@ -99,11 +85,18 @@ fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParameterProvi
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TrackListLayout(
-    state: TrackListState,
+    viewModel: ViewModelInterface<TrackListState, TrackListUserAction>,
     listState: LazyListState,
-    delegate: TrackListScreenDelegate
 ) {
-    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
+    val state by viewModel.state.collectAsState()
+    PlaybackStatusIndicator(
+        playbackResult = state.playbackResult,
+        delegate = object : PlaybackStatusIndicatorDelegate {
+            override fun onDismissRequest() {
+                viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
+            }
+        })
+
     LazyColumn(state = listState) {
         itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
             ModelListItem(
@@ -111,14 +104,16 @@ fun TrackListLayout(
                 modifier = Modifier
                     .animateItemPlacement()
                     .clickable {
-                        delegate.onTrackClicked(index)
+                        viewModel.handle(TrackListUserAction.TrackClicked(index))
                     },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            delegate.onOverflowMenuIconClicked(
-                                index,
-                                item.id
+                            viewModel.handle(
+                                TrackListUserAction.TrackOverflowMenuIconClicked(
+                                    index,
+                                    item.id
+                                )
                             )
                         },
                     ) {

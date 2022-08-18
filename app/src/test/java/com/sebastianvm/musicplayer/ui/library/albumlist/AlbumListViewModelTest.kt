@@ -90,7 +90,7 @@ class AlbumListViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SortByClicked adds ShowSortBottomSheet event`() {
+    fun `SortByClicked navigates to SortMenu`() {
         with(generateViewModel()) {
             handle(AlbumListUserAction.SortByClicked)
             assertEquals(

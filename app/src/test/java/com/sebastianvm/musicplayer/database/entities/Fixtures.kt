@@ -62,6 +62,28 @@ object Fixtures {
         path = ""
     )
 
+    val trackBelgium = Track(
+        id = C.ID_TWO,
+        trackName = C.TRACK_BELGIUM,
+        albumId = C.ID_TWO,
+        albumName = C.ALBUM_BOBCAT,
+        artists = C.ARTIST_BOB,
+        trackDurationMs = 0,
+        trackNumber = 0,
+        path = ""
+    )
+
+    val trackColombia = Track(
+        id = C.ID_THREE,
+        trackName = C.TRACK_BELGIUM,
+        albumId = C.ID_THREE,
+        albumName = C.ALBUM_BOBCAT,
+        artists = C.ARTIST_BOB,
+        trackDurationMs = 0,
+        trackNumber = 0,
+        path = ""
+    )
+
     val playlistApple = Playlist(id = C.ID_ONE, playlistName = C.PLAYLIST_APPLE)
 
 

@@ -5,28 +5,22 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
-import com.sebastianvm.musicplayer.player.TrackListType
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PlaybackManagerImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val playbackInfoDataSource: PlaybackInfoDataSource,
     private val trackRepository: TrackRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
@@ -75,21 +69,14 @@ class PlaybackManagerImpl @Inject constructor(
 
     override fun playAllTracks(initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
-            sortPreferencesRepository.getTrackListSortPreferences(TrackListType.ALL_TRACKS)
-                .flatMapLatest { mediaSortPreferences ->
-                    trackRepository.getAllTracks(mediaSortPreferences)
-                }.first().map { it.toMediaItem() }
+            trackRepository.getAllTracks().first().map { it.toMediaItem() }
         }
 
     override fun playGenre(
         genreId: Long,
         initialTrackIndex: Int,
     ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
-        sortPreferencesRepository.getTrackListSortPreferences(TrackListType.GENRE, genreId)
-            .flatMapLatest { mediaSortPreferences ->
-                trackRepository.getTracksForGenre(genreId, mediaSortPreferences)
-            }.first().map { it.toMediaItem() }
-
+        trackRepository.getTracksForGenre(genreId).first().map { it.toMediaItem() }
     }
 
     override fun playAlbum(albumId: Long, initialTrackIndex: Int): Flow<PlaybackResult> =
