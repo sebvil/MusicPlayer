@@ -77,7 +77,7 @@ sealed class NavigationDestination(
     object Search : NavigationDestination(
         NavigationRoute.Search,
         arguments = null,
-        isBottomNavDestination = true
+        isBottomNavDestination = false
     )
 
     object Queue : NavigationDestination(
