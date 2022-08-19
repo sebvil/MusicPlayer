@@ -146,7 +146,7 @@ class SearchViewModelTest : BaseTest() {
     @Test
     fun `SearchModeChanged updates selectedOptions and changes results`() =
         testScope.runReliableTest {
-            every { ftsRepository.searchTracks("a") } returns flowOf(listOf(Fixtures.basicTrackArgentina))
+            every { ftsRepository.searchTracks(any()) } returns flowOf(listOf(Fixtures.basicTrackArgentina))
             every { ftsRepository.searchArtists(any()) } returns flowOf(listOf(Fixtures.artistAna))
             every { ftsRepository.searchAlbums(any()) } returns flowOf(listOf(Fixtures.albumAlpaca))
             every { ftsRepository.searchGenres(any()) } returns flowOf(listOf(Fixtures.genreAlpha))
