@@ -47,17 +47,3 @@ data class ArtistWithAlbums(
     )
     val artistAppearsOn: List<Album>,
 )
-
-data class AlbumWithArtists(
-    @Embedded val album: Album,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            AlbumsForArtist::class,
-            parentColumn = "albumId",
-            entityColumn = "artistId"
-        ),
-    )
-    val artists: List<Artist>
-)

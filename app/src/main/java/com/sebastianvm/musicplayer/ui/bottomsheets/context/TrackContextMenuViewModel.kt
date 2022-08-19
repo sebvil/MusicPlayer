@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -62,14 +61,12 @@ class TrackContextMenuViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
     private val playlistRepository: PlaylistRepository
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
-    private var artistId: Long = 0
+    private var artistIds: List<Long> = listOf()
     private var track: Track? = null
 
     init {
         trackRepository.getTrack(state.value.mediaId).onEach {
-            if (it.artists.size == 1) {
-                artistId = it.artists[0]
-            }
+            artistIds = it.artists
             track = it.track
             setState {
                 copy(
@@ -166,7 +163,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         destination = NavigationDestination.Artist(
-                            arguments = ArtistArguments(artistId = artistId)
+                            arguments = ArtistArguments(artistId = artistIds[0])
                         )
                     )
                 )
@@ -175,10 +172,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         destination = NavigationDestination.ArtistsMenu(
-                            arguments = ArtistsMenuArguments(
-                                mediaId = state.value.mediaId,
-                                mediaType = MediaType.TRACK
-                            )
+                            arguments = ArtistsMenuArguments(artistIds = artistIds)
                         )
                     )
                 )

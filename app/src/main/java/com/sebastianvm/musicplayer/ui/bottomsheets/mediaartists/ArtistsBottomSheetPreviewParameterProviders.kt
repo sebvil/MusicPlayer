@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 
 class ArtistsBottomSheetStatePreviewParameterProvider :
@@ -12,8 +11,7 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
                 ModelListItemState(id = 0, headlineText = "Melendi"),
                 ModelListItemState(id = 1, headlineText = "Carlos Vives")
             ),
-            mediaType = MediaType.TRACK,
-            mediaId = 23,
+            artistIds = listOf(0, 1)
         )
     )
 }
