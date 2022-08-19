@@ -24,7 +24,7 @@ class GenreRepositoryImpl @Inject constructor(
             .distinctUntilChanged()
     }
 
-    override fun getGenre(genreId: Long): Flow<Genre> {
-        return genreDao.getGenre(genreId = genreId).distinctUntilChanged()
+    override fun getGenreName(genreId: Long): Flow<String> {
+        return genreDao.getGenreName(genreId = genreId).distinctUntilChanged()
     }
 }

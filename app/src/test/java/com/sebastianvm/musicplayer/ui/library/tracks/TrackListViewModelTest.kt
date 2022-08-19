@@ -52,7 +52,7 @@ class TrackListViewModelTest : BaseTest() {
             every { getTracksForGenre(any()) } returns emptyFlow()
         }
         genreRepository = mockk {
-            every { getGenre(C.ID_ONE) } returns flowOf(Fixtures.genreAlpha)
+            every { getGenreName(C.ID_ONE) } returns flowOf(C.GENRE_ALPHA)
         }
     }
 

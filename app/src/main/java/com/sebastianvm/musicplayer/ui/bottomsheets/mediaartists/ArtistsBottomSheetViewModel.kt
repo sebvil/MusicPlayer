@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.lifecycle.SavedStateHandle
-import com.sebastianvm.musicplayer.player.MediaType
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
@@ -15,6 +15,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,30 +26,13 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 ) :
     BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(initialState) {
     init {
-        with(state.value) {
-            when (mediaType) {
-                MediaType.TRACK -> {
-                    collect(artistRepository.getArtistsForTrack(mediaId)) { artists ->
-                        setState {
-                            copy(
-                                artistList = artists.map { it.toModelListItemState() }
-                            )
-                        }
-                    }
-                }
-                MediaType.ALBUM -> {
-                    collect(artistRepository.getArtistsForAlbum(mediaId)) { artists ->
-                        setState {
-                            copy(
-                                artistList = artists.map { it.toModelListItemState() }
-                            )
-                        }
-                    }
-                }
-                else -> throw IllegalStateException("Media artists bottom sheet not supported for mediaType: $mediaType")
+        artistRepository.getArtists(state.value.artistIds).onEach { artists ->
+            setState {
+                copy(
+                    artistList = artists.map { it.toModelListItemState() }
+                )
             }
-        }
-
+        }.launchIn(viewModelScope)
     }
 
     fun onArtistClicked(artistId: Long) {
@@ -57,8 +42,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
 }
 
 data class ArtistsBottomSheetState(
-    val mediaType: MediaType,
-    val mediaId: Long,
+    val artistIds: List<Long>,
     val artistList: List<ModelListItemState>,
 ) : State
 
@@ -70,8 +54,7 @@ object InitialArtistsBottomSheetStateModule {
     fun initialArtistsBottomSheetStateProvider(savedStateHandle: SavedStateHandle): ArtistsBottomSheetState {
         val args = savedStateHandle.getArgs<ArtistsMenuArguments>()
         return ArtistsBottomSheetState(
-            mediaId = args.mediaId,
-            mediaType = args.mediaType,
+            artistIds = args.artistIds,
             artistList = listOf(),
         )
     }

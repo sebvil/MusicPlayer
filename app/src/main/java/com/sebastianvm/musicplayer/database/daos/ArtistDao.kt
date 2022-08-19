@@ -12,15 +12,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ArtistDao {
 
-    @Query("SELECT * from Artist ORDER BY " +
-            "CASE WHEN :sortOrder='ASCENDING' THEN artistName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN :sortOrder='DESCENDING' THEN artistName END COLLATE LOCALIZED DESC"
+    @Query(
+        "SELECT * from Artist ORDER BY " +
+                "CASE WHEN :sortOrder='ASCENDING' THEN artistName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN :sortOrder='DESCENDING' THEN artistName END COLLATE LOCALIZED DESC"
     )
     fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>>
-
-    @Transaction
-    @Query("SELECT * from Artist WHERE Artist.artistName=:artistName")
-    fun getArtist(artistName: String): Flow<ArtistWithAlbums>
 
     @Transaction
     @Query("SELECT * from Artist WHERE Artist.id=:artistId")
@@ -29,17 +26,6 @@ interface ArtistDao {
     @Query("SELECT COUNT(*) FROM Artist")
     fun getArtistsCount(): Flow<Int>
 
-    @Query(
-        "SELECT Artist.* FROM Artist " +
-                "JOIN ArtistTrackCrossRef ON Artist.id=ArtistTrackCrossRef.artistId " +
-                "WHERE ArtistTrackCrossRef.trackId=:trackId"
-    )
-    fun getArtistsForTrack(trackId: Long): Flow<List<Artist>>
-
-    @Query(
-        "SELECT Artist.* FROM Artist " +
-                "JOIN AlbumsForArtist ON Artist.artistName=AlbumsForArtist.artistName " +
-                "WHERE AlbumsForArtist.albumId=:albumId"
-    )
-    fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>>
+    @Query("SELECT * FROM ARTIST WHERE Artist.id IN (:artistsIds)")
+    fun getArtists(artistsIds: List<Long>): Flow<List<Artist>>
 }

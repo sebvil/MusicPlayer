@@ -5,10 +5,10 @@ import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import kotlinx.coroutines.flow.Flow
 
 interface TrackRepository {
@@ -17,9 +17,7 @@ interface TrackRepository {
 
     fun getAllTracks(): Flow<List<Track>>
 
-    fun getTrack(trackId: Long): Flow<FullTrackInfo>
-
-    fun getTracks(tracksIds: List<Long>): Flow<List<Track>>
+    fun getTrack(trackId: Long): Flow<TrackWithArtists>
 
     fun getTracksForArtist(artistId: Long): Flow<List<Track>>
 

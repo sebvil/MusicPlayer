@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -55,8 +54,7 @@ class TrackListViewModel @Inject constructor(
 
         val listNameFlow: Flow<String?> = when (state.value.trackListType) {
             TrackListType.ALL_TRACKS -> flowOf(null)
-            TrackListType.GENRE -> genreRepository.getGenre(state.value.trackListId)
-                .map { it.genreName }
+            TrackListType.GENRE -> genreRepository.getGenreName(state.value.trackListId)
         }
 
 

@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
@@ -20,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,15 +29,13 @@ class AlbumContextMenuViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
 
-    private var trackIds: List<Long> = listOf()
-    private var artistId: Long = 0
+    private var tracks: List<Track> = listOf()
+    private var artistIds: List<Long> = listOf()
 
     init {
         albumRepository.getAlbum(state.value.mediaId).onEach {
-            if (it.artists.size == 1) {
-                artistId = it.artists[0]
-            }
-            trackIds = it.tracks
+            artistIds = it.artists
+            tracks = it.tracks
             setState {
                 copy(
                     menuTitle = it.album.albumName,
@@ -72,9 +69,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
             is ContextMenuItem.AddToQueue -> {
-                viewModelScope.launch {
-                    playbackManager.addToQueue(trackIds)
-                }
+                playbackManager.addToQueue(tracks)
             }
             is ContextMenuItem.ViewAlbum -> {
                 addNavEvent(
@@ -91,10 +86,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.ArtistsMenu(
-                            ArtistsMenuArguments(
-                                mediaType = MediaType.ALBUM,
-                                mediaId = state.value.mediaId
-                            )
+                            ArtistsMenuArguments(artistIds = artistIds)
                         )
                     )
                 )
@@ -104,7 +96,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.Artist(
                             ArtistArguments(
-                                artistId = artistId
+                                artistId = artistIds[0]
                             )
                         )
                     )

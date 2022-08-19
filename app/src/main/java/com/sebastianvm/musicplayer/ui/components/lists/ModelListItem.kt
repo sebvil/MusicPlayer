@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.Track
@@ -155,6 +156,10 @@ fun Playlist.toModelListItemState(): ModelListItemState {
 }
 
 fun Track.toModelListItemState(): ModelListItemState {
+    return ModelListItemState(id = id, headlineText = trackName, supportingText = artists)
+}
+
+fun BasicTrack.toModelListItemState(): ModelListItemState {
     return ModelListItemState(id = id, headlineText = trackName, supportingText = artists)
 }
 

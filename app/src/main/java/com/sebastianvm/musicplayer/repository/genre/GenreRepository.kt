@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface GenreRepository {
     fun getGenresCount(): Flow<Int>
     fun getGenres(): Flow<List<Genre>>
-    fun getGenre(genreId: Long): Flow<Genre>
+    fun getGenreName(genreId: Long): Flow<String>
 
 }

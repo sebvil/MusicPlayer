@@ -28,38 +28,22 @@ data class ArtistWithAlbums(
         entity = Album::class,
         parentColumn = "id",
         entityColumn = "id",
-        projection = ["id"],
         associateBy = Junction(
             AlbumsForArtist::class,
             parentColumn = "artistId",
             entityColumn = "albumId"
         ),
     )
-    val artistAlbums: List<Long>,
+    val artistAlbums: List<Album>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
         entity = Album::class,
-        projection = ["id"],
         associateBy = Junction(
             AppearsOnForArtist::class,
             parentColumn = "artistId",
             entityColumn = "albumId"
         )
     )
-    val artistAppearsOn: List<Long>,
-)
-
-data class AlbumWithArtists(
-    @Embedded val album: Album,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(
-            AlbumsForArtist::class,
-            parentColumn = "albumId",
-            entityColumn = "artistId"
-        ),
-    )
-    val artists: List<Artist>
+    val artistAppearsOn: List<Album>,
 )

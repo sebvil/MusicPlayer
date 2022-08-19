@@ -10,10 +10,10 @@ import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
@@ -40,12 +40,8 @@ interface TrackDao {
     ): Flow<List<Track>>
 
     @Transaction
-    @Query("SELECT * FROM Track WHERE id in (:trackIds)")
-    fun getTracks(trackIds: List<Long>): Flow<List<Track>>
-
-    @Transaction
     @Query("SELECT * FROM Track WHERE id=:trackId")
-    fun getTrack(trackId: Long): Flow<FullTrackInfo>
+    fun getTrack(trackId: Long): Flow<TrackWithArtists>
 
     @Transaction
     @Query(
