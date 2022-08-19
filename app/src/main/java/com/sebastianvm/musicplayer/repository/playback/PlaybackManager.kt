@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import android.net.Uri
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.PlaybackInfo
@@ -44,6 +43,6 @@ data class PlaybackState(
 data class MediaItemMetadata(
     val title: String,
     val artists: String,
-    val artworkUri: Uri,
+    val artworkUri: String,
     val trackDurationMs: Long
 )

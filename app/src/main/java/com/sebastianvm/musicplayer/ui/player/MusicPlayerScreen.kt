@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import android.content.res.Configuration
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -31,9 +29,10 @@ import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.BooleanPreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 
 @Composable
@@ -45,24 +44,8 @@ fun MusicPlayerScreen(
         screenViewModel = screenViewModel,
         eventHandler = {},
         navigationDelegate = navigationDelegate
-    ) { state ->
-        MusicPlayerLayout(state = state, playerDelegate = object : PlayerDelegate() {
-            override fun togglePlay() {
-                screenViewModel.onPlayToggled()
-            }
-
-            override fun nextClicked() {
-                screenViewModel.onNextTapped()
-            }
-
-            override fun previousClicked() {
-                screenViewModel.onPreviousTapped()
-            }
-
-            override fun onProgressBarClicked(position: Int) {
-                screenViewModel.onProgressTapped(position)
-            }
-        })
+    ) {
+        MusicPlayerLayout(screenViewModel)
     }
 }
 
@@ -70,15 +53,13 @@ fun MusicPlayerScreen(
 @Composable
 fun MusicPlayerScreenPreview(@PreviewParameter(MusicPlayerStatePreviewParameterProvider::class) state: MusicPlayerState) {
     ScreenPreview {
-        MusicPlayerLayout(state = state, playerDelegate = PlayerDelegate())
+        MusicPlayerLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
     }
 }
 
 @Composable
-fun MusicPlayerLayout(
-    state: MusicPlayerState,
-    playerDelegate: PlayerDelegate
-) {
+fun MusicPlayerLayout(viewModel: ViewModelInterface<MusicPlayerState, MusicPlayerUserAction>) {
+    val state by viewModel.state.collectAsState()
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         Row {
             MediaArtImage(
@@ -94,21 +75,7 @@ fun MusicPlayerLayout(
                     .padding(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
-                TrackProgress(
-                    TrackProgressState(
-                        trackLengthMs = state.trackLengthMs,
-                        currentPlaybackTimeMs = state.currentPlaybackTimeMs
-                    ),
-                    delegate = playerDelegate
-                )
-                MediaButtons(state.isPlaying, playerDelegate)
-            }
+            PlaybackInfoAndButtons(viewModel, modifier = Modifier.fillMaxHeight())
         }
     } else {
         Column(
@@ -129,15 +96,7 @@ fun MusicPlayerLayout(
                     .padding(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
-            TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
-            TrackProgress(
-                TrackProgressState(
-                    trackLengthMs = state.trackLengthMs,
-                    currentPlaybackTimeMs = state.currentPlaybackTimeMs
-                ),
-                delegate = playerDelegate
-            )
-            MediaButtons(state.isPlaying, playerDelegate)
+            PlaybackInfoAndButtons(viewModel)
 
         }
     }
@@ -166,103 +125,51 @@ fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) s
 }
 
 
-data class TrackProgressState(
-    val trackLengthMs: Long?,
-    val currentPlaybackTimeMs: Long?
-)
-
-data class MinutesSecondsTime(val minutes: Long, val seconds: Long) {
-    companion object {
-        fun fromMs(ms: Long): MinutesSecondsTime {
-            return MinutesSecondsTime((ms / 1000) / 60, (ms / 1000) % 60)
-        }
-    }
-}
-
-interface TrackProgressDelegate {
-    fun onProgressBarClicked(position: Int) = Unit
-}
-
-@Preview
 @Composable
-fun TrackProgress(
-    @PreviewParameter(TrackProgressStatePreviewParameterProvider::class) trackProgressState: TrackProgressState,
-    delegate: TrackProgressDelegate = object : TrackProgressDelegate {}
+fun PlaybackInfoAndButtons(
+    viewModel: ViewModelInterface<MusicPlayerState, MusicPlayerUserAction>,
+    modifier: Modifier = Modifier
 ) {
-    with(trackProgressState) {
-        val progress =
-            if (currentPlaybackTimeMs == null || trackLengthMs == null || trackLengthMs == 0L) {
-                0f
-            } else {
-                currentPlaybackTimeMs.toFloat() / trackLengthMs.toFloat()
-            }
-
-        val currentDuration = MinutesSecondsTime.fromMs(currentPlaybackTimeMs ?: 0)
-        val trackDuration = MinutesSecondsTime.fromMs(trackLengthMs ?: 0)
-        Column(modifier = Modifier.padding(all = AppDimensions.spacing.medium)) {
-            LinearProgressIndicator(
-                progress = progress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = AppDimensions.spacing.xSmall)
-                    .pointerInput(Unit) {
-                        detectTapGestures { offset ->
-                            val xOffset = offset.x
-                            val percentPosition = (xOffset / size.width) * 100
-                            delegate.onProgressBarClicked(percentPosition.toInt())
-                        }
-                    }
-            )
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "%02d:%02d".format(currentDuration.minutes, currentDuration.seconds),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = "%02d:%02d".format(trackDuration.minutes, trackDuration.seconds),
-                    style = MaterialTheme.typography.bodyLarge,
+    val state by viewModel.state.collectAsState()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+    ) {
+        TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
+        TrackProgress(
+            TrackProgressState(
+                trackLengthMs = state.trackLengthMs,
+                currentPlaybackTimeMs = state.currentPlaybackTimeMs
+            ),
+            onProgressBarClicked = { position ->
+                viewModel.handle(
+                    MusicPlayerUserAction.ProgressBarClicked(
+                        position
+                    )
                 )
             }
-        }
-    }
-
-
-}
-
-open class PlayerDelegate : TrackProgressDelegate {
-    open fun togglePlay() = Unit
-    open fun nextClicked() = Unit
-    open fun previousClicked() = Unit
-}
-
-@Preview
-@Composable
-fun MediaButtons(
-    @PreviewParameter(BooleanPreviewParameterProvider::class) isPlaying: Boolean,
-    delegate: PlayerDelegate = PlayerDelegate()
-) {
-    Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-        IconButton(onClick = { delegate.previousClicked() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_prev),
-                contentDescription = stringResource(R.string.previous),
-            )
-        }
-        val playPauseIcon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-        IconButton(onClick = { delegate.togglePlay() }) {
-            Icon(
-                painter = painterResource(id = playPauseIcon),
-                contentDescription = stringResource(R.string.previous),
-            )
-        }
-        IconButton(onClick = { delegate.nextClicked() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_next),
-                contentDescription = stringResource(R.string.previous),
-            )
+        )
+        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+            IconButton(onClick = { viewModel.handle(MusicPlayerUserAction.PreviousButtonClicked) }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_prev),
+                    contentDescription = stringResource(R.string.previous),
+                )
+            }
+            val playPauseIcon = if (state.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+            IconButton(onClick = { viewModel.handle(MusicPlayerUserAction.PlayToggled) }) {
+                Icon(
+                    painter = painterResource(id = playPauseIcon),
+                    contentDescription = stringResource(R.string.previous),
+                )
+            }
+            IconButton(onClick = { viewModel.handle(MusicPlayerUserAction.NextButtonClicked) }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_next),
+                    contentDescription = stringResource(R.string.previous),
+                )
+            }
         }
     }
 }
