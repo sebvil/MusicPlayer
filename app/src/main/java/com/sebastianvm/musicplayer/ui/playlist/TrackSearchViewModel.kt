@@ -2,11 +2,6 @@ package com.sebastianvm.musicplayer.ui.playlist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.filter
-import androidx.paging.map
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -24,55 +19,52 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class TrackSearchViewModel @Inject constructor(
     initialState: TrackSearchState,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
 ) :
-    BaseViewModel<TrackSearchUiEvent, TrackSearchState>(initialState) {
+    BaseViewModel<TrackSearchUiEvent, TrackSearchState>(
+        initialState
+    ) {
 
     private val query = MutableStateFlow("")
     private val queryUpdater = combineToPair(query, state.map { it.hideTracksInPlaylist })
     private val playlistSize = MutableStateFlow(0L)
 
     init {
-        setState {
-            copy(
-                trackSearchResults = queryUpdater.flatMapLatest { (query, hideTracksInPlaylist) ->
-                    Pager(PagingConfig(pageSize = 20)) {
-                        ftsRepository.searchTracksPaged(query)
-                    }.flow.mapLatest { pagingData ->
-                        pagingData.map {
-                            it.track.toModelListItemState()
-                        }.filter {
-                            !hideTracksInPlaylist || (it.id !in state.value.playlistTrackIds)
-                        }
-                    }
-                },
-            )
-        }
-        combine(
+        queryUpdater.debounce(500).flatMapLatest { (newQuery, hideTracksInPlaylist) ->
+            ftsRepository.searchTracks(newQuery).map { tracks ->
+                tracks.map { it.toModelListItemState() }.filter {
+                    !hideTracksInPlaylist || (it.id !in state.value.playlistTrackIds)
+                }
+            }
+        }.onEach {
+            setState {
+                copy(
+                    trackSearchResults = it
+                )
+            }
+        }.launchIn(viewModelScope)
+
+        combineToPair(
             playlistRepository.getPlaylistSize(state.value.playlistId),
             playlistRepository.getTrackIdsInPlaylist(state.value.playlistId)
-        ) { size, trackIds ->
-            Pair(size, trackIds)
-        }.onEach { (size, trackIds) ->
+        ).onEach { (size, trackIds) ->
             setState {
                 copy(
                     playlistTrackIds = trackIds
@@ -147,7 +139,7 @@ class TrackSearchViewModel @Inject constructor(
 
 data class TrackSearchState(
     val playlistId: Long,
-    val trackSearchResults: Flow<PagingData<ModelListItemState>>,
+    val trackSearchResults: List<ModelListItemState>,
     val playlistTrackIds: Set<Long> = setOf(),
     val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
     val hideTracksInPlaylist: Boolean = true
@@ -163,7 +155,7 @@ object InitialTrackSearchStateModule {
         val args = savedStateHandle.getArgs<TrackSearchArguments>()
         return TrackSearchState(
             playlistId = args.playlistId,
-            trackSearchResults = emptyFlow(),
+            trackSearchResults = listOf(),
         )
     }
 }

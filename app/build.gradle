@@ -71,12 +71,12 @@ dependencies {
     // Kotlin
     implementation "androidx.core:core-ktx:1.9.0-beta01"
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     // Room
     def room_version = '2.5.0-alpha02'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-paging:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     // Lifecycle
@@ -93,10 +93,6 @@ dependencies {
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
-
-    // Paging
-    def paging_version = '3.2.0-alpha02'
-    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Coil
     def coil_version = '2.1.0'
@@ -124,9 +120,6 @@ dependencies {
     def accompanist_version = '0.25.0'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
-
-    // Paging
-    implementation "androidx.paging:paging-compose:1.0.0-alpha16"
 
     // Glide
     implementation "io.coil-kt:coil-compose:$coil_version"

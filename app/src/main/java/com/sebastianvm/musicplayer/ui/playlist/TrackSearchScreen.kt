@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -38,8 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
@@ -222,38 +221,34 @@ fun TrackSearchLayout(
             )
         }
 
-        state.trackSearchResults.collectAsLazyPagingItems().also { lazyPagingItems ->
-            LazyColumn {
-                items(lazyPagingItems) { item ->
-                    item?.also {
-                        ModelListItem(
-                            state = item,
-                            modifier = Modifier
-                                .clickable {
-                                    delegate.onTrackClicked(
-                                        trackId = item.id,
-                                        trackName = item.headlineText
-                                    )
-                                },
-                            trailingContent = {
-                                if (it.id in state.playlistTrackIds) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = stringResource(
-                                            id = R.string.search
-                                        ),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                } else {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_plus),
-                                        contentDescription = stringResource(R.string.more),
-                                    )
-                                }
-                            }
-                        )
+        LazyColumn {
+            items(state.trackSearchResults) { item ->
+                ModelListItem(
+                    state = item,
+                    modifier = Modifier
+                        .clickable {
+                            delegate.onTrackClicked(
+                                trackId = item.id,
+                                trackName = item.headlineText
+                            )
+                        },
+                    trailingContent = {
+                        if (item.id in state.playlistTrackIds) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = stringResource(
+                                    id = R.string.search
+                                ),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_plus),
+                                contentDescription = stringResource(R.string.more),
+                            )
+                        }
                     }
-                }
+                )
             }
         }
     }
