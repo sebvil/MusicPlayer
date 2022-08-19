@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
@@ -109,11 +110,8 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.playQueueItem(index)
     }
 
-    override suspend fun addToQueue(mediaIds: List<Long>) {
-        val tracks = withContext(ioDispatcher) {
-            trackRepository.getTracks(tracksIds = mediaIds).first().map { it.toMediaItem() }
-        }
-        mediaPlaybackClient.addToQueue(tracks)
+    override fun addToQueue(tracks: List<Track>) {
+        mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
     }
 
     override fun getQueue(): Flow<List<TrackWithQueueId>> {

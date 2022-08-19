@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -62,12 +63,14 @@ class TrackContextMenuViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistId: Long = 0
+    private var track: Track? = null
 
     init {
         trackRepository.getTrack(state.value.mediaId).onEach {
             if (it.artists.size == 1) {
                 artistId = it.artists[0]
             }
+            track = it.track
             setState {
                 copy(
                     menuTitle = it.track.trackName,
@@ -148,9 +151,7 @@ class TrackContextMenuViewModel @Inject constructor(
 
             }
             ContextMenuItem.AddToQueue -> {
-                viewModelScope.launch {
-                    playbackManager.addToQueue(listOf(state.value.mediaId))
-                }
+                track?.also { playbackManager.addToQueue(listOf(it)) }
             }
             ContextMenuItem.ViewAlbum -> {
                 addNavEvent(

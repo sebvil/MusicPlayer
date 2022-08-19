@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -193,8 +193,8 @@ class MediaTree @Inject constructor(
                     }
             }
             KeyType.ARTIST -> {
-                artistRepository.getArtist(parentKey.itemIndexOrId).flatMapLatest {
-                    albumRepository.getAlbums(it.artistAlbums)
+                artistRepository.getArtist(parentKey.itemIndexOrId).map {
+                    it.artistAlbums
                 }.first().map { it.buildMediaItem(parentKey) }
             }
             KeyType.GENRE -> null

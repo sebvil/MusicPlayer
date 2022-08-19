@@ -18,6 +18,6 @@ interface GenreDao {
     )
     fun getGenres(sortOrder: MediaSortOrder): Flow<List<Genre>>
 
-    @Query("SELECT * FROM Genre WHERE Genre.id=:genreId")
-    fun getGenre(genreId: Long): Flow<Genre>
+    @Query("SELECT genreName FROM GENRE WHERE Genre.id=:genreId")
+    fun getGenreName(genreId: Long): Flow<String>
 }

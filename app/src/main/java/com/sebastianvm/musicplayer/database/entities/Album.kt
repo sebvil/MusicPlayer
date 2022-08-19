@@ -13,3 +13,4 @@ data class Album(
     val imageUri: String
 )
 
+data class BasicAlbum(val id: Long, val albumName: String)

@@ -6,7 +6,7 @@ import androidx.room.Relation
 
 data class FullAlbumInfo(
     @Embedded
-    val album: Album,
+    val album: BasicAlbum,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
@@ -23,7 +23,7 @@ data class FullAlbumInfo(
         parentColumn = "id",
         entityColumn = "id",
         entity = Track::class,
-        projection = ["id"],
     )
-    val tracks: List<Long>,
+    val tracks: List<Track>
 )
+

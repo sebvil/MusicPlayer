@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
@@ -23,8 +22,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -34,30 +31,15 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
     artistRepository: ArtistRepository,
-    private val albumRepository: AlbumRepository,
 ) : BaseViewModel<ArtistUiEvent, ArtistState>(
     initialState
 ) {
     init {
-        artistRepository.getArtist(state.value.artistId).flatMapLatest { artistWithAlbums ->
-            val albumsForArtist = artistWithAlbums.artistAlbums.let { albums ->
-                albumRepository.getAlbums(albums)
-            }
-            val appearsOnForArtist = artistWithAlbums.artistAppearsOn.let { albums ->
-                albumRepository.getAlbums(albums)
-            }
-            combine(albumsForArtist, appearsOnForArtist) { albumsFor, appearsOn ->
-                Triple(
-                    artistWithAlbums.artist.artistName,
-                    albumsFor,
-                    appearsOn
-                )
-            }
-        }.onEach { (artistName, albumsForArtist, appearsOnForArtist) ->
+        artistRepository.getArtist(state.value.artistId).onEach { artistWithAlbums ->
             setState {
                 copy(
-                    artistName = artistName,
-                    albumsForArtistItems = albumsForArtist.takeUnless { it.isEmpty() }
+                    artistName = artistWithAlbums.artist.artistName,
+                    albumsForArtistItems = artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }
                         ?.let { albums ->
                             listOf(
                                 ArtistScreenItem.SectionHeaderItem(
@@ -68,7 +50,7 @@ class ArtistViewModel @Inject constructor(
                                 .map { it.toAlbumRowItem() })
 
                         },
-                    appearsOnForArtistItems = appearsOnForArtist.takeUnless { it.isEmpty() }
+                    appearsOnForArtistItems = artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }
                         ?.let { albums ->
                             listOf(
                                 ArtistScreenItem.SectionHeaderItem(
