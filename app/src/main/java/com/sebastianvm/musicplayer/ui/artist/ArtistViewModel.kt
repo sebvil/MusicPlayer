@@ -23,8 +23,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +34,8 @@ class ArtistViewModel @Inject constructor(
 ) : BaseViewModel<ArtistUiEvent, ArtistState>(initialState),
     ViewModelInterface<ArtistState, ArtistUserAction> {
     init {
-        artistRepository.getArtist(state.value.artistId).onEach { artistWithAlbums ->
+        viewModelScope.launch {
+            val artistWithAlbums = artistRepository.getArtist(state.value.artistId).first()
             setState {
                 copy(
                     artistName = artistWithAlbums.artist.artistName,
@@ -61,7 +62,7 @@ class ArtistViewModel @Inject constructor(
                         },
                 )
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
     override fun handle(action: ArtistUserAction) {
