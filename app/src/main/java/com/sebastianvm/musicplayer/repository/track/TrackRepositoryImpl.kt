@@ -6,10 +6,10 @@ import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.FullTrackInfo
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
@@ -42,12 +42,8 @@ class TrackRepositoryImpl @Inject constructor(
             }.distinctUntilChanged()
     }
 
-    override fun getTrack(trackId: Long): Flow<FullTrackInfo> {
+    override fun getTrack(trackId: Long): Flow<TrackWithArtists> {
         return trackDao.getTrack(trackId).distinctUntilChanged()
-    }
-
-    override fun getTracks(tracksIds: List<Long>): Flow<List<Track>> {
-        return trackDao.getTracks(tracksIds).distinctUntilChanged()
     }
 
     override fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
