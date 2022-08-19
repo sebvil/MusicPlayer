@@ -62,6 +62,13 @@ object Fixtures {
         path = ""
     )
 
+    val basicTrackArgentina = BasicTrack(
+        id = C.ID_ONE,
+        trackName = C.TRACK_ARGENTINA,
+        artists = C.ARTIST_ANA,
+        trackNumber = 0,
+    )
+
     val trackBelgium = Track(
         id = C.ID_TWO,
         trackName = C.TRACK_BELGIUM,
@@ -86,5 +93,8 @@ object Fixtures {
 
     val playlistApple = Playlist(id = C.ID_ONE, playlistName = C.PLAYLIST_APPLE)
 
-
+    val albumWithTracks = AlbumWithTracks(
+        album = albumAlpaca,
+        tracks = listOf(basicTrackArgentina)
+    )
 }

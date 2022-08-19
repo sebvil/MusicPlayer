@@ -7,12 +7,16 @@ import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -21,6 +25,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,10 +36,12 @@ class AlbumViewModel @Inject constructor(
     initialState: AlbumState,
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState) {
+) : BaseViewModel<AlbumUiEvent, AlbumState>(initialState),
+    ViewModelInterface<AlbumState, AlbumUserAction> {
 
     init {
-        albumRepository.getAlbumWithTracks(state.value.albumId).onEach { albumWithTracks ->
+        viewModelScope.launch {
+            val albumWithTracks = albumRepository.getAlbumWithTracks(state.value.albumId).first()
             setState {
                 copy(
                     imageUri = albumWithTracks.album.imageUri,
@@ -43,33 +50,49 @@ class AlbumViewModel @Inject constructor(
                         .map { it.toModelListItemState() }
                 )
             }
-        }.launchIn(viewModelScope)
-    }
-
-    fun onTrackClicked(trackIndex: Int) {
-        viewModelScope.launch {
-            playbackManager.playAlbum(albumId = state.value.albumId, initialTrackIndex = trackIndex)
-            addUiEvent(AlbumUiEvent.NavEvent(NavigationDestination.MusicPlayer))
         }
     }
 
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-        addUiEvent(
-            AlbumUiEvent.NavEvent(
-                NavigationDestination.TrackContextMenu(
-                    TrackContextMenuArguments(
-                        trackId = trackId,
-                        mediaType = MediaType.TRACK,
-                        mediaGroup = MediaGroup(
-                            mediaId = state.value.albumId,
-                            mediaGroupType = MediaGroupType.ALBUM
-                        ),
-                        trackIndex = trackIndex
+    override fun handle(action: AlbumUserAction) {
+        when (action) {
+            is AlbumUserAction.TrackClicked -> {
+                playbackManager.playAlbum(
+                    albumId = state.value.albumId,
+                    initialTrackIndex = action.trackIndex
+                ).onEach {
+                    when (it) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
+                            copy(
+                                playbackResult = it
+                            )
+                        }
+                        is PlaybackResult.Success -> {
+                            setState { copy(playbackResult = null) }
+                            addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            }
+            is AlbumUserAction.TrackOverflowMenuIconClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackContextMenu(
+                            TrackContextMenuArguments(
+                                trackId = action.trackId,
+                                mediaType = MediaType.TRACK,
+                                mediaGroup = MediaGroup(
+                                    mediaId = state.value.albumId,
+                                    mediaGroupType = MediaGroupType.ALBUM
+                                ),
+                                trackIndex = action.trackIndex
+                            )
+                        )
                     )
                 )
-            )
-        )
+            }
+        }
     }
+
 }
 
 data class AlbumState(
@@ -77,6 +100,7 @@ data class AlbumState(
     val imageUri: String,
     val albumName: String,
     val trackList: List<ModelListItemState>,
+    val playbackResult: PlaybackResult? = null
 ) : State
 
 
@@ -96,6 +120,9 @@ object InitialAlbumStateModule {
     }
 }
 
-sealed class AlbumUiEvent : UiEvent {
-    data class NavEvent(val navigationDestination: NavigationDestination) : AlbumUiEvent()
+sealed class AlbumUiEvent : UiEvent
+sealed interface AlbumUserAction : UserAction {
+    data class TrackClicked(val trackIndex: Int) : AlbumUserAction
+    data class TrackOverflowMenuIconClicked(val trackIndex: Int, val trackId: Long) :
+        AlbumUserAction
 }

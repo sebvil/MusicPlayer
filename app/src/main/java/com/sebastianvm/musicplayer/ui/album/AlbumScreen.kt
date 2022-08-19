@@ -13,6 +13,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +30,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
 fun AlbumScreen(
@@ -38,25 +42,9 @@ fun AlbumScreen(
         screenViewModel = screenViewModel,
         eventHandler = {},
         navigationDelegate = navigationDelegate
-    ) { state ->
-        AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {
-            override fun onTrackClicked(trackIndex: Int) {
-                screenViewModel.onTrackClicked(trackIndex = trackIndex)
-            }
-
-            override fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) {
-                screenViewModel.onTrackOverflowMenuIconClicked(
-                    trackIndex = trackIndex,
-                    trackId = trackId
-                )
-            }
-        })
+    ) {
+        AlbumLayout(viewModel = screenViewModel)
     }
-}
-
-interface AlbumScreenDelegate {
-    fun onTrackClicked(trackIndex: Int) = Unit
-    fun onTrackOverflowMenuIconClicked(trackIndex: Int, trackId: Long) = Unit
 }
 
 @ScreenPreview
@@ -65,70 +53,72 @@ fun AlbumScreenPreview(
     @PreviewParameter(AlbumStatePreviewParameterProvider::class) state: AlbumState
 ) {
     ScreenPreview {
-        AlbumLayout(state = state, delegate = object : AlbumScreenDelegate {})
+        AlbumLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
     }
 }
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AlbumLayout(state: AlbumState, delegate: AlbumScreenDelegate) {
-    with(state) {
-        LazyColumn {
-            item {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+fun AlbumLayout(viewModel: ViewModelInterface<AlbumState, AlbumUserAction>) {
+    val state by viewModel.state.collectAsState()
+    LazyColumn {
+        item {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = AppDimensions.spacing.medium),
+            ) {
+                MediaArtImage(
+                    uri = state.imageUri,
+                    contentDescription = stringResource(
+                        id = R.string.album_art_for_album,
+                        state.albumName
+                    ),
+                    backupContentDescription = R.string.placeholder_album_art,
+                    backupResource = R.drawable.ic_album,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = AppDimensions.spacing.medium),
-                ) {
-                    MediaArtImage(
-                        uri = state.imageUri,
-                        contentDescription = stringResource(
-                            id = R.string.album_art_for_album,
-                            state.albumName
-                        ),
-                        backupContentDescription = R.string.placeholder_album_art,
-                        backupResource = R.drawable.ic_album,
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .padding(all = AppDimensions.spacing.mediumLarge),
-                        contentScale = ContentScale.FillHeight
-                    )
-                    Text(
-                        text = state.albumName,
-                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.mediumLarge),
-                        style = MaterialTheme.typography.headlineLarge,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
-            itemsIndexed(trackList) { index, item ->
-                ModelListItem(
-                    state = item,
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .clickable {
-                            delegate.onTrackClicked(index)
-                        },
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
-                                delegate.onTrackOverflowMenuIconClicked(
-                                    index,
-                                    item.id
-                                )
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_overflow),
-                                contentDescription = stringResource(R.string.more),
-                            )
-                        }
-                    }
+                        .aspectRatio(1f)
+                        .padding(all = AppDimensions.spacing.mediumLarge),
+                    contentScale = ContentScale.FillHeight
+                )
+                Text(
+                    text = state.albumName,
+                    modifier = Modifier.padding(horizontal = AppDimensions.spacing.mediumLarge),
+                    style = MaterialTheme.typography.headlineLarge,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
+        itemsIndexed(state.trackList) { index, item ->
+            ModelListItem(
+                state = item,
+                modifier = Modifier
+                    .animateItemPlacement()
+                    .clickable {
+                        viewModel.handle(AlbumUserAction.TrackClicked(index))
+                    },
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            viewModel.handle(
+                                AlbumUserAction.TrackOverflowMenuIconClicked(
+                                    index,
+                                    item.id
+                                )
+                            )
+                        },
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(R.string.more),
+                        )
+                    }
+                }
+            )
+        }
+
     }
 }
