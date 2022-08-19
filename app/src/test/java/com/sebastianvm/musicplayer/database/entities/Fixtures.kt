@@ -29,23 +29,12 @@ object Fixtures {
     val artistBob = Artist(id = C.ID_TWO, artistName = C.ARTIST_BOB)
     val artistCamilo = Artist(id = C.ID_THREE, artistName = C.ARTIST_CAMILO)
 
-//    val artistWithAlbumsAna = ArtistWithAlbums(
-//        artist = artistAna,
-//        artistAlbums = listOf(C.ID_TWO),
-//        artistAppearsOn = listOf()
-//    )
-//
-//    val artistWithAlbumsBob = ArtistWithAlbums(
-//        artist = artistBob,
-//        artistAlbums = listOf(C.ID_THREE),
-//        artistAppearsOn = listOf()
-//    )
-//
-//    val artistWithAlbumsCamilo = ArtistWithAlbums(
-//        artist = artistCamilo,
-//        artistAlbums = listOf(C.ID_ONE),
-//        artistAppearsOn = listOf()
-//    )
+    val artistWithAlbums = ArtistWithAlbums(
+        artist = artistAna,
+        artistAlbums = listOf(albumAlpaca),
+        artistAppearsOn = listOf(albumBobcat, albumCheetah)
+    )
+
 
     val genreAlpha = Genre(id = C.ID_ONE, genreName = C.GENRE_ALPHA)
     val genreBravo = Genre(id = C.ID_TWO, genreName = C.GENRE_BRAVO)
@@ -60,6 +49,13 @@ object Fixtures {
         trackDurationMs = 0,
         trackNumber = 0,
         path = ""
+    )
+
+    val basicTrackArgentina = BasicTrack(
+        id = C.ID_ONE,
+        trackName = C.TRACK_ARGENTINA,
+        artists = C.ARTIST_ANA,
+        trackNumber = 0,
     )
 
     val trackBelgium = Track(
@@ -86,5 +82,9 @@ object Fixtures {
 
     val playlistApple = Playlist(id = C.ID_ONE, playlistName = C.PLAYLIST_APPLE)
 
+    val albumWithTracks = AlbumWithTracks(
+        album = albumAlpaca,
+        tracks = listOf(basicTrackArgentina)
+    )
 
 }

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.player
 
-import android.net.Uri
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 
@@ -12,7 +11,7 @@ class MusicPlayerStatePreviewParameterProvider : PreviewParameterProvider<MusicP
             artists = "Melendi, Carlos Vives",
             trackLengthMs = null,
             currentPlaybackTimeMs = null,
-            trackArt = Uri.EMPTY,
+            trackArt = "",
         )
     )
 }

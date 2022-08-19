@@ -1,157 +1,136 @@
-//package com.sebastianvm.musicplayer.ui.album
-//
-//import android.content.ContentUris
-//import android.net.Uri
-//import android.provider.MediaStore
-//import com.sebastianvm.musicplayer.database.entities.fullAlbumInfo
-//import com.sebastianvm.musicplayer.database.entities.fullTrackInfo
-//import com.sebastianvm.musicplayer.player.MediaGroup
-//import com.sebastianvm.musicplayer.player.MediaGroupType
-//import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-//import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
-//import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-//import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-//import com.sebastianvm.musicplayer.repository.queue.FakeMediaQueueRepository
-//import com.sebastianvm.musicplayer.repository.queue.MediaQueueRepository
-//import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
-//import com.sebastianvm.musicplayer.repository.track.TrackRepository
-//import com.sebastianvm.musicplayer.ui.components.TrackRowState
-//import com.sebastianvm.musicplayer.util.DispatcherSetUpRule
-//import io.mockk.coVerify
-//import io.mockk.spyk
-//import io.mockk.verify
-//import kotlinx.coroutines.ExperimentalCoroutinesApi
-//import kotlinx.coroutines.test.runTest
-//import org.junit.Assert.assertEquals
-//import org.junit.Before
-//import org.junit.Rule
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.robolectric.RobolectricTestRunner
-//
-//@RunWith(RobolectricTestRunner::class)
-//class AlbumViewModelTest : BaseTest() {
-//
-//    private lateinit var playbackManager: PlaybackManager
-//    private lateinit var mediaQueueRepository: MediaQueueRepository
-//    private lateinit var albumRepository: AlbumRepository
-//    private lateinit var trackRepository: TrackRepository
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @get:Rule
-//    val mainCoroutineRule = DispatcherSetUpRule()
-//
-////    @get:Rule
-////    val fakeUriUtilsRule = FakeUriUtilsRule()
-//
-//    @Before
-//    fun setUp() {
-//        playbackManager = spyk(FakePlaybackManager())
-//        mediaQueueRepository = spyk(FakeMediaQueueRepository())
-//        albumRepository = FakeAlbumRepository(
-//            fullAlbumInfo = listOf(
-//                fullAlbumInfo {
-//                    album {
-//                        albumId = ALBUM_ID
-//                        albumName = ALBUM_NAME
-//                        year = ALBUM_YEAR
-//                        artists = ALBUM_ARTIST
-//                    }
-//                    artistIds {
-//                        add(ALBUM_ARTIST)
-//                    }
-//                    trackIds {
-//                        add(TRACK_ID)
-//                    }
-//                })
-//        )
-//        trackRepository = FakeTrackRepository(tracks = listOf(
-//            fullTrackInfo {
-//                track {
-//                    trackId = TRACK_ID
-//                    trackName = TRACK_NAME
-//                    albumName = ALBUM_NAME
-//                    trackNumber = TRACK_NUMBER
-//                    artists = ALBUM_ARTIST
-//                }
-//            }
-//        ))
-//    }
-//
-//    private fun generateViewModel(): AlbumViewModel {
-//        return AlbumViewModel(
-//            mediaPlaybackRepository = playbackManager,
-//            initialState = AlbumState(
-//                albumId = ALBUM_ID,
-//                trackList = listOf(),
-//                albumName = "",
-//                imageUri = Uri.EMPTY,
-//            ),
-//            albumRepository = albumRepository,
-//            trackRepository = trackRepository,
-//            mediaQueueRepository = mediaQueueRepository,
-//        )
-//    }
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @Test
-//    fun `init sets albumHeaderItem and trackList`() = testScope.runReliableTest {
-//        with(generateViewModel()) {
-//            assertEquals(ALBUM_NAME, state.value.albumName)
-//            assertEquals(
-//                ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_ID.toLong()),
-//                state.value.imageUri
-//            )
-//            assertEquals(
-//                listOf(
-//                    TrackRowState(
-//                        trackId = TRACK_ID,
-//                        trackName = TRACK_NAME,
-//                        artists = ALBUM_ARTIST,
-//                        albumName = ALBUM_NAME,
-//                        trackNumber = TRACK_NUMBER
-//                    )
-//                ), state.value.trackList
-//            )
-//        }
-//    }
-//
-//    @Test
-//    fun `onTrackClicked creates queue, triggers playback adds nav to player event`() {
-//        with(generateViewModel()) {
-//            onTrackClicked(TRACK_ID)
-//            assertEquals(listOf(AlbumUiEvent.NavigateToPlayer), events.value)
-//            verify {
-//                playbackManager.playFromId(
-//                    TRACK_ID,
-//                    MediaGroup(
-//                        mediaGroupType = MediaGroupType.ALBUM,
-//                        mediaId = ALBUM_ID
-//                    )
-//                )
-//            }
-//
-//        }
-//    }
-//
-//    @Test
-//    fun `onTrackOverflowMenuIconClicked adds OpenContextMenu UiEvent`() {
-//        with(generateViewModel()) {
-//            onTrackOverflowMenuIconClicked(TRACK_ID)
-//            assertEquals(
-//                listOf(AlbumUiEvent.OpenContextMenu(trackId = TRACK_ID, albumId = ALBUM_ID)), events.value
-//            )
-//        }
-//    }
-//
-//
-//    companion object {
-//        private const val ALBUM_ID = "0"
-//        private const val ALBUM_NAME = "ALBUM_NAME"
-//        private const val ALBUM_ARTIST = "ALBUM_ARTIST"
-//        private const val ALBUM_YEAR = 2000L
-//        private const val TRACK_ID = "0"
-//        private const val TRACK_NAME = "TRACK_NAME"
-//        private const val TRACK_NUMBER = 1L
-//    }
-//}
+package com.sebastianvm.musicplayer.ui.album
+
+import com.sebastianvm.musicplayer.database.entities.C
+import com.sebastianvm.musicplayer.database.entities.Fixtures
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
+import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
+import com.sebastianvm.musicplayer.util.BaseTest
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+import kotlin.test.assertNull
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class AlbumViewModelTest : BaseTest() {
+
+    private lateinit var playbackManager: PlaybackManager
+    private lateinit var albumRepository: AlbumRepository
+
+
+    @Before
+    fun setUp() {
+        playbackManager = mockk()
+        albumRepository = mockk {
+            every { getAlbumWithTracks(C.ID_ONE) } returns MutableStateFlow(Fixtures.albumWithTracks)
+        }
+    }
+
+    private fun generateViewModel(): AlbumViewModel {
+        return AlbumViewModel(
+            initialState = AlbumState(
+                albumId = C.ID_ONE,
+                trackList = listOf(),
+                albumName = "",
+                imageUri = "",
+            ),
+            albumRepository = albumRepository,
+            playbackManager = playbackManager
+        )
+    }
+
+    @Test
+    fun `init sets initial state`() =
+        testScope.runReliableTest {
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                assertEquals(
+                    Fixtures.albumWithTracks.tracks.map { it.toModelListItemState() },
+                    state.value.trackList
+                )
+                assertEquals(C.ALBUM_ALPACA, state.value.albumName)
+            }
+        }
+
+
+    @Test
+    fun `TrackClicked triggers playback and on failure sets playback result`() =
+        testScope.runReliableTest {
+            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            every {
+                playbackManager.playAlbum(
+                    initialTrackIndex = 0,
+                    albumId = C.ID_ONE
+                )
+            } returns result
+            with(generateViewModel()) {
+                handle(AlbumUserAction.TrackClicked(trackIndex = 0))
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                result.value = PlaybackResult.Error(errorMessage = 0)
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Error(errorMessage = 0), state.value.playbackResult)
+            }
+        }
+
+    @Test
+    fun `TrackClicked for triggers playback and on success navigates to player`() =
+        testScope.runReliableTest {
+            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            every {
+                playbackManager.playAlbum(
+                    initialTrackIndex = 0,
+                    albumId = C.ID_ONE
+                )
+            } returns result
+            with(generateViewModel()) {
+                handle(AlbumUserAction.TrackClicked(trackIndex = 0))
+                advanceUntilIdle()
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                result.value = PlaybackResult.Success
+                advanceUntilIdle()
+                assertNull(state.value.playbackResult)
+                assertEquals(
+                    listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
+                    navEvents.value
+                )
+            }
+        }
+
+    @Test
+    fun `TrackOverflowMenuIconClicked navigates to track context menu `() {
+        with(generateViewModel()) {
+            handle(AlbumUserAction.TrackOverflowMenuIconClicked(trackIndex = 1, trackId = 0))
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackContextMenu(
+                            TrackContextMenuArguments(
+                                trackId = 0,
+                                mediaType = MediaType.TRACK,
+                                mediaGroup = MediaGroup(
+                                    mediaId = C.ID_ONE,
+                                    mediaGroupType = MediaGroupType.ALBUM
+                                ),
+                                trackIndex = 1
+                            )
+                        )
+                    )
+                ),
+                navEvents.value
+            )
+        }
+    }
+}

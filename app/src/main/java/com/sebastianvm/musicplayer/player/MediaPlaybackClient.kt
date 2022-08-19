@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
 import android.content.Context
-import android.net.Uri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -169,7 +168,7 @@ class MediaPlaybackClient @Inject constructor(
         MediaItemMetadata(
             title = title?.toString() ?: "",
             artists = artist?.toString() ?: "",
-            artworkUri = artworkUri ?: Uri.EMPTY,
+            artworkUri = artworkUri?.toString() ?: "",
             trackDurationMs = duration
         )
     }
