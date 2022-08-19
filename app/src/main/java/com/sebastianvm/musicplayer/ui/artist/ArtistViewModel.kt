@@ -11,6 +11,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -29,9 +31,8 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
     artistRepository: ArtistRepository,
-) : BaseViewModel<ArtistUiEvent, ArtistState>(
-    initialState
-) {
+) : BaseViewModel<ArtistUiEvent, ArtistState>(initialState),
+    ViewModelInterface<ArtistState, ArtistUserAction> {
     init {
         artistRepository.getArtist(state.value.artistId).onEach { artistWithAlbums ->
             setState {
@@ -63,34 +64,35 @@ class ArtistViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
-        return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
-    }
-
-    fun onAlbumClicked(albumId: Long) {
-        addUiEvent(
-            ArtistUiEvent.NavEvent(
-                NavigationDestination.Album(
-                    AlbumArguments(
-                        albumId = albumId
+    override fun handle(action: ArtistUserAction) {
+        when (action) {
+            is ArtistUserAction.AlbumClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Album(
+                            AlbumArguments(
+                                albumId = action.albumId
+                            )
+                        )
                     )
                 )
-            )
-        )
-    }
-
-    fun onAlbumOverflowMenuIconClicked(albumId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumContextMenu(
-                    AlbumContextMenuArguments(albumId = albumId)
+            }
+            is ArtistUserAction.AlbumOverflowMenuIconClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.AlbumContextMenu(
+                            AlbumContextMenuArguments(albumId = action.albumId)
+                        )
+                    )
                 )
-            )
-        )
+            }
+            is ArtistUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+
+        }
     }
 
-    fun onUpButtonClicked() {
-        addNavEvent(NavEvent.NavigateUp)
+    private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
+        return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
     }
 
 }
@@ -121,4 +123,10 @@ object InitialArtistState {
 
 sealed class ArtistUiEvent : UiEvent {
     data class NavEvent(val navigationDestination: NavigationDestination) : ArtistUiEvent()
+}
+
+sealed interface ArtistUserAction : UserAction {
+    data class AlbumClicked(val albumId: Long) : ArtistUserAction
+    data class AlbumOverflowMenuIconClicked(val albumId: Long) : ArtistUserAction
+    object UpButtonClicked : ArtistUserAction
 }
