@@ -27,7 +27,7 @@ interface SortPreferencesRepository {
     suspend fun toggleGenreListSortOrder()
     fun getGenreListSortOrder(): Flow<MediaSortOrder>
 
-    suspend fun modifyPlaylistsListSortOrder(mediaSortOrder: MediaSortOrder)
+    suspend fun modifyPlaylistsListSortOrder()
     fun getPlaylistsListSortOrder(): Flow<MediaSortOrder>
 
     suspend fun modifyPlaylistsSortPreferences(

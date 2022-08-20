@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 
 fun NavGraphBuilder.playlistsListNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<PlaylistsListViewModel>(
+    screenDestination<PlaylistListViewModel>(
         destination = NavigationRoute.PlaylistsRoot,
         destinationType = DestinationType.Screen
     ) { viewModel ->

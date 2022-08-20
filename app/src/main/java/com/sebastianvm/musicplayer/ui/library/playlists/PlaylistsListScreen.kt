@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,10 +29,12 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
 fun PlaylistsListScreen(
-    screenViewModel: PlaylistsListViewModel = viewModel(),
+    screenViewModel: PlaylistListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
     Screen(
@@ -41,7 +44,7 @@ fun PlaylistsListScreen(
         fab = {
             ExtendedFloatingActionButton(
                 text = { Text(text = stringResource(id = R.string.new_playlist)) },
-                onClick = { screenViewModel.onFabClicked() },
+                onClick = { screenViewModel.handle(PlaylistListUserAction.AddPlaylistButtonClicked) },
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_plus),
@@ -54,71 +57,44 @@ fun PlaylistsListScreen(
                 title = stringResource(id = R.string.playlists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(PlaylistListUserAction.SortByButtonClicked)
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(PlaylistListUserAction.UpButtonClicked)
                     }
                 })
-        }) { state ->
-        PlaylistsListLayout(state = state, object : PlaylistsListScreenDelegate {
-            override fun onPlaylistClicked(playlistId: Long) {
-                screenViewModel.onPlaylistClicked(playlistId = playlistId)
-            }
-
-            override fun onContextMenuIconClicked(playlistId: Long) {
-                screenViewModel.onOverflowMenuIconClicked(playlistId = playlistId)
-            }
-
-            override fun onDismissDialog() {
-                screenViewModel.onDialogDismissed()
-            }
-
-            override fun onSubmit(playlistName: String) {
-                screenViewModel.onPlaylistCreated(playlistName)
-            }
-        })
+        }) {
+        PlaylistsListLayout(screenViewModel)
     }
 }
 
-interface PlaylistsListScreenDelegate : PlaylistDialogDelegate {
-    fun onPlaylistClicked(playlistId: Long) = Unit
-    fun onContextMenuIconClicked(playlistId: Long) = Unit
-}
 
 @ScreenPreview
 @Composable
 fun PlaylistsListScreenPreview(
-    @PreviewParameter(PlaylistsListStatePreviewParameterProvider::class) state: PlaylistsListState
+    @PreviewParameter(PlaylistsListStatePreviewParameterProvider::class) state: PlaylistListState
 ) {
     ScreenPreview {
-        PlaylistsListLayout(state = state, object : PlaylistsListScreenDelegate {
-            override fun onPlaylistClicked(playlistId: Long) = Unit
-        })
+        PlaylistsListLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
     }
-}
-
-interface PlaylistDialogDelegate {
-    fun onDismissDialog() = Unit
-    fun onSubmit(playlistName: String) = Unit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePlaylistDialog(delegate: PlaylistDialogDelegate) {
+fun CreatePlaylistDialog(onDismiss: () -> Unit, onConfirm: (playlistName: String) -> Unit) {
     var playListName by rememberSaveable {
         mutableStateOf("")
     }
     AlertDialog(
-        onDismissRequest = { delegate.onDismissDialog() },
+        onDismissRequest = { onDismiss() },
         confirmButton = {
-            TextButton(onClick = { delegate.onSubmit(playListName) }) {
+            TextButton(onClick = { onConfirm(playListName) }) {
                 Text(text = "Create")
             }
         },
         dismissButton = {
-            TextButton(onClick = { delegate.onDismissDialog() }) {
+            TextButton(onClick = { onDismiss() }) {
                 Text(text = "Cancel")
             }
         },
@@ -134,26 +110,62 @@ fun CreatePlaylistDialog(delegate: PlaylistDialogDelegate) {
     )
 }
 
+@Composable
+fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(text = "Ok")
+            }
+        },
+        title = {
+            Text(text = "Error creating playlist")
+        },
+        text = {
+            Text(text = "A playlist with that name already exists.")
+
+        }
+    )
+}
+
 
 @Composable
-fun PlaylistsListLayout(
-    state: PlaylistsListState,
-    delegate: PlaylistsListScreenDelegate
-) {
-    if (state.isDialogOpen) {
-        CreatePlaylistDialog(delegate = delegate)
+fun PlaylistsListLayout(viewModel: ViewModelInterface<PlaylistListState, PlaylistListUserAction>) {
+    val state by viewModel.state.collectAsState()
+    if (state.isCreatePlaylistDialogOpen) {
+        CreatePlaylistDialog(
+            onDismiss = { viewModel.handle(PlaylistListUserAction.DismissPlaylistCreationButtonClicked) },
+            onConfirm = { playlistName ->
+                viewModel.handle(
+                    PlaylistListUserAction.CreatePlaylistButtonClicked(
+                        playlistName
+                    )
+                )
+            }
+        )
+    }
+
+    if (state.isPlaylistCreationErrorDialogOpen) {
+        PlaylistCreationErrorDialog(
+            onDismiss = { viewModel.handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) },
+        )
     }
     LazyColumn {
         items(state.playlistsList) { item ->
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onPlaylistClicked(item.id)
+                    viewModel.handle(PlaylistListUserAction.PlaylistClicked(item.id))
                 },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            delegate.onContextMenuIconClicked(playlistId = item.id)
+                            viewModel.handle(
+                                PlaylistListUserAction.PlaylistOverflowMenuIconClicked(
+                                    playlistId = item.id
+                                )
+                            )
                         },
                     ) {
                         Icon(

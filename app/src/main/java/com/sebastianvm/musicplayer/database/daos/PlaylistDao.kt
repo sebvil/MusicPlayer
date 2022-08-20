@@ -46,7 +46,7 @@ interface PlaylistDao {
     fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks?>
 
     @Insert
-    suspend fun createPlaylist(playlist: Playlist)
+    suspend fun createPlaylist(playlist: Playlist): Long
 
     @Delete
     suspend fun deletePlaylist(playlist: Playlist)
