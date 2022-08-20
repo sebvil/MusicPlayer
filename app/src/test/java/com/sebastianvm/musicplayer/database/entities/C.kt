@@ -37,5 +37,7 @@ object C {
     const val IMAGE_URI_3 = "path/to/image/3"
 
     const val PLAYLIST_APPLE = "Apple"
+    const val PLAYLIST_BANANA = "Banana"
+    const val PLAYLIST_CARROT = "Carrot"
 }
 

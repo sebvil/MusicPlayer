@@ -29,7 +29,7 @@ import javax.inject.Inject
 class PlaylistListViewModel @Inject constructor(
     initialState: PlaylistListState,
     private val playlistRepository: PlaylistRepository,
-    private val preferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<PlaylistListUiEvent, PlaylistListState>(initialState),
     ViewModelInterface<PlaylistListState, PlaylistListUserAction> {
 
@@ -37,7 +37,7 @@ class PlaylistListViewModel @Inject constructor(
         playlistRepository.getPlaylists().onEach { playlists ->
             setState {
                 copy(
-                    playlistsList = playlists.map { it.toModelListItemState() },
+                    playlistList = playlists.map { it.toModelListItemState() },
                 )
             }
         }.launchIn(viewModelScope)
@@ -65,7 +65,7 @@ class PlaylistListViewModel @Inject constructor(
             }
             is PlaylistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
-                    preferencesRepository.modifyPlaylistsListSortOrder()
+                    sortPreferencesRepository.togglePlaylistListSortOder()
                 }
             }
             is PlaylistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
@@ -105,7 +105,7 @@ class PlaylistListViewModel @Inject constructor(
 }
 
 data class PlaylistListState(
-    val playlistsList: List<ModelListItemState>,
+    val playlistList: List<ModelListItemState>,
     val isCreatePlaylistDialogOpen: Boolean,
     val isPlaylistCreationErrorDialogOpen: Boolean
 ) : State
@@ -119,7 +119,7 @@ object InitialPlaylistsListStateModule {
     @ViewModelScoped
     fun initialPlaylistsListStateProvider() =
         PlaylistListState(
-            playlistsList = listOf(),
+            playlistList = listOf(),
             isCreatePlaylistDialogOpen = false,
             isPlaylistCreationErrorDialogOpen = false
         )

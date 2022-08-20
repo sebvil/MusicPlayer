@@ -7,7 +7,7 @@ class PlaylistsListStatePreviewParameterProvider :
     PreviewParameterProvider<PlaylistListState> {
     override val values = sequenceOf(
         PlaylistListState(
-            playlistsList = listOf(
+            playlistList = listOf(
                 ModelListItemState(id = 0, "Pop"),
                 ModelListItemState(id = 1, "Rock"),
                 ModelListItemState(id = 2, "Tropipop"),
@@ -17,7 +17,7 @@ class PlaylistsListStatePreviewParameterProvider :
             isPlaylistCreationErrorDialogOpen = false
         ),
         PlaylistListState(
-            playlistsList = listOf(
+            playlistList = listOf(
                 ModelListItemState(id = 0, "Pop"),
                 ModelListItemState(id = 1, "Rock"),
                 ModelListItemState(id = 2, "Tropipop"),

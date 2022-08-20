@@ -124,7 +124,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun modifyPlaylistsListSortOrder() {
+    override suspend fun togglePlaylistListSortOder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
                 playlistListSortOrder = !oldPreferences.playlistListSortOrder

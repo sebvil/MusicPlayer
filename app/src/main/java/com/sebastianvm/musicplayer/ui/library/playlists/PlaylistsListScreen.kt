@@ -152,7 +152,7 @@ fun PlaylistsListLayout(viewModel: ViewModelInterface<PlaylistListState, Playlis
         )
     }
     LazyColumn {
-        items(state.playlistsList) { item ->
+        items(state.playlistList) { item ->
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
