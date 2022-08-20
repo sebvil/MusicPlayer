@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.playlists
+package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,7 +33,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvide
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 @Composable
-fun PlaylistsListScreen(
+fun PlaylistListScreen(
     screenViewModel: PlaylistListViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
@@ -65,7 +65,7 @@ fun PlaylistsListScreen(
                     }
                 })
         }) {
-        PlaylistsListLayout(screenViewModel)
+        PlaylistListLayout(screenViewModel)
     }
 }
 
@@ -73,10 +73,10 @@ fun PlaylistsListScreen(
 @ScreenPreview
 @Composable
 fun PlaylistsListScreenPreview(
-    @PreviewParameter(PlaylistsListStatePreviewParameterProvider::class) state: PlaylistListState
+    @PreviewParameter(PlaylistListStatePreviewParameterProvider::class) state: PlaylistListState
 ) {
     ScreenPreview {
-        PlaylistsListLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
+        PlaylistListLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
     }
 }
 
@@ -131,7 +131,7 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 
 
 @Composable
-fun PlaylistsListLayout(viewModel: ViewModelInterface<PlaylistListState, PlaylistListUserAction>) {
+fun PlaylistListLayout(viewModel: ViewModelInterface<PlaylistListState, PlaylistListUserAction>) {
     val state by viewModel.state.collectAsState()
     if (state.isCreatePlaylistDialogOpen) {
         CreatePlaylistDialog(

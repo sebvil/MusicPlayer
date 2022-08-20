@@ -1,9 +1,9 @@
-package com.sebastianvm.musicplayer.ui.library.playlists
+package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 
-class PlaylistsListStatePreviewParameterProvider :
+class PlaylistListStatePreviewParameterProvider :
     PreviewParameterProvider<PlaylistListState> {
     override val values = sequenceOf(
         PlaylistListState(

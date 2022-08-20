@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.playlists
+package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
