@@ -43,7 +43,6 @@ class AlbumListViewModelTest : BaseTest() {
     }
 
     private fun generateViewModel(): AlbumListViewModel {
-
         return AlbumListViewModel(
             initialState = AlbumListState(albumList = listOf()),
             albumRepository = albumRepository,

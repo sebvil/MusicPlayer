@@ -81,6 +81,8 @@ object Fixtures {
     )
 
     val playlistApple = Playlist(id = C.ID_ONE, playlistName = C.PLAYLIST_APPLE)
+    val playlistBanana = Playlist(id = C.ID_TWO, playlistName = C.PLAYLIST_BANANA)
+    val playlistCarrot = Playlist(id = C.ID_THREE, playlistName = C.PLAYLIST_CARROT)
 
     val albumWithTracks = AlbumWithTracks(
         album = albumAlpaca,

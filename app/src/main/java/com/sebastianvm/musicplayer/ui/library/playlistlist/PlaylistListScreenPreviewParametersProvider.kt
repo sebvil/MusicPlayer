@@ -1,31 +1,30 @@
-package com.sebastianvm.musicplayer.ui.library.playlists
+package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-class PlaylistsListStatePreviewParameterProvider :
-    PreviewParameterProvider<PlaylistsListState> {
+class PlaylistListStatePreviewParameterProvider :
+    PreviewParameterProvider<PlaylistListState> {
     override val values = sequenceOf(
-        PlaylistsListState(
-            playlistsList = listOf(
+        PlaylistListState(
+            playlistList = listOf(
                 ModelListItemState(id = 0, "Pop"),
                 ModelListItemState(id = 1, "Rock"),
                 ModelListItemState(id = 2, "Tropipop"),
                 ModelListItemState(id = 3, "Vallenato")
             ),
-            sortOrder = MediaSortOrder.ASCENDING,
-            isDialogOpen = false,
+            isCreatePlaylistDialogOpen = false,
+            isPlaylistCreationErrorDialogOpen = false
         ),
-        PlaylistsListState(
-            playlistsList = listOf(
+        PlaylistListState(
+            playlistList = listOf(
                 ModelListItemState(id = 0, "Pop"),
                 ModelListItemState(id = 1, "Rock"),
                 ModelListItemState(id = 2, "Tropipop"),
                 ModelListItemState(id = 3, "Vallenato")
             ),
-            sortOrder = MediaSortOrder.ASCENDING,
-            isDialogOpen = true,
+            isCreatePlaylistDialogOpen = true,
+            isPlaylistCreationErrorDialogOpen = false
         )
     )
 }
