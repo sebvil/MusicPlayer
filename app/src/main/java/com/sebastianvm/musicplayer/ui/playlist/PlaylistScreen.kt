@@ -13,6 +13,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,6 +31,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 
 
 @Composable
@@ -48,11 +52,11 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
             LibraryTopBar(title = it.playlistName,
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(PlaylistUserAction.UpClicked)
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(PlaylistUserAction.SortByClicked)
                     }
                 })
         },
@@ -65,30 +69,9 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
                         contentDescription = "Plus"
                     )
                 },
-                onClick = { screenViewModel.onAddTracksClicked() })
-        }) { state ->
-        PlaylistLayout(
-            state = state,
-            listState = listState,
-            delegate = object : PlaylistScreenDelegate {
-
-                override fun onTrackClicked(trackIndex: Int) {
-                    screenViewModel.onTrackClicked(trackIndex)
-                }
-
-                override fun onOverflowMenuIconClicked(
-                    trackIndex: Int,
-                    trackId: Long,
-                    position: Long
-                ) {
-                    screenViewModel.onTrackOverflowMenuIconClicked(trackIndex, trackId, position)
-                }
-
-                override fun onDismissRequest() {
-                    screenViewModel.onClosePlaybackErrorDialog()
-                }
-
-            })
+                onClick = { screenViewModel.handle(PlaylistUserAction.AddTracksClicked) })
+        }) {
+        PlaylistLayout(viewModel = screenViewModel, listState = listState)
     }
 }
 
@@ -110,24 +93,25 @@ fun PlaylistScreenPreview(@PreviewParameter(PlaylistStatePreviewParameterProvide
             onClick = { })
     }) {
         PlaylistLayout(
-            state = state,
-            listState = rememberLazyListState(),
-            delegate = object : PlaylistScreenDelegate {})
+            viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state),
+            listState = rememberLazyListState()
+        )
     }
-}
-
-interface PlaylistScreenDelegate : PlaybackStatusIndicatorDelegate {
-    fun onTrackClicked(trackIndex: Int) = Unit
-    fun onOverflowMenuIconClicked(trackIndex: Int, trackId: Long, position: Long) = Unit
 }
 
 @Composable
 fun PlaylistLayout(
-    state: PlaylistState,
-    listState: LazyListState,
-    delegate: PlaylistScreenDelegate
+    viewModel: ViewModelInterface<PlaylistState, PlaylistUserAction>,
+    listState: LazyListState
 ) {
-    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
+    val state by viewModel.state.collectAsState()
+    PlaybackStatusIndicator(
+        playbackResult = state.playbackResult,
+        delegate = object : PlaybackStatusIndicatorDelegate {
+            override fun onDismissRequest() {
+                viewModel.handle(PlaylistUserAction.DismissPlaybackErrorDialog)
+            }
+        })
 
     if (state.trackList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -149,15 +133,17 @@ fun PlaylistLayout(
                     state = item.modelListItemState,
                     modifier = Modifier
                         .clickable {
-                            delegate.onTrackClicked(index)
+                            viewModel.handle(PlaylistUserAction.TrackClicked(index))
                         },
                     trailingContent = {
                         IconButton(
                             onClick = {
-                                delegate.onOverflowMenuIconClicked(
-                                    index,
-                                    item.modelListItemState.id,
-                                    item.position
+                                viewModel.handle(
+                                    PlaylistUserAction.TrackOverflowMenuIconClicked(
+                                        index,
+                                        item.modelListItemState.id,
+                                        item.position
+                                    )
                                 )
                             },
                         ) {
