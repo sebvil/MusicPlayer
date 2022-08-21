@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.player.NewTrackListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.components.lists.tracklist.HasTrackList
 import com.sebastianvm.musicplayer.ui.components.lists.tracklist.TrackListComponentArgs
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
 data class PlaylistArguments(val playlistId: Long) : NavigationArguments, HasTrackList {
     @IgnoredOnParcel
     override val args: TrackListComponentArgs =
-        TrackListComponentArgs(playlistId, NewTrackListType.PLAYLIST)
+        TrackListComponentArgs(playlistId, TrackListType.PLAYLIST)
 }
 
 fun NavGraphBuilder.playlistNavDestination(navigationDelegate: NavigationDelegate) {

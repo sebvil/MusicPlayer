@@ -4,6 +4,7 @@ import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithTracks
+import com.sebastianvm.musicplayer.database.entities.BasicAlbum
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,8 +35,12 @@ class AlbumRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getAlbum(albumId: Long): Flow<FullAlbumInfo> {
-        return albumDao.getAlbum(albumId = albumId).distinctUntilChanged()
+    override fun getFullAlbumInfo(albumId: Long): Flow<FullAlbumInfo> {
+        return albumDao.getFullAlbumInfo(albumId = albumId).distinctUntilChanged()
+    }
+
+    override fun getAlbum(albumId: Long): Flow<BasicAlbum> {
+        return albumDao.getAlbum(albumId = albumId)
     }
 
     override fun getAlbumWithTracks(albumId: Long): Flow<AlbumWithTracks> {

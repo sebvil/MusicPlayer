@@ -51,6 +51,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
                 trackListId,
                 newPreferences
             )
+            else -> throw IllegalArgumentException("Invalid trackListType for modifyTrackListSortPreferences")
         }
     }
 
@@ -76,6 +77,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         return when (trackListType) {
             TrackListType.ALL_TRACKS -> getAllTrackListSortPreferences()
             TrackListType.GENRE -> getGenreTrackListSortPreferences(trackListId)
+            else -> throw IllegalArgumentException("Invalid trackListType for getTrackListSortPreferences")
         }
     }
 

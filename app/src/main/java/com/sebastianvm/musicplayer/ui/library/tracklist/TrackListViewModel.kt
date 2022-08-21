@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
-import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
@@ -60,7 +59,7 @@ object InitialTrackListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
+    fun initialTrackListStateProvider(): TrackListState {
         return TrackListState
     }
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.NewTrackListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -44,11 +44,13 @@ class TrackListViewModel @Inject constructor(
 
     init {
         when (state.value.trackListType) {
-            NewTrackListType.ALL_TRACKS -> trackRepository.getAllTracks()
+            TrackListType.ALL_TRACKS -> trackRepository.getAllTracks()
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
-            NewTrackListType.GENRE -> trackRepository.getTracksForGenre(state.value.trackListId)
+            TrackListType.GENRE -> trackRepository.getTracksForGenre(state.value.trackListId)
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
-            NewTrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(state.value.trackListId)
+            TrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(state.value.trackListId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.ALBUM -> trackRepository.getTracksForAlbum(state.value.trackListId)
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
         }.onEach { newTrackList ->
             setState { copy(trackList = newTrackList) }
@@ -63,17 +65,23 @@ class TrackListViewModel @Inject constructor(
 
             is TrackListUserAction.TrackClicked -> {
                 val playTracksFlow = when (state.value.trackListType) {
-                    NewTrackListType.ALL_TRACKS -> {
+                    TrackListType.ALL_TRACKS -> {
                         playbackManager.playAllTracks(initialTrackIndex = action.trackIndex)
                     }
-                    NewTrackListType.GENRE -> {
+                    TrackListType.GENRE -> {
                         playbackManager.playGenre(
                             state.value.trackListId,
                             initialTrackIndex = action.trackIndex,
                         )
                     }
-                    NewTrackListType.PLAYLIST -> {
+                    TrackListType.PLAYLIST -> {
                         playbackManager.playPlaylist(
+                            state.value.trackListId,
+                            initialTrackIndex = action.trackIndex
+                        )
+                    }
+                    TrackListType.ALBUM -> {
+                        playbackManager.playAlbum(
                             state.value.trackListId,
                             initialTrackIndex = action.trackIndex
                         )
@@ -97,9 +105,10 @@ class TrackListViewModel @Inject constructor(
             is TrackListUserAction.TrackOverflowMenuIconClicked -> {
                 val mediaGroup = MediaGroup(
                     mediaGroupType = when (state.value.trackListType) {
-                        NewTrackListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
-                        NewTrackListType.GENRE -> MediaGroupType.GENRE
-                        NewTrackListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                        TrackListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+                        TrackListType.GENRE -> MediaGroupType.GENRE
+                        TrackListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                        TrackListType.ALBUM -> MediaGroupType.ALBUM
                     },
                     mediaId = state.value.trackListId
                 )
@@ -125,7 +134,7 @@ class TrackListViewModel @Inject constructor(
 
 data class TrackListState(
     val trackListId: Long,
-    val trackListType: NewTrackListType,
+    val trackListType: TrackListType,
     val trackList: List<ModelListItemState>,
     val playbackResult: PlaybackResult? = null
 ) : State

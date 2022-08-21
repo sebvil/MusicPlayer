@@ -33,7 +33,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     private var artistIds: List<Long> = listOf()
 
     init {
-        albumRepository.getAlbum(state.value.mediaId).onEach {
+        albumRepository.getFullAlbumInfo(state.value.mediaId).onEach {
             artistIds = it.artists
             tracks = it.tracks
             setState {

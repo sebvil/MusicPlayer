@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.genre
 
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.player.NewTrackListType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.components.lists.tracklist.HasTrackList
 import com.sebastianvm.musicplayer.ui.components.lists.tracklist.TrackListComponentArgs
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
@@ -19,7 +19,7 @@ data class GenreArguments(val genreId: Long) :
     @IgnoredOnParcel
     override val args: TrackListComponentArgs = TrackListComponentArgs(
         trackListId = genreId,
-        trackListType = NewTrackListType.GENRE
+        trackListType = TrackListType.GENRE
     )
 }
 

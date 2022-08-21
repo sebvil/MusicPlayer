@@ -18,12 +18,8 @@ enum class MediaGroupType {
 enum class TrackListType {
     ALL_TRACKS,
     GENRE,
-}
-
-enum class NewTrackListType {
-    ALL_TRACKS,
-    GENRE,
     PLAYLIST,
+    ALBUM
 }
 
 

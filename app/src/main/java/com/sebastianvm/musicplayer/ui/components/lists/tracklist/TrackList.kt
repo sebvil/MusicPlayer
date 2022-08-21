@@ -16,6 +16,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
@@ -24,6 +25,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 fun TrackList(
     viewModel: TrackListViewModel,
     navigationDelegate: NavigationDelegate,
+    preListContent: @Composable (() -> Unit)? = null
 ) {
     val listState = rememberLazyListState()
     HandleNavEvents(viewModel = viewModel, navigationDelegate = navigationDelegate)
@@ -42,6 +44,11 @@ fun TrackList(
         })
 
     LazyColumn(state = listState) {
+        preListContent?.also {
+            item {
+                it()
+            }
+        }
         itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
             ModelListItem(
                 state = item,
@@ -55,7 +62,8 @@ fun TrackList(
                             viewModel.handle(
                                 TrackListUserAction.TrackOverflowMenuIconClicked(
                                     index,
-                                    item.id
+                                    item.id,
+                                    (item as? ModelListItemState.WithPosition)?.position
                                 )
                             )
                         },
