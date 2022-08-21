@@ -20,6 +20,12 @@ enum class TrackListType {
     GENRE,
 }
 
+enum class NewTrackListType {
+    ALL_TRACKS,
+    GENRE,
+    PLAYLIST,
+}
+
 
 // TODO? use sealed class
 @Serializable

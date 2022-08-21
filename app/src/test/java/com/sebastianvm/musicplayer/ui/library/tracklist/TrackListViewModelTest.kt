@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.tracks
+package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures

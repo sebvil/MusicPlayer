@@ -10,11 +10,27 @@ class AlbumStatePreviewParameterProvider :
             albumId = 0,
             imageUri = "",
             albumName = "10:20:40",
-            listOf(
-                ModelListItemState(id = 0, headlineText = "La Promesa", supportingText = "Melendi"),
-                ModelListItemState(id = 1, headlineText = "La Promesa", supportingText = "Melendi"),
-                ModelListItemState(id = 2, headlineText = "La Promesa", supportingText = "Melendi"),
-                ModelListItemState(id = 3, headlineText = "La Promesa", supportingText = "Melendi")
+            trackList = listOf(
+                ModelListItemState.Basic(
+                    id = 0,
+                    headlineText = "La Promesa",
+                    supportingText = "Melendi"
+                ),
+                ModelListItemState.Basic(
+                    id = 1,
+                    headlineText = "La Promesa",
+                    supportingText = "Melendi"
+                ),
+                ModelListItemState.Basic(
+                    id = 2,
+                    headlineText = "La Promesa",
+                    supportingText = "Melendi"
+                ),
+                ModelListItemState.Basic(
+                    id = 3,
+                    headlineText = "La Promesa",
+                    supportingText = "Melendi"
+                )
             ),
         )
     )

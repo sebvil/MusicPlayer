@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.playlist
+package com.sebastianvm.musicplayer.ui.library.genre
 
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.NewTrackListType
@@ -11,24 +11,26 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
-
-@Serializable
+@kotlinx.serialization.Serializable
 @Parcelize
-data class PlaylistArguments(val playlistId: Long) : NavigationArguments, HasTrackList {
+data class GenreArguments(val genreId: Long) :
+    NavigationArguments, HasTrackList {
     @IgnoredOnParcel
-    override val args: TrackListComponentArgs =
-        TrackListComponentArgs(playlistId, NewTrackListType.PLAYLIST)
+    override val args: TrackListComponentArgs = TrackListComponentArgs(
+        trackListId = genreId,
+        trackListType = NewTrackListType.GENRE
+    )
 }
 
-fun NavGraphBuilder.playlistNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<PlaylistViewModel>(
-        destination = NavigationRoute.Playlist,
+fun NavGraphBuilder.genreNavDestination(navigationDelegate: NavigationDelegate) {
+    screenDestination<GenreViewModel>(
+        destination = NavigationRoute.Genre,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        PlaylistScreen(
-            screenViewModel = viewModel, navigationDelegate = navigationDelegate
+        GenreScreen(
+            screenViewModel = viewModel,
+            navigationDelegate = navigationDelegate
         )
     }
 }
