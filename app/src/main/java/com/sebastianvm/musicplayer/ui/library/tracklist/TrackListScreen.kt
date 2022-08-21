@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 
 @Composable
 fun TrackListScreen(
-    screenViewModel: TrackListViewModel = viewModel(),
+    screenViewModel: AllTracksViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
     Screen(
@@ -26,11 +26,11 @@ fun TrackListScreen(
                 title = stringResource(id = R.string.all_songs),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.handle(TrackListUserAction.UpButtonClicked)
+                        screenViewModel.handle(AllTracksUserAction.UpButtonClicked)
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.handle(TrackListUserAction.SortByButtonClicked)
+                        screenViewModel.handle(AllTracksUserAction.SortByButtonClicked)
                     }
                 })
         },

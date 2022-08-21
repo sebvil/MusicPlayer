@@ -18,13 +18,13 @@ object TrackListArguments :
     NavigationArguments, HasTrackList {
     @IgnoredOnParcel
     override val args: TrackListComponentArgs = TrackListComponentArgs(
-        trackListId = TrackListViewModel.ALL_TRACKS,
+        trackListId = AllTracksViewModel.ALL_TRACKS,
         trackListType = TrackListType.ALL_TRACKS
     )
 }
 
 fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<TrackListViewModel>(
+    screenDestination<AllTracksViewModel>(
         destination = NavigationRoute.TrackList,
         destinationType = DestinationType.Screen
     ) { viewModel ->

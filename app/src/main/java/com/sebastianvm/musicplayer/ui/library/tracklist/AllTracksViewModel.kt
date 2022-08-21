@@ -20,16 +20,16 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class TrackListViewModel @Inject constructor(
-    initialState: TrackListState,
-) : BaseViewModel<TrackListUiEvent, TrackListState>(initialState),
-    ViewModelInterface<TrackListState, TrackListUserAction> {
+class AllTracksViewModel @Inject constructor(
+    initialState: AllTracksState,
+) : BaseViewModel<AllTracksUiEvent, AllTracksState>(initialState),
+    ViewModelInterface<AllTracksState, AllTracksUserAction> {
 
 
-    override fun handle(action: TrackListUserAction) {
+    override fun handle(action: AllTracksUserAction) {
         when (action) {
-            is TrackListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
-            is TrackListUserAction.SortByButtonClicked -> {
+            is AllTracksUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is AllTracksUserAction.SortByButtonClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.SortMenu(
@@ -50,7 +50,7 @@ class TrackListViewModel @Inject constructor(
 }
 
 
-object TrackListState : State
+object AllTracksState : State
 
 
 @InstallIn(ViewModelComponent::class)
@@ -59,14 +59,14 @@ object InitialTrackListStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListStateProvider(): TrackListState {
-        return TrackListState
+    fun initialTrackListStateProvider(): AllTracksState {
+        return AllTracksState
     }
 }
 
-sealed interface TrackListUiEvent : UiEvent
+sealed interface AllTracksUiEvent : UiEvent
 
-sealed interface TrackListUserAction : UserAction {
-    object UpButtonClicked : TrackListUserAction
-    object SortByButtonClicked : TrackListUserAction
+sealed interface AllTracksUserAction : UserAction {
+    object UpButtonClicked : AllTracksUserAction
+    object SortByButtonClicked : AllTracksUserAction
 }

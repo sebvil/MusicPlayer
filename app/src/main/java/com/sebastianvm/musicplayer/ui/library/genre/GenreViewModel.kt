@@ -33,7 +33,6 @@ class GenreViewModel @Inject constructor(
     ViewModelInterface<GenreState, GenreUserAction> {
 
     init {
-
         viewModelScope.launch {
             val genreName = genreRepository.getGenreName(state.value.genreId).first()
             setState { copy(genreName = genreName) }

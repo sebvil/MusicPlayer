@@ -10,7 +10,7 @@ class StringPreviewParameterProvider : PreviewParameterProvider<String> {
     override val values: Sequence<String>
         get() = sequenceOf(
             "Library",
-            "All Songs",
+            "AllTracksUiEvent Songs",
             "Tropipop"
         )
 
