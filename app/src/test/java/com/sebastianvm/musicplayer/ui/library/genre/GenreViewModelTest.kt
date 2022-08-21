@@ -10,7 +10,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -32,6 +35,16 @@ class GenreViewModelTest : BaseTest() {
             genreRepository = genreRepository
         )
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `init sets initial state`() =
+        testScope.runReliableTest {
+            with(generateViewModel()) {
+                advanceUntilIdle()
+                Assert.assertEquals(C.GENRE_ALPHA, state.value.genreName)
+            }
+        }
 
 
     @Test

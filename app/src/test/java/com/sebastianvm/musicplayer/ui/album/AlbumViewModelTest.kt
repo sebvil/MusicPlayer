@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.album
 
+import com.sebastianvm.musicplayer.database.entities.BasicAlbum
 import com.sebastianvm.musicplayer.database.entities.C
-import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.util.BaseTest
@@ -25,7 +25,13 @@ class AlbumViewModelTest : BaseTest() {
     fun setUp() {
         playbackManager = mockk()
         albumRepository = mockk {
-            every { getAlbumWithTracks(C.ID_ONE) } returns MutableStateFlow(Fixtures.albumWithTracks)
+            every { getAlbum(C.ID_ONE) } returns MutableStateFlow(
+                BasicAlbum(
+                    id = C.ID_ONE,
+                    albumName = C.ALBUM_ALPACA,
+                    imageUri = C.IMAGE_URI_1
+                )
+            )
         }
     }
 
