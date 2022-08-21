@@ -28,13 +28,11 @@ class PlaylistContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
     init {
-        playlistRepository.getPlaylist(state.value.mediaId).onEach {
-            it?.also {
-                setState {
-                    copy(menuTitle = it.playlistName)
-                }
+        playlistRepository.getPlaylistName(state.value.mediaId).onEach { playlistName ->
+            requireNotNull(playlistName)
+            setState {
+                copy(menuTitle = playlistName)
             }
-
         }.launchIn(viewModelScope)
     }
 

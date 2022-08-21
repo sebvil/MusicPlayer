@@ -8,6 +8,8 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -25,48 +27,47 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     initialState: PlaylistState,
-    playlistRepository: PlaylistRepository
-) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState) {
+    playlistRepository: PlaylistRepository,
+) : BaseViewModel<PlaylistUiEvent, PlaylistState>(initialState),
+    ViewModelInterface<PlaylistState, PlaylistUserAction> {
 
     init {
-        playlistRepository.getPlaylist(playlistId = state.value.playlistId)
-            .onEach { playlist ->
-                requireNotNull(playlist)
+        playlistRepository.getPlaylistName(playlistId = state.value.playlistId)
+            .onEach { playlistName ->
+                requireNotNull(playlistName)
                 setState {
                     copy(
-                        playlistName = playlist.playlistName,
+                        playlistName = playlistName,
                     )
                 }
             }.launchIn(viewModelScope)
     }
 
-    fun onAddTracksClicked() {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.TrackSearch(
-                    TrackSearchArguments(state.value.playlistId)
-                )
-            )
-        )
-    }
-
-
-    fun onSortByClicked() {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.SortMenu(
-                    SortMenuArguments(
-                        listType = SortableListType.Playlist,
-                        mediaId = state.value.playlistId
+    override fun handle(action: PlaylistUserAction) {
+        when (action) {
+            is PlaylistUserAction.AddTracksClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackSearch(
+                            TrackSearchArguments(state.value.playlistId)
+                        )
                     )
                 )
-            )
-        )
-    }
-
-
-    fun onUpButtonClicked() {
-        addNavEvent(NavEvent.NavigateUp)
+            }
+            is PlaylistUserAction.UpClicked -> addNavEvent(NavEvent.NavigateUp)
+            is PlaylistUserAction.SortByClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = SortableListType.Playlist,
+                                mediaId = state.value.playlistId
+                            )
+                        )
+                    )
+                )
+            }
+        }
     }
 
 }
@@ -90,4 +91,11 @@ object InitialPlaylistStateModule {
     }
 }
 
-sealed class PlaylistUiEvent : UiEvent
+sealed interface PlaylistUiEvent : UiEvent
+
+sealed interface PlaylistUserAction : UserAction {
+    object AddTracksClicked : PlaylistUserAction
+    object UpClicked : PlaylistUserAction
+    object SortByClicked : PlaylistUserAction
+}
+

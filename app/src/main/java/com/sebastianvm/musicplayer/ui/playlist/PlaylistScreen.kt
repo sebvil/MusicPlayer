@@ -25,11 +25,11 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
             LibraryTopBar(title = it.playlistName,
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.onUpButtonClicked()
+                        screenViewModel.handle(PlaylistUserAction.UpClicked)
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.onSortByClicked()
+                        screenViewModel.handle(PlaylistUserAction.SortByClicked)
                     }
                 })
         },
@@ -42,7 +42,7 @@ fun PlaylistScreen(screenViewModel: PlaylistViewModel, navigationDelegate: Navig
                         contentDescription = "Plus"
                     )
                 },
-                onClick = { screenViewModel.onAddTracksClicked() })
+                onClick = { screenViewModel.handle(PlaylistUserAction.AddTracksClicked) })
         }) {
         TrackList(
             viewModel = hiltViewModel(),
