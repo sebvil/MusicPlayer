@@ -6,6 +6,7 @@ import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithTracks
+import com.sebastianvm.musicplayer.database.entities.BasicAlbum
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -23,7 +24,12 @@ interface AlbumDao {
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from Album WHERE Album.id=:albumId")
-    fun getAlbum(albumId: Long): Flow<FullAlbumInfo>
+    fun getFullAlbumInfo(albumId: Long): Flow<FullAlbumInfo>
+
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * from Album WHERE Album.id=:albumId")
+    fun getAlbum(albumId: Long): Flow<BasicAlbum>
 
     @Transaction
     @Query("SELECT * from Album WHERE Album.id=:albumId")

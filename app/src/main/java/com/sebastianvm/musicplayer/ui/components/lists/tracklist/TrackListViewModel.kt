@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.tracks
+package com.sebastianvm.musicplayer.ui.components.lists.tracklist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -6,13 +6,11 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
-import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -29,10 +27,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -41,32 +37,23 @@ import javax.inject.Inject
 class TrackListViewModel @Inject constructor(
     initialState: TrackListState,
     trackRepository: TrackRepository,
-    genreRepository: GenreRepository,
+    playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseViewModel<TrackListUiEvent, TrackListState>(initialState),
     ViewModelInterface<TrackListState, TrackListUserAction> {
 
     init {
-        val trackListFlow = when (state.value.trackListType) {
+        when (state.value.trackListType) {
             TrackListType.ALL_TRACKS -> trackRepository.getAllTracks()
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
             TrackListType.GENRE -> trackRepository.getTracksForGenre(state.value.trackListId)
-        }
-
-        val listNameFlow: Flow<String?> = when (state.value.trackListType) {
-            TrackListType.ALL_TRACKS -> flowOf(null)
-            TrackListType.GENRE -> genreRepository.getGenreName(state.value.trackListId)
-        }
-
-
-        combine(trackListFlow, listNameFlow) { tracks, listName ->
-            Pair(tracks, listName)
-        }.onEach { (newTrackList, listName) ->
-            setState {
-                copy(
-                    trackListName = listName,
-                    trackList = newTrackList.map { it.toModelListItemState() },
-                )
-            }
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(state.value.trackListId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.ALBUM -> trackRepository.getTracksForAlbum(state.value.trackListId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+        }.onEach { newTrackList ->
+            setState { copy(trackList = newTrackList) }
             addUiEvent(TrackListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
 
@@ -85,6 +72,18 @@ class TrackListViewModel @Inject constructor(
                         playbackManager.playGenre(
                             state.value.trackListId,
                             initialTrackIndex = action.trackIndex,
+                        )
+                    }
+                    TrackListType.PLAYLIST -> {
+                        playbackManager.playPlaylist(
+                            state.value.trackListId,
+                            initialTrackIndex = action.trackIndex
+                        )
+                    }
+                    TrackListType.ALBUM -> {
+                        playbackManager.playAlbum(
+                            state.value.trackListId,
+                            initialTrackIndex = action.trackIndex
                         )
                     }
                 }
@@ -108,6 +107,8 @@ class TrackListViewModel @Inject constructor(
                     mediaGroupType = when (state.value.trackListType) {
                         TrackListType.ALL_TRACKS -> MediaGroupType.ALL_TRACKS
                         TrackListType.GENRE -> MediaGroupType.GENRE
+                        TrackListType.PLAYLIST -> MediaGroupType.PLAYLIST
+                        TrackListType.ALBUM -> MediaGroupType.ALBUM
                     },
                     mediaId = state.value.trackListId
                 )
@@ -118,20 +119,8 @@ class TrackListViewModel @Inject constructor(
                                 trackId = action.trackId,
                                 mediaType = MediaType.TRACK,
                                 mediaGroup = mediaGroup,
-                                trackIndex = action.trackIndex
-                            )
-                        )
-                    )
-                )
-            }
-            is TrackListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
-            is TrackListUserAction.SortByButtonClicked -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.SortMenu(
-                            SortMenuArguments(
-                                listType = SortableListType.Tracks(state.value.trackListType),
-                                mediaId = state.value.trackListId
+                                trackIndex = action.trackIndex,
+                                positionInPlaylist = action.position
                             )
                         )
                     )
@@ -140,15 +129,11 @@ class TrackListViewModel @Inject constructor(
         }
     }
 
-    companion object {
-        const val ALL_TRACKS = 0L
-    }
 }
 
 
 data class TrackListState(
     val trackListId: Long,
-    val trackListName: String?,
     val trackListType: TrackListType,
     val trackList: List<ModelListItemState>,
     val playbackResult: PlaybackResult? = null
@@ -162,10 +147,9 @@ object InitialTrackListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val args = savedStateHandle.getArgs<TrackListArguments>()
+        val args = savedStateHandle.getArgs<HasTrackList>().args
         return TrackListState(
             trackListId = args.trackListId,
-            trackListName = null,
             trackList = listOf(),
             trackListType = args.trackListType,
         )
@@ -178,10 +162,12 @@ sealed class TrackListUiEvent : UiEvent {
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction
-    data class TrackOverflowMenuIconClicked(val trackIndex: Int, val trackId: Long) :
+    data class TrackOverflowMenuIconClicked(
+        val trackIndex: Int,
+        val trackId: Long,
+        val position: Long? = null
+    ) :
         TrackListUserAction
 
-    object UpButtonClicked : TrackListUserAction
     object DismissPlaybackErrorDialog : TrackListUserAction
-    object SortByButtonClicked : TrackListUserAction
 }

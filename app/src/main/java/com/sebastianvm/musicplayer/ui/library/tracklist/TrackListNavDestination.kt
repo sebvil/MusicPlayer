@@ -1,21 +1,30 @@
-package com.sebastianvm.musicplayer.ui.library.tracks
+package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.ui.components.lists.tracklist.HasTrackList
+import com.sebastianvm.musicplayer.ui.components.lists.tracklist.TrackListComponentArgs
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @kotlinx.serialization.Serializable
 @Parcelize
-data class TrackListArguments(val trackListId: Long, val trackListType: TrackListType) :
-    NavigationArguments
+object TrackListArguments :
+    NavigationArguments, HasTrackList {
+    @IgnoredOnParcel
+    override val args: TrackListComponentArgs = TrackListComponentArgs(
+        trackListId = AllTracksViewModel.ALL_TRACKS,
+        trackListType = TrackListType.ALL_TRACKS
+    )
+}
 
 fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelegate) {
-    screenDestination<TrackListViewModel>(
+    screenDestination<AllTracksViewModel>(
         destination = NavigationRoute.TrackList,
         destinationType = DestinationType.Screen
     ) { viewModel ->

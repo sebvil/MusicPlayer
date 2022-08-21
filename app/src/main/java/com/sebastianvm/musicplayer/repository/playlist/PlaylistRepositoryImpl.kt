@@ -38,8 +38,8 @@ class PlaylistRepositoryImpl @Inject constructor(
             .distinctUntilChanged()
     }
 
-    override fun getPlaylist(playlistId: Long): Flow<Playlist?> {
-        return playlistDao.getPlaylist(playlistId)
+    override fun getPlaylistName(playlistId: Long): Flow<String?> {
+        return playlistDao.getPlaylistName(playlistId)
     }
 
     override fun createPlaylist(playlistName: String): Flow<Long?> {
@@ -86,9 +86,7 @@ class PlaylistRepositoryImpl @Inject constructor(
             .flowOn(defaultDispatcher).distinctUntilChanged()
     }
 
-    override fun getTracksInPlaylist(
-        playlistId: Long
-    ): Flow<List<TrackWithPlaylistPositionView>> {
+    override fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>> {
         return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
             .flatMapLatest { sortPreferences ->
                 playlistDao.getTracksInPlaylist(
