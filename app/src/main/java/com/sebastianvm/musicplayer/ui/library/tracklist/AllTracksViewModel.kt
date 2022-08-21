@@ -55,11 +55,11 @@ object AllTracksState : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialTrackListStateModule {
+object InitialAllTracksStateProviderModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListStateProvider(): AllTracksState {
+    fun initialAllTracksStateProvider(): AllTracksState {
         return AllTracksState
     }
 }

@@ -63,11 +63,11 @@ data class GenreState(val genreId: Long, val genreName: String = "") : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialTrackListStateModule {
+object InitialGenreStateModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): GenreState {
+    fun initialGenreStateProvider(savedStateHandle: SavedStateHandle): GenreState {
         val args = savedStateHandle.getArgs<GenreArguments>()
         return GenreState(genreId = args.genreId)
     }
