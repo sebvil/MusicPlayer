@@ -8,20 +8,20 @@ class PlaylistListStatePreviewParameterProvider :
     override val values = sequenceOf(
         PlaylistListState(
             playlistList = listOf(
-                ModelListItemState(id = 0, "Pop"),
-                ModelListItemState(id = 1, "Rock"),
-                ModelListItemState(id = 2, "Tropipop"),
-                ModelListItemState(id = 3, "Vallenato")
+                ModelListItemState.Basic(id = 0, "Pop"),
+                ModelListItemState.Basic(id = 1, "Rock"),
+                ModelListItemState.Basic(id = 2, "Tropipop"),
+                ModelListItemState.Basic(id = 3, "Vallenato")
             ),
             isCreatePlaylistDialogOpen = false,
             isPlaylistCreationErrorDialogOpen = false
         ),
         PlaylistListState(
             playlistList = listOf(
-                ModelListItemState(id = 0, "Pop"),
-                ModelListItemState(id = 1, "Rock"),
-                ModelListItemState(id = 2, "Tropipop"),
-                ModelListItemState(id = 3, "Vallenato")
+                ModelListItemState.Basic(id = 0, "Pop"),
+                ModelListItemState.Basic(id = 1, "Rock"),
+                ModelListItemState.Basic(id = 2, "Tropipop"),
+                ModelListItemState.Basic(id = 3, "Vallenato")
             ),
             isCreatePlaylistDialogOpen = true,
             isPlaylistCreationErrorDialogOpen = false

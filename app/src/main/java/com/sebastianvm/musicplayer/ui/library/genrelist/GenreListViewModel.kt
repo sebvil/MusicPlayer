@@ -1,13 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -61,10 +60,9 @@ class GenreListViewModel @Inject constructor(
             is GenreListUserAction.GenreRowClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackListId = action.genreId,
-                                trackListType = TrackListType.GENRE
+                        NavigationDestination.Genre(
+                            GenreArguments(
+                                genreId = action.genreId
                             )
                         )
                     )

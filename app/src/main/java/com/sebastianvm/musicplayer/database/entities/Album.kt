@@ -13,4 +13,4 @@ data class Album(
     val imageUri: String
 )
 
-data class BasicAlbum(val id: Long, val albumName: String)
+data class BasicAlbum(val id: Long, val albumName: String, val imageUri: String)

@@ -89,4 +89,31 @@ object Fixtures {
         tracks = listOf(basicTrackArgentina)
     )
 
+    val trackWithPlaylistPositionArgentina = TrackWithPlaylistPositionView(
+        id = C.ID_ONE,
+        trackName = C.TRACK_ARGENTINA,
+        artists = C.ARTIST_ANA,
+        albumName = C.ALBUM_ALPACA,
+        position = 0,
+        playlistId = C.ID_ONE
+    )
+
+    val trackWithPlaylistPositionBelgium = TrackWithPlaylistPositionView(
+        id = C.ID_TWO,
+        trackName = C.TRACK_BELGIUM,
+        artists = C.ARTIST_BOB,
+        albumName = C.ALBUM_BOBCAT,
+        position = 1,
+        playlistId = C.ID_ONE
+    )
+
+    val trackWithPlaylistPositionColombia = TrackWithPlaylistPositionView(
+        id = C.ID_THREE,
+        trackName = C.TRACK_COLOMBIA,
+        artists = C.ARTIST_CAMILO,
+        albumName = C.ALBUM_CHEETAH,
+        position = 2,
+        playlistId = C.ID_ONE
+    )
+
 }

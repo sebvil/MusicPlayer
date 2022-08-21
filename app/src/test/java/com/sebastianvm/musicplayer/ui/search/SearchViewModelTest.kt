@@ -4,7 +4,6 @@ import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -17,7 +16,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -274,24 +273,18 @@ class SearchViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `SearchResultClicked navigates to genre screen when searching for artists`() {
+    fun `SearchResultClicked navigates to genre screen when searching for genres`() {
         with(generateViewModel(searchMode = SearchMode.GENRES)) {
             handle(SearchUserAction.SearchResultClicked(id = 0))
             assertEquals(
-                listOf(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
-                            TrackListArguments(trackListId = 0, trackListType = TrackListType.GENRE)
-                        )
-                    )
-                ),
+                listOf(NavEvent.NavigateToScreen(NavigationDestination.Genre(GenreArguments(genreId = 0)))),
                 navEvents.value
             )
         }
     }
 
     @Test
-    fun `SearchResultClicked navigates to playlist screen when searching for artists`() {
+    fun `SearchResultClicked navigates to playlist screen when searching for playlists`() {
         with(generateViewModel(searchMode = SearchMode.PLAYLISTS)) {
             handle(SearchUserAction.SearchResultClicked(id = 0))
             assertEquals(

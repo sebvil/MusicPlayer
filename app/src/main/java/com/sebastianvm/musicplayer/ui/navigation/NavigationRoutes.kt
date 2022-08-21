@@ -24,7 +24,8 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.library.tracks.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.serialization.decodeFromString
@@ -48,6 +49,7 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     PlaylistsRoot(hasArgs = false),
     Artist(hasArgs = true),
     Album(hasArgs = true),
+    Genre(hasArgs = true),
     Playlist(hasArgs = true),
     TrackList(hasArgs = true),
     TrackSearch(hasArgs = true),
@@ -112,6 +114,9 @@ sealed class NavigationDestination(
     data class Artist(override val arguments: ArtistArguments) :
         NavigationDestination(NavigationRoute.Artist, arguments = arguments)
 
+    data class Genre(override val arguments: GenreArguments) :
+        NavigationDestination(NavigationRoute.Genre, arguments = arguments)
+
     data class TrackContextMenu(override val arguments: TrackContextMenuArguments) :
         NavigationDestination(NavigationRoute.TrackContextMenu, arguments = arguments)
 
@@ -150,6 +155,7 @@ private val module = SerializersModule {
         subclass(PlaylistContextMenuArguments::class)
         subclass(SortMenuArguments::class)
         subclass(ArtistsMenuArguments::class)
+        subclass(GenreArguments::class)
     }
 }
 

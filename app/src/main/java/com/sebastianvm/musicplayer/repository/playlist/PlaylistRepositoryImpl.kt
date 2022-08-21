@@ -9,8 +9,6 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -88,15 +86,15 @@ class PlaylistRepositoryImpl @Inject constructor(
             .flowOn(defaultDispatcher).distinctUntilChanged()
     }
 
-    override fun getTracksInPlaylist(
-        playlistId: Long,
-        sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
-    ): Flow<List<TrackWithPlaylistPositionView>> {
-        return playlistDao.getTracksInPlaylist(
-            playlistId = playlistId,
-            sortOption = sortPreferences.sortOption,
-            sortOrder = sortPreferences.sortOrder
-        ).distinctUntilChanged()
+    override fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>> {
+        return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
+            .flatMapLatest { sortPreferences ->
+                playlistDao.getTracksInPlaylist(
+                    playlistId = playlistId,
+                    sortOption = sortPreferences.sortOption,
+                    sortOrder = sortPreferences.sortOrder
+                )
+            }.distinctUntilChanged()
     }
 
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {

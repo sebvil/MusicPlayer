@@ -8,10 +8,10 @@ class GenreListStatePreviewParameterProvider :
     override val values = sequenceOf(
         GenreListState(
             genreList = listOf(
-                ModelListItemState(id = 0, "Pop"),
-                ModelListItemState(id = 1, "Rock"),
-                ModelListItemState(id = 2, "Tropipop"),
-                ModelListItemState(id = 3, "Vallenato")
+                ModelListItemState.Basic(id = 0, "Pop"),
+                ModelListItemState.Basic(id = 1, "Rock"),
+                ModelListItemState.Basic(id = 2, "Tropipop"),
+                ModelListItemState.Basic(id = 3, "Vallenato")
             ),
         )
     )

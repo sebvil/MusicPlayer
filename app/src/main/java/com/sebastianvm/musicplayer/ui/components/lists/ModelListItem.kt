@@ -27,12 +27,28 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 
 
-data class ModelListItemState(
-    val id: Long,
-    val headlineText: String,
-    val supportingText: String? = null,
-    val mediaArtImageState: MediaArtImageState? = null
-)
+sealed class ModelListItemState(
+    open val id: Long,
+    open val headlineText: String,
+    open val supportingText: String? = null,
+    open val mediaArtImageState: MediaArtImageState? = null
+) {
+    data class Basic(
+        override val id: Long,
+        override val headlineText: String,
+        override val supportingText: String? = null,
+        override val mediaArtImageState: MediaArtImageState? = null
+    ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
+
+    data class WithPosition(
+        val position: Long,
+        override val id: Long,
+        override val headlineText: String,
+        override val supportingText: String? = null,
+        override val mediaArtImageState: MediaArtImageState? = null
+    ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
+}
+
 
 data class ModelListItemStateWithPosition(
     val position: Long,
@@ -70,7 +86,7 @@ fun ModelListItem(
             supportingText = supportingText?.let {
                 {
                     Text(
-                        text = supportingText,
+                        text = it,
                         modifier = Modifier.alpha(alpha = 0.8f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -120,7 +136,7 @@ fun ModelListItem(
 
 fun Album.toModelListItemState(): ModelListItemState {
     val supportingText = if (year != 0L) "$year $artists" else artists
-    return ModelListItemState(
+    return ModelListItemState.Basic(
         id = id,
         headlineText = albumName,
         supportingText = supportingText,
@@ -135,49 +151,47 @@ fun Album.toModelListItemState(): ModelListItemState {
 }
 
 fun Artist.toModelListItemState(): ModelListItemState {
-    return ModelListItemState(
+    return ModelListItemState.Basic(
         id = id,
         headlineText = artistName,
     )
 }
 
 fun Genre.toModelListItemState(): ModelListItemState {
-    return ModelListItemState(
+    return ModelListItemState.Basic(
         id = id,
         headlineText = genreName,
     )
 }
 
 fun Playlist.toModelListItemState(): ModelListItemState {
-    return ModelListItemState(
+    return ModelListItemState.Basic(
         id = id,
         headlineText = playlistName,
     )
 }
 
 fun Track.toModelListItemState(): ModelListItemState {
-    return ModelListItemState(id = id, headlineText = trackName, supportingText = artists)
+    return ModelListItemState.Basic(id = id, headlineText = trackName, supportingText = artists)
 }
 
 fun BasicTrack.toModelListItemState(): ModelListItemState {
-    return ModelListItemState(id = id, headlineText = trackName, supportingText = artists)
+    return ModelListItemState.Basic(id = id, headlineText = trackName, supportingText = artists)
 }
 
-fun TrackWithPlaylistPositionView.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
-    return ModelListItemStateWithPosition(
+fun TrackWithPlaylistPositionView.toModelListItemState(): ModelListItemState {
+    return ModelListItemState.WithPosition(
         position = position,
-        modelListItemState = ModelListItemState(
-            id = id,
-            headlineText = trackName,
-            supportingText = artists
-        )
+        id = id,
+        headlineText = trackName,
+        supportingText = artists
     )
 }
 
 fun TrackWithQueueId.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
     return ModelListItemStateWithPosition(
         position = this.uniqueQueueItemId,
-        modelListItemState = ModelListItemState(
+        modelListItemState = ModelListItemState.Basic(
             id = id,
             headlineText = trackName,
             supportingText = artists

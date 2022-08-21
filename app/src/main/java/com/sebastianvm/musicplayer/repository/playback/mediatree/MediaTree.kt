@@ -140,7 +140,7 @@ class MediaTree @Inject constructor(
             KeyType.UNKNOWN -> null
             KeyType.ROOT -> listOf(
                 buildMediaItem(
-                    title = "All tracks",
+                    title = "AllTracksUiEvent tracks",
                     mediaId = MediaKey.fromParent(
                         parent = parentKey,
                         keyType = KeyType.ALL_TRACKS,
