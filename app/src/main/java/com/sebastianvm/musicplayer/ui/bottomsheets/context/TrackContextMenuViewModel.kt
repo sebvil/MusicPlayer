@@ -128,7 +128,7 @@ class TrackContextMenuViewModel @Inject constructor(
                             )
                         }
                         MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
-                        MediaGroupType.ARTIST, MediaGroupType.UNKNOWN -> throw IllegalStateException(
+                        MediaGroupType.ARTIST -> throw IllegalStateException(
                             "Unsupported media group type: ${mediaGroup.mediaGroupType}"
                         )
                     }

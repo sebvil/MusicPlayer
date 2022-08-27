@@ -11,13 +11,17 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -25,7 +29,8 @@ import javax.inject.Inject
 class TrackRepositoryImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val trackDao: TrackDao
+    private val trackDao: TrackDao,
+    private val playlistRepository: PlaylistRepository,
 ) : TrackRepository {
 
     override fun getTracksCount(): Flow<Int> {
@@ -66,7 +71,30 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
-        return trackDao.getTracksForPlaylist(playlistId).distinctUntilChanged()
+        return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
+            .flatMapLatest { sortPreferences ->
+                trackDao.getTracksForPlaylist(
+                    playlistId = playlistId,
+                    sortOption = sortPreferences.sortOption,
+                    sortOrder = sortPreferences.sortOrder
+                )
+            }.distinctUntilChanged()
+    }
+
+    override fun getTracksForMedia(
+        trackListType: TrackListType,
+        mediaId: Long
+    ): Flow<List<ModelListItemState>> {
+        return when (trackListType) {
+            TrackListType.ALL_TRACKS -> getAllTracks()
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.GENRE -> getTracksForGenre(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.ALBUM -> getTracksForAlbum(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+        }
     }
 
     override suspend fun insertAllTracks(

@@ -11,7 +11,6 @@ enum class MediaGroupType {
     ALBUM,
     GENRE,
     PLAYLIST,
-    UNKNOWN,
 }
 
 // used for MediaGroups that are TrackLists
@@ -19,7 +18,16 @@ enum class TrackListType {
     ALL_TRACKS,
     GENRE,
     PLAYLIST,
-    ALBUM
+    ALBUM;
+
+    fun toMediaGroupType(): MediaGroupType {
+        return when (this) {
+            ALL_TRACKS -> MediaGroupType.ALL_TRACKS
+            GENRE -> MediaGroupType.GENRE
+            PLAYLIST -> MediaGroupType.PLAYLIST
+            ALBUM -> MediaGroupType.ALBUM
+        }
+    }
 }
 
 

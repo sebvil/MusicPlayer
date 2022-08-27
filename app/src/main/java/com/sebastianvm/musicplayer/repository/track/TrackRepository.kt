@@ -9,6 +9,8 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
+import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import kotlinx.coroutines.flow.Flow
 
 interface TrackRepository {
@@ -26,6 +28,11 @@ interface TrackRepository {
     fun getTracksForGenre(genreId: Long): Flow<List<Track>>
 
     fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>>
+
+    fun getTracksForMedia(
+        trackListType: TrackListType,
+        mediaId: Long
+    ): Flow<List<ModelListItemState>>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,
