@@ -3,10 +3,11 @@ package com.sebastianvm.musicplayer.ui.artist
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -75,9 +76,10 @@ class ArtistViewModelTest : BaseTest() {
             assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Album(
-                            AlbumArguments(
-                                albumId = C.ID_ONE
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.ALBUM,
+                                trackListId = C.ID_ONE
                             )
                         )
                     )

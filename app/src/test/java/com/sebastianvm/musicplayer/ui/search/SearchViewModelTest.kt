@@ -4,11 +4,11 @@ import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
@@ -16,9 +16,8 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.every
@@ -262,8 +261,11 @@ class SearchViewModelTest : BaseTest() {
             assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Album(
-                            AlbumArguments(albumId = 0)
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.ALBUM,
+                                trackListId = 0
+                            )
                         )
                     )
                 ),
@@ -277,7 +279,16 @@ class SearchViewModelTest : BaseTest() {
         with(generateViewModel(searchMode = SearchMode.GENRES)) {
             handle(SearchUserAction.SearchResultClicked(id = 0))
             assertEquals(
-                listOf(NavEvent.NavigateToScreen(NavigationDestination.Genre(GenreArguments(genreId = 0)))),
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.GENRE,
+                                trackListId = 0
+                            )
+                        )
+                    )
+                ),
                 navEvents.value
             )
         }
@@ -290,8 +301,11 @@ class SearchViewModelTest : BaseTest() {
             assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Playlist(
-                            PlaylistArguments(playlistId = 0)
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.PLAYLIST,
+                                trackListId = 0
+                            )
                         )
                     )
                 ),
