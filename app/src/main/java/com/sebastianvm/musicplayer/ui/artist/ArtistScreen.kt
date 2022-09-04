@@ -35,7 +35,6 @@ fun ArtistScreen(
     navigationDelegate: NavigationDelegate,
 ) {
     val topBarState = rememberTopAppBarState()
-//    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
 
 
