@@ -21,12 +21,23 @@ interface LibraryTopBarDelegate {
     fun sortByClicked() = Unit
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class LibraryTopBarState(val title: String, val hasSortButton: Boolean = true)
+
 @Composable
 fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
+    LibraryTopBar(
+        state = LibraryTopBarState(title = title, hasSortButton = true),
+        delegate = delegate
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LibraryTopBar(state: LibraryTopBarState, delegate: LibraryTopBarDelegate) {
     SmallTopAppBar(
         title = {
-            Text(text = title)
+            Text(text = state.title)
         },
         navigationIcon = {
             IconButton(onClick = { delegate.upButtonClicked() }) {
@@ -37,11 +48,13 @@ fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
             }
         },
         actions = {
-            IconButton(onClick = { delegate.sortByClicked() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_sort),
-                    contentDescription = stringResource(id = R.string.sort_by)
-                )
+            if (state.hasSortButton) {
+                IconButton(onClick = { delegate.sortByClicked() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_sort),
+                        contentDescription = stringResource(id = R.string.sort_by)
+                    )
+                }
             }
         }
     )
@@ -52,6 +65,8 @@ fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
 @Composable
 fun TopBarPreview(@PreviewParameter(StringPreviewParameterProvider::class) title: String) {
     ThemedPreview {
-        LibraryTopBar(title = title, delegate = object : LibraryTopBarDelegate {})
+        LibraryTopBar(
+            state = LibraryTopBarState(title = title, hasSortButton = true),
+            delegate = object : LibraryTopBarDelegate {})
     }
 }

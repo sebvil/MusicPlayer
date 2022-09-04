@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.components.lists.tracklist
+package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -9,14 +9,19 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
+import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
+import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -38,11 +43,22 @@ class TrackListViewModel @Inject constructor(
     ViewModelInterface<TrackListState, TrackListUserAction> {
 
     init {
-        trackRepository.getTracksForMedia(state.value.trackListType, state.value.trackListId)
-            .onEach { newTrackList ->
-                setState { copy(trackList = newTrackList) }
+        with(trackRepository) {
+            combineToPair(
+                getTracksForMedia(state.value.trackListType, state.value.trackListId),
+                getTrackListMetadata(state.value.trackListType, state.value.trackListId)
+            ).onEach { (newTrackList, trackListMetadata) ->
+                setState {
+                    copy(
+                        trackList = newTrackList,
+                        trackListName = trackListMetadata.trackListName,
+                        headerImage = trackListMetadata.mediaArtImageState
+                    )
+                }
                 addUiEvent(TrackListUiEvent.ScrollToTop)
             }.launchIn(viewModelScope)
+        }
+
 
     }
 
@@ -92,7 +108,39 @@ class TrackListViewModel @Inject constructor(
                     )
                 )
             }
+            is TrackListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is TrackListUserAction.SortByButtonClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = when (state.value.trackListType) {
+                                    TrackListType.PLAYLIST -> SortableListType.Playlist
+                                    TrackListType.ALL_TRACKS, TrackListType.GENRE -> SortableListType.Tracks(
+                                        trackListType = state.value.trackListType
+                                    )
+                                    TrackListType.ALBUM -> throw IllegalStateException("Cannot sort album")
+                                },
+                                mediaId = state.value.trackListId
+                            )
+                        )
+                    )
+                )
+            }
+            is TrackListUserAction.AddTracksClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackSearch(
+                            TrackSearchArguments(state.value.trackListId)
+                        )
+                    )
+                )
+            }
         }
+    }
+
+    companion object {
+        const val ALL_TRACKS = -1L
     }
 
 }
@@ -102,7 +150,9 @@ data class TrackListState(
     val trackListId: Long,
     val trackListType: TrackListType,
     val trackList: List<ModelListItemState>,
-    val playbackResult: PlaybackResult? = null
+    val trackListName: String? = null,
+    val playbackResult: PlaybackResult? = null,
+    val headerImage: MediaArtImageState? = null
 ) : State
 
 
@@ -113,7 +163,7 @@ object InitialTrackListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val args = savedStateHandle.getArgs<HasTrackList>().args
+        val args = savedStateHandle.getArgs<TrackListArguments>()
         return TrackListState(
             trackListId = args.trackListId,
             trackList = listOf(),
@@ -135,4 +185,7 @@ sealed interface TrackListUserAction : UserAction {
     ) : TrackListUserAction
 
     object DismissPlaybackErrorDialog : TrackListUserAction
+    object UpButtonClicked : TrackListUserAction
+    object SortByButtonClicked : TrackListUserAction
+    object AddTracksClicked : TrackListUserAction
 }

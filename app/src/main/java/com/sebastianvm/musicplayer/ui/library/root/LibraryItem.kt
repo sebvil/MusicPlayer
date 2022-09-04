@@ -4,7 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 
 sealed class LibraryItem(
@@ -15,7 +17,12 @@ sealed class LibraryItem(
     open val count: Int
 ) {
     data class Tracks(override val count: Int) : LibraryItem(
-        destination = NavigationDestination.TrackList(TrackListArguments),
+        destination = NavigationDestination.TrackList(
+            TrackListArguments(
+                trackListType = TrackListType.ALL_TRACKS,
+                trackListId = TrackListViewModel.ALL_TRACKS
+            )
+        ),
         rowName = R.string.all_songs,
         icon = R.drawable.ic_song,
         countString = R.plurals.number_of_tracks,

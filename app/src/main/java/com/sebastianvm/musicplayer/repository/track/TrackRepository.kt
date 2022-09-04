@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
@@ -33,6 +34,8 @@ interface TrackRepository {
         trackListType: TrackListType,
         mediaId: Long
     ): Flow<List<ModelListItemState>>
+
+    fun getTrackListMetadata(trackListType: TrackListType, mediaId: Long): Flow<TrackListMetadata>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,

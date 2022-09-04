@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
@@ -17,9 +17,8 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -109,8 +108,11 @@ class SearchViewModel @Inject constructor(
     private fun onAlbumSearchResultClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.Album(
-                    AlbumArguments(albumId = albumId)
+                NavigationDestination.TrackList(
+                    TrackListArguments(
+                        trackListType = TrackListType.ALBUM,
+                        trackListId = albumId
+                    )
                 )
             )
         )
@@ -119,9 +121,10 @@ class SearchViewModel @Inject constructor(
     private fun onGenreSearchResultClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.Genre(
-                    GenreArguments(
-                        genreId = genreId
+                NavigationDestination.TrackList(
+                    TrackListArguments(
+                        trackListType = TrackListType.GENRE,
+                        trackListId = genreId
                     )
                 )
             )
@@ -131,8 +134,11 @@ class SearchViewModel @Inject constructor(
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.Playlist(
-                    PlaylistArguments(playlistId = playlistId)
+                NavigationDestination.TrackList(
+                    TrackListArguments(
+                        trackListType = TrackListType.PLAYLIST,
+                        trackListId = playlistId
+                    )
                 )
             )
         )

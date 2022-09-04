@@ -4,10 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -70,9 +71,10 @@ class ArtistViewModel @Inject constructor(
             is ArtistUserAction.AlbumClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Album(
-                            AlbumArguments(
-                                albumId = action.albumId
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.ALBUM,
+                                trackListId = action.albumId
                             )
                         )
                     )

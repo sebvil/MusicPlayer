@@ -3,12 +3,13 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -74,9 +75,10 @@ class AlbumContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewAlbum -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Album(
-                            AlbumArguments(
-                                albumId = state.value.mediaId
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.ALBUM,
+                                trackListId = state.value.mediaId
                             )
                         )
                     )
