@@ -1,16 +1,18 @@
-package com.sebastianvm.musicplayer.ui.components.lists.tracklist
+package com.sebastianvm.musicplayer.ui.library.tracklist
 
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
+import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -20,8 +22,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertNull
@@ -31,7 +34,6 @@ class TrackListViewModelTest : BaseTest() {
 
     private lateinit var playbackManager: PlaybackManager
     private lateinit var trackRepository: TrackRepository
-    private lateinit var playlistRepository: PlaylistRepository
 
     private val tracks = listOf(
         Fixtures.trackArgentina,
@@ -39,30 +41,17 @@ class TrackListViewModelTest : BaseTest() {
         Fixtures.trackColombia,
     )
 
-    private val tracksInPlaylist = listOf(
-        Fixtures.trackWithPlaylistPositionArgentina,
-        Fixtures.trackWithPlaylistPositionBelgium,
-        Fixtures.trackWithPlaylistPositionColombia,
-    )
     private val modelListItemStatesAscending = tracks.map { it.toModelListItemState() }
     private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
-
-    private val modelListItemStatesWithPositionAscending =
-        tracksInPlaylist.map { it.toModelListItemState() }
-    private val modelListItemStatesWithPositionDescending =
-        modelListItemStatesWithPositionAscending.reversed()
 
     @Before
     fun setUp() {
         playbackManager = mockk()
         trackRepository = mockk {
-            every { getAllTracks() } returns emptyFlow()
-            every { getTracksForGenre(any()) } returns emptyFlow()
-            every { getTracksForAlbum(any()) } returns emptyFlow()
+            every { getTracksForMedia(any(), any()) } returns emptyFlow()
+            every { getTrackListMetadata(any(), any()) } returns emptyFlow()
         }
-        playlistRepository = mockk {
-            every { getTracksInPlaylist(any()) } returns emptyFlow()
-        }
+
     }
 
     private fun generateViewModel(
@@ -78,7 +67,6 @@ class TrackListViewModelTest : BaseTest() {
                 playbackResult = playbackResult
             ),
             trackRepository = trackRepository,
-            playlistRepository = playlistRepository,
             playbackManager = playbackManager,
         )
     }
@@ -93,19 +81,33 @@ class TrackListViewModelTest : BaseTest() {
         generateViewModel(trackListType = TrackListType.PLAYLIST, trackListId = C.ID_ONE)
 
 
-    // BEGIN SECTION ALL TRACKS
-
     @Test
     fun `init sets initial state and updates state on change to all tracks list`() =
         testScope.runReliableTest {
-            val tracksFlow = MutableStateFlow(tracks)
-            every { trackRepository.getAllTracks() } returns tracksFlow
+            val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
+            every {
+                trackRepository.getTracksForMedia(
+                    trackListType = TrackListType.ALL_TRACKS,
+                    mediaId = 0
+                )
+            } returns tracksFlow
+            every {
+                trackRepository.getTrackListMetadata(
+                    mediaId = 0,
+                    trackListType = TrackListType.ALL_TRACKS
+                )
+            } returns flowOf(
+                TrackListMetadata()
+            )
+
             with(generateViewModel()) {
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesAscending, state.value.trackList)
-                tracksFlow.value = tracks.reversed()
+                assertEquals(modelListItemStatesAscending, state.value.trackList)
+                assertNull(state.value.trackListName)
+                assertNull(state.value.headerImage)
+                tracksFlow.value = modelListItemStatesDescending
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.value.trackList)
             }
         }
 
@@ -113,14 +115,19 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for all tracks triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playAllTracks(initialTrackIndex = 0) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(mediaGroupType = MediaGroupType.ALL_TRACKS, mediaId = 0)
+                )
+            } returns result
             with(generateViewModel()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
                 advanceUntilIdle()
-                Assert.assertEquals(
+                assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
                     state.value.playbackResult
                 )
@@ -131,15 +138,20 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for all tracks triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playAllTracks(initialTrackIndex = 0) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(mediaGroupType = MediaGroupType.ALL_TRACKS, mediaId = 0)
+                )
+            } returns result
             with(generateViewModel()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Success
                 advanceUntilIdle()
                 assertNull(state.value.playbackResult)
-                Assert.assertEquals(
+                assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
                 )
@@ -147,7 +159,7 @@ class TrackListViewModelTest : BaseTest() {
         }
 
     @Test
-    fun `TrackOverflowMenuIconClicked navigates to track context menu for all tracks`() {
+    fun `TrackOverflowMenuIconClicked navigates to track context menu`() {
         with(generateViewModel()) {
             handle(TrackListUserAction.TrackOverflowMenuIconClicked(trackIndex = 0, trackId = 0))
             kotlin.test.assertEquals(
@@ -177,14 +189,31 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `init sets initial state and updates state on change to genre tracks list`() =
         testScope.runReliableTest {
-            val tracksFlow = MutableStateFlow(tracks)
-            every { trackRepository.getTracksForGenre(C.ID_ONE) } returns tracksFlow
+            val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
+            every {
+                trackRepository.getTracksForMedia(
+                    trackListType = TrackListType.GENRE,
+                    mediaId = C.ID_ONE
+                )
+            } returns tracksFlow
+            every {
+                trackRepository.getTrackListMetadata(
+                    mediaId = C.ID_ONE,
+                    trackListType = TrackListType.GENRE
+                )
+            } returns flowOf(
+                TrackListMetadata(
+                    trackListName = C.GENRE_ALPHA,
+                )
+            )
             with(generateViewModelForGenre()) {
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesAscending, state.value.trackList)
-                tracksFlow.value = tracks.reversed()
+                assertEquals(modelListItemStatesAscending, state.value.trackList)
+                assertEquals(C.GENRE_ALPHA, state.value.trackListName)
+                assertNull(state.value.headerImage)
+                tracksFlow.value = modelListItemStatesDescending
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.value.trackList)
             }
         }
 
@@ -193,14 +222,22 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for genre triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playGenre(genreId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.GENRE,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForGenre()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
                 advanceUntilIdle()
-                Assert.assertEquals(
+                assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
                     state.value.playbackResult
                 )
@@ -211,15 +248,23 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for genre triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playGenre(genreId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.GENRE,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForGenre()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Success
                 advanceUntilIdle()
                 assertNull(state.value.playbackResult)
-                Assert.assertEquals(
+                assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
                 )
@@ -259,17 +304,33 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `init sets initial state and updates state on change to playlist tracks list`() =
         testScope.runReliableTest {
-            val tracksFlow = MutableStateFlow(tracksInPlaylist)
-            every { playlistRepository.getTracksInPlaylist(C.ID_ONE) } returns tracksFlow
+            val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
+            every {
+                trackRepository.getTracksForMedia(
+                    trackListType = TrackListType.PLAYLIST,
+                    mediaId = C.ID_ONE
+                )
+            } returns tracksFlow
+
+            every {
+                trackRepository.getTrackListMetadata(
+                    mediaId = C.ID_ONE,
+                    trackListType = TrackListType.PLAYLIST
+                )
+            } returns flowOf(
+                TrackListMetadata(
+                    trackListName = C.PLAYLIST_APPLE,
+                )
+            )
+
             with(generateViewModelForPlaylist()) {
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesWithPositionAscending, state.value.trackList)
-                tracksFlow.value = tracksInPlaylist.reversed()
+                assertEquals(modelListItemStatesAscending, state.value.trackList)
+                assertEquals(C.PLAYLIST_APPLE, state.value.trackListName)
+                assertNull(state.value.headerImage)
+                tracksFlow.value = modelListItemStatesDescending
                 advanceUntilIdle()
-                Assert.assertEquals(
-                    modelListItemStatesWithPositionDescending,
-                    state.value.trackList
-                )
+                assertEquals(modelListItemStatesDescending, state.value.trackList)
             }
         }
 
@@ -278,14 +339,22 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for playlist triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playPlaylist(playlistId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.PLAYLIST,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForPlaylist()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
                 advanceUntilIdle()
-                Assert.assertEquals(
+                assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
                     state.value.playbackResult
                 )
@@ -296,15 +365,23 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for playlist triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playPlaylist(playlistId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.PLAYLIST,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForPlaylist()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Success
                 advanceUntilIdle()
                 assertNull(state.value.playbackResult)
-                Assert.assertEquals(
+                assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
                 )
@@ -343,14 +420,40 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `init sets initial state and updates state on change to album tracks list`() =
         testScope.runReliableTest {
-            val tracksFlow = MutableStateFlow(tracks)
-            every { trackRepository.getTracksForAlbum(C.ID_ONE) } returns tracksFlow
+            val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
+            every {
+                trackRepository.getTracksForMedia(
+                    trackListType = TrackListType.ALBUM,
+                    mediaId = C.ID_ONE
+                )
+            } returns tracksFlow
+
+            val mediaArtState = MediaArtImageState(
+                imageUri = C.IMAGE_URI_1,
+                contentDescription = R.string.album_art_for_album,
+                backupResource = R.drawable.ic_album,
+                backupContentDescription = R.string.placeholder_album_art,
+                args = listOf(C.ALBUM_ALPACA)
+            )
+            every {
+                trackRepository.getTrackListMetadata(
+                    mediaId = C.ID_ONE,
+                    trackListType = TrackListType.ALBUM
+                )
+            } returns flowOf(
+                TrackListMetadata(
+                    trackListName = C.ALBUM_ALPACA,
+                    mediaArtImageState = mediaArtState
+                )
+            )
             with(generateViewModelForAlbum()) {
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesAscending, state.value.trackList)
-                tracksFlow.value = tracks.reversed()
+                assertEquals(modelListItemStatesAscending, state.value.trackList)
+                assertEquals(C.ALBUM_ALPACA, state.value.trackListName)
+                assertEquals(mediaArtState, state.value.headerImage)
+                tracksFlow.value = modelListItemStatesDescending
                 advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.value.trackList)
             }
         }
 
@@ -359,14 +462,22 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for album triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playAlbum(albumId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.ALBUM,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForAlbum()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
                 advanceUntilIdle()
-                Assert.assertEquals(
+                assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
                     state.value.playbackResult
                 )
@@ -377,15 +488,23 @@ class TrackListViewModelTest : BaseTest() {
     fun `TrackClicked for album triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
             val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
-            every { playbackManager.playAlbum(albumId = C.ID_ONE) } returns result
+            every {
+                playbackManager.playMedia(
+                    initialTrackIndex = 0,
+                    mediaGroup = MediaGroup(
+                        mediaGroupType = MediaGroupType.ALBUM,
+                        mediaId = C.ID_ONE
+                    )
+                )
+            } returns result
             with(generateViewModelForAlbum()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
                 advanceUntilIdle()
-                Assert.assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
                 result.value = PlaybackResult.Success
                 advanceUntilIdle()
                 assertNull(state.value.playbackResult)
-                Assert.assertEquals(
+                assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
                 )
@@ -417,7 +536,7 @@ class TrackListViewModelTest : BaseTest() {
         }
     }
 
-    // END SECTION GENRE
+    // END SECTION ALBUM
     @Test
     fun `DismissPlaybackErrorDialog resets playback status state`() {
         with(generateViewModel(playbackResult = PlaybackResult.Error(0))) {

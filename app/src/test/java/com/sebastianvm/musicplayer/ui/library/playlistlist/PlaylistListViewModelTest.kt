@@ -2,12 +2,13 @@ package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.playlist.PlaylistArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.coVerify
@@ -82,9 +83,10 @@ class PlaylistListViewModelTest : BaseTest() {
             Assert.assertEquals(
                 navEvents.value.first(),
                 NavEvent.NavigateToScreen(
-                    NavigationDestination.Playlist(
-                        arguments = PlaylistArguments(
-                            playlistId = C.ID_ONE
+                    NavigationDestination.TrackList(
+                        TrackListArguments(
+                            trackListType = TrackListType.PLAYLIST,
+                            trackListId = C.ID_ONE
                         )
                     )
                 )

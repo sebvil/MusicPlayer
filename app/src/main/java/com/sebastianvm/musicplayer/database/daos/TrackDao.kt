@@ -76,15 +76,25 @@ interface TrackDao {
         sortOrder: MediaSortOrder
     ): Flow<List<Track>>
 
-    @Transaction
     @Query(
-        """
-        SELECT Track.* FROM Track 
-        INNER JOIN PlaylistTrackCrossRef ON Track.id = PlaylistTrackCrossRef.trackId
-        WHERE PlaylistTrackCrossRef.playlistId=:playlistId
-    """
+        "SELECT Track.* FROM Track " +
+                "INNER JOIN PlaylistTrackCrossRef " +
+                "ON Track.id = PlaylistTrackCrossRef.trackId " +
+                "WHERE PlaylistTrackCrossRef.playlistId=:playlistId ORDER BY " +
+                "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='ASCENDING' THEN position END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='DESCENDING' THEN position END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
-    fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>>
+    fun getTracksForPlaylist(
+        playlistId: Long,
+        sortOption: SortOptions.PlaylistSortOptions,
+        sortOrder: MediaSortOrder
+    ): Flow<List<Track>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTracks(

@@ -3,11 +3,12 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.genre.GenreArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
@@ -73,9 +74,10 @@ class GenreListViewModelTest : BaseTest() {
             assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Genre(
-                            GenreArguments(
-                                genreId = C.ID_ONE
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.GENRE,
+                                trackListId = C.ID_ONE
                             )
                         )
                     )

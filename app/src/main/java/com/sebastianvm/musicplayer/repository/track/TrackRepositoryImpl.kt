@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.repository.track
 
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
@@ -9,15 +10,24 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.repository.album.AlbumRepository
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -25,7 +35,10 @@ import javax.inject.Inject
 class TrackRepositoryImpl @Inject constructor(
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val trackDao: TrackDao
+    private val trackDao: TrackDao,
+    private val playlistRepository: PlaylistRepository,
+    private val genreRepository: GenreRepository,
+    private val albumRepository: AlbumRepository
 ) : TrackRepository {
 
     override fun getTracksCount(): Flow<Int> {
@@ -66,7 +79,56 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
-        return trackDao.getTracksForPlaylist(playlistId).distinctUntilChanged()
+        return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
+            .flatMapLatest { sortPreferences ->
+                trackDao.getTracksForPlaylist(
+                    playlistId = playlistId,
+                    sortOption = sortPreferences.sortOption,
+                    sortOrder = sortPreferences.sortOrder
+                )
+            }.distinctUntilChanged()
+    }
+
+    override fun getTracksForMedia(
+        trackListType: TrackListType,
+        mediaId: Long
+    ): Flow<List<ModelListItemState>> {
+        return when (trackListType) {
+            TrackListType.ALL_TRACKS -> getAllTracks()
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.GENRE -> getTracksForGenre(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            TrackListType.ALBUM -> getTracksForAlbum(mediaId)
+                .map { tracks -> tracks.map { it.toModelListItemState() } }
+        }
+    }
+
+    override fun getTrackListMetadata(
+        trackListType: TrackListType,
+        mediaId: Long
+    ): Flow<TrackListMetadata> {
+        return when (trackListType) {
+            TrackListType.ALL_TRACKS -> flowOf(TrackListMetadata())
+            TrackListType.GENRE -> genreRepository.getGenreName(mediaId)
+                .map { TrackListMetadata(trackListName = it) }
+            TrackListType.PLAYLIST -> playlistRepository.getPlaylistName(mediaId)
+                .map { TrackListMetadata(trackListName = it) }
+            TrackListType.ALBUM -> albumRepository.getAlbum(mediaId)
+                .map {
+                    TrackListMetadata(
+                        trackListName = it.albumName,
+                        mediaArtImageState = MediaArtImageState(
+                            it.imageUri,
+                            contentDescription = R.string.album_art_for_album,
+                            backupResource = R.drawable.ic_album,
+                            backupContentDescription = R.string.placeholder_album_art,
+                            args = listOf(it.albumName)
+                        )
+                    )
+                }
+        }
     }
 
     override suspend fun insertAllTracks(

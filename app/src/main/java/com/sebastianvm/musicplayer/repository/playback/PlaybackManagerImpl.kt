@@ -4,8 +4,11 @@ import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
@@ -22,6 +25,7 @@ class PlaybackManagerImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val playbackInfoDataSource: PlaybackInfoDataSource,
     private val trackRepository: TrackRepository,
+    private val playlistRepository: PlaylistRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
@@ -101,6 +105,19 @@ class PlaybackManagerImpl @Inject constructor(
             listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
         }
 
+    override fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int): Flow<PlaybackResult> {
+        return playTracks(initialTrackIndex) {
+            when (mediaGroup.mediaGroupType) {
+                MediaGroupType.ALL_TRACKS -> trackRepository.getAllTracks()
+                MediaGroupType.SINGLE_TRACK -> trackRepository.getTrack(mediaGroup.mediaId)
+                    .map { listOf(it.track) }
+                MediaGroupType.ARTIST -> trackRepository.getTracksForArtist(mediaGroup.mediaId)
+                MediaGroupType.ALBUM -> trackRepository.getTracksForAlbum(mediaGroup.mediaId)
+                MediaGroupType.GENRE -> trackRepository.getTracksForGenre(mediaGroup.mediaId)
+                MediaGroupType.PLAYLIST -> trackRepository.getTracksForPlaylist(mediaGroup.mediaId)
+            }.map { tracks -> tracks.map { it.toMediaItem() } }.first()
+        }
+    }
 
     override fun moveQueueItem(previousIndex: Int, newIndex: Int) {
         mediaPlaybackClient.moveQueueItem(previousIndex, newIndex)

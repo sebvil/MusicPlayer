@@ -2,12 +2,13 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
@@ -70,9 +71,10 @@ class AlbumListViewModelTest : BaseTest() {
             assertEquals(
                 navEvents.value.first(),
                 NavEvent.NavigateToScreen(
-                    NavigationDestination.Album(
-                        arguments = AlbumArguments(
-                            albumId = C.ID_ONE
+                    NavigationDestination.TrackList(
+                        TrackListArguments(
+                            trackListType = TrackListType.ALBUM,
+                            trackListId = C.ID_ONE
                         )
                     )
                 )

@@ -1,13 +1,14 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.ui.album.AlbumArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -49,8 +50,11 @@ class AlbumListViewModel @Inject constructor(
             is AlbumListUserAction.AlbumClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Album(
-                            AlbumArguments(action.albumId)
+                        NavigationDestination.TrackList(
+                            TrackListArguments(
+                                trackListType = TrackListType.ALBUM,
+                                trackListId = action.albumId
+                            )
                         )
                     )
                 )

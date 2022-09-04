@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,8 @@ interface PlaybackManager {
     fun playArtist(artistId: Long): Flow<PlaybackResult>
     fun playPlaylist(playlistId: Long, initialTrackIndex: Int = 0): Flow<PlaybackResult>
     fun playSingleTrack(trackId: Long): Flow<PlaybackResult>
+
+    fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0): Flow<PlaybackResult>
 
     fun moveQueueItem(previousIndex: Int, newIndex: Int)
     fun playQueueItem(index: Int)
