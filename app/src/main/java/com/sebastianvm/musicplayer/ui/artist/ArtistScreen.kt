@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,7 +15,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -37,10 +35,10 @@ fun ArtistScreen(
     navigationDelegate: NavigationDelegate,
 ) {
     val topBarState = rememberTopAppBarState()
-    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-    val scrollBehavior = remember(decayAnimationSpec) {
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(decayAnimationSpec, topBarState)
-    }
+//    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
+
+
 
     Screen(
         screenViewModel = screenViewModel,
