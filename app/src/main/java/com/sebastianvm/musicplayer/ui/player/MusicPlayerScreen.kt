@@ -70,9 +70,6 @@ fun MusicPlayerLayout(viewModel: ViewModelInterface<MusicPlayerState, MusicPlaye
                 ),
                 backupResource = R.drawable.ic_album,
                 backupContentDescription = R.string.placeholder_album_art,
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .padding(all = AppDimensions.spacing.mediumLarge),
                 contentScale = ContentScale.FillHeight
             )
             PlaybackInfoAndButtons(viewModel, modifier = Modifier.fillMaxHeight())
