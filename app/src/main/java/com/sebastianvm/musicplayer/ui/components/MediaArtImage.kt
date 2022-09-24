@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
@@ -85,25 +86,30 @@ fun MediaArtImage(
 ) {
     val painter = rememberAsyncImagePainter(model = uri)
 
-    Image(
-        painter = painter,
-        modifier = modifier,
-        contentDescription = contentDescription,
-        alignment = alignment,
-        contentScale = contentScale,
-        alpha = alpha,
-    )
 
-    when (painter.state) {
-        is AsyncImagePainter.State.Loading, is AsyncImagePainter.State.Error, is AsyncImagePainter.State.Empty -> {
-            Icon(
-                painter = painterResource(id = backupResource),
-                contentDescription = stringResource(id = backupContentDescription),
-                modifier = modifier.background(backgroundColor),
-                tint = MaterialTheme.colorScheme.contentColorFor(backgroundColor),
-            )
+    Box(modifier = modifier) {
+
+        Image(
+            painter = painter,
+            modifier = modifier,
+            contentDescription = contentDescription,
+            alignment = alignment,
+            contentScale = contentScale,
+            alpha = alpha,
+        )
+
+        when (painter.state) {
+            is AsyncImagePainter.State.Loading, is AsyncImagePainter.State.Error, is AsyncImagePainter.State.Empty -> {
+                Icon(
+                    painter = painterResource(id = backupResource),
+                    contentDescription = stringResource(id = backupContentDescription),
+                    modifier = modifier.background(backgroundColor),
+                    tint = MaterialTheme.colorScheme.contentColorFor(backgroundColor),
+                )
+            }
+
+            else -> Unit
         }
-        else -> Unit
     }
 
 }
