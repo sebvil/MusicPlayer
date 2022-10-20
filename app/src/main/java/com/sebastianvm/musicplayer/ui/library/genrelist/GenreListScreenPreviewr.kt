@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -25,7 +26,8 @@ private fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParamP
     ScreenPreview {
         GenreListScreen(
             state = state,
-            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance()
+            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance(),
+            listState = rememberLazyListState()
         )
     }
 }

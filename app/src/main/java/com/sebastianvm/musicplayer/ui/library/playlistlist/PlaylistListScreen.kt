@@ -2,7 +2,9 @@ package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -23,14 +25,38 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+
+@Composable
+fun PlaylistListScreen(viewModel: PlaylistListViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = { event ->
+            when (event) {
+                is PlaylistListUiEvent.ScrollToTop -> {
+                    listState.scrollToItem(0)
+                }
+            }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        PlaylistListScreen(
+            state = state,
+            screenDelegate = delegate,
+            listState = listState
+        )
+    }
+}
 
 @Composable
 fun PlaylistListScreen(
     state: PlaylistListState,
-    screenDelegate: ScreenDelegate<PlaylistListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance()
+    screenDelegate: ScreenDelegate<PlaylistListUserAction>,
+    listState: LazyListState
 ) {
     ScreenLayout(
         fab = {
@@ -57,7 +83,7 @@ fun PlaylistListScreen(
                     }
                 })
         }) {
-        PlaylistListLayout(state = state, screenDelegate = screenDelegate)
+        PlaylistListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
     }
 }
 
@@ -115,7 +141,8 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 @Composable
 fun PlaylistListLayout(
     state: PlaylistListState,
-    screenDelegate: ScreenDelegate<PlaylistListUserAction>
+    screenDelegate: ScreenDelegate<PlaylistListUserAction>,
+    listState: LazyListState
 ) {
     if (state.isCreatePlaylistDialogOpen) {
         CreatePlaylistDialog(
@@ -135,7 +162,7 @@ fun PlaylistListLayout(
             onDismiss = { screenDelegate.handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) },
         )
     }
-    LazyColumn {
+    LazyColumn(state = listState) {
         items(state.playlistList) { item ->
             ModelListItem(
                 state = item,

@@ -39,6 +39,7 @@ class PlaylistListViewModel @Inject constructor(
                     playlistList = playlists.map { it.toModelListItemState() },
                 )
             }
+            addUiEvent(PlaylistListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -133,7 +134,6 @@ object InitialPlaylistsListStateModule {
         )
 }
 
-sealed interface PlaylistListUiEvent : UiEvent
 sealed interface PlaylistListUserAction : UserAction {
     data class PlaylistClicked(val playlistId: Long) : PlaylistListUserAction
     data class PlaylistOverflowMenuIconClicked(val playlistId: Long) : PlaylistListUserAction
@@ -143,4 +143,8 @@ sealed interface PlaylistListUserAction : UserAction {
     data class CreatePlaylistButtonClicked(val playlistName: String) : PlaylistListUserAction
     object DismissPlaylistCreationButtonClicked : PlaylistListUserAction
     object DismissPlaylistCreationErrorDialog : PlaylistListUserAction
+}
+
+sealed interface PlaylistListUiEvent : UiEvent {
+    object ScrollToTop : PlaylistListUiEvent
 }

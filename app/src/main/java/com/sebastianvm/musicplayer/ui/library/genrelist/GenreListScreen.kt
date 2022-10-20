@@ -2,7 +2,9 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -20,14 +22,22 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun GenreListScreen(viewModel: GenreListViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
     Screen(
         screenViewModel = viewModel,
-        eventHandler = {},
+        eventHandler = { event ->
+            when (event) {
+                is GenreListUiEvent.ScrollToTop -> {
+                    listState.scrollToItem(0)
+                }
+            }
+        },
         navigationDelegate = navigationDelegate
     ) { state, delegate ->
         GenreListScreen(
             state = state,
-            screenDelegate = delegate
+            screenDelegate = delegate,
+            listState = listState
         )
     }
 }
@@ -35,7 +45,8 @@ fun GenreListScreen(viewModel: GenreListViewModel, navigationDelegate: Navigatio
 @Composable
 fun GenreListScreen(
     state: GenreListState,
-    screenDelegate: ScreenDelegate<GenreListUserAction>
+    screenDelegate: ScreenDelegate<GenreListUserAction>,
+    listState: LazyListState
 ) {
     ScreenLayout(
         topBar = {
@@ -51,13 +62,17 @@ fun GenreListScreen(
                     }
                 })
         }) {
-        GenreListLayout(state, screenDelegate)
+        GenreListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
     }
 }
 
 @Composable
-fun GenreListLayout(state: GenreListState, screenDelegate: ScreenDelegate<GenreListUserAction>) {
-    LazyColumn {
+fun GenreListLayout(
+    state: GenreListState,
+    screenDelegate: ScreenDelegate<GenreListUserAction>,
+    listState: LazyListState
+) {
+    LazyColumn(state = listState) {
         items(state.genreList) { item ->
             ModelListItem(
                 state = item,

@@ -39,6 +39,7 @@ class GenreListViewModel @Inject constructor(
                     genreList = genreList.map { it.toModelListItemState() },
                 )
             }
+            addUiEvent(GenreListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -96,11 +97,15 @@ object InitialGenreListStateModule {
         GenreListState(genreList = listOf())
 }
 
-sealed interface GenreListUiEvent : UiEvent
 sealed interface GenreListUserAction : UserAction {
     data class GenreRowClicked(val genreId: Long) : GenreListUserAction
     data class GenreOverflowMenuIconClicked(val genreId: Long) : GenreListUserAction
     object UpButtonClicked : GenreListUserAction
     object SortByButtonClicked : GenreListUserAction
 }
+
+sealed interface GenreListUiEvent : UiEvent {
+    object ScrollToTop : GenreListUiEvent
+}
+
 
