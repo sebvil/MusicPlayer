@@ -9,20 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
-@ScreenPreview
 @Composable
 fun GenreListScreen(
-    @PreviewParameter(GenreListStatePreviewParamProvider::class) state: GenreListState,
+    state: GenreListState,
     screenDelegate: ScreenDelegate<GenreListUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance()
 ) {
     ScreenLayout(

@@ -84,6 +84,7 @@ class AlbumListViewModel @Inject constructor(
     }
 }
 
+
 data class AlbumListState(val albumList: List<ModelListItemState>) : State
 
 
@@ -97,13 +98,14 @@ object InitialAlbumListStateModule {
     }
 }
 
-sealed class AlbumListUiEvent : UiEvent {
-    object ScrollToTop : AlbumListUiEvent()
-}
-
 sealed interface AlbumListUserAction : UserAction {
     data class AlbumClicked(val albumId: Long) : AlbumListUserAction
     object UpButtonClicked : AlbumListUserAction
     object SortByClicked : AlbumListUserAction
     data class AlbumOverflowIconClicked(val albumId: Long) : AlbumListUserAction
 }
+
+sealed class AlbumListUiEvent : UiEvent {
+    object ScrollToTop : AlbumListUiEvent()
+}
+

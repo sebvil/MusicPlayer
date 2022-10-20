@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.player.TrackListType
@@ -150,7 +149,6 @@ class TrackListViewModel @Inject constructor(
 
 }
 
-@Dowel
 data class TrackListState(
     val trackListId: Long,
     val trackListType: TrackListType,

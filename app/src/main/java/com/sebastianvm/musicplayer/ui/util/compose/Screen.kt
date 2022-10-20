@@ -23,46 +23,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun <S : State, A : UserAction, E : UiEvent> Screen(
-    screenViewModel: BaseViewModel<S, A, E>,
-    eventHandler: EventHandler<E>,
-    navigationDelegate: NavigationDelegate,
-    modifier: Modifier = Modifier,
-    topBar: @Composable (S) -> Unit = {},
-    fab: @Composable (S) -> Unit = {},
-    content: @Composable (S) -> Unit
-) {
-    val state = screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
-    HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
-    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    val interactionSource = remember { MutableInteractionSource() }
-    val focusManager = LocalFocusManager.current
-
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                focusManager.clearFocus()
-            },
-        topBar = { topBar(state.value) },
-        floatingActionButton = { fab(state.value) },
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            content(state.value)
-        }
-    }
-}
-
-
 @Composable
 fun <S : State, A : UserAction, E : UiEvent> NewScreen(
     screenViewModel: BaseViewModel<S, A, E>,

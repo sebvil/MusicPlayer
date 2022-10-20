@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.lifecycle.viewModelScope
-import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
@@ -54,7 +53,7 @@ class LibraryViewModel @Inject constructor(
     }
 }
 
-@Dowel(count = 4)
+
 data class LibraryState(val libraryItems: List<LibraryItem>) : State
 
 @InstallIn(ViewModelComponent::class)

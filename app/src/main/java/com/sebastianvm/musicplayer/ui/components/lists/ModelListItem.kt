@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
@@ -34,7 +33,7 @@ sealed class ModelListItemState(
     open val supportingText: String? = null,
     open val mediaArtImageState: MediaArtImageState? = null
 ) {
-    @Dowel(count = 20)
+
     data class Basic(
         override val id: Long,
         override val headlineText: String,
@@ -42,7 +41,7 @@ sealed class ModelListItemState(
         override val mediaArtImageState: MediaArtImageState? = null
     ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
 
-    @Dowel(count = 20)
+
     data class WithPosition(
         val position: Long,
         override val id: Long,

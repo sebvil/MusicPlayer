@@ -4,11 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 
 
-@Dowel(count = 1)
 class NavigationDelegateForPreviews : NavigationDelegate {
     override fun handleNavEvent(navEvent: NavEvent) = Unit
 

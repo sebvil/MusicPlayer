@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
-import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -83,7 +82,7 @@ class GenreListViewModel @Inject constructor(
 
 }
 
-@Dowel(count = 3)
+
 data class GenreListState(val genreList: List<ModelListItemState>) : State
 
 
