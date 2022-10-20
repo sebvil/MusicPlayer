@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
@@ -46,7 +47,8 @@ object PreviewUtil {
         "culpa m",
     )
 
-    fun randomString() = strings.random()
+    fun randomString(minLength: Int = 0, maxLength: Int = strings.maxOf { it.length }) =
+        strings.filter { it.length in minLength..maxLength }.random()
 }
 
 @Composable
@@ -96,6 +98,7 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 1024, heightDp = 360)
 annotation class ScreenPreview
 
 @Preview

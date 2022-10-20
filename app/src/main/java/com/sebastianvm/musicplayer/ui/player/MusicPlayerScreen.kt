@@ -19,22 +19,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
+@Composable
+fun MusicPlayerScreen(viewModel: MusicPlayerViewModel, navigationDelegate: NavigationDelegate) {
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        MusicPlayerScreen(
+            state = state,
+            screenDelegate = delegate
+        )
+    }
+}
 
 @Composable
-fun MusicPlayerLayout(
+fun MusicPlayerScreen(
     state: MusicPlayerState,
     screenDelegate: ScreenDelegate<MusicPlayerUserAction>
 ) {
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        Row {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             MediaArtImage(
                 uri = state.trackArt,
                 contentDescription = stringResource(
@@ -43,7 +60,10 @@ fun MusicPlayerLayout(
                 ),
                 backupResource = R.drawable.ic_album,
                 backupContentDescription = R.string.placeholder_album_art,
-                contentScale = ContentScale.FillHeight
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .padding(all = AppDimensions.spacing.mediumLarge),
+                contentScale = ContentScale.FillWidth
             )
             PlaybackInfoAndButtons(state, screenDelegate, modifier = Modifier.fillMaxHeight())
         }
@@ -74,9 +94,8 @@ fun MusicPlayerLayout(
 
 data class TrackInfoState(val trackName: String, val artists: String)
 
-@Preview
 @Composable
-fun TrackInfo(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) state: TrackInfoState) {
+fun TrackInfo(state: TrackInfoState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
