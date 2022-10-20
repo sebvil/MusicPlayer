@@ -31,7 +31,7 @@ fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
     )
 }
 
-
+// TODO Need to handle arbitrarily long text
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryTopBar(state: LibraryTopBarState, delegate: LibraryTopBarDelegate) {

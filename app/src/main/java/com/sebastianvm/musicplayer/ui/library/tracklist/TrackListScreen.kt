@@ -30,16 +30,37 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
 @Composable
+fun TrackListScreen(viewModel: TrackListViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = { event ->
+            when (event) {
+                is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
+            }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        TrackListScreen(
+            state = state,
+            screenDelegate = delegate,
+            listState = listState
+        )
+    }
+}
+
+@Composable
 fun TrackListScreen(
     state: TrackListState,
-    screenDelegate: ScreenDelegate<TrackListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance(),
-    listState: LazyListState = rememberLazyListState()
+    screenDelegate: ScreenDelegate<TrackListUserAction>,
+    listState: LazyListState
 ) {
     ScreenLayout(
         fab = {
