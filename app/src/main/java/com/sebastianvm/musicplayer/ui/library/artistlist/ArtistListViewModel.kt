@@ -41,6 +41,7 @@ class ArtistListViewModel @Inject constructor(
                     }
                 )
             }
+            addUiEvent(ArtistListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -91,7 +92,9 @@ object InitialArtistListStateModule {
     }
 }
 
-sealed interface ArtistListUiEvent : UiEvent
+sealed interface ArtistListUiEvent : UiEvent {
+    object ScrollToTop : ArtistListUiEvent
+}
 
 sealed interface ArtistListUserAction : UserAction {
     data class ArtistRowClicked(val artistId: Long) : ArtistListUserAction

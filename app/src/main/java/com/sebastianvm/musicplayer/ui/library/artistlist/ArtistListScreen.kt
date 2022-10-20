@@ -2,7 +2,9 @@ package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -13,14 +15,38 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+
+@Composable
+fun ArtistListScreen(viewModel: ArtistListViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = { event ->
+            when (event) {
+                is ArtistListUiEvent.ScrollToTop -> {
+                    listState.scrollToItem(0)
+                }
+            }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        ArtistListScreen(
+            state = state,
+            screenDelegate = delegate,
+            listState = listState
+        )
+    }
+}
 
 @Composable
 fun ArtistListScreen(
     state: ArtistListState,
-    screenDelegate: ScreenDelegate<ArtistListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance()
+    screenDelegate: ScreenDelegate<ArtistListUserAction>,
+    listState: LazyListState
 ) {
     ScreenLayout(
         topBar = {
@@ -37,14 +63,18 @@ fun ArtistListScreen(
                 })
         }
     ) {
-        ArtistListLayout(state = state, screenDelegate = screenDelegate)
+        ArtistListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
     }
 }
 
 
 @Composable
-fun ArtistListLayout(state: ArtistListState, screenDelegate: ScreenDelegate<ArtistListUserAction>) {
-    LazyColumn {
+fun ArtistListLayout(
+    state: ArtistListState,
+    screenDelegate: ScreenDelegate<ArtistListUserAction>,
+    listState: LazyListState
+) {
+    LazyColumn(state = listState) {
         items(state.artistList) { item ->
             ModelListItem(
                 state = item,

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
@@ -19,8 +18,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
@@ -45,22 +42,11 @@ fun AlbumListScreen(viewModel: AlbumListViewModel, navigationDelegate: Navigatio
     }
 }
 
-@ScreenPreview
 @Composable
-private fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParamsProvider::class) state: AlbumListState) {
-    ScreenPreview {
-        AlbumListScreen(
-            state = state,
-            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance()
-        )
-    }
-}
-
-@Composable
-private fun AlbumListScreen(
+fun AlbumListScreen(
     state: AlbumListState,
-    screenDelegate: ScreenDelegate<AlbumListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance(),
-    listState: LazyListState = rememberLazyListState()
+    screenDelegate: ScreenDelegate<AlbumListUserAction>,
+    listState: LazyListState
 ) {
     ScreenLayout(
         topBar = {
