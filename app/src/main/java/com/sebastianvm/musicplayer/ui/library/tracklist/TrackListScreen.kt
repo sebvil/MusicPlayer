@@ -31,14 +31,14 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
 @Composable
 fun TrackListScreen(
     state: TrackListState,
-    screenDelegate: ScreenDelegate<TrackListUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance(),
+    screenDelegate: ScreenDelegate<TrackListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance(),
     listState: LazyListState = rememberLazyListState()
 ) {
     ScreenLayout(

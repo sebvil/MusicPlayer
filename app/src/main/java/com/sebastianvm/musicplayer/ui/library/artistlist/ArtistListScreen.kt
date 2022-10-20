@@ -14,13 +14,13 @@ import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun ArtistListScreen(
     state: ArtistListState,
-    screenDelegate: ScreenDelegate<ArtistListUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance()
+    screenDelegate: ScreenDelegate<ArtistListUserAction> = DefaultScreenDelegateProvider.getDefaultInstance()
 ) {
     ScreenLayout(
         topBar = {

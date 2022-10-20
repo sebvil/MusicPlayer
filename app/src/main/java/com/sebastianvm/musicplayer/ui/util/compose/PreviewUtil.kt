@@ -59,27 +59,21 @@ fun ScreenPreview(
 }
 
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun <S : State, A : UserAction> ScreenPreview(
-//    state: S,
-//    topBar: @Composable () -> Unit = {},
-//    fab: @Composable () -> Unit = {},
-//    screen: @Composable (ViewModelInterface<S, A>) -> Unit
-//) {
-//    NavHostWrapper { navController ->
-//        Scaffold(
-//            topBar = topBar,
-//            bottomBar = { BottomNavBar(NavigationDelegateImpl(navController)) },
-//            floatingActionButton = fab
-//        ) { padding ->
-//            Box(modifier = Modifier.padding(padding)) {
-//                val viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance<S, A>(state)
-//                screen(viewModel)
-//            }
-//        }
-//    }
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScreenPreview(
+    screen: @Composable () -> Unit
+) {
+    NavHostWrapper { navController ->
+        Scaffold(
+            bottomBar = { BottomNavBar(NavigationDelegateImpl(navController)) },
+        ) { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                screen()
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

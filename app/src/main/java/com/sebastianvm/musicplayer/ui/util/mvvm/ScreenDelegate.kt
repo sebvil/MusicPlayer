@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.util.mvvm
 
-object DefaultViewModelInterfaceProvider {
+object DefaultScreenDelegateProvider {
 
     fun <A : UserAction> getDefaultInstance(): ScreenDelegate<A> =
         object : ScreenDelegate<A> {

@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -25,7 +25,7 @@ fun NavGraphBuilder.trackSearchNavDestination(navigationDelegate: NavigationDele
         destinationType = DestinationType.Screen
     ) { viewModel ->
         val context = LocalContext.current
-        NewScreen(
+        Screen(
             screenViewModel = viewModel,
             eventHandler = { event ->
                 when (event) {

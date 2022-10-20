@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 
 
 fun NavGraphBuilder.albumListNavDestination(navigationDelegate: NavigationDelegate) {
@@ -15,7 +15,7 @@ fun NavGraphBuilder.albumListNavDestination(navigationDelegate: NavigationDelega
         destinationType = DestinationType.Screen,
     ) { viewModel ->
         val listState = rememberLazyListState()
-        NewScreen(
+        Screen(
             screenViewModel = viewModel,
             eventHandler = { event ->
                 when (event) {

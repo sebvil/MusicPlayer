@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import kotlinx.parcelize.Parcelize
 
 @kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelega
         destinationType = DestinationType.Screen
     ) { viewModel ->
         val listState = rememberLazyListState()
-        NewScreen(
+        Screen(
             screenViewModel = viewModel,
             eventHandler = { event ->
                 when (event) {

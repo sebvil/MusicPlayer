@@ -43,7 +43,7 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
@@ -120,7 +120,7 @@ fun LibraryScreen(
 @Composable
 fun LibraryScreenLayout(
     state: LibraryState,
-    screenDelegate: ScreenDelegate<LibraryUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance(),
+    screenDelegate: ScreenDelegate<LibraryUserAction> = DefaultScreenDelegateProvider.getDefaultInstance(),
     onFabClicked: () -> Unit
 ) {
     ScreenLayout(fab = {

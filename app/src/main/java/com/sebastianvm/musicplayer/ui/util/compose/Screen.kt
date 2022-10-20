@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun <S : State, A : UserAction, E : UiEvent> NewScreen(
+fun <S : State, A : UserAction, E : UiEvent> Screen(
     screenViewModel: BaseViewModel<S, A, E>,
     eventHandler: EventHandler<E>,
     navigationDelegate: NavigationDelegate,

@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -20,7 +20,7 @@ fun NavGraphBuilder.artistNavDestination(navigationDelegate: NavigationDelegate)
         destination = NavigationRoute.Artist,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        NewScreen(
+        Screen(
             screenViewModel = viewModel,
             eventHandler = {},
             navigationDelegate = navigationDelegate
