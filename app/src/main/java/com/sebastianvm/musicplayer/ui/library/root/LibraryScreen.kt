@@ -40,12 +40,25 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
+@Composable
+fun LibraryScreen(viewModel: LibraryViewModel, navigationDelegate: NavigationDelegate) {
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        LibraryScreen(
+            state = state,
+            screenDelegate = delegate
+        )
+    }
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -120,7 +133,7 @@ fun LibraryScreen(
 @Composable
 fun LibraryScreenLayout(
     state: LibraryState,
-    screenDelegate: ScreenDelegate<LibraryUserAction> = DefaultScreenDelegateProvider.getDefaultInstance(),
+    screenDelegate: ScreenDelegate<LibraryUserAction>,
     onFabClicked: () -> Unit
 ) {
     ScreenLayout(fab = {
@@ -143,7 +156,6 @@ fun LibraryScreenLayout(
 }
 
 
-@ComponentPreview
 @Composable
 fun SearchBox(modifier: Modifier = Modifier) {
     Box(
