@@ -13,8 +13,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -32,25 +30,19 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
+import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
 @Composable
 fun TrackListScreen(
-    screenViewModel: TrackListViewModel,
-    navigationDelegate: NavigationDelegate,
+    state: TrackListState,
+    screenDelegate: ScreenDelegate<TrackListUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance(),
+    listState: LazyListState = rememberLazyListState()
 ) {
-    val listState = rememberLazyListState()
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
-            }
-        },
-        fab = { state ->
+    ScreenLayout(
+        fab = {
             if (state.trackListType == TrackListType.PLAYLIST) {
                 ExtendedFloatingActionButton(
                     text = { Text(text = stringResource(id = R.string.add_tracks)) },
@@ -60,45 +52,42 @@ fun TrackListScreen(
                             contentDescription = "Plus"
                         )
                     },
-                    onClick = { screenViewModel.handle(TrackListUserAction.AddTracksClicked) }
+                    onClick = { screenDelegate.handle(TrackListUserAction.AddTracksClicked) }
                 )
             }
 
         },
-        navigationDelegate = navigationDelegate,
         topBar = {
             LibraryTopBar(
                 state = LibraryTopBarState(
-                    it.trackListName ?: stringResource(id = R.string.all_songs),
-                    hasSortButton = it.trackListType != TrackListType.ALBUM
+                    state.trackListName ?: stringResource(id = R.string.all_songs),
+                    hasSortButton = state.trackListType != TrackListType.ALBUM
                 ),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
-                        screenViewModel.handle(TrackListUserAction.UpButtonClicked)
+                        screenDelegate.handle(TrackListUserAction.UpButtonClicked)
                     }
 
                     override fun sortByClicked() {
-                        screenViewModel.handle(TrackListUserAction.SortByButtonClicked)
+                        screenDelegate.handle(TrackListUserAction.SortByButtonClicked)
                     }
                 })
         },
     ) {
-        TrackListLayout(viewModel = screenViewModel, listState = listState)
+        TrackListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
     }
 }
 
-
 @Composable
 fun TrackListLayout(
-    viewModel: ViewModelInterface<TrackListState, TrackListUserAction>,
+    state: TrackListState, screenDelegate: ScreenDelegate<TrackListUserAction>,
     listState: LazyListState = rememberLazyListState(),
 ) {
-    val state by viewModel.state.collectAsState()
     PlaybackStatusIndicator(
         playbackResult = state.playbackResult,
         delegate = object : PlaybackStatusIndicatorDelegate {
             override fun onDismissRequest() {
-                viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
+                screenDelegate.handle(TrackListUserAction.DismissPlaybackErrorDialog)
             }
         })
 
@@ -123,12 +112,12 @@ fun TrackListLayout(
                 state = item,
                 modifier = Modifier
                     .clickable {
-                        viewModel.handle(TrackListUserAction.TrackClicked(index))
+                        screenDelegate.handle(TrackListUserAction.TrackClicked(index))
                     },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            viewModel.handle(
+                            screenDelegate.handle(
                                 TrackListUserAction.TrackOverflowMenuIconClicked(
                                     index,
                                     item.id,

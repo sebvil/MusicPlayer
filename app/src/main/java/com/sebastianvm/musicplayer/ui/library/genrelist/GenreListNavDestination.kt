@@ -5,15 +5,22 @@ import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
+import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
 
 fun NavGraphBuilder.genreListNavDestination(navigationDelegate: NavigationDelegate) {
     screenDestination<GenreListViewModel>(
         destination = NavigationRoute.GenresRoot,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        GenreListScreen(
+        NewScreen(
             screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate,
-        )
+            eventHandler = {},
+            navigationDelegate = navigationDelegate
+        ) { state, delegate ->
+            GenreListScreen(
+                state = state,
+                screenDelegate = delegate
+            )
+        }
     }
 }

@@ -47,7 +47,7 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
     sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
+    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
     HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
     HandleEvents(viewModel = sheetViewModel) { event ->

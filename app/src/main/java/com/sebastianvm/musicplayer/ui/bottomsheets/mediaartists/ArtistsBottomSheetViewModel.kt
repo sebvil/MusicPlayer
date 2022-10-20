@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -24,15 +25,21 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetUiEvent, ArtistsBottomSheetState>(initialState) {
+    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent>(
+        initialState
+    ) {
     init {
-        artistRepository.getArtists(state.value.artistIds).onEach { artists ->
+        artistRepository.getArtists(state.artistIds).onEach { artists ->
             setState {
                 copy(
                     artistList = artists.map { it.toModelListItemState() }
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    override fun handle(action: ArtistsBottomSheetUserAction) {
+        TODO("handle Not yet implemented")
     }
 
     fun onArtistClicked(artistId: Long) {
@@ -60,6 +67,8 @@ object InitialArtistsBottomSheetStateModule {
     }
 }
 
-sealed class ArtistsBottomSheetUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: Long) : ArtistsBottomSheetUiEvent()
+sealed interface ArtistsBottomSheetUiEvent : UiEvent {
+    data class NavigateToArtist(val artistId: Long) : ArtistsBottomSheetUiEvent
 }
+
+sealed interface ArtistsBottomSheetUserAction : UserAction

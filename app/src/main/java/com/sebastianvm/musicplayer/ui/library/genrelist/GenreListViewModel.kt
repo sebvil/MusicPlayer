@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
+import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -12,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -31,11 +31,9 @@ class GenreListViewModel @Inject constructor(
     initialState: GenreListState,
     genreRepository: GenreRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<GenreListUiEvent, GenreListState>(initialState),
-    ViewModelInterface<GenreListState, GenreListUserAction> {
+) : BaseViewModel<GenreListState, GenreListUserAction, GenreListUiEvent>(initialState) {
 
     init {
-
         genreRepository.getGenres().onEach { genreList ->
             setState {
                 copy(
@@ -58,6 +56,7 @@ class GenreListViewModel @Inject constructor(
                     )
                 )
             }
+
             is GenreListUserAction.GenreRowClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -76,13 +75,15 @@ class GenreListViewModel @Inject constructor(
                     preferencesRepository.toggleGenreListSortOrder()
                 }
             }
-            GenreListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+
+            is GenreListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
         }
     }
 
 }
 
+@Dowel(count = 3)
 data class GenreListState(val genreList: List<ModelListItemState>) : State
 
 

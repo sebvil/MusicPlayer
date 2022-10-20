@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 
 abstract class BaseContextMenuState(
@@ -14,15 +15,20 @@ abstract class BaseContextMenuState(
     open val playbackResult: PlaybackResult? = null
 ) : State
 
-sealed class BaseContextMenuUiEvent : UiEvent {
+sealed interface BaseContextMenuUiEvent : UiEvent {
     data class ShowToast(@StringRes val message: Int, val success: Boolean) :
-        BaseContextMenuUiEvent()
+        BaseContextMenuUiEvent
 
 }
 
+sealed interface BaseContextMenuUserAction : UserAction
+
 abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
     initialState: S
-) : BaseViewModel<BaseContextMenuUiEvent, S>(initialState) {
+) : BaseViewModel<S, BaseContextMenuUserAction, BaseContextMenuUiEvent>(initialState) {
     abstract fun onRowClicked(row: ContextMenuItem)
     abstract fun onPlaybackErrorDismissed()
+    override fun handle(action: BaseContextMenuUserAction) {
+        TODO("handle Not yet implemented")
+    }
 }

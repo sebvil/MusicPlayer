@@ -36,7 +36,7 @@ fun SortBottomSheet(
     sheetViewModel: SortBottomSheetViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
+    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     HandleEvents(viewModel = sheetViewModel) {}
     HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
 

@@ -23,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,20 +37,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
@@ -66,32 +58,10 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
         }
     }
 
-@Composable
-fun SearchScreen(
-    screenViewModel: SearchViewModel = viewModel(),
-    navigationDelegate: NavigationDelegate
-) {
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = {},
-        navigationDelegate = navigationDelegate
-    ) {
-        SearchLayout(screenViewModel)
-    }
-}
-
-@ScreenPreview
-@Composable
-fun SearchScreenPreview(@PreviewParameter(SearchStatePreviewParameterProvider::class) state: SearchState) {
-    ScreenPreview {
-        SearchLayout(DefaultViewModelInterfaceProvider.getDefaultInstance(state))
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
-    val state by viewModel.state.collectAsState()
+fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAction>) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val input = rememberSaveable {
         mutableStateOf("")
@@ -103,11 +73,13 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
         focusRequester.requestFocus()
     }
 
-    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = object : PlaybackStatusIndicatorDelegate {
-        override fun onDismissRequest() {
-            viewModel.handle(SearchUserAction.DismissPlaybackErrorDialog)
-        }
-    })
+    PlaybackStatusIndicator(
+        playbackResult = state.playbackResult,
+        delegate = object : PlaybackStatusIndicatorDelegate {
+            override fun onDismissRequest() {
+                screenDelegate.handle(SearchUserAction.DismissPlaybackErrorDialog)
+            }
+        })
 
     Column(
         modifier = Modifier
@@ -117,7 +89,7 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
             value = input.value,
             onValueChange = {
                 input.value = it
-                viewModel.handle(SearchUserAction.TextChanged(it))
+                screenDelegate.handle(SearchUserAction.TextChanged(it))
             },
             placeholder = {
                 Text(
@@ -129,7 +101,7 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
             leadingIcon =
             {
                 IconButton(onClick = {
-                    viewModel.handle(SearchUserAction.UpButtonClicked)
+                    screenDelegate.handle(SearchUserAction.UpButtonClicked)
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
@@ -144,7 +116,7 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
                 {
                     IconButton(onClick = {
                         input.value = ""
-                        viewModel.handle(SearchUserAction.TextChanged(it))
+                        screenDelegate.handle(SearchUserAction.TextChanged(it))
                     }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
@@ -170,7 +142,7 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
             getDisplayName = { stringResource(id = res) },
             onNewOptionSelected = { newOption ->
                 focusManager.clearFocus()
-                viewModel.handle(SearchUserAction.SearchModeChanged(newOption))
+                screenDelegate.handle(SearchUserAction.SearchModeChanged(newOption))
             }
         )
         LazyColumn {
@@ -179,14 +151,14 @@ fun SearchLayout(viewModel: ViewModelInterface<SearchState, SearchUserAction>) {
                     state = item,
                     modifier = Modifier
                         .clickable {
-                            viewModel.handle(SearchUserAction.SearchResultClicked(item.id))
+                            screenDelegate.handle(SearchUserAction.SearchResultClicked(item.id))
                         }
                         .clearFocusOnTouch(focusManager),
                     trailingContent = {
                         IconButton(
                             onClick = {
                                 focusManager.clearFocus()
-                                viewModel.handle(
+                                screenDelegate.handle(
                                     SearchUserAction.SearchResultOverflowMenuIconClicked(
                                         item.id
                                     )

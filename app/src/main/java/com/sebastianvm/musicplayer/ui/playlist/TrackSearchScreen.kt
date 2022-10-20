@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,94 +33,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
-
-@Composable
-fun TrackSearchScreen(
-    screenViewModel: TrackSearchViewModel = viewModel(),
-    navigationDelegate: NavigationDelegate
-) {
-    val context = LocalContext.current
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is TrackSearchUiEvent.ShowConfirmationToast -> {
-                    Toast.makeText(
-                        context,
-                        ResUtil.getString(
-                            context,
-                            R.string.track_added_to_playlist,
-                            event.trackName
-                        ),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        },
-        navigationDelegate = navigationDelegate
-    ) { state ->
-        TrackSearchLayout(state = state, delegate = object : TrackSearchScreenDelegate {
-            override fun onTextChanged(newText: String) {
-                screenViewModel.onTextChanged(newText = newText)
-            }
-
-            override fun onTrackClicked(trackId: Long, trackName: String) {
-                screenViewModel.onTrackClicked(trackId = trackId, trackName)
-            }
-
-            override fun onCancelAddTrackToPlaylist() {
-                screenViewModel.onCancelAddTrackToPlaylist()
-            }
-
-            override fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) {
-                screenViewModel.onConfirmAddTrackToPlaylist(
-                    trackId = trackId,
-                    trackName = trackName
-                )
-            }
-
-            override fun onHideTracksCheckedToggle() {
-                screenViewModel.onHideTracksCheckedToggle()
-            }
-
-        })
-    }
-}
-
-@ScreenPreview
-@Composable
-fun TrackSearchScreenPreview(@PreviewParameter(TrackSearchStatePreviewParameterProvider::class) state: TrackSearchState) {
-    ScreenPreview {
-        TrackSearchLayout(state = state)
-    }
-}
-
-interface TrackSearchScreenDelegate {
-    fun onTextChanged(newText: String) = Unit
-    fun onTrackClicked(trackId: Long, trackName: String) = Unit
-    fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) = Unit
-    fun onCancelAddTrackToPlaylist() = Unit
-    fun onHideTracksCheckedToggle() = Unit
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
-    delegate: TrackSearchScreenDelegate = object : TrackSearchScreenDelegate {},
+    screenDelegate: ScreenDelegate<TrackSearchUserAction>,
 ) {
     val input = rememberSaveable {
         mutableStateOf("")
@@ -131,7 +55,7 @@ fun TrackSearchLayout(
     state.addTrackConfirmationDialogState?.also {
         AlertDialog(
             onDismissRequest = {
-                delegate.onCancelAddTrackToPlaylist()
+                screenDelegate.handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
             },
             title = {
                 Text(text = stringResource(R.string.add_to_playlist_question))
@@ -142,7 +66,12 @@ fun TrackSearchLayout(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        delegate.onConfirmAddTrackToPlaylist(it.trackId, it.trackName)
+                        screenDelegate.handle(
+                            TrackSearchUserAction.ConfirmAddTrackToPlaylist(
+                                it.trackId,
+                                it.trackName
+                            )
+                        )
                     }
                 ) {
                     Text(stringResource(R.string.add_to_playlist))
@@ -151,7 +80,7 @@ fun TrackSearchLayout(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        delegate.onCancelAddTrackToPlaylist()
+                        screenDelegate.handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
                     }
                 ) {
                     Text("Cancel")
@@ -170,7 +99,7 @@ fun TrackSearchLayout(
             value = input.value,
             onValueChange = {
                 input.value = it
-                delegate.onTextChanged(it)
+                screenDelegate.handle(TrackSearchUserAction.TextChanged(it))
             },
             placeholder = {
                 Text(
@@ -193,7 +122,7 @@ fun TrackSearchLayout(
                 {
                     IconButton(onClick = {
                         input.value = ""
-                        delegate.onTextChanged("")
+                        screenDelegate.handle(TrackSearchUserAction.TextChanged(it))
                     }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
@@ -214,7 +143,7 @@ fun TrackSearchLayout(
         ) {
             Switch(
                 checked = state.hideTracksInPlaylist,
-                onCheckedChange = { delegate.onHideTracksCheckedToggle() })
+                onCheckedChange = { screenDelegate.handle(TrackSearchUserAction.HideTracksCheckToggled) })
             Text(
                 text = stringResource(R.string.hide_tracks_in_playlist),
                 modifier = Modifier.padding(start = AppDimensions.spacing.large)
@@ -227,9 +156,11 @@ fun TrackSearchLayout(
                     state = item,
                     modifier = Modifier
                         .clickable {
-                            delegate.onTrackClicked(
-                                trackId = item.id,
-                                trackName = item.headlineText
+                            screenDelegate.handle(
+                                TrackSearchUserAction.TrackClicked(
+                                    trackId = item.id,
+                                    trackName = item.headlineText
+                                )
                             )
                         },
                     trailingContent = {

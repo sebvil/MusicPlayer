@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    val navigationDelegate = NavigationDelegate(navController)
+    val navigationDelegate = NavigationDelegateImpl(navController)
     Scaffold(bottomBar = { BottomNavBar(navigationDelegate) }) { paddingValues ->
         NavHost(
             navController = navController,

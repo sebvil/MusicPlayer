@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
@@ -7,6 +8,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
+import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
 import kotlinx.parcelize.Parcelize
 
 @kotlinx.serialization.Serializable
@@ -19,9 +21,20 @@ fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelega
         destination = NavigationRoute.TrackList,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        TrackListScreen(
+        val listState = rememberLazyListState()
+        NewScreen(
             screenViewModel = viewModel,
+            eventHandler = { event ->
+                when (event) {
+                    is TrackListUiEvent.ScrollToTop -> listState.scrollToItem(0)
+                }
+            },
             navigationDelegate = navigationDelegate
-        )
+        ) { state, delegate ->
+            TrackListScreen(
+                state = state,
+                screenDelegate = delegate
+            )
+        }
     }
 }

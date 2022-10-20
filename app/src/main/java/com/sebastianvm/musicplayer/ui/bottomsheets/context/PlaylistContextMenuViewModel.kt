@@ -29,7 +29,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<PlaylistContextMenuState>(initialState) {
 
     init {
-        playlistRepository.getPlaylistName(state.value.mediaId).onEach { playlistName ->
+        playlistRepository.getPlaylistName(state.mediaId).onEach { playlistName ->
             requireNotNull(playlistName)
             setState {
                 copy(menuTitle = playlistName)
@@ -40,13 +40,14 @@ class PlaylistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playPlaylist(state.value.mediaId).onEach {
+                playbackManager.playPlaylist(state.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
                                 playbackResult = it
                             )
                         }
+
                         is PlaybackResult.Success -> addNavEvent(
                             navEvent = NavEvent.NavigateToScreen(
                                 NavigationDestination.MusicPlayer
@@ -55,18 +56,20 @@ class PlaylistContextMenuViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
+
             is ContextMenuItem.ViewPlaylist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
                                 trackListType = TrackListType.PLAYLIST,
-                                trackListId = state.value.mediaId
+                                trackListId = state.mediaId
                             )
                         )
                     )
                 )
             }
+
             is ContextMenuItem.DeletePlaylist -> {
                 setState {
                     copy(
@@ -74,13 +77,14 @@ class PlaylistContextMenuViewModel @Inject constructor(
                     )
                 }
             }
+
             else -> throw IllegalStateException("Invalid row for playlist context menu")
         }
     }
 
     fun onConfirmDeleteClicked() {
         viewModelScope.launch {
-            playlistRepository.deletePlaylist(state.value.mediaId)
+            playlistRepository.deletePlaylist(state.mediaId)
             setState {
                 copy(
                     showDeleteConfirmationDialog = false

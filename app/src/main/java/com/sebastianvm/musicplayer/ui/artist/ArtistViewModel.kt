@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -32,11 +31,10 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
     artistRepository: ArtistRepository,
-) : BaseViewModel<ArtistUiEvent, ArtistState>(initialState),
-    ViewModelInterface<ArtistState, ArtistUserAction> {
+) : BaseViewModel<ArtistState, ArtistUserAction, ArtistUiEvent>(initialState) {
     init {
         viewModelScope.launch {
-            val artistWithAlbums = artistRepository.getArtist(state.value.artistId).first()
+            val artistWithAlbums = artistRepository.getArtist(state.artistId).first()
             setState {
                 copy(
                     artistName = artistWithAlbums.artist.artistName,
@@ -80,6 +78,7 @@ class ArtistViewModel @Inject constructor(
                     )
                 )
             }
+
             is ArtistUserAction.AlbumOverflowMenuIconClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -89,6 +88,7 @@ class ArtistViewModel @Inject constructor(
                     )
                 )
             }
+
             is ArtistUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
         }

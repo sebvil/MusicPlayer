@@ -27,7 +27,7 @@ class ArtistContextMenuViewModel @Inject constructor(
 ) : BaseContextMenuViewModel<ArtistContextMenuState>(initialState) {
 
     init {
-        artistRepository.getArtist(artistId = state.value.mediaId).onEach {
+        artistRepository.getArtist(artistId = state.mediaId).onEach {
             setState {
                 copy(menuTitle = it.artist.artistName)
             }
@@ -37,13 +37,14 @@ class ArtistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playArtist(state.value.mediaId).onEach {
+                playbackManager.playArtist(state.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
                                 playbackResult = it
                             )
                         }
+
                         is PlaybackResult.Success -> addNavEvent(
                             NavEvent.NavigateToScreen(
                                 NavigationDestination.MusicPlayer
@@ -53,17 +54,19 @@ class ArtistContextMenuViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
 
             }
+
             is ContextMenuItem.ViewArtist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.Artist(
                             ArtistArguments(
-                                artistId = state.value.mediaId
+                                artistId = state.mediaId
                             )
                         )
                     )
                 )
             }
+
             else -> throw IllegalStateException("Invalid row for artist context menu")
         }
     }

@@ -28,12 +28,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import kotlinx.coroutines.Dispatchers
+
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
     navigationDelegate: NavigationDelegate
 ) {
-    val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
+    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     HandleEvents(viewModel = sheetViewModel) {}
     HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
     ArtistsBottomSheetLayout(state = state.value, delegate = object : ArtistsBottomSheetDelegate {

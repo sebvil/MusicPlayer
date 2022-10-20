@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
+import com.sebastianvm.musicplayer.ui.util.compose.NewScreen
 
 
 fun NavGraphBuilder.libraryNavDestination(
@@ -14,9 +15,15 @@ fun NavGraphBuilder.libraryNavDestination(
         destination = NavigationRoute.LibraryRoot,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        LibraryScreen(
+        NewScreen(
             screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate,
-        )
+            eventHandler = {},
+            navigationDelegate = navigationDelegate
+        ) { state, delegate ->
+            LibraryScreen(
+                state = state,
+                screenDelegate = delegate
+            )
+        }
     }
 }

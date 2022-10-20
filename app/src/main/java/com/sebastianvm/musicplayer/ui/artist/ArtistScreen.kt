@@ -13,42 +13,32 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
 import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
-    screenViewModel: ArtistViewModel,
-    navigationDelegate: NavigationDelegate,
+    state: ArtistState,
+    screenDelegate: ScreenDelegate<ArtistUserAction> = DefaultViewModelInterfaceProvider.getDefaultInstance()
 ) {
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
 
-
-
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = {},
-        navigationDelegate = navigationDelegate,
+    ScreenLayout(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { state ->
+        topBar = {
             LargeTopAppBar(
                 title = { Text(text = state.artistName) },
                 navigationIcon = {
-                    IconButton(onClick = { screenViewModel.handle(ArtistUserAction.UpButtonClicked) }) {
+                    IconButton(onClick = { screenDelegate.handle(ArtistUserAction.UpButtonClicked) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = stringResource(id = R.string.back)
@@ -60,23 +50,14 @@ fun ArtistScreen(
 
         }
     ) {
-        ArtistLayout(viewModel = screenViewModel)
+        ArtistLayout(state, screenDelegate)
     }
 }
 
-
-@ScreenPreview
-@Composable
-fun ArtistScreenPreview(@PreviewParameter(ArtistStatePreviewParameterProvider::class) state: ArtistState) {
-    ScreenPreview {
-        ArtistLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistLayout(viewModel: ViewModelInterface<ArtistState, ArtistUserAction>) {
-    val state by viewModel.state.collectAsState()
+fun ArtistLayout(state: ArtistState, screenDelegate: ScreenDelegate<ArtistUserAction>) {
     with(state) {
         LazyColumn {
             items(
@@ -92,16 +73,17 @@ fun ArtistLayout(viewModel: ViewModelInterface<ArtistState, ArtistUserAction>) {
                         })
 
                     }
+
                     is ArtistScreenItem.AlbumRowItem -> {
                         ModelListItem(
                             state = item.state,
                             modifier = Modifier.clickable {
-                                viewModel.handle(ArtistUserAction.AlbumClicked(item.state.id))
+                                screenDelegate.handle(ArtistUserAction.AlbumClicked(item.state.id))
                             },
                             trailingContent = {
                                 IconButton(
                                     onClick = {
-                                        viewModel.handle(
+                                        screenDelegate.handle(
                                             ArtistUserAction.AlbumOverflowMenuIconClicked(
                                                 item.state.id
                                             )

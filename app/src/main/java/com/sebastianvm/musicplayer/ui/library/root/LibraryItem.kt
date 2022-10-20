@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.root
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import com.jayasuryat.dowel.annotation.Dowel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
@@ -16,6 +17,8 @@ sealed class LibraryItem(
     @PluralsRes val countString: Int,
     open val count: Int
 ) {
+
+    @Dowel
     data class Tracks(override val count: Int) : LibraryItem(
         destination = NavigationDestination.TrackList(
             TrackListArguments(
@@ -29,6 +32,7 @@ sealed class LibraryItem(
         count = count
     )
 
+    @Dowel
     data class Artists(override val count: Int) : LibraryItem(
         destination = NavigationDestination.ArtistsRoot,
         rowName = R.string.artists,
@@ -37,6 +41,7 @@ sealed class LibraryItem(
         count = count
     )
 
+    @Dowel
     data class Albums(override val count: Int) : LibraryItem(
         destination = NavigationDestination.AlbumsRoot,
         rowName = R.string.albums,
@@ -45,6 +50,7 @@ sealed class LibraryItem(
         count = count
     )
 
+    @Dowel
     data class Genres(override val count: Int) : LibraryItem(
         destination = NavigationDestination.GenresRoot,
         rowName = R.string.genres,
@@ -53,6 +59,7 @@ sealed class LibraryItem(
         count = count
     )
 
+    @Dowel
     data class Playlists(override val count: Int) : LibraryItem(
         destination = NavigationDestination.PlaylistsRoot,
         rowName = R.string.playlists,

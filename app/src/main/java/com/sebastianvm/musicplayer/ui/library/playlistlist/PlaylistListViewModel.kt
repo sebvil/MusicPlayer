@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -31,8 +30,7 @@ class PlaylistListViewModel @Inject constructor(
     initialState: PlaylistListState,
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<PlaylistListUiEvent, PlaylistListState>(initialState),
-    ViewModelInterface<PlaylistListState, PlaylistListUserAction> {
+) : BaseViewModel<PlaylistListState, PlaylistListUserAction, PlaylistListUiEvent>(initialState) {
 
     init {
         playlistRepository.getPlaylists().onEach { playlists ->
@@ -58,6 +56,7 @@ class PlaylistListViewModel @Inject constructor(
                     )
                 )
             }
+
             is PlaylistListUserAction.PlaylistOverflowMenuIconClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -67,17 +66,20 @@ class PlaylistListViewModel @Inject constructor(
                     )
                 )
             }
+
             is PlaylistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
                     sortPreferencesRepository.togglePlaylistListSortOder()
                 }
             }
+
             is PlaylistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
             is PlaylistListUserAction.AddPlaylistButtonClicked -> {
                 setState {
                     copy(isCreatePlaylistDialogOpen = true)
                 }
             }
+
             is PlaylistListUserAction.CreatePlaylistButtonClicked -> {
                 playlistRepository.createPlaylist(action.playlistName).onEach {
                     if (it == null) {
@@ -94,11 +96,13 @@ class PlaylistListViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
+
             is PlaylistListUserAction.DismissPlaylistCreationButtonClicked -> {
                 setState {
                     copy(isCreatePlaylistDialogOpen = false)
                 }
             }
+
             is PlaylistListUserAction.DismissPlaylistCreationErrorDialog -> {
                 setState {
                     copy(isPlaylistCreationErrorDialogOpen = false)
