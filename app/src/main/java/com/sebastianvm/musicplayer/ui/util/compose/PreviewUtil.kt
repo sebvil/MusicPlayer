@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.ui.util.compose
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -21,43 +19,48 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
+object PreviewUtil {
+    private val strings = listOf(
+        "Lorem ipsum dolor sit amet",
+        "consectetur adipiscing elit",
+        "sed do eiusmod tempor incididunt ut labore",
+        "et dolore magna aliqua",
+        "Ut enim ad minim veniam",
+        "quis nostrud exercitation ullamco laboris nisi ut",
+        "aliquip ex ea commodo consequat",
+        "Duis aute irure dolor in reprehenderit in voluptate velit esse",
+        "cillum dolore eu fugiat nulla pariatur",
+        "Excepteur sint occaecat cupidatat non proident",
+        "culpa qui officia deserunt mollit anim id est laborum",
+        "sunt in",
+        "Lorem ipsum dolor sit amet",
+        "con elit",
+        "sed do et labore",
+        "et dolore magna aliqua",
+        "Ut eniiam",
+        "quis nos ",
+        "aliquip ex ea quat",
+        "Duis aute irure e",
+        "cillumr",
+        "Exct",
+        "culpa m",
+    )
+
+    fun randomString() = strings.random()
+}
 
 @Composable
 fun ThemedPreview(
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable () -> Unit
 ) {
     AppTheme {
         M3AppTheme {
-            Surface(
-            ) {
-                Column {
-                    content()
-                }
+            Surface {
+                content()
             }
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ScreenPreview(
-    topBar: @Composable () -> Unit = {},
-    fab: @Composable () -> Unit = {},
-    screen: @Composable () -> Unit
-) {
-    NavHostWrapper { navController ->
-        Scaffold(
-            topBar = topBar,
-            bottomBar = { BottomNavBar(NavigationDelegateImpl(navController)) },
-            floatingActionButton = fab
-        ) { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                screen()
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,6 +98,6 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 annotation class ScreenPreview
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 annotation class ComponentPreview

@@ -1,12 +1,10 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
 
 
 fun NavGraphBuilder.albumListNavDestination(navigationDelegate: NavigationDelegate) {
@@ -14,24 +12,6 @@ fun NavGraphBuilder.albumListNavDestination(navigationDelegate: NavigationDelega
         destination = NavigationRoute.AlbumsRoot,
         destinationType = DestinationType.Screen,
     ) { viewModel ->
-        val listState = rememberLazyListState()
-        Screen(
-            screenViewModel = viewModel,
-            eventHandler = { event ->
-                when (event) {
-                    is AlbumListUiEvent.ScrollToTop -> {
-                        listState.scrollToItem(0)
-                    }
-                }
-            },
-            navigationDelegate = navigationDelegate
-        ) { state, delegate ->
-            AlbumListScreen(
-                state = state,
-                screenDelegate = delegate,
-                listState = listState
-            )
-        }
-
+        AlbumListScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }
