@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -36,31 +35,32 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
-import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun <S : BaseContextMenuState> ContextBottomSheet(
     sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
-    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
-    HandleEvents(viewModel = sheetViewModel) { event ->
-        when (event) {
-            is BaseContextMenuUiEvent.ShowToast -> {
-                Toast.makeText(
-                    context,
-                    event.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+    Screen(
+        screenViewModel = sheetViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is BaseContextMenuUiEvent.ShowToast -> {
+                    Toast.makeText(
+                        context,
+                        event.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, screenDelegate ->
+        ContextMenuLayout(state = state, screenDelegate = screenDelegate)
     }
-    ContextMenuLayout(state = state.value, screenDelegate = sheetViewModel)
 }
 
 interface DeletePlaylistConfirmationDialogDelegate {

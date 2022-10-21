@@ -3,11 +3,14 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -39,13 +42,18 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     }
 
     override fun handle(action: ArtistsBottomSheetUserAction) {
-        TODO("handle Not yet implemented")
+        when (action) {
+            is ArtistsBottomSheetUserAction.ArtistRowClicked -> {
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.Artist(
+                            ArtistArguments(artistId = action.artistId)
+                        )
+                    )
+                )
+            }
+        }
     }
-
-    fun onArtistClicked(artistId: Long) {
-        addUiEvent(ArtistsBottomSheetUiEvent.NavigateToArtist(artistId = artistId))
-    }
-
 }
 
 data class ArtistsBottomSheetState(
@@ -67,8 +75,8 @@ object InitialArtistsBottomSheetStateModule {
     }
 }
 
-sealed interface ArtistsBottomSheetUiEvent : UiEvent {
-    data class NavigateToArtist(val artistId: Long) : ArtistsBottomSheetUiEvent
+sealed interface ArtistsBottomSheetUserAction : UserAction {
+    data class ArtistRowClicked(val artistId: Long) : ArtistsBottomSheetUserAction
 }
 
-sealed interface ArtistsBottomSheetUserAction : UserAction
+sealed interface ArtistsBottomSheetUiEvent : UiEvent

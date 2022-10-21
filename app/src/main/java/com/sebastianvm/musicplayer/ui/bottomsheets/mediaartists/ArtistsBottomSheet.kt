@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -14,60 +13,37 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.BottomSheetPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
-import kotlinx.coroutines.Dispatchers
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun ArtistsBottomSheet(
     sheetViewModel: ArtistsBottomSheetViewModel,
     navigationDelegate: NavigationDelegate
 ) {
-    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
-    HandleEvents(viewModel = sheetViewModel) {}
-    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
-    ArtistsBottomSheetLayout(state = state.value, delegate = object : ArtistsBottomSheetDelegate {
-        override fun onArtistRowClicked(artistId: Long) {
-            sheetViewModel.onArtistClicked(artistId)
-        }
-    })
-}
-
-interface ArtistsBottomSheetDelegate {
-    fun onArtistRowClicked(artistId: Long) = Unit
-}
-
-
-/**
- * The Android Studio Preview cannot handle this, but it can be run in device for preview
- */
-@Preview
-@Preview(showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ArtistsBottomSheetLayoutPreview(
-    @PreviewParameter(
-        ArtistsBottomSheetStatePreviewParameterProvider::class
-    ) state: ArtistsBottomSheetState
-) {
-    BottomSheetPreview {
-        ArtistsBottomSheetLayout(state = state, delegate = object : ArtistsBottomSheetDelegate {})
+    Screen(
+        screenViewModel = sheetViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state, screenDelegate ->
+        ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBottomSheetDelegate) {
+fun ArtistsBottomSheetLayout(
+    state: ArtistsBottomSheetState,
+    screenDelegate: ScreenDelegate<ArtistsBottomSheetUserAction>
+) {
     LazyColumn {
         stickyHeader {
             Row(
@@ -76,7 +52,6 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
                     .height(AppDimensions.bottomSheet.rowHeight)
                     .padding(start = AppDimensions.bottomSheet.startPadding),
             ) {
-
                 Text(
                     text = stringResource(id = R.string.artists),
                     modifier = Modifier.paddingFromBaseline(top = 36.dp),
@@ -89,7 +64,7 @@ fun ArtistsBottomSheetLayout(state: ArtistsBottomSheetState, delegate: ArtistsBo
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    delegate.onArtistRowClicked(item.id)
+                    screenDelegate.handle(ArtistsBottomSheetUserAction.ArtistRowClicked(item.id))
                 }
             )
 

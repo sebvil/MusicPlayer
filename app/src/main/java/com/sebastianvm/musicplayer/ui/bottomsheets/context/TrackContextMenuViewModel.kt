@@ -63,7 +63,7 @@ class TrackContextMenuViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository
 ) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
     private var artistIds: List<Long> = listOf()
-    private var track: Track? = null
+    private lateinit var track: Track
 
     init {
         trackRepository.getTrack(state.mediaId).onEach {
@@ -157,7 +157,7 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.AddToQueue -> {
-                track?.also { playbackManager.addToQueue(listOf(it)) }
+                playbackManager.addToQueue(listOf(track))
             }
 
             is ContextMenuItem.ViewAlbum -> {
@@ -166,14 +166,14 @@ class TrackContextMenuViewModel @Inject constructor(
                         NavigationDestination.TrackList(
                             TrackListArguments(
                                 trackListType = TrackListType.ALBUM,
-                                trackListId = state.mediaGroup.mediaId
+                                trackListId = track.albumId
                             )
                         )
                     )
                 )
             }
 
-            ContextMenuItem.ViewArtist -> {
+            is ContextMenuItem.ViewArtist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         destination = NavigationDestination.Artist(
@@ -183,7 +183,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 )
             }
 
-            ContextMenuItem.ViewArtists -> {
+            is ContextMenuItem.ViewArtists -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         destination = NavigationDestination.ArtistsMenu(
@@ -193,7 +193,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 )
             }
 
-            ContextMenuItem.RemoveFromPlaylist -> {
+            is ContextMenuItem.RemoveFromPlaylist -> {
                 state.positionInPlaylist?.also {
                     viewModelScope.launch {
                         playlistRepository.removeItemFromPlaylist(
