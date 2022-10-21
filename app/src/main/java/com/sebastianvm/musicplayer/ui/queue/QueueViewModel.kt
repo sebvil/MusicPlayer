@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPos
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<QueueUiEvent, QueueState>(
+) : BaseViewModel<QueueState, QueueUserAction, QueueUiEvent>(
     initialState
 ) {
 
@@ -46,40 +47,45 @@ class QueueViewModel @Inject constructor(
 
     }
 
-    fun onItemSelectedForDrag(position: Int) {
-        setState {
-            copy(
-                draggedItemFinalIndex = position
-            )
-        }
-    }
+    override fun handle(action: QueueUserAction) {
+        when (action) {
+            is QueueUserAction.DragEnded -> {
+                playbackManager.moveQueueItem(action.initialPosition, action.finalPosition)
+                setState { copy(draggedItemFinalIndex = -1) }
+            }
 
-    fun onMove(to: Int) {
-        val oldIndex = state.value.draggedItemFinalIndex
-        if (oldIndex != to) {
-            val items = state.value.queueItems.toMutableList()
-            val item = items.removeAt(oldIndex)
-            items.add(to, item)
-            setState {
-                copy(
-                    queueItems = items,
-                    draggedItemFinalIndex = to
-                )
+            is QueueUserAction.ItemMoved -> {
+                val oldIndex = state.draggedItemFinalIndex
+                if (oldIndex != action.to) {
+                    val items = state.queueItems.toMutableList()
+                    val item = items.removeAt(oldIndex)
+                    items.add(action.to, item)
+                    setState {
+                        copy(
+                            queueItems = items,
+                            draggedItemFinalIndex = action.to
+                        )
+                    }
+                }
+            }
+
+            is QueueUserAction.ItemSelectedForDrag -> {
+                setState {
+                    copy(
+                        draggedItemFinalIndex = action.position
+                    )
+                }
+            }
+
+            is QueueUserAction.TrackClicked -> {
+                playbackManager.playQueueItem(action.trackIndex)
+            }
+
+            is QueueUserAction.TrackOverflowMenuClicked -> {
+                // TODO()
             }
         }
-
     }
-
-    fun onDragEnded(initialPosition: Int, finalPosition: Int) {
-        playbackManager.moveQueueItem(initialPosition, finalPosition)
-        setState { copy(draggedItemFinalIndex = -1) }
-    }
-
-    fun onTrackClicked(trackIndex: Int) {
-        playbackManager.playQueueItem(trackIndex)
-    }
-
-    fun onTrackOverflowMenuClicked(trackId: String) {}
 
 
 }
@@ -106,6 +112,15 @@ object InitialQueueStateModule {
     }
 }
 
-sealed class QueueUiEvent : UiEvent {
-    data class ScrollToNowPlayingItem(val index: Int) : QueueUiEvent()
+sealed interface QueueUserAction : UserAction {
+    data class ItemSelectedForDrag(val position: Int) : QueueUserAction
+    data class ItemMoved(val to: Int) : QueueUserAction
+    data class DragEnded(val initialPosition: Int, val finalPosition: Int) : QueueUserAction
+    data class TrackClicked(val trackIndex: Int) : QueueUserAction
+    data class TrackOverflowMenuClicked(val trackId: Long) : QueueUserAction
 }
+
+sealed interface QueueUiEvent : UiEvent {
+    data class ScrollToNowPlayingItem(val index: Int) : QueueUiEvent
+}
+

@@ -22,78 +22,45 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
-import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
-import kotlinx.coroutines.Dispatchers
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun <S : BaseContextMenuState> ContextBottomSheet(
     sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val state = sheetViewModel.state.collectAsState(context = Dispatchers.Main)
     val context = LocalContext.current
-    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
-    HandleEvents(viewModel = sheetViewModel) { event ->
-        when (event) {
-            is BaseContextMenuUiEvent.ShowToast -> {
-                Toast.makeText(
-                    context,
-                    event.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+    Screen(
+        screenViewModel = sheetViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is BaseContextMenuUiEvent.ShowToast -> {
+                    Toast.makeText(
+                        context,
+                        event.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-        }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, screenDelegate ->
+        ContextMenuLayout(state = state, screenDelegate = screenDelegate)
     }
-    ContextMenuLayout(state = state.value, object : ContextMenuDelegate {
-        override fun onRowClicked(contextMenuItem: ContextMenuItem) {
-            sheetViewModel.onRowClicked(contextMenuItem)
-        }
-
-        override fun onDismissDialog() {
-            (sheetViewModel as? PlaylistContextMenuViewModel)?.onCancelDeleteClicked()
-        }
-
-        override fun onSubmit() {
-            (sheetViewModel as? PlaylistContextMenuViewModel)?.onConfirmDeleteClicked()
-        }
-
-        override fun onDismissRequest() {
-            sheetViewModel.onPlaybackErrorDismissed()
-        }
-    })
-}
-
-/**
- * The Android Studio Preview cannot handle this, but it can be run in device for preview
- */
-@ComponentPreview
-@Composable
-fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
-    ThemedPreview {
-        ContextMenuLayout(state = state, object : ContextMenuDelegate {})
-    }
-}
-
-interface ContextMenuDelegate : DeletePlaylistConfirmationDialogDelegate,
-    PlaybackStatusIndicatorDelegate {
-    fun onRowClicked(contextMenuItem: ContextMenuItem) = Unit
 }
 
 interface DeletePlaylistConfirmationDialogDelegate {
@@ -111,19 +78,19 @@ fun DeletePlaylistConfirmationDialog(
         onDismissRequest = { delegate.onDismissDialog() },
         confirmButton = {
             TextButton(onClick = { delegate.onSubmit() }) {
-                Text(text = "Delete")
+                Text(text = stringResource(R.string.delete))
             }
         },
         dismissButton = {
             TextButton(onClick = { delegate.onDismissDialog() }) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel))
             }
         },
         title = {
-            Text(text = "Delete playlist $playlistName")
+            Text(text = stringResource(id = R.string.delete_this_playlist, playlistName))
         },
         text = {
-            Text(text = "Are you sure you want to delete $playlistName?")
+            Text(text = stringResource(id = R.string.sure_you_want_to_delete, playlistName))
         }
     )
 }
@@ -132,14 +99,28 @@ fun DeletePlaylistConfirmationDialog(
 @Composable
 fun ContextMenuLayout(
     state: BaseContextMenuState,
-    delegate: ContextMenuDelegate
+    screenDelegate: ScreenDelegate<BaseContextMenuUserAction>
 ) {
-    PlaybackStatusIndicator(playbackResult = state.playbackResult, delegate = delegate)
+    PlaybackStatusIndicator(
+        playbackResult = state.playbackResult,
+        delegate = object : PlaybackStatusIndicatorDelegate {
+            override fun onDismissRequest() {
+                screenDelegate.handle(BaseContextMenuUserAction.DismissPlaybackErrorDialog)
+            }
+        })
 
     if (state is PlaylistContextMenuState && state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
             playlistName = state.menuTitle,
-            delegate = delegate
+            delegate = object : DeletePlaylistConfirmationDialogDelegate {
+                override fun onDismissDialog() {
+                    screenDelegate.handle(BaseContextMenuUserAction.CancelDeleteClicked)
+                }
+
+                override fun onSubmit() {
+                    screenDelegate.handle(BaseContextMenuUserAction.ConfirmDeleteClicked)
+                }
+            }
         )
         // Need this to be able to dismiss bottom sheet after deleting playlist
         Box(
@@ -174,7 +155,11 @@ fun ContextMenuLayout(
                                     overflow = TextOverflow.Ellipsis,
                                 )
                             },
-                            modifier = Modifier.clickable { delegate.onRowClicked(it) },
+                            modifier = Modifier.clickable {
+                                screenDelegate.handle(
+                                    BaseContextMenuUserAction.RowClicked(it)
+                                )
+                            },
                             leadingContent = {
                                 Icon(
                                     painter = painterResource(id = it.icon),

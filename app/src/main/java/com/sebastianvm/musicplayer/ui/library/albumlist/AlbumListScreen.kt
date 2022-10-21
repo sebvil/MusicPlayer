@@ -8,30 +8,23 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
-fun AlbumListScreen(
-    screenViewModel: AlbumListViewModel = viewModel(),
-    navigationDelegate: NavigationDelegate,
-) {
+fun AlbumListScreen(viewModel: AlbumListViewModel, navigationDelegate: NavigationDelegate) {
     val listState = rememberLazyListState()
     Screen(
-        screenViewModel = screenViewModel,
+        screenViewModel = viewModel,
         eventHandler = { event ->
             when (event) {
                 is AlbumListUiEvent.ScrollToTop -> {
@@ -39,54 +32,58 @@ fun AlbumListScreen(
                 }
             }
         },
-        navigationDelegate = navigationDelegate,
-        topBar = {
-            LibraryTopBar(
-                title = stringResource(id = R.string.albums),
-                delegate = object : LibraryTopBarDelegate {
-                    override fun upButtonClicked() {
-                        screenViewModel.handle(AlbumListUserAction.UpButtonClicked)
-                    }
-
-                    override fun sortByClicked() {
-                        screenViewModel.handle(AlbumListUserAction.SortByClicked)
-                    }
-                }
-            )
-        }) {
-        AlbumListLayout(viewModel = screenViewModel, listState = listState)
-    }
-}
-
-@ScreenPreview
-@Composable
-fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParameterProvider::class) state: AlbumListState) {
-    val lazyListState = rememberLazyListState()
-    ScreenPreview(state) { vm ->
-        AlbumListLayout(
-            viewModel = vm,
-            listState = lazyListState
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        AlbumListScreen(
+            state = state,
+            screenDelegate = delegate,
+            listState = listState
         )
     }
 }
 
 @Composable
-fun AlbumListLayout(
-    viewModel: ViewModelInterface<AlbumListState, AlbumListUserAction>,
+fun AlbumListScreen(
+    state: AlbumListState,
+    screenDelegate: ScreenDelegate<AlbumListUserAction>,
     listState: LazyListState
 ) {
-    val state by viewModel.state.collectAsState()
+    ScreenLayout(
+        topBar = {
+            LibraryTopBar(
+                title = stringResource(id = R.string.albums),
+                delegate = object : LibraryTopBarDelegate {
+                    override fun upButtonClicked() {
+                        screenDelegate.handle(AlbumListUserAction.UpButtonClicked)
+                    }
+
+                    override fun sortByClicked() {
+                        screenDelegate.handle(AlbumListUserAction.SortByClicked)
+                    }
+                }
+            )
+        }) {
+        AlbumListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
+    }
+}
+
+@Composable
+fun AlbumListLayout(
+    state: AlbumListState,
+    screenDelegate: ScreenDelegate<AlbumListUserAction>,
+    listState: LazyListState
+) {
     LazyColumn(state = listState) {
         items(state.albumList) { item ->
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    viewModel.handle(AlbumListUserAction.AlbumClicked(item.id))
+                    screenDelegate.handle(AlbumListUserAction.AlbumClicked(item.id))
                 },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            viewModel.handle(
+                            screenDelegate.handle(
                                 AlbumListUserAction.AlbumOverflowIconClicked(
                                     item.id
                                 )

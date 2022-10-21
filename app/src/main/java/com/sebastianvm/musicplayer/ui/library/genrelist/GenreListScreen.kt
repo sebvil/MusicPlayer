@@ -2,71 +2,82 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultViewModelInterfaceProvider
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+
+@Composable
+fun GenreListScreen(viewModel: GenreListViewModel, navigationDelegate: NavigationDelegate) {
+    val listState = rememberLazyListState()
+    Screen(
+        screenViewModel = viewModel,
+        eventHandler = { event ->
+            when (event) {
+                is GenreListUiEvent.ScrollToTop -> {
+                    listState.scrollToItem(0)
+                }
+            }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        GenreListScreen(
+            state = state,
+            screenDelegate = delegate,
+            listState = listState
+        )
+    }
+}
 
 @Composable
 fun GenreListScreen(
-    screenViewModel: GenreListViewModel = viewModel(),
-    navigationDelegate: NavigationDelegate,
+    state: GenreListState,
+    screenDelegate: ScreenDelegate<GenreListUserAction>,
+    listState: LazyListState
 ) {
-    Screen(
-        screenViewModel = screenViewModel,
-        eventHandler = {},
-        navigationDelegate = navigationDelegate,
+    ScreenLayout(
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.genres),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenViewModel.handle(GenreListUserAction.SortByButtonClicked)
+                        screenDelegate.handle(GenreListUserAction.SortByButtonClicked)
                     }
 
                     override fun upButtonClicked() {
-                        screenViewModel.handle(GenreListUserAction.UpButtonClicked)
+                        screenDelegate.handle(GenreListUserAction.UpButtonClicked)
                     }
                 })
         }) {
-        GenreListLayout(screenViewModel)
+        GenreListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
     }
 }
 
-@ScreenPreview
 @Composable
-fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParameterProvider::class) state: GenreListState) {
-    ScreenPreview {
-        GenreListLayout(viewModel = DefaultViewModelInterfaceProvider.getDefaultInstance(state))
-    }
-}
-
-
-@Composable
-fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserAction>) {
-    val state by viewModel.state.collectAsState()
-    LazyColumn {
+fun GenreListLayout(
+    state: GenreListState,
+    screenDelegate: ScreenDelegate<GenreListUserAction>,
+    listState: LazyListState
+) {
+    LazyColumn(state = listState) {
         items(state.genreList) { item ->
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    viewModel.handle(
+                    screenDelegate.handle(
                         GenreListUserAction.GenreRowClicked(
                             item.id
                         )
@@ -75,7 +86,7 @@ fun GenreListLayout(viewModel: ViewModelInterface<GenreListState, GenreListUserA
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            viewModel.handle(
+                            screenDelegate.handle(
                                 GenreListUserAction.GenreOverflowMenuIconClicked(
                                     item.id
                                 )

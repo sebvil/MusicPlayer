@@ -16,11 +16,29 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+
+private val drawableResources =
+    sequenceOf(R.drawable.ic_song, R.drawable.ic_album, R.drawable.ic_artist, R.drawable.ic_genre)
+
+class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaArtImageState> {
+    override val values: Sequence<MediaArtImageState>
+        get() = drawableResources.map {
+            MediaArtImageState(
+                imageUri = "",
+                contentDescription = R.string.album_art_for_album,
+                backupContentDescription = R.string.placeholder_album_art,
+                backupResource = it,
+                args = listOf("album")
+            )
+        }
+}
 
 data class MediaArtImageState(
     val imageUri: String,
@@ -33,14 +51,9 @@ data class MediaArtImageState(
 
 @ComponentPreview
 @Composable
-fun MediaArtImagePreview() {
+fun MediaArtImagePreview(@PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState) {
     ThemedPreview {
-        MediaArtImage(
-            uri = "",
-            contentDescription = "",
-            backupResource = R.drawable.ic_song,
-            backupContentDescription = R.string.placeholder_album_art
-        )
+        MediaArtImage(mediaArtImageState = mediaArtImageState)
     }
 }
 

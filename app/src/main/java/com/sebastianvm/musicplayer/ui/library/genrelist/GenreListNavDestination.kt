@@ -11,9 +11,6 @@ fun NavGraphBuilder.genreListNavDestination(navigationDelegate: NavigationDelega
         destination = NavigationRoute.GenresRoot,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        GenreListScreen(
-            screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate,
-        )
+        GenreListScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

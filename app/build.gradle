@@ -74,7 +74,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     // Room
-    def room_version = '2.5.0-alpha03'
+    def room_version = '2.5.0-beta01'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
@@ -95,7 +95,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Coil
-    def coil_version = '2.2.1'
+    def coil_version = '2.2.2'
     implementation "io.coil-kt:coil:$coil_version"
 
     // Start Jetpack Compose
@@ -110,7 +110,7 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-beta03'
+    implementation 'androidx.compose.material3:material3:1.0.0-rc01'
 
     // UI + tooling
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -134,12 +134,11 @@ dependencies {
 
 
     // Kotlin serialization
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
     implementation "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5"
 
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4'
-
 
     // TESTING
 
@@ -153,7 +152,7 @@ dependencies {
     testImplementation "androidx.test:core:1.4.0"
 
     // Mockk
-    def mockk_version = '1.12.8'
+    def mockk_version = '1.13.2'
     testImplementation "io.mockk:mockk:$mockk_version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"

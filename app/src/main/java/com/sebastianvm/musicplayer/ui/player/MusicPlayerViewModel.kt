@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -22,8 +21,7 @@ import javax.inject.Inject
 class MusicPlayerViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
     initialState: MusicPlayerState,
-) : BaseViewModel<MusicPlayerUiEvent, MusicPlayerState>(initialState),
-    ViewModelInterface<MusicPlayerState, MusicPlayerUserAction> {
+) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction, MusicPlayerUiEvent>(initialState) {
 
     init {
         playbackManager.playbackState.onEach {
@@ -43,18 +41,19 @@ class MusicPlayerViewModel @Inject constructor(
     override fun handle(action: MusicPlayerUserAction) {
         when (action) {
             is MusicPlayerUserAction.PlayToggled -> {
-                if (state.value.isPlaying) {
+                if (state.isPlaying) {
                     playbackManager.pause()
                 } else {
                     playbackManager.play()
                 }
             }
+
             is MusicPlayerUserAction.NextButtonClicked -> playbackManager.next()
 
             is MusicPlayerUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MusicPlayerUserAction.ProgressBarClicked -> {
-                val time: Long = (state.value.trackLengthMs ?: 0) * action.position / 100
+                val time: Long = (state.trackLengthMs ?: 0) * action.position / 100
                 playbackManager.seekToTrackPosition(time)
             }
         }

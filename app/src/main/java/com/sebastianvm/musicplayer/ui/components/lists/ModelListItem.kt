@@ -33,12 +33,14 @@ sealed class ModelListItemState(
     open val supportingText: String? = null,
     open val mediaArtImageState: MediaArtImageState? = null
 ) {
+
     data class Basic(
         override val id: Long,
         override val headlineText: String,
         override val supportingText: String? = null,
         override val mediaArtImageState: MediaArtImageState? = null
     ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
+
 
     data class WithPosition(
         val position: Long,

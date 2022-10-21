@@ -14,30 +14,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.EventHandler
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.Dispatchers
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <E : UiEvent, S : State> Screen(
-    screenViewModel: BaseViewModel<E, S>,
+fun <S : State, A : UserAction, E : UiEvent> Screen(
+    screenViewModel: BaseViewModel<S, A, E>,
     eventHandler: EventHandler<E>,
     navigationDelegate: NavigationDelegate,
-    modifier: Modifier = Modifier,
-    topBar: @Composable (S) -> Unit = {},
-    fab: @Composable (S) -> Unit = {},
-    content: @Composable (S) -> Unit
+    screen: @Composable (S, ScreenDelegate<A>) -> Unit
 ) {
-    val state = screenViewModel.state.collectAsState(context = Dispatchers.Main)
+    val state = screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     HandleEvents(viewModel = screenViewModel, eventHandler = eventHandler)
     HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+    screen(state.value, screenViewModel)
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScreenLayout(
+    modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit = {},
+    fab: @Composable () -> Unit = {},
+    content: @Composable () -> Unit
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
-
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -47,15 +56,15 @@ fun <E : UiEvent, S : State> Screen(
             ) {
                 focusManager.clearFocus()
             },
-        topBar = { topBar(state.value) },
-        floatingActionButton = { fab(state.value) },
+        topBar = { topBar() },
+        floatingActionButton = { fab() },
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            content(state.value)
+            content()
         }
     }
 }

@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -30,9 +29,7 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,
     albumRepository: AlbumRepository,
-) : BaseViewModel<AlbumListUiEvent, AlbumListState>(initialState),
-    ViewModelInterface<AlbumListState, AlbumListUserAction> {
-
+) : BaseViewModel<AlbumListState, AlbumListUserAction, AlbumListUiEvent>(initialState) {
     init {
         albumRepository.getAlbums().onEach { albums ->
             setState {
@@ -59,6 +56,7 @@ class AlbumListViewModel @Inject constructor(
                     )
                 )
             }
+
             is AlbumListUserAction.AlbumOverflowIconClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -68,7 +66,8 @@ class AlbumListViewModel @Inject constructor(
                     )
                 )
             }
-            AlbumListUserAction.SortByClicked -> {
+
+            is AlbumListUserAction.SortByClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.SortMenu(
@@ -79,10 +78,12 @@ class AlbumListViewModel @Inject constructor(
                     )
                 )
             }
+
             AlbumListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
         }
     }
 }
+
 
 data class AlbumListState(val albumList: List<ModelListItemState>) : State
 
@@ -97,13 +98,14 @@ object InitialAlbumListStateModule {
     }
 }
 
-sealed class AlbumListUiEvent : UiEvent {
-    object ScrollToTop : AlbumListUiEvent()
-}
-
 sealed interface AlbumListUserAction : UserAction {
     data class AlbumClicked(val albumId: Long) : AlbumListUserAction
     object UpButtonClicked : AlbumListUserAction
     object SortByClicked : AlbumListUserAction
     data class AlbumOverflowIconClicked(val albumId: Long) : AlbumListUserAction
 }
+
+sealed class AlbumListUiEvent : UiEvent {
+    object ScrollToTop : AlbumListUiEvent()
+}
+

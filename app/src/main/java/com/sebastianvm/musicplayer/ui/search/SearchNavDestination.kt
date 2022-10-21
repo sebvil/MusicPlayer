@@ -11,6 +11,6 @@ fun NavGraphBuilder.searchNavDestination(navigationDelegate: NavigationDelegate)
         destination = NavigationRoute.Search,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        SearchScreen(viewModel, navigationDelegate)
+        SearchScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

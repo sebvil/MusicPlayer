@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -31,8 +30,7 @@ class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistListUiEvent, ArtistListState>(initialState),
-    ViewModelInterface<ArtistListState, ArtistListUserAction> {
+) : BaseViewModel<ArtistListState, ArtistListUserAction, ArtistListUiEvent>(initialState) {
 
     init {
         artistRepository.getArtists().onEach { artists ->
@@ -43,6 +41,7 @@ class ArtistListViewModel @Inject constructor(
                     }
                 )
             }
+            addUiEvent(ArtistListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -58,6 +57,7 @@ class ArtistListViewModel @Inject constructor(
                     )
                 )
             }
+
             is ArtistListUserAction.ArtistOverflowMenuIconClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -67,11 +67,13 @@ class ArtistListViewModel @Inject constructor(
                     )
                 )
             }
+
             is ArtistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
                     preferencesRepository.toggleArtistListSortOrder()
                 }
             }
+
             is ArtistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
         }
@@ -90,7 +92,9 @@ object InitialArtistListStateModule {
     }
 }
 
-sealed interface ArtistListUiEvent : UiEvent
+sealed interface ArtistListUiEvent : UiEvent {
+    object ScrollToTop : ArtistListUiEvent
+}
 
 sealed interface ArtistListUserAction : UserAction {
     data class ArtistRowClicked(val artistId: Long) : ArtistListUserAction

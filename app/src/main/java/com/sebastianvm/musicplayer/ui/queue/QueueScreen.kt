@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
@@ -17,7 +16,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelega
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationDelegate) {
@@ -32,62 +31,36 @@ fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationD
             }
         },
         navigationDelegate = navigationDelegate
-    ) { state ->
-        QueueLayout(state = state, delegate = object : QueueScreenDelegate {
-            override fun onMove(from: Int, to: Int) {
-                screenViewModel.onMove(to)
-            }
-
-            override fun onItemSelectedForDrag(position: Int) {
-                screenViewModel.onItemSelectedForDrag(position = position)
-            }
-
-            override fun onDragEnded(initialPosition: Int, finalPosition: Int) {
-                screenViewModel.onDragEnded(
-                    initialPosition = initialPosition,
-                    finalPosition = finalPosition
-                )
-            }
-
-            override fun onTrackClicked(trackIndex: Int) {
-                screenViewModel.onTrackClicked(trackIndex = trackIndex)
-            }
-
-            override fun onContextMenuItemClicked(trackId: String) {
-                screenViewModel.onTrackOverflowMenuClicked(trackId = trackId)
-            }
-
-        }, layoutManager = layoutManager)
-    }
-}
-
-
-@ScreenPreview
-@Composable
-fun QueueScreenPreview(@PreviewParameter(QueueStatePreviewParameterProvider::class) state: QueueState) {
-    ScreenPreview {
+    ) { state, delegate ->
         QueueLayout(
-            state = state, delegate = object : QueueScreenDelegate {}, LinearLayoutManager(
-                LocalContext.current
-            )
+            state = state,
+            screenDelegate = delegate,
+            layoutManager = layoutManager
         )
     }
-}
-
-interface QueueScreenDelegate : DraggableColumnListDelegate {
-    fun onTrackClicked(trackIndex: Int) = Unit
-    fun onContextMenuItemClicked(trackId: String) = Unit
 }
 
 @Composable
 fun QueueLayout(
     state: QueueState,
-    delegate: QueueScreenDelegate,
+    screenDelegate: ScreenDelegate<QueueUserAction>,
     layoutManager: LinearLayoutManager
 ) {
     DraggableColumnList(
         items = state.queueItems,
-        delegate = delegate,
+        delegate = object : DraggableColumnListDelegate {
+            override fun onItemSelectedForDrag(position: Int) {
+                screenDelegate.handle(QueueUserAction.ItemSelectedForDrag(position))
+            }
+
+            override fun onDragEnded(initialPosition: Int, finalPosition: Int) {
+                screenDelegate.handle(QueueUserAction.DragEnded(initialPosition, finalPosition))
+            }
+
+            override fun onMove(from: Int, to: Int) {
+                screenDelegate.handle(QueueUserAction.ItemMoved(to))
+            }
+        },
         listAdapter = QueueAdapter { index, item ->
             val isNowPlayingItem = item.id == state.nowPlayingId
             val backgroundColor = if (isNowPlayingItem) {
@@ -99,7 +72,7 @@ fun QueueLayout(
                 state = item.modelListItemState,
                 modifier = Modifier
                     .clickable {
-                        delegate.onTrackClicked(index)
+                        screenDelegate.handle(QueueUserAction.TrackClicked(index))
                     },
                 backgroundColor = backgroundColor,
                 leadingContent = {

@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -63,7 +62,6 @@ fun BottomNavBar(navigationDelegate: NavigationDelegate) {
 @Composable
 fun BottomNavBarPreview() {
     ThemedPreview {
-        val navController = rememberNavController()
-        BottomNavBar(NavigationDelegate(navController))
+        BottomNavBar(NavigationDelegateForPreviews())
     }
 }

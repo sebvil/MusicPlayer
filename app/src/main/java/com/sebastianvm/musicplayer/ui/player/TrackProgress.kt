@@ -12,8 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
 data class TrackProgressState(
@@ -21,10 +19,9 @@ data class TrackProgressState(
     val currentPlaybackTimeMs: Long?
 )
 
-@Preview
 @Composable
 fun TrackProgress(
-    @PreviewParameter(TrackProgressStatePreviewParameterProvider::class) trackProgressState: TrackProgressState,
+    trackProgressState: TrackProgressState,
     onProgressBarClicked: (position: Int) -> Unit = {}
 ) {
     with(trackProgressState) {

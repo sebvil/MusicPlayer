@@ -16,6 +16,7 @@ sealed class LibraryItem(
     @PluralsRes val countString: Int,
     open val count: Int
 ) {
+
     data class Tracks(override val count: Int) : LibraryItem(
         destination = NavigationDestination.TrackList(
             TrackListArguments(

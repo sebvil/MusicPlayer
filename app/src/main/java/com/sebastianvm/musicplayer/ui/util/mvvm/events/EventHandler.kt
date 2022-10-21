@@ -9,6 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
@@ -16,10 +17,9 @@ fun interface EventHandler<E : UiEvent> {
     suspend fun onEvent(event: E)
 }
 
-
 @Composable
-fun <E : UiEvent, S : State> HandleEvents(
-    viewModel: BaseViewModel<E, S>,
+fun <S : State, A : UserAction, E : UiEvent> HandleEvents(
+    viewModel: BaseViewModel<S, A, E>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     eventHandler: EventHandler<E>
 ) {
@@ -34,10 +34,9 @@ fun <E : UiEvent, S : State> HandleEvents(
     }
 }
 
-
 @Composable
-fun <E : UiEvent, S : State> HandleNavEvents(
-    viewModel: BaseViewModel<E, S>,
+fun <S : State, A : UserAction, E : UiEvent> HandleNavEvents(
+    viewModel: BaseViewModel<S, A, E>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     navigationDelegate: NavigationDelegate,
 ) {

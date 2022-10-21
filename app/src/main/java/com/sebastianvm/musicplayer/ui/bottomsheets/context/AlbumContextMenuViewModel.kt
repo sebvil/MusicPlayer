@@ -34,7 +34,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     private var artistIds: List<Long> = listOf()
 
     init {
-        albumRepository.getFullAlbumInfo(state.value.mediaId).onEach {
+        albumRepository.getFullAlbumInfo(state.mediaId).onEach {
             artistIds = it.artists
             tracks = it.tracks
             setState {
@@ -54,7 +54,7 @@ class AlbumContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayFromBeginning -> {
-                playbackManager.playAlbum(state.value.mediaId).onEach {
+                playbackManager.playAlbum(state.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
@@ -78,7 +78,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                         NavigationDestination.TrackList(
                             TrackListArguments(
                                 trackListType = TrackListType.ALBUM,
-                                trackListId = state.value.mediaId
+                                trackListId = state.mediaId
                             )
                         )
                     )

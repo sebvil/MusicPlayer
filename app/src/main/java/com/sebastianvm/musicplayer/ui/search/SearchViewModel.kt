@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
@@ -54,8 +53,7 @@ class SearchViewModel @Inject constructor(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : BaseViewModel<SearchUiEvent, SearchState>(initialState),
-    ViewModelInterface<SearchState, SearchUserAction> {
+) : BaseViewModel<SearchState, SearchUserAction, SearchUiEvent>(initialState) {
 
     private val query =
         MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))
@@ -66,12 +64,16 @@ class SearchViewModel @Inject constructor(
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
                     .map { tracks -> tracks.map { it.toModelListItemState() } }
+
                 SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
                     .map { artists -> artists.map { it.toModelListItemState() } }
+
                 SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
                     .map { albums -> albums.map { it.toModelListItemState() } }
+
                 SearchMode.GENRES -> ftsRepository.searchGenres(newQuery.term)
                     .map { genres -> genres.map { it.toModelListItemState() } }
+
                 SearchMode.PLAYLISTS -> ftsRepository.searchPlaylists(newQuery.term)
                     .map { playlists -> playlists.map { it.toModelListItemState() } }
             }
@@ -204,7 +206,7 @@ class SearchViewModel @Inject constructor(
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {
-                when (state.value.selectedOption) {
+                when (state.selectedOption) {
                     SearchMode.SONGS -> onTrackSearchResultClicked(action.id)
                     SearchMode.ARTISTS -> onArtistSearchResultClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
@@ -212,8 +214,9 @@ class SearchViewModel @Inject constructor(
                     SearchMode.PLAYLISTS -> onPlaylistSearchResultClicked(action.id)
                 }
             }
+
             is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
-                when (state.value.selectedOption) {
+                when (state.selectedOption) {
                     SearchMode.SONGS -> onTrackSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.ARTISTS -> onArtistSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultOverflowMenuIconClicked(action.id)
@@ -221,10 +224,12 @@ class SearchViewModel @Inject constructor(
                     SearchMode.PLAYLISTS -> onPlaylistSearchResultOverflowMenuIconClicked(action.id)
                 }
             }
+
             is SearchUserAction.SearchModeChanged -> {
                 setState { copy(selectedOption = action.newMode) }
                 query.update { it.copy(mode = action.newMode) }
             }
+
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
             is SearchUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }

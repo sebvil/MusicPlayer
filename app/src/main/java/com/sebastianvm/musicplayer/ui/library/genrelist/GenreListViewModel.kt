@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.ViewModelInterface
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
@@ -31,17 +30,16 @@ class GenreListViewModel @Inject constructor(
     initialState: GenreListState,
     genreRepository: GenreRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<GenreListUiEvent, GenreListState>(initialState),
-    ViewModelInterface<GenreListState, GenreListUserAction> {
+) : BaseViewModel<GenreListState, GenreListUserAction, GenreListUiEvent>(initialState) {
 
     init {
-
         genreRepository.getGenres().onEach { genreList ->
             setState {
                 copy(
                     genreList = genreList.map { it.toModelListItemState() },
                 )
             }
+            addUiEvent(GenreListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
@@ -58,6 +56,7 @@ class GenreListViewModel @Inject constructor(
                     )
                 )
             }
+
             is GenreListUserAction.GenreRowClicked -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -76,12 +75,14 @@ class GenreListViewModel @Inject constructor(
                     preferencesRepository.toggleGenreListSortOrder()
                 }
             }
-            GenreListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+
+            is GenreListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
 
         }
     }
 
 }
+
 
 data class GenreListState(val genreList: List<ModelListItemState>) : State
 
@@ -96,11 +97,15 @@ object InitialGenreListStateModule {
         GenreListState(genreList = listOf())
 }
 
-sealed interface GenreListUiEvent : UiEvent
 sealed interface GenreListUserAction : UserAction {
     data class GenreRowClicked(val genreId: Long) : GenreListUserAction
     data class GenreOverflowMenuIconClicked(val genreId: Long) : GenreListUserAction
     object UpButtonClicked : GenreListUserAction
     object SortByButtonClicked : GenreListUserAction
 }
+
+sealed interface GenreListUiEvent : UiEvent {
+    object ScrollToTop : GenreListUiEvent
+}
+
 

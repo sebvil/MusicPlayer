@@ -205,6 +205,4 @@ inline fun <reified VM : ViewModel> NavGraphBuilder.screenDestination(
             screen(screenViewModel)
         }
     }
-
 }
-

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.sebastianvm.musicplayer.ui.components.ArtistRowState
@@ -16,7 +15,7 @@ import org.junit.Test
 
 class ArtistListScreenTest {
     @get:Rule
-    val composeTestRule = createComposeRule()
+//    val composeTestRule = createComposeRule()
 
     private fun generateViewModel(): ArtistListViewModel {
         return mockk(relaxed = true) {
@@ -63,7 +62,7 @@ class ArtistListScreenTest {
         }
         composeTestRule.onNodeWithText("A").performClick()
         verify {
-            screenViewModel.handle(ArtistListUserAction.ArtistClicked("A"))
+            screenDelegate.handle(ArtistListUserAction.ArtistClicked("A"))
         }
     }
 

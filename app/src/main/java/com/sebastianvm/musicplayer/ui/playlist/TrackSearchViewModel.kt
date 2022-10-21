@@ -9,6 +9,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -37,20 +39,17 @@ class TrackSearchViewModel @Inject constructor(
     initialState: TrackSearchState,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
-) :
-    BaseViewModel<TrackSearchUiEvent, TrackSearchState>(
-        initialState
-    ) {
+) : BaseViewModel<TrackSearchState, TrackSearchUserAction, TrackSearchUiEvent>(initialState) {
 
     private val query = MutableStateFlow("")
-    private val queryUpdater = combineToPair(query, state.map { it.hideTracksInPlaylist })
+    private val queryUpdater = combineToPair(query, stateFlow.map { it.hideTracksInPlaylist })
     private val playlistSize = MutableStateFlow(0L)
 
     init {
         queryUpdater.debounce(500).flatMapLatest { (newQuery, hideTracksInPlaylist) ->
             ftsRepository.searchTracks(newQuery).map { tracks ->
                 tracks.map { it.toModelListItemState() }.filter {
-                    !hideTracksInPlaylist || (it.id !in state.value.playlistTrackIds)
+                    !hideTracksInPlaylist || (it.id !in state.playlistTrackIds)
                 }
             }
         }.onEach {
@@ -62,8 +61,10 @@ class TrackSearchViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
         combineToPair(
-            playlistRepository.getPlaylistSize(state.value.playlistId),
-            playlistRepository.getTrackIdsInPlaylist(state.value.playlistId)
+            playlistRepository.getPlaylistSize(
+                state.playlistId
+            ),
+            playlistRepository.getTrackIdsInPlaylist(state.playlistId)
         ).onEach { (size, trackIds) ->
             setState {
                 copy(
@@ -75,45 +76,52 @@ class TrackSearchViewModel @Inject constructor(
 
     }
 
-    fun onTextChanged(newText: String) {
-        query.update { newText }
-    }
-
-    fun onTrackClicked(trackId: Long, trackName: String) {
-        if (trackId in state.value.playlistTrackIds) {
-            setState {
-                copy(
-                    addTrackConfirmationDialogState = AddTrackConfirmationDialogState(
-                        trackId = trackId,
-                        trackName = trackName
+    override fun handle(action: TrackSearchUserAction) {
+        when (action) {
+            is TrackSearchUserAction.CancelAddTrackToPlaylist -> {
+                setState {
+                    copy(
+                        addTrackConfirmationDialogState = null
                     )
-                )
+                }
             }
-            return
+
+            is TrackSearchUserAction.ConfirmAddTrackToPlaylist -> {
+                setState {
+                    copy(
+                        addTrackConfirmationDialogState = null
+                    )
+                }
+                addTrackToPlaylist(trackId = action.trackId, trackName = action.trackName)
+            }
+
+            is TrackSearchUserAction.HideTracksCheckToggled -> {
+                setState { copy(hideTracksInPlaylist = !hideTracksInPlaylist) }
+            }
+
+            is TrackSearchUserAction.TextChanged -> {
+                query.update { action.newText }
+            }
+
+            is TrackSearchUserAction.TrackClicked -> {
+                if (action.trackId in state.playlistTrackIds) {
+                    setState {
+                        copy(
+                            addTrackConfirmationDialogState = AddTrackConfirmationDialogState(
+                                trackId = action.trackId,
+                                trackName = action.trackName
+                            )
+                        )
+                    }
+                    return
+                }
+                addTrackToPlaylist(trackId = action.trackId, trackName = action.trackName)
+            }
+
+            is TrackSearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
         }
-        addTrackToPlaylist(trackId = trackId, trackName = trackName)
     }
 
-    fun onConfirmAddTrackToPlaylist(trackId: Long, trackName: String) {
-        setState {
-            copy(
-                addTrackConfirmationDialogState = null
-            )
-        }
-        addTrackToPlaylist(trackId = trackId, trackName = trackName)
-    }
-
-    fun onCancelAddTrackToPlaylist() {
-        setState {
-            copy(
-                addTrackConfirmationDialogState = null
-            )
-        }
-    }
-
-    fun onHideTracksCheckedToggle() {
-        setState { copy(hideTracksInPlaylist = !hideTracksInPlaylist) }
-    }
 
     private fun addTrackToPlaylist(trackId: Long, trackName: String) {
         // We do this so the behavior is still the same in case the user presses on tracks very fast
@@ -127,7 +135,7 @@ class TrackSearchViewModel @Inject constructor(
         viewModelScope.launch {
             playlistRepository.addTrackToPlaylist(
                 PlaylistTrackCrossRef(
-                    playlistId = state.value.playlistId,
+                    playlistId = state.playlistId,
                     trackId = trackId,
                     position = playlistSize.value
                 )
@@ -160,8 +168,19 @@ object InitialTrackSearchStateModule {
     }
 }
 
-sealed class TrackSearchUiEvent : UiEvent {
-    data class ShowConfirmationToast(val trackName: String) : TrackSearchUiEvent()
+sealed interface TrackSearchUiEvent : UiEvent {
+    data class ShowConfirmationToast(val trackName: String) : TrackSearchUiEvent
+}
+
+sealed interface TrackSearchUserAction : UserAction {
+    data class TextChanged(val newText: String) : TrackSearchUserAction
+    data class TrackClicked(val trackId: Long, val trackName: String) : TrackSearchUserAction
+    data class ConfirmAddTrackToPlaylist(val trackId: Long, val trackName: String) :
+        TrackSearchUserAction
+
+    object CancelAddTrackToPlaylist : TrackSearchUserAction
+    object HideTracksCheckToggled : TrackSearchUserAction
+    object UpButtonClicked : TrackSearchUserAction
 }
 
 data class AddTrackConfirmationDialogState(val trackId: Long, val trackName: String)

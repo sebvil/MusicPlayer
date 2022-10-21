@@ -12,7 +12,7 @@ fun NavGraphBuilder.playlistListNavDestination(navigationDelegate: NavigationDel
         destinationType = DestinationType.Screen
     ) { viewModel ->
         PlaylistListScreen(
-            screenViewModel = viewModel,
+            viewModel = viewModel,
             navigationDelegate = navigationDelegate
         )
     }

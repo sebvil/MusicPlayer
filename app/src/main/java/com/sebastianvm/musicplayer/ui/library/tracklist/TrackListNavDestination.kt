@@ -19,9 +19,6 @@ fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelega
         destination = NavigationRoute.TrackList,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        TrackListScreen(
-            screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate
-        )
+        TrackListScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

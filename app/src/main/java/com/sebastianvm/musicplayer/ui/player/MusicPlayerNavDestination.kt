@@ -12,6 +12,6 @@ fun NavGraphBuilder.musicPlayerNavDestination(navigationDelegate: NavigationDele
         destination = NavigationRoute.Player,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        MusicPlayerScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
+        MusicPlayerScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

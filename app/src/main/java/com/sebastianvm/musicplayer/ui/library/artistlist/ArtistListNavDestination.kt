@@ -12,8 +12,10 @@ fun NavGraphBuilder.artistListNavDestination(navigationDelegate: NavigationDeleg
         destinationType = DestinationType.Screen
     ) { viewModel ->
         ArtistListScreen(
-            screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate,
+            viewModel = viewModel,
+            navigationDelegate = navigationDelegate
         )
     }
 }
+
+

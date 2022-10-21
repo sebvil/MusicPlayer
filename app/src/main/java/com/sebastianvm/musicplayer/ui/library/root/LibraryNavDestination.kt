@@ -14,9 +14,6 @@ fun NavGraphBuilder.libraryNavDestination(
         destination = NavigationRoute.LibraryRoot,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        LibraryScreen(
-            screenViewModel = viewModel,
-            navigationDelegate = navigationDelegate,
-        )
+        LibraryScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

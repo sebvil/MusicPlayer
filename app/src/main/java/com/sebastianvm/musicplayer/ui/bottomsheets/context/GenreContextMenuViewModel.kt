@@ -29,13 +29,14 @@ class GenreContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playGenre(state.value.mediaId).onEach {
+                playbackManager.playGenre(state.mediaId).onEach {
                     when (it) {
                         is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
                             copy(
                                 playbackResult = it
                             )
                         }
+
                         is PlaybackResult.Success -> addNavEvent(
                             NavEvent.NavigateToScreen(
                                 NavigationDestination.MusicPlayer
@@ -44,18 +45,20 @@ class GenreContextMenuViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
+
             is ContextMenuItem.ViewGenre -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
                                 trackListType = TrackListType.GENRE,
-                                trackListId = state.value.mediaId
+                                trackListId = state.mediaId
                             )
                         )
                     )
                 )
             }
+
             else -> throw IllegalStateException("Invalid row for genre context menu")
         }
     }

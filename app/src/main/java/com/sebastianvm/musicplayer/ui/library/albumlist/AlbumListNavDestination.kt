@@ -10,11 +10,8 @@ import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 fun NavGraphBuilder.albumListNavDestination(navigationDelegate: NavigationDelegate) {
     screenDestination<AlbumListViewModel>(
         destination = NavigationRoute.AlbumsRoot,
-        destinationType = DestinationType.Screen
+        destinationType = DestinationType.Screen,
     ) { viewModel ->
-        AlbumListScreen(
-            viewModel,
-            navigationDelegate = navigationDelegate
-        )
+        AlbumListScreen(viewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

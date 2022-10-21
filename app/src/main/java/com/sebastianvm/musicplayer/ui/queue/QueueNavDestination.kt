@@ -11,6 +11,6 @@ fun NavGraphBuilder.queueNavDestination(navigationDelegate: NavigationDelegate) 
         destination = NavigationRoute.Queue,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        QueueScreen(screenViewModel = viewModel, navigationDelegate)
+        QueueScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

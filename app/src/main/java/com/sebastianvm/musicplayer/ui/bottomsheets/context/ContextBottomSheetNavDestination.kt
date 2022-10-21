@@ -39,41 +39,45 @@ data class GenreContextMenuArguments(val genreId: Long) : NavigationArguments
 @Parcelize
 data class PlaylistContextMenuArguments(val playlistId: Long) : NavigationArguments
 
-fun NavGraphBuilder.contextBottomSheet(
+
+private inline fun <reified VM : BaseContextMenuViewModel<*>> NavGraphBuilder.contextBottomSheetDestination(
+    destination: NavigationRoute,
+    navigationDelegate: NavigationDelegate
+) {
+    screenDestination<VM>(
+        destination = destination,
+        destinationType = DestinationType.BottomSheet
+    ) { viewModel ->
+        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
+    }
+}
+
+fun NavGraphBuilder.contextBottomSheetDestinations(
     navigationDelegate: NavigationDelegate,
 ) {
-    screenDestination<TrackContextMenuViewModel>(
-        NavigationRoute.TrackContextMenu,
-        destinationType = DestinationType.BottomSheet
-    ) { viewModel ->
-        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
-    }
 
-    screenDestination<ArtistContextMenuViewModel>(
-        NavigationRoute.ArtistContextMenu,
-        destinationType = DestinationType.BottomSheet
-    ) { viewModel ->
-        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
-    }
+    contextBottomSheetDestination<TrackContextMenuViewModel>(
+        destination = NavigationRoute.TrackContextMenu,
+        navigationDelegate = navigationDelegate
+    )
 
-    screenDestination<AlbumContextMenuViewModel>(
-        NavigationRoute.AlbumContextMenu,
-        destinationType = DestinationType.BottomSheet
-    ) { viewModel ->
-        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
-    }
+    contextBottomSheetDestination<ArtistContextMenuViewModel>(
+        destination = NavigationRoute.ArtistContextMenu,
+        navigationDelegate = navigationDelegate
+    )
 
-    screenDestination<GenreContextMenuViewModel>(
-        NavigationRoute.GenreContextMenu,
-        destinationType = DestinationType.BottomSheet
-    ) { viewModel ->
-        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
-    }
+    contextBottomSheetDestination<AlbumContextMenuViewModel>(
+        destination = NavigationRoute.AlbumContextMenu,
+        navigationDelegate = navigationDelegate
+    )
 
-    screenDestination<PlaylistContextMenuViewModel>(
-        NavigationRoute.PlaylistContextMenu,
-        destinationType = DestinationType.BottomSheet
-    ) { viewModel ->
-        ContextBottomSheet(sheetViewModel = viewModel, navigationDelegate = navigationDelegate)
-    }
+    contextBottomSheetDestination<GenreContextMenuViewModel>(
+        destination = NavigationRoute.GenreContextMenu,
+        navigationDelegate = navigationDelegate
+    )
+
+    contextBottomSheetDestination<PlaylistContextMenuViewModel>(
+        destination = NavigationRoute.PlaylistContextMenu,
+        navigationDelegate = navigationDelegate
+    )
 }
