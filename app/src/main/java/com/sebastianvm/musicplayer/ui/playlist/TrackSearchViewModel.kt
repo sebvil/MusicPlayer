@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -116,6 +117,8 @@ class TrackSearchViewModel @Inject constructor(
                 }
                 addTrackToPlaylist(trackId = action.trackId, trackName = action.trackName)
             }
+
+            is TrackSearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
         }
     }
 
@@ -177,6 +180,7 @@ sealed interface TrackSearchUserAction : UserAction {
 
     object CancelAddTrackToPlaylist : TrackSearchUserAction
     object HideTracksCheckToggled : TrackSearchUserAction
+    object UpButtonClicked : TrackSearchUserAction
 }
 
 data class AddTrackConfirmationDialogState(val trackId: Long, val trackName: String)

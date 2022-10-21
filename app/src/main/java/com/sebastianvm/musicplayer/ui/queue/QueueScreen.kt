@@ -6,6 +6,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +14,31 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+
+@Composable
+fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationDelegate) {
+    val layoutManager = LinearLayoutManager(LocalContext.current)
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = { event ->
+            when (event) {
+                is QueueUiEvent.ScrollToNowPlayingItem -> {
+                    layoutManager.scrollToPositionWithOffset(event.index, 0)
+                }
+            }
+        },
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        QueueLayout(
+            state = state,
+            screenDelegate = delegate,
+            layoutManager = layoutManager
+        )
+    }
+}
 
 @Composable
 fun QueueLayout(

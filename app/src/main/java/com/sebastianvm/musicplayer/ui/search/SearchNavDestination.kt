@@ -5,22 +5,12 @@ import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
 
 fun NavGraphBuilder.searchNavDestination(navigationDelegate: NavigationDelegate) {
     screenDestination<SearchViewModel>(
         destination = NavigationRoute.Search,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        Screen(
-            screenViewModel = viewModel,
-            eventHandler = {},
-            navigationDelegate = navigationDelegate
-        ) { state, delegate ->
-            SearchLayout(
-                state = state,
-                screenDelegate = delegate
-            )
-        }
+        SearchScreen(screenViewModel = viewModel, navigationDelegate = navigationDelegate)
     }
 }

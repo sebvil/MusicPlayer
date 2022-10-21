@@ -27,7 +27,9 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
@@ -41,6 +43,20 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
         }
     }
 
+
+@Composable
+fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
+    Screen(
+        screenViewModel = screenViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state, delegate ->
+        SearchLayout(
+            state = state,
+            screenDelegate = delegate
+        )
+    }
+}
 
 @Composable
 fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAction>) {
