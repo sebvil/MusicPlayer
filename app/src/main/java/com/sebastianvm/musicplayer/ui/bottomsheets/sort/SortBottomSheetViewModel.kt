@@ -63,51 +63,52 @@ class SortBottomSheetViewModel @Inject constructor(
     }
 
     override fun handle(action: SortBottomSheetUserAction) {
-        TODO("handle Not yet implemented")
-    }
-
-    fun onMediaSortOptionClicked(newSortOption: SortOptions) {
-        val newSortOrder = if (newSortOption == state.selectedSort) {
-            !state.sortOrder
-        } else {
-            state.sortOrder
-        }
-        viewModelScope.launch {
-            when (val listType = state.listType) {
-                is SortableListType.Tracks -> {
-                    require(newSortOption is SortOptions.TrackListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
-                    sortPreferencesRepository.modifyTrackListSortPreferences(
-                        newPreferences = MediaSortPreferences(
-                            sortOption = newSortOption,
-                            sortOrder = newSortOrder
-                        ),
-                        trackListType = listType.trackListType,
-                        trackListId = state.mediaId
-                    )
+        when (action) {
+            is SortBottomSheetUserAction.MediaSortOptionClicked -> {
+                val newSortOption = action.newSortOption
+                val newSortOrder = if (newSortOption == state.selectedSort) {
+                    !state.sortOrder
+                } else {
+                    state.sortOrder
                 }
+                viewModelScope.launch {
+                    when (val listType = state.listType) {
+                        is SortableListType.Tracks -> {
+                            require(newSortOption is SortOptions.TrackListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            sortPreferencesRepository.modifyTrackListSortPreferences(
+                                newPreferences = MediaSortPreferences(
+                                    sortOption = newSortOption,
+                                    sortOrder = newSortOrder
+                                ),
+                                trackListType = listType.trackListType,
+                                trackListId = state.mediaId
+                            )
+                        }
 
-                is SortableListType.Albums -> {
-                    require(newSortOption is SortOptions.AlbumListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
-                    sortPreferencesRepository.modifyAlbumListSortPreferences(
-                        newPreferences = MediaSortPreferences(
-                            sortOption = newSortOption,
-                            sortOrder = newSortOrder
-                        )
-                    )
-                }
+                        is SortableListType.Albums -> {
+                            require(newSortOption is SortOptions.AlbumListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            sortPreferencesRepository.modifyAlbumListSortPreferences(
+                                newPreferences = MediaSortPreferences(
+                                    sortOption = newSortOption,
+                                    sortOrder = newSortOrder
+                                )
+                            )
+                        }
 
-                is SortableListType.Playlist -> {
-                    require(newSortOption is SortOptions.PlaylistSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
-                    sortPreferencesRepository.modifyPlaylistsSortPreferences(
-                        newPreferences = MediaSortPreferences(
-                            sortOption = newSortOption,
-                            sortOrder = newSortOrder
-                        ),
-                        playlistId = state.mediaId
-                    )
+                        is SortableListType.Playlist -> {
+                            require(newSortOption is SortOptions.PlaylistSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            sortPreferencesRepository.modifyPlaylistsSortPreferences(
+                                newPreferences = MediaSortPreferences(
+                                    sortOption = newSortOption,
+                                    sortOrder = newSortOrder
+                                ),
+                                playlistId = state.mediaId
+                            )
+                        }
+                    }
+                    addNavEvent(NavEvent.NavigateUp)
                 }
             }
-            addNavEvent(NavEvent.NavigateUp)
         }
     }
 }
@@ -138,7 +139,7 @@ object InitialSortBottomSheetState {
     }
 }
 
-fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
+private fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
     return when (listType) {
         is SortableListType.Tracks -> {
             SortOptions.TrackListSortOptions.values().toList()
@@ -167,5 +168,8 @@ sealed class SortableListType : Parcelable {
     object Playlist : SortableListType()
 }
 
-sealed interface SortBottomSheetUserAction : UserAction
+sealed interface SortBottomSheetUserAction : UserAction {
+    data class MediaSortOptionClicked(val newSortOption: SortOptions) : SortBottomSheetUserAction
+}
+
 sealed interface SortBottomSheetUiEvent : UiEvent

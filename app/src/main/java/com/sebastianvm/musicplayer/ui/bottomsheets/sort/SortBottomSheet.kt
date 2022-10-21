@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,21 +24,29 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleEvents
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
+import com.sebastianvm.musicplayer.ui.util.compose.Screen
+import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import kotlinx.coroutines.Dispatchers
-
 
 @Composable
 fun SortBottomSheet(
     sheetViewModel: SortBottomSheetViewModel = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val state = sheetViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
-    HandleEvents(viewModel = sheetViewModel) {}
-    HandleNavEvents(viewModel = sheetViewModel, navigationDelegate = navigationDelegate)
+    Screen(
+        screenViewModel = sheetViewModel,
+        eventHandler = {},
+        navigationDelegate = navigationDelegate
+    ) { state, screenDelegate ->
+        SortBottomSheet(state = state, screenDelegate = screenDelegate)
+    }
+}
 
+@Composable
+fun SortBottomSheet(
+    state: SortBottomSheetState,
+    screenDelegate: ScreenDelegate<SortBottomSheetUserAction>
+) {
     val rowModifier = Modifier
         .fillMaxWidth()
         .height(AppDimensions.bottomSheet.rowHeight)
@@ -55,12 +62,18 @@ fun SortBottomSheet(
         }
         Divider(modifier = Modifier.fillMaxWidth())
         LazyColumn {
-            items(state.value.sortOptions, key = { it }) { row ->
+            items(state.sortOptions, key = { it }) { row ->
                 Row(
                     modifier = Modifier
-                        .clickable { sheetViewModel.onMediaSortOptionClicked(row) }
+                        .clickable {
+                            screenDelegate.handle(
+                                SortBottomSheetUserAction.MediaSortOptionClicked(
+                                    row
+                                )
+                            )
+                        }
                         .let {
-                            if (state.value.selectedSort == row) {
+                            if (state.selectedSort == row) {
                                 it.background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                 )
@@ -71,10 +84,10 @@ fun SortBottomSheet(
                         .then(rowModifier),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (state.value.selectedSort == row) {
+                    if (state.selectedSort == row) {
                         Icon(
-                            painter = painterResource(id = if (state.value.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
-                            contentDescription = if (state.value.sortOrder == MediaSortOrder.ASCENDING) stringResource(
+                            painter = painterResource(id = if (state.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
+                            contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) stringResource(
                                 R.string.up_arrow
                             )
                             else stringResource(R.string.down_arrow),
