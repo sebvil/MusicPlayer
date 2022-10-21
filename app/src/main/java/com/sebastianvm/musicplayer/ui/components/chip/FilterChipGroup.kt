@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
@@ -23,7 +24,7 @@ fun <T> SingleSelectFilterChipGroup(
     LazyRow(
         contentPadding = PaddingValues(horizontal = AppDimensions.spacing.medium),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacing.small),
-        modifier = modifier
+        modifier = modifier.selectableGroup()
     ) {
         items(options) { option ->
             FilterChip(
