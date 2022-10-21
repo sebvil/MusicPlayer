@@ -82,6 +82,10 @@
     <string name="add_to_playlist">Add to playlist</string>
     <string name="add_to_playlist_question">Add to playlist?</string>
     <string name="song_already_in_playlist"><b>%1$s</b> is already in the playlist. Are you sure you want to add it again?"</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_this_playlist">Delete playlist %1$s</string>
+    <string name="sure_you_want_to_delete">"Are you sure you want to delete %1$s?</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d track</item>

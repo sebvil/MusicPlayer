@@ -82,7 +82,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
         }
     }
 
-    fun onConfirmDeleteClicked() {
+    override fun onConfirmDeleteClicked() {
         viewModelScope.launch {
             playlistRepository.deletePlaylist(state.mediaId)
             setState {
@@ -95,7 +95,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
         }
     }
 
-    fun onCancelDeleteClicked() {
+    override fun onCancelDeleteClicked() {
         setState {
             copy(
                 showDeleteConfirmationDialog = false

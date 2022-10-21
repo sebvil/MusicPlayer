@@ -21,14 +21,30 @@ sealed interface BaseContextMenuUiEvent : UiEvent {
 
 }
 
-sealed interface BaseContextMenuUserAction : UserAction
+sealed interface BaseContextMenuUserAction : UserAction {
+    data class RowClicked(val row: ContextMenuItem) : BaseContextMenuUserAction
+    object DismissPlaybackErrorDialog : BaseContextMenuUserAction
+    object CancelDeleteClicked : BaseContextMenuUserAction
+    object ConfirmDeleteClicked : BaseContextMenuUserAction
+}
 
 abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
     initialState: S
 ) : BaseViewModel<S, BaseContextMenuUserAction, BaseContextMenuUiEvent>(initialState) {
-    abstract fun onRowClicked(row: ContextMenuItem)
-    abstract fun onPlaybackErrorDismissed()
+    protected abstract fun onRowClicked(row: ContextMenuItem)
+    protected abstract fun onPlaybackErrorDismissed()
+
+    // no-ops except for PlaylistContextMenuViewModel
+    protected open fun onCancelDeleteClicked() = Unit
+    protected open fun onConfirmDeleteClicked() = Unit
+
+
     override fun handle(action: BaseContextMenuUserAction) {
-        TODO("handle Not yet implemented")
+        when (action) {
+            is BaseContextMenuUserAction.RowClicked -> onRowClicked(row = action.row)
+            is BaseContextMenuUserAction.DismissPlaybackErrorDialog -> onPlaybackErrorDismissed()
+            is BaseContextMenuUserAction.CancelDeleteClicked -> onCancelDeleteClicked()
+            is BaseContextMenuUserAction.ConfirmDeleteClicked -> onConfirmDeleteClicked()
+        }
     }
 }
