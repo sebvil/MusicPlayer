@@ -1,21 +1,23 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -31,38 +33,87 @@ data class PermissionHandlerState @OptIn(ExperimentalPermissionsApi::class) cons
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionHandler(
-    state: PermissionHandlerState,
-    onPermissionDeniedDialogDismissed: () -> Unit,
+    permission: String,
+    @StringRes dialogTitle: Int,
+    @StringRes message: Int,
+    onPermissionGranted: () -> Unit,
+    content: @Composable (onClick: () -> Unit) -> Unit,
 ) {
+    var showPermissionDeniedDialog by remember {
+        mutableStateOf(false)
+    }
+    val permissionState = if (LocalInspectionMode.current) {
+        // Show this text in a preview window:
+        object : PermissionState {
+            override val permission: String
+                get() = ""
+            override val status: PermissionStatus
+                get() = PermissionStatus.Granted
 
-    val context = LocalContext.current
-
-    val navigateToSettingsLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            state.permissionState.launchPermissionRequest()
+            override fun launchPermissionRequest() = Unit
         }
-    )
-    if (state.showPermissionDeniedDialog && state.permissionState.status.shouldShowRationale) {
-        PermissionDialog(
-            state = state.permissionExplanationDialogState,
-            onDismiss = onPermissionDeniedDialogDismissed,
-            onConfirm = {
-                state.permissionState.launchPermissionRequest()
-            })
-    } else if (state.showPermissionDeniedDialog) {
-        PermissionDialog(
-            state = state.permissionDeniedDialogState,
-            onDismiss = onPermissionDeniedDialogDismissed,
-            onConfirm = {
-                val intent = Intent(
-                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                )
-                intent.data = Uri.parse("package:${context.packageName}")
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    navigateToSettingsLauncher.launch(intent)
+    } else {
+        rememberPermissionState(
+            permission = permission,
+            onPermissionResult = { isGranted ->
+                showPermissionDeniedDialog = if (isGranted) {
+                    onPermissionGranted()
+                    false
+                } else {
+                    true
                 }
             })
+    }
+
+
+    val permissionHandlerState = remember {
+        derivedStateOf {
+            PermissionHandlerState(
+                permissionState = permissionState,
+                showPermissionDeniedDialog = showPermissionDeniedDialog,
+                permissionDeniedDialogState = PermissionDialogState(
+                    title = dialogTitle,
+                    text = message,
+                    confirmButtonText = R.string.ok
+                ),
+                permissionExplanationDialogState = PermissionDialogState(
+                    title = dialogTitle,
+                    text = message,
+                    confirmButtonText = R.string.continue_string
+                )
+            )
+        }
+    }
+
+    if (permissionHandlerState.value.showPermissionDeniedDialog && permissionHandlerState.value.permissionState.status.shouldShowRationale) {
+        PermissionDialog(
+            state = permissionHandlerState.value.permissionExplanationDialogState,
+            onDismiss = { showPermissionDeniedDialog = false },
+            onConfirm = {
+                permissionHandlerState.value.permissionState.launchPermissionRequest()
+            })
+    } else if (permissionHandlerState.value.showPermissionDeniedDialog) {
+        PermissionDialog(
+            state = permissionHandlerState.value.permissionDeniedDialogState,
+            onDismiss = { showPermissionDeniedDialog = false },
+            onConfirm = { showPermissionDeniedDialog = false }
+        )
+    }
+
+    content {
+        when (val status = permissionState.status) {
+            is PermissionStatus.Granted -> {
+                onPermissionGranted()
+            }
+
+            is PermissionStatus.Denied -> {
+                if (status.shouldShowRationale) {
+                    showPermissionDeniedDialog = true
+                } else {
+                    permissionState.launchPermissionRequest()
+                }
+            }
+        }
     }
 }
 

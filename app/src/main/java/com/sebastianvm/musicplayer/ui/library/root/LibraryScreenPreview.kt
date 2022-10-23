@@ -55,10 +55,9 @@ fun SearchBoxPreview() {
 @Composable
 private fun LibraryScreenPreview(@PreviewParameter(LibraryStatePreviewParamProvider::class) state: LibraryState) {
     ScreenPreview {
-        LibraryScreenLayout(
+        LibraryScreen(
             state = state,
             screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance(),
-            onFabClicked = {}
         )
     }
 }
