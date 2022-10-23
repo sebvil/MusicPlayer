@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.util.mvvm
 
 import androidx.lifecycle.ViewModel
+import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,9 @@ abstract class BaseViewModel<S : State, A : UserAction, E : UiEvent>(initialStat
 
     private val _state = MutableStateFlow(initialState)
     val stateFlow: StateFlow<S> = _state
-    protected val state get() = _state.value
+
+    @VisibleForTesting
+    val state get() = _state.value
 
     private val _events: MutableStateFlow<List<E>> = MutableStateFlow(listOf())
     val events: StateFlow<List<E>> = _events

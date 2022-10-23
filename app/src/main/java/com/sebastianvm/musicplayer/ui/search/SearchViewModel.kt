@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.search
 
 import androidx.lifecycle.viewModelScope
+import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
 import com.sebastianvm.musicplayer.player.MediaType
@@ -60,7 +61,7 @@ class SearchViewModel @Inject constructor(
 
 
     init {
-        query.debounce(500).flatMapLatest { newQuery ->
+        query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
                     .map { tracks -> tracks.map { it.toModelListItemState() } }
@@ -234,6 +235,11 @@ class SearchViewModel @Inject constructor(
             is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
             is SearchUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
         }
+    }
+
+    companion object {
+        @VisibleForTesting
+        const val DEBOUNCE_TIME = 500L
     }
 }
 
