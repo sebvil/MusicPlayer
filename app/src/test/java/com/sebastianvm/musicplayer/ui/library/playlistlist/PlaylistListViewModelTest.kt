@@ -18,7 +18,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -68,11 +67,9 @@ class PlaylistListViewModelTest : BaseTest() {
             val playlistsFlow = MutableStateFlow(playlists)
             every { playlistRepository.getPlaylists() } returns playlistsFlow
             with(generateViewModel()) {
-                advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesAscending, state.value.playlistList)
+                Assert.assertEquals(modelListItemStatesAscending, state.playlistList)
                 playlistsFlow.value = playlists.reversed()
-                advanceUntilIdle()
-                Assert.assertEquals(modelListItemStatesDescending, state.value.playlistList)
+                Assert.assertEquals(modelListItemStatesDescending, state.playlistList)
             }
         }
 
@@ -106,7 +103,6 @@ class PlaylistListViewModelTest : BaseTest() {
     fun `SortByButtonClicked toggles playlist sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
             handle(PlaylistListUserAction.SortByButtonClicked)
-            advanceUntilIdle()
             coVerify { sortPreferencesRepository.togglePlaylistListSortOder() }
         }
     }
@@ -131,7 +127,7 @@ class PlaylistListViewModelTest : BaseTest() {
     fun `AddPlaylistButtonClicked opens playlist creation dialog`() {
         with(generateViewModel()) {
             handle(PlaylistListUserAction.AddPlaylistButtonClicked)
-            assertTrue(state.value.isCreatePlaylistDialogOpen)
+            assertTrue(state.isCreatePlaylistDialogOpen)
         }
     }
 
@@ -139,7 +135,7 @@ class PlaylistListViewModelTest : BaseTest() {
     fun `DismissPlaylistCreationButtonClicked closes playlist creation dialog`() {
         with(generateViewModel(isCreatePlaylistDialogOpen = true)) {
             handle(PlaylistListUserAction.DismissPlaylistCreationButtonClicked)
-            assertFalse(state.value.isCreatePlaylistDialogOpen)
+            assertFalse(state.isCreatePlaylistDialogOpen)
         }
     }
 
@@ -147,7 +143,7 @@ class PlaylistListViewModelTest : BaseTest() {
     fun `DismissPlaylistCreationErrorDialog closes playlist creation dialog`() {
         with(generateViewModel(isPlaylistCreationErrorDialogOpen = true)) {
             handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog)
-            assertFalse(state.value.isPlaylistCreationErrorDialogOpen)
+            assertFalse(state.isPlaylistCreationErrorDialogOpen)
         }
     }
 
@@ -157,9 +153,8 @@ class PlaylistListViewModelTest : BaseTest() {
             every { playlistRepository.createPlaylist(C.PLAYLIST_APPLE) } returns flowOf(null)
             with(generateViewModel(isCreatePlaylistDialogOpen = true)) {
                 handle(PlaylistListUserAction.CreatePlaylistButtonClicked(playlistName = C.PLAYLIST_APPLE))
-                advanceUntilIdle()
-                assertFalse(state.value.isCreatePlaylistDialogOpen)
-                assertTrue(state.value.isPlaylistCreationErrorDialogOpen)
+                assertFalse(state.isCreatePlaylistDialogOpen)
+                assertTrue(state.isPlaylistCreationErrorDialogOpen)
             }
         }
 
@@ -169,9 +164,8 @@ class PlaylistListViewModelTest : BaseTest() {
             every { playlistRepository.createPlaylist(C.PLAYLIST_APPLE) } returns flowOf(1)
             with(generateViewModel(isCreatePlaylistDialogOpen = true)) {
                 handle(PlaylistListUserAction.CreatePlaylistButtonClicked(playlistName = C.PLAYLIST_APPLE))
-                advanceUntilIdle()
-                assertFalse(state.value.isCreatePlaylistDialogOpen)
-                assertFalse(state.value.isPlaylistCreationErrorDialogOpen)
+                assertFalse(state.isCreatePlaylistDialogOpen)
+                assertFalse(state.isPlaylistCreationErrorDialogOpen)
             }
         }
 

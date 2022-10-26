@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -30,7 +29,6 @@ class LibraryViewModelTest : BaseTest() {
     @Test
     fun `init updates counts`() = testScope.runReliableTest {
         with(generateViewModel()) {
-            advanceUntilIdle()
             assertEquals(
                 listOf(
                     LibraryItem.Tracks(count = FakeMusicRepository.FAKE_TRACK_COUNTS),
@@ -39,7 +37,7 @@ class LibraryViewModelTest : BaseTest() {
                     LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
                     LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
                 ),
-                state.value.libraryItems
+                state.libraryItems
             )
         }
     }

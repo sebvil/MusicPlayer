@@ -16,7 +16,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -59,11 +58,9 @@ class ArtistListViewModelTest : BaseTest() {
             val artistsFlow = MutableStateFlow(artists)
             every { artistRepository.getArtists() } returns artistsFlow
             with(generateViewModel()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.artistList)
+                assertEquals(modelListItemStatesAscending, state.artistList)
                 artistsFlow.value = artists.reversed()
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.artistList)
+                assertEquals(modelListItemStatesDescending, state.artistList)
             }
         }
 
@@ -96,7 +93,6 @@ class ArtistListViewModelTest : BaseTest() {
     fun `SortByClicked toggles artist list sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
             handle(ArtistListUserAction.SortByButtonClicked)
-            advanceUntilIdle()
             coVerify { preferencesRepository.toggleArtistListSortOrder() }
         }
     }

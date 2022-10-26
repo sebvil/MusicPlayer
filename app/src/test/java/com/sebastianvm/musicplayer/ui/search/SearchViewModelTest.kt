@@ -24,9 +24,9 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -54,6 +54,11 @@ class SearchViewModelTest : BaseTest() {
         )
     }
 
+    private suspend fun SearchViewModel.handleWithDelay(action: SearchUserAction) {
+        handle(action)
+        delay(SearchViewModel.DEBOUNCE_TIME + 1)
+    }
+
     @Before
     fun setUp() {
         ftsRepository = mockk()
@@ -65,13 +70,11 @@ class SearchViewModelTest : BaseTest() {
         every { ftsRepository.searchTracks("a") } returns flowOf(listOf(Fixtures.basicTrackArgentina))
         every { ftsRepository.searchTracks("") } returns flowOf(listOf())
         with(generateViewModel()) {
-            advanceUntilIdle()
-            assertEquals(listOf(), state.value.searchResults)
-            handle(SearchUserAction.TextChanged("a"))
-            advanceUntilIdle()
+            assertEquals(listOf(), state.searchResults)
+            handleWithDelay(SearchUserAction.TextChanged("a"))
             assertEquals(
                 listOf(Fixtures.trackArgentina.toModelListItemState()),
-                state.value.searchResults
+                state.searchResults
             )
         }
     }
@@ -81,13 +84,11 @@ class SearchViewModelTest : BaseTest() {
         every { ftsRepository.searchArtists("a") } returns flowOf(listOf(Fixtures.artistAna))
         every { ftsRepository.searchArtists("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.ARTISTS)) {
-            advanceUntilIdle()
-            assertEquals(listOf(), state.value.searchResults)
-            handle(SearchUserAction.TextChanged("a"))
-            advanceUntilIdle()
+            assertEquals(listOf(), state.searchResults)
+            handleWithDelay(SearchUserAction.TextChanged("a"))
             assertEquals(
                 listOf(Fixtures.artistAna.toModelListItemState()),
-                state.value.searchResults
+                state.searchResults
             )
         }
     }
@@ -97,13 +98,11 @@ class SearchViewModelTest : BaseTest() {
         every { ftsRepository.searchAlbums("a") } returns flowOf(listOf(Fixtures.albumAlpaca))
         every { ftsRepository.searchAlbums("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.ALBUMS)) {
-            advanceUntilIdle()
-            assertEquals(listOf(), state.value.searchResults)
-            handle(SearchUserAction.TextChanged("a"))
-            advanceUntilIdle()
+            assertEquals(listOf(), state.searchResults)
+            handleWithDelay(SearchUserAction.TextChanged("a"))
             assertEquals(
                 listOf(Fixtures.albumAlpaca.toModelListItemState()),
-                state.value.searchResults
+                state.searchResults
             )
         }
     }
@@ -113,13 +112,11 @@ class SearchViewModelTest : BaseTest() {
         every { ftsRepository.searchGenres("a") } returns flowOf(listOf(Fixtures.genreAlpha))
         every { ftsRepository.searchGenres("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.GENRES)) {
-            advanceUntilIdle()
-            assertEquals(listOf(), state.value.searchResults)
-            handle(SearchUserAction.TextChanged("a"))
-            advanceUntilIdle()
+            assertEquals(listOf(), state.searchResults)
+            handleWithDelay(SearchUserAction.TextChanged("a"))
             assertEquals(
                 listOf(Fixtures.genreAlpha.toModelListItemState()),
-                state.value.searchResults
+                state.searchResults
             )
 
         }
@@ -130,13 +127,11 @@ class SearchViewModelTest : BaseTest() {
         every { ftsRepository.searchPlaylists("a") } returns flowOf(listOf(Fixtures.playlistApple))
         every { ftsRepository.searchPlaylists("") } returns flowOf(listOf())
         with(generateViewModel(searchMode = SearchMode.PLAYLISTS)) {
-            advanceUntilIdle()
-            assertEquals(listOf(), state.value.searchResults)
-            handle(SearchUserAction.TextChanged("a"))
-            advanceUntilIdle()
+            assertEquals(listOf(), state.searchResults)
+            handleWithDelay(SearchUserAction.TextChanged("a"))
             assertEquals(
                 listOf(Fixtures.playlistApple.toModelListItemState()),
-                state.value.searchResults
+                state.searchResults
             )
         }
     }
@@ -151,50 +146,45 @@ class SearchViewModelTest : BaseTest() {
             every { ftsRepository.searchPlaylists(any()) } returns flowOf(listOf(Fixtures.playlistApple))
 
             with(generateViewModel()) {
-                advanceUntilIdle()
+                delay(SearchViewModel.DEBOUNCE_TIME + 1)
                 assertEquals(
                     listOf(Fixtures.trackArgentina.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
 
-                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ARTISTS))
-                assertEquals(SearchMode.ARTISTS, state.value.selectedOption)
-                advanceUntilIdle()
+                handleWithDelay(SearchUserAction.SearchModeChanged(newMode = SearchMode.ARTISTS))
+                assertEquals(SearchMode.ARTISTS, state.selectedOption)
                 assertEquals(
                     listOf(Fixtures.artistAna.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
 
-                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.ALBUMS))
-                assertEquals(SearchMode.ALBUMS, state.value.selectedOption)
-                advanceUntilIdle()
+                handleWithDelay(SearchUserAction.SearchModeChanged(newMode = SearchMode.ALBUMS))
+                assertEquals(SearchMode.ALBUMS, state.selectedOption)
                 assertEquals(
                     listOf(Fixtures.albumAlpaca.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
 
-                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.GENRES))
-                assertEquals(SearchMode.GENRES, state.value.selectedOption)
-                advanceUntilIdle()
+                handleWithDelay(SearchUserAction.SearchModeChanged(newMode = SearchMode.GENRES))
+                assertEquals(SearchMode.GENRES, state.selectedOption)
                 assertEquals(
                     listOf(Fixtures.genreAlpha.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
 
-                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.PLAYLISTS))
-                assertEquals(SearchMode.PLAYLISTS, state.value.selectedOption)
-                advanceUntilIdle()
+                handleWithDelay(SearchUserAction.SearchModeChanged(newMode = SearchMode.PLAYLISTS))
+                assertEquals(SearchMode.PLAYLISTS, state.selectedOption)
                 assertEquals(
                     listOf(Fixtures.playlistApple.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
 
-                handle(SearchUserAction.SearchModeChanged(newMode = SearchMode.SONGS))
-                assertEquals(SearchMode.SONGS, state.value.selectedOption)
-                advanceUntilIdle()
+                handleWithDelay(SearchUserAction.SearchModeChanged(newMode = SearchMode.SONGS))
+                assertEquals(SearchMode.SONGS, state.selectedOption)
                 assertEquals(
                     listOf(Fixtures.trackArgentina.toModelListItemState()),
-                    state.value.searchResults
+                    state.searchResults
                 )
             }
         }
@@ -208,11 +198,9 @@ class SearchViewModelTest : BaseTest() {
             every { playbackManager.playSingleTrack(0) } returns result
             with(generateViewModel()) {
                 handle(SearchUserAction.SearchResultClicked(id = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Success
-                advanceUntilIdle()
-                assertNull(state.value.playbackResult)
+                assertNull(state.playbackResult)
                 assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
@@ -228,11 +216,9 @@ class SearchViewModelTest : BaseTest() {
             every { playbackManager.playSingleTrack(0) } returns result
             with(generateViewModel()) {
                 handle(SearchUserAction.SearchResultClicked(id = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Error(0)
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Error(0), state.value.playbackResult)
+                assertEquals(PlaybackResult.Error(0), state.playbackResult)
                 assertEquals(listOf(), navEvents.value)
             }
         }
@@ -419,7 +405,7 @@ class SearchViewModelTest : BaseTest() {
     fun `DismissPlaybackErrorDialog resets playback status state`() {
         with(generateViewModel(playbackResult = PlaybackResult.Error(0))) {
             handle(SearchUserAction.DismissPlaybackErrorDialog)
-            assertNull(state.value.playbackResult)
+            assertNull(state.playbackResult)
         }
     }
 

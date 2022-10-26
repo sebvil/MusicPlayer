@@ -10,7 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.flow.update
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -25,7 +25,9 @@ class MusicPlayerViewModelTest : BaseTest() {
                 artists = C.ARTIST_ANA,
                 trackDurationMs = TRACK_DURATION,
                 artworkUri = C.IMAGE_URI_1
-            ), currentPlayTimeMs = 0, isPlaying = false
+            ),
+            currentPlayTimeMs = 0,
+            isPlaying = false
         )
     )
 
@@ -38,6 +40,7 @@ class MusicPlayerViewModelTest : BaseTest() {
     }
 
     private fun generateViewModel(isPlaying: Boolean = false): MusicPlayerViewModel {
+        playbackState.update { it.copy(isPlaying = isPlaying) }
         return MusicPlayerViewModel(
             playbackManager = playbackManager,
             initialState = MusicPlayerState(
@@ -55,7 +58,6 @@ class MusicPlayerViewModelTest : BaseTest() {
     fun `init sets initial state and listens to change in playback state`() =
         testScope.runReliableTest {
             with(generateViewModel()) {
-                advanceUntilIdle()
                 assertEquals(
                     MusicPlayerState(
                         trackName = C.TRACK_ARGENTINA,
@@ -65,10 +67,9 @@ class MusicPlayerViewModelTest : BaseTest() {
                         isPlaying = false,
                         currentPlaybackTimeMs = 0,
                     ),
-                    state.value
+                    state
                 )
                 playbackState.value = playbackState.value.copy(isPlaying = true)
-                advanceUntilIdle()
                 assertEquals(
                     MusicPlayerState(
                         trackName = C.TRACK_ARGENTINA,
@@ -78,7 +79,7 @@ class MusicPlayerViewModelTest : BaseTest() {
                         isPlaying = true,
                         currentPlaybackTimeMs = 0,
                     ),
-                    state.value
+                    state
                 )
             }
         }
@@ -120,7 +121,6 @@ class MusicPlayerViewModelTest : BaseTest() {
     @Test
     fun `onProgressTapped triggers seekToTrackPosition call`() = testScope.runReliableTest {
         with(generateViewModel()) {
-            advanceUntilIdle()
             handle(MusicPlayerUserAction.ProgressBarClicked(50))
             verify { playbackManager.seekToTrackPosition(TRACK_DURATION / 2) }
         }

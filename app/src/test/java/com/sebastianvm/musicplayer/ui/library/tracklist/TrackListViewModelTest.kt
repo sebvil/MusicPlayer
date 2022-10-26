@@ -12,9 +12,12 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.every
@@ -23,8 +26,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertNull
@@ -101,13 +104,11 @@ class TrackListViewModelTest : BaseTest() {
             )
 
             with(generateViewModel()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.trackList)
-                assertNull(state.value.trackListName)
-                assertNull(state.value.headerImage)
+                assertEquals(modelListItemStatesAscending, state.trackList)
+                assertNull(state.trackListName)
+                assertNull(state.headerImage)
                 tracksFlow.value = modelListItemStatesDescending
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
 
@@ -123,13 +124,11 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModel()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
-                advanceUntilIdle()
                 assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
-                    state.value.playbackResult
+                    state.playbackResult
                 )
             }
         }
@@ -146,11 +145,9 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModel()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Success
-                advanceUntilIdle()
-                assertNull(state.value.playbackResult)
+                assertNull(state.playbackResult)
                 assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
@@ -173,6 +170,26 @@ class TrackListViewModelTest : BaseTest() {
                                     mediaId = 0,
                                     mediaGroupType = MediaGroupType.ALL_TRACKS
                                 )
+                            )
+                        )
+                    )
+                ),
+                navEvents.value
+            )
+        }
+    }
+
+    @Test
+    fun `SortByButtonClicked navigates to sort menu for all tracks`() {
+        with(generateViewModel()) {
+            handle(TrackListUserAction.SortByButtonClicked)
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = SortableListType.Tracks(trackListType = TrackListType.ALL_TRACKS),
+                                mediaId = 0
                             )
                         )
                     )
@@ -207,13 +224,11 @@ class TrackListViewModelTest : BaseTest() {
                 )
             )
             with(generateViewModelForGenre()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.trackList)
-                assertEquals(C.GENRE_ALPHA, state.value.trackListName)
-                assertNull(state.value.headerImage)
+                assertEquals(modelListItemStatesAscending, state.trackList)
+                assertEquals(C.GENRE_ALPHA, state.trackListName)
+                assertNull(state.headerImage)
                 tracksFlow.value = modelListItemStatesDescending
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
 
@@ -221,7 +236,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for genre triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -233,13 +249,11 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForGenre()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
-                advanceUntilIdle()
                 assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
-                    state.value.playbackResult
+                    state.playbackResult
                 )
             }
         }
@@ -247,7 +261,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for genre triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -259,11 +274,9 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForGenre()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Success
-                advanceUntilIdle()
-                assertNull(state.value.playbackResult)
+                assertNull(state.playbackResult)
                 assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
@@ -275,7 +288,12 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for genre`() {
         with(generateViewModelForGenre()) {
-            handle(TrackListUserAction.TrackOverflowMenuIconClicked(trackIndex = 0, trackId = 0))
+            handle(
+                TrackListUserAction.TrackOverflowMenuIconClicked(
+                    trackIndex = 0,
+                    trackId = 0
+                )
+            )
             kotlin.test.assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
@@ -296,8 +314,27 @@ class TrackListViewModelTest : BaseTest() {
         }
     }
 
-    // END SECTION GENRE
+    @Test
+    fun `SortByButtonClicked navigates to sort menu for genre`() {
+        with(generateViewModelForGenre()) {
+            handle(TrackListUserAction.SortByButtonClicked)
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = SortableListType.Tracks(trackListType = TrackListType.GENRE),
+                                mediaId = 1
+                            )
+                        )
+                    )
+                ),
+                navEvents.value
+            )
+        }
+    }
 
+    // END SECTION GENRE
 
     // BEGIN SECTION PLAYLIST
 
@@ -324,13 +361,11 @@ class TrackListViewModelTest : BaseTest() {
             )
 
             with(generateViewModelForPlaylist()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.trackList)
-                assertEquals(C.PLAYLIST_APPLE, state.value.trackListName)
-                assertNull(state.value.headerImage)
+                assertEquals(modelListItemStatesAscending, state.trackList)
+                assertEquals(C.PLAYLIST_APPLE, state.trackListName)
+                assertNull(state.headerImage)
                 tracksFlow.value = modelListItemStatesDescending
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
 
@@ -338,7 +373,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for playlist triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -350,13 +386,11 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForPlaylist()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
-                advanceUntilIdle()
                 assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
-                    state.value.playbackResult
+                    state.playbackResult
                 )
             }
         }
@@ -364,7 +398,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for playlist triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -376,11 +411,9 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForPlaylist()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Success
-                advanceUntilIdle()
-                assertNull(state.value.playbackResult)
+                assertNull(state.playbackResult)
                 assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
@@ -392,7 +425,12 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for playlist`() {
         with(generateViewModelForPlaylist()) {
-            handle(TrackListUserAction.TrackOverflowMenuIconClicked(trackIndex = 0, trackId = 0))
+            handle(
+                TrackListUserAction.TrackOverflowMenuIconClicked(
+                    trackIndex = 0,
+                    trackId = 0
+                )
+            )
             kotlin.test.assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
@@ -404,6 +442,26 @@ class TrackListViewModelTest : BaseTest() {
                                     mediaId = C.ID_ONE,
                                     mediaGroupType = MediaGroupType.PLAYLIST
                                 )
+                            )
+                        )
+                    )
+                ),
+                navEvents.value
+            )
+        }
+    }
+
+    @Test
+    fun `SortByButtonClicked navigates to sort menu for playlist`() {
+        with(generateViewModelForPlaylist()) {
+            handle(TrackListUserAction.SortByButtonClicked)
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.SortMenu(
+                            SortMenuArguments(
+                                listType = SortableListType.Playlist,
+                                mediaId = 1
                             )
                         )
                     )
@@ -447,13 +505,11 @@ class TrackListViewModelTest : BaseTest() {
                 )
             )
             with(generateViewModelForAlbum()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.trackList)
-                assertEquals(C.ALBUM_ALPACA, state.value.trackListName)
-                assertEquals(mediaArtState, state.value.headerImage)
+                assertEquals(modelListItemStatesAscending, state.trackList)
+                assertEquals(C.ALBUM_ALPACA, state.trackListName)
+                assertEquals(mediaArtState, state.headerImage)
                 tracksFlow.value = modelListItemStatesDescending
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.trackList)
+                assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
 
@@ -461,7 +517,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for album triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -473,13 +530,11 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForAlbum()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Error(errorMessage = 0)
-                advanceUntilIdle()
                 assertEquals(
                     PlaybackResult.Error(errorMessage = 0),
-                    state.value.playbackResult
+                    state.playbackResult
                 )
             }
         }
@@ -487,7 +542,8 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackClicked for album triggers playback and on success navigates to player`() =
         testScope.runReliableTest {
-            val result: MutableStateFlow<PlaybackResult> = MutableStateFlow(PlaybackResult.Loading)
+            val result: MutableStateFlow<PlaybackResult> =
+                MutableStateFlow(PlaybackResult.Loading)
             every {
                 playbackManager.playMedia(
                     initialTrackIndex = 0,
@@ -499,11 +555,9 @@ class TrackListViewModelTest : BaseTest() {
             } returns result
             with(generateViewModelForAlbum()) {
                 handle(TrackListUserAction.TrackClicked(trackIndex = 0))
-                advanceUntilIdle()
-                assertEquals(PlaybackResult.Loading, state.value.playbackResult)
+                assertEquals(PlaybackResult.Loading, state.playbackResult)
                 result.value = PlaybackResult.Success
-                advanceUntilIdle()
-                assertNull(state.value.playbackResult)
+                assertNull(state.playbackResult)
                 assertEquals(
                     listOf(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer)),
                     navEvents.value
@@ -515,7 +569,12 @@ class TrackListViewModelTest : BaseTest() {
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for album`() {
         with(generateViewModelForAlbum()) {
-            handle(TrackListUserAction.TrackOverflowMenuIconClicked(trackIndex = 0, trackId = 0))
+            handle(
+                TrackListUserAction.TrackOverflowMenuIconClicked(
+                    trackIndex = 0,
+                    trackId = 0
+                )
+            )
             kotlin.test.assertEquals(
                 listOf(
                     NavEvent.NavigateToScreen(
@@ -536,12 +595,47 @@ class TrackListViewModelTest : BaseTest() {
         }
     }
 
+    @Test
+    fun `SortByButtonClicked throws error for album`() {
+        with(generateViewModelForAlbum()) {
+            assertThrows(IllegalStateException::class.java) {
+                handle(TrackListUserAction.SortByButtonClicked)
+            }
+        }
+    }
+
+
     // END SECTION ALBUM
     @Test
     fun `DismissPlaybackErrorDialog resets playback status state`() {
         with(generateViewModel(playbackResult = PlaybackResult.Error(0))) {
             handle(TrackListUserAction.DismissPlaybackErrorDialog)
-            assertNull(state.value.playbackResult)
+            assertNull(state.playbackResult)
+        }
+    }
+
+    @Test
+    fun `UpButtonClicked navigates up`() {
+        with(generateViewModel()) {
+            handle(TrackListUserAction.UpButtonClicked)
+            assertEquals(listOf(NavEvent.NavigateUp), navEvents.value)
+        }
+    }
+
+    @Test
+    fun `AddTracksClicked navigates to TrackSearch screen`() {
+        with(generateViewModel()) {
+            handle(TrackListUserAction.AddTracksClicked)
+            assertEquals(
+                listOf(
+                    NavEvent.NavigateToScreen(
+                        NavigationDestination.TrackSearch(
+                            TrackSearchArguments(0)
+                        )
+                    )
+                ),
+                navEvents.value
+            )
         }
     }
 }

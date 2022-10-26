@@ -16,7 +16,6 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -49,13 +48,12 @@ class ArtistViewModelTest : BaseTest() {
     @Test
     fun `init sets initial state`() = testScope.runReliableTest {
         with(generateViewModel()) {
-            advanceUntilIdle()
             assertEquals(
                 listOf(
                     ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
                     ArtistScreenItem.AlbumRowItem(Fixtures.albumAlpaca.toModelListItemState())
                 ),
-                state.value.albumsForArtistItems
+                state.albumsForArtistItems
             )
             assertEquals(
                 listOf(
@@ -63,7 +61,7 @@ class ArtistViewModelTest : BaseTest() {
                     ArtistScreenItem.AlbumRowItem(Fixtures.albumCheetah.toModelListItemState()),
                     ArtistScreenItem.AlbumRowItem(Fixtures.albumBobcat.toModelListItemState())
                 ),
-                state.value.appearsOnForArtistItems
+                state.appearsOnForArtistItems
             )
 
         }

@@ -19,9 +19,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,14 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
-import com.sebastianvm.musicplayer.ui.components.PermissionDialogState
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
-import com.sebastianvm.musicplayer.ui.components.PermissionHandlerState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
@@ -60,96 +52,39 @@ fun LibraryScreen(viewModel: LibraryViewModel, navigationDelegate: NavigationDel
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+
 @Composable
 fun LibraryScreen(
     state: LibraryState,
-    screenDelegate: ScreenDelegate<LibraryUserAction>
+    screenDelegate: ScreenDelegate<LibraryUserAction>,
 ) {
     val context = LocalContext.current
-    val showPermissionDeniedDialog = remember {
-        mutableStateOf(false)
-    }
-
-    val storagePermissionState = rememberPermissionState(
-        permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
-        onPermissionResult = { isGranted ->
-            if (isGranted) {
-                startForegroundService(
-                    context,
-                    Intent(context, LibraryScanService::class.java)
-                )
-                showPermissionDeniedDialog.value = false
-            } else {
-                showPermissionDeniedDialog.value = true
-            }
-        })
-
-    val permissionHandlerState = remember {
-        derivedStateOf {
-            PermissionHandlerState(
-                permissionState = storagePermissionState,
-                showPermissionDeniedDialog = showPermissionDeniedDialog.value,
-                permissionDeniedDialogState = PermissionDialogState(
-                    title = R.string.storage_permission_needed,
-                    text = R.string.grant_storage_permissions,
-                    confirmButtonText = R.string.go_to_settings
-                ),
-                permissionExplanationDialogState = PermissionDialogState(
-                    title = R.string.storage_permission_needed,
-                    text = R.string.grant_storage_permissions,
-                    confirmButtonText = R.string.continue_string
-                )
-            )
-        }
-    }
-
-    PermissionHandler(
-        state = permissionHandlerState.value,
-        onPermissionDeniedDialogDismissed = {
-            showPermissionDeniedDialog.value = false
-        })
-
-    LibraryScreenLayout(state = state, screenDelegate = screenDelegate, onFabClicked = {
-        when (val status = storagePermissionState.status) {
-            is PermissionStatus.Granted -> {
-                startForegroundService(
-                    context,
-                    Intent(context, LibraryScanService::class.java)
-                )
-            }
-
-            is PermissionStatus.Denied -> {
-                if (status.shouldShowRationale) {
-                    showPermissionDeniedDialog.value = true
-                } else {
-                    storagePermissionState.launchPermissionRequest()
-                }
-            }
-        }
-    })
-}
-
-@Composable
-fun LibraryScreenLayout(
-    state: LibraryState,
-    screenDelegate: ScreenDelegate<LibraryUserAction>,
-    onFabClicked: () -> Unit
-) {
     ScreenLayout(fab = {
-        ExtendedFloatingActionButton(
-            text = {
-                Text(
-                    text = stringResource(id = R.string.scan),
+        PermissionHandler(
+            permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
+            dialogTitle = R.string.storage_permission_needed,
+            message = R.string.grant_storage_permissions,
+            onPermissionGranted = {
+                startForegroundService(
+                    context,
+                    Intent(context, LibraryScanService::class.java)
                 )
-            },
-            onClick = onFabClicked,
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_scan),
-                    contentDescription = stringResource(id = R.string.scan)
-                )
-            })
+            }
+        ) { onClick ->
+            ExtendedFloatingActionButton(
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.scan),
+                    )
+                },
+                onClick = onClick,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_scan),
+                        contentDescription = stringResource(id = R.string.scan)
+                    )
+                })
+        }
     }) {
         LibraryLayout(state = state, screenDelegate = screenDelegate)
     }

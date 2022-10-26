@@ -17,7 +17,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -56,11 +55,9 @@ class AlbumListViewModelTest : BaseTest() {
             val albumsFlow = MutableStateFlow(albums)
             every { albumRepository.getAlbums() } returns albumsFlow
             with(generateViewModel()) {
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesAscending, state.value.albumList)
+                assertEquals(modelListItemStatesAscending, state.albumList)
                 albumsFlow.value = albums.reversed()
-                advanceUntilIdle()
-                assertEquals(modelListItemStatesDescending, state.value.albumList)
+                assertEquals(modelListItemStatesDescending, state.albumList)
             }
         }
 
