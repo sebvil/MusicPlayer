@@ -7,6 +7,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,20 +26,21 @@ interface LibraryTopBarDelegate {
 data class LibraryTopBarState(val title: String, val hasSortButton: Boolean = true)
 
 @Composable
-fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate) {
+fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate, titleAlpha: Float = 1f) {
     LibraryTopBar(
         state = LibraryTopBarState(title = title, hasSortButton = true),
-        delegate = delegate
+        delegate = delegate,
+        titleAlpha = titleAlpha
     )
 }
 
 // TODO Need to handle arbitrarily long text
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LibraryTopBar(state: LibraryTopBarState, delegate: LibraryTopBarDelegate) {
+fun LibraryTopBar(state: LibraryTopBarState, delegate: LibraryTopBarDelegate, titleAlpha: Float = 1f) {
     SmallTopAppBar(
         title = {
-            Text(text = state.title)
+            Text(text = state.title, modifier = Modifier.alpha(titleAlpha))
         },
         navigationIcon = {
             IconButton(onClick = { delegate.upButtonClicked() }) {
