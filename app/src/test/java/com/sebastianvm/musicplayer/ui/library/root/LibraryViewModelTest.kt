@@ -34,7 +34,7 @@ class LibraryViewModelTest : BaseTest() {
                     genresItem = LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
                     playlistsItem = LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
                 ),
-                state.libraryItems
+                state
             )
         }
     }
