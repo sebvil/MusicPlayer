@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -72,9 +73,7 @@ object InitialLibraryStateModule {
     )
 }
 
-sealed class LibraryUiEvent : UiEvent {
-    object RequestPermission : LibraryUiEvent()
-}
+sealed class LibraryUiEvent : UiEvent
 
 sealed class LibraryUserAction : UserAction {
     data class RowClicked(val destination: NavigationDestination) : LibraryUserAction()

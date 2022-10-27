@@ -3,10 +3,8 @@ package com.sebastianvm.musicplayer.ui.library.root
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 import kotlin.random.Random
 
 
@@ -43,21 +41,11 @@ class LibraryStatePreviewParamProvider : PreviewParameterProvider<LibraryState> 
         )
 }
 
-@ComponentPreview
-@Composable
-fun SearchBoxPreview() {
-    ThemedPreview {
-        SearchBox()
-    }
-}
 
 @ScreenPreview
 @Composable
 private fun LibraryScreenPreview(@PreviewParameter(LibraryStatePreviewParamProvider::class) state: LibraryState) {
     ScreenPreview {
-        LibraryScreen(
-            state = state,
-            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance(),
-        )
+        LibraryScreen(state = state)
     }
 }

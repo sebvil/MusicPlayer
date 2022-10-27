@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.root
+package com.sebastianvm.musicplayer.ui.library.root.listitem
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
