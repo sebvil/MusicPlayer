@@ -17,8 +17,6 @@
     <string name="playlists">Playlists</string>
     <string name="artist_count">artist_count</string>
     <string name="music_library_values">music_library_values</string>
-    <string name="track_count">track_count</string>
-    <string name="album_count">album_count</string>
     <string name="previous_song_button">previous song</string>
     <string name="next_song_button">next song</string>
     <string name="play_button">Play</string>

@@ -55,7 +55,6 @@ android {
         unitTests {
             includeAndroidResources = true
         }
-
     }
 
     composeOptions {
@@ -157,5 +156,9 @@ dependencies {
     testImplementation "io.mockk:mockk:$mockk_version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
+    androidTestImplementation 'androidx.test:core:1.5.0-beta01'
 
 }
