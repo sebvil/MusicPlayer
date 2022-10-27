@@ -3,125 +3,130 @@ package com.sebastianvm.musicplayer.ui.library.root
 import android.Manifest
 import android.content.Intent
 import android.os.Build
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
+import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun LibraryScreen(viewModel: LibraryViewModel, navigationDelegate: NavigationDelegate) {
-    Screen(
-        screenViewModel = viewModel,
-        eventHandler = {},
-        navigationDelegate = navigationDelegate
-    ) { state, delegate ->
-        LibraryScreen(
-            state = state,
-            screenDelegate = delegate
-        )
-    }
+fun LibraryRoute(
+    viewModel: LibraryViewModel,
+    navigateToSearchScreen: () -> Unit,
+    navigateToAllTracksList: () -> Unit,
+    navigateToArtistList: () -> Unit,
+    navigateToAlbumList: () -> Unit,
+    navigateToGenreList: () -> Unit,
+    navigateToPlaylistList: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    LibraryScreen(
+        state = state,
+        navigateToSearchScreen = navigateToSearchScreen,
+        navigateToAllTracksList = navigateToAllTracksList,
+        navigateToArtistList = navigateToArtistList,
+        navigateToAlbumList = navigateToAlbumList,
+        navigateToGenreList = navigateToGenreList,
+        navigateToPlaylistList = navigateToPlaylistList,
+        modifier = modifier
+    )
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     state: LibraryState,
-    screenDelegate: ScreenDelegate<LibraryUserAction>,
+    modifier: Modifier = Modifier,
+    navigateToSearchScreen: () -> Unit,
+    navigateToAllTracksList: () -> Unit,
+    navigateToArtistList: () -> Unit,
+    navigateToAlbumList: () -> Unit,
+    navigateToGenreList: () -> Unit,
+    navigateToPlaylistList: () -> Unit,
 ) {
     val context = LocalContext.current
-    ScreenLayout(fab = {
-        PermissionHandler(
-            permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
-            dialogTitle = R.string.storage_permission_needed,
-            message = R.string.grant_storage_permissions,
-            onPermissionGranted = {
-                startForegroundService(
-                    context,
-                    Intent(context, LibraryScanService::class.java)
-                )
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            PermissionHandler(
+                permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
+                dialogTitle = R.string.storage_permission_needed,
+                message = R.string.grant_storage_permissions,
+                onPermissionGranted = {
+                    startForegroundService(
+                        context,
+                        Intent(context, LibraryScanService::class.java)
+                    )
+                }
+            ) { onClick ->
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(
+                            text = stringResource(id = R.string.scan),
+                        )
+                    },
+                    onClick = onClick,
+                    icon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_scan),
+                            contentDescription = stringResource(id = R.string.scan)
+                        )
+                    })
             }
-        ) { onClick ->
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(
-                        text = stringResource(id = R.string.scan),
-                    )
-                },
-                onClick = onClick,
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_scan),
-                        contentDescription = stringResource(id = R.string.scan)
-                    )
-                })
-        }
-    }) {
-        LibraryLayout(state = state, screenDelegate = screenDelegate)
-    }
-}
-
-
-@Composable
-fun SearchBox(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(AppDimensions.spacing.small)
-            )
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = stringResource(id = R.string.search),
-            modifier = Modifier.padding(all = AppDimensions.spacing.small),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        }) { paddingValues ->
+        LibraryLayout(
+            state = state,
+            onSearchBoxClicked = navigateToSearchScreen,
+            onTracksItemClicked = navigateToAllTracksList,
+            onArtistsItemClicked = navigateToArtistList,
+            onAlbumsItemClicked = navigateToAlbumList,
+            onGenresItemClicked = navigateToGenreList,
+            onPlaylistsItemClicked = navigateToPlaylistList,
+            modifier = modifier.padding(paddingValues)
         )
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun LibraryLayout(state: LibraryState, screenDelegate: ScreenDelegate<LibraryUserAction>) {
-    val libraryItems = state.libraryItems
 
-    LazyColumn {
+@Composable
+fun LibraryLayout(
+    state: LibraryState,
+    onSearchBoxClicked: () -> Unit,
+    onTracksItemClicked: () -> Unit,
+    onArtistsItemClicked: () -> Unit,
+    onAlbumsItemClicked: () -> Unit,
+    onGenresItemClicked: () -> Unit,
+    onPlaylistsItemClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
         item {
             SearchBox(modifier = Modifier
                 .padding(all = AppDimensions.spacing.medium)
-                .clickable {
-                    screenDelegate.handle(LibraryUserAction.SearchBoxClicked)
-                })
+                .clickable { onSearchBoxClicked() })
         }
         item {
             Text(
@@ -133,42 +138,10 @@ fun LibraryLayout(state: LibraryState, screenDelegate: ScreenDelegate<LibraryUse
                 )
             )
         }
-        items(libraryItems) { item ->
-            ListItem(
-                headlineText = {
-                    Text(
-                        text = stringResource(id = item.rowName),
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-
-                modifier = Modifier.clickable {
-                    screenDelegate.handle(LibraryUserAction.RowClicked(item.destination))
-                },
-                leadingContent =
-                {
-                    Icon(
-                        painter = painterResource(id = item.icon),
-                        contentDescription = stringResource(id = item.rowName),
-                        modifier = Modifier.size(40.dp),
-                    )
-                },
-                trailingContent = {
-                    Text(
-                        text = pluralStringResource(
-                            id = item.countString,
-                            count = item.count,
-                            item.count
-                        ),
-                        modifier = Modifier.padding(horizontal = AppDimensions.spacing.medium),
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-            )
-        }
+        item { LibraryListItem(item = state.tracksItem, onItemClicked = onTracksItemClicked) }
+        item { LibraryListItem(item = state.artistsItem, onItemClicked = onArtistsItemClicked) }
+        item { LibraryListItem(item = state.albumsItem, onItemClicked = onAlbumsItemClicked) }
+        item { LibraryListItem(item = state.genresItem, onItemClicked = onGenresItemClicked) }
+        item { LibraryListItem(item = state.playlistsItem, onItemClicked = onPlaylistsItemClicked) }
     }
 }

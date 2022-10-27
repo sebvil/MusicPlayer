@@ -10,6 +10,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 class NavigationDelegateForPreviews : NavigationDelegate {
     override fun handleNavEvent(navEvent: NavEvent) = Unit
 
+    override fun navigateToScreen(destination: NavigationDestination) = Unit
+
     @Composable
     override fun isRouteInGraphAsState(navigationRoute: NavigationRoute): State<Boolean> {
         return remember {

@@ -1,69 +1,72 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
+import com.sebastianvm.musicplayer.repository.music.CountHolder
 import com.sebastianvm.musicplayer.repository.music.FakeMusicRepository
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
+import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import com.sebastianvm.musicplayer.util.BaseTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LibraryViewModelTest : BaseTest() {
 
+    private val countHolderFlow = MutableStateFlow(
+        CountHolder(
+            tracks = 0,
+            artists = 0,
+            albums = 0,
+            genres = 0,
+            playlists = 0
+        )
+    )
+
     private fun generateViewModel(): LibraryViewModel {
         return LibraryViewModel(
             initialState = LibraryState(
-                libraryItems = listOf(
-                    LibraryItem.Tracks(count = 0),
-                    LibraryItem.Artists(count = 0),
-                    LibraryItem.Albums(count = 0),
-                    LibraryItem.Genres(count = 0),
-                    LibraryItem.Playlists(count = 0)
-                ),
+                tracksItem = LibraryItem.Tracks(count = 0),
+                artistsItem = LibraryItem.Artists(count = 0),
+                albumsItem = LibraryItem.Albums(count = 0),
+                genresItem = LibraryItem.Genres(count = 0),
+                playlistsItem = LibraryItem.Playlists(count = 0)
             ),
-            musicRepository = FakeMusicRepository(),
+            musicRepository = FakeMusicRepository(countHolderFlow),
         )
     }
 
     @Test
-    fun `init updates counts`() = testScope.runReliableTest {
+    fun `init subscribes to count updates`() = testScope.runReliableTest {
         with(generateViewModel()) {
             assertEquals(
-                listOf(
-                    LibraryItem.Tracks(count = FakeMusicRepository.FAKE_TRACK_COUNTS),
-                    LibraryItem.Artists(count = FakeMusicRepository.FAKE_ARTIST_COUNTS),
-                    LibraryItem.Albums(count = FakeMusicRepository.FAKE_ALBUM_COUNTS),
-                    LibraryItem.Genres(count = FakeMusicRepository.FAKE_GENRE_COUNTS),
-                    LibraryItem.Playlists(count = FakeMusicRepository.FAKE_PLAYLIST_COUNTS)
+                LibraryState(
+                    tracksItem = LibraryItem.Tracks(count = 0),
+                    artistsItem = LibraryItem.Artists(count = 0),
+                    albumsItem = LibraryItem.Albums(count = 0),
+                    genresItem = LibraryItem.Genres(count = 0),
+                    playlistsItem = LibraryItem.Playlists(count = 0)
                 ),
-                state.libraryItems
+                state
             )
-        }
-    }
+            countHolderFlow.value = CountHolder(
+                tracks = 5,
+                artists = 4,
+                albums = 3,
+                genres = 2,
+                playlists = 1
+            )
 
-
-    @Test
-    fun `RowClicked adds NavigateToScreen event`() {
-        with(generateViewModel()) {
-            handle(LibraryUserAction.RowClicked(NavigationDestination.GenresRoot))
             assertEquals(
-                navEvents.value.first(),
-                NavEvent.NavigateToScreen(NavigationDestination.GenresRoot)
+                LibraryState(
+                    tracksItem = LibraryItem.Tracks(count = 5),
+                    artistsItem = LibraryItem.Artists(count = 4),
+                    albumsItem = LibraryItem.Albums(count = 3),
+                    genresItem = LibraryItem.Genres(count = 2),
+                    playlistsItem = LibraryItem.Playlists(count = 1)
+                ),
+                state
             )
         }
     }
-
-    @Test
-    fun `SearchBoxClicked navigates to search screen`() {
-        with(generateViewModel()) {
-            handle(LibraryUserAction.SearchBoxClicked)
-            assertEquals(
-                navEvents.value.first(),
-                NavEvent.NavigateToScreen(NavigationDestination.Search)
-            )
-        }
-    }
-
 
 }

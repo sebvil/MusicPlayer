@@ -8,6 +8,7 @@ interface NavigationDelegate {
 
     fun handleNavEvent(navEvent: NavEvent)
 
+    fun navigateToScreen(destination: NavigationDestination)
     @Composable
     fun isRouteInGraphAsState(navigationRoute: NavigationRoute): State<Boolean>
 

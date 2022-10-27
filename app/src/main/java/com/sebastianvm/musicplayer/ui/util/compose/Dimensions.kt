@@ -6,6 +6,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+// TODO refactor dimensions throughout the app
 data class Spacing(
     val xxSmall: Dp = 2.dp,
     val xSmall: Dp = 4.dp,
