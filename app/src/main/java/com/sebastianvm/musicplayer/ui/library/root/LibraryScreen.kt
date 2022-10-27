@@ -6,9 +6,11 @@ import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,8 +28,6 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.util.NoOp
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -55,21 +55,22 @@ fun LibraryRoute(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     state: LibraryState,
     modifier: Modifier = Modifier,
-    navigateToSearchScreen: () -> Unit = NoOp,
-    navigateToAllTracksList: () -> Unit = NoOp,
-    navigateToArtistList: () -> Unit = NoOp,
-    navigateToAlbumList: () -> Unit = NoOp,
-    navigateToGenreList: () -> Unit = NoOp,
-    navigateToPlaylistList: () -> Unit = NoOp,
+    navigateToSearchScreen: () -> Unit,
+    navigateToAllTracksList: () -> Unit,
+    navigateToArtistList: () -> Unit,
+    navigateToAlbumList: () -> Unit,
+    navigateToGenreList: () -> Unit,
+    navigateToPlaylistList: () -> Unit,
 ) {
     val context = LocalContext.current
-    ScreenLayout(
+    Scaffold(
         modifier = modifier,
-        fab = {
+        floatingActionButton = {
             PermissionHandler(
                 permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
                 dialogTitle = R.string.storage_permission_needed,
@@ -95,7 +96,7 @@ fun LibraryScreen(
                         )
                     })
             }
-        }) {
+        }) { paddingValues ->
         LibraryLayout(
             state = state,
             onSearchBoxClicked = navigateToSearchScreen,
@@ -103,7 +104,8 @@ fun LibraryScreen(
             onArtistsItemClicked = navigateToArtistList,
             onAlbumsItemClicked = navigateToAlbumList,
             onGenresItemClicked = navigateToGenreList,
-            onPlaylistsItemClicked = navigateToPlaylistList
+            onPlaylistsItemClicked = navigateToPlaylistList,
+            modifier = modifier.padding(paddingValues)
         )
     }
 }
@@ -118,8 +120,9 @@ fun LibraryLayout(
     onAlbumsItemClicked: () -> Unit,
     onGenresItemClicked: () -> Unit,
     onPlaylistsItemClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         item {
             SearchBox(modifier = Modifier
                 .padding(all = AppDimensions.spacing.medium)

@@ -40,6 +40,14 @@ class LibraryStatePreviewParamProvider : PreviewParameterProvider<LibraryState> 
 @Composable
 private fun LibraryScreenPreview(@PreviewParameter(LibraryStatePreviewParamProvider::class) state: LibraryState) {
     ScreenPreview {
-        LibraryScreen(state = state)
+        LibraryScreen(
+            state = state,
+            navigateToSearchScreen = {},
+            navigateToAllTracksList = {},
+            navigateToArtistList = {},
+            navigateToAlbumList = {},
+            navigateToGenreList = {},
+            navigateToPlaylistList = {},
+        )
     }
 }
