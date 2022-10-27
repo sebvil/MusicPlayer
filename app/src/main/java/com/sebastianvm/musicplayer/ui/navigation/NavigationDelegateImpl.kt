@@ -29,7 +29,7 @@ class NavigationDelegateImpl(private val navController: NavController) : Navigat
         }
     }
 
-    private fun navigateToScreen(destination: NavigationDestination) {
+    override fun navigateToScreen(destination: NavigationDestination) {
         if (!destination.isBottomNavDestination) {
             navController.navigateTo(destination)
         } else {
