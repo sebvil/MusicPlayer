@@ -1,13 +1,17 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
+import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
 import com.sebastianvm.commons.R
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import org.junit.Assert.assertTrue
@@ -57,20 +61,7 @@ class LibraryScreenTest {
         composeTestRule.setContent {
             TestLibraryScreen(state = newLibraryState())
         }
-        composeTestRule.onNodeWithContentDescription(searchText).assertIsDisplayed()
-        composeTestRule.onNodeWithText(libraryText).assertIsDisplayed()
-        composeTestRule.onNodeWithText(scanText).assertIsDisplayed()
-
-        composeTestRule.onNode(hasText(allSongsText) and hasText(allSongsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(artistsText) and hasText(artistsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(albumsText) and hasText(albumsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(genresText) and hasText(genresCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(playlistsText) and hasText(playlistsCountText))
-            .assertIsDisplayed()
+        assertScreenContent()
     }
 
     @Test
@@ -86,21 +77,22 @@ class LibraryScreenTest {
                 )
             )
         }
-        composeTestRule.onNodeWithContentDescription(searchText).assertIsDisplayed()
-        composeTestRule.onNodeWithText(libraryText).assertIsDisplayed()
-        composeTestRule.onNodeWithText(scanText).assertIsDisplayed()
-
-        composeTestRule.onNode(hasText(allSongsText) and hasText(allSongsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(artistsText) and hasText(artistsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(albumsText) and hasText(albumsCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(genresText) and hasText(genresCountText))
-            .assertIsDisplayed()
-        composeTestRule.onNode(hasText(playlistsText) and hasText(playlistsCountText))
-            .assertIsDisplayed()
+        assertScreenContent()
     }
+
+    @Test
+    fun fab_onScrollDown_isHidden() {
+        composeTestRule.activity.apply {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+        composeTestRule.setContent {
+            TestLibraryScreen(state = newLibraryState())
+        }
+
+        composeTestRule.onNode(hasScrollAction()).performTouchInput { swipeUp() }
+        composeTestRule.onNodeWithText(scanText, useUnmergedTree = true).assertDoesNotExist()
+    }
+
 
     @Test
     fun trackItemClicked_navigatesToTrackList() {
@@ -162,6 +154,23 @@ class LibraryScreenTest {
         assertTrue(didNavigate)
     }
 
+    private fun assertScreenContent() {
+        composeTestRule.onNodeWithContentDescription(searchText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(libraryText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(scanText, useUnmergedTree = true).assertIsDisplayed()
+
+        composeTestRule.onNode(hasText(allSongsText) and hasText(allSongsCountText))
+            .assertIsDisplayed()
+        composeTestRule.onNode(hasText(artistsText) and hasText(artistsCountText))
+            .assertIsDisplayed()
+        composeTestRule.onNode(hasText(albumsText) and hasText(albumsCountText))
+            .assertIsDisplayed()
+        composeTestRule.onNode(hasText(genresText) and hasText(genresCountText))
+            .assertIsDisplayed()
+        composeTestRule.onNode(hasText(playlistsText) and hasText(playlistsCountText))
+            .assertIsDisplayed()
+    }
+
     private fun newLibraryState(
         trackCount: Int = 0,
         artistCount: Int = 0,
@@ -217,6 +226,5 @@ class LibraryScreenTest {
             navigateToPlaylistList = navigateToPlaylistList,
         )
     }
-
 
 }

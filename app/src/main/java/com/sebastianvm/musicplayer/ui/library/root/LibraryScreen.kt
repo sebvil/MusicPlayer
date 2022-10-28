@@ -135,7 +135,6 @@ fun LibraryScreen(
                                 contentDescription = stringResource(id = R.string.scan)
                             )
                         },
-                        modifier = Modifier //.alpha(buttonAlphaAnimated)
                     )
                 }
             }
@@ -148,7 +147,7 @@ fun LibraryScreen(
             onAlbumsItemClicked = navigateToAlbumList,
             onGenresItemClicked = navigateToGenreList,
             onPlaylistsItemClicked = navigateToPlaylistList,
-            modifier = modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues)
         )
     }
 }
