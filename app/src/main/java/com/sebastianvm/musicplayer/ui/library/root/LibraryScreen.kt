@@ -3,6 +3,11 @@ package com.sebastianvm.musicplayer.ui.library.root
 import android.Manifest
 import android.content.Intent
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +19,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +40,7 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -55,7 +68,7 @@ fun LibraryRoute(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun LibraryScreen(
     state: LibraryState,
@@ -67,34 +80,64 @@ fun LibraryScreen(
     navigateToGenreList: () -> Unit,
     navigateToPlaylistList: () -> Unit,
 ) {
+    var isButtonVisible by remember {
+        mutableStateOf(true)
+    }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                val delta = consumed.y.roundToInt()
+                if (delta == 0) {
+                    return Offset.Zero
+                }
+                isButtonVisible = delta > 0
+
+                return Offset.Zero
+            }
+        }
+    }
+
     val context = LocalContext.current
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(nestedScrollConnection),
         floatingActionButton = {
-            PermissionHandler(
-                permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
-                dialogTitle = R.string.storage_permission_needed,
-                message = R.string.grant_storage_permissions,
-                onPermissionGranted = {
-                    startForegroundService(
-                        context,
-                        Intent(context, LibraryScanService::class.java)
+            AnimatedVisibility(
+                visible = isButtonVisible,
+                enter = scaleIn(animationSpec = tween(durationMillis = 300)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500))
+            ) {
+                PermissionHandler(
+                    permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
+                    dialogTitle = R.string.storage_permission_needed,
+                    message = R.string.grant_storage_permissions,
+                    onPermissionGranted = {
+                        startForegroundService(
+                            context,
+                            Intent(context, LibraryScanService::class.java)
+                        )
+                    }
+                ) { onClick ->
+                    ExtendedFloatingActionButton(
+                        text = {
+                            Text(
+                                text = stringResource(id = R.string.scan),
+                            )
+                        },
+                        onClick = onClick,
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_scan),
+                                contentDescription = stringResource(id = R.string.scan)
+                            )
+                        },
+                        modifier = Modifier //.alpha(buttonAlphaAnimated)
                     )
                 }
-            ) { onClick ->
-                ExtendedFloatingActionButton(
-                    text = {
-                        Text(
-                            text = stringResource(id = R.string.scan),
-                        )
-                    },
-                    onClick = onClick,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_scan),
-                            contentDescription = stringResource(id = R.string.scan)
-                        )
-                    })
             }
         }) { paddingValues ->
         LibraryLayout(
