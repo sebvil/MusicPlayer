@@ -12,7 +12,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import com.sebastianvm.commons.R
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import org.junit.Assert.assertTrue
 import org.junit.Before

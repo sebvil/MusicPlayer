@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import com.sebastianvm.commons.R
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.player.TrackListType

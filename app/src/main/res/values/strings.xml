@@ -1,4 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Music Player</string>
     <string name="add_tracks">Add tracks</string>
+    <string name="artist_or_album_image">Artist or album image</string>
+    <string name="no_artist">No artist</string>
+    <string name="album_art_placeholder">album art placeholder</string>
+    <string name="albums">Albums</string>
+    <string name="singles">Singles</string>
+    <string name="appears_on">Appears On</string>
+    <string name="library">Library</string>
+    <string name="player">Player</string>
+    <string name="queue">Queue</string>
+    <string name="no_queue">No queue</string>
+    <string name="artists">Artists</string>
+    <string name="all_songs">All songs</string>
+    <string name="song">Song</string>
+    <string name="genres">Genres</string>
+    <string name="playlists">Playlists</string>
+    <string name="artist_count">artist_count</string>
+    <string name="music_library_values">music_library_values</string>
+    <string name="previous_song_button">previous song</string>
+    <string name="next_song_button">next song</string>
+    <string name="play_button">Play</string>
+    <string name="play">Play</string>
+    <string name="play_from_beginning">Play from beginning</string>
+    <string name="play_all_songs">Play all songs</string>
+
+    <string name="scan">Scan</string>
+    <string name="stop_scanning">Stop scanning</string>
+    <string name="previous">Previous</string>
+    <!--    Cannot name "continue" as this is reserved by Kotlin-->
+    <string name="continue_string">Continue</string>
+
+    <string name="album_art_for_album">Album art for %1$s</string>
+    <string name="album_art_for_unknown_album">Album art for unknown album</string>
+    <string name="album_art_for_unknown_track">Album art for unknown track</string>
+    <string name="placeholder_album_art">Placeholder album art</string>
+    <string name="placeholder_artist_image">Placeholder artist image</string>
+
+    <string name="storage_permission_needed">Storage Permission Needed</string>
+    <string name="grant_storage_permissions">In order to read your music library, please grant storage permission.</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="go_to_settings">Go to settings </string>
+
+    <string name="new_playlist">New Playlist</string>
+
+    <string name="unknown_album">Unknown album</string>
+    <string name="unknown_artist">Unknown artist</string>
+    <string name="back">Back</string>
+    <string name="sort_by">Sort by</string>
+    <string name="track_name">Track name</string>
+    <string name="custom">Custom</string>
+    <string name="artist_name">Artist name</string>
+    <string name="album_name">Album name</string>
+    <string name="view_artists">View artists</string>
+    <string name="view_album">View album</string>
+    <string name="view_genre">View genre</string>
+    <string name="view_playlist">View playlist</string>
+
+    <string name="year">Year</string>
+    <string name="more">More</string>
+    <string name="track_number">Track number</string>
+    <string name="view_artist">View artist</string>
+    <string name="check_mark">Check mark</string>
+    <string name="songs">Songs</string>
+    <string name="search">Search</string>
+    <string name="up_arrow">Up Arrow</string>
+    <string name="down_arrow">Down arrow</string>
+    <string name="drag">Drag</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="no_queue_available">No queue available</string>
+    <string name="added_to_queue">Added to queue</string>
+    <string name="delete_playlist">Delete playlist</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
+    <string name="error_collection_empty">This collection is empty!</string>
+    <string name="ok">OK</string>
+    <string name="playback_error">Playback error</string>
+    <string name="playlist_without_tracks">No tracks found. Try adding some by pressing \'Add tracks\'</string>
+    <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
+    <string name="hide_tracks_in_playlist">Hide tracks in playlist</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="add_to_playlist_question">Add to playlist?</string>
+    <string name="song_already_in_playlist"><b>%1$s</b> is already in the playlist. Are you sure you want to add it again?"</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_this_playlist">Delete playlist %1$s</string>
+    <string name="sure_you_want_to_delete">"Are you sure you want to delete %1$s?</string>
+
+    <plurals name="number_of_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
+
+    <plurals name="number_of_artists">
+        <item quantity="one">%1$d artist</item>
+        <item quantity="other">%1$d artists</item>
+    </plurals>
+
+    <plurals name="number_of_albums">
+        <item quantity="one">%1$d album</item>
+        <item quantity="other">%1$d albums</item>
+    </plurals>
+
+    <plurals name="number_of_genres">
+        <item quantity="one">%1$d genre</item>
+        <item quantity="other">%1$d genres</item>
+    </plurals>
+
+    <plurals name="number_of_playlists">
+        <item quantity="one">%1$d playlist</item>
+        <item quantity="other">%1$d playlists</item>
+    </plurals>
+
+    <plurals name="number_of_folders">
+        <item quantity="one">%1$d folder</item>
+        <item quantity="other">%1$d folders</item>
+    </plurals>
 </resources>

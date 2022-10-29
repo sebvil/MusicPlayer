@@ -91,8 +91,8 @@ fun AlbumListLayout(
                         },
                     ) {
                         Icon(
-                            painter = painterResource(id = com.sebastianvm.commons.R.drawable.ic_overflow),
-                            contentDescription = stringResource(id = com.sebastianvm.commons.R.string.more)
+                            painter = painterResource(id = R.drawable.ic_overflow),
+                            contentDescription = stringResource(id = R.string.more)
                         )
                     }
                 }

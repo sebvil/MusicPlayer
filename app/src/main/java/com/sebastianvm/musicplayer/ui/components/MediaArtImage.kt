@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import com.sebastianvm.commons.R
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
