@@ -27,7 +27,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
@@ -50,8 +49,7 @@ fun TrackSearchScreen(
                 is TrackSearchUiEvent.ShowConfirmationToast -> {
                     Toast.makeText(
                         context,
-                        ResUtil.getString(
-                            context,
+                        context.getString(
                             R.string.track_added_to_playlist,
                             event.trackName
                         ),

@@ -13,7 +13,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
-import com.sebastianvm.commons.util.ResUtil
 import com.sebastianvm.musicplayer.MainActivity
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
@@ -92,7 +91,7 @@ class LibraryScanService : Service() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .addAction(
                 R.drawable.ic_close,
-                ResUtil.getString(this, R.string.stop_scanning),
+                getString(R.string.stop_scanning),
                 stopServicePendingIntent
             )
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
