@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.player.TrackListType
@@ -37,8 +36,7 @@ class ArtistViewModelTest : BaseTest() {
             initialState = ArtistState(
                 artistId = C.ID_ONE,
                 artistName = C.ARTIST_ANA,
-                albumsForArtistItems = listOf(),
-                appearsOnForArtistItems = listOf(),
+                listItems = listOf(),
             ),
             artistRepository = artistRepository,
         )
@@ -50,20 +48,14 @@ class ArtistViewModelTest : BaseTest() {
         with(generateViewModel()) {
             assertEquals(
                 listOf(
-                    ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM, R.string.albums),
-                    ArtistScreenItem.AlbumRowItem(Fixtures.albumAlpaca.toModelListItemState())
-                ),
-                state.albumsForArtistItems
-            )
-            assertEquals(
-                listOf(
-                    ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON, R.string.appears_on),
+                    ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM),
+                    ArtistScreenItem.AlbumRowItem(Fixtures.albumAlpaca.toModelListItemState()),
+                    ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON),
                     ArtistScreenItem.AlbumRowItem(Fixtures.albumCheetah.toModelListItemState()),
                     ArtistScreenItem.AlbumRowItem(Fixtures.albumBobcat.toModelListItemState())
                 ),
-                state.appearsOnForArtistItems
+                state.listItems
             )
-
         }
     }
 
