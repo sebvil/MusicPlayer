@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -38,27 +37,16 @@ class ArtistViewModel @Inject constructor(
             setState {
                 copy(
                     artistName = artistWithAlbums.artist.artistName,
-                    albumsForArtistItems = artistWithAlbums.artistAlbums.takeUnless { it.isEmpty() }
-                        ?.let { albums ->
-                            listOf(
-                                ArtistScreenItem.SectionHeaderItem(
-                                    AlbumType.ALBUM,
-                                    R.string.albums
-                                )
-                            ).plus(albums.sortedByDescending { album -> album.year }
-                                .map { it.toAlbumRowItem() })
-
-                        },
-                    appearsOnForArtistItems = artistWithAlbums.artistAppearsOn.takeUnless { it.isEmpty() }
-                        ?.let { albums ->
-                            listOf(
-                                ArtistScreenItem.SectionHeaderItem(
-                                    AlbumType.APPEARS_ON,
-                                    R.string.appears_on
-                                )
-                            ).plus(albums.sortedByDescending { album -> album.year }
-                                .map { it.toAlbumRowItem() })
-                        },
+                    listItems = buildList {
+                        if (artistWithAlbums.artistAlbums.isNotEmpty()) {
+                            add(ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM))
+                        }
+                        addAll(artistWithAlbums.artistAlbums.map { it.toAlbumRowItem() })
+                        if (artistWithAlbums.artistAppearsOn.isNotEmpty()) {
+                            add(ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON))
+                        }
+                        addAll(artistWithAlbums.artistAppearsOn.map { it.toAlbumRowItem() })
+                    }
                 )
             }
         }
@@ -103,8 +91,7 @@ class ArtistViewModel @Inject constructor(
 data class ArtistState(
     val artistId: Long,
     val artistName: String,
-    val albumsForArtistItems: List<ArtistScreenItem>?,
-    val appearsOnForArtistItems: List<ArtistScreenItem>?
+    val listItems: List<ArtistScreenItem>,
 ) : State
 
 
@@ -118,8 +105,7 @@ object InitialArtistState {
         return ArtistState(
             artistId = args.artistId,
             artistName = "",
-            albumsForArtistItems = null,
-            appearsOnForArtistItems = null,
+            listItems = listOf(),
         )
     }
 }

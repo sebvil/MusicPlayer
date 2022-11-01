@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.artist
 
-import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.util.AlbumType
 
@@ -13,7 +12,7 @@ sealed class ArtistScreenItem {
         override val id = state.id
     }
 
-    data class SectionHeaderItem(val sectionType: AlbumType, @StringRes val sectionName: Int) :
+    data class SectionHeaderItem(val sectionType: AlbumType) :
         ArtistScreenItem() {
         override val id = sectionType.name
     }

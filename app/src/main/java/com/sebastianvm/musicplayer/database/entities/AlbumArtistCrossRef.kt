@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.database.entities
 
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
@@ -13,6 +14,7 @@ data class AlbumsForArtist(
     val artistId: Long,
     val artistName: String,
     val albumName: String,
+    val year: Long,
 )
 
 @Entity(primaryKeys = ["albumId", "artistId"])
@@ -20,7 +22,25 @@ data class AppearsOnForArtist(
     val albumId: Long,
     @ColumnInfo(index = true)
     val artistId: Long,
+    val year: Long
 )
+
+@DatabaseView("SELECT * FROM AlbumsForArtist ORDER BY year DESC")
+data class AlbumsForArtistByYear(
+    val albumId: Long,
+    @ColumnInfo(index = true)
+    val artistId: Long,
+    val year: Long
+)
+
+@DatabaseView("SELECT * FROM AppearsOnForArtist ORDER BY year DESC")
+data class AppearsOnForArtistByYear(
+    val albumId: Long,
+    @ColumnInfo(index = true)
+    val artistId: Long,
+    val year: Long
+)
+
 
 data class ArtistWithAlbums(
     @Embedded val artist: Artist,
@@ -29,7 +49,7 @@ data class ArtistWithAlbums(
         parentColumn = "id",
         entityColumn = "id",
         associateBy = Junction(
-            AlbumsForArtist::class,
+            AlbumsForArtistByYear::class,
             parentColumn = "artistId",
             entityColumn = "albumId"
         ),
@@ -40,7 +60,7 @@ data class ArtistWithAlbums(
         entityColumn = "id",
         entity = Album::class,
         associateBy = Junction(
-            AppearsOnForArtist::class,
+            AppearsOnForArtistByYear::class,
             parentColumn = "artistId",
             entityColumn = "albumId"
         )

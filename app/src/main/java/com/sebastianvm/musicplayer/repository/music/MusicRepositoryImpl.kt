@@ -123,14 +123,16 @@ class MusicRepositoryImpl @Inject constructor(
                         albumId = albumId,
                         artistId = artist.id,
                         artistName = artist.artistName,
-                        albumName = albumName
+                        albumName = albumName,
+                        year = year
                     )
                 )
             } else {
                 appearsOnForArtists.add(
                     AppearsOnForArtist(
                         albumId = albumId,
-                        artistId = artist.id
+                        artistId = artist.id,
+                        year = year
                     )
                 )
             }

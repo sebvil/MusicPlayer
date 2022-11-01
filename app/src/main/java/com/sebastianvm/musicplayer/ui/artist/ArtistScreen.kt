@@ -58,49 +58,45 @@ fun ArtistScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistLayout(state: ArtistState, screenDelegate: ScreenDelegate<ArtistUserAction>) {
-    with(state) {
-        LazyColumn {
-            items(
-                items = (albumsForArtistItems ?: listOf()) + (appearsOnForArtistItems ?: listOf())
-            ) { item ->
-                when (item) {
-                    is ArtistScreenItem.SectionHeaderItem -> {
-                        ListItem(headlineText = {
-                            Text(
-                                text = stringResource(id = item.sectionName),
-                                style = MaterialTheme.typography.headlineMedium,
-                            )
-                        })
-
-                    }
-
-                    is ArtistScreenItem.AlbumRowItem -> {
-                        ModelListItem(
-                            state = item.state,
-                            modifier = Modifier.clickable {
-                                screenDelegate.handle(ArtistUserAction.AlbumClicked(item.state.id))
-                            },
-                            trailingContent = {
-                                IconButton(
-                                    onClick = {
-                                        screenDelegate.handle(
-                                            ArtistUserAction.AlbumOverflowMenuIconClicked(
-                                                item.state.id
-                                            )
-                                        )
-                                    },
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_overflow),
-                                        contentDescription = stringResource(id = R.string.more)
-                                    )
-                                }
-                            }
+    LazyColumn {
+        items(items = state.listItems) { item ->
+            when (item) {
+                is ArtistScreenItem.SectionHeaderItem -> {
+                    ListItem(headlineText = {
+                        Text(
+                            text = stringResource(id = item.sectionType.sectionName),
+                            style = MaterialTheme.typography.headlineMedium,
                         )
-                    }
+                    })
+                }
+
+                is ArtistScreenItem.AlbumRowItem -> {
+                    ModelListItem(
+                        state = item.state,
+                        modifier = Modifier.clickable {
+                            screenDelegate.handle(ArtistUserAction.AlbumClicked(item.state.id))
+                        },
+                        trailingContent = {
+                            IconButton(
+                                onClick = {
+                                    screenDelegate.handle(
+                                        ArtistUserAction.AlbumOverflowMenuIconClicked(
+                                            item.state.id
+                                        )
+                                    )
+                                },
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_overflow),
+                                    contentDescription = stringResource(id = R.string.more)
+                                )
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
+
 

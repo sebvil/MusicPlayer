@@ -16,7 +16,9 @@ import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumFts
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.database.entities.AlbumsForArtistByYear
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtistByYear
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistFts
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
@@ -52,7 +54,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
         GenreFts::class,
         PlaylistFts::class,
     ],
-    views = [TrackWithPlaylistPositionView::class],
+    views = [TrackWithPlaylistPositionView::class, AlbumsForArtistByYear::class, AppearsOnForArtistByYear::class],
     version = 1,
     exportSchema = false
 )
