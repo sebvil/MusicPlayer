@@ -73,10 +73,10 @@ sealed class NavigationDestination(
         isBottomNavDestination = true
     )
 
-    object Search : NavigationDestination(
-        NavigationRoute.Search,
+    object Library : NavigationDestination(
+        NavigationRoute.Library,
         arguments = null,
-        isBottomNavDestination = false
+        isBottomNavDestination = true
     )
 
     object Queue : NavigationDestination(
@@ -85,12 +85,7 @@ sealed class NavigationDestination(
         isBottomNavDestination = true
     )
 
-    object LibraryRoot : NavigationDestination(
-        NavigationRoute.Library,
-        arguments = null,
-        isBottomNavDestination = true
-    )
-
+    object Search : NavigationDestination(NavigationRoute.Search, arguments = null)
     object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
     object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
     object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
@@ -200,6 +195,7 @@ inline fun <reified VM : ViewModel> NavGraphBuilder.screenDestination(
             val screenViewModel = hiltViewModel<VM>()
             screen(screenViewModel)
         }
+
         DestinationType.BottomSheet -> bottomSheet(route = route, arguments = args) {
             val screenViewModel = hiltViewModel<VM>()
             screen(screenViewModel)

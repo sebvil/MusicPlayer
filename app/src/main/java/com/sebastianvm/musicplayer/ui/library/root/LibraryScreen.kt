@@ -164,6 +164,7 @@ fun LibraryLayout(
     onPlaylistsItemClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // TODO Use keys + content type
     LazyColumn(modifier = modifier) {
         item {
             SearchBox(modifier = Modifier
@@ -175,7 +176,7 @@ fun LibraryLayout(
                 text = stringResource(id = R.string.library),
                 style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Medium),
                 modifier = Modifier.padding(
-                    start = AppDimensions.spacing.mediumLarge,
+                    start = AppDimensions.spacing.medium,
                     bottom = AppDimensions.spacing.medium
                 )
             )

@@ -24,7 +24,7 @@ sealed class Screen(
     @StringRes val resourceId: Int,
     @DrawableRes val icon: Int
 ) {
-    object Library : Screen(NavigationDestination.LibraryRoot, R.string.library, R.drawable.ic_song)
+    object Library : Screen(NavigationDestination.Library, R.string.library, R.drawable.ic_song)
     object Queue : Screen(NavigationDestination.Queue, R.string.queue, R.drawable.ic_queue)
     object Player : Screen(NavigationDestination.MusicPlayer, R.string.player, R.drawable.ic_play)
 }
