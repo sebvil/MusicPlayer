@@ -71,7 +71,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     // Room
-    def room_version = '2.5.0-beta01'
+    def room_version = '2.5.0-rc01'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
@@ -108,14 +108,14 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha01'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha03'
 
     // UI + tooling
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
 
     // Accompanist
-    def accompanist_version = '0.25.0'
+    def accompanist_version = '0.28.0'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
@@ -126,7 +126,7 @@ dependencies {
 
 
     // Media 3
-    def media3_version = '1.0.0-beta02'
+    def media3_version = '1.0.0-beta03'
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-session:$media3_version"
 
@@ -146,17 +146,17 @@ dependencies {
     // Coroutines tests
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
-    testImplementation "androidx.test:core-ktx:1.4.0"
-    testImplementation "androidx.test:core:1.4.0"
+    testImplementation "androidx.test:core-ktx:1.5.0"
+    testImplementation "androidx.test:core:1.5.0"
 
     // Mockk
-    def mockk_version = '1.13.2'
+    def mockk_version = '1.13.3'
     testImplementation "io.mockk:mockk:$mockk_version"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_version")
-    androidTestImplementation 'androidx.test:core:1.5.0-beta01'
+    androidTestImplementation 'androidx.test:core:1.5.0'
 
 }
