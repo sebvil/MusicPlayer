@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
@@ -48,10 +48,7 @@ class AlbumListViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackListType = TrackListType.ALBUM,
-                                trackListId = action.albumId
-                            )
+                            TrackListArguments(trackList = MediaGroup.Album(albumId = action.albumId))
                         )
                     )
                 )

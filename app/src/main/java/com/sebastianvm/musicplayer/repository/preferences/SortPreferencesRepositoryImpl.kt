@@ -1,7 +1,8 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import androidx.datastore.core.DataStore
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -40,17 +41,22 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackListType: TrackListType,
-        trackListId: Long,
+        trackList: TrackList,
     ) {
-        when (trackListType) {
-            TrackListType.ALL_TRACKS -> modifyAllTrackListSortPreferences(
-                newPreferences
-            )
-            TrackListType.GENRE -> modifyGenreTrackListSortPreferences(
-                trackListId,
-                newPreferences
-            )
+        when (trackList) {
+            is MediaGroup.AllTracks -> {
+                modifyAllTrackListSortPreferences(
+                    newPreferences
+                )
+            }
+
+            is MediaGroup.Genre -> {
+                modifyGenreTrackListSortPreferences(
+                    trackList.genreId,
+                    newPreferences
+                )
+            }
+
             else -> throw IllegalArgumentException("Invalid trackListType for modifyTrackListSortPreferences")
         }
     }
@@ -71,12 +77,12 @@ class SortPreferencesRepositoryImpl @Inject constructor(
     }
 
     override fun getTrackListSortPreferences(
-        trackListType: TrackListType,
+        trackList: TrackList,
         trackListId: Long
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
-        return when (trackListType) {
-            TrackListType.ALL_TRACKS -> getAllTrackListSortPreferences()
-            TrackListType.GENRE -> getGenreTrackListSortPreferences(trackListId)
+        return when (trackList) {
+            is MediaGroup.AllTracks -> getAllTrackListSortPreferences()
+            is MediaGroup.Genre -> getGenreTrackListSortPreferences(trackListId)
             else -> throw IllegalArgumentException("Invalid trackListType for getTrackListSortPreferences")
         }
     }

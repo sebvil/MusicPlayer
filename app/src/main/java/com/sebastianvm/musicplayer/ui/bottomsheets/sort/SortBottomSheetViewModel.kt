@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -40,8 +40,7 @@ class SortBottomSheetViewModel @Inject constructor(
             val sortPreferences = when (val listType = state.listType) {
                 is SortableListType.Tracks -> {
                     sortPreferencesRepository.getTrackListSortPreferences(
-                        trackListType = listType.trackListType,
-                        trackListId = state.mediaId
+                        trackList = listType.trackList,
                     )
                 }
 
@@ -50,7 +49,7 @@ class SortBottomSheetViewModel @Inject constructor(
                 }
 
                 is SortableListType.Playlist -> {
-                    sortPreferencesRepository.getPlaylistSortPreferences(playlistId = state.mediaId)
+                    sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
                 }
             }.first()
             setState {
@@ -80,8 +79,7 @@ class SortBottomSheetViewModel @Inject constructor(
                                     sortOption = newSortOption,
                                     sortOrder = newSortOrder
                                 ),
-                                trackListType = listType.trackListType,
-                                trackListId = state.mediaId
+                                trackList = listType.trackList,
                             )
                         }
 
@@ -102,7 +100,7 @@ class SortBottomSheetViewModel @Inject constructor(
                                     sortOption = newSortOption,
                                     sortOrder = newSortOrder
                                 ),
-                                playlistId = state.mediaId
+                                playlistId = listType.playlistId
                             )
                         }
                     }
@@ -114,7 +112,6 @@ class SortBottomSheetViewModel @Inject constructor(
 }
 
 data class SortBottomSheetState(
-    val mediaId: Long,
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,
     val sortOrder: MediaSortOrder,
@@ -130,7 +127,6 @@ object InitialSortBottomSheetState {
         val args = savedStateHandle.getArgs<SortMenuArguments>()
         val sortOptions = getSortOptionsForScreen(args.listType)
         return SortBottomSheetState(
-            mediaId = args.mediaId,
             sortOptions = sortOptions,
             selectedSort = sortOptions[0],
             sortOrder = MediaSortOrder.ASCENDING,
@@ -159,13 +155,13 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
 @Parcelize
 sealed class SortableListType : Parcelable {
     @Serializable
-    data class Tracks(val trackListType: TrackListType) : SortableListType()
+    data class Tracks(val trackList: TrackList) : SortableListType()
 
     @Serializable
     object Albums : SortableListType()
 
     @Serializable
-    object Playlist : SortableListType()
+    data class Playlist(val playlistId: Long) : SortableListType()
 }
 
 sealed interface SortBottomSheetUserAction : UserAction {

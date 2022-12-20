@@ -3,9 +3,6 @@ package com.sebastianvm.musicplayer.ui.search
 import androidx.lifecycle.viewModelScope
 import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -112,10 +109,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackList(
-                    TrackListArguments(
-                        trackListType = TrackListType.ALBUM,
-                        trackListId = albumId
-                    )
+                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
                 )
             )
         )
@@ -125,10 +119,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackList(
-                    TrackListArguments(
-                        trackListType = TrackListType.GENRE,
-                        trackListId = genreId
-                    )
+                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
                 )
             )
         )
@@ -138,10 +129,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 NavigationDestination.TrackList(
-                    TrackListArguments(
-                        trackListType = TrackListType.PLAYLIST,
-                        trackListId = playlistId
-                    )
+                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
                 )
             )
         )
@@ -153,10 +141,8 @@ class SearchViewModel @Inject constructor(
                 NavigationDestination.TrackContextMenu(
                     TrackContextMenuArguments(
                         trackId = trackId,
-                        mediaType = MediaType.TRACK,
-                        mediaGroup = MediaGroup(
-                            mediaId = trackId,
-                            mediaGroupType = MediaGroupType.SINGLE_TRACK
+                        mediaGroup = MediaGroup.SingleTrack(
+                            trackId = trackId
                         )
                     )
                 )

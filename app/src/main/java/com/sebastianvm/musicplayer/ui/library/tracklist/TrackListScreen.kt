@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.LibraryTopBarState
@@ -93,7 +93,7 @@ fun TrackListScreen(
 
     ScreenLayout(
         fab = {
-            if (state.trackListType == TrackListType.PLAYLIST) {
+            if (state.trackListType is MediaGroup.Playlist) {
                 ExtendedFloatingActionButton(
                     text = { Text(text = stringResource(id = R.string.add_tracks)) },
                     icon = {
@@ -111,7 +111,7 @@ fun TrackListScreen(
             LibraryTopBar(
                 state = LibraryTopBarState(
                     title = state.trackListName ?: stringResource(id = R.string.all_songs),
-                    hasSortButton = state.trackListType != TrackListType.ALBUM,
+                    hasSortButton = state.trackListType !is MediaGroup.Album,
                 ),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {

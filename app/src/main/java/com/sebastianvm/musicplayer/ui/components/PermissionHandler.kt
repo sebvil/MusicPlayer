@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.components
 
+import android.Manifest
+import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -33,7 +35,7 @@ data class PermissionHandlerState @OptIn(ExperimentalPermissionsApi::class) cons
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionHandler(
-    permission: String,
+    permission: Permission,
     @StringRes dialogTitle: Int,
     @StringRes message: Int,
     onPermissionGranted: () -> Unit,
@@ -54,7 +56,7 @@ fun PermissionHandler(
         }
     } else {
         rememberPermissionState(
-            permission = permission,
+            permission = permission.permissionName,
             onPermissionResult = { isGranted ->
                 showPermissionDeniedDialog = if (isGranted) {
                     onPermissionGranted()
@@ -157,4 +159,17 @@ fun PermissionDialog(
             }
         }
     )
+}
+
+sealed interface Permission {
+    val permissionName: String
+
+    object ReadAudio : Permission {
+        override val permissionName: String
+            get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_AUDIO
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+    }
 }

@@ -3,8 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -43,8 +42,8 @@ class TrackListViewModel @Inject constructor(
     init {
         with(trackRepository) {
             combineToPair(
-                getTracksForMedia(state.trackListType, state.trackListId),
-                getTrackListMetadata(state.trackListType, state.trackListId)
+                getTracksForMedia(state.trackListType),
+                getTrackListMetadata(state.trackListType)
             ).onEach { (newTrackList, trackListMetadata) ->
                 setState {
                     copy(
@@ -61,13 +60,9 @@ class TrackListViewModel @Inject constructor(
     override fun handle(action: TrackListUserAction) {
         when (action) {
             is TrackListUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
-
             is TrackListUserAction.TrackClicked -> {
                 val playTracksFlow = playbackManager.playMedia(
-                    mediaGroup = MediaGroup(
-                        state.trackListType.toMediaGroupType(),
-                        state.trackListId
-                    ),
+                    mediaGroup = state.trackListType,
                     initialTrackIndex = action.trackIndex
                 )
                 playTracksFlow.onEach {
@@ -88,17 +83,12 @@ class TrackListViewModel @Inject constructor(
             }
 
             is TrackListUserAction.TrackOverflowMenuIconClicked -> {
-                val mediaGroup = MediaGroup(
-                    mediaGroupType = state.trackListType.toMediaGroupType(),
-                    mediaId = state.trackListId
-                )
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackContextMenu(
                             TrackContextMenuArguments(
                                 trackId = action.trackId,
-                                mediaType = MediaType.TRACK,
-                                mediaGroup = mediaGroup,
+                                mediaGroup = state.trackListType,
                                 trackIndex = action.trackIndex,
                                 positionInPlaylist = action.position
                             )
@@ -109,20 +99,17 @@ class TrackListViewModel @Inject constructor(
 
             is TrackListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
             is TrackListUserAction.SortByButtonClicked -> {
+                val trackListType = state.trackListType
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.SortMenu(
                             SortMenuArguments(
-                                listType = when (state.trackListType
-                                ) {
-                                    TrackListType.PLAYLIST -> SortableListType.Playlist
-                                    TrackListType.ALL_TRACKS, TrackListType.GENRE -> SortableListType.Tracks(
-                                        trackListType = state.trackListType
-                                    )
-
-                                    TrackListType.ALBUM -> throw IllegalStateException("Cannot sort album")
-                                },
-                                mediaId = state.trackListId
+                                listType = when (trackListType) {
+                                    is MediaGroup.AllTracks -> SortableListType.Tracks(trackList = trackListType)
+                                    is MediaGroup.Genre -> SortableListType.Tracks(trackList = trackListType)
+                                    is MediaGroup.Playlist -> SortableListType.Playlist(playlistId = trackListType.playlistId)
+                                    is MediaGroup.Album -> throw IllegalStateException("Cannot sort album")
+                                }
                             )
                         )
                     )
@@ -130,12 +117,12 @@ class TrackListViewModel @Inject constructor(
             }
 
             is TrackListUserAction.AddTracksClicked -> {
+                val trackListType = state.trackListType
+                check(trackListType is MediaGroup.Playlist)
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackSearch(
-                            TrackSearchArguments(
-                                state.trackListId
-                            )
+                            TrackSearchArguments(trackListType.playlistId)
                         )
                     )
                 )
@@ -143,15 +130,10 @@ class TrackListViewModel @Inject constructor(
         }
     }
 
-    companion object {
-        const val ALL_TRACKS = -1L
-    }
-
 }
 
 data class TrackListState(
-    val trackListId: Long,
-    val trackListType: TrackListType,
+    val trackListType: TrackList,
     val trackList: List<ModelListItemState>,
     val trackListName: String? = null,
     val playbackResult: PlaybackResult? = null,
@@ -168,9 +150,8 @@ object InitialTrackListStateModule {
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
         val args = savedStateHandle.getArgs<TrackListArguments>()
         return TrackListState(
-            trackListId = args.trackListId,
             trackList = listOf(),
-            trackListType = args.trackListType,
+            trackListType = args.trackList,
         )
     }
 }

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -12,7 +12,7 @@ import kotlinx.parcelize.Parcelize
 // TODO make sealed class to get rid of need of passing id to All tracks list
 @kotlinx.serialization.Serializable
 @Parcelize
-data class TrackListArguments(val trackListType: TrackListType, val trackListId: Long) :
+data class TrackListArguments(val trackList: TrackList) :
     NavigationArguments
 
 fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelegate) {

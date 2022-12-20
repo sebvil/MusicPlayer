@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
-import android.Manifest
 import android.content.Intent
-import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +22,7 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
+import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
@@ -74,7 +72,7 @@ fun LibraryScreen(
         modifier = modifier,
         floatingActionButton = {
             PermissionHandler(
-                permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE,
+                permission = Permission.ReadAudio,
                 dialogTitle = R.string.storage_permission_needed,
                 message = R.string.grant_storage_permissions,
                 onPermissionGranted = {
@@ -147,11 +145,5 @@ fun LibraryLayout(
         item { LibraryListItem(item = state.albumsItem, onItemClicked = onAlbumsItemClicked) }
         item { LibraryListItem(item = state.genresItem, onItemClicked = onGenresItemClicked) }
         item { LibraryListItem(item = state.playlistsItem, onItemClicked = onPlaylistsItemClicked) }
-        item {
-            LibraryListItem(
-                item = state.playlistsItem,
-                modifier = Modifier.alpha(0f),
-                onItemClicked = {})
-        }
     }
 }

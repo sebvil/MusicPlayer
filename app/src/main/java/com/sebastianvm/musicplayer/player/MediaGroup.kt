@@ -4,34 +4,37 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-enum class MediaGroupType {
-    ALL_TRACKS,
-    SINGLE_TRACK,
-    ARTIST,
-    ALBUM,
-    GENRE,
-    PLAYLIST,
-}
 
-// used for MediaGroups that are TrackLists
-enum class TrackListType {
-    ALL_TRACKS,
-    GENRE,
-    PLAYLIST,
-    ALBUM;
-
-    fun toMediaGroupType(): MediaGroupType {
-        return when (this) {
-            ALL_TRACKS -> MediaGroupType.ALL_TRACKS
-            GENRE -> MediaGroupType.GENRE
-            PLAYLIST -> MediaGroupType.PLAYLIST
-            ALBUM -> MediaGroupType.ALBUM
-        }
-    }
-}
-
-
-// TODO? use sealed class
 @Serializable
 @Parcelize
-data class MediaGroup(val mediaGroupType: MediaGroupType, val mediaId: Long) : Parcelable
+sealed interface MediaGroup : Parcelable {
+    @Serializable
+    @Parcelize
+    object AllTracks : TrackList
+
+    @Serializable
+    @Parcelize
+    data class SingleTrack(val trackId: Long) : MediaGroup
+
+    @Serializable
+    @Parcelize
+    data class Artist(val artistId: Long) : MediaGroup
+
+    @Serializable
+    @Parcelize
+    data class Album(val albumId: Long) : TrackList
+
+    @Serializable
+    @Parcelize
+    data class Genre(val genreId: Long) : TrackList
+
+    @Serializable
+    @Parcelize
+    data class Playlist(val playlistId: Long) : TrackList
+
+}
+
+@Serializable
+@Parcelize
+sealed interface TrackList : MediaGroup
+

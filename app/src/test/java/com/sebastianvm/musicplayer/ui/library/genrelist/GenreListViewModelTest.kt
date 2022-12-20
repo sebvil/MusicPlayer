@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
@@ -73,7 +73,7 @@ class GenreListViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.GENRE,
+                                trackList = TrackList.GENRE,
                                 trackListId = C.ID_ONE
                             )
                         )

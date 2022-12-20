@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
@@ -51,8 +51,7 @@ class GenreContextMenuViewModel @Inject constructor(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.GENRE,
-                                trackListId = state.mediaId
+                                trackList = MediaGroup.Genre(state.mediaId)
                             )
                         )
                     )

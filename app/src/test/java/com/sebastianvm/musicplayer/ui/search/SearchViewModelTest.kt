@@ -3,8 +3,7 @@ package com.sebastianvm.musicplayer.ui.search
 import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -249,7 +248,7 @@ class SearchViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.ALBUM,
+                                trackList = TrackList.ALBUM,
                                 trackListId = 0
                             )
                         )
@@ -269,7 +268,7 @@ class SearchViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.GENRE,
+                                trackList = TrackList.GENRE,
                                 trackListId = 0
                             )
                         )
@@ -289,7 +288,7 @@ class SearchViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.PLAYLIST,
+                                trackList = TrackList.PLAYLIST,
                                 trackListId = 0
                             )
                         )
@@ -310,8 +309,7 @@ class SearchViewModelTest : BaseTest() {
                         NavigationDestination.TrackContextMenu(
                             TrackContextMenuArguments(
                                 trackId = 0,
-                                mediaType = MediaType.TRACK,
-                                mediaGroup = MediaGroup(
+                                trackList = com.sebastianvm.musicplayer.player.MediaGroup(
                                     mediaId = 0,
                                     mediaGroupType = MediaGroupType.SINGLE_TRACK
                                 )

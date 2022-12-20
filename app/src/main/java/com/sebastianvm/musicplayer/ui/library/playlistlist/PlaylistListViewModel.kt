@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
@@ -49,10 +49,8 @@ class PlaylistListViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackListType = TrackListType.PLAYLIST,
-                                trackListId = action.playlistId
-                            )
+                            TrackListArguments(trackList = MediaGroup.Playlist(playlistId = action.playlistId))
+
                         )
                     )
                 )

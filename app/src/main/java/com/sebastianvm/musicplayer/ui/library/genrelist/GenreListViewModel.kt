@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
@@ -61,10 +61,7 @@ class GenreListViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackListType = TrackListType.GENRE,
-                                trackListId = action.genreId
-                            )
+                            TrackListArguments(trackList = MediaGroup.Genre(genreId = action.genreId))
                         )
                     )
                 )

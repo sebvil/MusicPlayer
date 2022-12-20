@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaType
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -15,7 +14,6 @@ import kotlinx.serialization.Serializable
 @Parcelize
 data class TrackContextMenuArguments(
     val trackId: Long,
-    val mediaType: MediaType,
     val mediaGroup: MediaGroup,
     val trackIndex: Int = 0,
     val positionInPlaylist: Long? = null

@@ -6,10 +6,10 @@ import com.sebastianvm.musicplayer.database.entities.Fixtures
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.MediaType
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
@@ -51,21 +51,21 @@ class TrackListViewModelTest : BaseTest() {
     fun setUp() {
         playbackManager = mockk()
         trackRepository = mockk {
-            every { getTracksForMedia(any(), any()) } returns emptyFlow()
-            every { getTrackListMetadata(any(), any()) } returns emptyFlow()
+            every { getTracksForMedia(any()) } returns emptyFlow()
+            every { getTrackListMetadata(any()) } returns emptyFlow()
         }
 
     }
 
     private fun generateViewModel(
-        trackListType: TrackListType = TrackListType.ALL_TRACKS,
+        trackList: TrackList = MediaTree.KeyType.ALL_TRACKS,
         trackListId: Long = 0,
         playbackResult: PlaybackResult? = null
     ): TrackListViewModel {
         return TrackListViewModel(
             initialState = TrackListState(
                 trackListId = trackListId,
-                trackListType = trackListType,
+                trackListType = trackList,
                 trackList = listOf(),
                 playbackResult = playbackResult
             ),
@@ -75,13 +75,13 @@ class TrackListViewModelTest : BaseTest() {
     }
 
     private fun generateViewModelForGenre(): TrackListViewModel =
-        generateViewModel(trackListType = TrackListType.GENRE, trackListId = C.ID_ONE)
+        generateViewModel(trackList = TrackList.GENRE, trackListId = C.ID_ONE)
 
     private fun generateViewModelForAlbum(): TrackListViewModel =
-        generateViewModel(trackListType = TrackListType.ALBUM, trackListId = C.ID_ONE)
+        generateViewModel(trackList = TrackList.ALBUM, trackListId = C.ID_ONE)
 
     private fun generateViewModelForPlaylist(): TrackListViewModel =
-        generateViewModel(trackListType = TrackListType.PLAYLIST, trackListId = C.ID_ONE)
+        generateViewModel(trackList = TrackList.PLAYLIST, trackListId = C.ID_ONE)
 
 
     @Test
@@ -90,14 +90,12 @@ class TrackListViewModelTest : BaseTest() {
             val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
             every {
                 trackRepository.getTracksForMedia(
-                    trackListType = TrackListType.ALL_TRACKS,
-                    mediaId = 0
+                    trackList = MediaTree.KeyType.ALL_TRACKS
                 )
             } returns tracksFlow
             every {
                 trackRepository.getTrackListMetadata(
-                    mediaId = 0,
-                    trackListType = TrackListType.ALL_TRACKS
+                    trackList = MediaTree.KeyType.ALL_TRACKS
                 )
             } returns flowOf(
                 TrackListMetadata()
@@ -166,7 +164,7 @@ class TrackListViewModelTest : BaseTest() {
                             TrackContextMenuArguments(
                                 trackId = 0,
                                 mediaType = MediaType.TRACK,
-                                mediaGroup = MediaGroup(
+                                trackList = MediaGroup(
                                     mediaId = 0,
                                     mediaGroupType = MediaGroupType.ALL_TRACKS
                                 )
@@ -188,7 +186,7 @@ class TrackListViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.SortMenu(
                             SortMenuArguments(
-                                listType = SortableListType.Tracks(trackListType = TrackListType.ALL_TRACKS),
+                                listType = SortableListType.Tracks(trackList = TrackList.ALL_TRACKS),
                                 mediaId = 0
                             )
                         )
@@ -209,14 +207,12 @@ class TrackListViewModelTest : BaseTest() {
             val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
             every {
                 trackRepository.getTracksForMedia(
-                    trackListType = TrackListType.GENRE,
-                    mediaId = C.ID_ONE
+                    trackList = TrackList.GENRE
                 )
             } returns tracksFlow
             every {
                 trackRepository.getTrackListMetadata(
-                    mediaId = C.ID_ONE,
-                    trackListType = TrackListType.GENRE
+                    trackList = TrackList.GENRE
                 )
             } returns flowOf(
                 TrackListMetadata(
@@ -301,7 +297,7 @@ class TrackListViewModelTest : BaseTest() {
                             TrackContextMenuArguments(
                                 trackId = 0,
                                 mediaType = MediaType.TRACK,
-                                mediaGroup = MediaGroup(
+                                trackList = MediaGroup(
                                     mediaId = C.ID_ONE,
                                     mediaGroupType = MediaGroupType.GENRE
                                 )
@@ -323,7 +319,7 @@ class TrackListViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.SortMenu(
                             SortMenuArguments(
-                                listType = SortableListType.Tracks(trackListType = TrackListType.GENRE),
+                                listType = SortableListType.Tracks(trackList = TrackList.GENRE),
                                 mediaId = 1
                             )
                         )
@@ -344,15 +340,13 @@ class TrackListViewModelTest : BaseTest() {
             val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
             every {
                 trackRepository.getTracksForMedia(
-                    trackListType = TrackListType.PLAYLIST,
-                    mediaId = C.ID_ONE
+                    trackList = TrackList.PLAYLIST
                 )
             } returns tracksFlow
 
             every {
                 trackRepository.getTrackListMetadata(
-                    mediaId = C.ID_ONE,
-                    trackListType = TrackListType.PLAYLIST
+                    trackList = TrackList.PLAYLIST
                 )
             } returns flowOf(
                 TrackListMetadata(
@@ -438,7 +432,7 @@ class TrackListViewModelTest : BaseTest() {
                             TrackContextMenuArguments(
                                 trackId = 0,
                                 mediaType = MediaType.TRACK,
-                                mediaGroup = MediaGroup(
+                                trackList = MediaGroup(
                                     mediaId = C.ID_ONE,
                                     mediaGroupType = MediaGroupType.PLAYLIST
                                 )
@@ -481,8 +475,7 @@ class TrackListViewModelTest : BaseTest() {
             val tracksFlow = MutableStateFlow(modelListItemStatesAscending)
             every {
                 trackRepository.getTracksForMedia(
-                    trackListType = TrackListType.ALBUM,
-                    mediaId = C.ID_ONE
+                    trackList = TrackList.ALBUM
                 )
             } returns tracksFlow
 
@@ -495,8 +488,7 @@ class TrackListViewModelTest : BaseTest() {
             )
             every {
                 trackRepository.getTrackListMetadata(
-                    mediaId = C.ID_ONE,
-                    trackListType = TrackListType.ALBUM
+                    trackList = TrackList.ALBUM
                 )
             } returns flowOf(
                 TrackListMetadata(
@@ -582,7 +574,7 @@ class TrackListViewModelTest : BaseTest() {
                             TrackContextMenuArguments(
                                 trackId = 0,
                                 mediaType = MediaType.TRACK,
-                                mediaGroup = MediaGroup(
+                                trackList = MediaGroup(
                                     mediaId = C.ID_ONE,
                                     mediaGroupType = MediaGroupType.ALBUM
                                 )
