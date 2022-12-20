@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.artist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
@@ -68,7 +68,7 @@ class ArtistViewModelTest : BaseTest() {
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.ALBUM,
+                                trackList = TrackList.ALBUM,
                                 trackListId = C.ID_ONE
                             )
                         )

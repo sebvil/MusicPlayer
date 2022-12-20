@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import com.sebastianvm.musicplayer.database.entities.C
 import com.sebastianvm.musicplayer.database.entities.Fixtures
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
@@ -82,7 +82,7 @@ class PlaylistListViewModelTest : BaseTest() {
                 NavEvent.NavigateToScreen(
                     NavigationDestination.TrackList(
                         TrackListArguments(
-                            trackListType = TrackListType.PLAYLIST,
+                            trackList = TrackList.PLAYLIST,
                             trackListId = C.ID_ONE
                         )
                     )

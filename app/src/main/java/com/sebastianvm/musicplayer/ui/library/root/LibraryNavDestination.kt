@@ -1,9 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -24,10 +23,7 @@ fun NavGraphBuilder.libraryNavDestination(
             navigateToAllTracksList = {
                 navigationDelegate.navigateToScreen(
                     NavigationDestination.TrackList(
-                        TrackListArguments(
-                            trackListType = TrackListType.ALL_TRACKS,
-                            trackListId = TrackListViewModel.ALL_TRACKS
-                        )
+                        TrackListArguments(trackList = MediaGroup.AllTracks)
                     )
                 )
             },

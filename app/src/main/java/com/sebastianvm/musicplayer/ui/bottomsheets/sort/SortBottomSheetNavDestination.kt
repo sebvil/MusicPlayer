@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class SortMenuArguments(val listType: SortableListType, val mediaId: Long = 0) :
+data class SortMenuArguments(val listType: SortableListType) :
     NavigationArguments
 
 fun NavGraphBuilder.sortBottomSheetNavDestination(navigationDelegate: NavigationDelegate) {

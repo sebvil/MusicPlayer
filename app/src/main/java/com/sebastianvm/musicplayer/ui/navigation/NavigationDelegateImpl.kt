@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
@@ -39,7 +38,6 @@ class NavigationDelegateImpl(private val navController: NavController) : Navigat
                 // Pop up to the start destination of the graph to
                 // avoid building up a large stack of destinations
                 // on the back stack as users select items
-                Log.i("Nav", "${navController.graph.findStartDestination()}")
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }

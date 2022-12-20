@@ -16,4 +16,5 @@ sealed class ContextMenuItem(@DrawableRes val icon: Int, @StringRes val text: In
     object AddToQueue : ContextMenuItem(R.drawable.ic_queue, R.string.add_to_queue)
     object DeletePlaylist : ContextMenuItem(R.drawable.ic_close, R.string.delete_playlist)
     object RemoveFromPlaylist : ContextMenuItem(R.drawable.ic_close, R.string.remove_from_playlist)
+    object AddToPlaylist : ContextMenuItem(R.drawable.ic_plus, R.string.add_to_playlist)
 }

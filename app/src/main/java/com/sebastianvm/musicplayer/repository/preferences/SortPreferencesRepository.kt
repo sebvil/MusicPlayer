@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -9,12 +9,11 @@ import kotlinx.coroutines.flow.Flow
 interface SortPreferencesRepository {
     suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackListType: TrackListType,
-        trackListId: Long,
+        trackList: TrackList,
     )
 
     fun getTrackListSortPreferences(
-        trackListType: TrackListType,
+        trackList: TrackList,
         trackListId: Long = 0
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>>
 

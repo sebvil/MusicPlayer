@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
@@ -61,6 +61,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                                 playbackResult = it
                             )
                         }
+
                         is PlaybackResult.Success -> addNavEvent(
                             NavEvent.NavigateToScreen(
                                 NavigationDestination.MusicPlayer
@@ -69,21 +70,25 @@ class AlbumContextMenuViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
+
             is ContextMenuItem.AddToQueue -> {
                 playbackManager.addToQueue(tracks)
             }
+
             is ContextMenuItem.ViewAlbum -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
                             TrackListArguments(
-                                trackListType = TrackListType.ALBUM,
-                                trackListId = state.mediaId
+                                trackList = MediaGroup.Album(
+                                    state.mediaId
+                                )
                             )
                         )
                     )
                 )
             }
+
             is ContextMenuItem.ViewArtists -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -93,6 +98,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                     )
                 )
             }
+
             is ContextMenuItem.ViewArtist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
@@ -104,6 +110,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                     )
                 )
             }
+
             else -> throw IllegalStateException("Invalid row for album context menu")
         }
     }

@@ -12,7 +12,8 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
-import com.sebastianvm.musicplayer.player.TrackListType
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -46,7 +47,7 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getAllTracks(): Flow<List<Track>> {
-        return sortPreferencesRepository.getTrackListSortPreferences(trackListType = TrackListType.ALL_TRACKS)
+        return sortPreferencesRepository.getTrackListSortPreferences(trackList = MediaGroup.AllTracks)
             .flatMapLatest { mediaSortPreferences ->
                 trackDao.getAllTracks(
                     sortOption = mediaSortPreferences.sortOption,
@@ -68,14 +69,17 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
-        return sortPreferencesRepository.getTrackListSortPreferences(trackListType = TrackListType.GENRE)
-            .flatMapLatest { mediaSortPreferences ->
-                trackDao.getTracksForGenre(
-                    genreId = genreId,
-                    sortOption = mediaSortPreferences.sortOption,
-                    sortOrder = mediaSortPreferences.sortOrder
-                )
-            }.distinctUntilChanged()
+        return sortPreferencesRepository.getTrackListSortPreferences(
+            trackList = MediaGroup.Genre(
+                genreId = genreId
+            )
+        ).flatMapLatest { mediaSortPreferences ->
+            trackDao.getTracksForGenre(
+                genreId = genreId,
+                sortOption = mediaSortPreferences.sortOption,
+                sortOrder = mediaSortPreferences.sortOrder
+            )
+        }.distinctUntilChanged()
     }
 
     override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
@@ -90,32 +94,35 @@ class TrackRepositoryImpl @Inject constructor(
     }
 
     override fun getTracksForMedia(
-        trackListType: TrackListType,
-        mediaId: Long
+        trackList: TrackList
     ): Flow<List<ModelListItemState>> {
-        return when (trackListType) {
-            TrackListType.ALL_TRACKS -> getAllTracks()
+        return when (trackList) {
+            is MediaGroup.AllTracks -> getAllTracks()
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
-            TrackListType.GENRE -> getTracksForGenre(mediaId)
+
+            is MediaGroup.Genre -> getTracksForGenre(trackList.genreId)
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
-            TrackListType.PLAYLIST -> playlistRepository.getTracksInPlaylist(mediaId)
+
+            is MediaGroup.Playlist -> playlistRepository.getTracksInPlaylist(trackList.playlistId)
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
-            TrackListType.ALBUM -> getTracksForAlbum(mediaId)
+
+            is MediaGroup.Album -> getTracksForAlbum(trackList.albumId)
                 .map { tracks -> tracks.map { it.toModelListItemState() } }
         }
     }
 
     override fun getTrackListMetadata(
-        trackListType: TrackListType,
-        mediaId: Long
+        trackList: TrackList
     ): Flow<TrackListMetadata> {
-        return when (trackListType) {
-            TrackListType.ALL_TRACKS -> flowOf(TrackListMetadata())
-            TrackListType.GENRE -> genreRepository.getGenreName(mediaId)
+        return when (trackList) {
+            is MediaGroup.AllTracks -> flowOf(TrackListMetadata())
+            is MediaGroup.Genre -> genreRepository.getGenreName(trackList.genreId)
                 .map { TrackListMetadata(trackListName = it) }
-            TrackListType.PLAYLIST -> playlistRepository.getPlaylistName(mediaId)
+
+            is MediaGroup.Playlist -> playlistRepository.getPlaylistName(trackList.playlistId)
                 .map { TrackListMetadata(trackListName = it) }
-            TrackListType.ALBUM -> albumRepository.getAlbum(mediaId)
+
+            is MediaGroup.Album -> albumRepository.getAlbum(trackList.albumId)
                 .map {
                     TrackListMetadata(
                         trackListName = it.albumName,

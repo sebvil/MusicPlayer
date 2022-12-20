@@ -4,8 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.MediaGroupType
-import com.sebastianvm.musicplayer.player.TrackListType
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -72,19 +70,21 @@ class TrackContextMenuViewModel @Inject constructor(
             setState {
                 copy(
                     menuTitle = it.track.trackName,
-                    listItems = when (state.mediaGroup.mediaGroupType) {
-                        MediaGroupType.ALBUM -> {
+                    listItems = when (state.mediaGroup) {
+                        is MediaGroup.Album -> {
                             listOf(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
+                                ContextMenuItem.AddToPlaylist,
                                 if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                             )
                         }
 
-                        MediaGroupType.PLAYLIST -> {
+                        is MediaGroup.Playlist -> {
                             listOf(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
+                                ContextMenuItem.AddToPlaylist,
                                 if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                                 ContextMenuItem.ViewAlbum,
                                 ContextMenuItem.RemoveFromPlaylist
@@ -95,6 +95,7 @@ class TrackContextMenuViewModel @Inject constructor(
                             listOf(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
+                                ContextMenuItem.AddToPlaylist,
                                 if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                                 ContextMenuItem.ViewAlbum
                             )
@@ -109,36 +110,7 @@ class TrackContextMenuViewModel @Inject constructor(
         when (row) {
             is ContextMenuItem.Play -> {
                 with(state) {
-                    val playMediaFlow = when (mediaGroup.mediaGroupType) {
-                        MediaGroupType.ALL_TRACKS -> {
-                            playbackManager.playAllTracks(trackIndex)
-                        }
-
-                        MediaGroupType.GENRE -> {
-                            playbackManager.playGenre(
-                                genreId = mediaGroup.mediaId,
-                                initialTrackIndex = trackIndex
-                            )
-                        }
-
-                        MediaGroupType.ALBUM -> {
-                            playbackManager.playAlbum(
-                                albumId = mediaGroup.mediaId,
-                                initialTrackIndex = trackIndex
-                            )
-                        }
-
-                        MediaGroupType.PLAYLIST -> {
-                            playbackManager.playPlaylist(
-                                playlistId = mediaGroup.mediaId
-                            )
-                        }
-
-                        MediaGroupType.SINGLE_TRACK -> playbackManager.playSingleTrack(mediaId)
-                        MediaGroupType.ARTIST -> throw IllegalStateException(
-                            "Unsupported media group type: ${mediaGroup.mediaGroupType}"
-                        )
-                    }
+                    val playMediaFlow = playbackManager.playMedia(mediaGroup, trackIndex)
                     playMediaFlow.onEach {
                         when (it) {
                             is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
@@ -164,10 +136,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackListType = TrackListType.ALBUM,
-                                trackListId = track.albumId
-                            )
+                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
                         )
                     )
                 )
@@ -196,16 +165,18 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.RemoveFromPlaylist -> {
                 state.positionInPlaylist?.also {
                     viewModelScope.launch {
+                        val mediaGroup = state.mediaGroup
+                        check(mediaGroup is MediaGroup.Playlist)
                         playlistRepository.removeItemFromPlaylist(
-                            playlistId = state.mediaGroup.mediaId,
+                            playlistId = mediaGroup.playlistId,
                             position = it
                         )
                     }
                 }
                 addNavEvent(NavEvent.NavigateUp)
-
             }
 
+            is ContextMenuItem.AddToPlaylist -> TODO()
             else -> throw IllegalStateException("Invalid row for track context menu")
         }
     }
