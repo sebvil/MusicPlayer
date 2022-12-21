@@ -8,9 +8,9 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-// TODO make sealed class to get rid of need of passing id to All tracks list
-@kotlinx.serialization.Serializable
+@Serializable
 @Parcelize
 data class TrackListArguments(val trackList: TrackList) :
     NavigationArguments

@@ -20,14 +20,6 @@ fun NavHostWrapper(
             val bottomSheetNavigator = rememberBottomSheetNavigator()
             val navController = rememberNavController(bottomSheetNavigator)
 
-//            // TODO: wait until this is a bit more mature
-//            val systemUiController = rememberSystemUiController()
-//            val surfaceColor = MaterialTheme.colorScheme.surface
-//
-//            SideEffect {
-//                systemUiController.setStatusBarColor(surfaceColor)
-//            }
-
             M3ModalBottomSheetLayout(
                 bottomSheetNavigator = bottomSheetNavigator,
                 sheetShape = RoundedCornerShape(
