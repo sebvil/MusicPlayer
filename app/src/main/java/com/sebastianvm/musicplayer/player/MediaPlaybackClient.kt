@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// TODO I might be able to get rid of this per https://developer.android.com/guide/topics/media/media3/getting-started/mediasession#controlling-media
 @Singleton
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,

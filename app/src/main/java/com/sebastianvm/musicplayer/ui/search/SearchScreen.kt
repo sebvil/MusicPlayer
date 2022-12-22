@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.ui.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -35,11 +35,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
     this.pointerInput(key1 = null) {
-        forEachGesture {
-            awaitPointerEventScope {
-                awaitFirstDown(requireUnconsumed = true)
-                focusManager.clearFocus()
-            }
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = true)
+            focusManager.clearFocus()
         }
     }
 

@@ -1,22 +1,17 @@
 package com.sebastianvm.musicplayer.repository.playback.mediatree
 
-import android.net.Uri
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_ALBUMS
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_ARTISTS
+import androidx.media3.common.MediaMetadata.FOLDER_TYPE_GENRES
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_MIXED
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_NONE
 import androidx.media3.common.MediaMetadata.FOLDER_TYPE_TITLES
-import com.sebastianvm.musicplayer.ArtworkProvider
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.buildMediaItem
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
+import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.uri.UriUtils
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -26,215 +21,150 @@ class MediaTree @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository,
+    private val genreRepository: GenreRepository,
+    private val playlistRepository: PlaylistRepository
 ) {
 
     private val mediaItemsTree: MutableMap<String, List<MediaItem>> = mutableMapOf()
-    private val mediaItemsMap: MutableMap<String, MediaItem> = mutableMapOf()
+    private val mediaItemsMap: MutableMap<String, Pair<KeyType, MediaItem>> = mutableMapOf()
 
-    private val rootKey =
-        MediaKey(parentType = KeyType.UNKNOWN, parentId = 0, type = KeyType.ROOT, itemIndexOrId = 0)
 
-    // TODO unify builders
-    private fun buildMediaItem(
-        title: String,
-        mediaId: MediaKey,
-        isPlayable: Boolean,
-        @MediaMetadata.FolderType folderType: Int,
-        subtitle: String? = null,
-        album: String? = null,
-        artist: String? = null,
-        genre: String? = null,
-        sourceUri: Uri? = null,
-        artworkUri: Uri? = null
-    ): MediaItem {
-        val metadata =
-            MediaMetadata.Builder()
-                .setAlbumTitle(album)
-                .setTitle(title)
-                .setSubtitle(subtitle)
-                .setArtist(artist)
-                .setGenre(genre)
-                .setFolderType(folderType)
-                .setIsPlayable(isPlayable)
-                .setArtworkUri(artworkUri)
-                .build()
-        return MediaItem.Builder()
-            .setMediaId(mediaId.toString())
-            .setMediaMetadata(metadata)
-            .setUri(sourceUri)
-            .build()
+    private val tracksRoot: MediaItem = buildMediaItem(
+        title = "All tracks",
+        mediaId = KeyType.TracksRoot.hashCode(),
+        isPlayable = false,
+        folderType = FOLDER_TYPE_TITLES
+    )
+
+    private val albumsRoot = buildMediaItem(
+        title = "Albums",
+        mediaId = KeyType.AlbumsRoot.hashCode(),
+        isPlayable = false,
+        folderType = FOLDER_TYPE_ALBUMS
+    )
+
+    private val artistsRoot = buildMediaItem(
+        title = "Artists",
+        mediaId = KeyType.ArtistsRoot.hashCode(),
+        isPlayable = false,
+        folderType = FOLDER_TYPE_ARTISTS
+    )
+
+    private val genresRoot = buildMediaItem(
+        title = "Genres",
+        mediaId = KeyType.GenresRoot.hashCode(),
+        isPlayable = false,
+        folderType = FOLDER_TYPE_GENRES
+    )
+
+
+    val root: MediaItem = buildMediaItem(
+        title = "Root folder",
+        mediaId = KeyType.Root.hashCode(),
+        isPlayable = false,
+        folderType = FOLDER_TYPE_MIXED
+    )
+
+    init {
+        mediaItemsMap[root.mediaId] = KeyType.Root to root
     }
 
-    private fun Track.buildMediaItem(parent: MediaKey, index: Long): MediaItem {
-        return buildMediaItem(
-            title = trackName,
-            mediaId = MediaKey.fromParent(
-                parent = parent,
-                keyType = KeyType.TRACK,
-                itemIndexOrId = index
-            ),
-            isPlayable = true,
-            folderType = FOLDER_TYPE_NONE,
-            album = albumName,
-            subtitle = artists,
-            artist = artists,
-            genre = "",
-            sourceUri = UriUtils.getTrackUri(trackId = id),
-            artworkUri = ArtworkProvider.getUriForTrack(albumId)
-        )
-    }
 
-    private fun Album.buildMediaItem(parent: MediaKey): MediaItem {
-        return buildMediaItem(
-            title = albumName,
-            mediaId = MediaKey.fromParent(
-                parent = parent,
-                keyType = KeyType.ALBUM,
-                itemIndexOrId = id
-            ),
-            isPlayable = false,
-            folderType = FOLDER_TYPE_TITLES,
-            subtitle = artists,
-            album = albumName,
-            artist = artists,
-            genre = null,
-            sourceUri = UriUtils.getAlbumUri(albumId = id),
-            artworkUri = ArtworkProvider.getUriForAlbum(id)
-        )
-    }
+    private fun getCachedChildren(parent: String): List<MediaItem>? = mediaItemsTree[parent]
 
-    private fun Artist.buildMediaItem(parent: MediaKey): MediaItem {
-        return buildMediaItem(
-            title = artistName,
-            mediaId = MediaKey.fromParent(
-                parent = parent,
-                keyType = KeyType.ARTIST,
-                itemIndexOrId = id
-            ),
-            isPlayable = false,
-            folderType = FOLDER_TYPE_ALBUMS,
-            subtitle = null,
-            album = null,
-            artist = artistName,
-            genre = null,
-            sourceUri = null,
-        )
-    }
-
-    fun getRoot(): MediaItem {
-        return buildMediaItem(
-            title = "Root folder",
-            mediaId = rootKey,
-            isPlayable = false,
-            folderType = FOLDER_TYPE_MIXED
-        )
-    }
-
-    fun getCachedChildren(parent: String): List<MediaItem>? = mediaItemsTree[parent]
-    fun getCachedMediaItem(mediaId: String): MediaItem? = mediaItemsMap[mediaId]
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun getChildren(parent: String): List<MediaItem>? {
-        val parentKey = MediaKey.fromString(parent)
-        val mediaItems = when (parentKey.type) {
-            KeyType.UNKNOWN -> null
-            KeyType.ROOT -> listOf(
-                buildMediaItem(
-                    title = "AllTracksUiEvent tracks",
-                    mediaId = MediaKey.fromParent(
-                        parent = parentKey,
-                        keyType = KeyType.ALL_TRACKS,
-                        itemIndexOrId = 0
-                    ),
-                    isPlayable = false,
-                    folderType = FOLDER_TYPE_TITLES
-                ),
-                buildMediaItem(
-                    title = "Albums",
-                    mediaId = MediaKey.fromParent(
-                        parent = parentKey,
-                        keyType = KeyType.ALBUMS_ROOT,
-                        itemIndexOrId = 0
-                    ),
-                    isPlayable = false,
-                    folderType = FOLDER_TYPE_ALBUMS
-                ),
-                buildMediaItem(
-                    title = "Artists",
-                    mediaId = MediaKey.fromParent(
-                        parent = parentKey,
-                        keyType = KeyType.ARTISTS_ROOT,
-                        itemIndexOrId = 0
-                    ),
-                    isPlayable = false,
-                    folderType = FOLDER_TYPE_ARTISTS
+    suspend fun getChildren(parent: String): List<MediaItem> {
+        val cachedChildren = getCachedChildren(parent = parent)
+        if (cachedChildren != null) {
+            return cachedChildren
+        }
+        val parentKey = mediaItemsMap[parent]?.first ?: return listOf()
+        val mediaItems: List<Pair<KeyType, MediaItem>> = when (parentKey) {
+            is KeyType.Root -> {
+                listOf(
+                    KeyType.TracksRoot to tracksRoot,
+                    KeyType.ArtistsRoot to artistsRoot,
+                    KeyType.AlbumsRoot to albumsRoot,
+                    KeyType.GenresRoot to genresRoot
                 )
-            )
-            KeyType.ALL_TRACKS -> {
-                trackRepository.getAllTracks().first().mapIndexed { index, track ->
-                    track.buildMediaItem(parent = parentKey, index = index.toLong())
-                }
             }
-            KeyType.ALBUMS_ROOT -> {
-                albumRepository.getAlbums().first().map {
-                    it.buildMediaItem(parentKey)
-                }
+
+            is KeyType.TracksRoot -> {
+                trackRepository.getAllTracks().first()
+                    .map { KeyType.TrackKey(trackId = it.id) to it.toMediaItem() }
             }
-            KeyType.ARTISTS_ROOT -> {
+
+            is KeyType.AlbumsRoot -> {
+                albumRepository.getAlbums().first()
+                    .map { KeyType.AlbumKey(albumId = it.id) to it.toMediaItem() }
+            }
+
+            is KeyType.ArtistsRoot -> {
                 artistRepository.getArtists().first()
-                    .map { it.buildMediaItem(parentKey) }
+                    .map { KeyType.ArtistKey(artistId = it.id) to it.toMediaItem() }
             }
-            KeyType.GENRES_ROOT -> null
-            KeyType.PLAYLISTS_ROOT -> null
-            KeyType.ALBUM -> {
-                trackRepository.getTracksForAlbum(parentKey.itemIndexOrId).first()
-                    .mapIndexed { index, track ->
-                        track.buildMediaItem(parent = parentKey, index = index.toLong())
-                    }
+
+            is KeyType.GenresRoot -> {
+                genreRepository.getGenres().first()
+                    .map { KeyType.GenreKey(genreId = it.id) to it.toMediaItem() }
             }
-            KeyType.ARTIST -> {
-                artistRepository.getArtist(parentKey.itemIndexOrId).map {
-                    it.artistAlbums
-                }.first().map { it.buildMediaItem(parentKey) }
+
+            is KeyType.PlaylistRoot -> {
+                playlistRepository.getPlaylists().first()
+                    .map { KeyType.PlaylistKey(playlistId = it.id) to it.toMediaItem() }
             }
-            KeyType.GENRE -> null
-            KeyType.PLAYLIST -> null
-            KeyType.TRACK -> null
+
+            is KeyType.AlbumKey -> {
+                trackRepository.getTracksForAlbum(parentKey.albumId).first()
+                    .map { KeyType.TrackKey(trackId = it.id) to it.toMediaItem() }
+            }
+
+            is KeyType.ArtistKey -> {
+                artistRepository.getArtist(parentKey.artistId)
+                    .map { it.artistAlbums + it.artistAppearsOn }.first()
+                    .map { KeyType.AlbumKey(albumId = it.id) to it.toMediaItem() }
+            }
+
+            is KeyType.GenreKey -> {
+                trackRepository.getTracksForGenre(parentKey.genreId).first()
+                    .map { KeyType.TrackKey(trackId = it.id) to it.toMediaItem() }
+            }
+
+            is KeyType.PlaylistKey -> {
+                trackRepository.getTracksForPlaylist(parentKey.playlistId).first()
+                    .map { KeyType.TrackKey(trackId = it.id) to it.toMediaItem() }
+            }
+
+            is KeyType.TrackKey -> throw IllegalStateException("Track should not have children")
         }
-        return mediaItems?.also {
-            mediaItemsTree[parent] = it
+
+        saveItems(mediaItems = mediaItems)
+        val items = mediaItems.map { it.second }
+        mediaItemsTree[parent] = items
+        return items
+    }
+
+    private fun saveItems(mediaItems: List<Pair<KeyType, MediaItem>>) {
+        mediaItems.forEach { (key, item) ->
+            mediaItemsMap[item.mediaId] = key to item
         }
     }
 
-    suspend fun getItem(mediaId: String): MediaItem? {
-        val mediaKey = MediaKey.fromString(mediaId)
-        val mediaItem = when (mediaKey.type) {
-            KeyType.TRACK -> {
-                trackRepository.getTrack(mediaKey.itemIndexOrId).first().track.buildMediaItem(
-                    parent = rootKey,
-                    index = 0
-                )
-            }
-            else -> null
-        }
-        return mediaItem?.also {
-            mediaItemsMap[mediaId] = it
-        }
+    fun getItem(mediaId: String): MediaItem? {
+        return mediaItemsMap[mediaId]?.second
     }
 
-    enum class KeyType {
-        UNKNOWN,
-        ROOT,
-        ALL_TRACKS,
-        ALBUMS_ROOT,
-        ARTISTS_ROOT,
-        GENRES_ROOT,
-        PLAYLISTS_ROOT,
-        ALBUM,
-        ARTIST,
-        GENRE,
-        PLAYLIST,
-        TRACK
+    sealed interface KeyType {
+        object Root : KeyType
+        object TracksRoot : KeyType
+        object AlbumsRoot : KeyType
+        object ArtistsRoot : KeyType
+        object GenresRoot : KeyType
+        object PlaylistRoot : KeyType
+        data class AlbumKey(val albumId: Long) : KeyType
+        data class ArtistKey(val artistId: Long) : KeyType
+        data class GenreKey(val genreId: Long) : KeyType
+        data class PlaylistKey(val playlistId: Long) : KeyType
+        data class TrackKey(val trackId: Long) : KeyType
     }
 
 //    private suspend fun loadImage(uri: Uri): ByteArray {

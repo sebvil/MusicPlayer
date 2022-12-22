@@ -16,23 +16,19 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
-import com.sebastianvm.musicplayer.util.extensions.uri
-import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -53,10 +49,10 @@ class MediaPlaybackService : MediaLibraryService() {
     @Inject
     lateinit var mediaTree: MediaTree
 
-    private lateinit var player: ExoPlayer
+    private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<TrackWithQueueId>> = MutableStateFlow(listOf())
 
+    private val serviceScope = MainScope() + CoroutineName("Playback Service")
 
     override fun onCreate() {
         super.onCreate()
@@ -68,29 +64,29 @@ class MediaPlaybackService : MediaLibraryService() {
         player = ExoPlayer.Builder(this)
             .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true).build()
 
-        CoroutineScope(mainDispatcher).launch {
+        serviceScope.launch {
             initializeQueue()
         }
 
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                CoroutineScope(mainDispatcher).launch {
+                Log.i("Auto", "playing changed")
+                serviceScope.launch {
                     updateQueue()
-                    savePlaybackInfo()
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                CoroutineScope(mainDispatcher).launch {
+                Log.i("Auto", "metadata changed")
+                serviceScope.launch {
                     updateQueue()
-                    savePlaybackInfo()
                 }
             }
 
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                CoroutineScope(mainDispatcher).launch {
+                Log.i("Auto", "timeline changed")
+                serviceScope.launch {
                     updateQueue()
-                    savePlaybackInfo()
                 }
             }
 
@@ -101,21 +97,15 @@ class MediaPlaybackService : MediaLibraryService() {
             }
         })
         mediaSession = MediaLibrarySession.Builder(
-            this,
-            player,
-            object : MediaLibrarySession.Callback {
+            /* service = */ this,
+            /* player = */ player,
+            /* callback = */ object : MediaLibrarySession.Callback {
                 override fun onGetLibraryRoot(
                     session: MediaLibrarySession,
                     browser: MediaSession.ControllerInfo,
                     params: LibraryParams?
                 ): ListenableFuture<LibraryResult<MediaItem>> {
-                    Log.i("000Player", "get root")
-                    return Futures.immediateFuture(
-                        LibraryResult.ofItem(
-                            mediaTree.getRoot(),
-                            params
-                        )
-                    )
+                    return Futures.immediateFuture(LibraryResult.ofItem(mediaTree.root, params))
                 }
 
                 override fun onGetChildren(
@@ -126,16 +116,11 @@ class MediaPlaybackService : MediaLibraryService() {
                     pageSize: Int,
                     params: LibraryParams?
                 ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-                    Log.i("000Player", "get parent: $parentId")
-                    return mediaTree.getCachedChildren(parentId)?.let {
-                        Log.i("000Player", "cached children: ${it.map { child -> child.mediaId }}")
-                        Futures.immediateFuture(LibraryResult.ofItemList(it, params))
-                    } ?: CoroutineScope(mainDispatcher).async {
-                        mediaTree.getChildren(parentId)?.let {
-                            Log.i("000Player", "children: ${it.map { child -> child.mediaId }}")
+                    return serviceScope.future {
+                        mediaTree.getChildren(parentId).let {
                             LibraryResult.ofItemList(it, params)
-                        } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                    }.asListenableFuture()
+                        }
+                    }
                 }
 
                 override fun onGetItem(
@@ -143,14 +128,25 @@ class MediaPlaybackService : MediaLibraryService() {
                     browser: MediaSession.ControllerInfo,
                     mediaId: String
                 ): ListenableFuture<LibraryResult<MediaItem>> {
-                    Log.i("000Player", "get item: $mediaId")
-                    return mediaTree.getCachedMediaItem(mediaId)
-                        ?.let { Futures.immediateFuture(LibraryResult.ofItem(it, null)) }
-                        ?: CoroutineScope(mainDispatcher).future {
-                            mediaTree.getItem(mediaId)?.let {
-                                LibraryResult.ofItem(it, null)
-                            } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                        }
+                    Log.i("Auto", "getting item")
+                    return serviceScope.future {
+                        mediaTree.getItem(mediaId)?.let {
+                            LibraryResult.ofItem(it, null)
+                        } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                    }
+                }
+
+                override fun onSubscribe(
+                    session: MediaLibrarySession,
+                    browser: MediaSession.ControllerInfo,
+                    parentId: String,
+                    params: LibraryParams?
+                ): ListenableFuture<LibraryResult<Void>> {
+                    return serviceScope.future {
+                        val children = mediaTree.getChildren(parentId)
+                        session.notifyChildrenChanged(browser, parentId, children.size, params)
+                        LibraryResult.ofVoid()
+                    }
                 }
 
                 override fun onAddMediaItems(
@@ -158,10 +154,9 @@ class MediaPlaybackService : MediaLibraryService() {
                     controller: MediaSession.ControllerInfo,
                     mediaItems: MutableList<MediaItem>
                 ): ListenableFuture<MutableList<MediaItem>> {
-                    val newMediaItems = mediaItems.map {
-                        it.buildUpon().apply {
-                            uri = UriUtils.getTrackUri(it.mediaId.toLong())
-                        }.build()
+                    Log.i("Auto", "adding media items: ${mediaItems.size}")
+                    val newMediaItems = mediaItems.mapNotNull {
+                        mediaTree.getItem(mediaId = it.mediaId)
                     }.toMutableList()
                     return Futures.immediateFuture(newMediaItems)
                 }
@@ -210,33 +205,12 @@ class MediaPlaybackService : MediaLibraryService() {
         super.onDestroy()
         player.release()
         mediaSession.release()
+        serviceScope.cancel()
     }
 
-    suspend fun savePlaybackInfo() {
-        val id = player.currentMediaItem?.uniqueId ?: 0L
-        val contentPosition = player.contentPosition
-        playbackManager.modifySavedPlaybackInfo(
-            PlaybackInfo(
-                queuedTracks = queue.value,
-                nowPlayingId = id,
-                lastRecordedPosition = contentPosition
-            )
-        )
-    }
 
     suspend fun updateQueue() {
-        val timeline = player.currentTimeline
-        withContext(defaultDispatcher) {
-            val newQueue = (0 until timeline.windowCount).map {
-                TrackWithQueueId.fromMediaItem(
-                    mediaItem = timeline.getWindow(
-                        it,
-                        Timeline.Window()
-                    ).mediaItem
-                )
-            }
-            queue.value = newQueue
-        }
+        playbackManager.modifySavedPlaybackInfo(player)
     }
 
 }
