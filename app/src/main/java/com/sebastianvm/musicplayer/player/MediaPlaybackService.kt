@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.player
 
-import android.util.Log
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -70,21 +69,18 @@ class MediaPlaybackService : MediaLibraryService() {
 
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                Log.i("Auto", "playing changed")
                 serviceScope.launch {
                     updateQueue()
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                Log.i("Auto", "metadata changed")
                 serviceScope.launch {
                     updateQueue()
                 }
             }
 
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                Log.i("Auto", "timeline changed")
                 serviceScope.launch {
                     updateQueue()
                 }
@@ -128,7 +124,6 @@ class MediaPlaybackService : MediaLibraryService() {
                     browser: MediaSession.ControllerInfo,
                     mediaId: String
                 ): ListenableFuture<LibraryResult<MediaItem>> {
-                    Log.i("Auto", "getting item")
                     return serviceScope.future {
                         mediaTree.getItem(mediaId)?.let {
                             LibraryResult.ofItem(it, null)
@@ -154,7 +149,6 @@ class MediaPlaybackService : MediaLibraryService() {
                     controller: MediaSession.ControllerInfo,
                     mediaItems: MutableList<MediaItem>
                 ): ListenableFuture<MutableList<MediaItem>> {
-                    Log.i("Auto", "adding media items: ${mediaItems.size}")
                     val newMediaItems = mediaItems.mapNotNull {
                         mediaTree.getItem(mediaId = it.mediaId)
                     }.toMutableList()
