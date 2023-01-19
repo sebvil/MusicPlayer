@@ -18,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
@@ -28,7 +27,6 @@ import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun LibraryRoute(
     viewModel: LibraryViewModel,

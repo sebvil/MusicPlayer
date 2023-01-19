@@ -10,7 +10,6 @@ plugins {
 
 android {
     compileSdk 33
-    buildToolsVersion "33.0.0"
 
     defaultConfig {
         applicationId "com.sebastianvm.musicplayer"
@@ -32,23 +31,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
     buildFeatures {
         compose true
         viewBinding true
-    }
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/AL2.0', 'META-INF/LGPL2.1']
-        }
     }
 
     testOptions {
@@ -71,13 +65,13 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     // Room
-    def room_version = '2.5.0-rc01'
+    def room_version = '2.5.0'
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     // Lifecycle
-    def lifecycle_version = '2.6.0-alpha03'
+    def lifecycle_version = '2.6.0-alpha04'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
@@ -108,14 +102,14 @@ dependencies {
 
     // Material components
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha03'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha04'
 
     // UI + tooling
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
 
     // Accompanist
-    def accompanist_version = '0.28.0'
+    def accompanist_version = '0.29.0-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
 
