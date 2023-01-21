@@ -3,15 +3,11 @@ package com.sebastianvm.musicplayer.ui.library.artistlist
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
@@ -30,7 +26,7 @@ class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistListState, ArtistListUserAction, ArtistListUiEvent>(initialState) {
+) : BaseViewModel<ArtistListState, ArtistListUserAction, UiEvent>(initialState) {
 
     init {
         artistRepository.getArtists().onEach { artists ->
@@ -41,41 +37,17 @@ class ArtistListViewModel @Inject constructor(
                     }
                 )
             }
-            addUiEvent(ArtistListUiEvent.ScrollToTop)
         }.launchIn(viewModelScope)
     }
 
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
-            is ArtistListUserAction.ArtistRowClicked -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.Artist(
-                            ArtistArguments(artistId = action.artistId)
-                        )
-                    )
-                )
-            }
-
-            is ArtistListUserAction.ArtistOverflowMenuIconClicked -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.ArtistContextMenu(
-                            ArtistContextMenuArguments(artistId = action.artistId)
-                        )
-                    )
-                )
-            }
-
             is ArtistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
                     preferencesRepository.toggleArtistListSortOrder()
                 }
             }
-
-            is ArtistListUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
-
         }
     }
 }
@@ -92,13 +64,7 @@ object InitialArtistListStateModule {
     }
 }
 
-sealed interface ArtistListUiEvent : UiEvent {
-    object ScrollToTop : ArtistListUiEvent
-}
 
 sealed interface ArtistListUserAction : UserAction {
-    data class ArtistRowClicked(val artistId: Long) : ArtistListUserAction
-    data class ArtistOverflowMenuIconClicked(val artistId: Long) : ArtistListUserAction
-    object UpButtonClicked : ArtistListUserAction
     object SortByButtonClicked : ArtistListUserAction
 }
