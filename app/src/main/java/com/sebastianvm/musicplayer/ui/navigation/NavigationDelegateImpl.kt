@@ -50,7 +50,7 @@ class NavigationDelegateImpl(private val navController: NavController) : Navigat
         }
     }
 
-    private fun navigateUp() {
+    override fun navigateUp() {
         navController.navigateUp()
     }
 

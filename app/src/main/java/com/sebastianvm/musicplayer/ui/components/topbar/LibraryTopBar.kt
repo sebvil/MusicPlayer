@@ -29,6 +29,8 @@ fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate, titleAlpha: Fl
     )
 }
 
+
+// TODO remove sort button from here to not allow sorting unless at the top
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryTopBar(
