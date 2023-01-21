@@ -8,9 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +21,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = android.graphics.Color.TRANSPARENT
+        window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
@@ -33,10 +33,12 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            val systemUiController = rememberSystemUiController()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
-                systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = useDarkIcons)
+                WindowCompat.getInsetsController(
+                    window,
+                    window.decorView
+                ).isAppearanceLightStatusBars = useDarkIcons
             }
             NavHostWrapper { navController ->
                 AppNavHost(navController = navController)
