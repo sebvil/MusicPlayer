@@ -18,7 +18,9 @@ import kotlinx.serialization.Serializable
 data class TrackListArguments(val trackList: TrackList) :
     NavigationArguments
 
-fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelegate) {
+fun NavGraphBuilder.trackListNavDestination(
+    navigationDelegate: NavigationDelegate,
+) {
     screenDestination<TrackListViewModel>(
         destination = NavigationRoute.TrackList,
         destinationType = DestinationType.Screen
@@ -41,6 +43,7 @@ fun NavGraphBuilder.trackListNavDestination(navigationDelegate: NavigationDelega
                     )
                 )
             },
-            navigateBack = { navigationDelegate.navigateUp() })
+            navigateBack = { navigationDelegate.navigateUp() },
+        )
     }
 }
