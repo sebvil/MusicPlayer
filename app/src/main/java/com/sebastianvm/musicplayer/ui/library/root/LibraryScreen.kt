@@ -2,6 +2,8 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,7 +54,7 @@ fun LibraryRoute(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun LibraryScreen(
     state: LibraryState,
@@ -68,6 +70,7 @@ fun LibraryScreen(
     val context = LocalContext.current
     Scaffold(
         modifier = modifier,
+        topBar = {},
         floatingActionButton = {
             PermissionHandler(
                 permission = Permission.ReadAudio,
@@ -104,7 +107,8 @@ fun LibraryScreen(
             onAlbumsItemClicked = navigateToAlbumList,
             onGenresItemClicked = navigateToGenreList,
             onPlaylistsItemClicked = navigateToPlaylistList,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .consumeWindowInsets(paddingValues)
         )
     }
 }

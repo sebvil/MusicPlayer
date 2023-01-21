@@ -112,7 +112,7 @@ dependencies {
     def accompanist_version = '0.29.0-alpha'
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_version"
-
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     // Glide
     implementation "io.coil-kt:coil-compose:$coil_version"
 
