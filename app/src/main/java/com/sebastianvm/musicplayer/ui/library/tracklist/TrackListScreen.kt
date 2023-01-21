@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -11,7 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -35,6 +33,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarState
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @Composable
 fun TrackListRoute(
@@ -69,7 +68,7 @@ fun TrackListRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackListScreen(
     state: TrackListState,
@@ -94,7 +93,7 @@ fun TrackListScreen(
             }
         }
     }
-    Scaffold(
+    ScreenScaffold(
         modifier = modifier,
         floatingActionButton = {
             if (state.trackListType is MediaGroup.Playlist) {

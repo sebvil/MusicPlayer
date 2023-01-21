@@ -3,14 +3,12 @@ package com.sebastianvm.musicplayer.ui.library.root
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +26,7 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @Composable
 fun LibraryRoute(
@@ -68,9 +67,8 @@ fun LibraryScreen(
 ) {
 
     val context = LocalContext.current
-    Scaffold(
+    ScreenScaffold(
         modifier = modifier,
-        topBar = {},
         floatingActionButton = {
             PermissionHandler(
                 permission = Permission.ReadAudio,
@@ -108,7 +106,7 @@ fun LibraryScreen(
             onGenresItemClicked = navigateToGenreList,
             onPlaylistsItemClicked = navigateToPlaylistList,
             modifier = Modifier
-                .consumeWindowInsets(paddingValues)
+                .padding(paddingValues)
         )
     }
 }
