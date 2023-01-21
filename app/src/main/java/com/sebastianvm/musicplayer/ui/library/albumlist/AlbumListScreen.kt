@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -22,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @Composable
 fun AlbumListRoute(
@@ -43,6 +45,7 @@ fun AlbumListRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlbumListScreen(
     state: AlbumListState,
@@ -52,7 +55,8 @@ fun AlbumListScreen(
     navigateBack: NoArgNavFunction,
     modifier: Modifier = Modifier
 ) {
-    ScreenLayout(
+    ScreenScaffold(
+        modifier = modifier,
         topBar = {
             LibraryTopBar(
                 title = stringResource(id = R.string.albums),
@@ -66,12 +70,12 @@ fun AlbumListScreen(
                     }
                 }
             )
-        }) {
+        }) { paddingValues ->
         AlbumListLayout(
             state = state,
             navigateToAlbum = navigateToAlbum,
             openAlbumContextMenu = openAlbumContextMenu,
-            modifier = modifier
+            modifier = Modifier.padding(paddingValues)
         )
     }
 }
