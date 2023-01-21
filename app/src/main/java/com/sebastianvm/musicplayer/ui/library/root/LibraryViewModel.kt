@@ -21,7 +21,7 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState,
-) : BaseViewModel<LibraryState, LibraryUserAction, LibraryUiEvent>(initialState) {
+) : BaseViewModel<LibraryState, LibraryUserAction, UiEvent>(initialState) {
 
     init {
         musicRepository.getCounts().onEach { counts ->
@@ -63,5 +63,4 @@ object InitialLibraryStateModule {
     )
 }
 
-sealed class LibraryUiEvent : UiEvent
 sealed class LibraryUserAction : UserAction
