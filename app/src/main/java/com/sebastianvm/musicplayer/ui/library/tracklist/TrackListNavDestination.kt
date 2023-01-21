@@ -2,14 +2,12 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -27,20 +25,17 @@ fun NavGraphBuilder.trackListNavDestination(
     ) { viewModel ->
         TrackListRoute(
             viewModel = viewModel,
-            navigateToTrackSearchScreen = { playlistId ->
+            openTrackContextMenu = { args ->
+                navigationDelegate.navigateToScreen(NavigationDestination.TrackContextMenu(args))
+            },
+            navigateToTrackSearchScreen = { args ->
                 navigationDelegate.navigateToScreen(
-                    NavigationDestination.TrackSearch(
-                        TrackSearchArguments(playlistId = playlistId)
-                    )
+                    NavigationDestination.TrackSearch(args)
                 )
             },
-            openSortMenu = { sortableListType ->
+            openSortMenu = { args ->
                 navigationDelegate.navigateToScreen(
-                    NavigationDestination.SortMenu(
-                        SortMenuArguments(
-                            sortableListType
-                        )
-                    )
+                    NavigationDestination.SortMenu(args)
                 )
             },
             navigateBack = { navigationDelegate.navigateUp() },

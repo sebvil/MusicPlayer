@@ -82,7 +82,7 @@ private fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParamP
         TrackListScreen(
             state = state,
             onTrackClicked = {},
-            onTrackOverflowMenuIconClicked = { _, _, _ -> },
+            openTrackContextMenu = {},
             onDismissPlaybackErrorDialog = {},
             navigateToTrackSearchScreen = {},
             openSortMenu = {},

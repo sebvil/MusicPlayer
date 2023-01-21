@@ -24,7 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.toSortableListType
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.header.CollapsingImageHeader
@@ -33,13 +34,15 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarState
+import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @Composable
 fun TrackListRoute(
     viewModel: TrackListViewModel,
-    openSortMenu: (listType: SortableListType) -> Unit,
-    navigateToTrackSearchScreen: (playlistId: Long) -> Unit,
+    openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
+    openSortMenu: (args: SortMenuArguments) -> Unit,
+    navigateToTrackSearchScreen: (args: TrackSearchArguments) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,18 +52,10 @@ fun TrackListRoute(
         onTrackClicked = { trackIndex ->
             viewModel.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
         },
-        onTrackOverflowMenuIconClicked = { trackIndex, trackId, position ->
-            viewModel.handle(
-                TrackListUserAction.TrackOverflowMenuIconClicked(
-                    trackIndex = trackIndex,
-                    trackId = trackId,
-                    position = position
-                )
-            )
-        },
         onDismissPlaybackErrorDialog = {
             viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
         },
+        openTrackContextMenu = openTrackContextMenu,
         navigateToTrackSearchScreen = navigateToTrackSearchScreen,
         openSortMenu = openSortMenu,
         navigateBack = navigateBack,
@@ -73,10 +68,10 @@ fun TrackListRoute(
 fun TrackListScreen(
     state: TrackListState,
     onTrackClicked: (trackIndex: Int) -> Unit,
-    onTrackOverflowMenuIconClicked: (trackIndex: Int, trackId: Long, position: Long?) -> Unit,
     onDismissPlaybackErrorDialog: () -> Unit,
-    navigateToTrackSearchScreen: (playlistId: Long) -> Unit,
-    openSortMenu: (listType: SortableListType) -> Unit,
+    openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
+    openSortMenu: (args: SortMenuArguments) -> Unit,
+    navigateToTrackSearchScreen: (args: TrackSearchArguments) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -107,7 +102,7 @@ fun TrackListScreen(
                     },
                     onClick = {
                         val trackListType = state.trackListType
-                        navigateToTrackSearchScreen(trackListType.playlistId)
+                        navigateToTrackSearchScreen(TrackSearchArguments(playlistId = trackListType.playlistId))
                     }
                 )
             }
@@ -124,7 +119,7 @@ fun TrackListScreen(
                     }
 
                     override fun sortByClicked() {
-                        openSortMenu(state.trackListType.toSortableListType())
+                        openSortMenu(SortMenuArguments(listType = state.trackListType.toSortableListType()))
                     }
                 },
                 titleAlpha = titleAlpha.value
@@ -134,7 +129,7 @@ fun TrackListScreen(
         TrackListLayout(
             state = state,
             onTrackClicked = onTrackClicked,
-            onTrackOverflowMenuIconClicked = onTrackOverflowMenuIconClicked,
+            openTrackContextMenu = openTrackContextMenu,
             onDismissPlaybackErrorDialog = onDismissPlaybackErrorDialog,
             updateAlpha = { newAlpha -> maybeTitleAlpha.value = newAlpha },
             modifier = Modifier.padding(paddingValues)
@@ -146,7 +141,7 @@ fun TrackListScreen(
 fun TrackListLayout(
     state: TrackListState,
     onTrackClicked: (trackIndex: Int) -> Unit,
-    onTrackOverflowMenuIconClicked: (trackIndex: Int, trackId: Long, position: Long?) -> Unit,
+    openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
     onDismissPlaybackErrorDialog: () -> Unit,
     updateAlpha: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -181,10 +176,13 @@ fun TrackListLayout(
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            onTrackOverflowMenuIconClicked(
-                                index,
-                                item.id,
-                                (item as? ModelListItemState.WithPosition)?.position
+                            openTrackContextMenu(
+                                TrackContextMenuArguments(
+                                    trackId = item.id,
+                                    mediaGroup = state.trackListType,
+                                    trackIndex = index,
+                                    positionInPlaylist = (item as? ModelListItemState.WithPosition)?.position
+                                )
                             )
                         })
                     {

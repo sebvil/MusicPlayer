@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
@@ -75,21 +74,6 @@ class TrackListViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             }
-
-            is TrackListUserAction.TrackOverflowMenuIconClicked -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackContextMenu(
-                            TrackContextMenuArguments(
-                                trackId = action.trackId,
-                                mediaGroup = state.trackListType,
-                                trackIndex = action.trackIndex,
-                                positionInPlaylist = action.position
-                            )
-                        )
-                    )
-                )
-            }
         }
     }
 
@@ -122,11 +106,5 @@ object InitialTrackListStateModule {
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction
-    data class TrackOverflowMenuIconClicked(
-        val trackIndex: Int,
-        val trackId: Long,
-        val position: Long? = null
-    ) : TrackListUserAction
-
     object DismissPlaybackErrorDialog : TrackListUserAction
 }
