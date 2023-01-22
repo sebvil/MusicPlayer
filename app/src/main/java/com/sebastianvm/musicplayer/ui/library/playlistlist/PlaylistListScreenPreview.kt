@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.playlistlist
 
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -11,7 +10,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 
 class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
     private val playlistsList: List<ModelListItemState>
@@ -53,8 +51,12 @@ private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreview
     ScreenPreview {
         PlaylistListScreen(
             state = state,
-            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance(),
-            listState = rememberLazyListState()
+            onSortByClicked = {},
+            onDismissPlaylistCreationErrorDialog = {},
+            onCreatePlaylistCLicked = {},
+            navigateToPlaylist = {},
+            openPlaylistContextMenu = {},
+            navigateBack = {}
         )
     }
 }
