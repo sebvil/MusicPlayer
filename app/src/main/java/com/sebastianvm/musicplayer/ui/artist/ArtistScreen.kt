@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,32 +14,60 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavFunction
+import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
+
+
+@Composable
+fun ArtistRoute(
+    viewModel: ArtistViewModel,
+    navigateToAlbum: NavFunction<TrackListArguments>,
+    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
+    navigateBack: NoArgNavFunction,
+) {
+    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+
+    ArtistScreen(
+        state = state,
+        navigateToAlbum = navigateToAlbum,
+        openAlbumContextMenu = openAlbumContextMenu,
+        navigateBack = navigateBack
+    )
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistScreen(
     state: ArtistState,
-    screenDelegate: ScreenDelegate<ArtistUserAction> = DefaultScreenDelegateProvider.getDefaultInstance()
+    navigateToAlbum: NavFunction<TrackListArguments>,
+    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
+    navigateBack: NoArgNavFunction,
+    modifier: Modifier = Modifier
 ) {
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
 
-    ScreenLayout(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    ScreenScaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(text = state.artistName) },
                 navigationIcon = {
-                    IconButton(onClick = { screenDelegate.handle(ArtistUserAction.UpButtonClicked) }) {
+                    IconButton(onClick = { navigateBack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_back),
                             contentDescription = stringResource(id = R.string.back)
@@ -49,16 +78,26 @@ fun ArtistScreen(
             )
 
         }
-    ) {
-        ArtistLayout(state, screenDelegate)
+    ) { paddingValues ->
+        ArtistLayout(
+            state = state,
+            navigateToAlbum = navigateToAlbum,
+            openAlbumContextMenu = openAlbumContextMenu,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistLayout(state: ArtistState, screenDelegate: ScreenDelegate<ArtistUserAction>) {
-    LazyColumn {
+fun ArtistLayout(
+    state: ArtistState,
+    navigateToAlbum: NavFunction<TrackListArguments>,
+    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
         items(items = state.listItems) { item ->
             when (item) {
                 is ArtistScreenItem.SectionHeaderItem -> {
@@ -74,16 +113,12 @@ fun ArtistLayout(state: ArtistState, screenDelegate: ScreenDelegate<ArtistUserAc
                     ModelListItem(
                         state = item.state,
                         modifier = Modifier.clickable {
-                            screenDelegate.handle(ArtistUserAction.AlbumClicked(item.state.id))
+                            navigateToAlbum(TrackListArguments(trackList = MediaGroup.Album(albumId = item.id)))
                         },
                         trailingContent = {
                             IconButton(
                                 onClick = {
-                                    screenDelegate.handle(
-                                        ArtistUserAction.AlbumOverflowMenuIconClicked(
-                                            item.state.id
-                                        )
-                                    )
+                                    openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
                                 },
                             ) {
                                 Icon(
