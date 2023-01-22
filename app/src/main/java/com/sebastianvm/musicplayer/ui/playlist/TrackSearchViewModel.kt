@@ -91,7 +91,7 @@ class TrackSearchViewModel @Inject constructor(
                         addTrackConfirmationDialogState = null
                     )
                 }
-                addTrackToPlaylist(trackId = action.trackId, trackName = action.trackName)
+                addTrackToPlaylist(trackId = action.trackId)
             }
 
             is TrackSearchUserAction.HideTracksCheckToggled -> {
@@ -114,7 +114,7 @@ class TrackSearchViewModel @Inject constructor(
                     }
                     return
                 }
-                addTrackToPlaylist(trackId = action.trackId, trackName = action.trackName)
+                addTrackToPlaylist(trackId = action.trackId)
             }
 
             is TrackSearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
