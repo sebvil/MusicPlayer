@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import dagger.Module
 import dagger.Provides
@@ -51,7 +50,7 @@ class SearchViewModel @Inject constructor(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : BaseViewModel<SearchState, SearchUserAction, UiEvent>(initialState) {
+) : BaseViewModel<SearchState, SearchUserAction>(initialState) {
 
     private val query =
         MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))

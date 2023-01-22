@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +25,7 @@ class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistListState, ArtistListUserAction, UiEvent>(initialState) {
+) : BaseViewModel<ArtistListState, ArtistListUserAction>(initialState) {
 
     init {
         artistRepository.getArtists().onEach { artists ->

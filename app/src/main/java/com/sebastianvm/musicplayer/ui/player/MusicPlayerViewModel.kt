@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class MusicPlayerViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
     initialState: MusicPlayerState,
-) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction, UiEvent>(initialState) {
+) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction>(initialState) {
 
     init {
         playbackManager.playbackState.onEach {

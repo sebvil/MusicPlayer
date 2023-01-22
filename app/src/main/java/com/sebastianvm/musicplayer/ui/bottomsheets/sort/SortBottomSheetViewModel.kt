@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -31,7 +30,7 @@ import javax.inject.Inject
 class SortBottomSheetViewModel @Inject constructor(
     initialState: SortBottomSheetState,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction, UiEvent>(
+) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>(
     initialState
 ) {
 

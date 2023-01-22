@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +21,7 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,
     albumRepository: AlbumRepository,
-) : BaseViewModel<AlbumListState, AlbumListUserAction, UiEvent>(initialState) {
+) : BaseViewModel<AlbumListState, AlbumListUserAction>(initialState) {
     init {
         albumRepository.getAlbums().onEach { albums ->
             setState {

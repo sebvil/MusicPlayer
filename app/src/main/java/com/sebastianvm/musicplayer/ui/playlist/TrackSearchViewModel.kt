@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -39,7 +38,7 @@ class TrackSearchViewModel @Inject constructor(
     initialState: TrackSearchState,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
-) : BaseViewModel<TrackSearchState, TrackSearchUserAction, TrackSearchUiEvent>(initialState) {
+) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(initialState) {
 
     private val query = MutableStateFlow("")
     private val queryUpdater = combineToPair(query, stateFlow.map { it.hideTracksInPlaylist })
@@ -119,11 +118,12 @@ class TrackSearchViewModel @Inject constructor(
             }
 
             is TrackSearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
+            is TrackSearchUserAction.ToastShown -> setState { copy(showToast = false) }
         }
     }
 
 
-    private fun addTrackToPlaylist(trackId: Long, trackName: String) {
+    private fun addTrackToPlaylist(trackId: Long) {
         // We do this so the behavior is still the same in case the user presses on tracks very fast
         // and the db is not updated fast enough
         playlistSize.update { it + 1 }
@@ -140,7 +140,7 @@ class TrackSearchViewModel @Inject constructor(
                     position = playlistSize.value
                 )
             )
-            addUiEvent(TrackSearchUiEvent.ShowConfirmationToast(trackName))
+            setState { copy(showToast = true) }
         }
     }
 }
@@ -150,7 +150,8 @@ data class TrackSearchState(
     val trackSearchResults: List<ModelListItemState>,
     val playlistTrackIds: Set<Long> = setOf(),
     val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
-    val hideTracksInPlaylist: Boolean = true
+    val hideTracksInPlaylist: Boolean = true,
+    val showToast: Boolean = false
 ) : State
 
 
@@ -168,10 +169,6 @@ object InitialTrackSearchStateModule {
     }
 }
 
-sealed interface TrackSearchUiEvent : UiEvent {
-    data class ShowConfirmationToast(val trackName: String) : TrackSearchUiEvent
-}
-
 sealed interface TrackSearchUserAction : UserAction {
     data class TextChanged(val newText: String) : TrackSearchUserAction
     data class TrackClicked(val trackId: Long, val trackName: String) : TrackSearchUserAction
@@ -181,6 +178,7 @@ sealed interface TrackSearchUserAction : UserAction {
     object CancelAddTrackToPlaylist : TrackSearchUserAction
     object HideTracksCheckToggled : TrackSearchUserAction
     object UpButtonClicked : TrackSearchUserAction
+    object ToastShown : TrackSearchUserAction
 }
 
 data class AddTrackConfirmationDialogState(val trackId: Long, val trackName: String)

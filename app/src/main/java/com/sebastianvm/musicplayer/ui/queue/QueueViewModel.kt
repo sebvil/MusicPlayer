@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithP
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +21,7 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<QueueState, QueueUserAction, QueueUiEvent>(
+) : BaseViewModel<QueueState, QueueUserAction>(
     initialState
 ) {
 
@@ -37,11 +36,6 @@ class QueueViewModel @Inject constructor(
                         nowPlayingId = savedPlaybackInfo.nowPlayingId
                     )
                 }
-
-                addUiEvent(
-                    QueueUiEvent.ScrollToNowPlayingItem(
-                        savedPlaybackInfo.queuedTracks.indexOfFirst { it.uniqueQueueItemId == savedPlaybackInfo.nowPlayingId })
-                )
             }
         }
 
@@ -120,7 +114,4 @@ sealed interface QueueUserAction : UserAction {
     data class TrackOverflowMenuClicked(val trackId: Long) : QueueUserAction
 }
 
-sealed interface QueueUiEvent : UiEvent {
-    data class ScrollToNowPlayingItem(val index: Int) : QueueUiEvent
-}
 
