@@ -21,7 +21,7 @@ import javax.inject.Inject
 class MusicPlayerViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
     initialState: MusicPlayerState,
-) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction, MusicPlayerUiEvent>(initialState) {
+) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction, UiEvent>(initialState) {
 
     init {
         playbackManager.playbackState.onEach {
@@ -87,7 +87,6 @@ object InitialMusicPlayerStateModule {
     }
 }
 
-sealed interface MusicPlayerUiEvent : UiEvent
 sealed interface MusicPlayerUserAction : UserAction {
     object PlayToggled : MusicPlayerUserAction
     object NextButtonClicked : MusicPlayerUserAction

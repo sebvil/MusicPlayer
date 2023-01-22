@@ -51,7 +51,7 @@ class SearchViewModel @Inject constructor(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : BaseViewModel<SearchState, SearchUserAction, SearchUiEvent>(initialState) {
+) : BaseViewModel<SearchState, SearchUserAction, UiEvent>(initialState) {
 
     private val query =
         MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))
@@ -249,7 +249,6 @@ object InitialSearchStateModule {
     }
 }
 
-sealed class SearchUiEvent : UiEvent
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val id: Long) : SearchUserAction

@@ -17,7 +17,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val playbackManager: PlaybackManager
-) : BaseViewModel<MainActivityState, MainActivityUserAction, MainActivityUiEvent>(initialState) {
+) : BaseViewModel<MainActivityState, MainActivityUserAction, UiEvent>(initialState) {
     override fun handle(action: MainActivityUserAction) {
         when (action) {
             is MainActivityUserAction.ConnectToMusicService -> {
@@ -47,4 +47,3 @@ sealed class MainActivityUserAction : UserAction {
     object DisconnectFromMusicService : MainActivityUserAction()
 }
 
-sealed class MainActivityUiEvent : UiEvent

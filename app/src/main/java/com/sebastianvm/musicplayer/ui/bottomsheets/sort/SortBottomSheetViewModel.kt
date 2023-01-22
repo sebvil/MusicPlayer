@@ -31,7 +31,7 @@ import javax.inject.Inject
 class SortBottomSheetViewModel @Inject constructor(
     initialState: SortBottomSheetState,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction, SortBottomSheetUiEvent>(
+) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction, UiEvent>(
     initialState
 ) {
 
@@ -167,5 +167,3 @@ sealed class SortableListType : Parcelable {
 sealed interface SortBottomSheetUserAction : UserAction {
     data class MediaSortOptionClicked(val newSortOption: SortOptions) : SortBottomSheetUserAction
 }
-
-sealed interface SortBottomSheetUiEvent : UiEvent

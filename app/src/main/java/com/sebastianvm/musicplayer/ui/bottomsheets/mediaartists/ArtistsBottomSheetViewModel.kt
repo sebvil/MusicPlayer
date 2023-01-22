@@ -28,7 +28,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent>(
+    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction, UiEvent>(
         initialState
     ) {
     init {
@@ -78,5 +78,3 @@ object InitialArtistsBottomSheetStateModule {
 sealed interface ArtistsBottomSheetUserAction : UserAction {
     data class ArtistRowClicked(val artistId: Long) : ArtistsBottomSheetUserAction
 }
-
-sealed interface ArtistsBottomSheetUiEvent : UiEvent
