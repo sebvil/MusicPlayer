@@ -1,62 +1,83 @@
 package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenLayout
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navigation.NavFunction
+import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @Composable
-fun PlaylistListScreen(viewModel: PlaylistListViewModel, navigationDelegate: NavigationDelegate) {
-    val listState = rememberLazyListState()
-    Screen(
-        screenViewModel = viewModel,
-        eventHandler = { event ->
-            when (event) {
-                is PlaylistListUiEvent.ScrollToTop -> {
-                    listState.scrollToItem(0)
-                }
-            }
+fun PlaylistListRoute(
+    viewModel: PlaylistListViewModel,
+    navigateToPlaylist: NavFunction<TrackListArguments>,
+    openPlaylistContextMenu: NavFunction<PlaylistContextMenuArguments>,
+    navigateBack: NoArgNavFunction
+) {
+    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+
+    PlaylistListScreen(
+        state = state,
+        onSortByClicked = { viewModel.handle(PlaylistListUserAction.SortByClicked) },
+        onDismissPlaylistCreationErrorDialog = { viewModel.handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) },
+        onCreatePlaylistCLicked = { playlistName ->
+            viewModel.handle(
+                PlaylistListUserAction.CreatePlaylistButtonClicked(
+                    playlistName = playlistName
+                )
+            )
         },
-        navigationDelegate = navigationDelegate
-    ) { state, delegate ->
-        PlaylistListScreen(
-            state = state,
-            screenDelegate = delegate,
-            listState = listState
-        )
-    }
+        navigateToPlaylist = navigateToPlaylist,
+        openPlaylistContextMenu = openPlaylistContextMenu,
+        navigateBack = navigateBack
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistListScreen(
     state: PlaylistListState,
-    screenDelegate: ScreenDelegate<PlaylistListUserAction>,
-    listState: LazyListState
+    onSortByClicked: () -> Unit,
+    onDismissPlaylistCreationErrorDialog: () -> Unit,
+    onCreatePlaylistCLicked: (playlistName: String) -> Unit,
+    navigateToPlaylist: NavFunction<TrackListArguments>,
+    openPlaylistContextMenu: NavFunction<PlaylistContextMenuArguments>,
+    navigateBack: NoArgNavFunction,
+    modifier: Modifier = Modifier
 ) {
-    ScreenLayout(
-        fab = {
+    var isCreatePlaylistDialogOpen by remember {
+        mutableStateOf(false)
+    }
+    ScreenScaffold(
+        modifier = modifier,
+        floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text(text = stringResource(id = R.string.new_playlist)) },
-                onClick = { screenDelegate.handle(PlaylistListUserAction.AddPlaylistButtonClicked) },
+                onClick = { isCreatePlaylistDialogOpen = true },
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_plus),
@@ -69,15 +90,26 @@ fun PlaylistListScreen(
                 title = stringResource(id = R.string.playlists),
                 delegate = object : LibraryTopBarDelegate {
                     override fun sortByClicked() {
-                        screenDelegate.handle(PlaylistListUserAction.SortByButtonClicked)
+                        onSortByClicked()
                     }
 
                     override fun upButtonClicked() {
-                        screenDelegate.handle(PlaylistListUserAction.UpButtonClicked)
+                        navigateBack()
                     }
-                })
-        }) {
-        PlaylistListLayout(state = state, screenDelegate = screenDelegate, listState = listState)
+                }
+            )
+        }
+    ) { paddingValues ->
+        PlaylistListLayout(
+            state = state,
+            isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
+            onDismissPlaylistCreationDialog = { isCreatePlaylistDialogOpen = false },
+            onDismissPlaylistCreationErrorDialog = onDismissPlaylistCreationErrorDialog,
+            onCreatePlaylistCLicked = onCreatePlaylistCLicked,
+            navigateToPlaylist = navigateToPlaylist,
+            openPlaylistContextMenu = openPlaylistContextMenu,
+            modifier = Modifier.padding(paddingValues)
+        )
     }
 }
 
@@ -105,42 +137,37 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 @Composable
 fun PlaylistListLayout(
     state: PlaylistListState,
-    screenDelegate: ScreenDelegate<PlaylistListUserAction>,
-    listState: LazyListState
+    isCreatePlaylistDialogOpen: Boolean,
+    onDismissPlaylistCreationDialog: () -> Unit,
+    onDismissPlaylistCreationErrorDialog: () -> Unit,
+    onCreatePlaylistCLicked: (playlistName: String) -> Unit,
+    navigateToPlaylist: NavFunction<TrackListArguments>,
+    openPlaylistContextMenu: NavFunction<PlaylistContextMenuArguments>,
+    modifier: Modifier = Modifier
 ) {
-    if (state.isCreatePlaylistDialogOpen) {
+    if (isCreatePlaylistDialogOpen) {
         CreatePlaylistDialog(
-            onDismiss = { screenDelegate.handle(PlaylistListUserAction.DismissPlaylistCreationButtonClicked) },
-            onConfirm = { playlistName ->
-                screenDelegate.handle(
-                    PlaylistListUserAction.CreatePlaylistButtonClicked(
-                        playlistName
-                    )
-                )
-            }
+            onDismiss = onDismissPlaylistCreationDialog,
+            onConfirm = onCreatePlaylistCLicked
         )
     }
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = { screenDelegate.handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) },
+            onDismiss = onDismissPlaylistCreationErrorDialog,
         )
     }
-    LazyColumn(state = listState) {
+    LazyColumn(modifier = modifier) {
         items(state.playlistList) { item ->
             ModelListItem(
                 state = item,
                 modifier = Modifier.clickable {
-                    screenDelegate.handle(PlaylistListUserAction.PlaylistClicked(item.id))
+                    navigateToPlaylist(TrackListArguments(trackList = MediaGroup.Playlist(playlistId = item.id)))
                 },
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            screenDelegate.handle(
-                                PlaylistListUserAction.PlaylistOverflowMenuIconClicked(
-                                    playlistId = item.id
-                                )
-                            )
+                            openPlaylistContextMenu(PlaylistContextMenuArguments(playlistId = item.id))
                         },
                     ) {
                         Icon(

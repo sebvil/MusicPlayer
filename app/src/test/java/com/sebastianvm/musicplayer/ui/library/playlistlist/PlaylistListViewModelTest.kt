@@ -102,7 +102,7 @@ class PlaylistListViewModelTest : BaseTest() {
     @Test
     fun `SortByButtonClicked toggles playlist sort order`() = testScope.runReliableTest {
         with(generateViewModel()) {
-            handle(PlaylistListUserAction.SortByButtonClicked)
+            handle(PlaylistListUserAction.SortByClicked)
             coVerify { sortPreferencesRepository.togglePlaylistListSortOder() }
         }
     }
