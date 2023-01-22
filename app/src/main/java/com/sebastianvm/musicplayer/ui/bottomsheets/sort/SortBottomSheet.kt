@@ -38,7 +38,6 @@ fun SortBottomSheet(
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        eventHandler = {},
         navigationDelegate = navigationDelegate
     ) { state, screenDelegate ->
         SortBottomSheet(state = state, screenDelegate = screenDelegate)
@@ -55,9 +54,11 @@ fun SortBottomSheet(
         .height(AppDimensions.bottomSheet.rowHeight)
         .padding(start = AppDimensions.bottomSheet.startPadding)
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(WindowInsets.navigationBars.asPaddingValues())) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WindowInsets.navigationBars.asPaddingValues())
+    ) {
         Row(modifier = rowModifier) {
             Text(
                 text = stringResource(id = R.string.sort_by),

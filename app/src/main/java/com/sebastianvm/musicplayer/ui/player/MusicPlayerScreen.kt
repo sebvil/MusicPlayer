@@ -31,7 +31,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 fun MusicPlayerScreen(viewModel: MusicPlayerViewModel, navigationDelegate: NavigationDelegate) {
     Screen(
         screenViewModel = viewModel,
-        eventHandler = {},
         navigationDelegate = navigationDelegate
     ) { state, delegate ->
         MusicPlayerScreen(

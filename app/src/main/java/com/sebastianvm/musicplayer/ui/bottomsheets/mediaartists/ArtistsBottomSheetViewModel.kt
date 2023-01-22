@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -28,7 +27,7 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction, ArtistsBottomSheetUiEvent>(
+    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>(
         initialState
     ) {
     init {
@@ -78,5 +77,3 @@ object InitialArtistsBottomSheetStateModule {
 sealed interface ArtistsBottomSheetUserAction : UserAction {
     data class ArtistRowClicked(val artistId: Long) : ArtistsBottomSheetUserAction
 }
-
-sealed interface ArtistsBottomSheetUiEvent : UiEvent

@@ -19,7 +19,11 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -41,23 +45,8 @@ fun TrackSearchScreen(
     screenViewModel: TrackSearchViewModel,
     navigationDelegate: NavigationDelegate
 ) {
-    val context = LocalContext.current
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is TrackSearchUiEvent.ShowConfirmationToast -> {
-                    Toast.makeText(
-                        context,
-                        context.getString(
-                            R.string.track_added_to_playlist,
-                            event.trackName
-                        ),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        },
         navigationDelegate = navigationDelegate
     ) { state, delegate ->
         TrackSearchLayout(
@@ -70,7 +59,8 @@ fun TrackSearchScreen(
 @Composable
 fun AddTrackConfirmationDialog(
     state: AddTrackConfirmationDialogState,
-    screenDelegate: ScreenDelegate<TrackSearchUserAction>
+    screenDelegate: ScreenDelegate<TrackSearchUserAction>,
+    updateTrackName: (String) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {
@@ -91,6 +81,7 @@ fun AddTrackConfirmationDialog(
                             state.trackName
                         )
                     )
+                    updateTrackName(state.trackName)
                 }
             ) {
                 Text(stringResource(R.string.add_to_playlist))
@@ -115,9 +106,30 @@ fun TrackSearchLayout(
 ) {
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
-    state.addTrackConfirmationDialogState?.also {
-        AddTrackConfirmationDialog(state = it, screenDelegate = screenDelegate)
+    var trackName by remember {
+        mutableStateOf("")
     }
+    state.addTrackConfirmationDialogState?.also {
+        AddTrackConfirmationDialog(
+            state = it,
+            screenDelegate = screenDelegate,
+            updateTrackName = { newName -> trackName = newName })
+    }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = state.showToast) {
+        if (state.showToast) {
+            Toast.makeText(
+                context,
+                context.getString(
+                    R.string.track_added_to_playlist,
+                    trackName
+                ),
+                Toast.LENGTH_SHORT
+            ).show()
+            screenDelegate.handle(TrackSearchUserAction.ToastShown)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -155,6 +167,7 @@ fun TrackSearchLayout(
                                     trackName = item.headlineText
                                 )
                             )
+                            trackName = item.headlineText
                         },
                     trailingContent = {
                         if (item.id in state.playlistTrackIds) {

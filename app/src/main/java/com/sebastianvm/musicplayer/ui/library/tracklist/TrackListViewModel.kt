@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -32,7 +31,7 @@ class TrackListViewModel @Inject constructor(
     initialState: TrackListState,
     trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<TrackListState, TrackListUserAction, UiEvent>(initialState) {
+) : BaseViewModel<TrackListState, TrackListUserAction>(initialState) {
 
     init {
         with(trackRepository) {

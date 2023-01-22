@@ -23,13 +23,6 @@ fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationD
     val layoutManager = LinearLayoutManager(LocalContext.current)
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is QueueUiEvent.ScrollToNowPlayingItem -> {
-                    layoutManager.scrollToPositionWithOffset(event.index, 0)
-                }
-            }
-        },
         navigationDelegate = navigationDelegate
     ) { state, delegate ->
         QueueLayout(

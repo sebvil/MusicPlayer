@@ -30,7 +30,6 @@ fun ArtistsBottomSheet(
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        eventHandler = {},
         navigationDelegate = navigationDelegate
     ) { state, screenDelegate ->
         ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)

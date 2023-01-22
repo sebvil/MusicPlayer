@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,20 +41,8 @@ fun <S : BaseContextMenuState> ContextBottomSheet(
     sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
     navigationDelegate: NavigationDelegate,
 ) {
-    val context = LocalContext.current
     Screen(
         screenViewModel = sheetViewModel,
-        eventHandler = { event ->
-            when (event) {
-                is BaseContextMenuUiEvent.ShowToast -> {
-                    Toast.makeText(
-                        context,
-                        event.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        },
         navigationDelegate = navigationDelegate
     ) { state, screenDelegate ->
         ContextMenuLayout(state = state, screenDelegate = screenDelegate)
