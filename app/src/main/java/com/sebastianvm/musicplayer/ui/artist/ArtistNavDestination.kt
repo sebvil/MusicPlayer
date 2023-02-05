@@ -4,9 +4,9 @@ import androidx.navigation.NavGraphBuilder
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute
 import com.sebastianvm.musicplayer.ui.navigation.screenDestination
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -20,16 +20,22 @@ fun NavGraphBuilder.artistNavDestination(navigationDelegate: NavigationDelegate)
         destination = NavigationRoute.Artist,
         destinationType = DestinationType.Screen
     ) { viewModel ->
-        Screen(
-            screenViewModel = viewModel,
-            eventHandler = {},
-            navigationDelegate = navigationDelegate
-        ) { state, delegate ->
-            ArtistScreen(
-                state = state,
-                screenDelegate = delegate,
-            )
-        }
+        ArtistRoute(
+            viewModel = viewModel,
+            navigateToAlbum = { args ->
+                navigationDelegate.navigateToScreen(
+                    NavigationDestination.TrackList(
+                        arguments = args
+                    )
+                )
+            },
+            openAlbumContextMenu = { args ->
+                navigationDelegate.navigateToScreen(
+                    NavigationDestination.AlbumContextMenu(arguments = args)
+                )
+            },
+            navigateBack = navigationDelegate::navigateUp
+        )
     }
 }
 

@@ -1,17 +1,13 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
-import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTouchInput
-import androidx.compose.ui.test.swipeUp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import org.junit.Assert.assertTrue
@@ -79,20 +75,6 @@ class LibraryScreenTest {
         }
         assertScreenContent()
     }
-
-    @Test
-    fun fab_onScrollDown_isHidden() {
-        composeTestRule.activity.apply {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-        composeTestRule.setContent {
-            TestLibraryScreen(state = newLibraryState())
-        }
-
-        composeTestRule.onNode(hasScrollAction()).performTouchInput { swipeUp() }
-        composeTestRule.onNodeWithText(scanText, useUnmergedTree = true).assertDoesNotExist()
-    }
-
 
     @Test
     fun trackItemClicked_navigatesToTrackList() {

@@ -62,6 +62,20 @@ enum class NavigationRoute(val hasArgs: Boolean) {
 
 interface NavigationArguments : Parcelable
 
+fun interface NavFunction<T : NavigationArguments> {
+    fun navigate(args: T)
+
+    operator fun invoke(args: T) = navigate(args)
+}
+
+
+
+fun interface NoArgNavFunction {
+    fun navigate()
+
+    operator fun invoke() = navigate()
+}
+
 sealed class NavigationDestination(
     val navigationRoute: NavigationRoute,
     open val arguments: NavigationArguments?,

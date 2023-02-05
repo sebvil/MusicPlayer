@@ -8,7 +8,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
@@ -27,8 +25,8 @@ import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryListItem
 import com.sebastianvm.musicplayer.ui.library.root.searchbox.SearchBox
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun LibraryRoute(
     viewModel: LibraryViewModel,
@@ -68,7 +66,7 @@ fun LibraryScreen(
 ) {
 
     val context = LocalContext.current
-    Scaffold(
+    ScreenScaffold(
         modifier = modifier,
         floatingActionButton = {
             PermissionHandler(
@@ -106,7 +104,8 @@ fun LibraryScreen(
             onAlbumsItemClicked = navigateToAlbumList,
             onGenresItemClicked = navigateToGenreList,
             onPlaylistsItemClicked = navigateToPlaylistList,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(paddingValues)
         )
     }
 }

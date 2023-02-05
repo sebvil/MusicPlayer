@@ -11,6 +11,7 @@ class NavigationDelegateForPreviews : NavigationDelegate {
     override fun handleNavEvent(navEvent: NavEvent) = Unit
 
     override fun navigateToScreen(destination: NavigationDestination) = Unit
+    override fun navigateUp() = Unit
 
     @Composable
     override fun isRouteInGraphAsState(navigationRoute: NavigationRoute): State<Boolean> {

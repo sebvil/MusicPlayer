@@ -46,7 +46,6 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
 fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
     Screen(
         screenViewModel = screenViewModel,
-        eventHandler = {},
         navigationDelegate = navigationDelegate
     ) { state, delegate ->
         SearchLayout(

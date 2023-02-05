@@ -13,30 +13,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
-fun interface EventHandler<E : UiEvent> {
-    suspend fun onEvent(event: E)
-}
-
 @Composable
-fun <S : State, A : UserAction, E : UiEvent> HandleEvents(
-    viewModel: BaseViewModel<S, A, E>,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    eventHandler: EventHandler<E>
-) {
-    LaunchedEffect(key1 = viewModel.events) {
-        viewModel.events.onEach { events ->
-            val event = events.firstOrNull()
-            if (event != null) {
-                eventHandler.onEvent(event = event)
-                viewModel.onEventHandled(event)
-            }
-        }.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect()
-    }
-}
-
-@Composable
-fun <S : State, A : UserAction, E : UiEvent> HandleNavEvents(
-    viewModel: BaseViewModel<S, A, E>,
+fun <S : State, A : UserAction> HandleNavEvents(
+    viewModel: BaseViewModel<S, A>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     navigationDelegate: NavigationDelegate,
 ) {

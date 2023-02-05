@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -24,15 +26,18 @@ import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController) {
     val navigationDelegate = NavigationDelegateImpl(navController)
-    Scaffold(bottomBar = { BottomNavBar(navigationDelegate) }) { paddingValues ->
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(navigationDelegate)
+        }) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = NavigationRoute.Library.name,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
         ) {
 
             libraryGraph(navigationDelegate)
@@ -43,7 +48,9 @@ fun AppNavHost(navController: NavHostController) {
     }
 }
 
-fun NavGraphBuilder.libraryGraph(navigationDelegate: NavigationDelegate) {
+fun NavGraphBuilder.libraryGraph(
+    navigationDelegate: NavigationDelegate,
+) {
 
     navigation(
         startDestination = NavigationRoute.LibraryRoot.name,

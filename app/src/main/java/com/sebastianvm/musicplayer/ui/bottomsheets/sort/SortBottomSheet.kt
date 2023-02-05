@@ -4,8 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +38,6 @@ fun SortBottomSheet(
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        eventHandler = {},
         navigationDelegate = navigationDelegate
     ) { state, screenDelegate ->
         SortBottomSheet(state = state, screenDelegate = screenDelegate)
@@ -52,7 +54,11 @@ fun SortBottomSheet(
         .height(AppDimensions.bottomSheet.rowHeight)
         .padding(start = AppDimensions.bottomSheet.startPadding)
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WindowInsets.navigationBars.asPaddingValues())
+    ) {
         Row(modifier = rowModifier) {
             Text(
                 text = stringResource(id = R.string.sort_by),

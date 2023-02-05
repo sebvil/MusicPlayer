@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.ui.library.root.listitem.LibraryItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.UiEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class LibraryViewModel @Inject constructor(
     musicRepository: MusicRepository,
     initialState: LibraryState,
-) : BaseViewModel<LibraryState, LibraryUserAction, LibraryUiEvent>(initialState) {
+) : BaseViewModel<LibraryState, LibraryUserAction>(initialState) {
 
     init {
         musicRepository.getCounts().onEach { counts ->
@@ -63,5 +62,4 @@ object InitialLibraryStateModule {
     )
 }
 
-sealed class LibraryUiEvent : UiEvent
 sealed class LibraryUserAction : UserAction
