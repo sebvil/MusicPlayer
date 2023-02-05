@@ -1,10 +1,8 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import androidx.media3.common.Player
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -33,9 +31,6 @@ interface PlaybackManager {
     fun seekToTrackPosition(position: Long)
     fun addToQueue(tracks: List<Track>)
     fun getQueue(): Flow<List<TrackWithQueueId>>
-    suspend fun modifySavedPlaybackInfo(player: Player)
-    fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
-
 }
 
 data class PlaybackState(

@@ -15,7 +15,7 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoRepository
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
@@ -35,7 +35,7 @@ import javax.inject.Inject
 class MediaPlaybackService : MediaLibraryService() {
 
     @Inject
-    lateinit var playbackManager: PlaybackManager
+    lateinit var playbackInfoRepository: PlaybackInfoRepository
 
     @Inject
     @MainDispatcher
@@ -164,7 +164,7 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private suspend fun initializeQueue() {
         withContext(defaultDispatcher) {
-            playbackManager.getSavedPlaybackInfo().first().run {
+            playbackInfoRepository.getSavedPlaybackInfo().first().run {
                 if (queuedTracks.isEmpty()) {
                     return@run
                 }
@@ -204,7 +204,7 @@ class MediaPlaybackService : MediaLibraryService() {
 
 
     suspend fun updateQueue() {
-        playbackManager.modifySavedPlaybackInfo(player)
+        playbackInfoRepository.modifySavedPlaybackInfo(player)
     }
 
 }

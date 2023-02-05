@@ -1,17 +1,13 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
-import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +19,7 @@ import javax.inject.Inject
 
 class PlaybackManagerImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
-    private val playbackInfoDataSource: PlaybackInfoDataSource,
+    private val playbackInfoRepository: PlaybackInfoRepository,
     private val trackRepository: TrackRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
@@ -132,37 +128,10 @@ class PlaybackManagerImpl @Inject constructor(
     }
 
     override fun getQueue(): Flow<List<TrackWithQueueId>> {
-        return playbackInfoDataSource.getSavedPlaybackInfo().map { it.queuedTracks }
+        return playbackInfoRepository.getSavedPlaybackInfo().map { it.queuedTracks }
     }
 
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
-    }
-
-    override suspend fun modifySavedPlaybackInfo(player: Player) {
-        val timeline = player.currentTimeline
-        val id = player.currentMediaItem?.uniqueId ?: 0L
-        val contentPosition = player.contentPosition
-        withContext(ioDispatcher) {
-            val newQueue = (0 until timeline.windowCount).map {
-                TrackWithQueueId.fromMediaItem(
-                    mediaItem = timeline.getWindow(
-                        it,
-                        Timeline.Window()
-                    ).mediaItem
-                )
-            }
-            val newPlaybackInfo = PlaybackInfo(
-                queuedTracks = newQueue,
-                nowPlayingId = id,
-                lastRecordedPosition = contentPosition
-            )
-            playbackInfoDataSource.modifySavedPlaybackInfo(newPlaybackInfo)
-
-        }
-    }
-
-    override fun getSavedPlaybackInfo(): Flow<PlaybackInfo> {
-        return playbackInfoDataSource.getSavedPlaybackInfo()
     }
 }
