@@ -12,16 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
-data class TrackProgressState(
+data class OldTrackProgressState(
     val trackLengthMs: Long?,
     val currentPlaybackTimeMs: Long?
 )
 
 @Composable
 fun TrackProgress(
-    trackProgressState: TrackProgressState,
+    trackProgressState: OldTrackProgressState,
     onProgressBarClicked: (position: Int) -> Unit = {}
 ) {
     with(trackProgressState) {
@@ -63,6 +64,54 @@ fun TrackProgress(
             }
         }
     }
+}
+
+@JvmInline
+value class Percentage(val percent: Float)
+
+val Int.percent: Percentage
+    get() = Percentage(this.toFloat() / 100f)
+
+data class TrackProgressState(
+    val progress: Percentage,
+    val currentPlaybackTime: String,
+    val trackLength: String,
+)
 
 
+@Composable
+fun TrackProgress(
+    state: TrackProgressState,
+    onProgressBarClicked: (position: Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        LinearProgressIndicator(
+            progress = state.progress.percent,
+            modifier = Modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures { offset ->
+                        val xOffset = offset.x
+                        val percentPosition = (xOffset / size.width) * 100
+                        onProgressBarClicked(percentPosition.toInt())
+                    }
+                }
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            Text(
+                text = state.currentPlaybackTime,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = state.trackLength,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+    }
 }

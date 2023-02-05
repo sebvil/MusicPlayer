@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
@@ -57,7 +58,7 @@ fun ThemedPreview(
 ) {
     AppTheme {
         M3AppTheme {
-            Surface {
+            Surface(modifier = Modifier.padding(all = 16.dp)) {
                 content()
             }
         }

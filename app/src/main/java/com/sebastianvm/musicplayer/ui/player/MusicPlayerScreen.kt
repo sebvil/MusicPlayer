@@ -10,17 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
@@ -57,8 +54,8 @@ fun MusicPlayerScreen(
                     id = R.string.album_art_for_album,
                     state.trackName ?: ""
                 ),
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = R.string.placeholder_album_art,
+                backupImage = painterResource(id = R.drawable.ic_album),
+                backupContentDescription = stringResource(id = R.string.placeholder_album_art),
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.mediumLarge),
@@ -78,8 +75,8 @@ fun MusicPlayerScreen(
                     id = R.string.album_art_for_album,
                     state.trackName ?: ""
                 ),
-                backupResource = R.drawable.ic_album,
-                backupContentDescription = R.string.placeholder_album_art,
+                backupImage = painterResource(id = R.drawable.ic_album),
+                backupContentDescription = stringResource(id = R.string.placeholder_album_art),
                 modifier = Modifier
                     .aspectRatio(1f)
                     .padding(all = AppDimensions.spacing.mediumLarge),
@@ -88,27 +85,6 @@ fun MusicPlayerScreen(
             PlaybackInfoAndButtons(state, screenDelegate)
 
         }
-    }
-}
-
-data class TrackInfoState(val trackName: String, val artists: String)
-
-@Composable
-fun TrackInfo(state: TrackInfoState) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppDimensions.spacing.mediumLarge)
-    ) {
-        AnimatedTextOverflow(
-            text = state.trackName,
-            style = MaterialTheme.typography.titleLarge,
-        )
-        AnimatedTextOverflow(
-            text = state.artists,
-            modifier = Modifier.alpha(0.6f),
-            style = MaterialTheme.typography.titleLarge,
-        )
     }
 }
 
@@ -126,7 +102,7 @@ fun PlaybackInfoAndButtons(
     ) {
         TrackInfo(TrackInfoState(state.trackName ?: "", state.artists ?: ""))
         TrackProgress(
-            TrackProgressState(
+            OldTrackProgressState(
                 trackLengthMs = state.trackLengthMs,
                 currentPlaybackTimeMs = state.currentPlaybackTimeMs
             ),

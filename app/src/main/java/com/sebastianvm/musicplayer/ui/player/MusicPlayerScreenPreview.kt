@@ -10,47 +10,28 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.DefaultScreenDelegateProvider
 
 
-class TrackProgressStatePreviewParameterProvider : PreviewParameterProvider<TrackProgressState> {
+class OldTrackProgressStatePreviewParameterProvider :
+    PreviewParameterProvider<OldTrackProgressState> {
     override val values = sequenceOf(
-        TrackProgressState(
+        OldTrackProgressState(
             currentPlaybackTimeMs = 0,
             trackLengthMs = 184000
         ),
-        TrackProgressState(
+        OldTrackProgressState(
             currentPlaybackTimeMs = 184000,
             trackLengthMs = 184000
         ),
-        TrackProgressState(
+        OldTrackProgressState(
             currentPlaybackTimeMs = 100000,
             trackLengthMs = 184000
         ),
-        TrackProgressState(
+        OldTrackProgressState(
             currentPlaybackTimeMs = null,
             trackLengthMs = null
         )
     )
 }
 
-class TrackInfoStatePreviewParameterProvider : PreviewParameterProvider<TrackInfoState> {
-    override val values = sequenceOf(
-        TrackInfoState(
-            trackName = PreviewUtil.randomString(minLength = 40),
-            artists = PreviewUtil.randomString(minLength = 40)
-        ),
-        TrackInfoState(
-            trackName = PreviewUtil.randomString(maxLength = 15),
-            artists = PreviewUtil.randomString(maxLength = 15)
-        ),
-        TrackInfoState(
-            trackName = PreviewUtil.randomString(maxLength = 15),
-            artists = PreviewUtil.randomString(minLength = 40)
-        ),
-        TrackInfoState(
-            trackName = PreviewUtil.randomString(minLength = 40),
-            artists = PreviewUtil.randomString(maxLength = 15)
-        )
-    )
-}
 
 class MusicPlayerStatePreviewParamsProvider : PreviewParameterProvider<MusicPlayerState> {
     override val values: Sequence<MusicPlayerState>
@@ -85,17 +66,9 @@ class MusicPlayerStatePreviewParamsProvider : PreviewParameterProvider<MusicPlay
 
 @ComponentPreview
 @Composable
-fun TrackProgressPreview(@PreviewParameter(TrackProgressStatePreviewParameterProvider::class) state: TrackProgressState) {
+fun TrackProgressPreview(@PreviewParameter(OldTrackProgressStatePreviewParameterProvider::class) state: OldTrackProgressState) {
     ThemedPreview {
         TrackProgress(trackProgressState = state)
-    }
-}
-
-@ComponentPreview
-@Composable
-fun TrackInfoPreview(@PreviewParameter(TrackInfoStatePreviewParameterProvider::class) state: TrackInfoState) {
-    ThemedPreview {
-        TrackInfo(state = state)
     }
 }
 
