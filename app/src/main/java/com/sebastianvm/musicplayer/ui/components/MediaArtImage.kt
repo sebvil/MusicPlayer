@@ -82,9 +82,8 @@ fun MediaArtImage(
     )
 }
 
-/**
- * Wrapper around the Image composable that takes in a DisplayableImage as the image input.
- */
+// TODO use AsyncImage??
+// TODO support multiple thumbnails??
 @Composable
 fun MediaArtImage(
     uri: String,

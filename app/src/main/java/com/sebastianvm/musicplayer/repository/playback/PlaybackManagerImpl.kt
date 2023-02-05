@@ -3,13 +3,10 @@ package com.sebastianvm.musicplayer.repository.playback
 import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
-import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +18,6 @@ import javax.inject.Inject
 
 class PlaybackManagerImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
-    private val playbackInfoDataSource: PlaybackInfoDataSource,
     private val trackRepository: TrackRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
@@ -129,19 +125,7 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
     }
 
-    override fun getQueue(): Flow<List<TrackWithQueueId>> {
-        return playbackInfoDataSource.getSavedPlaybackInfo().map { it.queuedTracks }
-    }
-
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
-    }
-
-    override suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo) {
-        playbackInfoDataSource.modifySavedPlaybackInfo(newPlaybackInfo)
-    }
-
-    override fun getSavedPlaybackInfo(): Flow<PlaybackInfo> {
-        return playbackInfoDataSource.getSavedPlaybackInfo()
     }
 }

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.database.entities
 
 import androidx.media3.common.MediaItem
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
 
 data class TrackWithQueueId(

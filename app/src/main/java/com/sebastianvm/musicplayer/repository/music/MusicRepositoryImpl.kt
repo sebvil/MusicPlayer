@@ -150,7 +150,7 @@ class MusicRepositoryImpl @Inject constructor(
     }
 
     private fun parseTag(tag: String): List<String> {
-        return tag.split("&", ",", "/").map {
+        return tag.split("&", ";", "/", ",").map {
             it.trim()
         }
     }

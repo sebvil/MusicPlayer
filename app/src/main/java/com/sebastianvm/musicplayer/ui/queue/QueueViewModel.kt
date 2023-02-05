@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
+    private val playbackInfoRepository: PlaybackInfoRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseViewModel<QueueState, QueueUserAction>(
     initialState
@@ -27,7 +29,7 @@ class QueueViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            playbackManager.getSavedPlaybackInfo().collect { savedPlaybackInfo ->
+            playbackInfoRepository.getSavedPlaybackInfo().collect { savedPlaybackInfo ->
                 setState {
                     copy(
                         queueItems = savedPlaybackInfo.queuedTracks.map { track ->
