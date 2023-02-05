@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.library.root
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +52,7 @@ fun LibraryRoute(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
     state: LibraryState,
