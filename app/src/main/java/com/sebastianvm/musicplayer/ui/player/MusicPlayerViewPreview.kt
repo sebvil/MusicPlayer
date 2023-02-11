@@ -29,7 +29,7 @@ class MusicPlayerViewStatePreviewParameterProvider :
 fun MusicPlayerViewPreview(
     @PreviewParameter(
         MusicPlayerViewStatePreviewParameterProvider::class,
-        limit = 10
+        limit = 1
     ) state: MusicPlayerViewState
 ) {
     ThemedPreview {
@@ -38,7 +38,7 @@ fun MusicPlayerViewPreview(
             onProgressBarClicked = {},
             onPreviousButtonClicked = {},
             onNextButtonClicked = {},
-            onPlayToggled = {}
+            onPlayToggled = {},
         )
     }
 }

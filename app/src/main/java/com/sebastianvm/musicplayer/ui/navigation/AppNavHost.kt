@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -21,6 +20,8 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlistlist.playlistListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerHost
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewState
 import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
 import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
@@ -28,16 +29,21 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun AppNavHost(navController: NavHostController) {
+fun AppNavHost(musicPlayerViewState: MusicPlayerViewState?, navController: NavHostController) {
     val navigationDelegate = NavigationDelegateImpl(navController)
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(navigationDelegate)
-        }) { paddingValues ->
+    MusicPlayerHost(
+        state = musicPlayerViewState,
+        onProgressBarClicked = {},
+        onPreviousButtonClicked = {},
+        onNextButtonClicked = {},
+        onPlayToggled = {},
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = NavigationRoute.Library.name,
-            modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
+            modifier = Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues),
         ) {
 
             libraryGraph(navigationDelegate)

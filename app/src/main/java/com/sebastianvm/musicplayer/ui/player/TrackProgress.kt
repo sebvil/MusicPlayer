@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
 data class OldTrackProgressState(
@@ -98,20 +97,20 @@ fun TrackProgress(
                     }
                 }
         )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-        ) {
-            Text(
-                text = state.currentPlaybackTime,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                text = state.trackLength,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
+//        Row(
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 4.dp)
+//        ) {
+//            Text(
+//                text = state.currentPlaybackTime,
+//                style = MaterialTheme.typography.bodyMedium,
+//            )
+//            Text(
+//                text = state.trackLength,
+//                style = MaterialTheme.typography.bodyMedium,
+//            )
+//        }
     }
 }
