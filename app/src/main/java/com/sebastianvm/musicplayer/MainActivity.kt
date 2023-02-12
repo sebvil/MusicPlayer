@@ -8,9 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -36,7 +33,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            val state by viewModel.stateFlow.collectAsStateWithLifecycle()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
                 WindowCompat.getInsetsController(
@@ -45,10 +41,7 @@ class MainActivity : ComponentActivity() {
                 ).isAppearanceLightStatusBars = useDarkIcons
             }
             NavHostWrapper { navController ->
-                AppNavHost(
-                    musicPlayerViewState = state.musicPlayerViewState,
-                    navController = navController
-                )
+                AppNavHost(navController = navController)
             }
         }
     }

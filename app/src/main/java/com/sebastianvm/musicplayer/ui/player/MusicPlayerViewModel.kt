@@ -1,7 +1,9 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -22,16 +24,45 @@ class MusicPlayerViewModel @Inject constructor(
     initialState: MusicPlayerState,
 ) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction>(initialState) {
 
+    private var isPlaying: Boolean = false
+    private var trackLengthMs: Long = 0
+
     init {
         playbackManager.playbackState.onEach {
+            val newMusicPlayerViewState = if (it.mediaItemMetadata == null) {
+                isPlaying = false
+                trackLengthMs = 0
+                null
+            } else {
+                isPlaying = it.isPlaying
+                trackLengthMs = it.mediaItemMetadata.trackDurationMs
+                MusicPlayerViewState(
+                    mediaArtImageState = MediaArtImageState(
+                        imageUri = it.mediaItemMetadata.artworkUri,
+                        contentDescription = R.string.album_art_for_album,
+                        backupResource = R.drawable.ic_album,
+                        backupContentDescription = R.string.placeholder_album_art,
+                        args = listOf(it.mediaItemMetadata.title)
+                    ),
+                    trackInfoState = TrackInfoState(
+                        trackName = it.mediaItemMetadata.title,
+                        artists = it.mediaItemMetadata.artists
+                    ),
+                    playbackControlsState = PlaybackControlsState(
+                        trackProgressState = TrackProgressState(
+                            progress = Percentage(it.currentPlayTimeMs.toFloat() / it.mediaItemMetadata.trackDurationMs.toFloat()),
+                            currentPlaybackTime = MinutesSecondsTime.fromMs(it.currentPlayTimeMs)
+                                .toString(),
+                            trackLength = MinutesSecondsTime.fromMs(it.mediaItemMetadata.trackDurationMs)
+                                .toString()
+                        ),
+                        playbackIcon = if (it.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
+                    )
+                )
+            }
             setState {
                 copy(
-                    trackName = it.mediaItemMetadata?.title,
-                    artists = it.mediaItemMetadata?.artists,
-                    trackArt = it.mediaItemMetadata?.artworkUri ?: "",
-                    trackLengthMs = it.mediaItemMetadata?.trackDurationMs,
-                    isPlaying = it.isPlaying,
-                    currentPlaybackTimeMs = it.currentPlayTimeMs,
+                    musicPlayerViewState = newMusicPlayerViewState
                 )
             }
         }.launchIn(viewModelScope)
@@ -40,7 +71,7 @@ class MusicPlayerViewModel @Inject constructor(
     override fun handle(action: MusicPlayerUserAction) {
         when (action) {
             is MusicPlayerUserAction.PlayToggled -> {
-                if (state.isPlaying) {
+                if (isPlaying) {
                     playbackManager.pause()
                 } else {
                     playbackManager.play()
@@ -52,7 +83,7 @@ class MusicPlayerViewModel @Inject constructor(
             is MusicPlayerUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MusicPlayerUserAction.ProgressBarClicked -> {
-                val time: Long = (state.trackLengthMs ?: 0) * action.position / 100
+                val time: Long = trackLengthMs * action.position / 100
                 playbackManager.seekToTrackPosition(time)
             }
         }
@@ -60,12 +91,7 @@ class MusicPlayerViewModel @Inject constructor(
 }
 
 data class MusicPlayerState(
-    val isPlaying: Boolean,
-    val trackName: String?,
-    val artists: String?,
-    val trackLengthMs: Long?,
-    val currentPlaybackTimeMs: Long?,
-    val trackArt: String
+    val musicPlayerViewState: MusicPlayerViewState?
 ) : State
 
 
@@ -75,14 +101,7 @@ object InitialMusicPlayerStateModule {
     @Provides
     @ViewModelScoped
     fun initialMusicPlayerStateProvider(): MusicPlayerState {
-        return MusicPlayerState(
-            isPlaying = false,
-            trackName = null,
-            artists = null,
-            trackLengthMs = null,
-            currentPlaybackTimeMs = null,
-            trackArt = "",
-        )
+        return MusicPlayerState(musicPlayerViewState = null)
     }
 }
 
