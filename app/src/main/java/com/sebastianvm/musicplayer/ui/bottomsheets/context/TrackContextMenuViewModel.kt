@@ -119,9 +119,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 )
                             }
 
-                            is PlaybackResult.Success -> {
-                                addNavEvent(NavEvent.NavigateToScreen(destination = NavigationDestination.MusicPlayer))
-                            }
+                            is PlaybackResult.Success -> {}
                         }
                     }.launchIn(viewModelScope)
                 }

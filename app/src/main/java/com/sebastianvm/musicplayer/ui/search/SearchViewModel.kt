@@ -88,7 +88,6 @@ class SearchViewModel @Inject constructor(
                 is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
                 is PlaybackResult.Success -> {
                     setState { copy(playbackResult = null) }
-                    addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
                 }
             }
         }.launchIn(viewModelScope)

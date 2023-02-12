@@ -62,11 +62,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                             )
                         }
 
-                        is PlaybackResult.Success -> addNavEvent(
-                            NavEvent.NavigateToScreen(
-                                NavigationDestination.MusicPlayer
-                            )
-                        )
+                        is PlaybackResult.Success -> {}
                     }
                 }.launchIn(viewModelScope)
             }
