@@ -27,6 +27,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +48,13 @@ fun Context.findActivity(): Activity {
     }
     throw IllegalStateException("no activity")
 }
+
+fun WindowWidthSizeClass.toPlayerViewMode(isExpanded: Boolean): PlayerViewMode = when {
+    isExpanded -> PlayerViewMode.FULL_SCREEN
+    this == WindowWidthSizeClass.Compact -> PlayerViewMode.BOTTOM_BAR
+    else -> PlayerViewMode.SIDE_BAR
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -95,46 +105,66 @@ fun MusicPlayerHostLayout(
     onPlayToggled: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    if (windowWidthSizeClass == WindowWidthSizeClass.Compact) {
-        MusicPlayerHostCompactLayout(
-            musicPlayerViewState = musicPlayerViewState,
-            windowWidthSizeClass = windowWidthSizeClass,
-            modifier = modifier,
-            paddingValues = paddingValues,
-            onProgressBarClicked = onProgressBarClicked,
-            onPreviousButtonClicked = onPreviousButtonClicked,
-            onNextButtonClicked = onNextButtonClicked,
-            onPlayToggled = onPlayToggled
-        ) {
-            content()
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    when (windowWidthSizeClass.toPlayerViewMode(isExpanded)) {
+        PlayerViewMode.BOTTOM_BAR -> {
+            BottomBarPlayerLayout(
+                musicPlayerViewState = musicPlayerViewState,
+                modifier = modifier,
+                paddingValues = paddingValues,
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+                onToggleExpandedState = { isExpanded = true }
+            ) {
+                content()
+            }
         }
-    } else {
-        MusicPlayerHostExpandedLayout(
-            musicPlayerViewState = musicPlayerViewState,
-            windowWidthSizeClass = windowWidthSizeClass,
-            modifier = modifier,
-            paddingValues = paddingValues,
-            onProgressBarClicked = onProgressBarClicked,
-            onPreviousButtonClicked = onPreviousButtonClicked,
-            onNextButtonClicked = onNextButtonClicked,
-            onPlayToggled = onPlayToggled
-        ) {
-            content()
+
+        PlayerViewMode.SIDE_BAR -> {
+            SideBarPlayerLayout(
+                musicPlayerViewState = musicPlayerViewState,
+                modifier = modifier,
+                paddingValues = paddingValues,
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+                onToggleExpandedState = { isExpanded = true }
+            ) {
+                content()
+            }
+        }
+
+        PlayerViewMode.FULL_SCREEN -> {
+            checkNotNull(musicPlayerViewState)
+            FullScreenPlayerLayout(
+                musicPlayerViewState = musicPlayerViewState,
+                paddingValues = paddingValues,
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+                onToggleExpandedState = { isExpanded = false }
+            )
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MusicPlayerHostCompactLayout(
+fun BottomBarPlayerLayout(
     musicPlayerViewState: MusicPlayerViewState?,
-    windowWidthSizeClass: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onProgressBarClicked: (position: Int) -> Unit,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    onToggleExpandedState: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -159,7 +189,7 @@ fun MusicPlayerHostCompactLayout(
             ) {
                 MusicPlayerView(
                     state = musicPlayerViewState,
-                    windowWidthSizeClass = windowWidthSizeClass,
+                    playerViewMode = PlayerViewMode.BOTTOM_BAR,
                     modifier = Modifier
                         .padding(
                             top = cornerSize,
@@ -172,6 +202,7 @@ fun MusicPlayerHostCompactLayout(
                     onPreviousButtonClicked = onPreviousButtonClicked,
                     onNextButtonClicked = onNextButtonClicked,
                     onPlayToggled = onPlayToggled,
+                    onToggleExpandedState = onToggleExpandedState
                 )
             }
         }
@@ -180,15 +211,15 @@ fun MusicPlayerHostCompactLayout(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun MusicPlayerHostExpandedLayout(
+fun SideBarPlayerLayout(
     musicPlayerViewState: MusicPlayerViewState?,
-    windowWidthSizeClass: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onProgressBarClicked: (position: Int) -> Unit,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    onToggleExpandedState: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     Row(
@@ -211,7 +242,7 @@ fun MusicPlayerHostExpandedLayout(
             ) {
                 MusicPlayerView(
                     state = musicPlayerViewState,
-                    windowWidthSizeClass = windowWidthSizeClass,
+                    playerViewMode = PlayerViewMode.SIDE_BAR,
                     modifier = Modifier
                         .padding(all = cornerSize)
                         .systemBarsPadding(),
@@ -219,6 +250,7 @@ fun MusicPlayerHostExpandedLayout(
                     onPreviousButtonClicked = onPreviousButtonClicked,
                     onNextButtonClicked = onNextButtonClicked,
                     onPlayToggled = onPlayToggled,
+                    onToggleExpandedState = onToggleExpandedState
                 )
             }
         }
@@ -230,6 +262,37 @@ fun MusicPlayerHostExpandedLayout(
         ) {
             content()
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun FullScreenPlayerLayout(
+    musicPlayerViewState: MusicPlayerViewState,
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
+    onProgressBarClicked: (position: Int) -> Unit,
+    onPreviousButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    onPlayToggled: () -> Unit,
+    onToggleExpandedState: () -> Unit,
+) {
+    Surface(
+        tonalElevation = 8.dp,
+        modifier = modifier
+    ) {
+        MusicPlayerView(
+            state = musicPlayerViewState,
+            playerViewMode = PlayerViewMode.SIDE_BAR,
+            modifier = Modifier
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues),
+            onProgressBarClicked = onProgressBarClicked,
+            onPreviousButtonClicked = onPreviousButtonClicked,
+            onNextButtonClicked = onNextButtonClicked,
+            onPlayToggled = onPlayToggled,
+            onToggleExpandedState = onToggleExpandedState
+        )
     }
 }
 

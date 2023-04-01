@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.ui.player
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,34 +25,56 @@ data class MusicPlayerViewState(
 )
 
 
+enum class PlayerViewMode {
+    BOTTOM_BAR,
+    SIDE_BAR,
+    FULL_SCREEN
+}
+
 @Composable
 fun MusicPlayerView(
     state: MusicPlayerViewState,
-    windowWidthSizeClass: WindowWidthSizeClass,
+    playerViewMode: PlayerViewMode,
     modifier: Modifier = Modifier,
     onProgressBarClicked: (position: Int) -> Unit,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    onToggleExpandedState: () -> Unit
 ) {
-    if (windowWidthSizeClass == WindowWidthSizeClass.Compact) {
-        HorizontalMusicPlayerView(
-            state = state,
-            modifier = modifier,
-            onProgressBarClicked = onProgressBarClicked,
-            onPreviousButtonClicked = onPreviousButtonClicked,
-            onNextButtonClicked = onNextButtonClicked,
-            onPlayToggled = onPlayToggled,
-        )
-    } else {
-        VerticalMusicPlayerView(
-            state = state,
-            modifier = modifier,
-            onProgressBarClicked = onProgressBarClicked,
-            onPreviousButtonClicked = onPreviousButtonClicked,
-            onNextButtonClicked = onNextButtonClicked,
-            onPlayToggled = onPlayToggled,
-        )
+    when (playerViewMode) {
+        PlayerViewMode.BOTTOM_BAR -> {
+            HorizontalMusicPlayerView(
+                state = state,
+                modifier = modifier.clickable { onToggleExpandedState() },
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+            )
+        }
+
+        PlayerViewMode.SIDE_BAR -> {
+            VerticalMusicPlayerView(
+                state = state,
+                modifier = modifier.clickable { onToggleExpandedState() },
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+            )
+        }
+
+        PlayerViewMode.FULL_SCREEN -> {
+            VerticalMusicPlayerView(
+                state = state,
+                modifier = modifier.clickable { onToggleExpandedState() },
+                onProgressBarClicked = onProgressBarClicked,
+                onPreviousButtonClicked = onPreviousButtonClicked,
+                onNextButtonClicked = onNextButtonClicked,
+                onPlayToggled = onPlayToggled,
+            )
+        }
     }
 
 }
@@ -136,11 +158,12 @@ fun HorizontalMusicPlayerViewPreview(
     ThemedPreview {
         MusicPlayerView(
             state = state,
-            windowWidthSizeClass = WindowWidthSizeClass.Compact,
+            playerViewMode = PlayerViewMode.BOTTOM_BAR,
             onProgressBarClicked = {},
             onPreviousButtonClicked = {},
             onNextButtonClicked = {},
             onPlayToggled = {},
+            onToggleExpandedState = {}
         )
     }
 }
@@ -156,11 +179,12 @@ fun VerticalMusicPlayerViewPreview(
     ThemedPreview {
         MusicPlayerView(
             state = state,
-            windowWidthSizeClass = WindowWidthSizeClass.Medium,
+            playerViewMode = PlayerViewMode.SIDE_BAR,
             onProgressBarClicked = {},
             onPreviousButtonClicked = {},
             onNextButtonClicked = {},
             onPlayToggled = {},
+            onToggleExpandedState = {}
         )
     }
 }
