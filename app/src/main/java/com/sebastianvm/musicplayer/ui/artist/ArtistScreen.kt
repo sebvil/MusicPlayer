@@ -101,7 +101,7 @@ fun ArtistLayout(
         items(items = state.listItems) { item ->
             when (item) {
                 is ArtistScreenItem.SectionHeaderItem -> {
-                    ListItem(headlineText = {
+                    ListItem(headlineContent = {
                         Text(
                             text = stringResource(id = item.sectionType.sectionName),
                             style = MaterialTheme.typography.headlineMedium,
