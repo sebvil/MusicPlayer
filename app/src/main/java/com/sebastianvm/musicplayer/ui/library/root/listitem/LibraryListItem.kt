@@ -22,7 +22,7 @@ private val iconModifier = Modifier.size(40.dp)
 @Composable
 fun LibraryListItem(item: LibraryItem, modifier: Modifier = Modifier, onItemClicked: () -> Unit) {
     ListItem(
-        headlineText = {
+        headlineContent = {
             Text(
                 text = stringResource(id = item.rowName),
                 style = MaterialTheme.typography.titleLarge,

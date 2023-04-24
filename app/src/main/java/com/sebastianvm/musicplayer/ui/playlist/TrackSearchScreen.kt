@@ -164,10 +164,10 @@ fun TrackSearchLayout(
                             screenDelegate.handle(
                                 TrackSearchUserAction.TrackClicked(
                                     trackId = item.id,
-                                    trackName = item.headlineText
+                                    trackName = item.headlineContent
                                 )
                             )
-                            trackName = item.headlineText
+                            trackName = item.headlineContent
                         },
                     trailingContent = {
                         if (item.id in state.playlistTrackIds) {

@@ -133,7 +133,7 @@ fun ContextMenuLayout(
                 LazyColumn {
                     items(listItems, key = { it.text }) {
                         ListItem(
-                            headlineText = {
+                            headlineContent = {
                                 Text(
                                     text = stringResource(id = it.text),
                                     style = MaterialTheme.typography.titleMedium,

@@ -14,8 +14,8 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
     override val values = sequenceOf(
         ArtistsBottomSheetState(
             artistList = listOf(
-                ModelListItemState.Basic(id = 0, headlineText = "Melendi"),
-                ModelListItemState.Basic(id = 1, headlineText = "Carlos Vives")
+                ModelListItemState.Basic(id = 0, headlineContent = "Melendi"),
+                ModelListItemState.Basic(id = 1, headlineContent = "Carlos Vives")
             ),
             artistIds = listOf(0, 1)
         )
