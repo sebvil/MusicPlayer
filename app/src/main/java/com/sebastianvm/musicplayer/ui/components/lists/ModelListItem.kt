@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.components.lists
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -28,26 +27,26 @@ import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableLis
 
 sealed class ModelListItemState(
     open val id: Long,
-    open val headlineText: String,
-    open val supportingText: String? = null,
+    open val headlineContent: String,
+    open val supportingContent: String? = null,
     open val mediaArtImageState: MediaArtImageState? = null
 ) {
 
     data class Basic(
         override val id: Long,
-        override val headlineText: String,
-        override val supportingText: String? = null,
+        override val headlineContent: String,
+        override val supportingContent: String? = null,
         override val mediaArtImageState: MediaArtImageState? = null
-    ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
+    ) : ModelListItemState(id, headlineContent, supportingContent, mediaArtImageState)
 
 
     data class WithPosition(
         val position: Long,
         override val id: Long,
-        override val headlineText: String,
-        override val supportingText: String? = null,
+        override val headlineContent: String,
+        override val supportingContent: String? = null,
         override val mediaArtImageState: MediaArtImageState? = null
-    ) : ModelListItemState(id, headlineText, supportingText, mediaArtImageState)
+    ) : ModelListItemState(id, headlineContent, supportingContent, mediaArtImageState)
 }
 
 
@@ -64,7 +63,6 @@ data class ModelListItemStateWithPosition(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModelListItem(
     state: ModelListItemState,
@@ -76,15 +74,15 @@ fun ModelListItem(
     val textColor = contentColorFor(backgroundColor = backgroundColor)
     with(state) {
         ListItem(
-            headlineText = {
+            headlineContent = {
                 Text(
-                    text = headlineText,
+                    text = headlineContent,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             },
             modifier = modifier,
-            supportingText = supportingText?.let {
+            supportingContent = supportingContent?.let {
                 {
                     Text(
                         text = it,
@@ -127,11 +125,11 @@ fun ModelListItem(
 }
 
 fun Album.toModelListItemState(): ModelListItemState {
-    val supportingText = if (year != 0L) "$year $artists" else artists
+    val supportingContent = if (year != 0L) "$year $artists" else artists
     return ModelListItemState.Basic(
         id = id,
-        headlineText = albumName,
-        supportingText = supportingText,
+        headlineContent = albumName,
+        supportingContent = supportingContent,
         mediaArtImageState = MediaArtImageState(
             imageUri = imageUri,
             contentDescription = R.string.album_art_for_album,
@@ -145,38 +143,46 @@ fun Album.toModelListItemState(): ModelListItemState {
 fun Artist.toModelListItemState(): ModelListItemState {
     return ModelListItemState.Basic(
         id = id,
-        headlineText = artistName,
+        headlineContent = artistName,
     )
 }
 
 fun Genre.toModelListItemState(): ModelListItemState {
     return ModelListItemState.Basic(
         id = id,
-        headlineText = genreName,
+        headlineContent = genreName,
     )
 }
 
 fun Playlist.toModelListItemState(): ModelListItemState {
     return ModelListItemState.Basic(
         id = id,
-        headlineText = playlistName,
+        headlineContent = playlistName,
     )
 }
 
 fun Track.toModelListItemState(): ModelListItemState {
-    return ModelListItemState.Basic(id = id, headlineText = trackName, supportingText = artists)
+    return ModelListItemState.Basic(
+        id = id,
+        headlineContent = trackName,
+        supportingContent = artists
+    )
 }
 
 fun BasicTrack.toModelListItemState(): ModelListItemState {
-    return ModelListItemState.Basic(id = id, headlineText = trackName, supportingText = artists)
+    return ModelListItemState.Basic(
+        id = id,
+        headlineContent = trackName,
+        supportingContent = artists
+    )
 }
 
 fun TrackWithPlaylistPositionView.toModelListItemState(): ModelListItemState {
     return ModelListItemState.WithPosition(
         position = position,
         id = id,
-        headlineText = trackName,
-        supportingText = artists
+        headlineContent = trackName,
+        supportingContent = artists
     )
 }
 
@@ -185,8 +191,8 @@ fun TrackWithQueueId.toModelListItemStateWithPosition(): ModelListItemStateWithP
         position = this.uniqueQueueItemId,
         modelListItemState = ModelListItemState.Basic(
             id = id,
-            headlineText = trackName,
-            supportingText = artists
+            headlineContent = trackName,
+            supportingContent = artists
         )
     )
 }

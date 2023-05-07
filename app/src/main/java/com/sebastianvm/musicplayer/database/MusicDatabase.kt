@@ -59,16 +59,16 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
     exportSchema = false
 )
 abstract class MusicDatabase : RoomDatabase() {
-    abstract val trackDao: TrackDao
-    abstract val artistDao: ArtistDao
-    abstract val albumDao: AlbumDao
-    abstract val genreDao: GenreDao
-    abstract val playlistDao: PlaylistDao
-    abstract val mediaQueueDao: MediaQueueDao
+    abstract fun getTrackDao(): TrackDao
+    abstract fun getArtistDao(): ArtistDao
+    abstract fun getAlbumDao(): AlbumDao
+    abstract fun getGenreDao(): GenreDao
+    abstract fun getPlaylistDao(): PlaylistDao
+    abstract fun getMediaQueueDao(): MediaQueueDao
 
-    abstract val trackFtsDao: TrackFtsDao
-    abstract val artistFtsDao: ArtistFtsDao
-    abstract val albumFtsDao: AlbumFtsDao
-    abstract val genreFtsDao: GenreFtsDao
-    abstract val playlistFtsDao: PlaylistFtsDao
+    abstract fun getTrackFtsDao(): TrackFtsDao
+    abstract fun getArtistFtsDao(): ArtistFtsDao
+    abstract fun getAlbumFtsDao(): AlbumFtsDao
+    abstract fun getGenreFtsDao(): GenreFtsDao
+    abstract fun getPlaylistFtsDao(): PlaylistFtsDao
 }

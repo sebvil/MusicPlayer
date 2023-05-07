@@ -27,67 +27,67 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideTrackDao(database: MusicDatabase): TrackDao {
-        return database.trackDao
+        return database.getTrackDao()
     }
 
     @Provides
     @Singleton
     fun provideArtistDao(database: MusicDatabase): ArtistDao {
-        return database.artistDao
+        return database.getArtistDao()
     }
 
     @Provides
     @Singleton
     fun provideAlbumDao(database: MusicDatabase): AlbumDao {
-        return database.albumDao
+        return database.getAlbumDao()
     }
 
     @Provides
     @Singleton
     fun provideGenreDao(database: MusicDatabase): GenreDao {
-        return database.genreDao
+        return database.getGenreDao()
     }
 
     @Provides
     @Singleton
     fun providePlaylistDao(database: MusicDatabase): PlaylistDao {
-        return database.playlistDao
+        return database.getPlaylistDao()
     }
 
     @Provides
     @Singleton
     fun provideMediaQueueDao(database: MusicDatabase): MediaQueueDao {
-        return database.mediaQueueDao
+        return database.getMediaQueueDao()
     }
 
     @Provides
     @Singleton
     fun provideTrackFtsDao(database: MusicDatabase): TrackFtsDao {
-        return database.trackFtsDao
+        return database.getTrackFtsDao()
     }
 
     @Provides
     @Singleton
     fun provideArtistFtsDao(database: MusicDatabase): ArtistFtsDao {
-        return database.artistFtsDao
+        return database.getArtistFtsDao()
     }
 
     @Provides
     @Singleton
     fun provideAlbumFtsDao(database: MusicDatabase): AlbumFtsDao {
-        return database.albumFtsDao
+        return database.getAlbumFtsDao()
     }
 
     @Provides
     @Singleton
     fun provideGenreFtsDao(database: MusicDatabase): GenreFtsDao {
-        return database.genreFtsDao
+        return database.getGenreFtsDao()
     }
 
     @Provides
     @Singleton
     fun providePlaylistFtsDao(database: MusicDatabase): PlaylistFtsDao {
-        return database.playlistFtsDao
+        return database.getPlaylistFtsDao()
     }
 
     @Provides
