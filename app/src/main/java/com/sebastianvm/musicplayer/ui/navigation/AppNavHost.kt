@@ -15,7 +15,6 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlistlist.playlistListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
-import com.sebastianvm.musicplayer.ui.player.MusicPlayerHost
 import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
@@ -24,15 +23,14 @@ import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 fun AppNavHost(navController: NavHostController) {
     val navigationDelegate = NavigationDelegateImpl(navController)
 
-    MusicPlayerHost {
-        NavHost(
-            navController = navController,
-            startDestination = NavigationRoute.Library.name,
-        ) {
+    NavHost(
+        navController = navController,
+        startDestination = NavigationRoute.Library.name,
+    ) {
 
-            libraryGraph(navigationDelegate)
-        }
+        libraryGraph(navigationDelegate)
     }
+
 }
 
 fun NavGraphBuilder.libraryGraph(

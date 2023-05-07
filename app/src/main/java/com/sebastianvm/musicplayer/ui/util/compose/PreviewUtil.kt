@@ -64,10 +64,12 @@ fun ThemedPreview(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenPreview(screen: @Composable () -> Unit) {
-    NavHostWrapper {
-        Scaffold { padding ->
-            Box(modifier = Modifier.padding(padding)) {
-                screen()
+    M3AppTheme {
+        NavHostWrapper {
+            Scaffold { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    screen()
+                }
             }
         }
     }
@@ -91,11 +93,11 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Preview(
-    name = "Landscape",
-    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
-)
-@Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
+//@Preview(
+//    name = "Landscape",
+//    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
+//)
+//@Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
 annotation class ScreenPreview
 
 @Preview

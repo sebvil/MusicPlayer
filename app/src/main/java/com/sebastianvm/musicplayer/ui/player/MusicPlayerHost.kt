@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,7 +55,7 @@ fun WindowWidthSizeClass.toPlayerViewMode(isExpanded: Boolean): PlayerViewMode =
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun MusicPlayerHost(
     modifier: Modifier = Modifier,

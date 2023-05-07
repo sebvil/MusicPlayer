@@ -7,9 +7,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
+import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,8 +45,15 @@ class MainActivity : ComponentActivity() {
                     window.decorView
                 ).isAppearanceLightStatusBars = useDarkIcons
             }
-            NavHostWrapper { navController ->
-                AppNavHost(navController = navController)
+            M3AppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    NavHostWrapper { navController ->
+                        AppNavHost(navController = navController)
+                    }
+                }
             }
         }
     }

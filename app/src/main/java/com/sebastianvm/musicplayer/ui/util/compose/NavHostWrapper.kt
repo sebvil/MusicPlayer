@@ -7,28 +7,23 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
-import com.sebastianvm.musicplayer.ui.theme.AppTheme
-import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun NavHostWrapper(
     navHost: @Composable (NavHostController) -> Unit,
 ) {
-    AppTheme {
-        M3AppTheme {
-            val bottomSheetNavigator = rememberBottomSheetNavigator()
-            val navController = rememberNavController(bottomSheetNavigator)
 
-            M3ModalBottomSheetLayout(
-                bottomSheetNavigator = bottomSheetNavigator,
-                sheetShape = RoundedCornerShape(
-                    topStart = AppDimensions.bottomSheet.cornerRadius,
-                    topEnd = AppDimensions.bottomSheet.cornerRadius
-                )
-            ) {
-                navHost(navController)
-            }
-        }
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
+
+    M3ModalBottomSheetLayout(
+        bottomSheetNavigator = bottomSheetNavigator,
+        sheetShape = RoundedCornerShape(
+            topStart = AppDimensions.bottomSheet.cornerRadius,
+            topEnd = AppDimensions.bottomSheet.cornerRadius
+        )
+    ) {
+        navHost(navController)
     }
 }
