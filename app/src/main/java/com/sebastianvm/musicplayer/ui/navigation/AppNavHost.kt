@@ -1,12 +1,6 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,29 +15,22 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
 import com.sebastianvm.musicplayer.ui.library.playlistlist.playlistListNavDestination
 import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
-import com.sebastianvm.musicplayer.ui.player.musicPlayerNavDestination
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerHost
 import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
 import com.sebastianvm.musicplayer.ui.queue.queueNavDestination
 import com.sebastianvm.musicplayer.ui.search.searchNavDestination
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AppNavHost(navController: NavHostController) {
     val navigationDelegate = NavigationDelegateImpl(navController)
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(navigationDelegate)
-        }) { paddingValues ->
+
+    MusicPlayerHost {
         NavHost(
             navController = navController,
             startDestination = NavigationRoute.Library.name,
-            modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues),
         ) {
 
             libraryGraph(navigationDelegate)
-
-            queueNavDestination(navigationDelegate)
-            musicPlayerNavDestination(navigationDelegate)
         }
     }
 }
@@ -73,5 +60,7 @@ fun NavGraphBuilder.libraryGraph(
         sortBottomSheetNavDestination(navigationDelegate)
         contextBottomSheetDestinations(navigationDelegate)
         artistsBottomSheetNavDestination(navigationDelegate)
+        queueNavDestination(navigationDelegate)
+
     }
 }

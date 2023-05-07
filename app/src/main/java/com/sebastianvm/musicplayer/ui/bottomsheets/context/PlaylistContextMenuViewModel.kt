@@ -48,11 +48,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
                             )
                         }
 
-                        is PlaybackResult.Success -> addNavEvent(
-                            navEvent = NavEvent.NavigateToScreen(
-                                NavigationDestination.MusicPlayer
-                            )
-                        )
+                        is PlaybackResult.Success -> {}
                     }
                 }.launchIn(viewModelScope)
             }

@@ -12,11 +12,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
-import com.sebastianvm.musicplayer.ui.navigation.BottomNavBar
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.theme.AppTheme
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
@@ -66,13 +63,9 @@ fun ThemedPreview(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenPreview(
-    screen: @Composable () -> Unit
-) {
-    NavHostWrapper { navController ->
-        Scaffold(
-            bottomBar = { BottomNavBar(NavigationDelegateImpl(navController)) },
-        ) { padding ->
+fun ScreenPreview(screen: @Composable () -> Unit) {
+    NavHostWrapper {
+        Scaffold { padding ->
             Box(modifier = Modifier.padding(padding)) {
                 screen()
             }
@@ -98,7 +91,11 @@ fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Preview(device = Devices.AUTOMOTIVE_1024p, widthDp = 1024, heightDp = 360)
+@Preview(
+    name = "Landscape",
+    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
+)
+@Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
 annotation class ScreenPreview
 
 @Preview

@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -17,6 +18,7 @@ class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val playbackManager: PlaybackManager
 ) : BaseViewModel<MainActivityState, MainActivityUserAction>(initialState) {
+
     override fun handle(action: MainActivityUserAction) {
         when (action) {
             is MainActivityUserAction.ConnectToMusicService -> {
@@ -31,18 +33,20 @@ class MainViewModel @Inject constructor(
 }
 
 
-object MainActivityState : State
+data class MainActivityState(val musicPlayerViewState: MusicPlayerViewState?) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
 object InitialMainActivityStateModule {
     @Provides
     @ViewModelScoped
-    fun initialMainActivityStateProvider(): MainActivityState = MainActivityState
+    fun initialMainActivityStateProvider(): MainActivityState = MainActivityState(
+        musicPlayerViewState = null
+    )
 }
 
-sealed class MainActivityUserAction : UserAction {
-    object ConnectToMusicService : MainActivityUserAction()
-    object DisconnectFromMusicService : MainActivityUserAction()
+sealed interface MainActivityUserAction : UserAction {
+    object ConnectToMusicService : MainActivityUserAction
+    object DisconnectFromMusicService : MainActivityUserAction
 }
 

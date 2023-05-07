@@ -8,11 +8,9 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -68,7 +66,6 @@ class TrackListViewModel @Inject constructor(
 
                         is PlaybackResult.Success -> {
                             setState { copy(playbackResult = null) }
-                            addNavEvent(NavEvent.NavigateToScreen(NavigationDestination.MusicPlayer))
                         }
                     }
                 }.launchIn(viewModelScope)

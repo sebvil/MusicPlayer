@@ -36,7 +36,6 @@ const val ARGS = "ARGS"
 
 enum class NavigationRoute(val hasArgs: Boolean) {
     Library(hasArgs = false),
-    Player(hasArgs = false),
     Queue(hasArgs = false),
     Search(hasArgs = false),
     LibraryRoot(hasArgs = false),
@@ -81,11 +80,6 @@ sealed class NavigationDestination(
     open val arguments: NavigationArguments?,
     val isBottomNavDestination: Boolean = false
 ) {
-    object MusicPlayer : NavigationDestination(
-        NavigationRoute.Player,
-        arguments = null,
-        isBottomNavDestination = true
-    )
 
     object Library : NavigationDestination(
         NavigationRoute.Library,
