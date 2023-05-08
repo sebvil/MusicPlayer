@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.library.main
+package com.sebastianvm.musicplayer.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -105,7 +105,6 @@ fun MainScreen(content: @Composable (page: TopLevelScreen, paddingBottom: Dp) ->
 
     val coroutineScope = rememberCoroutineScope()
     Box {
-
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             SearchBar(
                 query = "",
@@ -129,7 +128,6 @@ fun MainScreen(content: @Composable (page: TopLevelScreen, paddingBottom: Dp) ->
                     Text(text = stringResource(R.string.search_media))
                 }
             ) {
-
             }
 
             ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {

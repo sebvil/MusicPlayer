@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer
+package com.sebastianvm.musicplayer.ui
 
 import android.os.Bundle
 import android.os.StrictMode

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer
+package com.sebastianvm.musicplayer.ui
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewState

@@ -13,9 +13,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
-import com.sebastianvm.musicplayer.MainActivity
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.ui.MainActivity
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher

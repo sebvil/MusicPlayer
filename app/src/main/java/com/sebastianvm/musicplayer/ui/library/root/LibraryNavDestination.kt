@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.ui.library.root
 
 import androidx.navigation.NavGraphBuilder
-import com.sebastianvm.musicplayer.ui.library.main.MainScreen
-import com.sebastianvm.musicplayer.ui.library.main.Screens
+import com.sebastianvm.musicplayer.ui.MainScreen
+import com.sebastianvm.musicplayer.ui.Screens
 import com.sebastianvm.musicplayer.ui.navigation.DestinationType
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationRoute

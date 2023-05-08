@@ -16,8 +16,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -296,7 +295,6 @@ fun FullScreenPlayerLayout(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @ScreenPreview
 @Composable
 fun MusicPlayerHostPreview(
@@ -312,9 +310,9 @@ fun MusicPlayerHostPreview(
             content = {
                 LazyColumn(modifier = Modifier) {
                     items(50) {
-                        ListItem {
+                        ListItem(headlineContent = {
                             Text(text = "Item #$it")
-                        }
+                        })
                     }
                 }
             },
