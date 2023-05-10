@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.toSortableListType
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
@@ -63,7 +63,6 @@ fun TrackListRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackListScreen(
     state: TrackListState,
@@ -155,7 +154,11 @@ fun TrackListLayout(
             }
         })
 
-    LazyColumn(state = listState, modifier = modifier) {
+    LazyColumn(
+        state = listState,
+        modifier = modifier,
+        contentPadding = LocalPaddingValues.current
+    ) {
         item {
             state.headerImage?.also {
                 CollapsingImageHeader(

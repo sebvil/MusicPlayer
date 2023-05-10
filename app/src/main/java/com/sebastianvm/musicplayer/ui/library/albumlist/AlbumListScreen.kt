@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
@@ -23,7 +24,7 @@ fun AlbumListLayout(
     openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         items(state.albumList) { item ->
             ModelListItem(
                 state = item,

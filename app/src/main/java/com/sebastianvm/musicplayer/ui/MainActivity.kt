@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppScreenHost { padding ->
+                    AppScreenHost {
                         val navController = rememberNavController()
                         AppNavHost(navController = navController)
                     }

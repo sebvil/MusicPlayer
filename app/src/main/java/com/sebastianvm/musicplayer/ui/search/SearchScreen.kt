@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
@@ -88,7 +89,7 @@ fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                 screenDelegate.handle(SearchUserAction.SearchModeChanged(newOption))
             }
         )
-        LazyColumn {
+        LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
                 ModelListItem(
                     state = item,

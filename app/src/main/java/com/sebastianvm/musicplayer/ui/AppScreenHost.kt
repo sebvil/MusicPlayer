@@ -18,6 +18,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,32 +38,34 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 @Composable
-fun AppScreenHost(content: @Composable (paddingValues: PaddingValues) -> Unit) {
+fun AppScreenHost(content: @Composable () -> Unit) {
     var height by remember {
         mutableStateOf(0f)
     }
     val density = LocalDensity.current
     val playerBottomPadding = 16.dp
 
-    val paddingDp by remember {
+    val paddingValues by remember {
         derivedStateOf {
             with(density) {
-                playerBottomPadding + height.toDp() + 8.dp
+                PaddingValues(bottom = playerBottomPadding + height.toDp() + 8.dp)
             }
         }
     }
-    Box {
-        content(PaddingValues(bottom = paddingDp))
-        PlayerCard(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 8.dp)
-                .padding(bottom = playerBottomPadding)
-                .onPlaced {
-                    height = it.boundsInParent().height
-                }
-        )
+    CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
+        Box {
+            content()
+            PlayerCard(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = playerBottomPadding)
+                    .onPlaced {
+                        height = it.boundsInParent().height
+                    }
+            )
 
+        }
     }
 
 }

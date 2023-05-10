@@ -10,9 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+
 
 @Composable
 fun ArtistListLayout(
@@ -21,7 +23,7 @@ fun ArtistListLayout(
     navigateToArtistScreen: (ArtistArguments) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         items(state.artistList) { item ->
             ModelListItem(
                 state = item,
