@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
@@ -42,7 +41,6 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListLayout
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListLayout
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
@@ -51,18 +49,12 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import kotlinx.coroutines.launch
 
-enum class TopLevelScreen(
-    @StringRes val screenName: Int,
-    val navigationDestination: NavigationDestination
-) {
-    ALL_SONGS(
-        R.string.all_songs,
-        NavigationDestination.TrackList(TrackListArguments(trackList = MediaGroup.AllTracks))
-    ),
-    ARTISTS(R.string.artists, NavigationDestination.ArtistsRoot),
-    ALBUMS(R.string.albums, NavigationDestination.AlbumsRoot),
-    GENRES(R.string.genres, NavigationDestination.GenresRoot),
-    PLAYLISTS(R.string.playlists, NavigationDestination.PlaylistsRoot)
+enum class TopLevelScreen(@StringRes val screenName: Int) {
+    ALL_SONGS(R.string.all_songs),
+    ARTISTS(R.string.artists),
+    ALBUMS(R.string.albums),
+    GENRES(R.string.genres),
+    PLAYLISTS(R.string.playlists)
 }
 
 

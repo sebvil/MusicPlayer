@@ -31,22 +31,18 @@ class NavigationDelegateImpl(private val navController: NavController) : Navigat
     }
 
     override fun navigateToScreen(destination: NavigationDestination) {
-        if (!destination.isBottomNavDestination) {
-            navController.navigateTo(destination)
-        } else {
-            navController.navigateTo(destination) {
-                // Pop up to the start destination of the graph to
-                // avoid building up a large stack of destinations
-                // on the back stack as users select items
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-                // Avoid multiple copies of the same destination when
-                // reselecting the same item
-                launchSingleTop = true
-                // Restore state when reselecting a previously selected item
-                restoreState = true
+        navController.navigateTo(destination) {
+            // Pop up to the start destination of the graph to
+            // avoid building up a large stack of destinations
+            // on the back stack as users select items
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
             }
+            // Avoid multiple copies of the same destination when
+            // reselecting the same item
+            launchSingleTop = true
+            // Restore state when reselecting a previously selected item
+            restoreState = true
         }
     }
 

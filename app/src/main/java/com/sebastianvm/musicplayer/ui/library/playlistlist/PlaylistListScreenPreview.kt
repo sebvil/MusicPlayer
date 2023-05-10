@@ -1,14 +1,12 @@
 package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
@@ -44,22 +42,22 @@ class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistL
         )
 }
 
-// Note: You can launch the preview on device to see the dialogs
-@ScreenPreview
-@Composable
-private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state: PlaylistListState) {
-    ScreenPreview {
-        PlaylistListScreen(
-            state = state,
-            onSortByClicked = {},
-            onDismissPlaylistCreationErrorDialog = {},
-            onCreatePlaylistCLicked = {},
-            navigateToPlaylist = {},
-            openPlaylistContextMenu = {},
-            navigateBack = {}
-        )
-    }
-}
+//// Note: You can launch the preview on device to see the dialogs
+//@ScreenPreview
+//@Composable
+//private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state: PlaylistListState) {
+//    ScreenPreview {
+//        PlaylistListScreen(
+//            state = state,
+//            onSortByClicked = {},
+//            onDismissPlaylistCreationErrorDialog = {},
+//            onCreatePlaylistCLicked = {},
+//            navigateToPlaylist = {},
+//            openPlaylistContextMenu = {},
+//            navigateBack = {}
+//        )
+//    }
+//}
 
 @ComponentPreview
 @Composable

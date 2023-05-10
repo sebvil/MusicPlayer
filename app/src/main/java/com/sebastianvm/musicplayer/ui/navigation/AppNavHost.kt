@@ -9,11 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.sebastianvm.musicplayer.ui.Screens
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
-import com.sebastianvm.musicplayer.ui.library.albumlist.albumListNavDestination
-import com.sebastianvm.musicplayer.ui.library.artistlist.artistListNavDestination
-import com.sebastianvm.musicplayer.ui.library.genrelist.genreListNavDestination
-import com.sebastianvm.musicplayer.ui.library.playlistlist.playlistListNavDestination
-import com.sebastianvm.musicplayer.ui.library.root.libraryNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.mainNavDestination
 import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
@@ -48,15 +43,10 @@ fun NavGraphBuilder.libraryGraph(
             Screens(page = page, navigationDelegate = navigationDelegate)
         }
 
-        libraryNavDestination(navigationDelegate)
 
         searchNavDestination(navigationDelegate)
 
         trackListNavDestination(navigationDelegate)
-        artistListNavDestination(navigationDelegate)
-        albumListNavDestination(navigationDelegate)
-        genreListNavDestination(navigationDelegate)
-        playlistListNavDestination(navigationDelegate)
 
         artistNavDestination(navigationDelegate)
 
