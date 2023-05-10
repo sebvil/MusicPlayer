@@ -39,6 +39,8 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     Queue(hasArgs = false),
     Search(hasArgs = false),
     LibraryRoot(hasArgs = false),
+    Main(hasArgs = false),
+    MainRoot(hasArgs = false),
     ArtistsRoot(hasArgs = false),
     AlbumsRoot(hasArgs = false),
     GenresRoot(hasArgs = false),
@@ -66,7 +68,6 @@ fun interface NavFunction<T : NavigationArguments> {
 
     operator fun invoke(args: T) = navigate(args)
 }
-
 
 
 fun interface NoArgNavFunction {

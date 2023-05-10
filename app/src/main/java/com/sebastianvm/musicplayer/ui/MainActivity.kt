@@ -13,9 +13,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
-import com.sebastianvm.musicplayer.ui.util.compose.NavHostWrapper
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -50,9 +50,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHostWrapper { navController ->
+                    AppScreenHost { padding ->
+                        val navController = rememberNavController()
                         AppNavHost(navController = navController)
                     }
+
                 }
             }
         }
