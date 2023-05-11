@@ -159,8 +159,8 @@ fun TrackListLayout(
         modifier = modifier,
         contentPadding = LocalPaddingValues.current
     ) {
-        item {
-            state.headerImage?.also {
+        state.headerImage?.also {
+            item {
                 CollapsingImageHeader(
                     mediaArtImageState = it,
                     listState = listState,
