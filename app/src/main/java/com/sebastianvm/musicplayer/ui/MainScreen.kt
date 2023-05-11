@@ -4,32 +4,23 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
@@ -46,6 +37,7 @@ import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import kotlinx.coroutines.launch
 
@@ -57,12 +49,25 @@ enum class TopLevelScreen(@StringRes val screenName: Int) {
     PLAYLISTS(R.string.playlists)
 }
 
+@Composable
+fun MainScreen(
+    navigationDelegate: NavigationDelegate,
+    content: @Composable (page: TopLevelScreen) -> Unit
+) {
+    MainScreenLayout(
+        searchScreen = {
+            SearchScreen(screenViewModel = hiltViewModel(), navigationDelegate = navigationDelegate)
+        },
+        content = content
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(
-    paddingValues: PaddingValues,
-    content: @Composable (page: TopLevelScreen, paddingValues: PaddingValues) -> Unit
+fun MainScreenLayout(
+    searchScreen: @Composable () -> Unit,
+    content: @Composable (page: TopLevelScreen) -> Unit
 ) {
     val pages = TopLevelScreen.values()
     val pagerState = rememberPagerState(initialPage = 0)
@@ -72,36 +77,10 @@ fun MainScreen(
         }
     }
 
-    var isSearchActive by remember {
-        mutableStateOf(false)
-    }
-
     val coroutineScope = rememberCoroutineScope()
     Box {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            SearchBar(
-                query = "",
-                onQueryChange = {},
-                onSearch = {},
-                active = isSearchActive,
-                onActiveChange = { isSearchActive = it },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "")
-                },
-                trailingIcon = {
-                    if (!isSearchActive) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(id = R.string.more)
-                        )
-                    }
-
-                },
-                placeholder = {
-                    Text(text = stringResource(R.string.search_media))
-                }
-            ) {
-            }
+            searchScreen()
 
             ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
                 pages.forEachIndexed { index, page ->
@@ -122,7 +101,7 @@ fun MainScreen(
                 pageCount = pages.size,
                 beyondBoundsPageCount = 1
             ) { pageIndex ->
-                content(pages[pageIndex], paddingValues)
+                content(pages[pageIndex])
             }
         }
     }
@@ -230,8 +209,10 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
 @Composable
 fun MainScreenPreview() {
     ScreenPreview {
-        MainScreen(paddingValues = PaddingValues(bottom = 20.dp)) { _, padding ->
-            LazyColumn(contentPadding = padding) {
+        MainScreenLayout(
+            searchScreen = {}
+        ) { _ ->
+            LazyColumn {
                 items(count = 20, key = { it }) {
                     ListItem(headlineContent = {
                         Text(text = it.toString())
