@@ -29,14 +29,14 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         playbackManager.playbackState.onEach {
-            val newMusicPlayerViewState = if (it.mediaItemMetadata == null) {
+            val newPlayerViewState = if (it.mediaItemMetadata == null) {
                 isPlaying = false
                 trackLengthMs = 0
                 null
             } else {
                 isPlaying = it.isPlaying
                 trackLengthMs = it.mediaItemMetadata.trackDurationMs
-                MusicPlayerViewState(
+                PlayerViewState(
                     mediaArtImageState = MediaArtImageState(
                         imageUri = it.mediaItemMetadata.artworkUri,
                         contentDescription = R.string.album_art_for_album,
@@ -62,7 +62,7 @@ class MusicPlayerViewModel @Inject constructor(
             }
             setState {
                 copy(
-                    musicPlayerViewState = newMusicPlayerViewState
+                    playerViewState = newPlayerViewState
                 )
             }
         }.launchIn(viewModelScope)
@@ -91,7 +91,7 @@ class MusicPlayerViewModel @Inject constructor(
 }
 
 data class MusicPlayerState(
-    val musicPlayerViewState: MusicPlayerViewState?
+    val playerViewState: PlayerViewState?
 ) : State
 
 
@@ -101,7 +101,7 @@ object InitialMusicPlayerStateModule {
     @Provides
     @ViewModelScoped
     fun initialMusicPlayerStateProvider(): MusicPlayerState {
-        return MusicPlayerState(musicPlayerViewState = null)
+        return MusicPlayerState(playerViewState = null)
     }
 }
 

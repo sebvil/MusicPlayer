@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
+            val state by viewModel.stateFlow.collectAsStateWithLifecycle()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
                 WindowCompat.getInsetsController(
@@ -50,7 +53,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppScreenHost {
+                    AppScreenHost(
+                        state = state.playerViewState,
+                        onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
+                        onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
+                        onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }) {
                         val navController = rememberNavController()
                         AppNavHost(navController = navController)
                     }
@@ -62,12 +69,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.handle(MainActivityUserAction.ConnectToMusicService)
+        viewModel.handle(MainUserAction.ConnectToMusicService)
     }
 
     override fun onStop() {
         super.onStop()
-        viewModel.handle(MainActivityUserAction.DisconnectFromMusicService)
+        viewModel.handle(MainUserAction.DisconnectFromMusicService)
     }
 
 }

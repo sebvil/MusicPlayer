@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.MainActivityState
-import com.sebastianvm.musicplayer.ui.MainActivityUserAction
+import com.sebastianvm.musicplayer.ui.MainUserAction
 import com.sebastianvm.musicplayer.ui.MainViewModel
 import com.sebastianvm.musicplayer.util.BaseTest
 import io.mockk.MockKAnnotations
@@ -23,7 +23,7 @@ class MainViewModelTest : BaseTest() {
     @Test
     fun `connectToMusicService connects to music service`() {
         with(MainViewModel(MainActivityState, playbackManager)) {
-            handle(MainActivityUserAction.ConnectToMusicService)
+            handle(MainUserAction.ConnectToMusicService)
             verify {
                 playbackManager.connectToService()
             }
@@ -34,7 +34,7 @@ class MainViewModelTest : BaseTest() {
     @Test
     fun `disconnectFromMusicService disconnects from music service`() {
         with(MainViewModel(MainActivityState, playbackManager)) {
-            handle(MainActivityUserAction.DisconnectFromMusicService)
+            handle(MainUserAction.DisconnectFromMusicService)
             verify {
                 playbackManager.disconnectFromService()
             }

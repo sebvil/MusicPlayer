@@ -62,12 +62,12 @@ fun MusicPlayerHost(
 ) {
     val musicPlayerViewModel: MusicPlayerViewModel = viewModel()
     val state by musicPlayerViewModel.stateFlow.collectAsStateWithLifecycle()
-    val musicPlayerViewState = state.musicPlayerViewState
+    val musicPlayerViewState = state.playerViewState
     val windowWidthSizeClass =
         calculateWindowSizeClass(activity = LocalContext.current.findActivity()).widthSizeClass
     Scaffold { paddingValues ->
         MusicPlayerHostLayout(
-            musicPlayerViewState = musicPlayerViewState,
+            playerViewState = musicPlayerViewState,
             windowWidthSizeClass = windowWidthSizeClass,
             modifier = modifier,
             content = content,
@@ -93,7 +93,7 @@ fun MusicPlayerHost(
 
 @Composable
 fun MusicPlayerHostLayout(
-    musicPlayerViewState: MusicPlayerViewState?,
+    playerViewState: PlayerViewState?,
     windowWidthSizeClass: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
@@ -109,7 +109,7 @@ fun MusicPlayerHostLayout(
     when (windowWidthSizeClass.toPlayerViewMode(isExpanded)) {
         PlayerViewMode.BOTTOM_BAR -> {
             BottomBarPlayerLayout(
-                musicPlayerViewState = musicPlayerViewState,
+                playerViewState = playerViewState,
                 modifier = modifier,
                 paddingValues = paddingValues,
                 onProgressBarClicked = onProgressBarClicked,
@@ -124,7 +124,7 @@ fun MusicPlayerHostLayout(
 
         PlayerViewMode.SIDE_BAR -> {
             SideBarPlayerLayout(
-                musicPlayerViewState = musicPlayerViewState,
+                playerViewState = playerViewState,
                 modifier = modifier,
                 paddingValues = paddingValues,
                 onProgressBarClicked = onProgressBarClicked,
@@ -138,9 +138,9 @@ fun MusicPlayerHostLayout(
         }
 
         PlayerViewMode.FULL_SCREEN -> {
-            checkNotNull(musicPlayerViewState)
+            checkNotNull(playerViewState)
             FullScreenPlayerLayout(
-                musicPlayerViewState = musicPlayerViewState,
+                playerViewState = playerViewState,
                 paddingValues = paddingValues,
                 onProgressBarClicked = onProgressBarClicked,
                 onPreviousButtonClicked = onPreviousButtonClicked,
@@ -155,7 +155,7 @@ fun MusicPlayerHostLayout(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BottomBarPlayerLayout(
-    musicPlayerViewState: MusicPlayerViewState?,
+    playerViewState: PlayerViewState?,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onProgressBarClicked: (position: Int) -> Unit,
@@ -171,14 +171,14 @@ fun BottomBarPlayerLayout(
                 .weight(1f)
                 .padding(
                     top = paddingValues.calculateTopPadding(),
-                    bottom = if (musicPlayerViewState == null) paddingValues.calculateBottomPadding() else 0.dp,
+                    bottom = if (playerViewState == null) paddingValues.calculateBottomPadding() else 0.dp,
                 )
                 .consumeWindowInsets(paddingValues)
         ) {
             content()
 
         }
-        if (musicPlayerViewState != null) {
+        if (playerViewState != null) {
             val cornerSize = 16.dp
             Surface(
                 modifier = Modifier
@@ -186,7 +186,7 @@ fun BottomBarPlayerLayout(
                 tonalElevation = 8.dp
             ) {
                 MusicPlayerView(
-                    state = musicPlayerViewState,
+                    state = playerViewState,
                     playerViewMode = PlayerViewMode.BOTTOM_BAR,
                     modifier = Modifier
                         .padding(
@@ -210,7 +210,7 @@ fun BottomBarPlayerLayout(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SideBarPlayerLayout(
-    musicPlayerViewState: MusicPlayerViewState?,
+    playerViewState: PlayerViewState?,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onProgressBarClicked: (position: Int) -> Unit,
@@ -223,7 +223,7 @@ fun SideBarPlayerLayout(
     Row(
         modifier = modifier
     ) {
-        if (musicPlayerViewState != null) {
+        if (playerViewState != null) {
             val cornerSize = 16.dp
 
             Surface(
@@ -239,7 +239,7 @@ fun SideBarPlayerLayout(
                     .fillMaxHeight()
             ) {
                 MusicPlayerView(
-                    state = musicPlayerViewState,
+                    state = playerViewState,
                     playerViewMode = PlayerViewMode.SIDE_BAR,
                     modifier = Modifier
                         .padding(all = cornerSize)
@@ -266,7 +266,7 @@ fun SideBarPlayerLayout(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FullScreenPlayerLayout(
-    musicPlayerViewState: MusicPlayerViewState,
+    playerViewState: PlayerViewState,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onProgressBarClicked: (position: Int) -> Unit,
@@ -280,7 +280,7 @@ fun FullScreenPlayerLayout(
         modifier = modifier
     ) {
         MusicPlayerView(
-            state = musicPlayerViewState,
+            state = playerViewState,
             playerViewMode = PlayerViewMode.SIDE_BAR,
             modifier = Modifier
                 .padding(paddingValues)
@@ -301,11 +301,11 @@ fun MusicPlayerHostPreview(
     @PreviewParameter(
         MusicPlayerViewStatePreviewParameterProvider::class,
         limit = 1
-    ) state: MusicPlayerViewState
+    ) state: PlayerViewState
 ) {
     ThemedPreview {
         MusicPlayerHostLayout(
-            musicPlayerViewState = state,
+            playerViewState = state,
             windowWidthSizeClass = WindowWidthSizeClass.Expanded,
             content = {
                 LazyColumn(modifier = Modifier) {

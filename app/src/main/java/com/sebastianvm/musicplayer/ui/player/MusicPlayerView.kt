@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 
-data class MusicPlayerViewState(
+data class PlayerViewState(
     val mediaArtImageState: MediaArtImageState,
     val trackInfoState: TrackInfoState,
     val playbackControlsState: PlaybackControlsState
@@ -33,7 +33,7 @@ enum class PlayerViewMode {
 
 @Composable
 fun MusicPlayerView(
-    state: MusicPlayerViewState,
+    state: PlayerViewState,
     playerViewMode: PlayerViewMode,
     modifier: Modifier = Modifier,
     onProgressBarClicked: (position: Int) -> Unit,
@@ -81,7 +81,7 @@ fun MusicPlayerView(
 
 @Composable
 fun HorizontalMusicPlayerView(
-    state: MusicPlayerViewState,
+    state: PlayerViewState,
     modifier: Modifier = Modifier,
     onProgressBarClicked: (position: Int) -> Unit,
     onPreviousButtonClicked: () -> Unit,
@@ -115,7 +115,7 @@ fun HorizontalMusicPlayerView(
 
 @Composable
 fun VerticalMusicPlayerView(
-    state: MusicPlayerViewState,
+    state: PlayerViewState,
     modifier: Modifier = Modifier,
     onProgressBarClicked: (position: Int) -> Unit,
     onPreviousButtonClicked: () -> Unit,
@@ -153,7 +153,7 @@ fun HorizontalMusicPlayerViewPreview(
     @PreviewParameter(
         MusicPlayerViewStatePreviewParameterProvider::class,
         limit = 1
-    ) state: MusicPlayerViewState
+    ) state: PlayerViewState
 ) {
     ThemedPreview {
         MusicPlayerView(
@@ -174,7 +174,7 @@ fun VerticalMusicPlayerViewPreview(
     @PreviewParameter(
         MusicPlayerViewStatePreviewParameterProvider::class,
         limit = 1
-    ) state: MusicPlayerViewState
+    ) state: PlayerViewState
 ) {
     ThemedPreview {
         MusicPlayerView(

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,13 +31,23 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewStatePreviewParameterProvider
+import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 @Composable
-fun AppScreenHost(content: @Composable () -> Unit) {
+fun AppScreenHost(
+    state: PlayerViewState?,
+    onPreviousButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    onPlayToggled: () -> Unit,
+    content: @Composable () -> Unit
+) {
     var height by remember {
         mutableStateOf(0f)
     }
@@ -48,22 +57,29 @@ fun AppScreenHost(content: @Composable () -> Unit) {
     val paddingValues by remember {
         derivedStateOf {
             with(density) {
-                PaddingValues(bottom = playerBottomPadding + height.toDp() + 8.dp)
+                PaddingValues(bottom = if (state == null) 0.dp else playerBottomPadding + height.toDp() + 8.dp)
             }
         }
     }
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
         Box {
             content()
-            PlayerCard(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = playerBottomPadding)
-                    .onPlaced {
-                        height = it.boundsInParent().height
-                    }
-            )
+            state?.let {
+                PlayerCard(
+                    state = state,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = playerBottomPadding)
+                        .onPlaced {
+                            height = it.boundsInParent().height
+                        },
+                    onPreviousButtonClicked = onPreviousButtonClicked,
+                    onNextButtonClicked = onNextButtonClicked,
+                    onPlayToggled = onPlayToggled
+                )
+            }
+
 
         }
     }
@@ -71,42 +87,49 @@ fun AppScreenHost(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun PlayerCard(modifier: Modifier = Modifier) {
+fun PlayerCard(
+    state: PlayerViewState, modifier: Modifier = Modifier,
+    onPreviousButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    onPlayToggled: () -> Unit,
+) {
     Card(modifier = modifier) {
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
                 .padding(8.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_album),
-                contentDescription = "",
+            MediaArtImage(
+                mediaArtImageState = state.mediaArtImageState,
                 modifier = Modifier.fillMaxHeight(),
                 contentScale = ContentScale.FillHeight
             )
             Column(modifier = Modifier.padding(start = 8.dp, bottom = 8.dp, top = 8.dp)) {
                 Text(
-                    text = "Track name",
+                    text = state.trackInfoState.trackName,
                     modifier = Modifier.padding(bottom = 2.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
-                Text(text = "Artist name", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = state.trackInfoState.artists,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            IconButton(onClick = { }) {
+            IconButton(onClick = onPreviousButtonClicked) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_prev),
                     contentDescription = stringResource(R.string.previous),
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = onPlayToggled) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_play),
+                    painter = painterResource(id = state.playbackControlsState.playbackIcon.icon),
                     contentDescription = stringResource(R.string.previous),
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = onNextButtonClicked) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_next),
                     contentDescription = stringResource(R.string.previous),
@@ -114,7 +137,7 @@ fun PlayerCard(modifier: Modifier = Modifier) {
             }
         }
         LinearProgressIndicator(
-            progress = 0.5f,
+            progress = state.playbackControlsState.trackProgressState.progress.percent,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
@@ -127,8 +150,13 @@ fun PlayerCard(modifier: Modifier = Modifier) {
 
 @ComponentPreview
 @Composable
-fun PlayerCardPreview() {
+fun PlayerCardPreview(@PreviewParameter(MusicPlayerViewStatePreviewParameterProvider::class) state: PlayerViewState) {
     ThemedPreview {
-        PlayerCard()
+        PlayerCard(
+            state = state,
+            onPreviousButtonClicked = {},
+            onNextButtonClicked = {},
+            onPlayToggled = {}
+        )
     }
 }
