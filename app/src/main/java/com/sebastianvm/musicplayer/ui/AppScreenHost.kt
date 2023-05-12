@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -61,23 +61,22 @@ fun AppScreenHost(
     var isFullScreen by remember {
         mutableStateOf(false)
     }
-    val animationDurationMs = 250
+
+    BackHandler(enabled = isFullScreen) {
+        if (isFullScreen) {
+            isFullScreen = false
+        }
+    }
     val transition =
         updateTransition(targetState = isFullScreen, label = "player animation")
-    val progress by transition.animateFloat(transitionSpec = {
-        tween(animationDurationMs)
-    }, label = "progress animation") { targetIsFullScreen ->
+    val progress by transition.animateFloat(label = "progress animation") { targetIsFullScreen ->
         if (targetIsFullScreen) 1f else 0f
     }
-    val paddingHorizontal by transition.animateDp(transitionSpec = {
-        tween(animationDurationMs)
-    }, label = "padding horizontal") { targetIsFullScreen ->
+    val paddingHorizontal by transition.animateDp(label = "padding horizontal") { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else 8.dp
     }
 
-    val paddingBottom by transition.animateDp(transitionSpec = {
-        tween(animationDurationMs)
-    }, label = "padding bottom") { targetIsFullScreen ->
+    val paddingBottom by transition.animateDp(label = "padding bottom") { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else playerBottomPadding
     }
     val paddingValues by remember {
@@ -91,8 +90,6 @@ fun AppScreenHost(
         Box {
             content()
             state?.let {
-
-
                 AnimatedPlayerCard(
                     state = state,
                     progress = progress,
@@ -104,7 +101,7 @@ fun AppScreenHost(
                         .onPlaced {
                             height = it.boundsInParent().height
                         }
-                        .clickable {
+                        .clickable(enabled = !isFullScreen) {
                             isFullScreen = !isFullScreen
                         },
                     onPreviousButtonClicked = onPreviousButtonClicked,
