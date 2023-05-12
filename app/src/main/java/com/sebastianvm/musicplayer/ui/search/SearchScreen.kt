@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui.search
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -15,6 +17,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,16 +31,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.ui.components.Permission
+import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
@@ -75,6 +85,12 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
         mutableStateOf("")
     }
 
+    var isDropdownManuExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    val context = LocalContext.current
+
     SearchBar(
         query = query,
         onQueryChange = {
@@ -109,10 +125,50 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
         },
         trailingIcon = {
             if (!isSearchActive) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(id = R.string.more)
-                )
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopStart)
+                ) {
+                    IconButton(
+                        onClick = {
+                            isDropdownManuExpanded = !isDropdownManuExpanded
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(id = R.string.more)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = isDropdownManuExpanded,
+                        onDismissRequest = { isDropdownManuExpanded = false }
+                    ) {
+                        PermissionHandler(
+                            permission = Permission.ReadAudio,
+                            dialogTitle = R.string.storage_permission_needed,
+                            message = R.string.grant_storage_permissions,
+                            onPermissionGranted = {
+                                startForegroundService(
+                                    context,
+                                    Intent(context, LibraryScanService::class.java)
+                                )
+                                isDropdownManuExpanded = false
+                            }
+                        ) { onClick ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(id = R.string.refresh_library)) },
+                                onClick = {
+                                    onClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Outlined.Refresh,
+                                        contentDescription = null
+                                    )
+                                })
+                        }
+                    }
+
+                }
             } else if (query.isNotEmpty()) {
                 IconButton(
                     onClick = {
@@ -182,7 +238,7 @@ fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                             },
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_overflow),
+                                imageVector = Icons.Default.MoreVert,
                                 contentDescription = stringResource(id = R.string.more)
                             )
                         }

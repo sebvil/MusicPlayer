@@ -87,6 +87,7 @@
     <string name="delete_this_playlist">Delete playlist %1$s</string>
     <string name="sure_you_want_to_delete">"Are you sure you want to delete %1$s?</string>
     <string name="search_media">Search media</string>
+    <string name="refresh_library">Refresh library</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d track</item>

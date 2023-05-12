@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.Dimension
@@ -41,7 +42,10 @@ import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 @Composable
 fun AppScreenHost(
@@ -274,21 +278,21 @@ fun AnimatedPlayerCard(
 }
 
 
-//@ComponentPreview
-//@Composable
-//fun PlayerCardPreview(
-//    @PreviewParameter(
-//        MusicPlayerViewStatePreviewParameterProvider::class,
-//        limit = 2
-//    ) state: PlayerViewState
-//) {
-//    ThemedPreview {
-//        AnimatedPlayerCard(
-//            state = state,
-//            isFullScreen = false,
-//            onPreviousButtonClicked = {},
-//            onNextButtonClicked = {},
-//            onPlayToggled = {}
-//        )
-//    }
-//}
+@ComponentPreview
+@Composable
+fun PlayerCardPreview(
+    @PreviewParameter(
+        MusicPlayerViewStatePreviewParameterProvider::class,
+        limit = 2
+    ) state: PlayerViewState
+) {
+    ThemedPreview {
+        AnimatedPlayerCard(
+            state = state,
+            progress = 0f,
+            onPreviousButtonClicked = {},
+            onNextButtonClicked = {},
+            onPlayToggled = {}
+        )
+    }
+}
