@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -23,6 +26,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,16 +57,18 @@ fun AppScreenHost(
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    windowInsets: WindowInsets = WindowInsets.navigationBars,
     content: @Composable () -> Unit
 ) {
+    val navBarPadding = windowInsets.asPaddingValues().calculateBottomPadding()
     var height by remember {
         mutableStateOf(0f)
     }
     val density = LocalDensity.current
-    val playerBottomPadding = 20.dp
+    val playerBottomPadding = 4.dp
 
 
-    var isFullScreen by remember {
+    var isFullScreen by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -81,7 +87,7 @@ fun AppScreenHost(
     }
 
     val paddingBottom by transition.animateDp(label = "padding bottom") { targetIsFullScreen ->
-        if (targetIsFullScreen) 0.dp else playerBottomPadding
+        if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
     }
     val paddingValues by remember {
         derivedStateOf {

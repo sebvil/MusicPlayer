@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,6 +31,10 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
 
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
@@ -43,10 +48,13 @@ class MainActivity : ComponentActivity() {
             val state by viewModel.stateFlow.collectAsStateWithLifecycle()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
-                WindowCompat.getInsetsController(
+                val windowInsetsController = WindowCompat.getInsetsController(
                     window,
                     window.decorView
-                ).isAppearanceLightStatusBars = useDarkIcons
+                ).apply {
+                    isAppearanceLightStatusBars = useDarkIcons
+                    isAppearanceLightNavigationBars = true
+                }
             }
             M3AppTheme {
                 Surface(
