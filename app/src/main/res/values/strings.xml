@@ -88,6 +88,12 @@
     <string name="sure_you_want_to_delete">"Are you sure you want to delete %1$s?</string>
     <string name="search_media">Search media</string>
     <string name="refresh_library">Refresh library</string>
+    <string name="create_playlist">Create playlist</string>
+    <string name="no_tracks_found">No tracks found. Try refreshing your library</string>
+    <string name="no_genres_found">No genres found. Try refreshing your library</string>
+    <string name="no_artists_found">No artists found. Try refreshing your library</string>
+    <string name="no_albums_found">No albums found. Try refreshing your library</string>
+    <string name="no_playlists_try_creating_one">No playlists. Try creating one!</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d track</item>

@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -28,6 +30,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
+import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.header.CollapsingImageHeader
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
@@ -154,48 +157,55 @@ fun TrackListLayout(
             }
         })
 
-    LazyColumn(
-        state = listState,
-        modifier = modifier,
-        contentPadding = LocalPaddingValues.current
-    ) {
-        state.headerImage?.also {
-            item {
-                CollapsingImageHeader(
-                    mediaArtImageState = it,
-                    listState = listState,
-                    title = state.trackListName ?: "",
-                    updateAlpha = updateAlpha
+    if (state.trackList.isEmpty()) {
+        StoragePermissionNeededEmptyScreen(
+            message = R.string.no_tracks_found,
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+        )
+    } else {
+        LazyColumn(
+            state = listState,
+            modifier = modifier,
+            contentPadding = LocalPaddingValues.current
+        ) {
+            state.headerImage?.also {
+                item {
+                    CollapsingImageHeader(
+                        mediaArtImageState = it,
+                        listState = listState,
+                        title = state.trackListName ?: "",
+                        updateAlpha = updateAlpha
+                    )
+                }
+            }
+            itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
+                ModelListItem(
+                    state = item,
+                    modifier = Modifier
+                        .clickable {
+                            onTrackClicked(index)
+                        },
+                    trailingContent = {
+                        IconButton(
+                            onClick = {
+                                openTrackContextMenu(
+                                    TrackContextMenuArguments(
+                                        trackId = item.id,
+                                        mediaGroup = state.trackListType,
+                                        trackIndex = index,
+                                        positionInPlaylist = (item as? ModelListItemState.WithPosition)?.position
+                                    )
+                                )
+                            })
+                        {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_overflow),
+                                contentDescription = stringResource(R.string.more),
+                            )
+                        }
+                    }
                 )
             }
-        }
-        itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->
-            ModelListItem(
-                state = item,
-                modifier = Modifier
-                    .clickable {
-                        onTrackClicked(index)
-                    },
-                trailingContent = {
-                    IconButton(
-                        onClick = {
-                            openTrackContextMenu(
-                                TrackContextMenuArguments(
-                                    trackId = item.id,
-                                    mediaGroup = state.trackListType,
-                                    trackIndex = index,
-                                    positionInPlaylist = (item as? ModelListItemState.WithPosition)?.position
-                                )
-                            )
-                        })
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_overflow),
-                            contentDescription = stringResource(R.string.more),
-                        )
-                    }
-                }
-            )
         }
     }
 }
