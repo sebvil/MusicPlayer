@@ -1,8 +1,14 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,13 +19,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -30,13 +40,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.Dimension
@@ -51,16 +66,20 @@ import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
+private fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
+    { spring() }
+
 @Composable
 fun AppScreenHost(
     state: PlayerViewState?,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
-    windowInsets: WindowInsets = WindowInsets.navigationBars,
+    windowInsets: WindowInsets = WindowInsets.systemBars,
     content: @Composable () -> Unit
 ) {
     val navBarPadding = windowInsets.asPaddingValues().calculateBottomPadding()
+    val statusBarPadding = windowInsets.asPaddingValues().calculateTopPadding()
     var height by remember {
         mutableStateOf(0f)
     }
@@ -77,16 +96,19 @@ fun AppScreenHost(
             isFullScreen = false
         }
     }
-    val transition =
-        updateTransition(targetState = isFullScreen, label = "player animation")
-    val progress by transition.animateFloat(label = "progress animation") { targetIsFullScreen ->
-        if (targetIsFullScreen) 1f else 0f
-    }
-    val paddingHorizontal by transition.animateDp(label = "padding horizontal") { targetIsFullScreen ->
+    val transition = updateTransition(targetState = isFullScreen, label = "player animation")
+
+    val paddingHorizontal by transition.animateDp(
+        transitionSpec = transitionSpec(),
+        label = "padding horizontal"
+    ) { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else 8.dp
     }
 
-    val paddingBottom by transition.animateDp(label = "padding bottom") { targetIsFullScreen ->
+    val paddingBottom by transition.animateDp(
+        transitionSpec = transitionSpec(),
+        label = "padding bottom"
+    ) { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
     }
     val paddingValues by remember {
@@ -102,7 +124,8 @@ fun AppScreenHost(
             state?.let {
                 AnimatedPlayerCard(
                     state = state,
-                    progress = progress,
+                    transition = transition,
+                    statusBarPadding = statusBarPadding,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
@@ -116,7 +139,10 @@ fun AppScreenHost(
                         },
                     onPreviousButtonClicked = onPreviousButtonClicked,
                     onNextButtonClicked = onNextButtonClicked,
-                    onPlayToggled = onPlayToggled
+                    onPlayToggled = onPlayToggled,
+                    onDismissPlayer = {
+                        isFullScreen = false
+                    }
                 )
             }
         }
@@ -129,14 +155,48 @@ fun AppScreenHost(
 @Composable
 fun AnimatedPlayerCard(
     state: PlayerViewState,
-    progress: Float,
+    transition: Transition<Boolean>,
+    statusBarPadding: Dp,
     modifier: Modifier = Modifier,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    onDismissPlayer: () -> Unit
 ) {
-    Card(modifier = modifier) {
-        val padding = 12.dp
+    val progress by transition.animateFloat(
+        transitionSpec = transitionSpec(),
+        label = "progress animation"
+    ) { targetIsFullScreen ->
+        if (targetIsFullScreen) 1f else 0f
+    }
+
+    val buttonSize by transition.animateDp(
+        transitionSpec = transitionSpec(),
+        label = "button size"
+    ) { targetIsFullScreen ->
+        if (targetIsFullScreen) 48.dp else 24.dp
+    }
+
+    val titleTextSize by transition.animateValue(
+        typeConverter = TwoWayConverter(
+            convertToVector = {
+                AnimationVector1D(
+                    it.value,
+                )
+            },
+            convertFromVector = {
+                TextUnit(it.value, TextUnitType.Sp)
+            }
+        ),
+        transitionSpec = transitionSpec(),
+        label = "text style"
+    ) { targetIsFullScreen ->
+        if (targetIsFullScreen) MaterialTheme.typography.headlineSmall.fontSize else MaterialTheme.typography.titleSmall.fontSize
+    }
+
+    ElevatedCard(modifier = modifier) {
+        val screenPadding = 12.dp
+        val itemPadding = 8.dp
         MotionLayout(
             motionScene = MotionScene {
                 val image = createRefFor("image")
@@ -144,14 +204,28 @@ fun AnimatedPlayerCard(
                 val playbackControls = createRefFor("playbackControls")
                 val progressBar = createRefFor("progressBar")
                 val box = createRefFor("box")
+                val hidePlayerButton = createRefFor("hidePlayer")
+                val trackTime = createRefFor("trackTime")
                 val fullScreenConstraints = constraintSet {
                     val chain = createVerticalChain(
-                        image,
-                        text,
-                        playbackControls,
-                        progressBar,
+                        image.withChainParams(bottomMargin = itemPadding),
+                        text.withChainParams(topMargin = itemPadding, bottomMargin = itemPadding),
+                        playbackControls.withChainParams(
+                            topMargin = itemPadding,
+                            bottomMargin = itemPadding
+                        ),
+                        progressBar.withChainParams(
+                            topMargin = itemPadding,
+                            bottomMargin = itemPadding
+                        ),
+                        trackTime.withChainParams(topMargin = itemPadding),
                         chainStyle = ChainStyle.Packed
                     )
+
+                    constrain(hidePlayerButton) {
+                        top.linkTo(parent.top, margin = statusBarPadding)
+                        start.linkTo(parent.start, margin = screenPadding)
+                    }
                     constrain(box) {
                         height = Dimension.matchParent
                         width = Dimension.matchParent
@@ -161,25 +235,29 @@ fun AnimatedPlayerCard(
                         bottom.linkTo(parent.bottom)
                     }
                     constrain(image) {
-                        width = Dimension.preferredValue(250.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
+                        width = Dimension.matchParent
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
                     }
                     constrain(text) {
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(parent.end, margin = padding)
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
                         width = Dimension.matchParent
                     }
 
                     constrain(playbackControls) {
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(parent.end, margin = padding)
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
                         width = Dimension.matchParent
                     }
                     constrain(progressBar) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(parent.end, margin = padding)
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
+                        width = Dimension.matchParent
+                    }
+                    constrain(trackTime) {
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
                         width = Dimension.matchParent
                     }
                 }
@@ -190,36 +268,39 @@ fun AnimatedPlayerCard(
                     }
                     val chain = createVerticalChain(
                         text,
-                        playbackControls,
-                        progressBar,
+                        playbackControls.withChainParams(),
+                        progressBar.withChainParams(
+                            topMargin = 2.dp,
+                            bottomMargin = 2.dp
+                        ),
                         chainStyle = ChainStyle.Packed
                     )
 
                     constrain(chain) {
-                        top.linkTo(parent.top, margin = padding)
+                        top.linkTo(parent.top, margin = screenPadding)
                         bottom.linkTo(parent.bottom)
                     }
 
                     constrain(image) {
                         top.linkTo(text.top)
                         bottom.linkTo(text.bottom)
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(text.start)
+                        start.linkTo(parent.start, margin = screenPadding)
                         height = Dimension.fillToConstraints
                     }
 
 
                     constrain(text) {
-                        start.linkTo(image.end, margin = padding)
+                        start.linkTo(image.end, margin = itemPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
+                        width = Dimension.fillToConstraints
                     }
                     constrain(playbackControls) {
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(parent.end, margin = padding)
-                        width = Dimension.matchParent
+                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = screenPadding)
                     }
                     constrain(progressBar) {
-                        start.linkTo(parent.start, margin = padding)
-                        end.linkTo(parent.end, margin = padding)
+                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = screenPadding)
                         width = Dimension.matchParent
                     }
 
@@ -228,22 +309,59 @@ fun AnimatedPlayerCard(
             },
             progress = progress,
         ) {
+            if (progress != 0f) {
+                IconButton(
+                    onClick = onDismissPlayer,
+                    modifier = Modifier
+                        .layoutId("hidePlayer")
+                        .alpha(progress)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = stringResource(R.string.hide_player),
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(progress).layoutId("trackTime")
+                ) {
+                    Text(
+                        text = state.playbackControlsState.trackProgressState.currentPlaybackTime,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = state.playbackControlsState.trackProgressState.trackLength,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
+            }
             Box(modifier = Modifier.layoutId("box"))
             MediaArtImage(
                 mediaArtImageState = state.mediaArtImageState,
                 modifier = Modifier.layoutId("image"),
             )
             Column(
-                modifier = Modifier.layoutId("text")
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .layoutId("text"),
             ) {
                 AnimatedTextOverflow(
                     text = state.trackInfoState.trackName,
-                    modifier = Modifier.padding(bottom = 2.dp),
+                    modifier = Modifier
+                        .padding(vertical = 2.dp),
                     style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = titleTextSize
                 )
                 AnimatedTextOverflow(
                     text = state.trackInfoState.artists,
+                    modifier = Modifier.padding(vertical = 2.dp),
                     style = MaterialTheme.typography.bodyMedium,
+                    fontSize = titleTextSize
                 )
             }
 
@@ -256,18 +374,21 @@ fun AnimatedPlayerCard(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_prev),
                         contentDescription = stringResource(R.string.previous),
+                        modifier = Modifier.size(buttonSize)
                     )
                 }
                 IconButton(onClick = onPlayToggled) {
                     Icon(
                         painter = painterResource(id = state.playbackControlsState.playbackIcon.icon),
                         contentDescription = stringResource(R.string.previous),
+                        modifier = Modifier.size(buttonSize)
                     )
                 }
                 IconButton(onClick = onNextButtonClicked) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_next),
                         contentDescription = stringResource(R.string.previous),
+                        modifier = Modifier.size(buttonSize)
                     )
                 }
             }
@@ -276,8 +397,9 @@ fun AnimatedPlayerCard(
                 modifier = Modifier
                     .layoutId("progressBar"),
                 trackColor = MaterialTheme.colorScheme.onPrimary
-
             )
+
+
         }
     }
 
@@ -289,16 +411,19 @@ fun AnimatedPlayerCard(
 fun PlayerCardPreview(
     @PreviewParameter(
         MusicPlayerViewStatePreviewParameterProvider::class,
-        limit = 2
+        limit = 1
     ) state: PlayerViewState
 ) {
+    val transition = updateTransition(targetState = true, label = "player animation")
     ThemedPreview {
         AnimatedPlayerCard(
             state = state,
-            progress = 0f,
+            statusBarPadding = 16.dp,
+            transition = transition,
             onPreviousButtonClicked = {},
             onNextButtonClicked = {},
-            onPlayToggled = {}
+            onPlayToggled = {},
+            onDismissPlayer = {}
         )
     }
 }

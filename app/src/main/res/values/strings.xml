@@ -94,6 +94,7 @@
     <string name="no_artists_found">No artists found. Try refreshing your library</string>
     <string name="no_albums_found">No albums found. Try refreshing your library</string>
     <string name="no_playlists_try_creating_one">No playlists. Try creating one!</string>
+    <string name="hide_player">Hide player</string>
 
     <plurals name="number_of_tracks">
         <item quantity="one">%1$d track</item>
