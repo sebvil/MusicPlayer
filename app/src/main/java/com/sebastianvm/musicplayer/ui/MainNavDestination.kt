@@ -11,7 +11,7 @@ fun NavGraphBuilder.mainNavDestination(navigationDelegate: NavigationDelegate) {
     screenDestination<MainViewModel>(
         destination = NavigationRoute.MainRoot,
         destinationType = DestinationType.Screen
-    ) { viewModel ->
+    ) {
         MainScreen(navigationDelegate) { page ->
             Screens(page = page, navigationDelegate = navigationDelegate)
         }

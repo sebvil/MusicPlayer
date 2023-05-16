@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             val state by viewModel.stateFlow.collectAsStateWithLifecycle()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
-                val windowInsetsController = WindowCompat.getInsetsController(
+                WindowCompat.getInsetsController(
                     window,
                     window.decorView
                 ).apply {
