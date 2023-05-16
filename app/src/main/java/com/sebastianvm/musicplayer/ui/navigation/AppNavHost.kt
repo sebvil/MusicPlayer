@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheetDestinations
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.artistsBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.mainNavDestination
@@ -47,7 +48,7 @@ fun NavGraphBuilder.libraryGraph(
 
         sortBottomSheetNavDestination(navigationDelegate)
         contextBottomSheetDestinations(navigationDelegate)
-//        artistsBottomSheetNavDestination(navigationDelegate)
+        artistsBottomSheetNavDestination(navigationDelegate)
         queueNavDestination(navigationDelegate)
 
     }

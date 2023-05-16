@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -49,7 +47,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            val state by viewModel.stateFlow.collectAsStateWithLifecycle()
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {
                 WindowCompat.getInsetsController(
@@ -69,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController(bottomSheetNavigator)
                     M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
                         AppScreenHost(
-                            state = state.playerViewState,
+                            viewModel = viewModel,
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
                             onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
                             onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }) {
