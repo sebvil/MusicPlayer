@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -59,7 +60,6 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.AnimatedTextOverflow
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
@@ -194,8 +194,26 @@ fun AnimatedPlayerCard(
         if (targetIsFullScreen) MaterialTheme.typography.headlineSmall.fontSize else MaterialTheme.typography.titleSmall.fontSize
     }
 
+    val artistTextSize by transition.animateValue(
+        typeConverter = TwoWayConverter(
+            convertToVector = {
+                AnimationVector1D(
+                    it.value,
+                )
+            },
+            convertFromVector = {
+                TextUnit(it.value, TextUnitType.Sp)
+            }
+        ),
+        transitionSpec = transitionSpec(),
+        label = "text style"
+    ) { targetIsFullScreen ->
+        if (targetIsFullScreen) MaterialTheme.typography.titleLarge.fontSize else MaterialTheme.typography.bodyMedium.fontSize
+    }
+
     ElevatedCard(modifier = modifier) {
-        val screenPadding = 12.dp
+        val fullScreenPadding = 26.dp
+        val cardPadding = 12.dp
         val itemPadding = 8.dp
         MotionLayout(
             motionScene = MotionScene {
@@ -224,7 +242,7 @@ fun AnimatedPlayerCard(
 
                     constrain(hidePlayerButton) {
                         top.linkTo(parent.top, margin = statusBarPadding)
-                        start.linkTo(parent.start, margin = screenPadding)
+                        start.linkTo(parent.start, margin = fullScreenPadding)
                     }
                     constrain(box) {
                         height = Dimension.matchParent
@@ -235,29 +253,29 @@ fun AnimatedPlayerCard(
                         bottom.linkTo(parent.bottom)
                     }
                     constrain(image) {
-                        width = Dimension.matchParent
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        width = Dimension.fillToConstraints
+                        start.linkTo(parent.start, margin = fullScreenPadding)
+                        end.linkTo(parent.end, margin = fullScreenPadding)
                     }
                     constrain(text) {
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = fullScreenPadding)
+                        end.linkTo(parent.end, margin = fullScreenPadding)
                         width = Dimension.matchParent
                     }
 
                     constrain(playbackControls) {
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = fullScreenPadding)
+                        end.linkTo(parent.end, margin = fullScreenPadding)
                         width = Dimension.matchParent
                     }
                     constrain(progressBar) {
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = fullScreenPadding)
+                        end.linkTo(parent.end, margin = fullScreenPadding)
                         width = Dimension.matchParent
                     }
                     constrain(trackTime) {
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = fullScreenPadding)
+                        end.linkTo(parent.end, margin = fullScreenPadding)
                         width = Dimension.matchParent
                     }
                 }
@@ -277,30 +295,30 @@ fun AnimatedPlayerCard(
                     )
 
                     constrain(chain) {
-                        top.linkTo(parent.top, margin = screenPadding)
+                        top.linkTo(parent.top, margin = cardPadding)
                         bottom.linkTo(parent.bottom)
                     }
 
                     constrain(image) {
                         top.linkTo(text.top)
                         bottom.linkTo(text.bottom)
-                        start.linkTo(parent.start, margin = screenPadding)
+                        start.linkTo(parent.start, margin = cardPadding)
                         height = Dimension.fillToConstraints
                     }
 
 
                     constrain(text) {
                         start.linkTo(image.end, margin = itemPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        end.linkTo(parent.end, margin = cardPadding)
                         width = Dimension.fillToConstraints
                     }
                     constrain(playbackControls) {
-                        end.linkTo(parent.end, margin = screenPadding)
-                        start.linkTo(parent.start, margin = screenPadding)
+                        end.linkTo(parent.end, margin = cardPadding)
+                        start.linkTo(parent.start, margin = cardPadding)
                     }
                     constrain(progressBar) {
-                        start.linkTo(parent.start, margin = screenPadding)
-                        end.linkTo(parent.end, margin = screenPadding)
+                        start.linkTo(parent.start, margin = cardPadding)
+                        end.linkTo(parent.end, margin = cardPadding)
                         width = Dimension.matchParent
                     }
 
@@ -317,7 +335,7 @@ fun AnimatedPlayerCard(
                         .alpha(progress)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.hide_player),
                         modifier = Modifier.size(48.dp)
                     )
@@ -327,7 +345,8 @@ fun AnimatedPlayerCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .alpha(progress).layoutId("trackTime")
+                        .alpha(progress)
+                        .layoutId("trackTime")
                 ) {
                     Text(
                         text = state.playbackControlsState.trackProgressState.currentPlaybackTime,
@@ -349,19 +368,22 @@ fun AnimatedPlayerCard(
                     .fillMaxWidth()
                     .layoutId("text"),
             ) {
-                AnimatedTextOverflow(
+                Text(
                     text = state.trackInfoState.trackName,
-                    modifier = Modifier
-                        .padding(vertical = 2.dp),
+                    modifier = Modifier.padding(vertical = 2.dp),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
-                    fontSize = titleTextSize
+                    fontSize = titleTextSize,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
-                AnimatedTextOverflow(
+                Text(
                     text = state.trackInfoState.artists,
                     modifier = Modifier.padding(vertical = 2.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    fontSize = titleTextSize
+                    fontSize = artistTextSize,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
 
