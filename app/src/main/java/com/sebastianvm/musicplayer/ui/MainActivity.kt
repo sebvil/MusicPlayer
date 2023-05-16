@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.navigation.AppNavHost
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
@@ -61,13 +65,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppScreenHost(
-                        state = state.playerViewState,
-                        onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
-                        onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
-                        onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }) {
-                        val navController = rememberNavController()
-                        AppNavHost(navController = navController)
+                    val bottomSheetNavigator = rememberBottomSheetNavigator()
+                    val navController = rememberNavController(bottomSheetNavigator)
+                    M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
+                        AppScreenHost(
+                            state = state.playerViewState,
+                            onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
+                            onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
+                            onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }) {
+                            AppNavHost(navController = navController)
+                        }
                     }
 
                 }

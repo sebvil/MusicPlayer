@@ -4,6 +4,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
@@ -23,8 +24,17 @@ import javax.inject.Inject
 @HiltViewModel
 class GenreContextMenuViewModel @Inject constructor(
     initialState: GenreContextMenuState,
+    genreRepository: GenreRepository,
     private val playbackManager: PlaybackManager,
 ) : BaseContextMenuViewModel<GenreContextMenuState>(initialState) {
+
+    init {
+        genreRepository.getGenreName(genreId = state.mediaId).onEach {
+            setState {
+                copy(menuTitle = it)
+            }
+        }.launchIn(viewModelScope)
+    }
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {

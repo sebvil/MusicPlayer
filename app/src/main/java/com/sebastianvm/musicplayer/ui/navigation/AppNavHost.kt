@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
 import com.sebastianvm.musicplayer.ui.artist.artistNavDestination
+import com.sebastianvm.musicplayer.ui.bottomsheets.context.contextBottomSheetDestinations
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.sortBottomSheetNavDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.trackListNavDestination
 import com.sebastianvm.musicplayer.ui.mainNavDestination
 import com.sebastianvm.musicplayer.ui.playlist.trackSearchNavDestination
@@ -19,7 +21,6 @@ fun AppNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = NavigationRoute.Main.name,
     ) {
-
         libraryGraph(navigationDelegate)
     }
 
@@ -36,15 +37,16 @@ fun NavGraphBuilder.libraryGraph(
     ) {
 
         mainNavDestination(navigationDelegate)
-        
+
         trackListNavDestination(navigationDelegate)
 
         artistNavDestination(navigationDelegate)
 
         trackSearchNavDestination(navigationDelegate)
 
-//        sortBottomSheetNavDestination(navigationDelegate)
-//        contextBottomSheetDestinations(navigationDelegate)
+
+        sortBottomSheetNavDestination(navigationDelegate)
+        contextBottomSheetDestinations(navigationDelegate)
 //        artistsBottomSheetNavDestination(navigationDelegate)
         queueNavDestination(navigationDelegate)
 

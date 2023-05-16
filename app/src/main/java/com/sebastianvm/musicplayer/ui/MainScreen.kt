@@ -121,7 +121,13 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                 onDismissPlaybackErrorDialog = {
                     vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                 },
-                openTrackContextMenu = {},
+                openTrackContextMenu = { args ->
+                    navigationDelegate.openSheet(
+                        NavigationDestination.TrackContextMenu(
+                            arguments = args
+                        )
+                    )
+                },
                 modifier = Modifier,
                 updateAlpha = {}
             )
@@ -132,7 +138,13 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
             val state by vm.stateFlow.collectAsStateWithLifecycle()
             ArtistListLayout(
                 state = state,
-                openArtistContextMenu = {},
+                openArtistContextMenu = { args ->
+                    navigationDelegate.openSheet(
+                        NavigationDestination.ArtistContextMenu(
+                            arguments = args
+                        )
+                    )
+                },
                 navigateToArtistScreen = { args ->
                     navigationDelegate.navigateToScreen(
                         NavigationDestination.Artist(
@@ -177,7 +189,13 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                         )
                     )
                 },
-                openGenreContextMenu = {}
+                openGenreContextMenu = { args ->
+                    navigationDelegate.openSheet(
+                        NavigationDestination.GenreContextMenu(
+                            arguments = args
+                        )
+                    )
+                }
             )
         }
 
@@ -197,7 +215,13 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                         )
                     )
                 },
-                openPlaylistContextMenu = {}
+                openPlaylistContextMenu = { args ->
+                    navigationDelegate.openSheet(
+                        NavigationDestination.PlaylistContextMenu(
+                            arguments = args
+                        )
+                    )
+                }
             )
         }
     }
