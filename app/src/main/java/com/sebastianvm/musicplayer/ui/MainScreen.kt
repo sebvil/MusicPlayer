@@ -122,7 +122,7 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                     vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                 },
                 openTrackContextMenu = { args ->
-                    navigationDelegate.openSheet(
+                    navigationDelegate.navigateToScreen(
                         NavigationDestination.TrackContextMenu(
                             arguments = args
                         )
@@ -139,7 +139,7 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
             ArtistListLayout(
                 state = state,
                 openArtistContextMenu = { args ->
-                    navigationDelegate.openSheet(
+                    navigationDelegate.navigateToScreen(
                         NavigationDestination.ArtistContextMenu(
                             arguments = args
                         )
@@ -190,7 +190,7 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                     )
                 },
                 openGenreContextMenu = { args ->
-                    navigationDelegate.openSheet(
+                    navigationDelegate.navigateToScreen(
                         NavigationDestination.GenreContextMenu(
                             arguments = args
                         )
@@ -216,7 +216,7 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                     )
                 },
                 openPlaylistContextMenu = { args ->
-                    navigationDelegate.openSheet(
+                    navigationDelegate.navigateToScreen(
                         NavigationDestination.PlaylistContextMenu(
                             arguments = args
                         )
