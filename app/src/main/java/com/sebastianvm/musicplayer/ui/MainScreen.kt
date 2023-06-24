@@ -118,6 +118,13 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                 onTrackClicked = { trackIndex ->
                     vm.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
                 },
+                openSortMenu = { args ->
+                    navigationDelegate.navigateToScreen(
+                        NavigationDestination.SortMenu(
+                            arguments = args
+                        )
+                    )
+                },
                 onDismissPlaybackErrorDialog = {
                     vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                 },

@@ -7,9 +7,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -113,16 +116,14 @@ fun TrackListScreen(
             LibraryTopBar(
                 state = LibraryTopBarState(
                     title = state.trackListName ?: stringResource(id = R.string.all_songs),
-                    hasSortButton = state.trackListType !is MediaGroup.Album,
+                    hasSortButton = false,
                 ),
                 delegate = object : LibraryTopBarDelegate {
                     override fun upButtonClicked() {
                         navigateBack()
                     }
 
-                    override fun sortByClicked() {
-                        openSortMenu(SortMenuArguments(listType = state.trackListType.toSortableListType()))
-                    }
+                    override fun sortByClicked() {}
                 },
                 titleAlpha = titleAlpha.value
             )
@@ -131,6 +132,7 @@ fun TrackListScreen(
         TrackListLayout(
             state = state,
             onTrackClicked = onTrackClicked,
+            openSortMenu = openSortMenu,
             openTrackContextMenu = openTrackContextMenu,
             onDismissPlaybackErrorDialog = onDismissPlaybackErrorDialog,
             updateAlpha = { newAlpha -> maybeTitleAlpha.value = newAlpha },
@@ -143,6 +145,7 @@ fun TrackListScreen(
 fun TrackListLayout(
     state: TrackListState,
     onTrackClicked: (trackIndex: Int) -> Unit,
+    openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
     onDismissPlaybackErrorDialog: () -> Unit,
     updateAlpha: (Float) -> Unit,
@@ -160,7 +163,9 @@ fun TrackListLayout(
     if (state.trackList.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_tracks_found,
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
         )
     } else {
         LazyColumn(
@@ -176,6 +181,24 @@ fun TrackListLayout(
                         title = state.trackListName ?: "",
                         updateAlpha = updateAlpha
                     )
+                }
+            } ?: kotlin.run {
+                if (state.trackListType !is MediaGroup.Album) {
+                    item {
+                        ListItem(
+                            headlineContent = {
+                                Text(text = stringResource(id = R.string.sort_by))
+                            },
+                            leadingContent = {
+                                Icon(imageVector = Icons.Default.Sort, contentDescription = null)
+                            },
+                            modifier = Modifier.clickable {
+                                openSortMenu(
+                                    SortMenuArguments(listType = state.trackListType.toSortableListType())
+                                )
+                            }
+                        )
+                    }
                 }
             }
             itemsIndexed(state.trackList, key = { _, item -> item.id }) { index, item ->

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -291,21 +293,21 @@ fun AnimatedPlayerCard(
             ) {
                 IconButton(onClick = onPreviousButtonClicked) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_prev),
+                        imageVector = Icons.Default.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
                         modifier = Modifier.size(buttonSize)
                     )
                 }
                 IconButton(onClick = onPlayToggled) {
                     Icon(
-                        painter = painterResource(id = state.playbackControlsState.playbackIcon.icon),
+                        imageVector = state.playbackControlsState.playbackIcon.icon,
                         contentDescription = stringResource(R.string.previous),
                         modifier = Modifier.size(buttonSize)
                     )
                 }
                 IconButton(onClick = onNextButtonClicked) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_next),
+                        imageVector = Icons.Default.SkipNext,
                         contentDescription = stringResource(R.string.previous),
                         modifier = Modifier.size(buttonSize)
                     )
