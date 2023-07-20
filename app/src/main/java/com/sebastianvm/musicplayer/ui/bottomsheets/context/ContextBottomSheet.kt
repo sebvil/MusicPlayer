@@ -3,26 +3,22 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,7 +28,6 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
@@ -81,7 +76,6 @@ fun DeletePlaylistConfirmationDialog(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContextMenuLayout(
     state: BaseContextMenuState,
@@ -116,19 +110,21 @@ fun ContextMenuLayout(
         )
     } else {
         with(state) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(AppDimensions.bottomSheet.rowHeight)
-                        .padding(start = AppDimensions.bottomSheet.startPadding)
-                ) {
-                    Text(
-                        text = state.menuTitle,
-                        modifier = Modifier.paddingFromBaseline(top = 36.dp),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+            ) {
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = state.menuTitle,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    },
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+
                 Divider(modifier = Modifier.fillMaxWidth())
                 LazyColumn {
                     items(listItems, key = { it.text }) {
@@ -152,10 +148,7 @@ fun ContextMenuLayout(
                                     contentDescription = stringResource(id = it.text),
                                     modifier = Modifier.size(24.dp),
                                 )
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
-                            )
+                            }
                         )
                     }
                 }

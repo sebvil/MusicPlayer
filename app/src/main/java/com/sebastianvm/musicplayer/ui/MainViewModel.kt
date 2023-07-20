@@ -1,9 +1,16 @@
-package com.sebastianvm.musicplayer.ui.player
+package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
+import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
+import com.sebastianvm.musicplayer.ui.player.Percentage
+import com.sebastianvm.musicplayer.ui.player.PlaybackControlsState
+import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
+import com.sebastianvm.musicplayer.ui.player.PlayerViewState
+import com.sebastianvm.musicplayer.ui.player.TrackInfoState
+import com.sebastianvm.musicplayer.ui.player.TrackProgressState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -17,12 +24,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-
 @HiltViewModel
-class MusicPlayerViewModel @Inject constructor(
-    private val playbackManager: PlaybackManager,
-    initialState: MusicPlayerState,
-) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction>(initialState) {
+class MainViewModel @Inject constructor(
+    initialState: MainActivityState,
+    private val playbackManager: PlaybackManager
+) : BaseViewModel<MainActivityState, MainUserAction>(initialState) {
 
     private var isPlaying: Boolean = false
     private var trackLengthMs: Long = 0
@@ -68,9 +74,17 @@ class MusicPlayerViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    override fun handle(action: MusicPlayerUserAction) {
+    override fun handle(action: MainUserAction) {
         when (action) {
-            is MusicPlayerUserAction.PlayToggled -> {
+            is MainUserAction.ConnectToMusicService -> {
+                playbackManager.connectToService()
+            }
+
+            is MainUserAction.DisconnectFromMusicService -> {
+                playbackManager.disconnectFromService()
+            }
+
+            is MainUserAction.PlayToggled -> {
                 if (isPlaying) {
                     playbackManager.pause()
                 } else {
@@ -78,11 +92,11 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
 
-            is MusicPlayerUserAction.NextButtonClicked -> playbackManager.next()
+            is MainUserAction.NextButtonClicked -> playbackManager.next()
 
-            is MusicPlayerUserAction.PreviousButtonClicked -> playbackManager.prev()
+            is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
 
-            is MusicPlayerUserAction.ProgressBarClicked -> {
+            is MainUserAction.ProgressBarClicked -> {
                 val time: Long = trackLengthMs * action.position / 100
                 playbackManager.seekToTrackPosition(time)
             }
@@ -90,24 +104,25 @@ class MusicPlayerViewModel @Inject constructor(
     }
 }
 
-data class MusicPlayerState(
-    val playerViewState: PlayerViewState?
-) : State
 
+data class MainActivityState(val playerViewState: PlayerViewState?) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialMusicPlayerStateModule {
+object InitialMainActivityStateModule {
     @Provides
     @ViewModelScoped
-    fun initialMusicPlayerStateProvider(): MusicPlayerState {
-        return MusicPlayerState(playerViewState = null)
-    }
+    fun initialMainActivityStateProvider(): MainActivityState = MainActivityState(
+        playerViewState = null
+    )
 }
 
-sealed interface MusicPlayerUserAction : UserAction {
-    object PlayToggled : MusicPlayerUserAction
-    object NextButtonClicked : MusicPlayerUserAction
-    object PreviousButtonClicked : MusicPlayerUserAction
-    data class ProgressBarClicked(val position: Int) : MusicPlayerUserAction
+sealed interface MainUserAction : UserAction {
+    object ConnectToMusicService : MainUserAction
+    object DisconnectFromMusicService : MainUserAction
+    object PlayToggled : MainUserAction
+    object NextButtonClicked : MainUserAction
+    object PreviousButtonClicked : MainUserAction
+    data class ProgressBarClicked(val position: Int) : MainUserAction
 }
+

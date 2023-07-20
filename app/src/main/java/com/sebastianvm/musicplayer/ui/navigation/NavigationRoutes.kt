@@ -25,7 +25,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -35,14 +34,10 @@ import kotlinx.serialization.modules.subclass
 const val ARGS = "ARGS"
 
 enum class NavigationRoute(val hasArgs: Boolean) {
-    Library(hasArgs = false),
     Queue(hasArgs = false),
     Search(hasArgs = false),
-    LibraryRoot(hasArgs = false),
-    ArtistsRoot(hasArgs = false),
-    AlbumsRoot(hasArgs = false),
-    GenresRoot(hasArgs = false),
-    PlaylistsRoot(hasArgs = false),
+    Main(hasArgs = false),
+    MainRoot(hasArgs = false),
     Artist(hasArgs = true),
     Album(hasArgs = true),
     Genre(hasArgs = true),
@@ -68,7 +63,6 @@ fun interface NavFunction<T : NavigationArguments> {
 }
 
 
-
 fun interface NoArgNavFunction {
     fun navigate()
 
@@ -78,26 +72,7 @@ fun interface NoArgNavFunction {
 sealed class NavigationDestination(
     val navigationRoute: NavigationRoute,
     open val arguments: NavigationArguments?,
-    val isBottomNavDestination: Boolean = false
 ) {
-
-    object Library : NavigationDestination(
-        NavigationRoute.Library,
-        arguments = null,
-        isBottomNavDestination = true
-    )
-
-    object Queue : NavigationDestination(
-        NavigationRoute.Queue,
-        arguments = null,
-        isBottomNavDestination = true
-    )
-
-    object Search : NavigationDestination(NavigationRoute.Search, arguments = null)
-    object ArtistsRoot : NavigationDestination(NavigationRoute.ArtistsRoot, arguments = null)
-    object AlbumsRoot : NavigationDestination(NavigationRoute.AlbumsRoot, arguments = null)
-    object GenresRoot : NavigationDestination(NavigationRoute.GenresRoot, arguments = null)
-    object PlaylistsRoot : NavigationDestination(NavigationRoute.PlaylistsRoot, arguments = null)
     data class TrackList(override val arguments: TrackListArguments) :
         NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
 

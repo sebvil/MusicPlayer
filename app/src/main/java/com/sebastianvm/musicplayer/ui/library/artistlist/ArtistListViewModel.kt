@@ -8,6 +8,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.util.coroutines.combineToPair
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,12 +30,16 @@ class ArtistListViewModel @Inject constructor(
 ) : BaseViewModel<ArtistListState, ArtistListUserAction>(initialState) {
 
     init {
-        artistRepository.getArtists().onEach { artists ->
+        combineToPair(
+            artistRepository.getArtists(),
+            preferencesRepository.getArtistListSortOrder()
+        ).onEach { (artists, sortOrder) ->
             setState {
                 copy(
                     artistList = artists.map { artist ->
                         artist.toModelListItemState()
-                    }
+                    },
+                    sortOrder = sortOrder
                 )
             }
         }.launchIn(viewModelScope)
@@ -51,7 +57,10 @@ class ArtistListViewModel @Inject constructor(
     }
 }
 
-data class ArtistListState(val artistList: List<ModelListItemState>) : State
+data class ArtistListState(
+    val artistList: List<ModelListItemState>,
+    val sortOrder: MediaSortOrder
+) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -59,7 +68,7 @@ object InitialArtistListStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistListStateProvider(): ArtistListState {
-        return ArtistListState(artistList = listOf())
+        return ArtistListState(artistList = listOf(), sortOrder = MediaSortOrder.ASCENDING)
     }
 }
 

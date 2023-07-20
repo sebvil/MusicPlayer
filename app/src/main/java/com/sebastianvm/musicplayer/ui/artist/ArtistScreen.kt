@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
@@ -88,7 +89,6 @@ fun ArtistScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistLayout(
     state: ArtistState,
@@ -96,7 +96,7 @@ fun ArtistLayout(
     openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         items(items = state.listItems) { item ->
             when (item) {
                 is ArtistScreenItem.SectionHeaderItem -> {

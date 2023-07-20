@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.util.compose
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,7 +30,6 @@ fun <S : State, A : UserAction> Screen(
     screen(state.value, screenViewModel)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenScaffold(
     modifier: Modifier = Modifier,

@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
@@ -12,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -91,7 +91,9 @@ object InitialTrackListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val args = savedStateHandle.getArgs<TrackListArguments>()
+        val args =
+            savedStateHandle.get<TrackListArguments>(com.sebastianvm.musicplayer.ui.navigation.ARGS)
+                ?: TrackListArguments(trackList = MediaGroup.AllTracks)
         return TrackListState(
             trackList = listOf(),
             trackListType = args.trackList,

@@ -5,12 +5,12 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParams
 
 
 class MusicPlayerViewStatePreviewParameterProvider :
-    PreviewParameterProvider<MusicPlayerViewState> {
-    override val values: Sequence<MusicPlayerViewState> =
+    PreviewParameterProvider<PlayerViewState> {
+    override val values: Sequence<PlayerViewState> =
         MediaArtImageStatePreviewParamsProvider().values.flatMap { mediaArtImageState ->
             PlaybackControlsStatePreviewParameterProvider().values.flatMap { playbackControlsState ->
                 TrackInfoStatePreviewParameterProvider().values.map { trackInfoState ->
-                    MusicPlayerViewState(
+                    PlayerViewState(
                         mediaArtImageState = mediaArtImageState,
                         trackInfoState = trackInfoState,
                         playbackControlsState = playbackControlsState
