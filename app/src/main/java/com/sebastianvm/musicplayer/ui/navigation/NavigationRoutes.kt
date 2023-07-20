@@ -25,7 +25,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule

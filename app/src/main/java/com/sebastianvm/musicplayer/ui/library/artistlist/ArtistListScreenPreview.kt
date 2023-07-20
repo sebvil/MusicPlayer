@@ -4,6 +4,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
+import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 
 class ArtistListStatePreviewParamsProvider : PreviewParameterProvider<ArtistListState> {
@@ -13,7 +14,7 @@ class ArtistListStatePreviewParamsProvider : PreviewParameterProvider<ArtistList
                 id = it.toLong(),
                 artistName = PreviewUtil.randomString(),
             ).toModelListItemState()
-        }))
+        }, sortOrder = MediaSortOrder.ASCENDING))
 }
 
 //@ScreenPreview

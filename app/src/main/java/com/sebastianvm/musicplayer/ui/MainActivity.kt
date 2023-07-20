@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
@@ -45,7 +46,6 @@ class MainActivity : ComponentActivity() {
                 .build()
         )
 
-        super.onCreate(savedInstanceState)
         setContent {
             val useDarkIcons = !isSystemInDarkTheme()
             SideEffect {

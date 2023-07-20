@@ -26,6 +26,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
+import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListLayout
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
@@ -158,7 +159,8 @@ fun Screens(page: TopLevelScreen, navigationDelegate: NavigationDelegate) {
                             arguments = args
                         )
                     )
-                }
+                },
+                changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) }
             )
         }
 
