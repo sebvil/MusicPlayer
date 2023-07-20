@@ -3,17 +3,14 @@ package com.sebastianvm.musicplayer.ui
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -31,13 +28,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        window.navigationBarColor = android.graphics.Color.TRANSPARENT
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
+        enableEdgeToEdge()
 
         StrictMode.setThreadPolicy(
             ThreadPolicy.Builder()
@@ -47,16 +38,6 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val useDarkIcons = !isSystemInDarkTheme()
-            SideEffect {
-                WindowCompat.getInsetsController(
-                    window,
-                    window.decorView
-                ).apply {
-                    isAppearanceLightStatusBars = useDarkIcons
-                    isAppearanceLightNavigationBars = true
-                }
-            }
             M3AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

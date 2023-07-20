@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.util.extensions
 import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_NONE
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import java.util.UUID
@@ -26,6 +25,6 @@ fun Track.getMediaMetadata(): MediaMetadata {
             uniqueId = UUID.randomUUID().mostSignificantBits
         }
         isPlayable = true
-        folderType = FOLDER_TYPE_NONE
+        setIsBrowsable(false)
     }.build()
 }
