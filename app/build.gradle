@@ -129,7 +129,7 @@ dependencies {
 
 
     // Media 3
-    def media3_version = "1.0.1"
+    def media3_version = "1.1.0"
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-session:$media3_version"
 

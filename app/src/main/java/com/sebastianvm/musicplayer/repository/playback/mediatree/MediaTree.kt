@@ -3,11 +3,9 @@ package com.sebastianvm.musicplayer.repository.playback.mediatree
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_ALBUMS
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_ARTISTS
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_MIXED
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_NONE
-import androidx.media3.common.MediaMetadata.FOLDER_TYPE_TITLES
+import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
+import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
+import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
 import com.sebastianvm.musicplayer.ArtworkProvider
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
@@ -16,7 +14,6 @@ import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -39,7 +36,8 @@ class MediaTree @Inject constructor(
         title: String,
         mediaId: MediaKey,
         isPlayable: Boolean,
-        @MediaMetadata.FolderType folderType: Int,
+        mediaType: Int? = null,
+        isBrowsable: Boolean,
         subtitle: String? = null,
         album: String? = null,
         artist: String? = null,
@@ -54,7 +52,8 @@ class MediaTree @Inject constructor(
                 .setSubtitle(subtitle)
                 .setArtist(artist)
                 .setGenre(genre)
-                .setFolderType(folderType)
+                .setIsBrowsable(isBrowsable)
+                .setMediaType(mediaType)
                 .setIsPlayable(isPlayable)
                 .setArtworkUri(artworkUri)
                 .build()
@@ -74,7 +73,8 @@ class MediaTree @Inject constructor(
                 itemIndexOrId = index
             ),
             isPlayable = true,
-            folderType = FOLDER_TYPE_NONE,
+            mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
+            isBrowsable = false,
             album = albumName,
             subtitle = artists,
             artist = artists,
@@ -93,7 +93,8 @@ class MediaTree @Inject constructor(
                 itemIndexOrId = id
             ),
             isPlayable = false,
-            folderType = FOLDER_TYPE_TITLES,
+            mediaType = MediaMetadata.MEDIA_TYPE_ALBUM,
+            isBrowsable = true,
             subtitle = artists,
             album = albumName,
             artist = artists,
@@ -112,7 +113,8 @@ class MediaTree @Inject constructor(
                 itemIndexOrId = id
             ),
             isPlayable = false,
-            folderType = FOLDER_TYPE_ALBUMS,
+            mediaType = MediaMetadata.MEDIA_TYPE_ARTIST,
+            isBrowsable = true,
             subtitle = null,
             album = null,
             artist = artistName,
@@ -126,28 +128,28 @@ class MediaTree @Inject constructor(
             title = "Root folder",
             mediaId = rootKey,
             isPlayable = false,
-            folderType = FOLDER_TYPE_MIXED
+            mediaType = MEDIA_TYPE_FOLDER_MIXED,
+            isBrowsable = true
         )
     }
 
     fun getCachedChildren(parent: String): List<MediaItem>? = mediaItemsTree[parent]
     fun getCachedMediaItem(mediaId: String): MediaItem? = mediaItemsMap[mediaId]
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun getChildren(parent: String): List<MediaItem>? {
         val parentKey = MediaKey.fromString(parent)
         val mediaItems = when (parentKey.type) {
             KeyType.UNKNOWN -> null
             KeyType.ROOT -> listOf(
                 buildMediaItem(
-                    title = "AllTracksUiEvent tracks",
+                    title = "All tracks",
                     mediaId = MediaKey.fromParent(
                         parent = parentKey,
                         keyType = KeyType.ALL_TRACKS,
                         itemIndexOrId = 0
                     ),
                     isPlayable = false,
-                    folderType = FOLDER_TYPE_TITLES
+                    isBrowsable = true
                 ),
                 buildMediaItem(
                     title = "Albums",
@@ -157,7 +159,8 @@ class MediaTree @Inject constructor(
                         itemIndexOrId = 0
                     ),
                     isPlayable = false,
-                    folderType = FOLDER_TYPE_ALBUMS
+                    mediaType = MEDIA_TYPE_FOLDER_ALBUMS,
+                    isBrowsable = true
                 ),
                 buildMediaItem(
                     title = "Artists",
@@ -167,23 +170,28 @@ class MediaTree @Inject constructor(
                         itemIndexOrId = 0
                     ),
                     isPlayable = false,
-                    folderType = FOLDER_TYPE_ARTISTS
+                    mediaType = MEDIA_TYPE_FOLDER_ARTISTS,
+                    isBrowsable = true
                 )
             )
+
             KeyType.ALL_TRACKS -> {
                 trackRepository.getAllTracks().first().mapIndexed { index, track ->
                     track.buildMediaItem(parent = parentKey, index = index.toLong())
                 }
             }
+
             KeyType.ALBUMS_ROOT -> {
                 albumRepository.getAlbums().first().map {
                     it.buildMediaItem(parentKey)
                 }
             }
+
             KeyType.ARTISTS_ROOT -> {
                 artistRepository.getArtists().first()
                     .map { it.buildMediaItem(parentKey) }
             }
+
             KeyType.GENRES_ROOT -> null
             KeyType.PLAYLISTS_ROOT -> null
             KeyType.ALBUM -> {
@@ -192,11 +200,13 @@ class MediaTree @Inject constructor(
                         track.buildMediaItem(parent = parentKey, index = index.toLong())
                     }
             }
+
             KeyType.ARTIST -> {
                 artistRepository.getArtist(parentKey.itemIndexOrId).map {
                     it.artistAlbums
                 }.first().map { it.buildMediaItem(parentKey) }
             }
+
             KeyType.GENRE -> null
             KeyType.PLAYLIST -> null
             KeyType.TRACK -> null
@@ -215,6 +225,7 @@ class MediaTree @Inject constructor(
                     index = 0
                 )
             }
+
             else -> null
         }
         return mediaItem?.also {

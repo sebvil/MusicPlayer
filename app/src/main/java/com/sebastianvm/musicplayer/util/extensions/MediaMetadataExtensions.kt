@@ -35,12 +35,6 @@ inline var MediaMetadata.Builder.isPlayable: Boolean
         setIsPlayable(value)
     }
 
-inline var MediaMetadata.Builder.folderType: Int
-    get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
-    set(value) {
-        setFolderType(value)
-    }
-
 inline val MediaMetadata.duration: Long
     get() = extras?.getLong(KEY_TRACK_DURATION_MS) ?: 0L
 
