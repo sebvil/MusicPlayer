@@ -70,7 +70,9 @@ fun MainScreenLayout(
     content: @Composable (page: TopLevelScreen) -> Unit
 ) {
     val pages = TopLevelScreen.values()
-    val pagerState = rememberPagerState(initialPage = 0)
+    val pagerState = rememberPagerState {
+        pages.size
+    }
     val currentScreen: TopLevelScreen by remember {
         derivedStateOf {
             pages[pagerState.currentPage]
@@ -98,7 +100,6 @@ fun MainScreenLayout(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
-                pageCount = pages.size,
                 beyondBoundsPageCount = 1
             ) { pageIndex ->
                 content(pages[pageIndex])

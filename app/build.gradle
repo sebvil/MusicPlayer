@@ -94,7 +94,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Coil
-    def coil_version = "2.3.0"
+    def coil_version = "2.4.0"
     implementation "io.coil-kt:coil:$coil_version"
 
 
