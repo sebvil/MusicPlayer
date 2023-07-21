@@ -3,14 +3,11 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -43,13 +40,13 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     override fun handle(action: ArtistsBottomSheetUserAction) {
         when (action) {
             is ArtistsBottomSheetUserAction.ArtistRowClicked -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.Artist(
-                            ArtistArguments(artistId = action.artistId)
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.Artist(
+//                            ArtistArguments(artistId = action.artistId)
+//                        )
+//                    )
+//                )
             }
         }
     }

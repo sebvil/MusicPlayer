@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.AlbumType
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -67,7 +67,7 @@ object InitialArtistState {
     @Provides
     @ViewModelScoped
     fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        val args = savedStateHandle.getArgs<ArtistArguments>()
+        val args: ArtistArguments = savedStateHandle.navArgs()
         return ArtistState(
             artistId = args.artistId,
             artistName = "",

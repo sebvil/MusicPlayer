@@ -8,9 +8,6 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -140,23 +137,23 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtist -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        destination = NavigationDestination.Artist(
-                            arguments = ArtistArguments(artistId = artistIds[0])
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        destination = NavigationDestination.Artist(
+//                            arguments = ArtistArguments(artistId = artistIds[0])
+//                        )
+//                    )
+//                )
             }
 
             is ContextMenuItem.ViewArtists -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        destination = NavigationDestination.ArtistsMenu(
-                            arguments = ArtistsMenuArguments(artistIds = artistIds)
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        destination = NavigationDestination.ArtistsMenu(
+//                            arguments = ArtistsMenuArguments(artistIds = artistIds)
+//                        )
+//                    )
+//                )
             }
 
             is ContextMenuItem.RemoveFromPlaylist -> {

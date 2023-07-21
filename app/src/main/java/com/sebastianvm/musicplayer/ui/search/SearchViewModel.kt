@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
@@ -93,13 +92,13 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.Artist(
-                    ArtistArguments(artistId = artistId)
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.Artist(
+//                    ArtistArguments(artistId = artistId)
+//                )
+//            )
+//        )
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {

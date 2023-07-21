@@ -6,10 +6,6 @@ import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -78,25 +74,25 @@ class AlbumContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtists -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.ArtistsMenu(
-                            ArtistsMenuArguments(artistIds = artistIds)
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.ArtistsMenu(
+//                            ArtistsMenuArguments(artistIds = artistIds)
+//                        )
+//                    )
+//                )
             }
 
             is ContextMenuItem.ViewArtist -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.Artist(
-                            ArtistArguments(
-                                artistId = artistIds[0]
-                            )
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.Artist(
+//                            ArtistArguments(
+//                                artistId = artistIds[0]
+//                            )
+//                        )
+//                    )
+//                )
             }
 
             else -> throw IllegalStateException("Invalid row for album context menu")

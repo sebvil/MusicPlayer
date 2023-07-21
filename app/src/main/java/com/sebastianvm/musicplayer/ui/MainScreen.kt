@@ -26,6 +26,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
@@ -159,11 +160,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
 //                    )
                 },
                 navigateToArtistScreen = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.Artist(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(ArtistRouteDestination(args))
                 },
                 changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) }
             )

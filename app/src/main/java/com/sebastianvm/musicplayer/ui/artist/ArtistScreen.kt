@@ -19,7 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -30,21 +34,20 @@ import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
-
+@RootNavGraph
+@Destination(navArgsDelegate = ArtistArguments::class)
 @Composable
 fun ArtistRoute(
-    viewModel: ArtistViewModel,
-    navigateToAlbum: NavFunction<TrackListArguments>,
-    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
-    navigateBack: NoArgNavFunction,
+    viewModel: ArtistViewModel = hiltViewModel(),
+    destinationsNavigator: DestinationsNavigator,
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
 
     ArtistScreen(
         state = state,
-        navigateToAlbum = navigateToAlbum,
-        openAlbumContextMenu = openAlbumContextMenu,
-        navigateBack = navigateBack
+        navigateToAlbum = { TODO() },
+        openAlbumContextMenu = { TODO() },
+        navigateBack = { destinationsNavigator.navigateUp() }
     )
 }
 

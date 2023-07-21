@@ -15,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
@@ -75,9 +74,6 @@ sealed class NavigationDestination(
     data class TrackSearch(override val arguments: TrackSearchArguments) :
         NavigationDestination(NavigationRoute.TrackSearch, arguments)
 
-    data class Artist(override val arguments: ArtistArguments) :
-        NavigationDestination(NavigationRoute.Artist, arguments = arguments)
-
     data class TrackContextMenu(override val arguments: TrackContextMenuArguments) :
         NavigationDestination(NavigationRoute.TrackContextMenu, arguments = arguments)
 
@@ -96,8 +92,6 @@ sealed class NavigationDestination(
     data class SortMenu(override val arguments: SortMenuArguments) :
         NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
 
-    data class ArtistsMenu(override val arguments: ArtistsMenuArguments) :
-        NavigationDestination(NavigationRoute.ArtistsMenu, arguments = arguments)
 
 }
 
@@ -105,7 +99,6 @@ sealed class NavigationDestination(
 private val module = SerializersModule {
     polymorphic(NavigationArguments::class) {
         subclass(TrackSearchArguments::class)
-        subclass(ArtistArguments::class)
         subclass(TrackContextMenuArguments::class)
         subclass(ArtistContextMenuArguments::class)
         subclass(AlbumContextMenuArguments::class)

@@ -5,9 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
@@ -52,15 +49,15 @@ class ArtistContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtist -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.Artist(
-                            ArtistArguments(
-                                artistId = state.mediaId
-                            )
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.Artist(
+//                            ArtistArguments(
+//                                artistId = state.mediaId
+//                            )
+//                        )
+//                    )
+//                )
             }
 
             else -> throw IllegalStateException("Invalid row for artist context menu")
