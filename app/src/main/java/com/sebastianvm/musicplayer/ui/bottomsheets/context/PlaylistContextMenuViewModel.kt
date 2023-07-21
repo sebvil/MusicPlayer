@@ -2,12 +2,9 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
@@ -54,15 +51,15 @@ class PlaylistContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewPlaylist -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackList = MediaGroup.Playlist(state.mediaId)
-                            )
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.TrackList(
+//                            TrackListArguments(
+//                                trackList = MediaGroup.Playlist(state.mediaId)
+//                            )
+//                        )
+//                    )
+//                )
             }
 
             is ContextMenuItem.DeletePlaylist -> {

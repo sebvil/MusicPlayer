@@ -10,7 +10,6 @@ import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.extensions.getArgs
@@ -131,13 +130,13 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewAlbum -> {
-                addNavEvent(
-                    NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
-                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
-                        )
-                    )
-                )
+//                addNavEvent(
+//                    NavEvent.NavigateToScreen(
+//                        NavigationDestination.TrackList(
+//                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
+//                        )
+//                    )
+//                )
             }
 
             is ContextMenuItem.ViewArtist -> {

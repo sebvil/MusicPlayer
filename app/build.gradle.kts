@@ -98,6 +98,8 @@ dependencies {
     // Start Jetpack Compose
     // Navigation
     implementation(libs.navigation.compose)
+    implementation(libs.compose.destinations.animations.core)
+    ksp(libs.compose.destinations.ksp)
 
     // Integration with activities
     implementation(libs.activity.compose)

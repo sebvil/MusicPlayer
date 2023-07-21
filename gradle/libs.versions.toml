@@ -9,6 +9,7 @@ constraintlayout-compose = "1.1.0-alpha09"
 core = "1.6.0-alpha01"
 core-ktx = "1.12.0-alpha05"
 datastore-preferences = "1.0.0"
+compose-destinations = "1.9.50"
 gradle = "8.1.0-rc01"
 hilt = "2.47"
 hilt-navigation-compose = "1.0.0"
@@ -44,6 +45,8 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versi
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui-test-manifest" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+compose-destinations-animations-core = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "compose-destinations" }
+compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 core = { module = "androidx.test:core", version.ref = "core" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }

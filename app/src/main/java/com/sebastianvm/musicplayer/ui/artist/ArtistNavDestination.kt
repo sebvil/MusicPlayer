@@ -23,11 +23,7 @@ fun NavGraphBuilder.artistNavDestination(navigationDelegate: NavigationDelegate)
         ArtistRoute(
             viewModel = viewModel,
             navigateToAlbum = { args ->
-                navigationDelegate.navigateToScreen(
-                    NavigationDestination.TrackList(
-                        arguments = args
-                    )
-                )
+//                navigator.navigate(TrackListRouteDestination(args))
             },
             openAlbumContextMenu = { args ->
                 navigationDelegate.navigateToScreen(

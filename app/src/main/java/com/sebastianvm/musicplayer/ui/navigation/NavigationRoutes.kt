@@ -23,7 +23,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -35,7 +34,6 @@ const val ARGS = "ARGS"
 
 enum class NavigationRoute(val hasArgs: Boolean) {
     Queue(hasArgs = false),
-    Search(hasArgs = false),
     Main(hasArgs = false),
     MainRoot(hasArgs = false),
     Artist(hasArgs = true),
@@ -56,7 +54,7 @@ enum class NavigationRoute(val hasArgs: Boolean) {
 
 interface NavigationArguments : Parcelable
 
-fun interface NavFunction<T : NavigationArguments> {
+fun interface NavFunction<T> {
     fun navigate(args: T)
 
     operator fun invoke(args: T) = navigate(args)
@@ -73,8 +71,6 @@ sealed class NavigationDestination(
     val navigationRoute: NavigationRoute,
     open val arguments: NavigationArguments?,
 ) {
-    data class TrackList(override val arguments: TrackListArguments) :
-        NavigationDestination(NavigationRoute.TrackList, arguments = arguments)
 
     data class TrackSearch(override val arguments: TrackSearchArguments) :
         NavigationDestination(NavigationRoute.TrackSearch, arguments)
@@ -109,7 +105,6 @@ sealed class NavigationDestination(
 private val module = SerializersModule {
     polymorphic(NavigationArguments::class) {
         subclass(TrackSearchArguments::class)
-        subclass(TrackListArguments::class)
         subclass(ArtistArguments::class)
         subclass(TrackContextMenuArguments::class)
         subclass(ArtistContextMenuArguments::class)

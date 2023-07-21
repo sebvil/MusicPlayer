@@ -15,7 +15,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -104,33 +103,33 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
-                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.TrackList(
+//                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
+//                )
+//            )
+//        )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
-                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.TrackList(
+//                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
+//                )
+//            )
+//        )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
-                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.TrackList(
+//                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
+//                )
+//            )
+//        )
     }
 
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {

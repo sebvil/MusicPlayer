@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -91,12 +92,10 @@ object InitialTrackListStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val args =
-            savedStateHandle.get<TrackListArguments>(com.sebastianvm.musicplayer.ui.navigation.ARGS)
-                ?: TrackListArguments(trackList = MediaGroup.AllTracks)
+        val args: TrackListArguments = savedStateHandle.navArgs()
         return TrackListState(
             trackList = listOf(),
-            trackListType = args.trackList,
+            trackListType = args.trackList ?: MediaGroup.AllTracks,
         )
     }
 }
