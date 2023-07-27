@@ -3,10 +3,16 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.util.extensions.getArgs
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,11 +72,18 @@ class AlbumContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewAlbum -> {
-                //                     navigator.navigate(TrackListRouteDestination(TrackListArguments(
-                //                                trackList = MediaGroup.Album(
-                //                                    state.mediaId
-                //                                )
-                //                            )))
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        TrackListRouteDestination(
+                            TrackListArguments(
+                                trackList = MediaGroup.Album(
+                                    state.mediaId
+                                )
+                            )
+                        )
+                    )
+                )
+
             }
 
             is ContextMenuItem.ViewArtists -> {
@@ -84,15 +97,15 @@ class AlbumContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtist -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        NavigationDestination.Artist(
-//                            ArtistArguments(
-//                                artistId = artistIds[0]
-//                            )
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        ArtistRouteDestination(
+                            ArtistArguments(
+                                artistId = artistIds[0]
+                            )
+                        )
+                    )
+                )
             }
 
             else -> throw IllegalStateException("Invalid row for album context menu")
@@ -117,7 +130,7 @@ object InitialAlbumContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
-        val args = savedStateHandle.getArgs<AlbumContextMenuArguments>()
+        val args = savedStateHandle.navArgs<AlbumContextMenuArguments>()
         return AlbumContextMenuState(
             mediaId = args.albumId,
             menuTitle = "",

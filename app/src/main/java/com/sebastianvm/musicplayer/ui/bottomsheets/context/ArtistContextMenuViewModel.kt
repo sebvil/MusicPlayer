@@ -5,7 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.util.extensions.getArgs
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.navArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,15 +52,15 @@ class ArtistContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtist -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        NavigationDestination.Artist(
-//                            ArtistArguments(
-//                                artistId = state.mediaId
-//                            )
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        ArtistRouteDestination(
+                            ArtistArguments(
+                                artistId = state.mediaId
+                            )
+                        )
+                    )
+                )
             }
 
             else -> throw IllegalStateException("Invalid row for artist context menu")
@@ -83,7 +86,7 @@ object InitialArtistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistContextMenuStateProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuState {
-        val args = savedStateHandle.getArgs<ArtistContextMenuArguments>()
+        val args = savedStateHandle.navArgs<ArtistContextMenuArguments>()
         return ArtistContextMenuState(
             mediaId = args.artistId,
             menuTitle = "",

@@ -23,25 +23,95 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
 fun <S : BaseContextMenuState> ContextBottomSheet(
-    sheetViewModel: BaseContextMenuViewModel<S> = viewModel(),
-    navigationDelegate: NavigationDelegate,
+    navigator: DestinationsNavigator,
+    sheetViewModel: BaseContextMenuViewModel<S>,
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        navigationDelegate = navigationDelegate
+        navigationDelegate = NavigationDelegateImpl(navigator)
     ) { state, screenDelegate ->
         ContextMenuLayout(state = state, screenDelegate = screenDelegate)
     }
+}
+
+
+@RootNavGraph
+@Destination(
+    navArgsDelegate = TrackContextMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
+@Composable
+fun TrackContextMenu(
+    navigator: DestinationsNavigator,
+    viewModel: TrackContextMenuViewModel = hiltViewModel()
+) {
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+}
+
+@RootNavGraph
+@Destination(
+    navArgsDelegate = ArtistContextMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
+@Composable
+fun ArtistContextMenu(
+    navigator: DestinationsNavigator,
+    viewModel: ArtistContextMenuViewModel = hiltViewModel()
+) {
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+}
+
+@RootNavGraph
+@Destination(
+    navArgsDelegate = AlbumContextMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
+@Composable
+fun AlbumContextMenu(
+    navigator: DestinationsNavigator,
+    viewModel: AlbumContextMenuViewModel = hiltViewModel()
+) {
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+}
+
+@RootNavGraph
+@Destination(
+    navArgsDelegate = GenreContextMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
+@Composable
+fun GenreContextMenu(
+    navigator: DestinationsNavigator,
+    viewModel: GenreContextMenuViewModel = hiltViewModel()
+) {
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+}
+
+@RootNavGraph
+@Destination(
+    navArgsDelegate = PlaylistContextMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
+@Composable
+fun PlaylistContextMenu(
+    navigator: DestinationsNavigator,
+    viewModel: PlaylistContextMenuViewModel = hiltViewModel()
+) {
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
 }
 
 interface DeletePlaylistConfirmationDialogDelegate {

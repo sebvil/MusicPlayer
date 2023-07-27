@@ -3,10 +3,14 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.util.extensions.getArgs
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navArgs
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,15 +53,15 @@ class GenreContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewGenre -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        NavigationDestination.TrackList(
-//                            TrackListArguments(
-//                                trackList = MediaGroup.Genre(state.mediaId)
-//                            )
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        TrackListRouteDestination(
+                            TrackListArguments(
+                                trackList = MediaGroup.Genre(state.mediaId)
+                            )
+                        )
+                    )
+                )
             }
 
             else -> throw IllegalStateException("Invalid row for genre context menu")
@@ -83,7 +87,7 @@ object InitialGenreContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialGenreContextMenuStateProvider(savedStateHandle: SavedStateHandle): GenreContextMenuState {
-        val args = savedStateHandle.getArgs<GenreContextMenuArguments>()
+        val args = savedStateHandle.navArgs<GenreContextMenuArguments>()
         return GenreContextMenuState(
             mediaId = args.genreId,
             menuTitle = "",

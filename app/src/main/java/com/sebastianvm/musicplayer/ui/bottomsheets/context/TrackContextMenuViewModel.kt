@@ -8,8 +8,12 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +41,7 @@ object InitialTrackContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackContextMenuStateProvider(savedStateHandle: SavedStateHandle): TrackContextMenuState {
-        val args = savedStateHandle.getArgs<TrackContextMenuArguments>()
+        val args = savedStateHandle.navArgs<TrackContextMenuArguments>()
         return TrackContextMenuState(
             mediaId = args.trackId,
             menuTitle = "",
@@ -127,23 +131,21 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewAlbum -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        NavigationDestination.TrackList(
-//                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        TrackListRouteDestination(
+                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
+                        )
+                    )
+                )
             }
 
             is ContextMenuItem.ViewArtist -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        destination = NavigationDestination.Artist(
-//                            arguments = ArtistArguments(artistId = artistIds[0])
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        ArtistRouteDestination(ArtistArguments(artistId = artistIds[0]))
+                    )
+                )
             }
 
             is ContextMenuItem.ViewArtists -> {

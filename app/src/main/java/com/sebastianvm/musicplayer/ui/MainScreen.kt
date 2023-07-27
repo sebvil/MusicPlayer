@@ -26,8 +26,13 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
@@ -137,11 +142,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                 },
                 openTrackContextMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.TrackContextMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(TrackContextMenuDestination(args))
                 },
                 modifier = Modifier,
                 updateAlpha = {}
@@ -154,11 +155,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
             ArtistListLayout(
                 state = state,
                 openArtistContextMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.ArtistContextMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(ArtistContextMenuDestination(args))
                 },
                 navigateToArtistScreen = { args ->
                     navigator.navigate(ArtistRouteDestination(args))
@@ -176,11 +173,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     navigator.navigate(TrackListRouteDestination(args))
                 },
                 openAlbumContextMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.AlbumContextMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(AlbumContextMenuDestination(args))
                 }
             )
         }
@@ -191,18 +184,10 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
             GenreListLayout(
                 state = state,
                 navigateToGenre = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.TrackList(
-//                            args
-//                        )
-//                    )
+                    navigator.navigate(TrackListRouteDestination(args))
                 },
                 openGenreContextMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.GenreContextMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(GenreContextMenuDestination(args))
                 }
             )
         }
@@ -217,18 +202,10 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                 onDismissPlaylistCreationErrorDialog = { /*TODO*/ },
                 onCreatePlaylistCLicked = {},
                 navigateToPlaylist = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.TrackList(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(TrackListRouteDestination(args))
                 },
                 openPlaylistContextMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.PlaylistContextMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(PlaylistContextMenuDestination(args))
                 }
             )
         }
