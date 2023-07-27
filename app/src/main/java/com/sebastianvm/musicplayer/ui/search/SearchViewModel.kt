@@ -7,14 +7,12 @@ import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -92,98 +90,98 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-//        addNavEvent(
-//            NavEvent.NavigateToScreen(
-//                NavigationDestination.Artist(
-//                    ArtistArguments(artistId = artistId)
-//                )
-//            )
-//        )
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                ArtistRouteDestination(
+                    ArtistArguments(artistId = artistId)
+                )
+            )
+        )
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
-//        addNavEvent(
-//            NavEvent.NavigateToScreen(
-//                NavigationDestination.TrackList(
-//                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
-//                )
-//            )
-//        )
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                TrackListRouteDestination(
+                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
+                )
+            )
+        )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
-//        addNavEvent(
-//            NavEvent.NavigateToScreen(
-//                NavigationDestination.TrackList(
-//                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
-//                )
-//            )
-//        )
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                TrackListRouteDestination(
+                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
+                )
+            )
+        )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
+        addNavEvent(
+            NavEvent.NavigateToScreen(
+                TrackListRouteDestination(
+                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
+                )
+            )
+        )
+    }
+
+    private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
 //        addNavEvent(
 //            NavEvent.NavigateToScreen(
-//                NavigationDestination.TrackList(
-//                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
+//                NavigationDestination.TrackContextMenu(
+//                    TrackContextMenuArguments(
+//                        trackId = trackId,
+//                        mediaGroup = MediaGroup.SingleTrack(
+//                            trackId = trackId
+//                        )
+//                    )
 //                )
 //            )
 //        )
     }
 
-    private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.TrackContextMenu(
-                    TrackContextMenuArguments(
-                        trackId = trackId,
-                        mediaGroup = MediaGroup.SingleTrack(
-                            trackId = trackId
-                        )
-                    )
-                )
-            )
-        )
-    }
-
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.ArtistContextMenu(
-                    ArtistContextMenuArguments(artistId = artistId)
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.ArtistContextMenu(
+//                    ArtistContextMenuArguments(artistId = artistId)
+//                )
+//            )
+//        )
     }
 
     private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumContextMenu(
-                    AlbumContextMenuArguments(albumId = albumId)
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.AlbumContextMenu(
+//                    AlbumContextMenuArguments(albumId = albumId)
+//                )
+//            )
+//        )
     }
 
     private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.GenreContextMenu(
-                    GenreContextMenuArguments(genreId = genreId)
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.GenreContextMenu(
+//                    GenreContextMenuArguments(genreId = genreId)
+//                )
+//            )
+//        )
     }
 
     private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
-        addNavEvent(
-            NavEvent.NavigateToScreen(
-                NavigationDestination.PlaylistContextMenu(
-                    PlaylistContextMenuArguments(playlistId = playlistId)
-                )
-            )
-        )
+//        addNavEvent(
+//            NavEvent.NavigateToScreen(
+//                NavigationDestination.PlaylistContextMenu(
+//                    PlaylistContextMenuArguments(playlistId = playlistId)
+//                )
+//            )
+//        )
     }
 
     override fun handle(action: SearchUserAction) {

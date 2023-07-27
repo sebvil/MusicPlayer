@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
@@ -51,8 +50,10 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
@@ -65,9 +66,9 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
 
 
 @Composable
-fun SearchScreen(screenViewModel: SearchViewModel, navigator: DestinationsNavigator) {
+fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
     val state by screenViewModel.stateFlow.collectAsStateWithLifecycle()
-//    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
     SearchScreen(state, screenViewModel)
 
 }

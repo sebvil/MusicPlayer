@@ -27,6 +27,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
@@ -40,6 +41,7 @@ import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListLayout
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import kotlinx.coroutines.launch
@@ -60,7 +62,10 @@ fun MainScreen(
 ) {
     MainScreenLayout(
         searchScreen = {
-            SearchScreen(screenViewModel = hiltViewModel(), navigator = navigator)
+            SearchScreen(
+                screenViewModel = hiltViewModel(),
+                navigationDelegate = NavigationDelegateImpl(navigator)
+            )
         }
     ) { page ->
         Screens(page = page, navigator = navigator)
@@ -126,11 +131,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     vm.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
                 },
                 openSortMenu = { args ->
-//                    navigationDelegate.navigateToScreen(
-//                        NavigationDestination.SortMenu(
-//                            arguments = args
-//                        )
-//                    )
+                    navigator.navigate(SortBottomSheetDestination(args))
                 },
                 onDismissPlaybackErrorDialog = {
                     vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)

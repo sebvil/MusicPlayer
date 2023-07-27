@@ -1,15 +1,12 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -21,9 +18,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -46,7 +41,6 @@ enum class NavigationRoute(val hasArgs: Boolean) {
     AlbumContextMenu(hasArgs = true),
     GenreContextMenu(hasArgs = true),
     PlaylistContextMenu(hasArgs = true),
-    SortMenu(hasArgs = true),
     ArtistsMenu(hasArgs = true)
 }
 
@@ -67,30 +61,26 @@ fun interface NoArgNavFunction {
 }
 
 sealed class NavigationDestination(
-    val navigationRoute: NavigationRoute,
     open val arguments: NavigationArguments?,
 ) {
 
     data class TrackSearch(override val arguments: TrackSearchArguments) :
-        NavigationDestination(NavigationRoute.TrackSearch, arguments)
+        NavigationDestination(arguments)
 
     data class TrackContextMenu(override val arguments: TrackContextMenuArguments) :
-        NavigationDestination(NavigationRoute.TrackContextMenu, arguments = arguments)
+        NavigationDestination(arguments = arguments)
 
     data class ArtistContextMenu(override val arguments: ArtistContextMenuArguments) :
-        NavigationDestination(NavigationRoute.ArtistContextMenu, arguments = arguments)
+        NavigationDestination(arguments = arguments)
 
     data class AlbumContextMenu(override val arguments: AlbumContextMenuArguments) :
-        NavigationDestination(NavigationRoute.AlbumContextMenu, arguments = arguments)
+        NavigationDestination(arguments = arguments)
 
     data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
-        NavigationDestination(NavigationRoute.GenreContextMenu, arguments = arguments)
+        NavigationDestination(arguments = arguments)
 
     data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArguments) :
-        NavigationDestination(NavigationRoute.PlaylistContextMenu, arguments = arguments)
-
-    data class SortMenu(override val arguments: SortMenuArguments) :
-        NavigationDestination(NavigationRoute.SortMenu, arguments = arguments)
+        NavigationDestination(arguments = arguments)
 
 
 }
@@ -104,24 +94,11 @@ private val module = SerializersModule {
         subclass(AlbumContextMenuArguments::class)
         subclass(GenreContextMenuArguments::class)
         subclass(PlaylistContextMenuArguments::class)
-        subclass(SortMenuArguments::class)
         subclass(ArtistsMenuArguments::class)
     }
 }
 
 private val json = Json { serializersModule = module }
-
-fun NavController.navigateTo(
-    destination: NavigationDestination, builder: NavOptionsBuilder.() -> Unit = {}
-) {
-    val navRoute = if (destination.navigationRoute.hasArgs) {
-        val encodedArgs = Uri.encode(json.encodeToString(destination.arguments))
-        "${destination.navigationRoute.name}/args=$encodedArgs"
-    } else {
-        destination.navigationRoute.name
-    }
-    navigate(navRoute, builder)
-}
 
 
 fun getArgumentsType(): NavType<NavigationArguments> =
