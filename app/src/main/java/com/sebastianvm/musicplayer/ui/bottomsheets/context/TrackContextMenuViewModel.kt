@@ -3,13 +3,16 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navArgs
@@ -149,13 +152,16 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtists -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        destination = NavigationDestination.ArtistsMenu(
-//                            arguments = ArtistsMenuArguments(artistIds = artistIds)
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        destination = ArtistsBottomSheetDestination(
+                            navArgs = ArtistsMenuArguments(
+                                mediaType = MediaWithArtists.Track,
+                                mediaId = state.mediaId,
+                            )
+                        )
+                    )
+                )
             }
 
             is ContextMenuItem.RemoveFromPlaylist -> {

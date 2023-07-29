@@ -7,12 +7,12 @@ import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -161,7 +161,7 @@ object InitialTrackSearchStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackSearchStateProvider(savedStateHandle: SavedStateHandle): TrackSearchState {
-        val args = savedStateHandle.getArgs<TrackSearchArguments>()
+        val args = savedStateHandle.navArgs<TrackSearchArguments>()
         return TrackSearchState(
             playlistId = args.playlistId,
             trackSearchResults = listOf(),

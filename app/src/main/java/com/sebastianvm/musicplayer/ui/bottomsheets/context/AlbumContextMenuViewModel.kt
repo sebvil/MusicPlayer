@@ -3,12 +3,15 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navArgs
@@ -87,13 +90,16 @@ class AlbumContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.ViewArtists -> {
-//                addNavEvent(
-//                    NavEvent.NavigateToScreen(
-//                        NavigationDestination.ArtistsMenu(
-//                            ArtistsMenuArguments(artistIds = artistIds)
-//                        )
-//                    )
-//                )
+                addNavEvent(
+                    NavEvent.NavigateToScreen(
+                        ArtistsBottomSheetDestination(
+                            ArtistsMenuArguments(
+                                mediaType = MediaWithArtists.Album,
+                                mediaId = state.mediaId
+                            )
+                        )
+                    )
+                )
             }
 
             is ContextMenuItem.ViewArtist -> {

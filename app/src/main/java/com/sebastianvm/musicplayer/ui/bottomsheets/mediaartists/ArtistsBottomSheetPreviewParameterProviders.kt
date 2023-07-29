@@ -11,7 +11,6 @@ class ArtistsBottomSheetStatePreviewParameterProvider :
                 ModelListItemState.Basic(id = 0, headlineContent = "Melendi"),
                 ModelListItemState.Basic(id = 1, headlineContent = "Carlos Vives")
             ),
-            artistIds = listOf(0, 1)
         )
     )
 }
