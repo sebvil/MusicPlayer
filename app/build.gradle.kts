@@ -97,7 +97,6 @@ dependencies {
 
     // Start Jetpack Compose
     // Navigation
-    implementation(libs.navigation.compose)
     implementation(libs.compose.destinations.animations.core)
     ksp(libs.compose.destinations.ksp)
 
@@ -115,7 +114,6 @@ dependencies {
     implementation(libs.androidx.ui)
 
     // Accompanist
-    implementation(libs.accompanist.navigation.material)
     implementation(libs.accompanist.permissions)
 
     // Glide
