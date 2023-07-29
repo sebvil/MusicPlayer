@@ -57,7 +57,7 @@ android {
 
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
 
     ksp {
@@ -144,9 +144,6 @@ dependencies {
     // Coroutines tests
     testImplementation(libs.kotlinx.coroutines.test)
 
-    testImplementation(libs.test.core.ktx)
-    testImplementation(libs.core)
-
     // Mockk
     testImplementation(libs.mockk)
 
@@ -154,6 +151,5 @@ dependencies {
 
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
-    androidTestImplementation(libs.test.core)
 
 }
