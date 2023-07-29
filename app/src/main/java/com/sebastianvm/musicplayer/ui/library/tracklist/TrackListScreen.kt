@@ -44,6 +44,9 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarState
+import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackSearchScreenDestination
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
@@ -63,9 +66,9 @@ fun TrackListRoute(
         onDismissPlaybackErrorDialog = {
             viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
         },
-        openTrackContextMenu = { TODO() },
-        navigateToTrackSearchScreen = { TODO() },
-        openSortMenu = { TODO() },
+        openTrackContextMenu = { navigator.navigate(TrackContextMenuDestination(it)) },
+        navigateToTrackSearchScreen = { navigator.navigate(TrackSearchScreenDestination(it)) },
+        openSortMenu = { navigator.navigate(SortBottomSheetDestination(it)) },
         navigateBack = { navigator.navigateUp() },
     )
 }

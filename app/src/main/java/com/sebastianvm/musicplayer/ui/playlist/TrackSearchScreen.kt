@@ -31,24 +31,30 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 
+@RootNavGraph
+@Destination(navArgsDelegate = TrackSearchArguments::class)
 @Composable
 fun TrackSearchScreen(
-    screenViewModel: TrackSearchViewModel,
-    navigationDelegate: NavigationDelegate
+    navigator: DestinationsNavigator,
+    screenViewModel: TrackSearchViewModel = hiltViewModel()
 ) {
     Screen(
         screenViewModel = screenViewModel,
-        navigationDelegate = navigationDelegate
+        navigationDelegate = NavigationDelegateImpl(navigator)
     ) { state, delegate ->
         TrackSearchLayout(
             state = state,

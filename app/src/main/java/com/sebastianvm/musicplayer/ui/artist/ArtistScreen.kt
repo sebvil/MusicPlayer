@@ -29,6 +29,8 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
@@ -45,8 +47,8 @@ fun ArtistRoute(
 
     ArtistScreen(
         state = state,
-        navigateToAlbum = { TODO() },
-        openAlbumContextMenu = { TODO() },
+        navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },
+        openAlbumContextMenu = { destinationsNavigator.navigate(AlbumContextMenuDestination(it)) },
         navigateBack = { destinationsNavigator.navigateUp() }
     )
 }
