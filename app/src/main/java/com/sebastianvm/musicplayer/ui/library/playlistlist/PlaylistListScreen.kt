@@ -10,12 +10,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,7 +23,7 @@ import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 
 
 ////@Composable
@@ -34,7 +32,7 @@ import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 //    onSortByClicked: () -> Unit,
 //    onDismissPlaylistCreationErrorDialog: () -> Unit,
 //    onCreatePlaylistCLicked: (playlistName: String) -> Unit,
-//    navigateToPlaylist: (TrackListArguments) -> Unit,
+//    navigateToPlaylist: (TrackListArgumentsForNav) -> Unit,
 //    openPlaylistContextMenu: (PlaylistContextMenuArguments) -> Unit,
 //    navigateBack: NoArgNavFunction,
 //    modifier: Modifier = Modifier
@@ -111,7 +109,7 @@ fun PlaylistListLayout(
     onDismissPlaylistCreationDialog: () -> Unit,
     onDismissPlaylistCreationErrorDialog: () -> Unit,
     onCreatePlaylistCLicked: (playlistName: String) -> Unit,
-    navigateToPlaylist: (TrackListArguments) -> Unit,
+    navigateToPlaylist: (TrackListArgumentsForNav) -> Unit,
     openPlaylistContextMenu: (PlaylistContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -152,24 +150,15 @@ fun PlaylistListLayout(
                     state = item,
                     modifier = Modifier.clickable {
                         navigateToPlaylist(
-                            TrackListArguments(
-                                trackList = MediaGroup.Playlist(
+                            TrackListArgumentsForNav(
+                                trackListType = MediaGroup.Playlist(
                                     playlistId = item.id
                                 )
                             )
                         )
                     },
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
-                                openPlaylistContextMenu(PlaylistContextMenuArguments(playlistId = item.id))
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_overflow),
-                                contentDescription = stringResource(id = R.string.more)
-                            )
-                        }
+                    onMoreClicked = {
+                        openPlaylistContextMenu(PlaylistContextMenuArguments(playlistId = item.id))
                     }
                 )
             }

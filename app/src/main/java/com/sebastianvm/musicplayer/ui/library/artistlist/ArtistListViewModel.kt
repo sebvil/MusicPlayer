@@ -4,8 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
@@ -27,7 +28,7 @@ class ArtistListViewModel @Inject constructor(
     initialState: ArtistListState,
     artistRepository: ArtistRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<ArtistListState, ArtistListUserAction>(initialState) {
+) : DeprecatedBaseViewModel<ArtistListState, ArtistListUserAction>(initialState) {
 
     init {
         combineToPair(
@@ -37,7 +38,7 @@ class ArtistListViewModel @Inject constructor(
             setState {
                 copy(
                     artistList = artists.map { artist ->
-                        artist.toModelListItemState()
+                        artist.toModelListItemState(trailingButtonType = TrailingButtonType.More)
                     },
                     sortOrder = sortOrder
                 )
@@ -74,5 +75,5 @@ object InitialArtistListStateModule {
 
 
 sealed interface ArtistListUserAction : UserAction {
-    object SortByButtonClicked : ArtistListUserAction
+    data object SortByButtonClicked : ArtistListUserAction
 }

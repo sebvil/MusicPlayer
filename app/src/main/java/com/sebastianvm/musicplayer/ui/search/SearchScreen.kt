@@ -227,21 +227,12 @@ fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                         .clickable {
                             screenDelegate.handle(SearchUserAction.SearchResultClicked(item.id))
                         },
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
-                                screenDelegate.handle(
-                                    SearchUserAction.SearchResultOverflowMenuIconClicked(
-                                        item.id
-                                    )
-                                )
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = R.string.more)
+                    onMoreClicked = {
+                        screenDelegate.handle(
+                            SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                item.id
                             )
-                        }
+                        )
                     }
                 )
             }

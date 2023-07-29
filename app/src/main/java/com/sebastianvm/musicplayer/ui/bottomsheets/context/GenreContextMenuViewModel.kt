@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import dagger.Module
@@ -56,8 +56,8 @@ class GenreContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         TrackListRouteDestination(
-                            TrackListArguments(
-                                trackList = MediaGroup.Genre(state.mediaId)
+                            TrackListArgumentsForNav(
+                                trackListType = MediaGroup.Genre(state.mediaId)
                             )
                         )
                     )

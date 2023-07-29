@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     initialState: AlbumListState,
     albumRepository: AlbumRepository,
-) : BaseViewModel<AlbumListState, AlbumListUserAction>(initialState) {
+) : DeprecatedBaseViewModel<AlbumListState, AlbumListUserAction>(initialState) {
     init {
         albumRepository.getAlbums().onEach { albums ->
             setState {

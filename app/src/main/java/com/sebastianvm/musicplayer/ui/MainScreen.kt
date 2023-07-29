@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,12 +21,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
@@ -129,24 +133,35 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
             val vm = hiltViewModel<TrackListViewModel>()
-            val state by vm.stateFlow.collectAsStateWithLifecycle()
-            TrackListLayout(
-                state = state,
-                onTrackClicked = { trackIndex ->
-                    vm.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
-                },
-                openSortMenu = { args ->
-                    navigator.navigate(SortBottomSheetDestination(args))
-                },
-                onDismissPlaybackErrorDialog = {
-                    vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
-                },
-                openTrackContextMenu = { args ->
-                    navigator.navigate(TrackContextMenuDestination(args))
-                },
-                modifier = Modifier,
-                updateAlpha = {}
-            )
+            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            UiStateScreen(uiState = uiState,
+                modifier = Modifier.fillMaxSize(),
+                emptyScreen = {
+                    StoragePermissionNeededEmptyScreen(
+                        message = R.string.no_tracks_found,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    )
+                }) { state ->
+                TrackListLayout(
+                    state = state,
+                    onTrackClicked = { trackIndex ->
+                        vm.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
+                    },
+                    openSortMenu = { args ->
+                        navigator.navigate(SortBottomSheetDestination(args))
+                    },
+                    onDismissPlaybackErrorDialog = {
+                        vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
+                    },
+                    openTrackContextMenu = { args ->
+                        navigator.navigate(TrackContextMenuDestination(args))
+                    },
+                    modifier = Modifier,
+                    updateAlpha = {}
+                )
+            }
         }
 
         TopLevelScreen.ARTISTS -> {

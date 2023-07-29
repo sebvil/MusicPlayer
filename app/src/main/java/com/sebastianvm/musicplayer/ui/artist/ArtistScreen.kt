@@ -31,7 +31,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @RootNavGraph
@@ -56,7 +56,7 @@ fun ArtistRoute(
 @Composable
 fun ArtistScreen(
     state: ArtistState,
-    navigateToAlbum: (TrackListArguments) -> Unit,
+    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
     openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -95,7 +95,7 @@ fun ArtistScreen(
 @Composable
 fun ArtistLayout(
     state: ArtistState,
-    navigateToAlbum: (TrackListArguments) -> Unit,
+    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
     openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,19 +115,16 @@ fun ArtistLayout(
                     ModelListItem(
                         state = item.state,
                         modifier = Modifier.clickable {
-                            navigateToAlbum(TrackListArguments(trackList = MediaGroup.Album(albumId = item.id)))
-                        },
-                        trailingContent = {
-                            IconButton(
-                                onClick = {
-                                    openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
-                                },
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_overflow),
-                                    contentDescription = stringResource(id = R.string.more)
+                            navigateToAlbum(
+                                TrackListArgumentsForNav(
+                                    trackListType = MediaGroup.Album(
+                                        albumId = item.id
+                                    )
                                 )
-                            }
+                            )
+                        },
+                        onMoreClicked = {
+                            openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
                         }
                     )
                 }

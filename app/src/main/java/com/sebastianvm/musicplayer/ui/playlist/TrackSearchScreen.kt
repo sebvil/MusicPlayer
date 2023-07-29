@@ -10,11 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -175,23 +170,7 @@ fun TrackSearchLayout(
                                 )
                             )
                             trackName = item.headlineContent
-                        },
-                    trailingContent = {
-                        if (item.id in state.playlistTrackIds) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = stringResource(
-                                    id = R.string.search
-                                ),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        } else {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_plus),
-                                contentDescription = stringResource(R.string.more),
-                            )
                         }
-                    }
                 )
             }
         }

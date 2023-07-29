@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import dagger.Module
@@ -27,23 +27,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TrackListViewModel @Inject constructor(
-    initialState: TrackListState,
     trackRepository: TrackRepository,
+    private val args: TrackListArguments,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<TrackListState, TrackListUserAction>(initialState) {
+) : BaseViewModel<TrackListState, TrackListUserAction>() {
 
     init {
         with(trackRepository) {
             combineToPair(
-                getTracksForMedia(state.trackListType),
-                getTrackListMetadata(state.trackListType)
+                getTracksForMedia(args.trackListType),
+                getTrackListMetadata(args.trackListType)
             ).onEach { (newTrackList, trackListMetadata) ->
-                setState {
-                    copy(
-                        trackList = newTrackList,
-                        trackListName = trackListMetadata.trackListName,
-                        headerImage = trackListMetadata.mediaArtImageState
-                    )
+                if (newTrackList.isEmpty()) {
+                    setState { Empty }
+                } else {
+                    setDataState {
+                        it.copy(
+                            trackList = newTrackList,
+                            trackListName = trackListMetadata.trackListName,
+                            headerImage = trackListMetadata.mediaArtImageState
+                        )
+                    }
                 }
             }.launchIn(viewModelScope)
         }
@@ -51,22 +55,35 @@ class TrackListViewModel @Inject constructor(
 
     override fun handle(action: TrackListUserAction) {
         when (action) {
-            is TrackListUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
+            is TrackListUserAction.DismissPlaybackErrorDialog -> {
+                setDataState {
+                    it.copy(
+                        playbackResult = null
+                    )
+                }
+            }
+
             is TrackListUserAction.TrackClicked -> {
                 val playTracksFlow = playbackManager.playMedia(
-                    mediaGroup = state.trackListType,
+                    mediaGroup = args.trackListType,
                     initialTrackIndex = action.trackIndex
                 )
-                playTracksFlow.onEach {
-                    when (it) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
-                            copy(
-                                playbackResult = it
-                            )
+                playTracksFlow.onEach { result ->
+                    when (result) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
+                            setDataState {
+                                it.copy(
+                                    playbackResult = result
+                                )
+                            }
                         }
 
                         is PlaybackResult.Success -> {
-                            setState { copy(playbackResult = null) }
+                            setDataState {
+                                it.copy(
+                                    playbackResult = null
+                                )
+                            }
                         }
                     }
                 }.launchIn(viewModelScope)
@@ -74,9 +91,24 @@ class TrackListViewModel @Inject constructor(
         }
     }
 
+
+    override val defaultState: TrackListState by lazy {
+        TrackListState(
+            trackListType = args.trackListType,
+            trackList = listOf(),
+            trackListName = null,
+            playbackResult = null,
+            headerImage = null
+        )
+    }
 }
 
-data class TrackListArguments(val trackList: TrackList?)
+data class TrackListArgumentsForNav(val trackListType: TrackList?) {
+    fun toTrackListArguments() =
+        TrackListArguments(trackListType ?: MediaGroup.AllTracks)
+}
+
+data class TrackListArguments(val trackListType: TrackList)
 
 
 data class TrackListState(
@@ -85,26 +117,23 @@ data class TrackListState(
     val trackListName: String? = null,
     val playbackResult: PlaybackResult? = null,
     val headerImage: MediaArtImageState? = null,
-) : State
+)
 
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialTrackListStateModule {
+object InitialTrackListArgumentsForNavModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListStateProvider(savedStateHandle: SavedStateHandle): TrackListState {
-        val args: TrackListArguments = savedStateHandle.navArgs()
-        return TrackListState(
-            trackList = listOf(),
-            trackListType = args.trackList ?: MediaGroup.AllTracks,
-        )
+    fun initialTrackListArgumentsForNavProvider(savedStateHandle: SavedStateHandle): TrackListArguments {
+        return savedStateHandle.navArgs<TrackListArgumentsForNav>()
+            .toTrackListArguments()
     }
 }
 
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction
-    object DismissPlaybackErrorDialog : TrackListUserAction
+    data object DismissPlaybackErrorDialog : TrackListUserAction
 }

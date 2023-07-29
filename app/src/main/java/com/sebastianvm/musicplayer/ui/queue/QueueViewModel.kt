@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class QueueViewModel @Inject constructor(
     initialState: QueueState,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<QueueState, QueueUserAction>(
+) : DeprecatedBaseViewModel<QueueState, QueueUserAction>(
     initialState
 ) {
 

@@ -7,16 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class BaseViewModel<S, A : UserAction> : ViewModel() {
+abstract class DeprecatedBaseViewModel<S : State, A : UserAction>(initialState: S) :
+    ScreenDelegate<A>, ViewModel() {
 
-    private val _state: MutableStateFlow<UiState<S>> = MutableStateFlow(Loading)
-    val stateFlow: StateFlow<UiState<S>> = _state
+    private val _state = MutableStateFlow(initialState)
+    val stateFlow: StateFlow<S> = _state
 
     @VisibleForTesting
     val state get() = _state.value
-
-    val dataState: S?
-        get() = (_state.value as? Data)?.state
 
     private val _navEvents: MutableStateFlow<List<NavEvent>> =
         MutableStateFlow(listOf())
@@ -30,14 +28,10 @@ abstract class BaseViewModel<S, A : UserAction> : ViewModel() {
         }
     }
 
-    protected fun setState(func: (UiState<S>) -> UiState<S>) {
+    protected fun setState(func: S.() -> S) {
         _state.update {
-            func(it)
+            it.func()
         }
-    }
-
-    protected fun setDataState(func: (S) -> S) {
-        setState { Data(func((it as? Data)?.state ?: defaultState)) }
     }
 
     protected fun addNavEvent(navEvent: NavEvent) {
@@ -48,8 +42,4 @@ abstract class BaseViewModel<S, A : UserAction> : ViewModel() {
         }
     }
 
-    abstract fun handle(action: A)
-
-    abstract val defaultState: S
 }
-
