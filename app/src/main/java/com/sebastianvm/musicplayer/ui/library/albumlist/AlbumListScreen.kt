@@ -19,13 +19,12 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 
 @Composable
 fun AlbumListLayout(
     state: AlbumListState,
-    navigateToAlbum: NavFunction<TrackListArguments>,
-    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
+    navigateToAlbum: (TrackListArguments) -> Unit,
+    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (state.albumList.isEmpty()) {

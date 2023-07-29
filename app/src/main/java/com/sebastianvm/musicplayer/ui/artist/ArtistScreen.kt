@@ -32,8 +32,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavFunction
-import com.sebastianvm.musicplayer.ui.navigation.NoArgNavFunction
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
 @RootNavGraph
@@ -58,9 +56,9 @@ fun ArtistRoute(
 @Composable
 fun ArtistScreen(
     state: ArtistState,
-    navigateToAlbum: NavFunction<TrackListArguments>,
-    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
-    navigateBack: NoArgNavFunction,
+    navigateToAlbum: (TrackListArguments) -> Unit,
+    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val topBarState = rememberTopAppBarState()
@@ -97,8 +95,8 @@ fun ArtistScreen(
 @Composable
 fun ArtistLayout(
     state: ArtistState,
-    navigateToAlbum: NavFunction<TrackListArguments>,
-    openAlbumContextMenu: NavFunction<AlbumContextMenuArguments>,
+    navigateToAlbum: (TrackListArguments) -> Unit,
+    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {

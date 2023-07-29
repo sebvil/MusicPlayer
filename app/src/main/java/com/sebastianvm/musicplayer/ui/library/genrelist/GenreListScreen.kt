@@ -19,19 +19,20 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 
 @Composable
 fun GenreListLayout(
     state: GenreListState,
-    navigateToGenre: NavFunction<TrackListArguments>,
-    openGenreContextMenu: NavFunction<GenreContextMenuArguments>,
+    navigateToGenre: (TrackListArguments) -> Unit,
+    openGenreContextMenu: (GenreContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (state.genreList.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_genres_found,
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
         )
     } else {
         LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
