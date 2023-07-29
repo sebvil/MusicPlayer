@@ -123,6 +123,9 @@ class AlbumContextMenuViewModel @Inject constructor(
     }
 }
 
+data class AlbumContextMenuArguments(val albumId: Long)
+
+
 data class AlbumContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val mediaId: Long,

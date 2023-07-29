@@ -76,6 +76,9 @@ class TrackListViewModel @Inject constructor(
 
 }
 
+data class TrackListArguments(val trackList: TrackList?)
+
+
 data class TrackListState(
     val trackListType: TrackList,
     val trackList: List<ModelListItemState>,

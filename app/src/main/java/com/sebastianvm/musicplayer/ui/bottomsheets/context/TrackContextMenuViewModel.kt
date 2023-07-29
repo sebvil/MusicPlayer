@@ -28,6 +28,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class TrackContextMenuArguments(
+    val trackId: Long,
+    val mediaGroup: MediaGroup,
+    val trackIndex: Int = 0,
+    val positionInPlaylist: Long? = null
+)
+
 data class TrackContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val mediaId: Long,

@@ -110,6 +110,8 @@ class SortBottomSheetViewModel @Inject constructor(
     }
 }
 
+data class SortMenuArguments(val listType: SortableListType)
+
 data class SortBottomSheetState(
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,

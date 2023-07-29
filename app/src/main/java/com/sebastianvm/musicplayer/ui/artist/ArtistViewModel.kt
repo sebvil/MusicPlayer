@@ -76,4 +76,7 @@ object InitialArtistState {
     }
 }
 
+data class ArtistArguments(val artistId: Long)
+
+
 sealed interface ArtistUserAction : UserAction

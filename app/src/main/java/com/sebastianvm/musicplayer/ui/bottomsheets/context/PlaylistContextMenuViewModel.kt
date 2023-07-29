@@ -103,6 +103,8 @@ class PlaylistContextMenuViewModel @Inject constructor(
     }
 }
 
+data class PlaylistContextMenuArguments(val playlistId: Long)
+
 
 data class PlaylistContextMenuState(
     override val listItems: List<ContextMenuItem>,

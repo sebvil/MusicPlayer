@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
@@ -55,6 +56,8 @@ class ArtistsBottomSheetViewModel @Inject constructor(
         }
     }
 }
+
+data class ArtistsMenuArguments(val mediaType: MediaWithArtists, val mediaId: Long)
 
 data class ArtistsBottomSheetState(val artistList: List<ModelListItemState>) : State
 

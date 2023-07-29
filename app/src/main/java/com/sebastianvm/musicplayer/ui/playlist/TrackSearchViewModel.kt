@@ -145,6 +145,8 @@ class TrackSearchViewModel @Inject constructor(
     }
 }
 
+data class TrackSearchArguments(val playlistId: Long)
+
 data class TrackSearchState(
     val playlistId: Long,
     val trackSearchResults: List<ModelListItemState>,

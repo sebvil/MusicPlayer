@@ -73,6 +73,9 @@ class GenreContextMenuViewModel @Inject constructor(
     }
 }
 
+data class GenreContextMenuArguments(val genreId: Long)
+
+
 data class GenreContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val mediaId: Long,

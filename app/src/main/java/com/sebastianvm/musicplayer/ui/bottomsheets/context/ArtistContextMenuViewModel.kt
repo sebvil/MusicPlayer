@@ -72,6 +72,9 @@ class ArtistContextMenuViewModel @Inject constructor(
     }
 }
 
+data class ArtistContextMenuArguments(val artistId: Long)
+
+
 data class ArtistContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val mediaId: Long,
