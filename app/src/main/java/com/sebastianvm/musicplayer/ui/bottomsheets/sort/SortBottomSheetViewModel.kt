@@ -5,11 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -110,6 +110,8 @@ class SortBottomSheetViewModel @Inject constructor(
     }
 }
 
+data class SortMenuArguments(val listType: SortableListType)
+
 data class SortBottomSheetState(
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,
@@ -123,7 +125,7 @@ object InitialSortBottomSheetState {
     @Provides
     @ViewModelScoped
     fun initialSortBottomSheetStateProvider(savedStateHandle: SavedStateHandle): SortBottomSheetState {
-        val args = savedStateHandle.getArgs<SortMenuArguments>()
+        val args = savedStateHandle.navArgs<SortMenuArguments>()
         val sortOptions = getSortOptionsForScreen(args.listType)
         return SortBottomSheetState(
             sortOptions = sortOptions,

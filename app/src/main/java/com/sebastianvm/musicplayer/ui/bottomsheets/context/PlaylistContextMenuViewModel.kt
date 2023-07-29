@@ -6,10 +6,10 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,7 +56,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewPlaylist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
+                        TrackListRouteDestination(
                             TrackListArguments(
                                 trackList = MediaGroup.Playlist(state.mediaId)
                             )
@@ -103,6 +103,8 @@ class PlaylistContextMenuViewModel @Inject constructor(
     }
 }
 
+data class PlaylistContextMenuArguments(val playlistId: Long)
+
 
 data class PlaylistContextMenuState(
     override val listItems: List<ContextMenuItem>,
@@ -119,7 +121,7 @@ object InitialPlaylistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialPlaylistContextMenuStateProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuState {
-        val args = savedStateHandle.getArgs<PlaylistContextMenuArguments>()
+        val args = savedStateHandle.navArgs<PlaylistContextMenuArguments>()
         return PlaylistContextMenuState(
             mediaId = args.playlistId,
             menuTitle = "",

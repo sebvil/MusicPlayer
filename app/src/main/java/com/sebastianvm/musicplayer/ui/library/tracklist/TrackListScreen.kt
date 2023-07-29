@@ -18,13 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.toSortableListType
@@ -40,17 +44,18 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarDelegate
 import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarState
+import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackSearchScreenDestination
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 
+@RootNavGraph
+@Destination(navArgsDelegate = TrackListArguments::class)
 @Composable
 fun TrackListRoute(
-    viewModel: TrackListViewModel,
-    openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
-    openSortMenu: (args: SortMenuArguments) -> Unit,
-    navigateToTrackSearchScreen: (args: TrackSearchArguments) -> Unit,
-    navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    navigator: DestinationsNavigator,
+    viewModel: TrackListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     TrackListScreen(
@@ -61,11 +66,10 @@ fun TrackListRoute(
         onDismissPlaybackErrorDialog = {
             viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
         },
-        openTrackContextMenu = openTrackContextMenu,
-        navigateToTrackSearchScreen = navigateToTrackSearchScreen,
-        openSortMenu = openSortMenu,
-        navigateBack = navigateBack,
-        modifier = modifier
+        openTrackContextMenu = { navigator.navigate(TrackContextMenuDestination(it)) },
+        navigateToTrackSearchScreen = { navigator.navigate(TrackSearchScreenDestination(it)) },
+        openSortMenu = { navigator.navigate(SortBottomSheetDestination(it)) },
+        navigateBack = { navigator.navigateUp() },
     )
 }
 
@@ -82,7 +86,7 @@ fun TrackListScreen(
 ) {
 
     val maybeTitleAlpha = remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
     val titleAlpha: State<Float> = remember(state.trackListName, maybeTitleAlpha) {
         derivedStateOf {

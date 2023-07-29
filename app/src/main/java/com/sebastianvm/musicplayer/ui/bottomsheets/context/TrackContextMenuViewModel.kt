@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
@@ -10,10 +11,12 @@ import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +27,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class TrackContextMenuArguments(
+    val trackId: Long,
+    val mediaGroup: MediaGroup,
+    val trackIndex: Int = 0,
+    val positionInPlaylist: Long? = null
+)
 
 data class TrackContextMenuState(
     override val listItems: List<ContextMenuItem>,
@@ -41,7 +51,7 @@ object InitialTrackContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialTrackContextMenuStateProvider(savedStateHandle: SavedStateHandle): TrackContextMenuState {
-        val args = savedStateHandle.getArgs<TrackContextMenuArguments>()
+        val args = savedStateHandle.navArgs<TrackContextMenuArguments>()
         return TrackContextMenuState(
             mediaId = args.trackId,
             menuTitle = "",
@@ -133,7 +143,7 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewAlbum -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.TrackList(
+                        TrackListRouteDestination(
                             TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
                         )
                     )
@@ -143,9 +153,7 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewArtist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        destination = NavigationDestination.Artist(
-                            arguments = ArtistArguments(artistId = artistIds[0])
-                        )
+                        ArtistRouteDestination(ArtistArguments(artistId = artistIds[0]))
                     )
                 )
             }
@@ -153,8 +161,11 @@ class TrackContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewArtists -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        destination = NavigationDestination.ArtistsMenu(
-                            arguments = ArtistsMenuArguments(artistIds = artistIds)
+                        destination = ArtistsBottomSheetDestination(
+                            navArgs = ArtistsMenuArguments(
+                                mediaType = MediaWithArtists.Track,
+                                mediaId = state.mediaId,
+                            )
                         )
                     )
                 )

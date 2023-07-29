@@ -26,7 +26,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 
 
 ////@Composable
@@ -35,8 +34,8 @@ import com.sebastianvm.musicplayer.ui.navigation.NavFunction
 //    onSortByClicked: () -> Unit,
 //    onDismissPlaylistCreationErrorDialog: () -> Unit,
 //    onCreatePlaylistCLicked: (playlistName: String) -> Unit,
-//    navigateToPlaylist: NavFunction<TrackListArguments>,
-//    openPlaylistContextMenu: NavFunction<PlaylistContextMenuArguments>,
+//    navigateToPlaylist: (TrackListArguments) -> Unit,
+//    openPlaylistContextMenu: (PlaylistContextMenuArguments) -> Unit,
 //    navigateBack: NoArgNavFunction,
 //    modifier: Modifier = Modifier
 //) {
@@ -112,8 +111,8 @@ fun PlaylistListLayout(
     onDismissPlaylistCreationDialog: () -> Unit,
     onDismissPlaylistCreationErrorDialog: () -> Unit,
     onCreatePlaylistCLicked: (playlistName: String) -> Unit,
-    navigateToPlaylist: NavFunction<TrackListArguments>,
-    openPlaylistContextMenu: NavFunction<PlaylistContextMenuArguments>,
+    navigateToPlaylist: (TrackListArguments) -> Unit,
+    openPlaylistContextMenu: (PlaylistContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isCreatePlaylistDialogOpen) {

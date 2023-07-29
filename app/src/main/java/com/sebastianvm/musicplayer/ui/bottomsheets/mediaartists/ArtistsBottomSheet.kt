@@ -16,21 +16,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
+@RootNavGraph
+@Destination(
+    navArgsDelegate = ArtistsMenuArguments::class,
+    style = DestinationStyleBottomSheet::class
+)
 @Composable
 fun ArtistsBottomSheet(
-    sheetViewModel: ArtistsBottomSheetViewModel,
-    navigationDelegate: NavigationDelegate
+    navigator: DestinationsNavigator,
+    sheetViewModel: ArtistsBottomSheetViewModel = hiltViewModel(),
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        navigationDelegate = navigationDelegate
+        navigationDelegate = NavigationDelegateImpl(navigator)
     ) { state, screenDelegate ->
         ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)
     }

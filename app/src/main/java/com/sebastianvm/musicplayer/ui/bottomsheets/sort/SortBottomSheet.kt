@@ -23,22 +23,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
+
+@RootNavGraph
+@Destination(navArgsDelegate = SortMenuArguments::class, style = DestinationStyleBottomSheet::class)
 @Composable
 fun SortBottomSheet(
-    sheetViewModel: SortBottomSheetViewModel = viewModel(),
-    navigationDelegate: NavigationDelegate,
+    navigator: DestinationsNavigator,
+    sheetViewModel: SortBottomSheetViewModel = hiltViewModel(),
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        navigationDelegate = navigationDelegate
+        navigationDelegate = NavigationDelegateImpl(navigator)
     ) { state, screenDelegate ->
         SortBottomSheet(state = state, screenDelegate = screenDelegate)
     }

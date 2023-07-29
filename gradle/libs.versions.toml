@@ -1,6 +1,6 @@
 [versions]
 agp = "8.1.0-rc01"
-accompanist-navigation-material = "0.31.5-beta"
+accompanist = "0.31.5-beta"
 activity-compose = "1.8.0-alpha06"
 androidx-core = "1.5.0"
 androidx-core-ktx = "1.5.0"
@@ -9,6 +9,7 @@ constraintlayout-compose = "1.1.0-alpha09"
 core = "1.6.0-alpha01"
 core-ktx = "1.12.0-alpha05"
 datastore-preferences = "1.0.0"
+compose-destinations = "1.9.50"
 gradle = "8.1.0-rc01"
 hilt = "2.47"
 hilt-navigation-compose = "1.0.0"
@@ -25,7 +26,6 @@ material-3 = "1.1.1"
 material-icons-extended = "1.6.0-alpha01"
 media3-exoplayer = "1.1.0"
 mockk = "1.13.5"
-navigation-compose = "2.7.0-beta02"
 recyclerview = "1.3.0"
 room-runtime = "2.6.0-alpha02"
 ui-test-manifest = "1.6.0-alpha01"
@@ -34,8 +34,7 @@ com-google-devtools = "1.8.22-1.0.11"
 
 
 [libraries]
-accompanist-navigation-material = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanist-navigation-material" }
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-navigation-material" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room-runtime" }
@@ -44,6 +43,8 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versi
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui-test-manifest" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+compose-destinations-animations-core = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "compose-destinations" }
+compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 core = { module = "androidx.test:core", version.ref = "core" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
@@ -68,7 +69,6 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material-3" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3-exoplayer" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3-exoplayer" }
-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }

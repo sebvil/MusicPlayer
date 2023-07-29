@@ -1,9 +1,11 @@
 package com.sebastianvm.musicplayer.ui.navigation
 
-import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.Direction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 
-class NavigationDelegateImpl(private val navController: NavController) : NavigationDelegate {
+class NavigationDelegateImpl(private val navigator: DestinationsNavigator) : NavigationDelegate {
 
     override fun handleNavEvent(navEvent: NavEvent) {
         when (navEvent) {
@@ -12,12 +14,16 @@ class NavigationDelegateImpl(private val navController: NavController) : Navigat
         }
     }
 
-    override fun navigateToScreen(destination: NavigationDestination) {
-        navController.navigateTo(destination)
+    override fun navigateToScreen(
+        destination: Direction,
+        onlyIfResumed: Boolean,
+        builder: NavOptionsBuilder.() -> Unit
+    ) {
+        navigator.navigate(destination, onlyIfResumed = onlyIfResumed, builder)
     }
 
     override fun navigateUp() {
-        navController.navigateUp()
+        navigator.navigateUp()
     }
 
 }

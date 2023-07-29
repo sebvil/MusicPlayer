@@ -6,9 +6,9 @@ import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.extensions.getArgs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,7 +54,7 @@ class ArtistContextMenuViewModel @Inject constructor(
             is ContextMenuItem.ViewArtist -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(
-                        NavigationDestination.Artist(
+                        ArtistRouteDestination(
                             ArtistArguments(
                                 artistId = state.mediaId
                             )
@@ -72,6 +72,9 @@ class ArtistContextMenuViewModel @Inject constructor(
     }
 }
 
+data class ArtistContextMenuArguments(val artistId: Long)
+
+
 data class ArtistContextMenuState(
     override val listItems: List<ContextMenuItem>,
     override val mediaId: Long,
@@ -86,7 +89,7 @@ object InitialArtistContextMenuStateModule {
     @Provides
     @ViewModelScoped
     fun initialArtistContextMenuStateProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuState {
-        val args = savedStateHandle.getArgs<ArtistContextMenuArguments>()
+        val args = savedStateHandle.navArgs<ArtistContextMenuArguments>()
         return ArtistContextMenuState(
             mediaId = args.artistId,
             menuTitle = "",

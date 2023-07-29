@@ -15,8 +15,14 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuAr
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -96,7 +102,7 @@ class SearchViewModel @Inject constructor(
     private fun onArtistSearchResultClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.Artist(
+                ArtistRouteDestination(
                     ArtistArguments(artistId = artistId)
                 )
             )
@@ -106,7 +112,7 @@ class SearchViewModel @Inject constructor(
     private fun onAlbumSearchResultClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
+                TrackListRouteDestination(
                     TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
                 )
             )
@@ -116,7 +122,7 @@ class SearchViewModel @Inject constructor(
     private fun onGenreSearchResultClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
+                TrackListRouteDestination(
                     TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
                 )
             )
@@ -126,7 +132,7 @@ class SearchViewModel @Inject constructor(
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.TrackList(
+                TrackListRouteDestination(
                     TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
                 )
             )
@@ -136,7 +142,7 @@ class SearchViewModel @Inject constructor(
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.TrackContextMenu(
+                TrackContextMenuDestination(
                     TrackContextMenuArguments(
                         trackId = trackId,
                         mediaGroup = MediaGroup.SingleTrack(
@@ -151,7 +157,7 @@ class SearchViewModel @Inject constructor(
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.ArtistContextMenu(
+                ArtistContextMenuDestination(
                     ArtistContextMenuArguments(artistId = artistId)
                 )
             )
@@ -161,7 +167,7 @@ class SearchViewModel @Inject constructor(
     private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.AlbumContextMenu(
+                AlbumContextMenuDestination(
                     AlbumContextMenuArguments(albumId = albumId)
                 )
             )
@@ -171,7 +177,7 @@ class SearchViewModel @Inject constructor(
     private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.GenreContextMenu(
+                GenreContextMenuDestination(
                     GenreContextMenuArguments(genreId = genreId)
                 )
             )
@@ -181,7 +187,7 @@ class SearchViewModel @Inject constructor(
     private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
         addNavEvent(
             NavEvent.NavigateToScreen(
-                NavigationDestination.PlaylistContextMenu(
+                PlaylistContextMenuDestination(
                     PlaylistContextMenuArguments(playlistId = playlistId)
                 )
             )
