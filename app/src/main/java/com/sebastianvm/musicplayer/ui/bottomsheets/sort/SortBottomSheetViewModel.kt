@@ -159,10 +159,11 @@ sealed class SortableListType : Parcelable {
     data class Tracks(val trackList: TrackList) : SortableListType()
 
     @Serializable
-    object Albums : SortableListType()
+    data object Albums : SortableListType()
 
     @Serializable
     data class Playlist(val playlistId: Long) : SortableListType()
+
 }
 
 sealed interface SortBottomSheetUserAction : UserAction {

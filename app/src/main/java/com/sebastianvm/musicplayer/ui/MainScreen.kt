@@ -159,7 +159,6 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                         navigator.navigate(TrackContextMenuDestination(args))
                     },
                     modifier = Modifier,
-                    updateAlpha = {}
                 )
             }
         }
