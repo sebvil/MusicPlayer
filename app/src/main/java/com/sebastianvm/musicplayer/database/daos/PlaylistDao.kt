@@ -39,7 +39,7 @@ interface PlaylistDao {
     fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
 
     @Query("SELECT playlistName FROM Playlist WHERE Playlist.id=:playlistId")
-    fun getPlaylistName(playlistId: Long): Flow<String?>
+    fun getPlaylistName(playlistId: Long): Flow<String>
 
     @Transaction
     @Query("SELECT * FROM Playlist WHERE Playlist.id=:playlistId")
@@ -102,6 +102,7 @@ interface PlaylistDao {
                             position = it.position
                         )
                     }
+
                     it.position > position -> {
                         PlaylistTrackCrossRef(
                             playlistId = it.playlistId,
@@ -109,6 +110,7 @@ interface PlaylistDao {
                             position = it.position - 1
                         )
                     }
+
                     else -> {
                         null
                     }

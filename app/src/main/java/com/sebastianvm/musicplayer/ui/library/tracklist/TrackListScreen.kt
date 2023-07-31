@@ -2,19 +2,17 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,9 +31,6 @@ import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScr
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBar
-import com.sebastianvm.musicplayer.ui.components.topbar.LibraryTopBarState
 import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackSearchScreenDestination
@@ -52,7 +47,8 @@ fun TrackListRoute(
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
         uiState = uiState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
                 message = R.string.no_tracks_found,
@@ -90,18 +86,7 @@ fun TrackListScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val maybeTitleAlpha = remember {
-        mutableFloatStateOf(0f)
-    }
-    val titleAlpha: State<Float> = remember(state.trackListName, maybeTitleAlpha) {
-        derivedStateOf {
-            if (state.headerImage == null) {
-                1f
-            } else {
-                maybeTitleAlpha.floatValue
-            }
-        }
-    }
+
     ScreenScaffold(
         modifier = modifier,
         floatingActionButton = {
@@ -110,8 +95,8 @@ fun TrackListScreen(
                     text = { Text(text = stringResource(id = R.string.add_tracks)) },
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_plus),
-                            contentDescription = stringResource(id = R.string.add_tracks)
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null
                         )
                     },
                     onClick = {
@@ -121,23 +106,17 @@ fun TrackListScreen(
                 )
             }
         },
-        topBar = {
-            LibraryTopBar(
-                state = LibraryTopBarState(
-                    title = state.trackListName ?: stringResource(id = R.string.all_songs),
-                ),
-                onUpButtonClicked = navigateBack,
-                titleAlpha = titleAlpha.value
-            )
-        }
     ) { paddingValues ->
         TrackListLayout(
             state = state,
+            onBackButtonClicked = navigateBack,
             onTrackClicked = onTrackClicked,
             openSortMenu = openSortMenu,
             openTrackContextMenu = openTrackContextMenu,
             onDismissPlaybackErrorDialog = onDismissPlaybackErrorDialog,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(paddingValues)
+                .statusBarsPadding()
         )
     }
 }
@@ -145,11 +124,12 @@ fun TrackListScreen(
 @Composable
 fun TrackListLayout(
     state: TrackListState,
+    modifier: Modifier = Modifier,
+    onBackButtonClicked: () -> Unit = {},
     onTrackClicked: (trackIndex: Int) -> Unit,
     openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
     onDismissPlaybackErrorDialog: () -> Unit,
-    modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
 ) {
     PlaybackStatusIndicator(
@@ -161,9 +141,10 @@ fun TrackListLayout(
         })
 
     ModelList(
-        state = ModelListState(items = state.trackList, sortButtonState = null),
+        state = state.modelListState,
         modifier = modifier,
         listState = listState,
+        onBackButtonClicked = onBackButtonClicked,
         onSortButtonClicked = {
             openSortMenu(
                 SortMenuArguments(listType = state.trackListType.toSortableListType())

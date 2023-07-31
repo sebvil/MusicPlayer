@@ -113,9 +113,9 @@ class TrackRepositoryImpl @Inject constructor(
 
     override fun getTrackListMetadata(
         trackList: TrackList
-    ): Flow<TrackListMetadata> {
+    ): Flow<TrackListMetadata?> {
         return when (trackList) {
-            is MediaGroup.AllTracks -> flowOf(TrackListMetadata())
+            is MediaGroup.AllTracks -> flowOf(null)
             is MediaGroup.Genre -> genreRepository.getGenreName(trackList.genreId)
                 .map { TrackListMetadata(trackListName = it) }
 
