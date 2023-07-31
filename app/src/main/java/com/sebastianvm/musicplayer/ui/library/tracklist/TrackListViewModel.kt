@@ -73,6 +73,7 @@ class TrackListViewModel @Inject constructor(
                                     else -> HeaderState.Simple(title = trackListMetadata.trackListName)
                                 }
                             ),
+                            trackListType = args.trackListType
                         )
                     }
                 }

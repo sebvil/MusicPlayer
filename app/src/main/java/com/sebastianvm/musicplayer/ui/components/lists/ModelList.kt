@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.ui.components.lists
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -70,6 +72,7 @@ data class ModelListState(
     val headerState: HeaderState
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModelList(
     state: ModelListState,
@@ -92,20 +95,17 @@ fun ModelList(
                 state.sortButtonState?.let {
                     item {
                         TextButton(
-                            onClick = { onSortButtonClicked?.invoke() })
-                        {
-                            Text(
-                                text = "${stringResource(id = R.string.sort_by)}: ${
-                                    stringResource(
-                                        id = it.text
-                                    )
-                                }"
-                            )
+                            onClick = { onSortButtonClicked?.invoke() },
+                            modifier = Modifier.padding(start = 16.dp)
+                        ) {
+                            Text(text = "${stringResource(id = R.string.sort_by)}:")
                             Icon(
                                 imageVector = if (it.sortOrder == MediaSortOrder.ASCENDING) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
+                            Text(text = stringResource(id = it.text))
+
                         }
                     }
                 }
@@ -113,6 +113,7 @@ fun ModelList(
                     ModelListItem(
                         state = item,
                         modifier = Modifier
+                            .animateItemPlacement()
                             .clickable {
                                 onItemClicked(index, item)
                             },
