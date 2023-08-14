@@ -165,31 +165,54 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
 
         TopLevelScreen.ARTISTS -> {
             val vm = hiltViewModel<ArtistListViewModel>()
-            val state by vm.stateFlow.collectAsStateWithLifecycle()
-            ArtistListLayout(
-                state = state,
-                openArtistContextMenu = { args ->
-                    navigator.navigate(ArtistContextMenuDestination(args))
-                },
-                navigateToArtistScreen = { args ->
-                    navigator.navigate(ArtistRouteDestination(args))
-                },
-                changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) }
-            )
+            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            UiStateScreen(uiState = uiState,
+                modifier = Modifier.fillMaxSize(),
+                emptyScreen = {
+                    StoragePermissionNeededEmptyScreen(
+                        message = R.string.no_artists_found,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    )
+                }) { state ->
+                ArtistListLayout(
+                    state = state,
+                    openArtistContextMenu = { args ->
+                        navigator.navigate(ArtistContextMenuDestination(args))
+                    },
+                    navigateToArtistScreen = { args ->
+                        navigator.navigate(ArtistRouteDestination(args))
+                    },
+                    changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) },
+                    modifier = Modifier,
+                )
+            }
         }
 
         TopLevelScreen.ALBUMS -> {
             val vm = hiltViewModel<AlbumListViewModel>()
-            val state by vm.stateFlow.collectAsStateWithLifecycle()
-            AlbumListLayout(
-                state = state,
-                navigateToAlbum = { args ->
-                    navigator.navigate(TrackListRouteDestination(args))
-                },
-                openAlbumContextMenu = { args ->
-                    navigator.navigate(AlbumContextMenuDestination(args))
-                }
-            )
+            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            UiStateScreen(uiState = uiState,
+                modifier = Modifier.fillMaxSize(),
+                emptyScreen = {
+                    StoragePermissionNeededEmptyScreen(
+                        message = R.string.no_artists_found,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp)
+                    )
+                }) { state ->
+                AlbumListLayout(
+                    state = state,
+                    navigateToAlbum = { args ->
+                        navigator.navigate(TrackListRouteDestination(args))
+                    },
+                    openAlbumContextMenu = { args ->
+                        navigator.navigate(AlbumContextMenuDestination(args))
+                    }
+                )
+            }
         }
 
         TopLevelScreen.GENRES -> {
