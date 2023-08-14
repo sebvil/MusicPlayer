@@ -1,16 +1,11 @@
 package com.sebastianvm.musicplayer.ui.queue
 
 import androidx.compose.foundation.clickable
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
 import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
@@ -68,22 +63,7 @@ fun QueueLayout(
                         screenDelegate.handle(QueueUserAction.TrackClicked(index))
                     },
                 backgroundColor = backgroundColor,
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_drag),
-                        contentDescription = stringResource(R.string.drag),
-                    )
-                },
-                trailingContent = {
-                    IconButton(
-                        onClick = { /* TODO */ },
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_overflow),
-                            contentDescription = stringResource(R.string.more),
-                        )
-                    }
-                })
+              )
         },
         layoutManager = layoutManager
     )

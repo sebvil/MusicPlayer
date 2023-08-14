@@ -38,7 +38,7 @@ class PlaylistRepositoryImpl @Inject constructor(
             .distinctUntilChanged()
     }
 
-    override fun getPlaylistName(playlistId: Long): Flow<String?> {
+    override fun getPlaylistName(playlistId: Long): Flow<String> {
         return playlistDao.getPlaylistName(playlistId)
     }
 

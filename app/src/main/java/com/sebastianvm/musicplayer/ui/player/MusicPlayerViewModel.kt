@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MusicPlayerViewModel @Inject constructor(
     private val playbackManager: PlaybackManager,
     initialState: MusicPlayerState,
-) : BaseViewModel<MusicPlayerState, MusicPlayerUserAction>(initialState) {
+) : DeprecatedBaseViewModel<MusicPlayerState, MusicPlayerUserAction>(initialState) {
 
     private var isPlaying: Boolean = false
     private var trackLengthMs: Long = 0

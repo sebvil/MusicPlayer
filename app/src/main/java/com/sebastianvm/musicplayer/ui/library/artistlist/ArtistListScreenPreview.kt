@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.library.artistlist
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -13,7 +14,7 @@ class ArtistListStatePreviewParamsProvider : PreviewParameterProvider<ArtistList
             Artist(
                 id = it.toLong(),
                 artistName = PreviewUtil.randomString(),
-            ).toModelListItemState()
+            ).toModelListItemState(trailingButtonType = TrailingButtonType.More)
         }, sortOrder = MediaSortOrder.ASCENDING))
 }
 

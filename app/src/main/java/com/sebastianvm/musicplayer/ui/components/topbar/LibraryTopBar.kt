@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.ui.components.topbar
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -8,7 +10,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.sebastianvm.musicplayer.R
@@ -18,16 +19,7 @@ interface LibraryTopBarDelegate {
     fun sortByClicked() = Unit
 }
 
-data class LibraryTopBarState(val title: String, val hasSortButton: Boolean = true)
-
-@Composable
-fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate, titleAlpha: Float = 1f) {
-    LibraryTopBar(
-        state = LibraryTopBarState(title = title, hasSortButton = true),
-        delegate = delegate,
-        titleAlpha = titleAlpha
-    )
-}
+data class LibraryTopBarState(val title: String)
 
 
 // TODO remove sort button from here to not allow sorting unless at the top
@@ -35,7 +27,7 @@ fun LibraryTopBar(title: String, delegate: LibraryTopBarDelegate, titleAlpha: Fl
 @Composable
 fun LibraryTopBar(
     state: LibraryTopBarState,
-    delegate: LibraryTopBarDelegate,
+    onUpButtonClicked: () -> Unit,
     titleAlpha: Float = 1f
 ) {
     TopAppBar(
@@ -48,21 +40,11 @@ fun LibraryTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { delegate.upButtonClicked() }) {
+            IconButton(onClick = onUpButtonClicked) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back),
+                    imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back)
                 )
-            }
-        },
-        actions = {
-            if (state.hasSortButton) {
-                IconButton(onClick = { delegate.sortByClicked() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_sort),
-                        contentDescription = stringResource(id = R.string.sort_by)
-                    )
-                }
             }
         }
     )

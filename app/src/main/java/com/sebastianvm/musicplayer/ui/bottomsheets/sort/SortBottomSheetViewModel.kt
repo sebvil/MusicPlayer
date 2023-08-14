@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class SortBottomSheetViewModel @Inject constructor(
     initialState: SortBottomSheetState,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>(
+) : DeprecatedBaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>(
     initialState
 ) {
 
@@ -159,10 +159,11 @@ sealed class SortableListType : Parcelable {
     data class Tracks(val trackList: TrackList) : SortableListType()
 
     @Serializable
-    object Albums : SortableListType()
+    data object Albums : SortableListType()
 
     @Serializable
     data class Playlist(val playlistId: Long) : SortableListType()
+
 }
 
 sealed interface SortBottomSheetUserAction : UserAction {

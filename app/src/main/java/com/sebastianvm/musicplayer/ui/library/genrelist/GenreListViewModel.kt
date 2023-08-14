@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -24,7 +24,7 @@ class GenreListViewModel @Inject constructor(
     initialState: GenreListState,
     genreRepository: GenreRepository,
     private val preferencesRepository: SortPreferencesRepository,
-) : BaseViewModel<GenreListState, GenreListUserAction>(initialState) {
+) : DeprecatedBaseViewModel<GenreListState, GenreListUserAction>(initialState) {
 
     init {
         genreRepository.getGenres().onEach { genreList ->

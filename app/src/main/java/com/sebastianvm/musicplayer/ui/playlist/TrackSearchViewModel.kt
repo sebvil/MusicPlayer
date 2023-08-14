@@ -6,9 +6,10 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -38,7 +39,7 @@ class TrackSearchViewModel @Inject constructor(
     initialState: TrackSearchState,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
-) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(initialState) {
+) : DeprecatedBaseViewModel<TrackSearchState, TrackSearchUserAction>(initialState) {
 
     private val query = MutableStateFlow("")
     private val queryUpdater = combineToPair(query, stateFlow.map { it.hideTracksInPlaylist })
@@ -47,9 +48,10 @@ class TrackSearchViewModel @Inject constructor(
     init {
         queryUpdater.debounce(500).flatMapLatest { (newQuery, hideTracksInPlaylist) ->
             ftsRepository.searchTracks(newQuery).map { tracks ->
-                tracks.map { it.toModelListItemState() }.filter {
-                    !hideTracksInPlaylist || (it.id !in state.playlistTrackIds)
-                }
+                tracks.map { it.toModelListItemState(if (it.id in state.playlistTrackIds) TrailingButtonType.Check else TrailingButtonType.Plus) }
+                    .filter {
+                        !hideTracksInPlaylist || (it.id !in state.playlistTrackIds)
+                    }
             }
         }.onEach {
             setState {

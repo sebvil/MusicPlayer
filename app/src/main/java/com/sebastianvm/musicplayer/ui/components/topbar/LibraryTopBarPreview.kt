@@ -11,10 +11,17 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun LibraryTopBarPreview(@PreviewParameter(StringPreviewParameterProvider::class, limit = 3) title: String) {
+fun LibraryTopBarPreview(
+    @PreviewParameter(
+        StringPreviewParameterProvider::class,
+        limit = 3
+    ) title: String
+) {
     ThemedPreview {
         LibraryTopBar(
-            state = LibraryTopBarState(title = title, hasSortButton = true),
-            delegate = object : LibraryTopBarDelegate {})
+            state = LibraryTopBarState(title = title),
+            onUpButtonClicked = {},
+            titleAlpha = 1f
+        )
     }
 }

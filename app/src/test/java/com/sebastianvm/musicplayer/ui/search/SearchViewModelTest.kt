@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDestination
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.BaseTest
@@ -247,8 +247,8 @@ class SearchViewModelTest : BaseTest() {
                 listOf(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackList = TrackList.ALBUM,
+                            TrackListArgumentsForNav(
+                                trackListType = TrackList.ALBUM,
                                 trackListId = 0
                             )
                         )
@@ -267,8 +267,8 @@ class SearchViewModelTest : BaseTest() {
                 listOf(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackList = TrackList.GENRE,
+                            TrackListArgumentsForNav(
+                                trackListType = TrackList.GENRE,
                                 trackListId = 0
                             )
                         )
@@ -287,8 +287,8 @@ class SearchViewModelTest : BaseTest() {
                 listOf(
                     NavEvent.NavigateToScreen(
                         NavigationDestination.TrackList(
-                            TrackListArguments(
-                                trackList = TrackList.PLAYLIST,
+                            TrackListArgumentsForNav(
+                                trackListType = TrackList.PLAYLIST,
                                 trackListId = 0
                             )
                         )

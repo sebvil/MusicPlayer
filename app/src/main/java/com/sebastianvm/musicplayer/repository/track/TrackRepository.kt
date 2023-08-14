@@ -32,7 +32,7 @@ interface TrackRepository {
 
     fun getTracksForMedia(trackList: TrackList): Flow<List<ModelListItemState>>
 
-    fun getTrackListMetadata(trackList: TrackList): Flow<TrackListMetadata>
+    fun getTrackListMetadata(trackList: TrackList): Flow<TrackListMetadata?>
 
     suspend fun insertAllTracks(
         tracks: Set<Track>,

@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     initialState: ArtistState,
     artistRepository: ArtistRepository,
-) : BaseViewModel<ArtistState, ArtistUserAction>(initialState) {
+) : DeprecatedBaseViewModel<ArtistState, ArtistUserAction>(initialState) {
     init {
         viewModelScope.launch {
             val artistWithAlbums = artistRepository.getArtist(state.artistId).first()

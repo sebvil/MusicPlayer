@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
 import com.sebastianvm.musicplayer.ui.player.TrackProgressState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     initialState: MainActivityState,
     private val playbackManager: PlaybackManager
-) : BaseViewModel<MainActivityState, MainUserAction>(initialState) {
+) : DeprecatedBaseViewModel<MainActivityState, MainUserAction>(initialState) {
 
     private var isPlaying: Boolean = false
     private var trackLengthMs: Long = 0

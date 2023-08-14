@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArgum
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
@@ -22,8 +23,8 @@ import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -56,7 +57,7 @@ class SearchViewModel @Inject constructor(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : BaseViewModel<SearchState, SearchUserAction>(initialState) {
+) : DeprecatedBaseViewModel<SearchState, SearchUserAction>(initialState) {
 
     private val query =
         MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))
@@ -66,10 +67,10 @@ class SearchViewModel @Inject constructor(
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
-                    .map { tracks -> tracks.map { it.toModelListItemState() } }
+                    .map { tracks -> tracks.map { it.toModelListItemState(trailingButtonType = TrailingButtonType.More) } }
 
                 SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
-                    .map { artists -> artists.map { it.toModelListItemState() } }
+                    .map { artists -> artists.map { it.toModelListItemState(trailingButtonType = TrailingButtonType.More) } }
 
                 SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
                     .map { albums -> albums.map { it.toModelListItemState() } }
@@ -113,7 +114,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 TrackListRouteDestination(
-                    TrackListArguments(trackList = MediaGroup.Album(albumId = albumId))
+                    TrackListArgumentsForNav(trackListType = MediaGroup.Album(albumId = albumId))
                 )
             )
         )
@@ -123,7 +124,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 TrackListRouteDestination(
-                    TrackListArguments(trackList = MediaGroup.Genre(genreId = genreId))
+                    TrackListArgumentsForNav(trackListType = MediaGroup.Genre(genreId = genreId))
                 )
             )
         )
@@ -133,7 +134,7 @@ class SearchViewModel @Inject constructor(
         addNavEvent(
             NavEvent.NavigateToScreen(
                 TrackListRouteDestination(
-                    TrackListArguments(trackList = MediaGroup.Playlist(playlistId = playlistId))
+                    TrackListArgumentsForNav(trackListType = MediaGroup.Playlist(playlistId = playlistId))
                 )
             )
         )
@@ -259,6 +260,6 @@ sealed interface SearchUserAction : UserAction {
     data class SearchResultOverflowMenuIconClicked(val id: Long) : SearchUserAction
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
-    object UpButtonClicked : SearchUserAction
-    object DismissPlaybackErrorDialog : SearchUserAction
+    data object UpButtonClicked : SearchUserAction
+    data object DismissPlaybackErrorDialog : SearchUserAction
 }

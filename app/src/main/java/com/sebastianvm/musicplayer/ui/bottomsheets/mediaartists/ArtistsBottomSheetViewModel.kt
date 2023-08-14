@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -29,14 +29,14 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
 ) :
-    BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>(
+    DeprecatedBaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>(
         initialState
     ) {
     init {
         artistRepository.getArtists(arguments.mediaType, arguments.mediaId).onEach { artists ->
             setState {
                 copy(
-                    artistList = artists.map { it.toModelListItemState() }
+                    artistList = artists.map { it.toModelListItemState(trailingButtonType = null) }
                 )
             }
         }.launchIn(viewModelScope)
@@ -75,7 +75,7 @@ object InitialArtistsBottomSheetStateModule {
     @Provides
     @ViewModelScoped
     fun artistMenuArgumentProvider(savedStateHandle: SavedStateHandle): ArtistsMenuArguments {
-        return savedStateHandle.navArgs<ArtistsMenuArguments>()
+        return savedStateHandle.navArgs()
     }
 }
 

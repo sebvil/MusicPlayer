@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 
@@ -23,7 +23,7 @@ sealed interface BaseContextMenuUserAction : UserAction {
 
 abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
     initialState: S
-) : BaseViewModel<S, BaseContextMenuUserAction>(initialState) {
+) : DeprecatedBaseViewModel<S, BaseContextMenuUserAction>(initialState) {
     protected abstract fun onRowClicked(row: ContextMenuItem)
     protected abstract fun onPlaybackErrorDismissed()
 

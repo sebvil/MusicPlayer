@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArgum
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import dagger.Module
@@ -144,7 +144,7 @@ class TrackContextMenuViewModel @Inject constructor(
                 addNavEvent(
                     NavEvent.NavigateToScreen(
                         TrackListRouteDestination(
-                            TrackListArguments(trackList = MediaGroup.Album(albumId = track.albumId))
+                            TrackListArgumentsForNav(trackListType = MediaGroup.Album(albumId = track.albumId))
                         )
                     )
                 )
