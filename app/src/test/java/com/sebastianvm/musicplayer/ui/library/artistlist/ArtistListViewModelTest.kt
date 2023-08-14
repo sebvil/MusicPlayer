@@ -48,7 +48,7 @@ class ArtistListViewModelTest : BaseTest() {
         return ArtistListViewModel(
             initialState = ArtistListState(artistList = listOf()),
             artistRepository = artistRepository,
-            preferencesRepository = preferencesRepository,
+            sortPreferencesRepository = preferencesRepository,
         )
     }
 

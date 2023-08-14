@@ -52,6 +52,7 @@
     <string name="track_name">Track name</string>
     <string name="custom">Custom</string>
     <string name="artist_name">Artist name</string>
+    <string name="genre_name">Genre name</string>
     <string name="album_name">Album name</string>
     <string name="view_artists">View artists</string>
     <string name="view_album">View album</string>

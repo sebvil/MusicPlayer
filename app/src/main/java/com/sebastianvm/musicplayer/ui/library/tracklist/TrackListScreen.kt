@@ -3,8 +3,6 @@ package com.sebastianvm.musicplayer.ui.library.tracklist
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -85,8 +83,6 @@ fun TrackListScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-
     ScreenScaffold(
         modifier = modifier,
         floatingActionButton = {
@@ -130,7 +126,6 @@ fun TrackListLayout(
     openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
     onDismissPlaybackErrorDialog: () -> Unit,
-    listState: LazyListState = rememberLazyListState(),
 ) {
     PlaybackStatusIndicator(
         playbackResult = state.playbackResult,
@@ -143,7 +138,6 @@ fun TrackListLayout(
     ModelList(
         state = state.modelListState,
         modifier = modifier,
-        listState = listState,
         onBackButtonClicked = onBackButtonClicked,
         onSortButtonClicked = {
             openSortMenu(
