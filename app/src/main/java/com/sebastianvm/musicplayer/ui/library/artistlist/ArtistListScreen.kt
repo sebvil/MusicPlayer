@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 
-
 @Composable
 fun ArtistListLayout(
     state: ArtistListState,
@@ -15,7 +14,6 @@ fun ArtistListLayout(
     changeSort: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     ModelList(
         state = state.modelListState,
         modifier = modifier,

@@ -25,13 +25,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistListViewModel @Inject constructor(
     artistRepository: ArtistRepository,
-    private val preferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
 ) : BaseViewModel<ArtistListState, ArtistListUserAction>() {
 
     init {
         combineToPair(
             artistRepository.getArtists(),
-            preferencesRepository.getArtistListSortOrder()
+            sortPreferencesRepository.getArtistListSortOrder()
         ).onEach { (artists, sortOrder) ->
             if (artists.isEmpty()) {
                 setState { Empty }
@@ -60,7 +60,7 @@ class ArtistListViewModel @Inject constructor(
         when (action) {
             is ArtistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch {
-                    preferencesRepository.toggleArtistListSortOrder()
+                    sortPreferencesRepository.toggleArtistListSortOrder()
                 }
             }
         }
