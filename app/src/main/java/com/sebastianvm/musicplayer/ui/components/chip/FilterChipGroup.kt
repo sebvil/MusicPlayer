@@ -20,7 +20,7 @@ fun <T> SingleSelectFilterChipGroup(
     selectedOption: T?,
     getDisplayName: @Composable T.() -> String,
     onNewOptionSelected: (T) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = AppDimensions.spacing.medium),

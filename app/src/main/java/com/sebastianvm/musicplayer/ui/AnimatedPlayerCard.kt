@@ -57,7 +57,7 @@ fun AnimatedPlayerCard(
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
     onDismissPlayer: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val progress by transition.animateFloat(
         transitionSpec = transitionSpec(),
