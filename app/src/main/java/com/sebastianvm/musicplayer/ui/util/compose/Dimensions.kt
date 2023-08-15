@@ -19,34 +19,11 @@ data class Spacing(
     val xxLarge: Dp = 32.dp
 )
 
-data class BottomSheet(
-    val rowHeight: Dp = 56.dp,
-    val startPadding: Dp = 16.dp,
-    val cornerRadius: Dp = 16.dp
-)
-
-data class AlbumRowDimensions(
-    val imageSize: Dp = 56.dp,
-    val height: Dp = 72.dp
-)
-
 val LocalSpacing = staticCompositionLocalOf { Spacing() }
-val LocalBottomSheetDimensions = staticCompositionLocalOf { BottomSheet() }
-val LocalAlbumRowDimensions = staticCompositionLocalOf { AlbumRowDimensions() }
 
 object AppDimensions {
     val spacing: Spacing
         @Composable
         @ReadOnlyComposable
         get() = LocalSpacing.current
-
-    val bottomSheet: BottomSheet
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalBottomSheetDimensions.current
-
-    val albumRowDimensions: AlbumRowDimensions
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalAlbumRowDimensions.current
 }

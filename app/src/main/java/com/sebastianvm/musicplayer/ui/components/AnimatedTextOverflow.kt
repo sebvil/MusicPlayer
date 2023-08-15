@@ -111,7 +111,7 @@ fun AnimatedTextOverflow(
 
 @Preview
 @Composable
-fun AnimatedTextOverflowPreviews() {
+private fun AnimatedTextOverflowPreviews() {
     ScreenPreview {
         Column {
             Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {

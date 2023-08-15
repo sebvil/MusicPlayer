@@ -148,6 +148,7 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
 
     detektPlugins(libs.detekt.ktlint)
+    detektPlugins(libs.detekt.compose)
 }
 
 detekt {

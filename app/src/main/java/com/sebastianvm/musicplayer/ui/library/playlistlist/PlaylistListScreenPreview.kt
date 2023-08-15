@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.playlistlist
 
 import androidx.compose.runtime.Composable
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 // class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
@@ -54,7 +54,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 //    }
 // }
 
-@ComponentPreview
+@ComponentPreviews
 @Composable
 private fun PlaylistCreationErrorDialogPreview() {
     ThemedPreview {
@@ -62,7 +62,7 @@ private fun PlaylistCreationErrorDialogPreview() {
     }
 }
 
-@ComponentPreview
+@ComponentPreviews
 @Composable
 private fun CreatePlaylistDialogPreview() {
     ThemedPreview {

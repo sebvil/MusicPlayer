@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImage
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 private val drawableResources =
@@ -50,9 +50,9 @@ data class MediaArtImageState(
     val args: List<Any> = listOf()
 )
 
-@ComponentPreview
+@ComponentPreviews
 @Composable
-fun MediaArtImagePreview(
+private fun MediaArtImagePreview(
     @PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState
 ) {
     ThemedPreview {

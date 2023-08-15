@@ -10,16 +10,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListAdapter
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
-    items: List<DraggableListItem>,
+    items: ImmutableList<DraggableListItem>,
     listAdapter: DraggableListAdapter<T, V>,
     delegate: DraggableColumnListDelegate,
-    layoutManager: LinearLayoutManager
+    layoutManager: LinearLayoutManager,
+    modifier: Modifier = Modifier
 ) {
     AndroidView(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = modifier.fillMaxHeight(),
         factory = {
             RecyclerView(it).apply {
                 this.layoutManager = layoutManager

@@ -42,7 +42,7 @@ object PreviewUtil {
 }
 
 @Composable
-fun ThemedPreview(
+internal fun ThemedPreview(
     content: @Composable () -> Unit
 ) {
     M3AppTheme {
@@ -53,7 +53,7 @@ fun ThemedPreview(
 }
 
 @Composable
-fun ScreenPreview(screen: @Composable () -> Unit) {
+internal fun ScreenPreview(screen: @Composable () -> Unit) {
     M3AppTheme {
         NavHostWrapper {
             Scaffold { padding ->
@@ -88,8 +88,8 @@ fun ScreenPreview(screen: @Composable () -> Unit) {
 //    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
 // )
 // @Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
-annotation class ScreenPreview
+annotation class ScreenPreviews
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-annotation class ComponentPreview
+annotation class ComponentPreviews

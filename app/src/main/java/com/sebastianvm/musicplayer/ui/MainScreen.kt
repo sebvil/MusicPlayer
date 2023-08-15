@@ -60,6 +60,7 @@ import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -84,6 +85,7 @@ fun MainScreen(
 @Composable
 fun MainScreenLayout(
     searchScreen: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (page: TopLevelScreen) -> Unit
 ) {
     val pages = TopLevelScreen.values()
@@ -97,7 +99,7 @@ fun MainScreenLayout(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    Box {
+    Box(modifier = modifier) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             searchScreen()
 
@@ -291,7 +293,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
     }
 }
 
-@ScreenPreview
+@ScreenPreviews
 @Composable
 fun MainScreenPreview() {
     ScreenPreview {

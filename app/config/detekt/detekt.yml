@@ -27,4 +27,6 @@ style:
   UnusedPrivateMember:
     active: true
     ignoreAnnotated:
-      - "ComponentPreview"
+      - "ComponentPreviews"
+      - "ScreenPreviews"
+      - "Preview"
