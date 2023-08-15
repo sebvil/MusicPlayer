@@ -89,10 +89,10 @@ data class ArtistContextMenuArguments(val artistId: Long)
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialArtistContextMenuStateModule {
+object ArtistContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialArtistContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuArguments {
+    fun artistContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuArguments {
         return savedStateHandle.navArgs()
     }
 }

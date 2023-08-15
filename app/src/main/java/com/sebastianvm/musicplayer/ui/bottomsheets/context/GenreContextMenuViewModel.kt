@@ -94,7 +94,7 @@ data class GenreContextMenuArguments(val genreId: Long)
 object InitialGenreContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialGenreContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): GenreContextMenuArguments {
+    fun genreContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): GenreContextMenuArguments {
         return savedStateHandle.navArgs()
     }
 }

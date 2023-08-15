@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -28,15 +29,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SortBottomSheetViewModel @Inject constructor(
-    initialState: SortBottomSheetState,
+    private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : DeprecatedBaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>(
-    initialState
-) {
+) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>() {
+
+    override val defaultState: SortBottomSheetState by lazy {
+        val sortOptions = getSortOptionsForScreen(arguments.listType)
+        SortBottomSheetState(
+            sortOptions = sortOptions,
+            selectedSort = sortOptions.first(),
+            sortOrder = MediaSortOrder.ASCENDING
+        )
+    }
+
+    private val selectedSort: SortOptions
+        get() = ((state as? Data)?.state ?: defaultState).selectedSort
+
+    private val sortOrder: MediaSortOrder
+        get() = ((state as? Data)?.state ?: defaultState).sortOrder
 
     init {
         viewModelScope.launch {
-            val sortPreferences = when (val listType = state.listType) {
+            val sortPreferences = when (val listType = arguments.listType) {
                 is SortableListType.Tracks -> {
                     sortPreferencesRepository.getTrackListSortPreferences(
                         trackList = listType.trackList,
@@ -51,8 +65,8 @@ class SortBottomSheetViewModel @Inject constructor(
                     sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
                 }
             }.first()
-            setState {
-                copy(
+            setDataState {
+                it.copy(
                     selectedSort = sortPreferences.sortOption,
                     sortOrder = sortPreferences.sortOrder
                 )
@@ -64,13 +78,13 @@ class SortBottomSheetViewModel @Inject constructor(
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionClicked -> {
                 val newSortOption = action.newSortOption
-                val newSortOrder = if (newSortOption == state.selectedSort) {
-                    !state.sortOrder
+                val newSortOrder = if (newSortOption == selectedSort) {
+                    !sortOrder
                 } else {
-                    state.sortOrder
+                    sortOrder
                 }
                 viewModelScope.launch {
-                    when (val listType = state.listType) {
+                    when (val listType = arguments.listType) {
                         is SortableListType.Tracks -> {
                             require(newSortOption is SortOptions.TrackListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
@@ -116,23 +130,15 @@ data class SortBottomSheetState(
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,
     val sortOrder: MediaSortOrder,
-    val listType: SortableListType
 ) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialSortBottomSheetState {
+object SortMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialSortBottomSheetStateProvider(savedStateHandle: SavedStateHandle): SortBottomSheetState {
-        val args = savedStateHandle.navArgs<SortMenuArguments>()
-        val sortOptions = getSortOptionsForScreen(args.listType)
-        return SortBottomSheetState(
-            sortOptions = sortOptions,
-            selectedSort = sortOptions[0],
-            sortOrder = MediaSortOrder.ASCENDING,
-            listType = args.listType
-        )
+    fun sortMenuArgumentsProvider(savedStateHandle: SavedStateHandle): SortMenuArguments {
+        return savedStateHandle.navArgs()
     }
 }
 

@@ -135,10 +135,10 @@ data class AlbumContextMenuArguments(val albumId: Long)
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialAlbumContextMenuStateModule {
+object AlbumContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialAlbumContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuArguments {
+    fun albumContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuArguments {
         return savedStateHandle.navArgs()
     }
 }

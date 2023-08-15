@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class BaseViewModel<S, A : UserAction> : ViewModel() {
+abstract class BaseViewModel<S : State, A : UserAction> : ViewModel() {
 
     private val _state: MutableStateFlow<UiState<S>> = MutableStateFlow(Loading)
     val stateFlow: StateFlow<UiState<S>> = _state

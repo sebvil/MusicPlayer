@@ -24,17 +24,13 @@ import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestinatio
 import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -53,14 +49,23 @@ data class SearchQueryState(val term: String, val mode: SearchMode)
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    initialState: SearchState,
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : DeprecatedBaseViewModel<SearchState, SearchUserAction>(initialState) {
+) : BaseViewModel<SearchState, SearchUserAction>() {
 
+    override val defaultState: SearchState by lazy {
+        SearchState(
+            selectedOption = SearchMode.SONGS,
+            searchResults = listOf(),
+            playbackResult = null
+        )
+    }
+
+    private val selectedOption: SearchMode
+        get() = (state as? Data)?.state?.selectedOption ?: SearchMode.SONGS
     private val query =
-        MutableStateFlow(SearchQueryState(term = "", mode = initialState.selectedOption))
+        MutableStateFlow(SearchQueryState(term = "", mode = selectedOption))
 
 
     init {
@@ -81,20 +86,27 @@ class SearchViewModel @Inject constructor(
                 SearchMode.PLAYLISTS -> ftsRepository.searchPlaylists(newQuery.term)
                     .map { playlists -> playlists.map { it.toModelListItemState() } }
             }
-        }.flowOn(defaultDispatcher).onEach {
-            setState {
-                copy(searchResults = it)
+        }.flowOn(defaultDispatcher).onEach { results ->
+            setDataState {
+                it.copy(searchResults = results)
             }
         }.launchIn(viewModelScope)
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
 
-        playbackManager.playSingleTrack(trackId).onEach {
-            when (it) {
-                is PlaybackResult.Loading, is PlaybackResult.Error -> setState { copy(playbackResult = it) }
+        playbackManager.playSingleTrack(trackId).onEach { result ->
+            when (result) {
+                is PlaybackResult.Loading, is PlaybackResult.Error -> {
+                    setDataState {
+                        it.copy(
+                            playbackResult = result
+                        )
+                    }
+                }
+
                 is PlaybackResult.Success -> {
-                    setState { copy(playbackResult = null) }
+                    setDataState { it.copy(playbackResult = null) }
                 }
             }
         }.launchIn(viewModelScope)
@@ -198,7 +210,7 @@ class SearchViewModel @Inject constructor(
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {
-                when (state.selectedOption) {
+                when (selectedOption) {
                     SearchMode.SONGS -> onTrackSearchResultClicked(action.id)
                     SearchMode.ARTISTS -> onArtistSearchResultClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
@@ -208,7 +220,7 @@ class SearchViewModel @Inject constructor(
             }
 
             is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
-                when (state.selectedOption) {
+                when (selectedOption) {
                     SearchMode.SONGS -> onTrackSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.ARTISTS -> onArtistSearchResultOverflowMenuIconClicked(action.id)
                     SearchMode.ALBUMS -> onAlbumSearchResultOverflowMenuIconClicked(action.id)
@@ -218,13 +230,13 @@ class SearchViewModel @Inject constructor(
             }
 
             is SearchUserAction.SearchModeChanged -> {
-                setState { copy(selectedOption = action.newMode) }
+                setDataState { it.copy(selectedOption = action.newMode) }
                 query.update { it.copy(mode = action.newMode) }
             }
 
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.UpButtonClicked -> addNavEvent(NavEvent.NavigateUp)
-            is SearchUserAction.DismissPlaybackErrorDialog -> setState { copy(playbackResult = null) }
+            is SearchUserAction.DismissPlaybackErrorDialog -> setDataState { it.copy(playbackResult = null) }
         }
     }
 
@@ -239,21 +251,6 @@ data class SearchState(
     val searchResults: List<ModelListItemState>,
     val playbackResult: PlaybackResult? = null
 ) : State
-
-
-@InstallIn(ViewModelComponent::class)
-@Module
-object InitialSearchStateModule {
-    @Provides
-    @ViewModelScoped
-    fun initialSearchStateProvider(): SearchState {
-        return SearchState(
-            selectedOption = SearchMode.SONGS,
-            searchResults = listOf()
-        )
-    }
-}
-
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val id: Long) : SearchUserAction

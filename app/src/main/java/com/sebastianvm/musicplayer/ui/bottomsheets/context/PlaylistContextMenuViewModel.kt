@@ -123,7 +123,7 @@ data class PlaylistContextMenuArguments(val playlistId: Long)
 object PlaylistContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialPlaylistContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuArguments {
+    fun playlistContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): PlaylistContextMenuArguments {
         return savedStateHandle.navArgs()
     }
 }
