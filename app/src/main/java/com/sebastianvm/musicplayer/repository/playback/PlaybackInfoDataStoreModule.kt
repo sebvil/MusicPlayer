@@ -24,7 +24,10 @@ object PlaybackInfoDataStoreModule {
 
     @Singleton
     @Provides
-    fun providePreferencesDataStore(@ApplicationContext appContext: Context, @IODispatcher ioDispatcher: CoroutineDispatcher): DataStore<Preferences> {
+    fun providePreferencesDataStore(
+        @ApplicationContext appContext: Context,
+        @IODispatcher ioDispatcher: CoroutineDispatcher
+    ): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = null,
             scope = CoroutineScope(ioDispatcher + SupervisorJob()),

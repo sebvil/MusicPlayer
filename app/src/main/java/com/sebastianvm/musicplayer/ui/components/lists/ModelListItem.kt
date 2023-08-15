@@ -115,7 +115,9 @@ fun ModelListItem(
                 }
             },
             leadingContent = state.mediaArtImageState?.let {
-                { MediaArtImage(mediaArtImageState = it, modifier = Modifier.size(56.dp)) }
+                {
+                    MediaArtImage(mediaArtImageState = it, modifier = Modifier.size(56.dp))
+                }
             },
             trailingContent = when (trailingButtonType) {
                 TrailingButtonType.More -> {

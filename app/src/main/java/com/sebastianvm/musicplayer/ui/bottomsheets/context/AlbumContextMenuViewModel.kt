@@ -117,7 +117,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                 )
             }
 
-            else -> throw IllegalStateException("Invalid row for album context menu")
+            else -> error("Invalid row for album context menu")
         }
     }
 

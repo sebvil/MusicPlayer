@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
@@ -108,11 +107,7 @@ class LibraryScanService : Service() {
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
         job = CoroutineScope(mainDispatcher).launch {
-            try {
-                musicRepository.getMusic(MessageCallback(startId = startId))
-            } catch (e: Exception) {
-                Log.e("Scan", "$e")
-            }
+            musicRepository.getMusic(MessageCallback(startId = startId))
         }
         return START_STICKY
     }

@@ -67,7 +67,7 @@ class GenreContextMenuViewModel @Inject constructor(
                 )
             }
 
-            else -> throw IllegalStateException("Invalid row for genre context menu")
+            else -> error("Invalid row for genre context menu")
         }
     }
 

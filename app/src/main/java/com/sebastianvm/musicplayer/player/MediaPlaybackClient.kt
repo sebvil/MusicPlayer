@@ -55,6 +55,7 @@ class MediaPlaybackClient @Inject constructor(
     private fun launchCurrentPlayTimeUpdates() {
         CoroutineScope(mainDispatcher).launch {
             while (true) {
+                @Suppress("MagicNumber")
                 delay(1000)
                 controller?.also {
                     if (it.isPlaying) {

@@ -74,7 +74,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
                 }
             }
 
-            else -> throw IllegalStateException("Invalid row for playlist context menu")
+            else -> error("Invalid row for playlist context menu")
         }
     }
 

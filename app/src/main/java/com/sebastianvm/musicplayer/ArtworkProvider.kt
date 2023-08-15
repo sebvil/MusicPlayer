@@ -18,11 +18,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Size
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import java.io.FileOutputStream
+import java.io.IOException
 
 class ArtworkProvider : ContentProvider() {
 
@@ -57,14 +59,14 @@ class ArtworkProvider : ContentProvider() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 b?.compress(
                     Bitmap.CompressFormat.WEBP_LOSSLESS,
-                    100,
+                    IMAGE_QUALITY,
                     FileOutputStream(pfd.fileDescriptor)
                 )
             } else {
                 @Suppress("DEPRECATION")
                 b?.compress(
                     Bitmap.CompressFormat.WEBP,
-                    100,
+                    IMAGE_QUALITY,
                     FileOutputStream(pfd.fileDescriptor)
                 )
             }
@@ -81,11 +83,17 @@ class ArtworkProvider : ContentProvider() {
         val path = getUri(uri)
         val bitmap = try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                nonNullContext.contentResolver.loadThumbnail(path, Size(500, 500), null)
+                nonNullContext.contentResolver.loadThumbnail(
+                    path,
+                    Size(IMAGE_SIZE, IMAGE_SIZE),
+                    null
+                )
             } else {
                 null
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            // TODO exception logger
+            Log.i("Exception", e.message ?: "")
             null
         } ?: nonNullContext.getBitmapFromDrawable(backUpResource)
         return getPFDFromBitmap(bitmap)
@@ -104,6 +112,8 @@ class ArtworkProvider : ContentProvider() {
         val drawable: Drawable = try {
             ContextCompat.getDrawable(this, drawableId) ?: return null
         } catch (e: Resources.NotFoundException) {
+            // TODO exception logger
+            Log.i("Exception", e.message ?: "")
             VectorDrawableCompat.create(this.resources, drawableId, this.theme)!!
         }
 
@@ -124,6 +134,7 @@ class ArtworkProvider : ContentProvider() {
                 drawable.draw(canvas)
                 bitmap
             }
+
             else -> BitmapFactory.decodeResource(this.resources, drawableId)
         }
     }
@@ -132,6 +143,8 @@ class ArtworkProvider : ContentProvider() {
         private const val AUTHORITY = "com.sebastianvm.musicplayer.provider"
         private const val TRACK_PATH = "TRACK"
         private const val ALBUM_PATH = "ALBUM"
+        private const val IMAGE_SIZE = 500
+        private const val IMAGE_QUALITY = 100
 
         fun getUriForTrack(albumId: Long): Uri {
             return ContentUris.withAppendedId(

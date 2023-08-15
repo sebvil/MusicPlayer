@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +47,7 @@ fun AnimatedTextOverflow(
     style: TextStyle = LocalTextStyle.current
 ) {
     var shouldScroll by remember { mutableStateOf(false) }
-    var width by remember { mutableStateOf(0) }
+    var width by remember { mutableIntStateOf(0) }
     val scrollState = rememberScrollState()
     LaunchedEffect(key1 = scrollState.maxValue) { shouldScroll = false }
     LaunchedEffect(key1 = width, key2 = scrollState.maxValue) {
@@ -67,7 +68,7 @@ fun AnimatedTextOverflow(
 
     if (shouldScroll) {
         Text(
-            text = text + " ".repeat(20) + text,
+            text = text + " ".repeat(SPACE_REPETITIONS) + text,
             modifier = modifier.horizontalScroll(scrollState, enabled = false),
             maxLines = 1,
             overflow = TextOverflow.Clip,
@@ -84,7 +85,7 @@ fun AnimatedTextOverflow(
         )
     } else {
         Text(
-            text = text + " ".repeat(20),
+            text = text + " ".repeat(SPACE_REPETITIONS),
             modifier = modifier.wrapContentWidth(),
             maxLines = 1,
             overflow = TextOverflow.Visible,
@@ -126,3 +127,5 @@ fun AnimatedTextOverflowPreviews() {
         }
     }
 }
+
+private const val SPACE_REPETITIONS = 20

@@ -98,7 +98,9 @@ fun SortBottomSheet(
                 ) {
                     if (state.selectedSort == row) {
                         Icon(
-                            painter = painterResource(id = if (state.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
+                            painter = painterResource(
+                                id = if (state.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down
+                            ),
                             contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) {
                                 stringResource(
                                     R.string.up_arrow

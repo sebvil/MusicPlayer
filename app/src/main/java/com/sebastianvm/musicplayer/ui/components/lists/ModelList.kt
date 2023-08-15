@@ -201,8 +201,9 @@ private fun HeaderWithImageModelList(
                     sizeChange = max(minSizePx - sizePx, available.y)
                     offsetChange = max(available.y - sizeChange, -fullHeaderHeight - offsetPx)
                 } else {
-                    if (listState.firstVisibleItemIndex != 0 || listState.firstVisibleItemScrollOffset != 0) return Offset.Zero
-                    if (sizeDp == maxSizeDp) return Offset.Zero
+                    if (listState.firstVisibleItemIndex != 0 || listState.firstVisibleItemScrollOffset != 0 || sizeDp == maxSizeDp) {
+                        return Offset.Zero
+                    }
 
                     offsetChange = min(-offsetPx, available.y)
                     sizeChange = min(maxSizePx - sizePx, available.y - offsetChange)

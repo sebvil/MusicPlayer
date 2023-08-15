@@ -40,7 +40,8 @@ data class SortPreferences(
         sortOption = SortOptions.TrackListSortOptions.TRACK
     ),
     @Serializable(with = GenreSortPrefsSerializer::class)
-    val genreTrackListSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> = persistentMapOf(),
+    val genreTrackListSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> =
+        persistentMapOf(),
     val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> = MediaSortPreferences(
         sortOption = SortOptions.AlbumListSortOptions.ALBUM
     ),
@@ -48,7 +49,8 @@ data class SortPreferences(
     val genreListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     val playlistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     @Serializable(with = PlaylistSortPrefsSerializer::class)
-    val playlistSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> = persistentMapOf()
+    val playlistSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> =
+        persistentMapOf()
 )
 
 @Serializable

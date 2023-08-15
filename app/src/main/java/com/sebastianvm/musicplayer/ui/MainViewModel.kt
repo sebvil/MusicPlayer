@@ -55,7 +55,9 @@ class MainViewModel @Inject constructor(
                     ),
                     playbackControlsState = PlaybackControlsState(
                         trackProgressState = TrackProgressState(
-                            progress = Percentage(playbackState.currentPlayTimeMs.toFloat() / mediaItemMetadata.trackDurationMs.toFloat()),
+                            progress = Percentage(
+                                playbackState.currentPlayTimeMs.toFloat() / mediaItemMetadata.trackDurationMs.toFloat()
+                            ),
                             currentPlaybackTime = MinutesSecondsTime.fromMs(playbackState.currentPlayTimeMs)
                                 .toString(),
                             trackLength = MinutesSecondsTime.fromMs(mediaItemMetadata.trackDurationMs)
@@ -96,7 +98,7 @@ class MainViewModel @Inject constructor(
             is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MainUserAction.ProgressBarClicked -> {
-                val time: Long = trackLengthMs * action.position / 100
+                val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
         }

@@ -52,7 +52,9 @@ data class MediaArtImageState(
 
 @ComponentPreview
 @Composable
-fun MediaArtImagePreview(@PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState) {
+fun MediaArtImagePreview(
+    @PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState
+) {
     ThemedPreview {
         MediaArtImage(mediaArtImageState = mediaArtImageState)
     }

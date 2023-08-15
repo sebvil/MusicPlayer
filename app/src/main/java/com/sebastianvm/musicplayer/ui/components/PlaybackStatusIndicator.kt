@@ -10,10 +10,6 @@ import androidx.compose.ui.window.Dialog
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 
-interface PlaybackStatusIndicatorDelegate {
-    fun onDismissRequest() = Unit
-}
-
 @Composable
 fun PlaybackStatusIndicator(
     playbackResult: PlaybackResult?,
@@ -39,4 +35,8 @@ fun PlaybackStatusIndicator(
         }
         else -> Unit
     }
+}
+
+interface PlaybackStatusIndicatorDelegate {
+    fun onDismissRequest() = Unit
 }

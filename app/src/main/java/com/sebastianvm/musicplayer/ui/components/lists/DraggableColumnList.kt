@@ -11,12 +11,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableLis
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
 
-interface DraggableColumnListDelegate {
-    fun onMove(from: Int, to: Int) = Unit
-    fun onItemSelectedForDrag(position: Int) = Unit
-    fun onDragEnded(initialPosition: Int, finalPosition: Int) = Unit
-}
-
 @Composable
 fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
     items: List<DraggableListItem>,
@@ -83,4 +77,10 @@ fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
             (it.adapter as? DraggableListAdapter<*, *>)?.submitList(items)
         }
     )
+}
+
+interface DraggableColumnListDelegate {
+    fun onMove(from: Int, to: Int) = Unit
+    fun onItemSelectedForDrag(position: Int) = Unit
+    fun onDragEnded(initialPosition: Int, finalPosition: Int) = Unit
 }

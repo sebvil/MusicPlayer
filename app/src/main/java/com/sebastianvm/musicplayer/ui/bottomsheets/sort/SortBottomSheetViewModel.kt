@@ -86,7 +86,9 @@ class SortBottomSheetViewModel @Inject constructor(
                 viewModelScope.launch {
                     when (val listType = arguments.listType) {
                         is SortableListType.Tracks -> {
-                            require(newSortOption is SortOptions.TrackListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            require(newSortOption is SortOptions.TrackListSortOptions) {
+                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                            }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
                                 newPreferences = MediaSortPreferences(
                                     sortOption = newSortOption,
@@ -97,7 +99,9 @@ class SortBottomSheetViewModel @Inject constructor(
                         }
 
                         is SortableListType.Albums -> {
-                            require(newSortOption is SortOptions.AlbumListSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            require(newSortOption is SortOptions.AlbumListSortOptions) {
+                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                            }
                             sortPreferencesRepository.modifyAlbumListSortPreferences(
                                 newPreferences = MediaSortPreferences(
                                     sortOption = newSortOption,
@@ -107,7 +111,9 @@ class SortBottomSheetViewModel @Inject constructor(
                         }
 
                         is SortableListType.Playlist -> {
-                            require(newSortOption is SortOptions.PlaylistSortOptions) { "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType" }
+                            require(newSortOption is SortOptions.PlaylistSortOptions) {
+                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                            }
                             sortPreferencesRepository.modifyPlaylistsSortPreferences(
                                 newPreferences = MediaSortPreferences(
                                     sortOption = newSortOption,

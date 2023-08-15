@@ -71,10 +71,22 @@ class SearchViewModel @Inject constructor(
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
-                    .map { tracks -> tracks.map { it.toModelListItemState(trailingButtonType = TrailingButtonType.More) } }
+                    .map { tracks ->
+                        tracks.map {
+                            it.toModelListItemState(
+                                trailingButtonType = TrailingButtonType.More
+                            )
+                        }
+                    }
 
                 SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term)
-                    .map { artists -> artists.map { it.toModelListItemState(trailingButtonType = TrailingButtonType.More) } }
+                    .map { artists ->
+                        artists.map {
+                            it.toModelListItemState(
+                                trailingButtonType = TrailingButtonType.More
+                            )
+                        }
+                    }
 
                 SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
                     .map { albums -> albums.map { it.toModelListItemState() } }
@@ -205,6 +217,7 @@ class SearchViewModel @Inject constructor(
         )
     }
 
+    @Suppress("CyclomaticComplexMethod")
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {

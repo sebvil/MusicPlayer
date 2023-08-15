@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.repository.playlist
 
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
@@ -54,6 +55,7 @@ class PlaylistRepositoryImpl @Inject constructor(
                     )
                 }
             } catch (e: SQLiteConstraintException) {
+                Log.i("Exception", e.message ?: "")
                 null
             }
             emit(id)
