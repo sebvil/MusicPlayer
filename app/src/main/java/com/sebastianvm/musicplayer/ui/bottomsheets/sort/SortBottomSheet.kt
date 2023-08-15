@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -18,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,7 +30,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -98,9 +99,10 @@ fun SortBottomSheet(
                     leadingContent = {
                         if (state.selectedSort == row) {
                             Icon(
-                                painter = painterResource(
-                                    id = if (state.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down
-                                ),
+                                imageVector = when (state.sortOrder) {
+                                    MediaSortOrder.ASCENDING -> Icons.Default.ArrowUpward
+                                    MediaSortOrder.DESCENDING -> Icons.Default.ArrowDownward
+                                },
                                 contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) {
                                     stringResource(
                                         R.string.up_arrow
@@ -108,7 +110,6 @@ fun SortBottomSheet(
                                 } else {
                                     stringResource(R.string.down_arrow)
                                 },
-                                modifier = Modifier.padding(end = AppDimensions.spacing.mediumLarge),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

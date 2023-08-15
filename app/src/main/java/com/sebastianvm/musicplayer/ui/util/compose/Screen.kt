@@ -25,11 +25,12 @@ import kotlinx.coroutines.Dispatchers
 fun <S : State, A : UserAction> Screen(
     screenViewModel: BaseViewModel<S, A>,
     navigationDelegate: NavigationDelegate,
+    modifier: Modifier = Modifier,
     screen: @Composable (S, ScreenDelegate<A>) -> Unit
 ) {
     val uiState by screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+    UiStateScreen(uiState = uiState, emptyScreen = {}, modifier = modifier) { state ->
         screen(
             state,
             ScreenDelegate { action -> screenViewModel.handle(action) }

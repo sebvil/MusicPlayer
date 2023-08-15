@@ -23,6 +23,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
+@Suppress("ViewModelForwarding")
 @RootNavGraph
 @Destination(
     navArgsDelegate = ArtistsMenuArguments::class,
@@ -31,11 +32,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 @Composable
 fun ArtistsBottomSheet(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     sheetViewModel: ArtistsBottomSheetViewModel = hiltViewModel()
 ) {
     Screen(
         screenViewModel = sheetViewModel,
-        navigationDelegate = NavigationDelegateImpl(navigator)
+        navigationDelegate = NavigationDelegateImpl(navigator),
+        modifier = modifier
     ) { state, screenDelegate ->
         ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)
     }
@@ -44,10 +47,11 @@ fun ArtistsBottomSheet(
 @Composable
 fun ArtistsBottomSheetLayout(
     state: ArtistsBottomSheetState,
-    screenDelegate: ScreenDelegate<ArtistsBottomSheetUserAction>
+    screenDelegate: ScreenDelegate<ArtistsBottomSheetUserAction>,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
     ) {

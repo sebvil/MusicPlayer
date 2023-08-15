@@ -10,7 +10,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,8 +23,8 @@ fun <T> SingleSelectFilterChipGroup(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = AppDimensions.spacing.medium),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.spacing.small),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.selectableGroup()
     ) {
         items(options) { option ->

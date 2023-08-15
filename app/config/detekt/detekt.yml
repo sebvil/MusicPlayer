@@ -30,3 +30,7 @@ style:
       - "ComponentPreviews"
       - "ScreenPreviews"
       - "Preview"
+
+Compose:
+  CompositionLocalAllowlist:
+    allowedCompositionLocals: "LocalPaddingValues"

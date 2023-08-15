@@ -38,6 +38,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
@@ -52,9 +53,9 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
+import kotlinx.collections.immutable.toImmutableList
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
     this.pointerInput(key1 = null) {
@@ -64,13 +65,22 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
         }
     }
 
+@Suppress("ViewModelForwarding")
 @Composable
-fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
+fun SearchScreen(
+    screenViewModel: SearchViewModel,
+    navigationDelegate: NavigationDelegate,
+    modifier: Modifier = Modifier
+) {
     val uiState by screenViewModel.stateFlow.collectAsStateWithLifecycle()
     HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    UiStateScreen(uiState = uiState, emptyScreen = {
-        Text(text = stringResource(R.string.no_results))
-    }) { state ->
+    UiStateScreen(
+        uiState = uiState,
+        modifier = modifier,
+        emptyScreen = {
+            Text(text = stringResource(R.string.no_results))
+        }
+    ) { state ->
         SearchScreen(
             state
         ) {
@@ -81,7 +91,11 @@ fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: Navigatio
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAction>) {
+fun SearchScreen(
+    state: SearchState,
+    modifier: Modifier = Modifier,
+    screenDelegate: ScreenDelegate<SearchUserAction> = ScreenDelegate {}
+) {
     var isSearchActive by remember {
         mutableStateOf(false)
     }
@@ -104,6 +118,7 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
             screenDelegate.handle(SearchUserAction.TextChanged(it))
         },
         onSearch = {},
+        modifier = modifier,
         active = isSearchActive,
         onActiveChange = {
             isSearchActive = it
@@ -200,7 +215,11 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
 }
 
 @Composable
-fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAction>) {
+fun SearchLayout(
+    state: SearchState,
+    screenDelegate: ScreenDelegate<SearchUserAction>,
+    modifier: Modifier = Modifier
+) {
     val focusManager = LocalFocusManager.current
 
     PlaybackStatusIndicator(
@@ -213,14 +232,14 @@ fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .clearFocusOnTouch(focusManager)
     ) {
         SingleSelectFilterChipGroup(
-            options = SearchMode.values().toList(),
+            options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
-            modifier = Modifier.padding(vertical = AppDimensions.spacing.medium),
+            modifier = Modifier.padding(vertical = 16.dp),
             getDisplayName = { stringResource(id = res) },
             onNewOptionSelected = { newOption ->
                 screenDelegate.handle(SearchUserAction.SearchModeChanged(newOption))

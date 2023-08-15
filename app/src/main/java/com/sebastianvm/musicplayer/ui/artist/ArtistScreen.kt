@@ -39,8 +39,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Destination(navArgsDelegate = ArtistArguments::class)
 @Composable
 fun ArtistRoute(
-    viewModel: ArtistViewModel = hiltViewModel(),
-    destinationsNavigator: DestinationsNavigator
+    destinationsNavigator: DestinationsNavigator,
+    viewModel: ArtistViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
 

@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
+import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
 @Composable
@@ -114,15 +114,15 @@ fun AnimatedTextOverflow(
 private fun AnimatedTextOverflowPreviews() {
     ScreenPreview {
         Column {
-            Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {
-//            AnimatedTextOverflow(text = "Short text")
+            Column(modifier = Modifier.padding(all = 16.dp)) {
+                AnimatedTextOverflow(text = "Short text")
                 AnimatedTextOverflow(
                     text = "Long text that I'm trying to animate, please work!"
                 )
                 AnimatedTextOverflow(
                     text = "Long text that                          "
                 )
-//            AnimatedTextOverflow(text = "12345678901234567890")
+                AnimatedTextOverflow(text = "12345678901234567890")
             }
         }
     }

@@ -129,14 +129,22 @@ fun MainScreenLayout(
 }
 
 @Composable
-fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
+fun Screens(
+    page: TopLevelScreen,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
+    trackListViewModel: TrackListViewModel = hiltViewModel(),
+    artistListViewModel: ArtistListViewModel = hiltViewModel(),
+    albumListViewModel: AlbumListViewModel = hiltViewModel(),
+    genreListViewModel: GenreListViewModel = hiltViewModel(),
+    playlistListViewModel: PlaylistListViewModel = hiltViewModel()
+) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
-            val vm = hiltViewModel<TrackListViewModel>()
-            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            val uiState by trackListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
                         message = R.string.no_tracks_found,
@@ -149,13 +157,13 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                 TrackListLayout(
                     state = state,
                     onTrackClicked = { trackIndex ->
-                        vm.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
+                        trackListViewModel.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
                     },
                     openSortMenu = { args ->
                         navigator.navigate(SortBottomSheetDestination(args))
                     },
                     onDismissPlaybackErrorDialog = {
-                        vm.handle(TrackListUserAction.DismissPlaybackErrorDialog)
+                        trackListViewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                     },
                     openTrackContextMenu = { args ->
                         navigator.navigate(TrackContextMenuDestination(args))
@@ -166,11 +174,10 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         }
 
         TopLevelScreen.ARTISTS -> {
-            val vm = hiltViewModel<ArtistListViewModel>()
-            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            val uiState by artistListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
                         message = R.string.no_artists_found,
@@ -188,18 +195,17 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     navigateToArtistScreen = { args ->
                         navigator.navigate(ArtistRouteDestination(args))
                     },
-                    changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) },
+                    changeSort = { artistListViewModel.handle(ArtistListUserAction.SortByButtonClicked) },
                     modifier = Modifier
                 )
             }
         }
 
         TopLevelScreen.ALBUMS -> {
-            val vm = hiltViewModel<AlbumListViewModel>()
-            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            val uiState by albumListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
                         message = R.string.no_albums_found,
@@ -222,11 +228,10 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         }
 
         TopLevelScreen.GENRES -> {
-            val vm = hiltViewModel<GenreListViewModel>()
-            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            val uiState by genreListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
                         message = R.string.no_genres_found,
@@ -241,7 +246,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     navigateToGenre = { args ->
                         navigator.navigate(TrackListRouteDestination(args))
                     },
-                    changeSort = { vm.handle(GenreListUserAction.SortByButtonClicked) },
+                    changeSort = { genreListViewModel.handle(GenreListUserAction.SortByButtonClicked) },
                     openGenreContextMenu = { args ->
                         navigator.navigate(GenreContextMenuDestination(args))
                     }
@@ -250,11 +255,10 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         }
 
         TopLevelScreen.PLAYLISTS -> {
-            val vm = hiltViewModel<PlaylistListViewModel>()
-            val uiState by vm.stateFlow.collectAsStateWithLifecycle()
+            val uiState by playlistListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     EmptyScreen(
                         message = {
@@ -295,7 +299,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
 
 @ScreenPreviews
 @Composable
-fun MainScreenPreview() {
+private fun MainScreenPreview() {
     ScreenPreview {
         MainScreenLayout(
             searchScreen = {}

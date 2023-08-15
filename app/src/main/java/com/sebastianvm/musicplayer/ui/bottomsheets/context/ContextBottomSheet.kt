@@ -1,3 +1,5 @@
+@file:Suppress("ViewModelForwarding")
+
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.compose.foundation.clickable
@@ -147,7 +149,8 @@ fun DeletePlaylistConfirmationDialog(
 @Composable
 fun ContextMenuLayout(
     state: ContextMenuState,
-    screenDelegate: ScreenDelegate<BaseContextMenuUserAction>
+    screenDelegate: ScreenDelegate<BaseContextMenuUserAction>,
+    modifier: Modifier = Modifier
 ) {
     PlaybackStatusIndicator(
         playbackResult = state.playbackResult,
@@ -173,14 +176,14 @@ fun ContextMenuLayout(
         )
         // Need this to be able to dismiss bottom sheet after deleting playlist
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(1.dp)
         )
     } else {
         with(state) {
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
             ) {
