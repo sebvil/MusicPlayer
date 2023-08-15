@@ -21,15 +21,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArtistContextMenuViewModel @Inject constructor(
-    initialState: ArtistContextMenuState,
+    arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
     private val playbackManager: PlaybackManager,
-) : BaseContextMenuViewModel<ArtistContextMenuState>(initialState) {
+) : BaseContextMenuViewModel() {
+
+    private val artistId = arguments.artistId
 
     init {
-        artistRepository.getArtist(artistId = state.mediaId).onEach {
-            setState {
-                copy(menuTitle = it.artist.artistName)
+        artistRepository.getArtist(artistId = artistId).onEach { artistWithAlbums ->
+            setDataState {
+                it.copy(menuTitle = artistWithAlbums.artist.artistName)
             }
         }.launchIn(viewModelScope)
     }
@@ -37,18 +39,19 @@ class ArtistContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playArtist(state.mediaId).onEach {
-                    when (it) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
-                            copy(
-                                playbackResult = it
-                            )
+                playbackManager.playArtist(artistId).onEach { result ->
+                    when (result) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
+                            setDataState {
+                                it.copy(
+                                    playbackResult = result
+                                )
+                            }
                         }
 
                         is PlaybackResult.Success -> {}
                     }
                 }.launchIn(viewModelScope)
-
             }
 
             is ContextMenuItem.ViewArtist -> {
@@ -56,7 +59,7 @@ class ArtistContextMenuViewModel @Inject constructor(
                     NavEvent.NavigateToScreen(
                         ArtistRouteDestination(
                             ArtistArguments(
-                                artistId = state.mediaId
+                                artistId = artistId
                             )
                         )
                     )
@@ -68,36 +71,29 @@ class ArtistContextMenuViewModel @Inject constructor(
     }
 
     override fun onPlaybackErrorDismissed() {
-        setState { copy(playbackResult = null) }
+        setDataState { it.copy(playbackResult = null) }
+    }
+
+    override val defaultState: ContextMenuState by lazy {
+        ContextMenuState(
+            menuTitle = "",
+            listItems = listOf(
+                ContextMenuItem.PlayAllSongs,
+                ContextMenuItem.ViewArtist
+            )
+        )
     }
 }
 
 data class ArtistContextMenuArguments(val artistId: Long)
-
-
-data class ArtistContextMenuState(
-    override val listItems: List<ContextMenuItem>,
-    override val mediaId: Long,
-    override val menuTitle: String,
-    override val playbackResult: PlaybackResult? = null,
-) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
-
 
 @InstallIn(ViewModelComponent::class)
 @Module
 object InitialArtistContextMenuStateModule {
     @Provides
     @ViewModelScoped
-    fun initialArtistContextMenuStateProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuState {
-        val args = savedStateHandle.navArgs<ArtistContextMenuArguments>()
-        return ArtistContextMenuState(
-            mediaId = args.artistId,
-            menuTitle = "",
-            listItems = listOf(
-                ContextMenuItem.PlayAllSongs,
-                ContextMenuItem.ViewArtist
-            ),
-        )
+    fun initialArtistContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): ArtistContextMenuArguments {
+        return savedStateHandle.navArgs()
     }
 }
 

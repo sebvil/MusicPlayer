@@ -8,10 +8,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -28,6 +31,27 @@ fun <S : State, A : UserAction> Screen(
     val state = screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
     HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
     screen(state.value, screenViewModel)
+}
+
+@Composable
+fun <S : State, A : UserAction> Screen(
+    screenViewModel: BaseViewModel<S, A>,
+    navigationDelegate: NavigationDelegate,
+    screen: @Composable (S, ScreenDelegate<A>) -> Unit
+) {
+    val uiState by screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
+    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+        screen(
+            state,
+            object : ScreenDelegate<A> {
+                override fun handle(action: A) {
+                    screenViewModel.handle(action)
+                }
+            }
+        )
+    }
+
 }
 
 @Composable

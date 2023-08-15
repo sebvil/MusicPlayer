@@ -36,9 +36,9 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
 @Composable
-fun <S : BaseContextMenuState> ContextBottomSheet(
+fun ContextBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: BaseContextMenuViewModel<S>,
+    sheetViewModel: BaseContextMenuViewModel,
 ) {
     Screen(
         screenViewModel = sheetViewModel,
@@ -148,7 +148,7 @@ fun DeletePlaylistConfirmationDialog(
 
 @Composable
 fun ContextMenuLayout(
-    state: BaseContextMenuState,
+    state: ContextMenuState,
     screenDelegate: ScreenDelegate<BaseContextMenuUserAction>
 ) {
     PlaybackStatusIndicator(
@@ -159,7 +159,7 @@ fun ContextMenuLayout(
             }
         })
 
-    if (state is PlaylistContextMenuState && state.showDeleteConfirmationDialog) {
+    if (state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
             playlistName = state.menuTitle,
             delegate = object : DeletePlaylistConfirmationDialogDelegate {

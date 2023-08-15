@@ -23,15 +23,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GenreContextMenuViewModel @Inject constructor(
-    initialState: GenreContextMenuState,
+    arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
     private val playbackManager: PlaybackManager,
-) : BaseContextMenuViewModel<GenreContextMenuState>(initialState) {
+) : BaseContextMenuViewModel() {
+
+    private val genreId = arguments.genreId
 
     init {
-        genreRepository.getGenreName(genreId = state.mediaId).onEach {
-            setState {
-                copy(menuTitle = it)
+        genreRepository.getGenreName(genreId = genreId).onEach { genre ->
+            setDataState {
+                it.copy(menuTitle = genre)
             }
         }.launchIn(viewModelScope)
     }
@@ -39,12 +41,14 @@ class GenreContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playGenre(state.mediaId).onEach {
-                    when (it) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
-                            copy(
-                                playbackResult = it
-                            )
+                playbackManager.playGenre(genreId).onEach { result ->
+                    when (result) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
+                            setDataState {
+                                it.copy(
+                                    playbackResult = result
+                                )
+                            }
                         }
 
                         is PlaybackResult.Success -> {}
@@ -57,7 +61,7 @@ class GenreContextMenuViewModel @Inject constructor(
                     NavEvent.NavigateToScreen(
                         TrackListRouteDestination(
                             TrackListArgumentsForNav(
-                                trackListType = MediaGroup.Genre(state.mediaId)
+                                trackListType = MediaGroup.Genre(genreId)
                             )
                         )
                     )
@@ -69,36 +73,29 @@ class GenreContextMenuViewModel @Inject constructor(
     }
 
     override fun onPlaybackErrorDismissed() {
-        setState { copy(playbackResult = null) }
+        setDataState { it.copy(playbackResult = null) }
     }
-}
 
-data class GenreContextMenuArguments(val genreId: Long)
-
-
-data class GenreContextMenuState(
-    override val listItems: List<ContextMenuItem>,
-    override val mediaId: Long,
-    override val menuTitle: String,
-    override val playbackResult: PlaybackResult? = null,
-) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
-
-
-@InstallIn(ViewModelComponent::class)
-@Module
-object InitialGenreContextMenuStateModule {
-    @Provides
-    @ViewModelScoped
-    fun initialGenreContextMenuStateProvider(savedStateHandle: SavedStateHandle): GenreContextMenuState {
-        val args = savedStateHandle.navArgs<GenreContextMenuArguments>()
-        return GenreContextMenuState(
-            mediaId = args.genreId,
+    override val defaultState: ContextMenuState by lazy {
+        ContextMenuState(
             menuTitle = "",
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewGenre
             ),
         )
+    }
+}
+
+data class GenreContextMenuArguments(val genreId: Long)
+
+@InstallIn(ViewModelComponent::class)
+@Module
+object InitialGenreContextMenuArgumentsModule {
+    @Provides
+    @ViewModelScoped
+    fun initialGenreContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): GenreContextMenuArguments {
+        return savedStateHandle.navArgs()
     }
 }
 

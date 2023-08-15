@@ -2,28 +2,27 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 
-abstract class BaseContextMenuState(
-    open val listItems: List<ContextMenuItem>,
-    open val mediaId: Long,
-    open val menuTitle: String,
-    open val playbackResult: PlaybackResult? = null
+data class ContextMenuState(
+    val listItems: List<ContextMenuItem>,
+    val menuTitle: String,
+    val playbackResult: PlaybackResult? = null,
+    val showDeleteConfirmationDialog: Boolean = false
 ) : State
 
 
 sealed interface BaseContextMenuUserAction : UserAction {
     data class RowClicked(val row: ContextMenuItem) : BaseContextMenuUserAction
-    object DismissPlaybackErrorDialog : BaseContextMenuUserAction
-    object CancelDeleteClicked : BaseContextMenuUserAction
-    object ConfirmDeleteClicked : BaseContextMenuUserAction
+    data object DismissPlaybackErrorDialog : BaseContextMenuUserAction
+    data object CancelDeleteClicked : BaseContextMenuUserAction
+    data object ConfirmDeleteClicked : BaseContextMenuUserAction
 }
 
-abstract class BaseContextMenuViewModel<S : BaseContextMenuState>(
-    initialState: S
-) : DeprecatedBaseViewModel<S, BaseContextMenuUserAction>(initialState) {
+abstract class BaseContextMenuViewModel :
+    BaseViewModel<ContextMenuState, BaseContextMenuUserAction>() {
     protected abstract fun onRowClicked(row: ContextMenuItem)
     protected abstract fun onPlaybackErrorDismissed()
 

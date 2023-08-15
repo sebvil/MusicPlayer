@@ -35,58 +35,45 @@ data class TrackContextMenuArguments(
     val positionInPlaylist: Long? = null
 )
 
-data class TrackContextMenuState(
-    override val listItems: List<ContextMenuItem>,
-    override val mediaId: Long,
-    override val menuTitle: String,
-    override val playbackResult: PlaybackResult? = null,
-    val mediaGroup: MediaGroup,
-    val trackIndex: Int,
-    val positionInPlaylist: Long? = null
-) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
-
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialTrackContextMenuStateModule {
+object TrackContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialTrackContextMenuStateProvider(savedStateHandle: SavedStateHandle): TrackContextMenuState {
-        val args = savedStateHandle.navArgs<TrackContextMenuArguments>()
-        return TrackContextMenuState(
-            mediaId = args.trackId,
-            menuTitle = "",
-            mediaGroup = args.mediaGroup,
-            listItems = listOf(),
-            trackIndex = args.trackIndex,
-            positionInPlaylist = args.positionInPlaylist
-        )
+    fun trackContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): TrackContextMenuArguments {
+        return savedStateHandle.navArgs()
     }
 }
 
 @HiltViewModel
 class TrackContextMenuViewModel @Inject constructor(
-    initialState: TrackContextMenuState,
+    arguments: TrackContextMenuArguments,
     trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
     private val playlistRepository: PlaylistRepository
-) : BaseContextMenuViewModel<TrackContextMenuState>(initialState) {
+) : BaseContextMenuViewModel() {
     private var artistIds: List<Long> = listOf()
     private lateinit var track: Track
 
+    private val trackId = arguments.trackId
+    private val mediaGroup = arguments.mediaGroup
+    private val trackIndex = arguments.trackIndex
+    private val positionInPlaylist = arguments.positionInPlaylist
+
     init {
-        trackRepository.getTrack(state.mediaId).onEach {
-            artistIds = it.artists
-            track = it.track
-            setState {
-                copy(
-                    menuTitle = it.track.trackName,
-                    listItems = when (state.mediaGroup) {
+        trackRepository.getTrack(trackId).onEach { trackWithArtists ->
+            artistIds = trackWithArtists.artists
+            track = trackWithArtists.track
+            setDataState {
+                it.copy(
+                    menuTitle = trackWithArtists.track.trackName,
+                    listItems = when (arguments.mediaGroup) {
                         is MediaGroup.Album -> {
                             listOf(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
                                 ContextMenuItem.AddToPlaylist,
-                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                if (trackWithArtists.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                             )
                         }
 
@@ -95,7 +82,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
                                 ContextMenuItem.AddToPlaylist,
-                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                if (trackWithArtists.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                                 ContextMenuItem.ViewAlbum,
                                 ContextMenuItem.RemoveFromPlaylist
                             )
@@ -106,7 +93,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
                                 ContextMenuItem.AddToPlaylist,
-                                if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                if (trackWithArtists.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                                 ContextMenuItem.ViewAlbum
                             )
                         }
@@ -119,21 +106,18 @@ class TrackContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.Play -> {
-                with(state) {
-                    val playMediaFlow = playbackManager.playMedia(mediaGroup, trackIndex)
-                    playMediaFlow.onEach {
-                        when (it) {
-                            is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
-                                copy(
-                                    playbackResult = it
-                                )
-                            }
-
-                            is PlaybackResult.Success -> {}
+                val playMediaFlow = playbackManager.playMedia(mediaGroup, trackIndex)
+                playMediaFlow.onEach { result ->
+                    when (result) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> setDataState {
+                            it.copy(
+                                playbackResult = result
+                            )
                         }
-                    }.launchIn(viewModelScope)
-                }
 
+                        is PlaybackResult.Success -> {}
+                    }
+                }.launchIn(viewModelScope)
             }
 
             is ContextMenuItem.AddToQueue -> {
@@ -164,7 +148,7 @@ class TrackContextMenuViewModel @Inject constructor(
                         destination = ArtistsBottomSheetDestination(
                             navArgs = ArtistsMenuArguments(
                                 mediaType = MediaWithArtists.Track,
-                                mediaId = state.mediaId,
+                                mediaId = trackId,
                             )
                         )
                     )
@@ -172,9 +156,8 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.RemoveFromPlaylist -> {
-                state.positionInPlaylist?.also {
+                positionInPlaylist?.also {
                     viewModelScope.launch {
-                        val mediaGroup = state.mediaGroup
                         check(mediaGroup is MediaGroup.Playlist)
                         playlistRepository.removeItemFromPlaylist(
                             playlistId = mediaGroup.playlistId,
@@ -191,6 +174,13 @@ class TrackContextMenuViewModel @Inject constructor(
     }
 
     override fun onPlaybackErrorDismissed() {
-        setState { copy(playbackResult = null) }
+        setDataState { it.copy(playbackResult = null) }
+    }
+
+    override val defaultState: ContextMenuState by lazy {
+        ContextMenuState(
+            menuTitle = "",
+            listItems = listOf(),
+        )
     }
 }
