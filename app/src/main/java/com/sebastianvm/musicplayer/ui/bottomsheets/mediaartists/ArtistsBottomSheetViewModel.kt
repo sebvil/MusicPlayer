@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -26,17 +26,19 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistsBottomSheetViewModel @Inject constructor(
     arguments: ArtistsMenuArguments,
-    initialState: ArtistsBottomSheetState,
     artistRepository: ArtistRepository,
-) :
-    DeprecatedBaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>(
-        initialState
-    ) {
+) : BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>() {
     init {
         artistRepository.getArtists(arguments.mediaType, arguments.mediaId).onEach { artists ->
-            setState {
-                copy(
-                    artistList = artists.map { it.toModelListItemState(trailingButtonType = null) }
+            setDataState {
+                it.copy(
+                    modelListState = ModelListState(
+                        items = artists.map { artist ->
+                            artist.toModelListItemState(
+                                trailingButtonType = null
+                            )
+                        }
+                    )
                 )
             }
         }.launchIn(viewModelScope)
@@ -55,22 +57,19 @@ class ArtistsBottomSheetViewModel @Inject constructor(
             }
         }
     }
+
+    override val defaultState: ArtistsBottomSheetState by lazy {
+        ArtistsBottomSheetState(modelListState = ModelListState())
+    }
 }
 
 data class ArtistsMenuArguments(val mediaType: MediaWithArtists, val mediaId: Long)
 
-data class ArtistsBottomSheetState(val artistList: List<ModelListItemState>) : State
+data class ArtistsBottomSheetState(val modelListState: ModelListState) : State
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialArtistsBottomSheetStateModule {
-    @Provides
-    @ViewModelScoped
-    fun initialArtistsBottomSheetStateProvider(): ArtistsBottomSheetState {
-        return ArtistsBottomSheetState(
-            artistList = listOf(),
-        )
-    }
+object ArtistsMenuArgumentsModule {
 
     @Provides
     @ViewModelScoped

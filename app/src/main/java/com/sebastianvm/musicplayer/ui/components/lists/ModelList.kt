@@ -67,9 +67,9 @@ sealed interface HeaderState {
 }
 
 data class ModelListState(
-    val items: List<ModelListItemState>,
-    val sortButtonState: SortButtonState?,
-    val headerState: HeaderState
+    val items: List<ModelListItemState> = listOf(),
+    val sortButtonState: SortButtonState? = null,
+    val headerState: HeaderState = HeaderState.None
 )
 
 @OptIn(ExperimentalFoundationApi::class)
