@@ -3,18 +3,21 @@ agp = "8.1.0"
 accompanist = "0.33.0-alpha"
 activity-compose = "1.8.0-alpha06"
 coil = "2.4.0"
+com-google-devtools = "1.9.0-1.0.11"
+compose = "1.6.0-alpha03"
 constraintlayout-compose = "1.1.0-alpha12"
 core-ktx = "1.12.0-rc01"
 datastore = "1.0.0"
+detekt = "1.23.1"
 compose-destinations = "1.9.52"
 hilt = "2.47"
 hilt-navigation-compose = "1.0.0"
 junit = "4.13.2"
 kotlin = "1.9.0"
-compose = "1.6.0-alpha03"
 kotlinx-collections-immutable = "0.3.5"
 kotlinx-coroutines-guava = "1.7.3"
 kotlinx-serialization-json = "1.5.1"
+ktlint-gradle = "11.4.2"
 lifecycle-viewmodel-ktx = "2.6.1"
 material-3 = "1.2.0-alpha05"
 media3-exoplayer = "1.1.0"
@@ -23,8 +26,6 @@ recyclerview = "1.3.1"
 room-runtime = "2.6.0-alpha03"
 ui-test-manifest = "1.6.0-alpha03"
 vectordrawable = "1.1.0"
-com-google-devtools = "1.9.0-1.0.11"
-ktlint-gradle = "11.4.2"
 
 
 
@@ -79,6 +80,6 @@ com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-g
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 org-jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
-
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 [bundles]
 

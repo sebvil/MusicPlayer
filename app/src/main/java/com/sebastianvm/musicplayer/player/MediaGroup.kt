@@ -42,6 +42,6 @@ fun TrackList.toSortableListType(): SortableListType {
         is MediaGroup.AllTracks -> SortableListType.Tracks(trackList = this)
         is MediaGroup.Genre -> SortableListType.Tracks(trackList = this)
         is MediaGroup.Playlist -> SortableListType.Playlist(playlistId = this.playlistId)
-        is MediaGroup.Album -> throw IllegalStateException("Cannot sort album")
+        is MediaGroup.Album -> error("Cannot sort album")
     }
 }

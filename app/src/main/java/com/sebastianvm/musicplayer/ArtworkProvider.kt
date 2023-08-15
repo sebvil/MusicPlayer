@@ -81,7 +81,11 @@ class ArtworkProvider : ContentProvider() {
         val path = getUri(uri)
         val bitmap = try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                nonNullContext.contentResolver.loadThumbnail(path, Size(500, 500), null)
+                nonNullContext.contentResolver.loadThumbnail(
+                    /* uri = */ path,
+                    /* size = */ Size(IMAGE_SIZE, IMAGE_SIZE),
+                    /* signal = */ null
+                )
             } else {
                 null
             }
@@ -124,6 +128,7 @@ class ArtworkProvider : ContentProvider() {
                 drawable.draw(canvas)
                 bitmap
             }
+
             else -> BitmapFactory.decodeResource(this.resources, drawableId)
         }
     }
@@ -132,6 +137,7 @@ class ArtworkProvider : ContentProvider() {
         private const val AUTHORITY = "com.sebastianvm.musicplayer.provider"
         private const val TRACK_PATH = "TRACK"
         private const val ALBUM_PATH = "ALBUM"
+        private const val IMAGE_SIZE = 500
 
         fun getUriForTrack(albumId: Long): Uri {
             return ContentUris.withAppendedId(
@@ -153,4 +159,6 @@ class ArtworkProvider : ContentProvider() {
             )
         }
     }
+
+
 }
