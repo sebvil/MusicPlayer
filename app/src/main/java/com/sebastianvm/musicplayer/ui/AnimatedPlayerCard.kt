@@ -39,27 +39,25 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
+import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun AnimatedPlayerCard(
     state: PlayerViewState,
     transition: Transition<Boolean>,
     statusBarPadding: Dp,
-    modifier: Modifier = Modifier,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
-    onDismissPlayer: () -> Unit
+    onDismissPlayer: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val progress by transition.animateFloat(
         transitionSpec = transitionSpec(),
@@ -320,9 +318,9 @@ fun AnimatedPlayerCard(
     }
 }
 
-@ComponentPreview
+@ComponentPreviews
 @Composable
-fun PlayerCardPreview(
+private fun PlayerCardPreview(
     @PreviewParameter(
         PlayerViewStatePreviewParameterProvider::class,
         limit = 1

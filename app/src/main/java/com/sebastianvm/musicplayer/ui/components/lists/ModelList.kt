@@ -78,7 +78,7 @@ fun ModelList(
     state: ModelListState,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit = {},
     onSortButtonClicked: (() -> Unit)? = null,
     onItemClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
     onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> }
@@ -151,8 +151,8 @@ fun ModelList(
 private fun HeaderWithImageModelList(
     state: HeaderState.WithImage,
     listState: LazyListState,
-    modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val density = LocalDensity.current
@@ -285,12 +285,13 @@ private fun HeaderWithImageModelList(
 @Composable
 fun TopBar(
     title: String,
+    modifier: Modifier = Modifier,
     alpha: Float = 1f,
     onSizeChanged: (Int) -> Unit = {},
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .zIndex(1f)
             .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))

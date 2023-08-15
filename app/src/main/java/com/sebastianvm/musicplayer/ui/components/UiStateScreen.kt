@@ -13,8 +13,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 @Composable
 fun <S> UiStateScreen(
     uiState: UiState<S>,
-    modifier: Modifier = Modifier,
     emptyScreen: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (S) -> Unit
 ) {
     Box(modifier = modifier) {

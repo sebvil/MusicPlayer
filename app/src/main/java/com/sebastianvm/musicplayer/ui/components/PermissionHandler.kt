@@ -16,13 +16,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
 @OptIn(ExperimentalPermissionsApi::class)
 data class PermissionHandlerState(
@@ -143,7 +143,7 @@ fun PermissionDialog(
         confirmButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = AppDimensions.spacing.xSmall),
+                    .padding(horizontal = 2.dp),
                 onClick = onConfirm
             ) {
                 Text(text = stringResource(state.confirmButtonText))
@@ -152,7 +152,7 @@ fun PermissionDialog(
         dismissButton = {
             Button(
                 modifier = Modifier
-                    .padding(horizontal = AppDimensions.spacing.xSmall),
+                    .padding(horizontal = 2.dp),
                 onClick = onDismiss
             ) {
                 Text(text = stringResource(id = R.string.dismiss))

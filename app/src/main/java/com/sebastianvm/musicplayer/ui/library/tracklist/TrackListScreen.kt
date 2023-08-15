@@ -40,12 +40,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Composable
 fun TrackListRoute(
     navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
     viewModel: TrackListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
         uiState = uiState,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
@@ -120,12 +121,12 @@ fun TrackListScreen(
 @Composable
 fun TrackListLayout(
     state: TrackListState,
-    modifier: Modifier = Modifier,
-    onBackButtonClicked: () -> Unit = {},
     onTrackClicked: (trackIndex: Int) -> Unit,
     openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
-    onDismissPlaybackErrorDialog: () -> Unit
+    onDismissPlaybackErrorDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+    onBackButtonClicked: () -> Unit = {}
 ) {
     PlaybackStatusIndicator(
         playbackResult = state.playbackResult,

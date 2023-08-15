@@ -41,6 +41,7 @@ fun AppScreenHost(
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.systemBars,
     content: @Composable () -> Unit
 ) {
@@ -85,7 +86,7 @@ fun AppScreenHost(
     }
     val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
-        Box {
+        Box(modifier = modifier) {
             content()
             (state as? Data)?.state?.playerViewState?.let {
                 AnimatedPlayerCard(
