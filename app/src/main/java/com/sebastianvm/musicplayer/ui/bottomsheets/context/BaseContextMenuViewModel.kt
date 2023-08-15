@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -12,7 +11,6 @@ data class ContextMenuState(
     val playbackResult: PlaybackResult? = null,
     val showDeleteConfirmationDialog: Boolean = false
 ) : State
-
 
 sealed interface BaseContextMenuUserAction : UserAction {
     data class RowClicked(val row: ContextMenuItem) : BaseContextMenuUserAction
@@ -29,7 +27,6 @@ abstract class BaseContextMenuViewModel :
     // no-ops except for PlaylistContextMenuViewModel
     protected open fun onCancelDeleteClicked() = Unit
     protected open fun onConfirmDeleteClicked() = Unit
-
 
     override fun handle(action: BaseContextMenuUserAction) {
         when (action) {

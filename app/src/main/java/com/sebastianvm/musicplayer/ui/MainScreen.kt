@@ -74,7 +74,7 @@ enum class TopLevelScreen(@StringRes val screenName: Int) {
 @Destination
 @Composable
 fun MainScreen(
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
 ) {
     MainScreenLayout(
         searchScreen = {
@@ -87,7 +87,6 @@ fun MainScreen(
         Screens(page = page, navigator = navigator)
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -119,7 +118,8 @@ fun MainScreenLayout(
                                 pagerState.scrollToPage(index)
                             }
                         },
-                        text = { Text(text = stringResource(id = page.screenName)) })
+                        text = { Text(text = stringResource(id = page.screenName)) }
+                    )
                 }
             }
 
@@ -134,14 +134,14 @@ fun MainScreenLayout(
     }
 }
 
-
 @Composable
 fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
             val vm = hiltViewModel<TrackListViewModel>()
             val uiState by vm.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(uiState = uiState,
+            UiStateScreen(
+                uiState = uiState,
                 modifier = Modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -150,7 +150,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     )
-                }) { state ->
+                }
+            ) { state ->
                 TrackListLayout(
                     state = state,
                     onTrackClicked = { trackIndex ->
@@ -165,7 +166,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                     openTrackContextMenu = { args ->
                         navigator.navigate(TrackContextMenuDestination(args))
                     },
-                    modifier = Modifier,
+                    modifier = Modifier
                 )
             }
         }
@@ -173,7 +174,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         TopLevelScreen.ARTISTS -> {
             val vm = hiltViewModel<ArtistListViewModel>()
             val uiState by vm.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(uiState = uiState,
+            UiStateScreen(
+                uiState = uiState,
                 modifier = Modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -182,7 +184,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     )
-                }) { state ->
+                }
+            ) { state ->
                 ArtistListLayout(
                     state = state,
                     openArtistContextMenu = { args ->
@@ -192,7 +195,7 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                         navigator.navigate(ArtistRouteDestination(args))
                     },
                     changeSort = { vm.handle(ArtistListUserAction.SortByButtonClicked) },
-                    modifier = Modifier,
+                    modifier = Modifier
                 )
             }
         }
@@ -200,7 +203,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         TopLevelScreen.ALBUMS -> {
             val vm = hiltViewModel<AlbumListViewModel>()
             val uiState by vm.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(uiState = uiState,
+            UiStateScreen(
+                uiState = uiState,
                 modifier = Modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -209,7 +213,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     )
-                }) { state ->
+                }
+            ) { state ->
                 AlbumListLayout(
                     state = state,
                     navigateToAlbum = { args ->
@@ -225,7 +230,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         TopLevelScreen.GENRES -> {
             val vm = hiltViewModel<GenreListViewModel>()
             val uiState by vm.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(uiState = uiState,
+            UiStateScreen(
+                uiState = uiState,
                 modifier = Modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -234,7 +240,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     )
-                }) { state ->
+                }
+            ) { state ->
                 GenreListLayout(
                     state = state,
                     navigateToGenre = { args ->
@@ -251,7 +258,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         TopLevelScreen.PLAYLISTS -> {
             val vm = hiltViewModel<PlaylistListViewModel>()
             val uiState by vm.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(uiState = uiState,
+            UiStateScreen(
+                uiState = uiState,
                 modifier = Modifier.fillMaxSize(),
                 emptyScreen = {
                     EmptyScreen(
@@ -271,8 +279,8 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     )
-
-                }) { state ->
+                }
+            ) { state ->
                 PlaylistListLayout(
                     state = state,
                     isCreatePlaylistDialogOpen = false,
@@ -290,7 +298,6 @@ fun Screens(page: TopLevelScreen, navigator: DestinationsNavigator) {
         }
     }
 }
-
 
 @ScreenPreview
 @Composable

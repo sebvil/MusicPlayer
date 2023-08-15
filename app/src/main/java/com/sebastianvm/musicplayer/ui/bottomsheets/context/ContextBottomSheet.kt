@@ -38,7 +38,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 @Composable
 fun ContextBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: BaseContextMenuViewModel,
+    sheetViewModel: BaseContextMenuViewModel
 ) {
     Screen(
         screenViewModel = sheetViewModel,
@@ -47,7 +47,6 @@ fun ContextBottomSheet(
         ContextMenuLayout(state = state, screenDelegate = screenDelegate)
     }
 }
-
 
 @RootNavGraph
 @Destination(
@@ -124,7 +123,6 @@ fun DeletePlaylistConfirmationDialog(
     playlistName: String,
     delegate: DeletePlaylistConfirmationDialogDelegate
 ) {
-
     AlertDialog(
         onDismissRequest = { delegate.onDismissDialog() },
         confirmButton = {
@@ -157,7 +155,8 @@ fun ContextMenuLayout(
             override fun onDismissRequest() {
                 screenDelegate.handle(BaseContextMenuUserAction.DismissPlaybackErrorDialog)
             }
-        })
+        }
+    )
 
     if (state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
@@ -204,7 +203,7 @@ fun ContextMenuLayout(
                                     text = stringResource(id = it.text),
                                     style = MaterialTheme.typography.titleMedium,
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             },
                             modifier = Modifier.clickable {
@@ -216,7 +215,7 @@ fun ContextMenuLayout(
                                 Icon(
                                     painter = painterResource(id = it.icon),
                                     contentDescription = stringResource(id = it.text),
-                                    modifier = Modifier.size(24.dp),
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         )

@@ -40,7 +40,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Composable
 fun TrackListRoute(
     navigator: DestinationsNavigator,
-    viewModel: TrackListViewModel = hiltViewModel(),
+    viewModel: TrackListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
@@ -54,7 +54,8 @@ fun TrackListRoute(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             )
-        }) { state ->
+        }
+    ) { state ->
         TrackListScreen(
             state = state,
             onTrackClicked = { trackIndex ->
@@ -66,10 +67,9 @@ fun TrackListRoute(
             openTrackContextMenu = { navigator.navigate(TrackContextMenuDestination(it)) },
             navigateToTrackSearchScreen = { navigator.navigate(TrackSearchScreenDestination(it)) },
             openSortMenu = { navigator.navigate(SortBottomSheetDestination(it)) },
-            navigateBack = { navigator.navigateUp() },
+            navigateBack = { navigator.navigateUp() }
         )
     }
-
 }
 
 @Composable
@@ -101,7 +101,7 @@ fun TrackListScreen(
                     }
                 )
             }
-        },
+        }
     ) { paddingValues ->
         TrackListLayout(
             state = state,
@@ -125,7 +125,7 @@ fun TrackListLayout(
     onTrackClicked: (trackIndex: Int) -> Unit,
     openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
-    onDismissPlaybackErrorDialog: () -> Unit,
+    onDismissPlaybackErrorDialog: () -> Unit
 ) {
     PlaybackStatusIndicator(
         playbackResult = state.playbackResult,
@@ -133,7 +133,8 @@ fun TrackListLayout(
             override fun onDismissRequest() {
                 onDismissPlaybackErrorDialog()
             }
-        })
+        }
+    )
 
     ModelList(
         state = state.modelListState,

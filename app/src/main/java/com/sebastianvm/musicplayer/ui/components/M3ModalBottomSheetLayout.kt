@@ -14,13 +14,12 @@ import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 
-
-///**
+// /**
 // * This is only used for previews as of right now
 // */
-//@Composable
-//@ExperimentalMaterialApi
-//fun M3ModalBottomSheetLayout(
+// @Composable
+// @ExperimentalMaterialApi
+// fun M3ModalBottomSheetLayout(
 //    sheetContent: @Composable ColumnScope.() -> Unit,
 //    modifier: Modifier = Modifier,
 //    sheetState: ModalBottomSheetState =
@@ -31,7 +30,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 //    sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
 //    scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
 //    content: @Composable () -> Unit
-//) {
+// ) {
 //    CompositionLocalProvider(
 //        LocalContentColor provides sheetContentColor
 //    ) {
@@ -47,7 +46,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 //            content = content
 //        )
 //    }
-//}
+// }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalMaterialNavigationApi
@@ -77,4 +76,3 @@ fun M3ModalBottomSheetLayout(
         )
     }
 }
-

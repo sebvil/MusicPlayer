@@ -34,7 +34,7 @@ object PreviewUtil {
         "Duis aute irure e",
         "cillumr",
         "Exct",
-        "culpa m",
+        "culpa m"
     )
 
     fun randomString(minLength: Int = 0, maxLength: Int = strings.maxOf { it.length }) =
@@ -65,9 +65,9 @@ fun ScreenPreview(screen: @Composable () -> Unit) {
     }
 }
 
-//@OptIn(ExperimentalMaterialApi::class)
-//@Composable
-//fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
+// @OptIn(ExperimentalMaterialApi::class)
+// @Composable
+// fun BottomSheetPreview(bottomSheet: @Composable () -> Unit) {
 //    ThemedPreview {
 //        M3ModalBottomSheetLayout(
 //            sheetContent = { bottomSheet() },
@@ -79,15 +79,15 @@ fun ScreenPreview(screen: @Composable () -> Unit) {
 //        ) {}
 //    }
 //
-//}
+// }
 
 @Preview(showSystemUi = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-//@Preview(
+// @Preview(
 //    name = "Landscape",
 //    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
-//)
-//@Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
+// )
+// @Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
 annotation class ScreenPreview
 
 @Preview

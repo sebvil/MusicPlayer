@@ -31,7 +31,7 @@ class LibraryViewModelTest : BaseTest() {
                 genresItem = LibraryItem.Genres(count = 0),
                 playlistsItem = LibraryItem.Playlists(count = 0)
             ),
-            musicRepository = FakeMusicRepository(countHolderFlow),
+            musicRepository = FakeMusicRepository(countHolderFlow)
         )
     }
 
@@ -68,5 +68,4 @@ class LibraryViewModelTest : BaseTest() {
             )
         }
     }
-
 }

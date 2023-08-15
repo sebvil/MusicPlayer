@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -25,7 +24,7 @@ import javax.inject.Inject
 class GenreContextMenuViewModel @Inject constructor(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
-    private val playbackManager: PlaybackManager,
+    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val genreId = arguments.genreId
@@ -82,7 +81,7 @@ class GenreContextMenuViewModel @Inject constructor(
             listItems = listOf(
                 ContextMenuItem.PlayAllSongs,
                 ContextMenuItem.ViewGenre
-            ),
+            )
         )
     }
 }
@@ -98,5 +97,3 @@ object InitialGenreContextMenuArgumentsModule {
         return savedStateHandle.navArgs()
     }
 }
-
-

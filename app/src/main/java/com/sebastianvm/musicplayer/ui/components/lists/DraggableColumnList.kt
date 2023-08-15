@@ -11,20 +11,18 @@ import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableLis
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListViewHolder
 
-
 interface DraggableColumnListDelegate {
     fun onMove(from: Int, to: Int) = Unit
     fun onItemSelectedForDrag(position: Int) = Unit
     fun onDragEnded(initialPosition: Int, finalPosition: Int) = Unit
 }
 
-
 @Composable
 fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
     items: List<DraggableListItem>,
     listAdapter: DraggableListAdapter<T, V>,
     delegate: DraggableColumnListDelegate,
-    layoutManager: LinearLayoutManager,
+    layoutManager: LinearLayoutManager
 ) {
     AndroidView(
         modifier = Modifier.fillMaxHeight(),
@@ -76,15 +74,13 @@ fun <T : DraggableListItem, V : DraggableListViewHolder<T>> DraggableColumnList(
                         return true
                     }
 
-
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) =
                         Unit
-
                 }).attachToRecyclerView(this)
-
             }
         },
         update = {
             (it.adapter as? DraggableListAdapter<*, *>)?.submitList(items)
-        })
+        }
+    )
 }

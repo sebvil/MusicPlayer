@@ -3,8 +3,7 @@ package com.sebastianvm.musicplayer.ui.player
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
 
-
-class MusicPlayerViewStatePreviewParameterProvider :
+class PlayerViewStatePreviewParameterProvider :
     PreviewParameterProvider<PlayerViewState> {
     override val values: Sequence<PlayerViewState> =
         MediaArtImageStatePreviewParamsProvider().values.flatMap { mediaArtImageState ->

@@ -13,8 +13,8 @@ interface AlbumFtsDao {
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT DISTINCT Album.* FROM Album " +
-                "JOIN AlbumFts ON Album.id == AlbumFts.albumId " +
-                "WHERE AlbumFts MATCH :text ORDER BY Album.albumName"
+            "JOIN AlbumFts ON Album.id == AlbumFts.albumId " +
+            "WHERE AlbumFts MATCH :text ORDER BY Album.albumName"
     )
     fun albumsWithText(text: String): Flow<List<Album>>
 }

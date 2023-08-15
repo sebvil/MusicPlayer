@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.player.MediaGroup

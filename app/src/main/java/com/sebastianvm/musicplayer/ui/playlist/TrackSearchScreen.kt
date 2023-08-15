@@ -39,7 +39,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 
-
 @RootNavGraph
 @Destination(navArgsDelegate = TrackSearchArguments::class)
 @Composable
@@ -104,7 +103,7 @@ fun AddTrackConfirmationDialog(
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
-    screenDelegate: ScreenDelegate<TrackSearchUserAction>,
+    screenDelegate: ScreenDelegate<TrackSearchUserAction>
 ) {
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
@@ -115,7 +114,8 @@ fun TrackSearchLayout(
         AddTrackConfirmationDialog(
             state = it,
             screenDelegate = screenDelegate,
-            updateTrackName = { newName -> trackName = newName })
+            updateTrackName = { newName -> trackName = newName }
+        )
     }
     val context = LocalContext.current
     LaunchedEffect(key1 = state.showToast) {
@@ -137,7 +137,8 @@ fun TrackSearchLayout(
             .fillMaxHeight()
             .focusRequester(focusRequester)
             .focusable(enabled = true, interactionSource)
-            .clickable { focusRequester.requestFocus() }) {
+            .clickable { focusRequester.requestFocus() }
+    ) {
         SearchField(
             onTextChanged = { screenDelegate.handle(TrackSearchUserAction.TextChanged(it)) },
             onUpButtonClicked = { screenDelegate.handle(TrackSearchUserAction.UpButtonClicked) },
@@ -150,7 +151,8 @@ fun TrackSearchLayout(
         ) {
             Switch(
                 checked = state.hideTracksInPlaylist,
-                onCheckedChange = { screenDelegate.handle(TrackSearchUserAction.HideTracksCheckToggled) })
+                onCheckedChange = { screenDelegate.handle(TrackSearchUserAction.HideTracksCheckToggled) }
+            )
             Text(
                 text = stringResource(R.string.hide_tracks_in_playlist),
                 modifier = Modifier.padding(start = AppDimensions.spacing.large)
@@ -176,5 +178,3 @@ fun TrackSearchLayout(
         }
     }
 }
-
-

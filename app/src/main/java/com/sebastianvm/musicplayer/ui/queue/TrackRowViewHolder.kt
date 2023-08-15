@@ -15,7 +15,9 @@ class TrackRowViewHolder(
     private val binding: ViewHolderSortableListBinding = ViewHolderSortableListBinding.inflate(
         LayoutInflater.from(
             context
-        ), parent, false
+        ),
+        parent,
+        false
     )
 ) : DraggableListViewHolder<ModelListItemStateWithPosition>(binding.root) {
 
@@ -27,5 +29,4 @@ class TrackRowViewHolder(
             }
         }
     }
-
 }

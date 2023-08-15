@@ -9,9 +9,8 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 @OptIn(ExperimentalMaterialNavigationApi::class)
 @Composable
 fun NavHostWrapper(
-    navHost: @Composable (NavHostController) -> Unit,
+    navHost: @Composable (NavHostController) -> Unit
 ) {
-
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
     navHost(navController)

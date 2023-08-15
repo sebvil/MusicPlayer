@@ -53,7 +53,7 @@ class SortBottomSheetViewModel @Inject constructor(
             val sortPreferences = when (val listType = arguments.listType) {
                 is SortableListType.Tracks -> {
                     sortPreferencesRepository.getTrackListSortPreferences(
-                        trackList = listType.trackList,
+                        trackList = listType.trackList
                     )
                 }
 
@@ -92,7 +92,7 @@ class SortBottomSheetViewModel @Inject constructor(
                                     sortOption = newSortOption,
                                     sortOrder = newSortOrder
                                 ),
-                                trackList = listType.trackList,
+                                trackList = listType.trackList
                             )
                         }
 
@@ -129,7 +129,7 @@ data class SortMenuArguments(val listType: SortableListType)
 data class SortBottomSheetState(
     val sortOptions: List<SortOptions>,
     val selectedSort: SortOptions,
-    val sortOrder: MediaSortOrder,
+    val sortOrder: MediaSortOrder
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -169,7 +169,6 @@ sealed class SortableListType : Parcelable {
 
     @Serializable
     data class Playlist(val playlistId: Long) : SortableListType()
-
 }
 
 sealed interface SortBottomSheetUserAction : UserAction {

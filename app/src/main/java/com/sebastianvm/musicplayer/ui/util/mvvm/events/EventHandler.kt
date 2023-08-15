@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onEach
 fun <S : State, A : UserAction> HandleNavEvents(
     viewModel: BaseViewModel<S, A>,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    navigationDelegate: NavigationDelegate,
+    navigationDelegate: NavigationDelegate
 ) {
     LaunchedEffect(key1 = viewModel.navEvents) {
         viewModel.navEvents.onEach { events ->

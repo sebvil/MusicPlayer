@@ -37,7 +37,6 @@ class PlaylistListViewModelTest : BaseTest() {
     private val modelListItemStatesAscending = playlists.map { it.toModelListItemState() }
     private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
 
-
     @Before
     fun setUp() {
         playlistRepository = mockk {
@@ -107,7 +106,6 @@ class PlaylistListViewModelTest : BaseTest() {
         }
     }
 
-
     @Test
     fun `PlaylistOverflowMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
@@ -168,6 +166,4 @@ class PlaylistListViewModelTest : BaseTest() {
                 assertFalse(state.isPlaylistCreationErrorDialogOpen)
             }
         }
-
-
 }

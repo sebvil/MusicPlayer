@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistsBottomSheetViewModel @Inject constructor(
     arguments: ArtistsMenuArguments,
-    artistRepository: ArtistRepository,
+    artistRepository: ArtistRepository
 ) : BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>() {
     init {
         artistRepository.getArtists(arguments.mediaType, arguments.mediaId).onEach { artists ->

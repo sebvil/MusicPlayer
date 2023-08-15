@@ -31,7 +31,6 @@ class MusicPlayerViewModelTest : BaseTest() {
         )
     )
 
-
     @Before
     fun setUp() {
         playbackManager = mockk(relaxUnitFun = true) {
@@ -49,7 +48,7 @@ class MusicPlayerViewModelTest : BaseTest() {
                 artists = null,
                 trackLengthMs = null,
                 currentPlaybackTimeMs = null,
-                trackArt = "",
+                trackArt = ""
             )
         )
     }
@@ -65,7 +64,7 @@ class MusicPlayerViewModelTest : BaseTest() {
                         trackArt = C.IMAGE_URI_1,
                         trackLengthMs = TRACK_DURATION,
                         isPlaying = false,
-                        currentPlaybackTimeMs = 0,
+                        currentPlaybackTimeMs = 0
                     ),
                     state
                 )
@@ -77,13 +76,12 @@ class MusicPlayerViewModelTest : BaseTest() {
                         trackArt = C.IMAGE_URI_1,
                         trackLengthMs = TRACK_DURATION,
                         isPlaying = true,
-                        currentPlaybackTimeMs = 0,
+                        currentPlaybackTimeMs = 0
                     ),
                     state
                 )
             }
         }
-
 
     @Test
     fun `PlayToggled while paused triggers playback`() {
@@ -100,7 +98,6 @@ class MusicPlayerViewModelTest : BaseTest() {
             verify { playbackManager.pause() }
         }
     }
-
 
     @Test
     fun `PreviousButtonClicked triggers prev call`() {
@@ -129,6 +126,4 @@ class MusicPlayerViewModelTest : BaseTest() {
     companion object {
         private const val TRACK_DURATION = 180000L
     }
-
-
 }

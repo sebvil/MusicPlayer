@@ -1,21 +1,21 @@
-//package com.sebastianvm.musicplayer.ui.library.artistlist
+// package com.sebastianvm.musicplayer.ui.library.artistlist
 //
-//import androidx.compose.ui.test.assertIsDisplayed
-//import androidx.compose.ui.test.onNodeWithText
-//import androidx.compose.ui.test.performClick
-//import com.sebastianvm.musicplayer.ui.components.ArtistRowState
-//import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.verify
-//import kotlinx.coroutines.flow.MutableStateFlow
-//import org.junit.Rule
-//import org.junit.Test
+// import androidx.compose.ui.test.assertIsDisplayed
+// import androidx.compose.ui.test.onNodeWithText
+// import androidx.compose.ui.test.performClick
+// import com.sebastianvm.musicplayer.ui.components.ArtistRowState
+// import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+// import io.mockk.every
+// import io.mockk.mockk
+// import io.mockk.verify
+// import kotlinx.coroutines.flow.MutableStateFlow
+// import org.junit.Rule
+// import org.junit.Test
 //
 //
-//class ArtistListScreenTest {
+// class ArtistListScreenTest {
 //    @get:Rule
-////    val composeTestRule = createComposeRule()
+// //    val composeTestRule = createComposeRule()
 //
 //    private fun generateViewModel(): ArtistListViewModel {
 //        return mockk(relaxed = true) {
@@ -67,4 +67,4 @@
 //    }
 //
 //
-//}
+// }

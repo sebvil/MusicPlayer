@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class Playlist(@PrimaryKey val id: Long, val playlistName: String)
 
-
 @Fts4(contentEntity = Playlist::class, tokenizer = FtsOptions.TOKENIZER_UNICODE61)
 @Entity
 data class PlaylistFts(val id: Long, val playlistName: String)

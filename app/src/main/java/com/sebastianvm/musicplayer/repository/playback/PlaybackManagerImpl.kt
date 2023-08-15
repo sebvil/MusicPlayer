@@ -23,7 +23,7 @@ class PlaybackManagerImpl @Inject constructor(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val playbackInfoDataSource: PlaybackInfoDataSource,
     private val trackRepository: TrackRepository,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+    @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PlaybackManager {
     override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
 
@@ -34,7 +34,6 @@ class PlaybackManagerImpl @Inject constructor(
     override fun disconnectFromService() {
         mediaPlaybackClient.releaseController()
     }
-
 
     override fun play() {
         mediaPlaybackClient.play()
@@ -68,7 +67,6 @@ class PlaybackManagerImpl @Inject constructor(
         emit(PlaybackResult.Success)
     }
 
-
     override fun playAllTracks(initialTrackIndex: Int): Flow<PlaybackResult> =
         playTracks(initialTrackIndex) {
             trackRepository.getAllTracks().first().map { it.toMediaItem() }
@@ -76,7 +74,7 @@ class PlaybackManagerImpl @Inject constructor(
 
     override fun playGenre(
         genreId: Long,
-        initialTrackIndex: Int,
+        initialTrackIndex: Int
     ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
         trackRepository.getTracksForGenre(genreId).first().map { it.toMediaItem() }
     }
@@ -86,7 +84,6 @@ class PlaybackManagerImpl @Inject constructor(
             trackRepository.getTracksForAlbum(albumId).first().map { it.toMediaItem() }
         }
 
-
     override fun playArtist(artistId: Long): Flow<PlaybackResult> = playTracks {
         trackRepository.getTracksForArtist(artistId).first().map { it.toMediaItem() }
     }
@@ -95,7 +92,6 @@ class PlaybackManagerImpl @Inject constructor(
         playTracks(initialTrackIndex) {
             trackRepository.getTracksForPlaylist(playlistId).first().map { it.toMediaItem() }
         }
-
 
     override fun playSingleTrack(trackId: Long): Flow<PlaybackResult> =
         playTracks(initialTrackIndex = 0) {

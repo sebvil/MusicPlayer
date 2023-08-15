@@ -73,7 +73,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 ContextMenuItem.Play,
                                 ContextMenuItem.AddToQueue,
                                 ContextMenuItem.AddToPlaylist,
-                                if (trackWithArtists.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                                if (trackWithArtists.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists
                             )
                         }
 
@@ -97,7 +97,7 @@ class TrackContextMenuViewModel @Inject constructor(
                                 ContextMenuItem.ViewAlbum
                             )
                         }
-                    },
+                    }
                 )
             }
         }.launchIn(viewModelScope)
@@ -148,7 +148,7 @@ class TrackContextMenuViewModel @Inject constructor(
                         destination = ArtistsBottomSheetDestination(
                             navArgs = ArtistsMenuArguments(
                                 mediaType = MediaWithArtists.Track,
-                                mediaId = trackId,
+                                mediaId = trackId
                             )
                         )
                     )
@@ -180,7 +180,7 @@ class TrackContextMenuViewModel @Inject constructor(
     override val defaultState: ContextMenuState by lazy {
         ContextMenuState(
             menuTitle = "",
-            listItems = listOf(),
+            listItems = listOf()
         )
     }
 }

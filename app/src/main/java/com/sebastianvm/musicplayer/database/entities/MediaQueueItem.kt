@@ -14,7 +14,8 @@ import androidx.room.PrimaryKey
             entity = Track::class,
             onDelete = CASCADE,
             onUpdate = CASCADE
-        )]
+        )
+    ]
 )
 data class MediaQueueItem(
     @ColumnInfo(index = true) val trackId: Long,

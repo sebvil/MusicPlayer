@@ -7,5 +7,4 @@ class FakeMusicRepository(private val countHolderFlow: Flow<CountHolder>) : Musi
     override fun getCounts(): Flow<CountHolder> = countHolderFlow
 
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) = Unit
-
 }

@@ -1,29 +1,29 @@
-//package com.sebastianvm.musicplayer.ui.queue
+// package com.sebastianvm.musicplayer.ui.queue
 //
-//import androidx.lifecycle.viewModelScope
-//import com.sebastianvm.musicplayer.player.MediaGroup
-//import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-//import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
-//import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
-//import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
-//import com.sebastianvm.musicplayer.ui.util.mvvm.State
-//import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-//import dagger.Module
-//import dagger.Provides
-//import dagger.hilt.InstallIn
-//import dagger.hilt.android.components.ViewModelComponent
-//import dagger.hilt.android.lifecycle.HiltViewModel
-//import dagger.hilt.android.scopes.ViewModelScoped
-//import kotlinx.coroutines.launch
-//import javax.inject.Inject
+// import androidx.lifecycle.viewModelScope
+// import com.sebastianvm.musicplayer.player.MediaGroup
+// import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+// import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
+// import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
+// import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+// import com.sebastianvm.musicplayer.ui.util.mvvm.State
+// import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+// import dagger.Module
+// import dagger.Provides
+// import dagger.hilt.InstallIn
+// import dagger.hilt.android.components.ViewModelComponent
+// import dagger.hilt.android.lifecycle.HiltViewModel
+// import dagger.hilt.android.scopes.ViewModelScoped
+// import kotlinx.coroutines.launch
+// import javax.inject.Inject
 //
-//@HiltViewModel
-//class QueueViewModel @Inject constructor(
+// @HiltViewModel
+// class QueueViewModel @Inject constructor(
 //    initialState: QueueState,
 //    private val playbackManager: PlaybackManager,
-//) : DeprecatedBaseViewModel<QueueState, QueueUserAction>(
+// ) : DeprecatedBaseViewModel<QueueState, QueueUserAction>(
 //    initialState
-//) {
+// ) {
 //
 //    init {
 //        viewModelScope.launch {
@@ -82,19 +82,19 @@
 //    }
 //
 //
-//}
+// }
 //
-//data class QueueState(
+// data class QueueState(
 //    val mediaGroup: MediaGroup?,
 //    val queueItems: List<ModelListItemStateWithPosition>,
 //    val draggedItemFinalIndex: Int = -1,
 //    val nowPlayingId: Long
-//) : State
+// ) : State
 //
 //
-//@InstallIn(ViewModelComponent::class)
-//@Module
-//object QueueArgumentsModule {
+// @InstallIn(ViewModelComponent::class)
+// @Module
+// object QueueArgumentsModule {
 //    @Provides
 //    @ViewModelScoped
 //    fun QueueStateProvider(): QueueState {
@@ -104,14 +104,14 @@
 //            nowPlayingId = 0L,
 //        )
 //    }
-//}
+// }
 //
-//sealed interface QueueUserAction : UserAction {
+// sealed interface QueueUserAction : UserAction {
 //    data class ItemSelectedForDrag(val position: Int) : QueueUserAction
 //    data class ItemMoved(val to: Int) : QueueUserAction
 //    data class DragEnded(val initialPosition: Int, val finalPosition: Int) : QueueUserAction
 //    data class TrackClicked(val trackIndex: Int) : QueueUserAction
 //    data class TrackOverflowMenuClicked(val trackId: Long) : QueueUserAction
-//}
+// }
 //
 //

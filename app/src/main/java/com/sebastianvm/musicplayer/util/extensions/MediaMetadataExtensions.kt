@@ -28,7 +28,6 @@ inline var MediaMetadata.Builder.uri: Uri
         setArtworkUri(value)
     }
 
-
 inline var MediaMetadata.Builder.isPlayable: Boolean
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {

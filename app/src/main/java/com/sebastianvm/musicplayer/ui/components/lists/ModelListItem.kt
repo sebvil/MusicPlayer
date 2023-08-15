@@ -36,7 +36,6 @@ enum class TrailingButtonType {
     More, Plus, Check
 }
 
-
 sealed class ModelListItemState(
     open val id: Long,
     open val headlineContent: String,
@@ -59,7 +58,6 @@ sealed class ModelListItemState(
         trailingButtonType
     )
 
-
     data class WithPosition(
         val position: Long,
         override val id: Long,
@@ -76,7 +74,6 @@ sealed class ModelListItemState(
     )
 }
 
-
 data class ModelListItemStateWithPosition(
     val position: Long,
     val modelListItemState: ModelListItemState
@@ -87,7 +84,6 @@ data class ModelListItemStateWithPosition(
     override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
         return otherItem is ModelListItemStateWithPosition && otherItem == this
     }
-
 }
 
 @Composable
@@ -104,7 +100,7 @@ fun ModelListItem(
                 Text(
                     text = headlineContent,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             modifier = modifier,
@@ -114,7 +110,7 @@ fun ModelListItem(
                         text = it,
                         modifier = Modifier.alpha(alpha = 0.8f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             },
@@ -141,7 +137,7 @@ fun ModelListItem(
                             imageVector = Icons.Default.Add,
                             contentDescription = stringResource(
                                 id = R.string.search
-                            ),
+                            )
                         )
                     }
                 }
@@ -159,7 +155,6 @@ fun ModelListItem(
                 }
 
                 null -> null
-
             },
             colors = ListItemDefaults.colors(
                 containerColor = backgroundColor,

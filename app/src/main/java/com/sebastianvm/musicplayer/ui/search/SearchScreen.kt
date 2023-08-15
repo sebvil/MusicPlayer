@@ -56,7 +56,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
 
-
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
     this.pointerInput(key1 = null) {
         awaitEachGesture {
@@ -64,7 +63,6 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
             focusManager.clearFocus()
         }
     }
-
 
 @Composable
 fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
@@ -79,7 +77,6 @@ fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: Navigatio
             screenViewModel.handle(it)
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,7 +126,6 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                 }
             } else {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "")
-
             }
         },
         trailingIcon = {
@@ -141,7 +137,8 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                     IconButton(
                         onClick = {
                             isDropdownManuExpanded = !isDropdownManuExpanded
-                        }) {
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = stringResource(id = R.string.more)
@@ -173,24 +170,24 @@ fun SearchScreen(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
                                         Icons.Outlined.Refresh,
                                         contentDescription = null
                                     )
-                                })
+                                }
+                            )
                         }
                     }
-
                 }
             } else if (query.isNotEmpty()) {
                 IconButton(
                     onClick = {
                         query = ""
                         screenDelegate.handle(SearchUserAction.TextChanged(""))
-                    }) {
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = stringResource(id = R.string.back)
                     )
                 }
             }
-
         },
         placeholder = {
             Text(text = stringResource(R.string.search_media))
@@ -212,7 +209,8 @@ fun SearchLayout(state: SearchState, screenDelegate: ScreenDelegate<SearchUserAc
             override fun onDismissRequest() {
                 screenDelegate.handle(SearchUserAction.DismissPlaybackErrorDialog)
             }
-        })
+        }
+    )
 
     Column(
         modifier = Modifier

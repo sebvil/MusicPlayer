@@ -52,4 +52,3 @@ abstract class BaseViewModel<S : State, A : UserAction> : ViewModel() {
 
     abstract val defaultState: S
 }
-

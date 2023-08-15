@@ -38,7 +38,7 @@ class MusicRepositoryImpl @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val genreRepository: GenreRepository,
     private val albumRepository: AlbumRepository,
-    private val playlistRepository: PlaylistRepository,
+    private val playlistRepository: PlaylistRepository
 ) : MusicRepository {
 
     private val trackSet = mutableSetOf<Track>()
@@ -146,7 +146,6 @@ class MusicRepositoryImpl @Inject constructor(
         albumSet.add(album)
         albumForArtistsSet.addAll(albumForArtists)
         appearsOnForArtistSet.addAll(appearsOnForArtists)
-
     }
 
     private fun parseTag(tag: String): List<String> {
@@ -166,7 +165,6 @@ class MusicRepositoryImpl @Inject constructor(
             CountHolder(tracksCount, artistsCount, albumCounts, genreCounts, playlistCounts)
         }.distinctUntilChanged()
     }
-
 
     // TODO makes this work for API 29
     @WorkerThread
@@ -189,7 +187,7 @@ class MusicRepositoryImpl @Inject constructor(
                 val musicCursor = musicResolver.query(musicUri, null, selection, null, null)
 
                 if (musicCursor != null && musicCursor.moveToFirst()) {
-                    //get columns
+                    // get columns
                     val titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
                     val idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID)
                     val artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
@@ -206,7 +204,7 @@ class MusicRepositoryImpl @Inject constructor(
                     val fileNameColumn =
                         musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
                     val dataColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA)
-                    //add songs to list
+                    // add songs to list
                     var count = 0
                     do {
                         val thisId = musicCursor.getLong(idColumn)
@@ -244,7 +242,6 @@ class MusicRepositoryImpl @Inject constructor(
                             thisDuration,
                             albumId
                         )
-
                     } while (musicCursor.moveToNext())
                 }
                 musicCursor?.close()
@@ -256,7 +253,7 @@ class MusicRepositoryImpl @Inject constructor(
                     genres = genresSet,
                     albums = albumSet,
                     albumsForArtists = albumForArtistsSet,
-                    appearsOnForArtists = appearsOnForArtistSet,
+                    appearsOnForArtists = appearsOnForArtistSet
                 )
             }
             messageCallback.onFinished()

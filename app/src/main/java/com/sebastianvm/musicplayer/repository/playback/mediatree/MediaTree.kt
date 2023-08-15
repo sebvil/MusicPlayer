@@ -18,11 +18,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
 class MediaTree @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
-    private val albumRepository: AlbumRepository,
+    private val albumRepository: AlbumRepository
 ) {
 
     private val mediaItemsTree: MutableMap<String, List<MediaItem>> = mutableMapOf()
@@ -119,7 +118,7 @@ class MediaTree @Inject constructor(
             album = null,
             artist = artistName,
             genre = null,
-            sourceUri = null,
+            sourceUri = null
         )
     }
 

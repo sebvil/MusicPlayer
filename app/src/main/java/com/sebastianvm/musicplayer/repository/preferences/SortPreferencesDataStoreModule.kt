@@ -26,7 +26,7 @@ object SortPreferencesDataStoreModule {
             serializer = SortPreferencesSerializer,
             corruptionHandler = null,
             migrations = listOf(),
-            produceFile = { appContext.dataStoreFile(SORT_PREFERENCES_DATA_STORE_FILE_NAME) },
+            produceFile = { appContext.dataStoreFile(SORT_PREFERENCES_DATA_STORE_FILE_NAME) }
         )
     }
 }

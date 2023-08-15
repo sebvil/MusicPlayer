@@ -34,7 +34,6 @@ interface PlaybackManager {
     fun getQueue(): Flow<List<TrackWithQueueId>>
     suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
     fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
-
 }
 
 data class PlaybackState(

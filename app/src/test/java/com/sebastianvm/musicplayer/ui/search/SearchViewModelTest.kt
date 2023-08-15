@@ -117,7 +117,6 @@ class SearchViewModelTest : BaseTest() {
                 listOf(Fixtures.genreAlpha.toModelListItemState()),
                 state.searchResults
             )
-
         }
     }
 
@@ -187,7 +186,6 @@ class SearchViewModelTest : BaseTest() {
                 )
             }
         }
-
 
     @Test
     fun `SearchResultClicked triggers playback and on success navigates to player when searching for tracks`() =
@@ -390,7 +388,6 @@ class SearchViewModelTest : BaseTest() {
         }
     }
 
-
     @Test
     fun `UpButtonClicked adds NavigateUp NavEvent`() {
         with(generateViewModel()) {
@@ -406,5 +403,4 @@ class SearchViewModelTest : BaseTest() {
             assertNull(state.playbackResult)
         }
     }
-
 }

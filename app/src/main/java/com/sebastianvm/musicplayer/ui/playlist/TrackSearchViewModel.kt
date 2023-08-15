@@ -33,13 +33,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class TrackSearchViewModel @Inject constructor(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
-    private val ftsRepository: FullTextSearchRepository,
+    private val ftsRepository: FullTextSearchRepository
 ) : BaseViewModel<TrackSearchState, TrackSearchUserAction>() {
 
     private val query = MutableStateFlow("")
@@ -75,7 +74,6 @@ class TrackSearchViewModel @Inject constructor(
             playlistTrackIds.addAll(trackIds)
             playlistSize.update { size }
         }.launchIn(viewModelScope)
-
     }
 
     override fun handle(action: TrackSearchUserAction) {
@@ -125,7 +123,6 @@ class TrackSearchViewModel @Inject constructor(
         }
     }
 
-
     private fun addTrackToPlaylist(trackId: Long) {
         // We do this so the behavior is still the same in case the user presses on tracks very fast
         // and the db is not updated fast enough
@@ -156,7 +153,6 @@ data class TrackSearchState(
     val hideTracksInPlaylist: Boolean = true,
     val showToast: Boolean = false
 ) : State
-
 
 @InstallIn(ViewModelComponent::class)
 @Module

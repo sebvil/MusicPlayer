@@ -29,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,8 +44,8 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
-import com.sebastianvm.musicplayer.ui.player.MusicPlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
+import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
@@ -80,7 +79,7 @@ fun AnimatedPlayerCard(
         typeConverter = TwoWayConverter(
             convertToVector = {
                 AnimationVector1D(
-                    it.value,
+                    it.value
                 )
             },
             convertFromVector = {
@@ -97,7 +96,7 @@ fun AnimatedPlayerCard(
         typeConverter = TwoWayConverter(
             convertToVector = {
                 AnimationVector1D(
-                    it.value,
+                    it.value
                 )
             },
             convertFromVector = {
@@ -205,7 +204,6 @@ fun AnimatedPlayerCard(
                         height = Dimension.fillToConstraints
                     }
 
-
                     constrain(text) {
                         start.linkTo(image.end, margin = itemPadding)
                         end.linkTo(parent.end, margin = cardPadding)
@@ -220,11 +218,10 @@ fun AnimatedPlayerCard(
                         end.linkTo(parent.end, margin = cardPadding)
                         width = Dimension.matchParent
                     }
-
                 }
                 defaultTransition(from = regularConstraints, to = fullScreenConstraints)
             },
-            progress = progress,
+            progress = progress
         ) {
             if (progress != 0f) {
                 IconButton(
@@ -249,23 +246,23 @@ fun AnimatedPlayerCard(
                 ) {
                     Text(
                         text = state.playbackControlsState.trackProgressState.currentPlaybackTime,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
                         text = state.playbackControlsState.trackProgressState.trackLength,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
             Box(modifier = Modifier.layoutId("box"))
             MediaArtImage(
                 mediaArtImageState = state.mediaArtImageState,
-                modifier = Modifier.layoutId("image"),
+                modifier = Modifier.layoutId("image")
             )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .layoutId("text"),
+                    .layoutId("text")
             ) {
                 Text(
                     text = state.trackInfoState.trackName,
@@ -319,18 +316,15 @@ fun AnimatedPlayerCard(
                     .layoutId("progressBar"),
                 trackColor = MaterialTheme.colorScheme.onPrimary
             )
-
-
         }
     }
-
 }
 
 @ComponentPreview
 @Composable
 fun PlayerCardPreview(
     @PreviewParameter(
-        MusicPlayerViewStatePreviewParameterProvider::class,
+        PlayerViewStatePreviewParameterProvider::class,
         limit = 1
     ) state: PlayerViewState
 ) {

@@ -1,20 +1,20 @@
-//package com.sebastianvm.musicplayer.ui.queue
+// package com.sebastianvm.musicplayer.ui.queue
 //
-//import androidx.compose.foundation.clickable
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.runtime.Composable
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.platform.LocalContext
-//import androidx.recyclerview.widget.LinearLayoutManager
-//import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
-//import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
-//import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-//import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-//import com.sebastianvm.musicplayer.ui.util.compose.Screen
-//import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+// import androidx.compose.foundation.clickable
+// import androidx.compose.material3.MaterialTheme
+// import androidx.compose.runtime.Composable
+// import androidx.compose.ui.Modifier
+// import androidx.compose.ui.platform.LocalContext
+// import androidx.recyclerview.widget.LinearLayoutManager
+// import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnList
+// import com.sebastianvm.musicplayer.ui.components.lists.DraggableColumnListDelegate
+// import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+// import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+// import com.sebastianvm.musicplayer.ui.util.compose.Screen
+// import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 //
-//@Composable
-//fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationDelegate) {
+// @Composable
+// fun QueueScreen(screenViewModel: QueueViewModel, navigationDelegate: NavigationDelegate) {
 //    val layoutManager = LinearLayoutManager(LocalContext.current)
 //    Screen(
 //        screenViewModel = screenViewModel,
@@ -26,14 +26,14 @@
 //            layoutManager = layoutManager
 //        )
 //    }
-//}
+// }
 //
-//@Composable
-//fun QueueLayout(
+// @Composable
+// fun QueueLayout(
 //    state: QueueState,
 //    screenDelegate: ScreenDelegate<QueueUserAction>,
 //    layoutManager: LinearLayoutManager
-//) {
+// ) {
 //    DraggableColumnList(
 //        items = state.queueItems,
 //        delegate = object : DraggableColumnListDelegate {
@@ -67,4 +67,4 @@
 //        },
 //        layoutManager = layoutManager
 //    )
-//}
+// }

@@ -25,5 +25,4 @@ class NavigationDelegateImpl(private val navigator: DestinationsNavigator) : Nav
     override fun navigateUp() {
         navigator.navigateUp()
     }
-
 }

@@ -7,5 +7,4 @@ interface GenreRepository {
     fun getGenresCount(): Flow<Int>
     fun getGenres(): Flow<List<Genre>>
     fun getGenreName(genreId: Long): Flow<String>
-
 }

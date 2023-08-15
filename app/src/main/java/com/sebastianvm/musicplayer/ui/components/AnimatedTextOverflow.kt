@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.TextUnit
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 
-
 @Composable
 fun AnimatedTextOverflow(
     text: String,
@@ -81,7 +80,7 @@ fun AnimatedTextOverflow(
             textDecoration = textDecoration,
             textAlign = textAlign,
             lineHeight = lineHeight,
-            style = style,
+            style = style
         )
     } else {
         Text(
@@ -106,10 +105,7 @@ fun AnimatedTextOverflow(
             lineHeight = lineHeight,
             style = style
         )
-
     }
-
-
 }
 
 @Preview
@@ -117,20 +113,16 @@ fun AnimatedTextOverflow(
 fun AnimatedTextOverflowPreviews() {
     ScreenPreview {
         Column {
-
-
             Column(modifier = Modifier.padding(all = AppDimensions.spacing.mediumLarge)) {
 //            AnimatedTextOverflow(text = "Short text")
                 AnimatedTextOverflow(
-                    text = "Long text that I'm trying to animate, please work!",
+                    text = "Long text that I'm trying to animate, please work!"
                 )
                 AnimatedTextOverflow(
-                    text = "Long text that                          ",
+                    text = "Long text that                          "
                 )
 //            AnimatedTextOverflow(text = "12345678901234567890")
             }
         }
     }
 }
-
-

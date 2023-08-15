@@ -10,7 +10,6 @@ enum class PlaybackIcon(val icon: ImageVector) {
     PAUSE(icon = Icons.Default.Pause)
 }
 
-
 data class PlaybackControlsState(
     val trackProgressState: TrackProgressState,
     val playbackIcon: PlaybackIcon

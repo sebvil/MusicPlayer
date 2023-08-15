@@ -12,7 +12,7 @@ fun ArtistListLayout(
     openArtistContextMenu: (ArtistContextMenuArguments) -> Unit,
     navigateToArtistScreen: (ArtistArguments) -> Unit,
     changeSort: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     ModelList(
         state = state.modelListState,

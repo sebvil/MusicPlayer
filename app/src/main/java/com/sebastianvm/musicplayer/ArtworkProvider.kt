@@ -26,7 +26,6 @@ import java.io.FileOutputStream
 
 class ArtworkProvider : ContentProvider() {
 
-
     override fun onCreate(): Boolean {
         return true
     }
@@ -47,10 +46,12 @@ class ArtworkProvider : ContentProvider() {
 
     override fun update(p0: Uri, p1: ContentValues?, p2: String?, p3: Array<out String>?): Int = 0
 
-
     private fun getPFDFromBitmap(bitmap: Bitmap?): ParcelFileDescriptor {
         return super.openPipeHelper(
-            Uri.EMPTY, "image/*", null, bitmap
+            Uri.EMPTY,
+            "image/*",
+            null,
+            bitmap
         ) { pfd: ParcelFileDescriptor, _: Uri, _: String, _: Bundle?, b: Bitmap? ->
             /* Compression is performed on an AsyncTask thread within openPipeHelper() */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -93,7 +94,6 @@ class ArtworkProvider : ContentProvider() {
     private fun getUri(uri: Uri): Uri {
         val id = ContentUris.parseId(uri)
         return ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, id)
-
     }
 
     private fun Context.getBitmapFromDrawable(
@@ -110,14 +110,15 @@ class ArtworkProvider : ContentProvider() {
         return when (drawable) {
             is BitmapDrawable -> drawable.bitmap
             is VectorDrawableCompat, is VectorDrawable -> {
-                val bitmap = if (width > 0 && height > 0)
+                val bitmap = if (width > 0 && height > 0) {
                     Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                else
+                } else {
                     Bitmap.createBitmap(
                         drawable.intrinsicWidth,
                         drawable.intrinsicHeight,
                         Bitmap.Config.ARGB_8888
                     )
+                }
                 val canvas = Canvas(bitmap)
                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                 drawable.draw(canvas)
@@ -126,7 +127,6 @@ class ArtworkProvider : ContentProvider() {
             else -> BitmapFactory.decodeResource(this.resources, drawableId)
         }
     }
-
 
     companion object {
         private const val AUTHORITY = "com.sebastianvm.musicplayer.provider"
@@ -138,7 +138,8 @@ class ArtworkProvider : ContentProvider() {
                 Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(AUTHORITY)
                     .appendPath(
                         TRACK_PATH
-                    ).build(), albumId
+                    ).build(),
+                albumId
             )
         }
 
@@ -147,7 +148,8 @@ class ArtworkProvider : ContentProvider() {
                 Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(AUTHORITY)
                     .appendPath(
                         ALBUM_PATH
-                    ).build(), albumId
+                    ).build(),
+                albumId
             )
         }
     }

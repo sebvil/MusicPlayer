@@ -67,7 +67,6 @@ class SearchViewModel @Inject constructor(
     private val query =
         MutableStateFlow(SearchQueryState(term = "", mode = selectedOption))
 
-
     init {
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
@@ -94,7 +93,6 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-
         playbackManager.playSingleTrack(trackId).onEach { result ->
             when (result) {
                 is PlaybackResult.Loading, is PlaybackResult.Error -> {

@@ -5,5 +5,5 @@ data class CountHolder(
     val artists: Int,
     val albums: Int,
     val genres: Int,
-    val playlists: Int,
+    val playlists: Int
 )

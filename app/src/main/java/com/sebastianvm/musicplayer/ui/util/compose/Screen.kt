@@ -35,7 +35,6 @@ fun <S : State, A : UserAction> Screen(
             ScreenDelegate { action -> screenViewModel.handle(action) }
         )
     }
-
 }
 
 @Composable
@@ -63,6 +62,3 @@ fun ScreenScaffold(
         content = content
     )
 }
-
-
-

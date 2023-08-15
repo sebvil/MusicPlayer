@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-//class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseContextMenuState> {
+// class ContextMenuStatePreviewParameterProvider : PreviewParameterProvider<BaseContextMenuState> {
 //    override val values = sequenceOf(
 //        AlbumContextMenuState(
 //            mediaId = 0,
@@ -12,16 +12,16 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 //            ),
 //        )
 //    )
-//}
+// }
 //
-//// TODO build tooling for bottom sheet previews
-//@ComponentPreview
-//@Composable
-//fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
+// // TODO build tooling for bottom sheet previews
+// @ComponentPreview
+// @Composable
+// fun ContextMenuScreenPreview(@PreviewParameter(ContextMenuStatePreviewParameterProvider::class) state: BaseContextMenuState) {
 //    ThemedPreview {
 //        ContextMenuLayout(
 //            state = state,
 //            screenDelegate = DefaultScreenDelegateProvider.getDefaultInstance()
 //        )
 //    }
-//}
+// }

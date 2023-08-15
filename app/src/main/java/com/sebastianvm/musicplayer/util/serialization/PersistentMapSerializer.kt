@@ -17,7 +17,6 @@ class PlaylistSortPrefsSerializer :
     private val serializer: KSerializer<Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>> =
         serializer()
 
-
     override val descriptor: SerialDescriptor =
         object :
             SerialDescriptor by serialDescriptor<Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>>() {}
@@ -39,7 +38,6 @@ class GenreSortPrefsSerializer :
 
     private val serializer: KSerializer<Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>> =
         serializer()
-
 
     override val descriptor: SerialDescriptor =
         object :

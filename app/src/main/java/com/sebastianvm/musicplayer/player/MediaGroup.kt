@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 @Parcelize
 sealed interface MediaGroup : Parcelable {
@@ -32,7 +31,6 @@ sealed interface MediaGroup : Parcelable {
     @Serializable
     @Parcelize
     data class Playlist(val playlistId: Long) : TrackList
-
 }
 
 @Serializable
@@ -47,4 +45,3 @@ fun TrackList.toSortableListType(): SortableListType {
         is MediaGroup.Album -> throw IllegalStateException("Cannot sort album")
     }
 }
-

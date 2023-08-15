@@ -57,7 +57,6 @@ data class MediaSortPreferences<T : SortOptions>(
     val sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING
 )
 
-
 enum class MediaSortOrder {
     ASCENDING,
     DESCENDING
@@ -69,5 +68,3 @@ operator fun MediaSortOrder.not(): MediaSortOrder {
         MediaSortOrder.DESCENDING -> MediaSortOrder.ASCENDING
     }
 }
-
-

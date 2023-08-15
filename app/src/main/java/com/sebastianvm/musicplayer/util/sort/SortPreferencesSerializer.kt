@@ -17,7 +17,8 @@ object SortPreferencesSerializer : Serializer<SortPreferences> {
     override suspend fun readFrom(input: InputStream): SortPreferences {
         try {
             return Json.decodeFromString(
-                serializer, input.readBytes().decodeToString()
+                serializer,
+                input.readBytes().decodeToString()
             )
         } catch (serialization: SerializationException) {
             throw CorruptionException("Unable to read SortPreferences", serialization)

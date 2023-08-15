@@ -57,7 +57,6 @@ class MediaPlaybackService : MediaLibraryService() {
     private lateinit var mediaSession: MediaLibrarySession
     private val queue: MutableStateFlow<List<TrackWithQueueId>> = MutableStateFlow(listOf())
 
-
     override fun onCreate() {
         super.onCreate()
         val audioAttributes = AudioAttributes.Builder()
@@ -165,13 +164,13 @@ class MediaPlaybackService : MediaLibraryService() {
                     }.toMutableList()
                     return Futures.immediateFuture(newMediaItems)
                 }
-            }).build()
+            }
+        ).build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
         return mediaSession
     }
-
 
     private suspend fun initializeQueue() {
         withContext(defaultDispatcher) {
@@ -238,5 +237,4 @@ class MediaPlaybackService : MediaLibraryService() {
             queue.value = newQueue
         }
     }
-
 }

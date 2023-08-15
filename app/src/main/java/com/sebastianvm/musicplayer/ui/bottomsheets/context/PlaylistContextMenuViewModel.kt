@@ -25,7 +25,7 @@ import javax.inject.Inject
 class PlaylistContextMenuViewModel @Inject constructor(
     arguments: PlaylistContextMenuArguments,
     private val playlistRepository: PlaylistRepository,
-    private val playbackManager: PlaybackManager,
+    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val playlistId = arguments.playlistId
@@ -111,7 +111,7 @@ class PlaylistContextMenuViewModel @Inject constructor(
                 ContextMenuItem.ViewPlaylist,
                 ContextMenuItem.DeletePlaylist
             ),
-            showDeleteConfirmationDialog = false,
+            showDeleteConfirmationDialog = false
         )
     }
 }
@@ -127,5 +127,3 @@ object PlaylistContextMenuArgumentsModule {
         return savedStateHandle.navArgs()
     }
 }
-
-

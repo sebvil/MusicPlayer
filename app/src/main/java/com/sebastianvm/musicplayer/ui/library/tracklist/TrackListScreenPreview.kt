@@ -1,20 +1,20 @@
-//package com.sebastianvm.musicplayer.ui.library.tracklist
+// package com.sebastianvm.musicplayer.ui.library.tracklist
 //
-//import androidx.compose.runtime.Composable
-//import androidx.compose.ui.tooling.preview.PreviewParameter
-//import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-//import com.sebastianvm.musicplayer.R
-//import com.sebastianvm.musicplayer.database.entities.Track
-//import com.sebastianvm.musicplayer.player.MediaGroup
-//import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-//import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
-//import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-//import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-//import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
-//import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-//import kotlin.random.Random
+// import androidx.compose.runtime.Composable
+// import androidx.compose.ui.tooling.preview.PreviewParameter
+// import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+// import com.sebastianvm.musicplayer.R
+// import com.sebastianvm.musicplayer.database.entities.Track
+// import com.sebastianvm.musicplayer.player.MediaGroup
+// import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+// import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
+// import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+// import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+// import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
+// import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+// import kotlin.random.Random
 //
-//class TrackListStatePreviewParamProvider : PreviewParameterProvider<TrackListState> {
+// class TrackListStatePreviewParamProvider : PreviewParameterProvider<TrackListState> {
 //    private val trackList: List<ModelListItemState>
 //        get() = (1..10).map {
 //            Track(
@@ -73,11 +73,11 @@
 //                headerImage = MediaArtImageStatePreviewParamsProvider().values.toList().random()
 //            )
 //        )
-//}
+// }
 //
-//@ScreenPreview
-//@Composable
-//private fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParamProvider::class) state: TrackListState) {
+// @ScreenPreview
+// @Composable
+// private fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParamProvider::class) state: TrackListState) {
 //    ScreenPreview {
 //        TrackListScreen(
 //            state = state,
@@ -89,4 +89,4 @@
 //            navigateBack = {},
 //        )
 //    }
-//}
+// }

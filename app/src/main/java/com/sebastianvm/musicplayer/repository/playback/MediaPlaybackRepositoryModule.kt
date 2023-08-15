@@ -12,5 +12,4 @@ private const val PLAYBACK_INFO_PREFERENCES_FILE = "playback_info"
 abstract class MediaPlaybackRepositoryModule {
     @Binds
     abstract fun bindMediaPlaybackRepository(mediaPlaybackRepository: PlaybackManagerImpl): PlaybackManager
-
 }

@@ -62,7 +62,6 @@ fun SearchField(
                     )
                 )
             }
-
         },
         trailingIcon = input.value.takeUnless { it.isEmpty() }?.let {
             {
@@ -81,7 +80,7 @@ fun SearchField(
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
-            onAny = { keyboardController?.hide() },
+            onAny = { keyboardController?.hide() }
         ),
         modifier = Modifier
             .fillMaxWidth()

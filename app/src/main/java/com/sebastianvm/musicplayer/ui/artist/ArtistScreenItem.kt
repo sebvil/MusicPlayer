@@ -7,7 +7,7 @@ sealed class ArtistScreenItem {
     abstract val id: Any
 
     data class AlbumRowItem(
-        val state: ModelListItemState,
+        val state: ModelListItemState
     ) : ArtistScreenItem() {
         override val id = state.id
     }
