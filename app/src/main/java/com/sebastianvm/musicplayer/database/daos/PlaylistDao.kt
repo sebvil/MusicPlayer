@@ -57,7 +57,9 @@ interface PlaylistDao {
     @Query("SELECT COUNT(*) FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId")
     fun getPlaylistSize(playlistId: Long): Flow<Long>
 
-    @Query("SELECT DISTINCT PlaylistTrackCrossRef.trackId FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId")
+    @Query(
+        "SELECT DISTINCT PlaylistTrackCrossRef.trackId FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId"
+    )
     fun getTrackIdsInPlaylist(playlistId: Long): Flow<List<Long>>
 
     @Query(

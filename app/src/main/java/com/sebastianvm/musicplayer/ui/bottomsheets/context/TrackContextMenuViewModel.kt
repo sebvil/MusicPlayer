@@ -169,7 +169,7 @@ class TrackContextMenuViewModel @Inject constructor(
             }
 
             is ContextMenuItem.AddToPlaylist -> TODO()
-            else -> throw IllegalStateException("Invalid row for track context menu")
+            else -> error("Invalid row for track context menu")
         }
     }
 

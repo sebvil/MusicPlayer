@@ -48,20 +48,25 @@ class TrackSearchViewModel @Inject constructor(
     private val playlistSize = MutableStateFlow(0L)
 
     init {
-        queryUpdater.debounce(500).flatMapLatest { (newQuery, hideTracksInPlaylist) ->
-            ftsRepository.searchTracks(newQuery).map { tracks ->
-                tracks.map { it.toModelListItemState(if (it.id in playlistTrackIds) TrailingButtonType.Check else TrailingButtonType.Plus) }
-                    .filter {
-                        !hideTracksInPlaylist || (it.id !in playlistTrackIds)
+        queryUpdater.debounce(SEARCH_DEBOUNCE_TIME_MS)
+            .flatMapLatest { (newQuery, hideTracksInPlaylist) ->
+                ftsRepository.searchTracks(newQuery).map { tracks ->
+                    tracks.map {
+                        it.toModelListItemState(
+                            if (it.id in playlistTrackIds) TrailingButtonType.Check else TrailingButtonType.Plus
+                        )
                     }
-            }
-        }.onEach { results ->
-            setDataState {
-                it.copy(
-                    trackSearchResults = results
-                )
-            }
-        }.launchIn(viewModelScope)
+                        .filter {
+                            !hideTracksInPlaylist || (it.id !in playlistTrackIds)
+                        }
+                }
+            }.onEach { results ->
+                setDataState {
+                    it.copy(
+                        trackSearchResults = results
+                    )
+                }
+            }.launchIn(viewModelScope)
 
         combineToPair(
             playlistRepository.getPlaylistSize(
@@ -142,6 +147,10 @@ class TrackSearchViewModel @Inject constructor(
 
     override val defaultState: TrackSearchState by lazy {
         TrackSearchState(trackSearchResults = listOf())
+    }
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_TIME_MS = 500L
     }
 }
 

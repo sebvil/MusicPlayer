@@ -68,6 +68,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui-test-manifest" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
+detekt-ktlint = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 
 [plugins]

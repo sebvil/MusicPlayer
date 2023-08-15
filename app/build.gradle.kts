@@ -1,4 +1,4 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION", "ForbiddenComment") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
@@ -146,6 +146,8 @@ dependencies {
 
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
+
+    detektPlugins(libs.detekt.ktlint)
 }
 
 detekt {
@@ -153,7 +155,7 @@ detekt {
     buildUponDefaultConfig = true
 
     // Turns on all the rules. `false` by default.
-    allRules = true
+    allRules = false
     enableCompilerPlugin.set(true)
     config.setFrom(file("config/detekt/detekt.yml"))
 }

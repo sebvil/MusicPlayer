@@ -66,7 +66,7 @@ class ArtistContextMenuViewModel @Inject constructor(
                 )
             }
 
-            else -> throw IllegalStateException("Invalid row for artist context menu")
+            else -> error("Invalid row for artist context menu")
         }
     }
 

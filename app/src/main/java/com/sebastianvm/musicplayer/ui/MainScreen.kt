@@ -62,14 +62,6 @@ import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import kotlinx.coroutines.launch
 
-enum class TopLevelScreen(@StringRes val screenName: Int) {
-    ALL_SONGS(R.string.all_songs),
-    ARTISTS(R.string.artists),
-    ALBUMS(R.string.albums),
-    GENRES(R.string.genres),
-    PLAYLISTS(R.string.playlists)
-}
-
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -315,4 +307,12 @@ fun MainScreenPreview() {
             }
         }
     }
+}
+
+enum class TopLevelScreen(@StringRes val screenName: Int) {
+    ALL_SONGS(R.string.all_songs),
+    ARTISTS(R.string.artists),
+    ALBUMS(R.string.albums),
+    GENRES(R.string.genres),
+    PLAYLISTS(R.string.playlists)
 }
