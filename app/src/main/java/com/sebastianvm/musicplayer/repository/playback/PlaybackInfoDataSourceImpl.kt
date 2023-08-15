@@ -26,13 +26,15 @@ class PlaybackInfoDataSourceImpl @Inject constructor(
             savedPrefs[PreferencesUtil.KEY_NOW_PLAYING_INDEX] = newPlaybackInfo.nowPlayingId
         }
         withContext(ioDispatcher) {
-            mediaQueueDao.saveQueue(newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
-                MediaQueueItem(
-                    track.id,
-                    index,
-                    track.uniqueQueueItemId
-                )
-            })
+            mediaQueueDao.saveQueue(
+                newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
+                    MediaQueueItem(
+                        track.id,
+                        index,
+                        track.uniqueQueueItemId
+                    )
+                }
+            )
         }
     }
 

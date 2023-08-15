@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.database.entities
 
-
 object C {
     // IDs
     const val ID_ONE = 1L
@@ -40,4 +39,3 @@ object C {
     const val PLAYLIST_BANANA = "Banana"
     const val PLAYLIST_CARROT = "Carrot"
 }
-

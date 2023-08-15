@@ -70,4 +70,3 @@ fun StoragePermissionNeededEmptyScreen(
         modifier = modifier
     )
 }
-

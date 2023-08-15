@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor(
     override val defaultState: MainActivityState by lazy {
         MainActivityState(playerViewState = null)
     }
-    
+
     init {
         playbackManager.playbackState.onEach { playbackState ->
             val mediaItemMetadata = playbackState.mediaItemMetadata
@@ -101,10 +101,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-
 }
-
 
 data class MainActivityState(val playerViewState: PlayerViewState?) : State
 
@@ -116,4 +113,3 @@ sealed interface MainUserAction : UserAction {
     data object PreviousButtonClicked : MainUserAction
     data class ProgressBarClicked(val position: Int) : MainUserAction
 }
-

@@ -14,7 +14,7 @@ data class AlbumsForArtist(
     val artistId: Long,
     val artistName: String,
     val albumName: String,
-    val year: Long,
+    val year: Long
 )
 
 @Entity(primaryKeys = ["albumId", "artistId"])
@@ -41,7 +41,6 @@ data class AppearsOnForArtistByYear(
     val year: Long
 )
 
-
 data class ArtistWithAlbums(
     @Embedded val artist: Artist,
     @Relation(
@@ -52,7 +51,7 @@ data class ArtistWithAlbums(
             AlbumsForArtistByYear::class,
             parentColumn = "artistId",
             entityColumn = "albumId"
-        ),
+        )
     )
     val artistAlbums: List<Album>,
     @Relation(
@@ -65,5 +64,5 @@ data class ArtistWithAlbums(
             entityColumn = "albumId"
         )
     )
-    val artistAppearsOn: List<Album>,
+    val artistAppearsOn: List<Album>
 )

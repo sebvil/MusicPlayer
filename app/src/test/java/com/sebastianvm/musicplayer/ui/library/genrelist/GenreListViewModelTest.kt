@@ -41,14 +41,13 @@ class GenreListViewModelTest : BaseTest() {
             every { getGenres() } returns emptyFlow()
         }
         preferencesRepository = mockk(relaxUnitFun = true)
-
     }
 
     private fun generateViewModel(): GenreListViewModel {
         return GenreListViewModel(
             initialState = GenreListState(genreList = listOf()),
             genreRepository = genreRepository,
-            preferencesRepository = preferencesRepository,
+            preferencesRepository = preferencesRepository
         )
     }
 

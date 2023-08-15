@@ -16,7 +16,6 @@ abstract class BaseTest {
     val dispatcherSetUpRule = DispatcherSetUpRule()
     protected val testScope = TestScope(dispatcherSetUpRule.dispatcher)
 
-
     fun TestScope.runReliableTest(block: suspend TestScope.() -> Unit) = this.runTest {
         Thread.setDefaultUncaughtExceptionHandler { _, tr -> error.value = tr }
         val job = launch {

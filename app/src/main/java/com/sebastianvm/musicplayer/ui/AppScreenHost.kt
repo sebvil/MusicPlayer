@@ -52,7 +52,6 @@ fun AppScreenHost(
     val density = LocalDensity.current
     val playerBottomPadding = 4.dp
 
-
     var isFullScreen by rememberSaveable {
         mutableStateOf(false)
     }
@@ -114,7 +113,4 @@ fun AppScreenHost(
             }
         }
     }
-
 }
-
-

@@ -19,12 +19,12 @@ fun TrackInfo(
     Column(modifier = modifier) {
         AnimatedTextOverflow(
             text = state.trackName,
-            style = style,
+            style = style
         )
         AnimatedTextOverflow(
             text = state.artists,
             modifier = Modifier.alpha(0.6f),
-            style = style,
+            style = style
         )
     }
 }

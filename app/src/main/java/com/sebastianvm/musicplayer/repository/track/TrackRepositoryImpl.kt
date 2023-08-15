@@ -157,7 +157,7 @@ class TrackRepositoryImpl @Inject constructor(
                 genres = genres,
                 albums = albums,
                 albumsForArtists = albumsForArtists,
-                appearsOnForArtists = appearsOnForArtists,
+                appearsOnForArtists = appearsOnForArtists
             )
         }
     }

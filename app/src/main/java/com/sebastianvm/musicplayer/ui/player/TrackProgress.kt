@@ -54,11 +54,11 @@ fun TrackProgress(
             ) {
                 Text(
                     text = "%02d:%02d".format(currentDuration.minutes, currentDuration.seconds),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
                     text = "%02d:%02d".format(trackDuration.minutes, trackDuration.seconds),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
@@ -74,9 +74,8 @@ val Int.percent: Percentage
 data class TrackProgressState(
     val progress: Percentage,
     val currentPlaybackTime: String,
-    val trackLength: String,
+    val trackLength: String
 )
-
 
 @Composable
 fun TrackProgress(

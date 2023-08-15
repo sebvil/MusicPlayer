@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistListViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<PlaylistListState, PlaylistListUserAction>() {
 
     init {

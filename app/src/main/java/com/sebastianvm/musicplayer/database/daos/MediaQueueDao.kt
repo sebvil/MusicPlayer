@@ -13,9 +13,9 @@ interface MediaQueueDao {
     @Transaction
     @Query(
         "SELECT Track.*, MediaQueueItem.uniqueQueueItemId FROM Track " +
-                "INNER JOIN MediaQueueItem " +
-                "ON Track.id=MediaQueueItem.trackId " +
-                "ORDER BY MediaQueueItem.position ASC"
+            "INNER JOIN MediaQueueItem " +
+            "ON Track.id=MediaQueueItem.trackId " +
+            "ORDER BY MediaQueueItem.position ASC"
     )
     fun getQueuedTracks(): Flow<List<TrackWithQueueId>>
 
@@ -30,6 +30,4 @@ interface MediaQueueDao {
         clearQueue()
         insertQueue(mediaQueueItems)
     }
-
-
 }

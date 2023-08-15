@@ -31,7 +31,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 @Composable
 fun ArtistsBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: ArtistsBottomSheetViewModel = hiltViewModel(),
+    sheetViewModel: ArtistsBottomSheetViewModel = hiltViewModel()
 ) {
     Screen(
         screenViewModel = sheetViewModel,
@@ -39,7 +39,6 @@ fun ArtistsBottomSheet(
     ) { state, screenDelegate ->
         ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)
     }
-
 }
 
 @Composable
@@ -72,6 +71,7 @@ fun ArtistsBottomSheetLayout(
                         item.id
                     )
                 )
-            })
+            }
+        )
     }
 }

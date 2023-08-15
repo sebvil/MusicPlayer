@@ -40,7 +40,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Composable
 fun ArtistRoute(
     viewModel: ArtistViewModel = hiltViewModel(),
-    destinationsNavigator: DestinationsNavigator,
+    destinationsNavigator: DestinationsNavigator
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
 
@@ -52,9 +52,7 @@ fun ArtistRoute(
             navigateBack = { destinationsNavigator.navigateUp() }
         )
     }
-
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +81,6 @@ fun ArtistScreen(
                 },
                 scrollBehavior = scrollBehavior
             )
-
         }
     ) { paddingValues ->
         ArtistLayout(
@@ -94,7 +91,6 @@ fun ArtistScreen(
         )
     }
 }
-
 
 @Composable
 fun ArtistLayout(
@@ -110,7 +106,7 @@ fun ArtistLayout(
                     ListItem(headlineContent = {
                         Text(
                             text = stringResource(id = item.sectionType.sectionName),
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineMedium
                         )
                     })
                 }
@@ -136,5 +132,3 @@ fun ArtistLayout(
         }
     }
 }
-
-

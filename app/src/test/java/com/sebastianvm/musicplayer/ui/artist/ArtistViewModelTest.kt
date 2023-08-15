@@ -19,7 +19,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-
 class ArtistViewModelTest : BaseTest() {
 
     private lateinit var artistRepository: ArtistRepository
@@ -36,9 +35,9 @@ class ArtistViewModelTest : BaseTest() {
             initialState = ArtistState(
                 artistId = C.ID_ONE,
                 artistName = C.ARTIST_ANA,
-                listItems = listOf(),
+                listItems = listOf()
             ),
-            artistRepository = artistRepository,
+            artistRepository = artistRepository
         )
     }
 
@@ -105,5 +104,4 @@ class ArtistViewModelTest : BaseTest() {
             assertEquals(listOf(NavEvent.NavigateUp), navEvents.value)
         }
     }
-
 }

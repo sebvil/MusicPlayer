@@ -35,7 +35,6 @@ object Fixtures {
         artistAppearsOn = listOf(albumBobcat, albumCheetah)
     )
 
-
     val genreAlpha = Genre(id = C.ID_ONE, genreName = C.GENRE_ALPHA)
     val genreBravo = Genre(id = C.ID_TWO, genreName = C.GENRE_BRAVO)
     val genreCharlie = Genre(id = C.ID_THREE, genreName = C.GENRE_CHARLIE)
@@ -55,7 +54,7 @@ object Fixtures {
         id = C.ID_ONE,
         trackName = C.TRACK_ARGENTINA,
         artists = C.ARTIST_ANA,
-        trackNumber = 0,
+        trackNumber = 0
     )
 
     val trackBelgium = Track(
@@ -115,5 +114,4 @@ object Fixtures {
         position = 2,
         playlistId = C.ID_ONE
     )
-
 }

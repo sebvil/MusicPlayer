@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistFtsDao {
     @Query(
         "SELECT * FROM Playlist " +
-                "JOIN PlaylistFts ON Playlist.playlistName == PlaylistFts.playlistName " +
-                "WHERE PlaylistFts.playlistName MATCH :text"
+            "JOIN PlaylistFts ON Playlist.playlistName == PlaylistFts.playlistName " +
+            "WHERE PlaylistFts.playlistName MATCH :text"
     )
     fun playlistsWithText(text: String): Flow<List<Playlist>>
 }

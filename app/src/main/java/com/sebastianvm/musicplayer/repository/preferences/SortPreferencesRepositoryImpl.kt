@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SortPreferencesRepositoryImpl @Inject constructor(
-    private val sortPreferencesDataStore: DataStore<SortPreferences>,
+    private val sortPreferencesDataStore: DataStore<SortPreferences>
 ) : SortPreferencesRepository {
 
     private suspend fun modifyAllTrackListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>) {
@@ -24,7 +24,6 @@ class SortPreferencesRepositoryImpl @Inject constructor(
             )
         }
     }
-
 
     private suspend fun modifyGenreTrackListSortPreferences(
         genreId: Long,
@@ -41,7 +40,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackList: TrackList,
+        trackList: TrackList
     ) {
         when (trackList) {
             is MediaGroup.AllTracks -> {
@@ -109,7 +108,6 @@ class SortPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-
     override fun getArtistListSortOrder(): Flow<MediaSortOrder> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.artistListSortOrder
@@ -122,9 +120,7 @@ class SortPreferencesRepositoryImpl @Inject constructor(
                 genreListSortOrder = !oldPreferences.genreListSortOrder
             )
         }
-
     }
-
 
     override fun getGenreListSortOrder(): Flow<MediaSortOrder> {
         return sortPreferencesDataStore.data.map { preferences ->
@@ -139,7 +135,6 @@ class SortPreferencesRepositoryImpl @Inject constructor(
             )
         }
     }
-
 
     override fun getPlaylistsListSortOrder(): Flow<MediaSortOrder> {
         return sortPreferencesDataStore.data.map { preferences ->

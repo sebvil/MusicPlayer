@@ -9,4 +9,3 @@ data class Genre(
     val id: Long,
     val genreName: String
 )
-

@@ -18,5 +18,5 @@ data class TrackWithArtists(
             entityColumn = "artistId"
         )
     )
-    val artists: List<Long>,
+    val artists: List<Long>
 )

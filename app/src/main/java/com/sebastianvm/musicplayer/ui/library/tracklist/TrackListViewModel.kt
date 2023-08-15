@@ -28,13 +28,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-
 @HiltViewModel
 class TrackListViewModel @Inject constructor(
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val args: TrackListArguments,
-    private val playbackManager: PlaybackManager,
+    private val playbackManager: PlaybackManager
 ) : BaseViewModel<TrackListState, TrackListUserAction>() {
 
     init {
@@ -42,9 +41,13 @@ class TrackListViewModel @Inject constructor(
             combine(
                 getTracksForMedia(args.trackListType),
                 getTrackListMetadata(args.trackListType),
-                if (args.trackListType !is MediaGroup.Album) sortPreferencesRepository.getTrackListSortPreferences(
-                    args.trackListType
-                ) else flowOf(null)
+                if (args.trackListType !is MediaGroup.Album) {
+                    sortPreferencesRepository.getTrackListSortPreferences(
+                        args.trackListType
+                    )
+                } else {
+                    flowOf(null)
+                }
 
             ) { newTrackList, trackListMetadata, sortPrefs ->
                 Triple(newTrackList, trackListMetadata, sortPrefs)
@@ -120,7 +123,6 @@ class TrackListViewModel @Inject constructor(
         }
     }
 
-
     override val defaultState: TrackListState by lazy {
         TrackListState(
             trackListType = args.trackListType,
@@ -129,7 +131,7 @@ class TrackListViewModel @Inject constructor(
                 sortButtonState = null,
                 headerState = HeaderState.None
             ),
-            playbackResult = null,
+            playbackResult = null
         )
     }
 }
@@ -141,13 +143,11 @@ data class TrackListArgumentsForNav(val trackListType: TrackList?) {
 
 data class TrackListArguments(val trackListType: TrackList)
 
-
 data class TrackListState(
     val modelListState: ModelListState,
     val trackListType: TrackList,
-    val playbackResult: PlaybackResult? = null,
+    val playbackResult: PlaybackResult? = null
 ) : State
-
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -160,7 +160,6 @@ object InitialTrackListArgumentsForNavModule {
             .toTrackListArguments()
     }
 }
-
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.albumlist
 
-
-//class AlbumListStatePreviewParamsProvider : PreviewParameterProvider<AlbumListState> {
+// class AlbumListStatePreviewParamsProvider : PreviewParameterProvider<AlbumListState> {
 //    override val values: Sequence<AlbumListState>
 //        get() = sequenceOf(AlbumListState(albumList = (1..10).map {
 //            Album(
@@ -12,11 +11,11 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 //                imageUri = ""
 //            ).toModelListItemState()
 //        }))
-//}
+// }
 //
-//@ScreenPreview
-//@Composable
-//private fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParamsProvider::class) state: AlbumListState) {
+// @ScreenPreview
+// @Composable
+// private fun AlbumListScreenPreview(@PreviewParameter(AlbumListStatePreviewParamsProvider::class) state: AlbumListState) {
 //    ScreenPreview {
 //        AlbumListScreen(
 //            state = state,
@@ -26,4 +25,4 @@ package com.sebastianvm.musicplayer.ui.library.albumlist
 //            navigateBack = {}
 //        )
 //    }
-//}
+// }

@@ -83,7 +83,6 @@ fun ModelList(
     onItemClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
     onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> }
 ) {
-
     val content: @Composable (Modifier, PaddingValues) -> Unit =
         { contentModifier, contentPadding ->
             LazyColumn(
@@ -105,7 +104,6 @@ fun ModelList(
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(text = stringResource(id = it.text))
-
                         }
                     }
                 }
@@ -147,7 +145,6 @@ fun ModelList(
             }
         }
     }
-
 }
 
 @Composable
@@ -222,11 +219,15 @@ private fun HeaderWithImageModelList(
                 }
 
                 imageAlpha =
-                    if (offset == 0.dp) 1f else (1f - ((topBarHeight - offsetPx) / sizePx)).coerceIn(
-                        minimumValue = 0f,
-                        maximumValue = 1f
-                    )
-                        .also { Log.i("Offset", "$it") }
+                    if (offset == 0.dp) {
+                        1f
+                    } else {
+                        (1f - ((topBarHeight - offsetPx) / sizePx)).coerceIn(
+                            minimumValue = 0f,
+                            maximumValue = 1f
+                        )
+                            .also { Log.i("Offset", "$it") }
+                    }
 
                 return available.copy(y = sizeChange + offsetChange, x = 0f)
             }
@@ -239,7 +240,6 @@ private fun HeaderWithImageModelList(
         modifier = modifier
             .nestedScroll(nestedScrollConnection)
     ) {
-
         TopBar(
             title = state.title,
             alpha = topBarAlpha,
@@ -298,7 +298,8 @@ fun TopBar(
     ) {
         IconButton(onClick = onBackButtonClicked) {
             Icon(
-                imageVector = Icons.Default.ArrowBack, contentDescription = stringResource(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = stringResource(
                     id = R.string.back
                 )
             )

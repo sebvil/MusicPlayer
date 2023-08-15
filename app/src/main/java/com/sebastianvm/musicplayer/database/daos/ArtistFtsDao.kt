@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface ArtistFtsDao {
     @Query(
         "SELECT * FROM Artist " +
-                "JOIN ArtistFts ON Artist.artistName == ArtistFts.artistName " +
-                "WHERE ArtistFts.artistName MATCH :text"
+            "JOIN ArtistFts ON Artist.artistName == ArtistFts.artistName " +
+            "WHERE ArtistFts.artistName MATCH :text"
     )
     fun artistsWithText(text: String): Flow<List<Artist>>
 }

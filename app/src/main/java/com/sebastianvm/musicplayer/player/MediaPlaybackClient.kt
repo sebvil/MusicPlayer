@@ -26,7 +26,7 @@ import javax.inject.Singleton
 @Singleton
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher
 ) {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
@@ -37,7 +37,7 @@ class MediaPlaybackClient @Inject constructor(
         PlaybackState(
             mediaItemMetadata = null,
             isPlaying = false,
-            currentPlayTimeMs = 0,
+            currentPlayTimeMs = 0
         )
     )
 
@@ -74,7 +74,7 @@ class MediaPlaybackClient @Inject constructor(
                     playbackState.value = playbackState.value.copy(
                         isPlaying = isPlaying || controller.playWhenReady,
                         currentPlayTimeMs = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
-                            ?: 0,
+                            ?: 0
                     )
                 }
 
@@ -82,14 +82,13 @@ class MediaPlaybackClient @Inject constructor(
                     playbackState.value = playbackState.value.copy(
                         mediaItemMetadata = mediaMetadata.toMediaItemMetadata(),
                         currentPlayTimeMs = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
-                            ?: 0)
-
+                            ?: 0
+                    )
                 }
             }
         )
         launchCurrentPlayTimeUpdates()
     }
-
 
     fun play() {
         controller?.play()
@@ -155,7 +154,6 @@ class MediaPlaybackClient @Inject constructor(
             }
             nextIndex
         } ?: -1
-
     }
 
     fun seekToTrackPosition(position: Long) {

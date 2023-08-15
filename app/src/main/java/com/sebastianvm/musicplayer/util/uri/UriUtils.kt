@@ -14,5 +14,4 @@ object UriUtils {
 
     fun getTrackUri(trackId: Long): Uri =
         ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, trackId)
-
 }

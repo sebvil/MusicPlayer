@@ -33,7 +33,7 @@ fun CreatePlaylistDialog(onDismiss: () -> Unit, onConfirm: (playlistName: String
         text = {
             TextField(
                 value = playListName,
-                onValueChange = { newValue -> playListName = newValue },
+                onValueChange = { newValue -> playListName = newValue }
             )
         }
     )

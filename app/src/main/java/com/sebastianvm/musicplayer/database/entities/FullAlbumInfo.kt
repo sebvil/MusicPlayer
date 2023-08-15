@@ -22,8 +22,7 @@ data class FullAlbumInfo(
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        entity = Track::class,
+        entity = Track::class
     )
     val tracks: List<Track>
 )
-

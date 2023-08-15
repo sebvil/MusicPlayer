@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
-
 class PlaybackControlsStatePreviewParameterProvider :
     PreviewParameterProvider<PlaybackControlsState> {
     override val values: Sequence<PlaybackControlsState> =

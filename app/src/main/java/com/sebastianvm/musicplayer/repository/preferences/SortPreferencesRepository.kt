@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface SortPreferencesRepository {
     suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackList: TrackList,
+        trackList: TrackList
     )
 
     fun getTrackListSortPreferences(

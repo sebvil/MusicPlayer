@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
-//class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
+// class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
 //    private val playlistsList: List<ModelListItemState>
 //        get() = (1..10).map {
 //            Playlist(
@@ -35,12 +35,12 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 //                isPlaylistCreationErrorDialogOpen = true
 //            )
 //        )
-//}
+// }
 
-//// Note: You can launch the preview on device to see the dialogs
-//@ScreenPreview
-//@Composable
-//private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state: PlaylistListState) {
+// // Note: You can launch the preview on device to see the dialogs
+// @ScreenPreview
+// @Composable
+// private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state: PlaylistListState) {
 //    ScreenPreview {
 //        PlaylistListScreen(
 //            state = state,
@@ -52,7 +52,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 //            navigateBack = {}
 //        )
 //    }
-//}
+// }
 
 @ComponentPreview
 @Composable

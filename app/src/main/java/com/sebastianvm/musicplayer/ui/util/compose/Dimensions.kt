@@ -16,7 +16,7 @@ data class Spacing(
     val mediumLarge: Dp = 20.dp,
     val large: Dp = 24.dp,
     val xLarge: Dp = 28.dp,
-    val xxLarge: Dp = 32.dp,
+    val xxLarge: Dp = 32.dp
 )
 
 data class BottomSheet(
@@ -33,7 +33,6 @@ data class AlbumRowDimensions(
 val LocalSpacing = staticCompositionLocalOf { Spacing() }
 val LocalBottomSheetDimensions = staticCompositionLocalOf { BottomSheet() }
 val LocalAlbumRowDimensions = staticCompositionLocalOf { AlbumRowDimensions() }
-
 
 object AppDimensions {
     val spacing: Spacing

@@ -24,11 +24,9 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
         },
         text = {
             Text(text = "A playlist with that name already exists.")
-
         }
     )
 }
-
 
 @Composable
 fun PlaylistListLayout(
@@ -50,7 +48,7 @@ fun PlaylistListLayout(
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = onDismissPlaylistCreationErrorDialog,
+            onDismiss = onDismissPlaylistCreationErrorDialog
         )
     }
     ModelList(

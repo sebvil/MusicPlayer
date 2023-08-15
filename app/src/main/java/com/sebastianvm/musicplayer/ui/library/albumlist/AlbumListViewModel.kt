@@ -46,7 +46,6 @@ class AlbumListViewModel @Inject constructor(
     }
 }
 
-
 data class AlbumListState(val modelListState: ModelListState) : State
 
 sealed interface AlbumListUserAction : UserAction

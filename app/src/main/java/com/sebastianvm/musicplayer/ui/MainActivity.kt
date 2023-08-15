@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -46,7 +45,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
                     val navController = rememberNavController()
                     navController.navigatorProvider += bottomSheetNavigator
@@ -55,7 +53,8 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel,
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
                             onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
-                            onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }) {
+                            onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }
+                        ) {
                             DestinationsNavHost(
                                 navGraph = NavGraphs.root,
                                 navController = navController,
@@ -63,7 +62,6 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
-
                 }
             }
         }
@@ -78,5 +76,4 @@ class MainActivity : ComponentActivity() {
         super.onStop()
         viewModel.handle(MainUserAction.DisconnectFromMusicService)
     }
-
 }

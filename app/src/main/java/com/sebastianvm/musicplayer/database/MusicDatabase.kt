@@ -52,7 +52,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
         ArtistFts::class,
         AlbumFts::class,
         GenreFts::class,
-        PlaylistFts::class,
+        PlaylistFts::class
     ],
     views = [TrackWithPlaylistPositionView::class, AlbumsForArtistByYear::class, AppearsOnForArtistByYear::class],
     version = 1,

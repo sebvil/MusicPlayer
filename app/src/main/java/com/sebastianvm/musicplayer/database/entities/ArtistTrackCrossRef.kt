@@ -9,5 +9,5 @@ data class ArtistTrackCrossRef(
     val artistName: String,
     @ColumnInfo(index = true)
     val trackId: Long,
-    val trackName: String,
+    val trackName: String
 )

@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
     arguments: ArtistArguments,
-    artistRepository: ArtistRepository,
+    artistRepository: ArtistRepository
 ) : BaseViewModel<ArtistState, ArtistUserAction>() {
     private val artistId = arguments.artistId
 
@@ -53,10 +53,9 @@ class ArtistViewModel @Inject constructor(
     override val defaultState: ArtistState by lazy {
         ArtistState(
             artistName = "",
-            listItems = listOf(),
+            listItems = listOf()
         )
     }
-
 }
 
 private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
@@ -65,9 +64,8 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
 
 data class ArtistState(
     val artistName: String,
-    val listItems: List<ArtistScreenItem>,
+    val listItems: List<ArtistScreenItem>
 ) : State
-
 
 @InstallIn(ViewModelComponent::class)
 @Module
@@ -80,6 +78,5 @@ object ArtistArgumentsModule {
 }
 
 data class ArtistArguments(val artistId: Long)
-
 
 sealed interface ArtistUserAction : UserAction

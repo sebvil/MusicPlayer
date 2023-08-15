@@ -30,7 +30,7 @@ import javax.inject.Inject
 class AlbumContextMenuViewModel @Inject constructor(
     arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
-    private val playbackManager: PlaybackManager,
+    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private var tracks: List<Track> = listOf()
@@ -90,7 +90,6 @@ class AlbumContextMenuViewModel @Inject constructor(
                         )
                     )
                 )
-
             }
 
             is ContextMenuItem.ViewArtists -> {
@@ -142,5 +141,3 @@ object AlbumContextMenuArgumentsModule {
         return savedStateHandle.navArgs()
     }
 }
-
-

@@ -21,11 +21,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class ArtistListViewModel @Inject constructor(
     artistRepository: ArtistRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<ArtistListState, ArtistListUserAction>() {
 
     init {
@@ -51,10 +50,8 @@ class ArtistListViewModel @Inject constructor(
                     )
                 }
             }
-
         }.launchIn(viewModelScope)
     }
-
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
@@ -75,15 +72,14 @@ class ArtistListViewModel @Inject constructor(
                     sortOrder = MediaSortOrder.ASCENDING
                 ),
                 headerState = HeaderState.None
-            ),
+            )
         )
     }
 }
 
 data class ArtistListState(
-    val modelListState: ModelListState,
+    val modelListState: ModelListState
 ) : State
-
 
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction

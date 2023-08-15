@@ -50,7 +50,6 @@ data class MediaArtImageState(
     val args: List<Any> = listOf()
 )
 
-
 @ComponentPreview
 @Composable
 fun MediaArtImagePreview(@PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState) {
@@ -66,7 +65,7 @@ fun MediaArtImage(
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha,
+    alpha: Float = DefaultAlpha
 ) {
     MediaArtImage(
         uri = mediaArtImageState.imageUri,
@@ -80,7 +79,7 @@ fun MediaArtImage(
         backgroundColor = backgroundColor,
         alignment = alignment,
         contentScale = contentScale,
-        alpha = alpha,
+        alpha = alpha
     )
 }
 
@@ -97,9 +96,8 @@ fun MediaArtImage(
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha,
+    alpha: Float = DefaultAlpha
 ) {
-
     var actualContentDescription by remember {
         mutableStateOf(backupContentDescription)
     }
@@ -126,10 +124,14 @@ fun MediaArtImage(
             useColorFilter = false
             actualContentDescription = contentDescription
         },
-        colorFilter = if (useColorFilter) ColorFilter.tint(
-            MaterialTheme.colorScheme.contentColorFor(
-                actualBackgroundColor
+        colorFilter = if (useColorFilter) {
+            ColorFilter.tint(
+                MaterialTheme.colorScheme.contentColorFor(
+                    actualBackgroundColor
+                )
             )
-        ) else null
+        } else {
+            null
+        }
     )
 }

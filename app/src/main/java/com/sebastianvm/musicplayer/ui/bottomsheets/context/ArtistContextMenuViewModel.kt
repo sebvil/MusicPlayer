@@ -23,7 +23,7 @@ import javax.inject.Inject
 class ArtistContextMenuViewModel @Inject constructor(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
-    private val playbackManager: PlaybackManager,
+    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val artistId = arguments.artistId
@@ -96,5 +96,3 @@ object ArtistContextMenuArgumentsModule {
         return savedStateHandle.navArgs()
     }
 }
-
-

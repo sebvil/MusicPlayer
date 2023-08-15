@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
-//class GenreListStatePreviewParamProvider : PreviewParameterProvider<GenreListState> {
+// class GenreListStatePreviewParamProvider : PreviewParameterProvider<GenreListState> {
 //    override val values: Sequence<GenreListState>
 //        get() = sequenceOf(GenreListState(genreList = (1..10).map {
 //            Genre(
@@ -8,11 +8,11 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 //                genreName = PreviewUtil.randomString(),
 //            ).toModelListItemState()
 //        }))
-//}
+// }
 
-//@ScreenPreview
-//@Composable
-//private fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParamProvider::class) state: GenreListState) {
+// @ScreenPreview
+// @Composable
+// private fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParamProvider::class) state: GenreListState) {
 //    ScreenPreview {
 //        GenreListScreen(
 //            state = state,
@@ -22,4 +22,4 @@ package com.sebastianvm.musicplayer.ui.library.genrelist
 //            navigateBack = {}
 //        )
 //    }
-//}
+// }

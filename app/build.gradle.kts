@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
+    alias(libs.plugins.ktlint.gradle)
 }
-
 
 android {
     namespace = "com.sebastianvm.musicplayer"
@@ -55,7 +55,6 @@ android {
         }
     }
 
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -63,7 +62,6 @@ android {
     ksp {
         arg("room.generateKotlin", "true")
     }
-
 }
 
 dependencies {
@@ -94,7 +92,6 @@ dependencies {
     // Coil
     implementation(libs.coil)
 
-
     // Start Jetpack Compose
     // Navigation
     implementation(libs.compose.destinations.animations.core)
@@ -123,16 +120,13 @@ dependencies {
 
     // End Jetpack Compose
 
-
     // Media 3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.session)
 
-
     // Kotlin serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.collections.immutable)
-
 
     implementation(libs.kotlinx.coroutines.guava)
 
@@ -151,5 +145,4 @@ dependencies {
 
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
-
 }

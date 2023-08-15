@@ -29,7 +29,7 @@ class ArtistListViewModelTest : BaseTest() {
     private val artists = listOf(
         Fixtures.artistAna,
         Fixtures.artistBob,
-        Fixtures.artistCamilo,
+        Fixtures.artistCamilo
     )
     private val modelListItemStatesAscending = artists.map { it.toModelListItemState() }
     private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
@@ -41,14 +41,13 @@ class ArtistListViewModelTest : BaseTest() {
         }
 
         preferencesRepository = mockk(relaxUnitFun = true)
-
     }
 
     private fun generateViewModel(): ArtistListViewModel {
         return ArtistListViewModel(
             initialState = ArtistListState(artistList = listOf()),
             artistRepository = artistRepository,
-            sortPreferencesRepository = preferencesRepository,
+            sortPreferencesRepository = preferencesRepository
         )
     }
 

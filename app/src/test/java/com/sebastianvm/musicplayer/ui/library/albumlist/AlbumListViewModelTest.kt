@@ -21,7 +21,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumListViewModelTest : BaseTest() {
 
@@ -29,11 +28,10 @@ class AlbumListViewModelTest : BaseTest() {
     private val albums = listOf(
         Fixtures.albumAlpaca,
         Fixtures.albumBobcat,
-        Fixtures.albumCheetah,
+        Fixtures.albumCheetah
     )
     private val modelListItemStatesAscending = albums.map { it.toModelListItemState() }
     private val modelListItemStatesDescending = modelListItemStatesAscending.reversed()
-
 
     @Before
     fun setUp() {
@@ -45,7 +43,7 @@ class AlbumListViewModelTest : BaseTest() {
     private fun generateViewModel(): AlbumListViewModel {
         return AlbumListViewModel(
             initialState = AlbumListState(albumList = listOf()),
-            albumRepository = albumRepository,
+            albumRepository = albumRepository
         )
     }
 
@@ -104,7 +102,6 @@ class AlbumListViewModelTest : BaseTest() {
         }
     }
 
-
     @Test
     fun `onAlbumOverflowMenuIconClicked adds OpenContextMenu event`() {
         with(generateViewModel()) {
@@ -119,5 +116,4 @@ class AlbumListViewModelTest : BaseTest() {
             )
         }
     }
-
 }

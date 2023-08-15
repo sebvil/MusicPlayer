@@ -35,13 +35,12 @@ import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-
 @RootNavGraph
 @Destination(navArgsDelegate = SortMenuArguments::class, style = DestinationStyleBottomSheet::class)
 @Composable
 fun SortBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: SortBottomSheetViewModel = hiltViewModel(),
+    sheetViewModel: SortBottomSheetViewModel = hiltViewModel()
 ) {
     Screen(
         screenViewModel = sheetViewModel,
@@ -88,7 +87,7 @@ fun SortBottomSheet(
                         .let {
                             if (state.selectedSort == row) {
                                 it.background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    color = MaterialTheme.colorScheme.surfaceVariant
                                 )
                             } else {
                                 it
@@ -100,10 +99,13 @@ fun SortBottomSheet(
                     if (state.selectedSort == row) {
                         Icon(
                             painter = painterResource(id = if (state.sortOrder == MediaSortOrder.ASCENDING) R.drawable.ic_up else R.drawable.ic_down),
-                            contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) stringResource(
-                                R.string.up_arrow
-                            )
-                            else stringResource(R.string.down_arrow),
+                            contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) {
+                                stringResource(
+                                    R.string.up_arrow
+                                )
+                            } else {
+                                stringResource(R.string.down_arrow)
+                            },
                             modifier = Modifier.padding(end = AppDimensions.spacing.mediumLarge),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -118,10 +120,8 @@ fun SortBottomSheet(
                             modifier = Modifier.padding(start = 24.dp.plus(AppDimensions.spacing.mediumLarge))
                         )
                     }
-
                 }
             }
         }
     }
 }
-

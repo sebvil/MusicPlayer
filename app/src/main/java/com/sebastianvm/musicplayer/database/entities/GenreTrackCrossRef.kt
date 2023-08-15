@@ -7,5 +7,5 @@ import androidx.room.Entity
 data class GenreTrackCrossRef(
     val genreId: Long,
     @ColumnInfo(index = true)
-    val trackId: Long,
+    val trackId: Long
 )

@@ -9,7 +9,7 @@ data class AlbumWithTracks(
     @Relation(
         parentColumn = "id",
         entityColumn = "albumId",
-        entity = Track::class,
+        entity = Track::class
     )
-    val tracks: List<BasicTrack>,
+    val tracks: List<BasicTrack>
 )

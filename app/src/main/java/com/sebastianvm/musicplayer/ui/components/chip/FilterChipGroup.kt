@@ -30,7 +30,7 @@ fun <T> SingleSelectFilterChipGroup(
             FilterChip(
                 selected = selectedOption == option,
                 onClick = { onNewOptionSelected(option) },
-                label = { Text(text = option.getDisplayName()) },
+                label = { Text(text = option.getDisplayName()) }
             )
         }
     }

@@ -54,10 +54,8 @@ class LibraryScanService : Service() {
                 isRunning = false
                 stopSelf(startId)
             }
-
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -68,7 +66,6 @@ class LibraryScanService : Service() {
             isRunning = true
         }
 
-
         val pendingIntent: PendingIntent =
             Intent(this, MainActivity::class.java).let { notificationIntent ->
                 PendingIntent.getActivity(this, 0, notificationIntent, FLAG_IMMUTABLE)
@@ -77,7 +74,6 @@ class LibraryScanService : Service() {
         val stopServiceIntent = Intent(this, LibraryBroadcastReceiver::class.java).apply {
             action = STOP_SCAN_SERVICE
             putExtra(EXTRA_NOTIFICATION_ID, NOTIFICATION_ID)
-
         }
         val stopServicePendingIntent: PendingIntent =
             PendingIntent.getBroadcast(this, 0, stopServiceIntent, FLAG_IMMUTABLE)

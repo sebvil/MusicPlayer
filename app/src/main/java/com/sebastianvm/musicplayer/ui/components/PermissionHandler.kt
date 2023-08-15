@@ -24,8 +24,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.util.compose.AppDimensions
 
-
-data class PermissionHandlerState @OptIn(ExperimentalPermissionsApi::class) constructor(
+@OptIn(ExperimentalPermissionsApi::class)
+data class PermissionHandlerState(
     val permissionState: PermissionState,
     val showPermissionDeniedDialog: Boolean,
     val permissionExplanationDialogState: PermissionDialogState,
@@ -39,7 +39,7 @@ fun PermissionHandler(
     @StringRes dialogTitle: Int,
     @StringRes message: Int,
     onPermissionGranted: () -> Unit,
-    content: @Composable (onClick: () -> Unit) -> Unit,
+    content: @Composable (onClick: () -> Unit) -> Unit
 ) {
     var showPermissionDeniedDialog by remember {
         mutableStateOf(false)
@@ -64,9 +64,9 @@ fun PermissionHandler(
                 } else {
                     true
                 }
-            })
+            }
+        )
     }
-
 
     val permissionHandlerState = remember {
         derivedStateOf {
@@ -93,7 +93,8 @@ fun PermissionHandler(
             onDismiss = { showPermissionDeniedDialog = false },
             onConfirm = {
                 permissionHandlerState.value.permissionState.launchPermissionRequest()
-            })
+            }
+        )
     } else if (permissionHandlerState.value.showPermissionDeniedDialog) {
         PermissionDialog(
             state = permissionHandlerState.value.permissionDeniedDialogState,
@@ -118,7 +119,6 @@ fun PermissionHandler(
         }
     }
 }
-
 
 data class PermissionDialogState(
     @StringRes val title: Int,
@@ -164,7 +164,7 @@ fun PermissionDialog(
 sealed interface Permission {
     val permissionName: String
 
-    object ReadAudio : Permission {
+    data object ReadAudio : Permission {
         override val permissionName: String
             get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Manifest.permission.READ_MEDIA_AUDIO

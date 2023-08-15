@@ -41,7 +41,7 @@ class TrackListViewModelTest : BaseTest() {
     private val tracks = listOf(
         Fixtures.trackArgentina,
         Fixtures.trackBelgium,
-        Fixtures.trackColombia,
+        Fixtures.trackColombia
     )
 
     private val modelListItemStatesAscending = tracks.map { it.toModelListItemState() }
@@ -54,7 +54,6 @@ class TrackListViewModelTest : BaseTest() {
             every { getTracksForMedia(any()) } returns emptyFlow()
             every { getTrackListMetadata(any()) } returns emptyFlow()
         }
-
     }
 
     private fun generateViewModel(
@@ -70,7 +69,7 @@ class TrackListViewModelTest : BaseTest() {
                 playbackResult = playbackResult
             ),
             trackRepository = trackRepository,
-            playbackManager = playbackManager,
+            playbackManager = playbackManager
         )
     }
 
@@ -82,7 +81,6 @@ class TrackListViewModelTest : BaseTest() {
 
     private fun generateViewModelForPlaylist(): TrackListViewModel =
         generateViewModel(trackList = TrackList.PLAYLIST, trackListId = C.ID_ONE)
-
 
     @Test
     fun `init sets initial state and updates state on change to all tracks list`() =
@@ -216,7 +214,7 @@ class TrackListViewModelTest : BaseTest() {
                 )
             } returns flowOf(
                 TrackListMetadata(
-                    trackListName = C.GENRE_ALPHA,
+                    trackListName = C.GENRE_ALPHA
                 )
             )
             with(generateViewModelForGenre()) {
@@ -227,7 +225,6 @@ class TrackListViewModelTest : BaseTest() {
                 assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
-
 
     @Test
     fun `TrackClicked for genre triggers playback and on failure sets playback result`() =
@@ -279,7 +276,6 @@ class TrackListViewModelTest : BaseTest() {
                 )
             }
         }
-
 
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for genre`() {
@@ -350,7 +346,7 @@ class TrackListViewModelTest : BaseTest() {
                 )
             } returns flowOf(
                 TrackListMetadata(
-                    trackListName = C.PLAYLIST_APPLE,
+                    trackListName = C.PLAYLIST_APPLE
                 )
             )
 
@@ -362,7 +358,6 @@ class TrackListViewModelTest : BaseTest() {
                 assertEquals(modelListItemStatesDescending, state.trackList)
             }
         }
-
 
     @Test
     fun `TrackClicked for playlist triggers playback and on failure sets playback result`() =
@@ -414,7 +409,6 @@ class TrackListViewModelTest : BaseTest() {
                 )
             }
         }
-
 
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for playlist`() {
@@ -505,7 +499,6 @@ class TrackListViewModelTest : BaseTest() {
             }
         }
 
-
     @Test
     fun `TrackClicked for album triggers playback and on failure sets playback result`() =
         testScope.runReliableTest {
@@ -557,7 +550,6 @@ class TrackListViewModelTest : BaseTest() {
             }
         }
 
-
     @Test
     fun `TrackOverflowMenuIconClicked navigates to track context menu for album`() {
         with(generateViewModelForAlbum()) {
@@ -595,7 +587,6 @@ class TrackListViewModelTest : BaseTest() {
             }
         }
     }
-
 
     // END SECTION ALBUM
     @Test

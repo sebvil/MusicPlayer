@@ -13,5 +13,4 @@ class DraggableListItemDiffCallback : DiffUtil.ItemCallback<DraggableListItem>()
     ): Boolean {
         return oldItem.areContentsTheSame(newItem)
     }
-
 }

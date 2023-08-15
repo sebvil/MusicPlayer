@@ -14,8 +14,8 @@ interface TrackFtsDao {
     @RewriteQueriesToDropUnusedColumns
     @Query(
         "SELECT DISTINCT Track.* FROM Track " +
-                "JOIN TrackFts ON Track.id == TrackFts.trackId " +
-                "WHERE TrackFts MATCH :text ORDER BY Track.trackName"
+            "JOIN TrackFts ON Track.id == TrackFts.trackId " +
+            "WHERE TrackFts MATCH :text ORDER BY Track.trackName"
     )
     fun tracksWithText(text: String): Flow<List<BasicTrack>>
 }

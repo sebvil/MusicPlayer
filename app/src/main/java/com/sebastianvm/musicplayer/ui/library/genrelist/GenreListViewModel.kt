@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GenreListViewModel @Inject constructor(
     genreRepository: GenreRepository,
-    private val preferencesRepository: SortPreferencesRepository,
+    private val preferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<GenreListState, GenreListUserAction>() {
 
     init {
@@ -68,7 +68,6 @@ class GenreListViewModel @Inject constructor(
             )
         )
     }
-
 }
 
 data class GenreListState(val modelListState: ModelListState) : State
@@ -76,4 +75,3 @@ data class GenreListState(val modelListState: ModelListState) : State
 sealed interface GenreListUserAction : UserAction {
     data object SortByButtonClicked : GenreListUserAction
 }
-
