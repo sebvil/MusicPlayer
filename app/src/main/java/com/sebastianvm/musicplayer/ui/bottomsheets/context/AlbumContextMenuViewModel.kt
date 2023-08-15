@@ -28,25 +28,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumContextMenuViewModel @Inject constructor(
-    initialState: AlbumContextMenuState,
+    arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-) : BaseContextMenuViewModel<AlbumContextMenuState>(initialState) {
+) : BaseContextMenuViewModel() {
 
     private var tracks: List<Track> = listOf()
     private var artistIds: List<Long> = listOf()
 
+    val albumId = arguments.albumId
+
     init {
-        albumRepository.getFullAlbumInfo(state.mediaId).onEach {
-            artistIds = it.artists
-            tracks = it.tracks
-            setState {
-                copy(
-                    menuTitle = it.album.albumName,
+        albumRepository.getFullAlbumInfo(albumId).onEach { album ->
+            artistIds = album.artists
+            tracks = album.tracks
+            setDataState {
+                it.copy(
+                    menuTitle = album.album.albumName,
                     listItems = listOf(
                         ContextMenuItem.PlayFromBeginning,
                         ContextMenuItem.AddToQueue,
-                        if (it.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
+                        if (album.artists.size == 1) ContextMenuItem.ViewArtist else ContextMenuItem.ViewArtists,
                         ContextMenuItem.ViewAlbum
                     )
                 )
@@ -57,12 +59,14 @@ class AlbumContextMenuViewModel @Inject constructor(
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
             is ContextMenuItem.PlayFromBeginning -> {
-                playbackManager.playAlbum(state.mediaId).onEach {
-                    when (it) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> setState {
-                            copy(
-                                playbackResult = it
-                            )
+                playbackManager.playAlbum(albumId).onEach { result ->
+                    when (result) {
+                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
+                            setDataState {
+                                it.copy(
+                                    playbackResult = result
+                                )
+                            }
                         }
 
                         is PlaybackResult.Success -> {}
@@ -80,7 +84,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                         TrackListRouteDestination(
                             TrackListArgumentsForNav(
                                 trackListType = MediaGroup.Album(
-                                    state.mediaId
+                                    albumId
                                 )
                             )
                         )
@@ -95,7 +99,7 @@ class AlbumContextMenuViewModel @Inject constructor(
                         ArtistsBottomSheetDestination(
                             ArtistsMenuArguments(
                                 mediaType = MediaWithArtists.Album,
-                                mediaId = state.mediaId
+                                mediaId = albumId
                             )
                         )
                     )
@@ -119,32 +123,23 @@ class AlbumContextMenuViewModel @Inject constructor(
     }
 
     override fun onPlaybackErrorDismissed() {
-        setState { copy(playbackResult = null) }
+        setDataState { it.copy(playbackResult = null) }
+    }
+
+    override val defaultState: ContextMenuState by lazy {
+        ContextMenuState(listItems = listOf(), menuTitle = "", playbackResult = null)
     }
 }
 
 data class AlbumContextMenuArguments(val albumId: Long)
 
-
-data class AlbumContextMenuState(
-    override val listItems: List<ContextMenuItem>,
-    override val mediaId: Long,
-    override val menuTitle: String,
-    override val playbackResult: PlaybackResult? = null,
-) : BaseContextMenuState(listItems, mediaId, menuTitle, playbackResult)
-
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialAlbumContextMenuStateModule {
+object AlbumContextMenuArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun initialAlbumContextMenuStateProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuState {
-        val args = savedStateHandle.navArgs<AlbumContextMenuArguments>()
-        return AlbumContextMenuState(
-            mediaId = args.albumId,
-            menuTitle = "",
-            listItems = listOf(),
-        )
+    fun albumContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuArguments {
+        return savedStateHandle.navArgs()
     }
 }
 

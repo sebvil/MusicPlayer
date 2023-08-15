@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.DeprecatedBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.AlbumType
@@ -22,24 +22,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
-    initialState: ArtistState,
+    arguments: ArtistArguments,
     artistRepository: ArtistRepository,
-) : DeprecatedBaseViewModel<ArtistState, ArtistUserAction>(initialState) {
+) : BaseViewModel<ArtistState, ArtistUserAction>() {
+    private val artistId = arguments.artistId
+
     init {
         viewModelScope.launch {
-            val artistWithAlbums = artistRepository.getArtist(state.artistId).first()
-            setState {
-                copy(
+            val artistWithAlbums = artistRepository.getArtist(artistId).first()
+            setDataState {
+                it.copy(
                     artistName = artistWithAlbums.artist.artistName,
                     listItems = buildList {
                         if (artistWithAlbums.artistAlbums.isNotEmpty()) {
                             add(ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM))
                         }
-                        addAll(artistWithAlbums.artistAlbums.map { it.toAlbumRowItem() })
+                        addAll(artistWithAlbums.artistAlbums.map { album -> album.toAlbumRowItem() })
                         if (artistWithAlbums.artistAppearsOn.isNotEmpty()) {
                             add(ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON))
                         }
-                        addAll(artistWithAlbums.artistAppearsOn.map { it.toAlbumRowItem() })
+                        addAll(artistWithAlbums.artistAppearsOn.map { album -> album.toAlbumRowItem() })
                     }
                 )
             }
@@ -48,6 +50,13 @@ class ArtistViewModel @Inject constructor(
 
     override fun handle(action: ArtistUserAction) = Unit
 
+    override val defaultState: ArtistState by lazy {
+        ArtistState(
+            artistName = "",
+            listItems = listOf(),
+        )
+    }
+
 }
 
 private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
@@ -55,7 +64,6 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
 }
 
 data class ArtistState(
-    val artistId: Long,
     val artistName: String,
     val listItems: List<ArtistScreenItem>,
 ) : State
@@ -63,16 +71,11 @@ data class ArtistState(
 
 @InstallIn(ViewModelComponent::class)
 @Module
-object InitialArtistState {
+object ArtistArgumentsModule {
     @Provides
     @ViewModelScoped
-    fun provideInitialArtistState(savedStateHandle: SavedStateHandle): ArtistState {
-        val args: ArtistArguments = savedStateHandle.navArgs()
-        return ArtistState(
-            artistId = args.artistId,
-            artistName = "",
-            listItems = listOf(),
-        )
+    fun provideArtistArguments(savedStateHandle: SavedStateHandle): ArtistArguments {
+        return savedStateHandle.navArgs()
     }
 }
 

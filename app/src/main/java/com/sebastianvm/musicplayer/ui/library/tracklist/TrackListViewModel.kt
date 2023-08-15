@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
 import dagger.Provides
@@ -145,7 +146,7 @@ data class TrackListState(
     val modelListState: ModelListState,
     val trackListType: TrackList,
     val playbackResult: PlaybackResult? = null,
-)
+) : State
 
 
 @InstallIn(ViewModelComponent::class)
@@ -154,7 +155,7 @@ object InitialTrackListArgumentsForNavModule {
 
     @Provides
     @ViewModelScoped
-    fun initialTrackListArgumentsForNavProvider(savedStateHandle: SavedStateHandle): TrackListArguments {
+    fun trackListArgumentsForNavProvider(savedStateHandle: SavedStateHandle): TrackListArguments {
         return savedStateHandle.navArgs<TrackListArgumentsForNav>()
             .toTrackListArguments()
     }

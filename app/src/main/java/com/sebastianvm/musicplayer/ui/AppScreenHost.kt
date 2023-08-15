@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
     { spring() }
@@ -45,7 +47,7 @@ fun AppScreenHost(
     val navBarPadding = windowInsets.asPaddingValues().calculateBottomPadding()
     val statusBarPadding = windowInsets.asPaddingValues().calculateTopPadding()
     var height by remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
     val density = LocalDensity.current
     val playerBottomPadding = 4.dp
@@ -86,7 +88,7 @@ fun AppScreenHost(
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
         Box {
             content()
-            state.playerViewState?.let {
+            (state as? Data)?.state?.playerViewState?.let {
                 AnimatedPlayerCard(
                     state = it,
                     transition = transition,

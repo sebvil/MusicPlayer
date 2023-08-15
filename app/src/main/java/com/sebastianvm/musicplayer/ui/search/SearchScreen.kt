@@ -48,6 +48,7 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
@@ -67,9 +68,17 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
 
 @Composable
 fun SearchScreen(screenViewModel: SearchViewModel, navigationDelegate: NavigationDelegate) {
-    val state by screenViewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by screenViewModel.stateFlow.collectAsStateWithLifecycle()
     HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    SearchScreen(state, screenViewModel)
+    UiStateScreen(uiState = uiState, emptyScreen = {
+        Text(text = stringResource(R.string.no_results))
+    }) { state ->
+        SearchScreen(
+            state
+        ) {
+            screenViewModel.handle(it)
+        }
+    }
 
 }
 

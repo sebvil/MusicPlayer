@@ -28,6 +28,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
@@ -41,14 +42,17 @@ fun ArtistRoute(
     viewModel: ArtistViewModel = hiltViewModel(),
     destinationsNavigator: DestinationsNavigator,
 ) {
-    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    ArtistScreen(
-        state = state,
-        navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },
-        openAlbumContextMenu = { destinationsNavigator.navigate(AlbumContextMenuDestination(it)) },
-        navigateBack = { destinationsNavigator.navigateUp() }
-    )
+    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+        ArtistScreen(
+            state = state,
+            navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },
+            openAlbumContextMenu = { destinationsNavigator.navigate(AlbumContextMenuDestination(it)) },
+            navigateBack = { destinationsNavigator.navigateUp() }
+        )
+    }
+
 }
 
 
