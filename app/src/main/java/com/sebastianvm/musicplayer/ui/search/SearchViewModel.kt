@@ -68,6 +68,7 @@ class SearchViewModel @Inject constructor(
         MutableStateFlow(SearchQueryState(term = "", mode = selectedOption))
 
     init {
+        setDataState { it }
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term)
