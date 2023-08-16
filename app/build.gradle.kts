@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
-    alias(libs.plugins.ktlint.gradle)
     alias(libs.plugins.detekt)
 }
 
@@ -149,17 +148,4 @@ dependencies {
 
     implementation(project(":fakegen"))
     kspTest(project(":fakegen"))
-
-    detektPlugins(libs.detekt.ktlint)
-    detektPlugins(libs.detekt.compose)
-}
-
-detekt {
-    // Applies the config files on top of detekt's default config file. `false` by default.
-    buildUponDefaultConfig = true
-
-    // Turns on all the rules. `false` by default.
-    allRules = false
-    enableCompilerPlugin.set(true)
-    config.setFrom(file("config/detekt/detekt.yml"))
 }
