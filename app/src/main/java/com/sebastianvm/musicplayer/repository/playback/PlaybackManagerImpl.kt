@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -25,7 +24,8 @@ class PlaybackManagerImpl @Inject constructor(
     private val trackRepository: TrackRepository,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher
 ) : PlaybackManager {
-    override val playbackState: MutableStateFlow<PlaybackState> = mediaPlaybackClient.playbackState
+    override fun getPlaybackState(): Flow<PlaybackState> =
+        mediaPlaybackClient.playbackState
 
     override fun connectToService() {
         mediaPlaybackClient.initializeController()

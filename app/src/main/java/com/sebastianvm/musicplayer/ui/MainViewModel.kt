@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
     }
 
     init {
-        playbackManager.playbackState.onEach { playbackState ->
+        playbackManager.getPlaybackState().onEach { playbackState ->
             val mediaItemMetadata = playbackState.mediaItemMetadata
             val newPlayerViewState = if (mediaItemMetadata == null) {
                 isPlaying = false

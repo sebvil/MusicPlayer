@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.android.junit5)
 }
 
 android {
@@ -133,18 +134,11 @@ dependencies {
     // TESTING
 
     // Junit
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.google.truth)
 
     // Coroutines tests
     testImplementation(libs.kotlinx.coroutines.test)
-
-    // Mockk
-    testImplementation(libs.mockk)
-
-    testImplementation(libs.kotlin.test)
-
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.ui.test.manifest)
 
     implementation(project(":fakegen"))
     kspTest(project(":fakegen"))

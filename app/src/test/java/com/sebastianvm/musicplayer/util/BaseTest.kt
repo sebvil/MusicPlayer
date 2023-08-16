@@ -1,29 +1,20 @@
 package com.sebastianvm.musicplayer.util
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import com.sebastianvm.musicplayer.CoroutineTestExtension
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
-import org.junit.Rule
+import org.junit.jupiter.api.extension.RegisterExtension
 
-@OptIn(ExperimentalCoroutinesApi::class)
 abstract class BaseTest {
 
-    private val error: MutableStateFlow<Throwable?> = MutableStateFlow(null)
+    protected val testScope: TestScope
+        get() = coroutineExtension.testScope
 
-    @get:Rule
-    val dispatcherSetUpRule = DispatcherSetUpRule()
-    protected val testScope = TestScope(dispatcherSetUpRule.dispatcher)
+    protected val dispatcher: TestDispatcher = coroutineExtension.dispatcher
 
-    fun TestScope.runReliableTest(block: suspend TestScope.() -> Unit) = this.runTest {
-        Thread.setDefaultUncaughtExceptionHandler { _, tr -> error.value = tr }
-        val job = launch {
-            error.collect { e ->
-                e?.also { throw it }
-            }
-        }
-        block()
-        job.cancel()
+    companion object {
+        @JvmStatic
+        @RegisterExtension
+        val coroutineExtension = CoroutineTestExtension()
     }
 }
