@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.ui.icons
 
-import com.sebastianvm.musicplayer.R
+import androidx.compose.material.icons.filled.Album
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
-import com.sebastianvm.musicplayer.ui.util.compose.ResourceIcon
+import com.sebastianvm.musicplayer.ui.util.compose.VectorIcon
 
 val Icons.Album: IconState
-    get() = ResourceIcon(resId = R.drawable.ic_album)
+    get() = VectorIcon(androidx.compose.material.icons.Icons.Default.Album)
