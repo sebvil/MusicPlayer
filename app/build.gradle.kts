@@ -147,6 +147,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
 
+    implementation(project(":fakegen"))
+    kspTest(project(":fakegen"))
+
     detektPlugins(libs.detekt.ktlint)
     detektPlugins(libs.detekt.compose)
 }
