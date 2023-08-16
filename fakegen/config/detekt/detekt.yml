@@ -1,0 +1,36 @@
+complexity:
+  LongMethod:
+    active: false
+  LongParameterList:
+    active: false
+  TooManyFunctions:
+    active: false
+
+formatting:
+  MaximumLineLength:
+    active: false
+  CommentWrapping:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - "Composable"
+
+style:
+  BracesOnWhenStatements:
+    active: false
+  MaxLineLength:
+    active: false
+  ReturnCount:
+    active: false
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated:
+      - "ComponentPreviews"
+      - "ScreenPreviews"
+      - "Preview"
+
+Compose:
+  CompositionLocalAllowlist:
+    allowedCompositionLocals: "LocalPaddingValues"
