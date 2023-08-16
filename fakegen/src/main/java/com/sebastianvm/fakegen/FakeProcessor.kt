@@ -1,6 +1,5 @@
 package com.sebastianvm.fakegen
 
-import com.google.devtools.ksp.getDeclaredFunctions
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
@@ -29,7 +28,7 @@ import java.util.Locale
 class FakeProcessor(
     private val options: Map<String, String>,
     private val logger: KSPLogger,
-    private val codeGenerator: CodeGenerator
+    private val codeGenerator: CodeGenerator,
 ) : SymbolProcessor {
 
     operator fun OutputStream.plusAssign(str: String) {
@@ -40,17 +39,17 @@ class FakeProcessor(
         val symbols = resolver
             .getSymbolsWithAnnotation("com.sebastianvm.fakegen.FakeClass")
             .filterIsInstance<KSClassDeclaration>()
-
         if (!symbols.iterator().hasNext()) return emptyList()
 
         symbols.forEach {
+            logger.warn("Processing ${it.simpleName.getShortName()}")
             if (it.classKind != ClassKind.INTERFACE) {
                 logger.error("Only interface can be annotated with @FakeClass", it)
                 return@forEach
             }
             val packageName = it.packageName.asString()
             val interfaceName = it.simpleName.asString()
-            val className = "Fake$interfaceName"
+            val className = "${interfaceName}Impl"
 
             @Suppress("SpreadOperator")
             val file = codeGenerator.createNewFile(
@@ -85,11 +84,11 @@ class FakeProcessor(
             data: Unit
         ): String {
             val interfaceName = classDeclaration.simpleName.asString()
-            val className = "Fake$interfaceName"
+            val className = "${interfaceName}Impl"
 
             return buildString {
                 val body =
-                    classDeclaration.getDeclaredFunctions().map { it.accept(this@Visitor, Unit) }
+                    classDeclaration.getAllFunctions().map { it.accept(this@Visitor, Unit) }
                         .joinToString("\n")
 
                 append(imports.sorted().joinToString("\n") { "import $it" })
@@ -98,7 +97,7 @@ class FakeProcessor(
 
                 if (classParameters.isNotEmpty()) {
                     append("(\n")
-                    append(classParameters.joinToString(",\n") { "\tval $it" })
+                    append(classParameters.joinToString(",\n") { "\tval $it = MutableSharedFlow()" })
                     append("\n)")
                 }
 
@@ -115,8 +114,11 @@ class FakeProcessor(
                     name == "FakeQueryMethod" || name == "FakeCommandMethod"
                 }.toList()
             if (annotations.size != 1) {
+                if (function.findOverridee() != null) {
+                    return ""
+                }
                 logger.error(
-                    "Method in FakeClass must be annotated with exactly one of @FakeQueryMethod or @FakeCommandMethod"
+                    "Method ${function.simpleName.getShortName()} in FakeClass must be annotated with exactly one of @FakeQueryMethod or @FakeCommandMethod"
                 )
                 return ""
             }
@@ -131,8 +133,8 @@ class FakeProcessor(
                     imports.add("kotlinx.coroutines.flow.MutableSharedFlow")
                     buildString {
                         append("\toverride ")
-                        if (modifiers.isNotBlank()) {
-                            append("$modifiers ")
+                        if (modifiers.contains("suspend")) {
+                            append("suspend ")
                         }
                         append("fun $functionName(")
                         append(function.parameters.joinToString { it.accept(this@Visitor, Unit) })
@@ -166,14 +168,14 @@ class FakeProcessor(
                         append("\tval ${functionName}Invocations: List<List<Any>>\n")
                         append("\t\tget() = _${functionName}Invocations\n\n")
                         append("\toverride ")
-                        if (modifiers.isNotBlank()) {
-                            append("$modifiers ")
+                        if (modifiers.contains("suspend")) {
+                            append("suspend ")
                         }
                         append("fun $functionName(")
                         append(function.parameters.joinToString { it.accept(this@Visitor, Unit) })
                         append(") {\n")
                         append("\t\t_${functionName}Invocations.add(listOf(")
-                        append(function.parameters.joinToString { it.name?.asString().orEmpty() })
+                        append(function.parameters.joinToString { it.name?.asString() ?: "" })
                         append("))\n")
                         append("\t}\n")
                         append("\n")
@@ -204,11 +206,11 @@ class FakeProcessor(
 
         override fun visitValueParameter(valueParameter: KSValueParameter, data: Unit): String {
             val type = valueParameter.type.accept(this, data)
-            return "${valueParameter.name?.asString().orEmpty()}: $type"
+            return "${valueParameter.name?.asString() ?: ""}: $type"
         }
 
         override fun visitTypeReference(typeReference: KSTypeReference, data: Unit): String {
-            val import = typeReference.resolve().declaration.qualifiedName?.asString().orEmpty()
+            val import = typeReference.resolve().declaration.qualifiedName?.asString() ?: ""
             imports.add(import)
             val resolvedType = typeReference.resolve()
             resolvedType.arguments.forEach { it.type?.accept(this, Unit) }
@@ -259,7 +261,7 @@ class FakeProcessor(
 
                 // Generating nested generic parameters if any.
                 val genericArguments: List<KSTypeArgument> =
-                    typeArgument.type?.element?.typeArguments.orEmpty()
+                    typeArgument.type?.element?.typeArguments ?: emptyList()
                 append(visitTypeArguments(genericArguments))
 
                 // Handling nullability.

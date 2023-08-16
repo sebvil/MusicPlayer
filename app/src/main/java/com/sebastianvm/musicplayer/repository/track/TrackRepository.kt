@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.repository.track
 
+import com.sebastianvm.fakegen.FakeCommandMethod
+import com.sebastianvm.fakegen.FakeQueryMethod
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
@@ -16,24 +18,34 @@ import kotlinx.coroutines.flow.Flow
 
 interface TrackRepository {
 
+    @FakeQueryMethod
     fun getTracksCount(): Flow<Int>
 
+    @FakeQueryMethod
     fun getAllTracks(): Flow<List<Track>>
 
+    @FakeQueryMethod
     fun getTrack(trackId: Long): Flow<TrackWithArtists>
 
+    @FakeQueryMethod
     fun getTracksForArtist(artistId: Long): Flow<List<Track>>
 
+    @FakeQueryMethod
     fun getTracksForAlbum(albumId: Long): Flow<List<Track>>
 
+    @FakeQueryMethod
     fun getTracksForGenre(genreId: Long): Flow<List<Track>>
 
+    @FakeQueryMethod
     fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>>
 
+    @FakeQueryMethod
     fun getTracksForMedia(trackList: TrackList): Flow<List<ModelListItemState>>
 
+    @FakeQueryMethod
     fun getTrackListMetadata(trackList: TrackList): Flow<TrackListMetadata?>
 
+    @FakeCommandMethod
     suspend fun insertAllTracks(
         tracks: Set<Track>,
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
