@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class MediaPlaybackRepositoryModule {
+interface MediaPlaybackRepositoryModule {
     @Binds
-    abstract fun bindMediaPlaybackRepository(mediaPlaybackRepository: PlaybackManagerImpl): PlaybackManager
+    fun bindMediaPlaybackRepository(mediaPlaybackRepository: PlaybackManagerImpl): PlaybackManager
 }

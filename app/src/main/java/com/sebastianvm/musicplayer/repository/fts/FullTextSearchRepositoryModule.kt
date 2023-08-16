@@ -7,10 +7,10 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class FullTextSearchRepositoryModule {
+interface FullTextSearchRepositoryModule {
 
     @Binds
-    abstract fun bindFullTextSearchRepository(
+    fun bindFullTextSearchRepository(
         fullTextSearchRepository: FullTextSearchRepositoryImpl
     ): FullTextSearchRepository
 }

@@ -7,8 +7,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class PlaybackInfoDataSourceModule {
+interface PlaybackInfoDataSourceModule {
 
     @Binds
-    abstract fun bindPlaybackInfoDataSource(playbackInfoDataSource: PlaybackInfoDataSourceImpl): PlaybackInfoDataSource
+    fun bindPlaybackInfoDataSource(playbackInfoDataSource: PlaybackInfoDataSourceImpl): PlaybackInfoDataSource
 }

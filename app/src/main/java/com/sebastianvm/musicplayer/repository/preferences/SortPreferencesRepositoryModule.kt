@@ -7,8 +7,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class SortPreferencesRepositoryModule {
-
+interface SortPreferencesRepositoryModule {
     @Binds
-    abstract fun bindSortPreferencesRepository(source: SortPreferencesRepositoryImpl): SortPreferencesRepository
+    fun bindSortPreferencesRepository(source: SortPreferencesRepositoryImpl): SortPreferencesRepository
 }

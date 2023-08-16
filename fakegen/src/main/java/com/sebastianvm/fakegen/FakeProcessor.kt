@@ -173,7 +173,7 @@ class FakeProcessor(
                         append(function.parameters.joinToString { it.accept(this@Visitor, Unit) })
                         append(") {\n")
                         append("\t\t_${functionName}Invocations.add(listOf(")
-                        append(function.parameters.joinToString { it.name?.asString() ?: "" })
+                        append(function.parameters.joinToString { it.name?.asString().orEmpty() })
                         append("))\n")
                         append("\t}\n")
                         append("\n")
@@ -204,11 +204,11 @@ class FakeProcessor(
 
         override fun visitValueParameter(valueParameter: KSValueParameter, data: Unit): String {
             val type = valueParameter.type.accept(this, data)
-            return "${valueParameter.name?.asString() ?: ""}: $type"
+            return "${valueParameter.name?.asString().orEmpty()}: $type"
         }
 
         override fun visitTypeReference(typeReference: KSTypeReference, data: Unit): String {
-            val import = typeReference.resolve().declaration.qualifiedName?.asString() ?: ""
+            val import = typeReference.resolve().declaration.qualifiedName?.asString().orEmpty()
             imports.add(import)
             val resolvedType = typeReference.resolve()
             resolvedType.arguments.forEach { it.type?.accept(this, Unit) }
@@ -259,7 +259,7 @@ class FakeProcessor(
 
                 // Generating nested generic parameters if any.
                 val genericArguments: List<KSTypeArgument> =
-                    typeArgument.type?.element?.typeArguments ?: emptyList()
+                    typeArgument.type?.element?.typeArguments.orEmpty()
                 append(visitTypeArguments(genericArguments))
 
                 // Handling nullability.
