@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
+import com.sebastianvm.musicplayer.ui.icons.Album
+import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlaybackControlsState
@@ -45,7 +47,7 @@ class MainViewModel @Inject constructor(
                     mediaArtImageState = MediaArtImageState(
                         imageUri = mediaItemMetadata.artworkUri,
                         contentDescription = R.string.album_art_for_album,
-                        backupResource = R.drawable.ic_album,
+                        backupImage = Icons.Album,
                         backupContentDescription = R.string.placeholder_album_art,
                         args = listOf(mediaItemMetadata.title)
                     ),

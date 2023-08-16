@@ -76,8 +76,8 @@ class ArtworkProvider : ContentProvider() {
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
         val nonNullContext = context ?: return null
         val backUpResource = when (uri.pathSegments[0]) {
-            TRACK_PATH -> R.drawable.ic_genre_grey
-            ALBUM_PATH -> R.drawable.ic_album_grey
+            TRACK_PATH -> R.drawable.ic_genre
+            ALBUM_PATH -> R.drawable.ic_album
             else -> 0
         }
         val path = getUri(uri)
