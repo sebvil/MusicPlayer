@@ -29,7 +29,7 @@ import java.util.Locale
 class FakeProcessor(
     private val options: Map<String, String>,
     private val logger: KSPLogger,
-    private val codeGenerator: CodeGenerator,
+    private val codeGenerator: CodeGenerator
 ) : SymbolProcessor {
 
     operator fun OutputStream.plusAssign(str: String) {
@@ -180,15 +180,15 @@ class FakeProcessor(
 
                         append(
                             "\tfun reset${
-                                functionName.replaceFirstChar {
-                                    if (it.isLowerCase()) {
-                                        it.titlecase(
-                                            Locale.ROOT
-                                        )
-                                    } else {
-                                        it.toString()
-                                    }
+                            functionName.replaceFirstChar {
+                                if (it.isLowerCase()) {
+                                    it.titlecase(
+                                        Locale.ROOT
+                                    )
+                                } else {
+                                    it.toString()
                                 }
+                            }
                             }Invocations() {\n"
                         )
                         append("\t\t_${functionName}Invocations.clear()\n")

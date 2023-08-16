@@ -13,4 +13,17 @@ java {
 
 dependencies {
     implementation(libs.ksp.api)
+
+    detektPlugins(libs.detekt.ktlint)
+    detektPlugins(libs.detekt.compose)
+}
+
+detekt {
+    // Applies the config files on top of detekt's default config file. `false` by default.
+    buildUponDefaultConfig = true
+
+    // Turns on all the rules. `false` by default.
+    allRules = false
+    enableCompilerPlugin.set(true)
+    config.setFrom(file("config/detekt/detekt.yml"))
 }
