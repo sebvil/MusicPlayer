@@ -180,15 +180,15 @@ class FakeProcessor(
 
                         append(
                             "\tfun reset${
-                            functionName.replaceFirstChar {
-                                if (it.isLowerCase()) {
-                                    it.titlecase(
-                                        Locale.ROOT
-                                    )
-                                } else {
-                                    it.toString()
+                                functionName.replaceFirstChar {
+                                    if (it.isLowerCase()) {
+                                        it.titlecase(
+                                            Locale.ROOT
+                                        )
+                                    } else {
+                                        it.toString()
+                                    }
                                 }
-                            }
                             }Invocations() {\n"
                         )
                         append("\t\t_${functionName}Invocations.clear()\n")
