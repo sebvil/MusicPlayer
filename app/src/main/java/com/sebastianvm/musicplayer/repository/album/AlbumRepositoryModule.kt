@@ -7,8 +7,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AlbumRepositoryModule {
+interface AlbumRepositoryModule {
 
     @Binds
-    abstract fun bindAlbumRepository(albumRepository: AlbumRepositoryImpl): AlbumRepository
+    fun bindAlbumRepository(albumRepository: AlbumRepositoryImpl): AlbumRepository
 }

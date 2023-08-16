@@ -7,8 +7,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class TrackRepositoryModule {
+interface TrackRepositoryModule {
 
     @Binds
-    abstract fun bindTrackRepository(trackRepository: TrackRepositoryImpl): TrackRepository
+    fun bindTrackRepository(trackRepository: TrackRepositoryImpl): TrackRepository
 }

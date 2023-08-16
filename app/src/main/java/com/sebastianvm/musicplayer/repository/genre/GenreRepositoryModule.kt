@@ -7,8 +7,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class GenreRepositoryModule {
-
+interface GenreRepositoryModule {
     @Binds
-    abstract fun bindGenreRepository(genreRepository: GenreRepositoryImpl): GenreRepository
+    fun bindGenreRepository(genreRepository: GenreRepositoryImpl): GenreRepository
 }

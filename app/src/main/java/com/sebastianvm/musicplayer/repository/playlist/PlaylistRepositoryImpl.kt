@@ -55,7 +55,7 @@ class PlaylistRepositoryImpl @Inject constructor(
                     )
                 }
             } catch (e: SQLiteConstraintException) {
-                Log.i("Exception", e.message ?: "")
+                Log.i("Exception", e.message.orEmpty())
                 null
             }
             emit(id)

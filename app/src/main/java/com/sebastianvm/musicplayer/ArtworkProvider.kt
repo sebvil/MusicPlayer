@@ -93,7 +93,7 @@ class ArtworkProvider : ContentProvider() {
             }
         } catch (e: IOException) {
             // TODO exception logger
-            Log.i("Exception", e.message ?: "")
+            Log.i("Exception", e.message.orEmpty())
             null
         } ?: nonNullContext.getBitmapFromDrawable(backUpResource)
         return getPFDFromBitmap(bitmap)
@@ -109,12 +109,12 @@ class ArtworkProvider : ContentProvider() {
         width: Int = -1,
         height: Int = -1
     ): Bitmap? {
-        val drawable: Drawable = try {
+        val drawable: Drawable? = try {
             ContextCompat.getDrawable(this, drawableId) ?: return null
         } catch (e: Resources.NotFoundException) {
             // TODO exception logger
-            Log.i("Exception", e.message ?: "")
-            VectorDrawableCompat.create(this.resources, drawableId, this.theme)!!
+            Log.i("Exception", e.message.orEmpty())
+            VectorDrawableCompat.create(this.resources, drawableId, this.theme)
         }
 
         return when (drawable) {

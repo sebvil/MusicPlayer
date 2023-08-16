@@ -165,9 +165,9 @@ class MediaPlaybackClient @Inject constructor(
 
     private fun MediaMetadata?.toMediaItemMetadata(): MediaItemMetadata? = this?.let {
         MediaItemMetadata(
-            title = title?.toString() ?: "",
-            artists = artist?.toString() ?: "",
-            artworkUri = artworkUri?.toString() ?: "",
+            title = title?.toString().orEmpty(),
+            artists = artist?.toString().orEmpty(),
+            artworkUri = artworkUri?.toString().orEmpty(),
             trackDurationMs = duration
         )
     }

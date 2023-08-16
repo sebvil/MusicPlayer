@@ -1,7 +1,6 @@
 #! /bin/sh
 set -e
-./gradlew ktlintFormat
-./gradlew detekt
+./gradlew detektMain
 set +e
 git add -A && git commit -m "lint"
 gt upstack submit
