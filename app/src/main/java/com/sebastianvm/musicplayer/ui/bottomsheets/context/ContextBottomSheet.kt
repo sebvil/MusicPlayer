@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -216,8 +215,8 @@ fun ContextMenuLayout(
                             },
                             leadingContent = {
                                 Icon(
-                                    painter = painterResource(id = it.icon),
-                                    contentDescription = stringResource(id = it.text),
+                                    imageVector = it.icon.icon(),
+                                    contentDescription = null,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }

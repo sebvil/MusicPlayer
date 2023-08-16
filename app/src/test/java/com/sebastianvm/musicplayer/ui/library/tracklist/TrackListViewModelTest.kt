@@ -476,7 +476,7 @@ class TrackListViewModelTest : BaseTest() {
             val mediaArtState = MediaArtImageState(
                 imageUri = C.IMAGE_URI_1,
                 contentDescription = R.string.album_art_for_album,
-                backupResource = R.drawable.ic_album,
+                backupImage = R.drawable.ic_album,
                 backupContentDescription = R.string.placeholder_album_art,
                 args = listOf(C.ALBUM_ALPACA)
             )

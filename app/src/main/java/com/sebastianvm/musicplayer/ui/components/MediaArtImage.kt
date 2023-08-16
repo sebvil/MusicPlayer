@@ -1,11 +1,11 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,19 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImage
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.icons.Album
+import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
+import com.sebastianvm.musicplayer.ui.util.compose.IconState
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.ui.util.compose.painter
 
 private val drawableResources =
-    sequenceOf(R.drawable.ic_song, R.drawable.ic_album, R.drawable.ic_artist, R.drawable.ic_genre)
+    sequenceOf(Icons.Album)
 
 class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaArtImageState> {
     override val values: Sequence<MediaArtImageState>
@@ -36,7 +38,7 @@ class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaAr
                 imageUri = "",
                 contentDescription = R.string.album_art_for_album,
                 backupContentDescription = R.string.placeholder_album_art,
-                backupResource = it,
+                backupImage = it,
                 args = listOf("album")
             )
         }
@@ -45,7 +47,7 @@ class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaAr
 data class MediaArtImageState(
     val imageUri: String,
     @StringRes val contentDescription: Int,
-    @DrawableRes val backupResource: Int,
+    val backupImage: IconState,
     @StringRes val backupContentDescription: Int,
     val args: List<Any> = listOf()
 )
@@ -64,7 +66,6 @@ private fun MediaArtImagePreview(
 fun MediaArtImage(
     mediaArtImageState: MediaArtImageState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha
@@ -75,10 +76,9 @@ fun MediaArtImage(
             id = mediaArtImageState.contentDescription,
             formatArgs = mediaArtImageState.args.toTypedArray()
         ),
-        backupImage = painterResource(id = mediaArtImageState.backupResource),
+        backupImage = mediaArtImageState.backupImage,
         backupContentDescription = stringResource(id = mediaArtImageState.backupContentDescription),
         modifier = modifier,
-        backgroundColor = backgroundColor,
         alignment = alignment,
         contentScale = contentScale,
         alpha = alpha
@@ -92,7 +92,7 @@ fun MediaArtImage(
 fun MediaArtImage(
     uri: String,
     contentDescription: String,
-    backupImage: Painter,
+    backupImage: IconState,
     backupContentDescription: String,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
@@ -111,11 +111,26 @@ fun MediaArtImage(
     var useColorFilter by remember {
         mutableStateOf(true)
     }
+    val colorScheme = MaterialTheme.colorScheme
+
+    val colorFilter by remember(useColorFilter, colorScheme, actualBackgroundColor) {
+        derivedStateOf {
+            if (useColorFilter) {
+                ColorFilter.tint(
+                    colorScheme.contentColorFor(
+                        actualBackgroundColor
+                    )
+                )
+            } else {
+                null
+            }
+        }
+    }
 
     AsyncImage(
         model = uri,
-        placeholder = backupImage,
-        error = backupImage,
+        placeholder = backupImage.painter(),
+        error = backupImage.painter(),
         contentDescription = actualContentDescription,
         contentScale = contentScale,
         alignment = alignment,
@@ -126,14 +141,6 @@ fun MediaArtImage(
             useColorFilter = false
             actualContentDescription = contentDescription
         },
-        colorFilter = if (useColorFilter) {
-            ColorFilter.tint(
-                MaterialTheme.colorScheme.contentColorFor(
-                    actualBackgroundColor
-                )
-            )
-        } else {
-            null
-        }
+        colorFilter = colorFilter,
     )
 }

@@ -31,6 +31,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
+import com.sebastianvm.musicplayer.ui.icons.Album
 
 enum class TrailingButtonType {
     More, Plus, Check
@@ -178,7 +179,7 @@ fun Album.toModelListItemState(): ModelListItemState {
         mediaArtImageState = MediaArtImageState(
             imageUri = imageUri,
             contentDescription = R.string.album_art_for_album,
-            backupResource = R.drawable.ic_album,
+            backupImage = com.sebastianvm.musicplayer.ui.icons.Icons.Album,
             backupContentDescription = R.string.placeholder_album_art,
             args = listOf(albumName)
         ),

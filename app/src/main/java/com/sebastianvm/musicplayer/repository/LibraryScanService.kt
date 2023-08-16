@@ -79,7 +79,7 @@ class LibraryScanService : Service() {
 
         notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Scanning library")
-            .setSmallIcon(R.drawable.ic_song)
+            .setSmallIcon(R.drawable.ic_album)
             .setContentIntent(pendingIntent)
             .setTicker("Library scan progress")
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)

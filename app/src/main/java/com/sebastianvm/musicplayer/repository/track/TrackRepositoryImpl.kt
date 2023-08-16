@@ -21,6 +21,8 @@ import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesReposit
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.icons.Album
+import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -129,7 +131,7 @@ class TrackRepositoryImpl @Inject constructor(
                         mediaArtImageState = MediaArtImageState(
                             it.imageUri,
                             contentDescription = R.string.album_art_for_album,
-                            backupResource = R.drawable.ic_album,
+                            backupImage = Icons.Album,
                             backupContentDescription = R.string.placeholder_album_art,
                             args = listOf(it.albumName)
                         )
