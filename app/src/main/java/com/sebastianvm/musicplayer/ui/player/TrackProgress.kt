@@ -19,10 +19,14 @@ val Int.percent: Percentage
     get() = Percentage(this.toFloat() / Percentage.MAX)
 
 data class TrackProgressState(
-    val progress: Percentage,
-    val currentPlaybackTime: String,
-    val trackLength: String
-)
+    val currentPlaybackTime: MinutesSecondsTime,
+    val trackLength: MinutesSecondsTime
+) {
+    val progress: Percentage
+        get() = Percentage(
+            currentPlaybackTime.toMilliseconds().toFloat() / trackLength.toMilliseconds().toFloat()
+        )
+}
 
 @Composable
 fun TrackProgress(

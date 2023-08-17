@@ -7,13 +7,16 @@ class PlayerViewStatePreviewParameterProvider :
     PreviewParameterProvider<PlayerViewState> {
     override val values: Sequence<PlayerViewState> =
         MediaArtImageStatePreviewParamsProvider().values.flatMap { mediaArtImageState ->
-            PlaybackControlsStatePreviewParameterProvider().values.flatMap { playbackControlsState ->
-                TrackInfoStatePreviewParameterProvider().values.map { trackInfoState ->
-                    PlayerViewState(
-                        mediaArtImageState = mediaArtImageState,
-                        trackInfoState = trackInfoState,
-                        playbackControlsState = playbackControlsState
-                    )
+            TrackProgressStatePreviewParameterProvider().values.flatMap { progressState ->
+                PlaybackIcon.entries.flatMap { icon ->
+                    TrackInfoStatePreviewParameterProvider().values.map { trackInfoState ->
+                        PlayerViewState(
+                            mediaArtImageState = mediaArtImageState,
+                            trackInfoState = trackInfoState,
+                            playbackIcon = icon,
+                            trackProgressState = progressState
+                        )
+                    }
                 }
             }
         }

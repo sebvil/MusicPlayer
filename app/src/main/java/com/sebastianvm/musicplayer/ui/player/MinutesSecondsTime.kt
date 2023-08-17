@@ -7,8 +7,7 @@ data class MinutesSecondsTime(val minutes: Long, val seconds: Long) {
     }
 
     companion object {
-        private const val MS_PER_SECOND = 1000
-        private const val SECONDS_PER_MINUTE = 60
+
         fun fromMs(ms: Long): MinutesSecondsTime {
             return MinutesSecondsTime(
                 minutes = (ms / MS_PER_SECOND) / SECONDS_PER_MINUTE,
@@ -17,3 +16,9 @@ data class MinutesSecondsTime(val minutes: Long, val seconds: Long) {
         }
     }
 }
+
+fun MinutesSecondsTime.toMilliseconds(): Long =
+    (minutes * SECONDS_PER_MINUTE + seconds) * MS_PER_SECOND
+
+private const val MS_PER_SECOND = 1000
+private const val SECONDS_PER_MINUTE = 60

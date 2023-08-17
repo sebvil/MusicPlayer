@@ -243,11 +243,11 @@ fun AnimatedPlayerCard(
                         .layoutId("trackTime")
                 ) {
                     Text(
-                        text = state.playbackControlsState.trackProgressState.currentPlaybackTime,
+                        text = state.trackProgressState.currentPlaybackTime.toString(),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = state.playbackControlsState.trackProgressState.trackLength,
+                        text = state.trackProgressState.trackLength.toString(),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -295,7 +295,7 @@ fun AnimatedPlayerCard(
                 }
                 IconButton(onClick = onPlayToggled) {
                     Icon(
-                        imageVector = state.playbackControlsState.playbackIcon.icon,
+                        imageVector = state.playbackIcon.icon,
                         contentDescription = stringResource(R.string.previous),
                         modifier = Modifier.size(buttonSize)
                     )
@@ -309,7 +309,7 @@ fun AnimatedPlayerCard(
                 }
             }
             LinearProgressIndicator(
-                progress = state.playbackControlsState.trackProgressState.progress.percent,
+                progress = state.trackProgressState.progress.percent,
                 modifier = Modifier
                     .layoutId("progressBar"),
                 trackColor = MaterialTheme.colorScheme.onPrimary
