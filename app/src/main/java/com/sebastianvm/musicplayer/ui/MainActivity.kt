@@ -11,6 +11,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
@@ -20,6 +22,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,17 +52,25 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     navController.navigatorProvider += bottomSheetNavigator
                     M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
-                        AppScreenHost(
-                            viewModel = viewModel,
-                            onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
-                            onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
-                            onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) }
-                        ) {
-                            DestinationsNavHost(
-                                navGraph = NavGraphs.root,
-                                navController = navController,
-                                engine = rememberAnimatedNavHostEngine()
-                            )
+                        val state by viewModel.stateFlow.collectAsState()
+                        (state as? Data)?.state?.let {
+                            AppScreenHost(
+                                mainState = it,
+                                onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
+                                onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
+                                onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) },
+                                onProgressBarValueChange = { progress ->
+                                    viewModel.handle(
+                                        MainUserAction.ProgressBarClicked(progress)
+                                    )
+                                }
+                            ) {
+                                DestinationsNavHost(
+                                    navGraph = NavGraphs.root,
+                                    navController = navController,
+                                    engine = rememberAnimatedNavHostEngine()
+                                )
+                            }
                         }
                     }
                 }
