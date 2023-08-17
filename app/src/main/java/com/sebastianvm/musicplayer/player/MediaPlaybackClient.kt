@@ -58,8 +58,10 @@ class MediaPlaybackClient @Inject constructor(
                             trackLength = nonNullController.mediaMetadata.duration.milliseconds
                         ),
                         isPlaying = nonNullController.isPlaying,
-                        currentPlayTime = (nonNullController.contentPosition.takeUnless { it == C.TIME_UNSET }
-                            ?: 0L).milliseconds
+                        currentPlayTime = (
+                            nonNullController.contentPosition.takeUnless { it == C.TIME_UNSET }
+                                ?: 0L
+                            ).milliseconds
                     )
                 }
             } ?: NotPlayingState
@@ -110,7 +112,6 @@ class MediaPlaybackClient @Inject constructor(
             mediaController?.play()
         }
     }
-
 
     fun next() {
         mediaController?.seekToNext()

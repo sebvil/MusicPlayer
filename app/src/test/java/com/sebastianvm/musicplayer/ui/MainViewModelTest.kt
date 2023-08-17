@@ -111,7 +111,6 @@ class MainViewModelTest : BaseTest() {
         }
     }
 
-
     @ParameterizedTest
     @ValueSource(ints = [10, 20, 30, 50])
     fun `ProgressBarClicked seeks to position in track when there is playback info`(position: Int) {
@@ -138,7 +137,6 @@ class MainViewModelTest : BaseTest() {
         }
     }
 
-
     @Test
     fun `ProgressBarClicked does not seeks to position in track when there is no playback info`() {
         with(generateViewModel()) {
@@ -146,5 +144,4 @@ class MainViewModelTest : BaseTest() {
             Truth.assertThat(playbackManager.seekToTrackPositionInvocations).isEmpty()
         }
     }
-
 }
