@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
-import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
 
 interface PlaybackManager {
 
@@ -77,7 +77,7 @@ sealed interface PlaybackState
 data class TrackPlayingState(
     val trackInfo: TrackInfo,
     val isPlaying: Boolean,
-    val currentPlayTime: MinutesSecondsTime
+    val currentPlayTime: Duration
 ) : PlaybackState
 
 data object NotPlayingState : PlaybackState
@@ -86,12 +86,5 @@ data class TrackInfo(
     val title: String,
     val artists: String,
     val artworkUri: String,
-    val trackLength: MinutesSecondsTime
-)
-
-data class MediaItemMetadata(
-    val title: String,
-    val artists: String,
-    val artworkUri: String,
-    val trackDurationMs: Long
+    val trackLength: Duration
 )

@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
 import com.sebastianvm.musicplayer.ui.player.TrackProgressState
-import com.sebastianvm.musicplayer.ui.player.toMilliseconds
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -90,7 +89,7 @@ class MainViewModel(
 
             is MainUserAction.ProgressBarClicked -> {
                 val trackLengthMs =
-                    dataState?.playerViewState?.trackProgressState?.trackLength?.toMilliseconds()
+                    dataState?.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
                         ?: return
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)

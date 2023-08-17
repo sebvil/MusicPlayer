@@ -3,20 +3,21 @@
 package com.sebastianvm.musicplayer.ui.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import kotlin.time.Duration.Companion.seconds
 
 class TrackProgressStatePreviewParameterProvider : PreviewParameterProvider<TrackProgressState> {
     override val values = sequenceOf(
         TrackProgressState(
-            currentPlaybackTime = MinutesSecondsTime.fromMs(0),
-            trackLength = MinutesSecondsTime.fromMs(180)
+            currentPlaybackTime = 0.seconds,
+            trackLength = 180.seconds
         ),
         TrackProgressState(
-            currentPlaybackTime = MinutesSecondsTime.fromMs(90),
-            trackLength = MinutesSecondsTime.fromMs(180)
+            currentPlaybackTime = 90.seconds,
+            trackLength = 180.seconds
         ),
         TrackProgressState(
-            currentPlaybackTime = MinutesSecondsTime.fromMs(180),
-            trackLength = MinutesSecondsTime.fromMs(180)
+            currentPlaybackTime = 180.seconds,
+            trackLength = 180.seconds
         )
     )
 }

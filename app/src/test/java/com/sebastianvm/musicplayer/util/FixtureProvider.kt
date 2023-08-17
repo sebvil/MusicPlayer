@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import java.util.stream.Stream
+import kotlin.time.Duration.Companion.seconds
 
 object FixtureProvider {
 
@@ -15,20 +15,20 @@ object FixtureProvider {
                     title = "",
                     artists = "",
                     artworkUri = "",
-                    trackLength = MinutesSecondsTime.fromMs(0)
+                    trackLength = 0.seconds
                 ),
                 isPlaying = false,
-                currentPlayTime = MinutesSecondsTime.fromMs(0)
+                currentPlayTime = 0.seconds
             ),
             TrackPlayingState(
                 trackInfo = TrackInfo(
                     title = "La Promesa",
                     artists = "Melendi",
                     artworkUri = "path/to/image",
-                    trackLength = MinutesSecondsTime.fromMs(250)
+                    trackLength = 250.seconds
                 ),
                 isPlaying = false,
-                currentPlayTime = MinutesSecondsTime.fromMs(125)
+                currentPlayTime = 125.seconds
             ),
         )
     }

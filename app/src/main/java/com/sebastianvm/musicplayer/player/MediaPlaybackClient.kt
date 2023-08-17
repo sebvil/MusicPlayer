@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.duration
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class MediaPlaybackClient @Inject constructor(
@@ -45,13 +45,23 @@ class MediaPlaybackClient @Inject constructor(
         controller: MediaController?,
     ) {
         _playbackState.update {
-            controller?.let {
-                TrackPlayingState(
-                    trackInfo = controller.mediaMetadata.toTrackInfo(),
-                    isPlaying = controller.isPlaying,
-                    currentPlayTime = MinutesSecondsTime.fromMs(controller.contentPosition.takeUnless { it == C.TIME_UNSET }
-                        ?: 0)
-                )
+            controller?.let { nonNullController ->
+                if (nonNullController.mediaMetadata == MediaMetadata.EMPTY) {
+                    NotPlayingState
+                } else {
+                    TrackPlayingState(
+                        trackInfo = TrackInfo(
+                            title = nonNullController.mediaMetadata.title?.toString().orEmpty(),
+                            artists = nonNullController.mediaMetadata.artist?.toString().orEmpty(),
+                            artworkUri = nonNullController.mediaMetadata.artworkUri?.toString()
+                                .orEmpty(),
+                            trackLength = nonNullController.mediaMetadata.duration.milliseconds
+                        ),
+                        isPlaying = nonNullController.isPlaying,
+                        currentPlayTime = (nonNullController.contentPosition.takeUnless { it == C.TIME_UNSET }
+                            ?: 0L).milliseconds
+                    )
+                }
             } ?: NotPlayingState
         }
     }
@@ -165,11 +175,4 @@ class MediaPlaybackClient @Inject constructor(
             controllerNotNull.seekTo(position)
         }
     }
-
-    private fun MediaMetadata.toTrackInfo(): TrackInfo = TrackInfo(
-        title = title?.toString().orEmpty(),
-        artists = artist?.toString().orEmpty(),
-        artworkUri = artworkUri?.toString().orEmpty(),
-        trackLength = MinutesSecondsTime.fromMs(duration)
-    )
 }

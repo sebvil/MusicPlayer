@@ -47,6 +47,7 @@ import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 
 @Composable
 fun AnimatedPlayerCard(
@@ -243,11 +244,11 @@ fun AnimatedPlayerCard(
                         .layoutId("trackTime")
                 ) {
                     Text(
-                        text = state.trackProgressState.currentPlaybackTime.toString(),
+                        text = state.trackProgressState.currentPlaybackTime.toDisplayableString(),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = state.trackProgressState.trackLength.toString(),
+                        text = state.trackProgressState.trackLength.toDisplayableString(),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -308,6 +309,7 @@ fun AnimatedPlayerCard(
                     )
                 }
             }
+            // TODO explore using slider
             LinearProgressIndicator(
                 progress = state.trackProgressState.progress.percent,
                 modifier = Modifier

@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
@@ -20,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.time.Duration.Companion.seconds
 
 class MainViewModelTest : BaseTest() {
 
@@ -125,8 +125,8 @@ class MainViewModelTest : BaseTest() {
                         ),
                         trackInfoState = TrackInfoState(trackName = "", artists = ""),
                         trackProgressState = TrackProgressState(
-                            currentPlaybackTime = MinutesSecondsTime.fromMs(0),
-                            trackLength = MinutesSecondsTime.fromMs(100_000)
+                            currentPlaybackTime = 0.seconds,
+                            trackLength = 100.seconds
                         ),
                         playbackIcon = PlaybackIcon.PLAY
                     )
