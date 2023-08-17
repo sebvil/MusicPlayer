@@ -1,12 +1,6 @@
 package com.sebastianvm.musicplayer.ui.player
 
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
+import kotlin.time.Duration
 
 @JvmInline
 value class Percentage(val percent: Float) {
@@ -15,48 +9,12 @@ value class Percentage(val percent: Float) {
     }
 }
 
-val Int.percent: Percentage
-    get() = Percentage(this.toFloat() / Percentage.MAX)
-
 data class TrackProgressState(
-    val progress: Percentage,
-    val currentPlaybackTime: String,
-    val trackLength: String
-)
-
-@Composable
-fun TrackProgress(
-    state: TrackProgressState,
-    onProgressBarClicked: (position: Int) -> Unit,
-    modifier: Modifier = Modifier
+    val currentPlaybackTime: Duration,
+    val trackLength: Duration
 ) {
-    Column(modifier = modifier) {
-        LinearProgressIndicator(
-            progress = state.progress.percent,
-            modifier = Modifier
-                .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectTapGestures { offset ->
-                        val xOffset = offset.x
-                        val percentPosition = (xOffset / size.width) * Percentage.MAX
-                        onProgressBarClicked(percentPosition.toInt())
-                    }
-                }
+    val progress: Percentage
+        get() = Percentage(
+            currentPlaybackTime.inWholeMilliseconds.toFloat() / trackLength.inWholeMilliseconds.toFloat()
         )
-//        Row(
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 4.dp)
-//        ) {
-//            Text(
-//                text = state.currentPlaybackTime,
-//                style = MaterialTheme.typography.bodyMedium,
-//            )
-//            Text(
-//                text = state.trackLength,
-//                style = MaterialTheme.typography.bodyMedium,
-//            )
-//        }
-    }
 }

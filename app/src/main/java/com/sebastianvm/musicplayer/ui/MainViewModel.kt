@@ -1,14 +1,12 @@
 package com.sebastianvm.musicplayer.ui
 
-import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.ui.player.MinutesSecondsTime
 import com.sebastianvm.musicplayer.ui.player.Percentage
-import com.sebastianvm.musicplayer.ui.player.PlaybackControlsState
 import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
@@ -17,64 +15,58 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class MainViewModel(
+    viewModelScope: CoroutineScope?,
     private val playbackManager: PlaybackManager
-) : BaseViewModel<MainActivityState, MainUserAction>() {
+) : BaseViewModel<MainState, MainUserAction>(viewModelScope = viewModelScope) {
 
-    private var isPlaying: Boolean = false
-    private var trackLengthMs: Long = 0
+    @Inject
+    constructor(playbackManager: PlaybackManager) : this(
+        viewModelScope = null,
+        playbackManager = playbackManager
+    )
 
-    override val defaultState: MainActivityState by lazy {
-        MainActivityState(playerViewState = null)
+    override val defaultState: MainState by lazy {
+        MainState(playerViewState = null)
     }
 
     init {
         playbackManager.getPlaybackState().onEach { playbackState ->
-            val mediaItemMetadata = playbackState.mediaItemMetadata
-            val newPlayerViewState = if (mediaItemMetadata == null) {
-                isPlaying = false
-                trackLengthMs = 0
-                null
-            } else {
-                isPlaying = playbackState.isPlaying
-                trackLengthMs = mediaItemMetadata.trackDurationMs
-                PlayerViewState(
-                    mediaArtImageState = MediaArtImageState(
-                        imageUri = mediaItemMetadata.artworkUri,
-                        contentDescription = R.string.album_art_for_album,
-                        backupImage = Icons.Album,
-                        backupContentDescription = R.string.placeholder_album_art,
-                        args = listOf(mediaItemMetadata.title)
-                    ),
-                    trackInfoState = TrackInfoState(
-                        trackName = mediaItemMetadata.title,
-                        artists = mediaItemMetadata.artists
-                    ),
-                    playbackControlsState = PlaybackControlsState(
-                        trackProgressState = TrackProgressState(
-                            progress = Percentage(
-                                playbackState.currentPlayTimeMs.toFloat() / mediaItemMetadata.trackDurationMs.toFloat()
-                            ),
-                            currentPlaybackTime = MinutesSecondsTime.fromMs(playbackState.currentPlayTimeMs)
-                                .toString(),
-                            trackLength = MinutesSecondsTime.fromMs(mediaItemMetadata.trackDurationMs)
-                                .toString()
-                        ),
-                        playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
-                    )
-                )
+            when (playbackState) {
+                is TrackPlayingState -> {
+                    val trackInfo = playbackState.trackInfo
+                    setDataState {
+                        it.copy(
+                            playerViewState = PlayerViewState(
+                                mediaArtImageState = MediaArtImageState(
+                                    imageUri = trackInfo.artworkUri,
+                                    backupImage = Icons.Album,
+                                ),
+                                trackInfoState = TrackInfoState(
+                                    trackName = trackInfo.title,
+                                    artists = trackInfo.artists
+                                ),
+                                trackProgressState = TrackProgressState(
+                                    currentPlaybackTime = playbackState.currentPlayTime,
+                                    trackLength = trackInfo.trackLength
+                                ),
+                                playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
+                            )
+                        )
+                    }
+                }
+
+                is NotPlayingState -> {
+                    setDataState { it.copy(playerViewState = null) }
+                }
             }
-            setDataState {
-                it.copy(
-                    playerViewState = newPlayerViewState
-                )
-            }
-        }.launchIn(viewModelScope)
+        }.launchIn(vmScope)
     }
 
     override fun handle(action: MainUserAction) {
@@ -88,11 +80,7 @@ class MainViewModel @Inject constructor(
             }
 
             is MainUserAction.PlayToggled -> {
-                if (isPlaying) {
-                    playbackManager.pause()
-                } else {
-                    playbackManager.play()
-                }
+                playbackManager.togglePlay()
             }
 
             is MainUserAction.NextButtonClicked -> playbackManager.next()
@@ -100,6 +88,9 @@ class MainViewModel @Inject constructor(
             is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MainUserAction.ProgressBarClicked -> {
+                val trackLengthMs =
+                    dataState?.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
+                        ?: return
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
@@ -107,7 +98,7 @@ class MainViewModel @Inject constructor(
     }
 }
 
-data class MainActivityState(val playerViewState: PlayerViewState?) : State
+data class MainState(val playerViewState: PlayerViewState?) : State
 
 sealed interface MainUserAction : UserAction {
     data object ConnectToMusicService : MainUserAction

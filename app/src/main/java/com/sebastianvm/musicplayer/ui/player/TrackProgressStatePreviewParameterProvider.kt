@@ -1,23 +1,23 @@
+@file:Suppress("MagicNumber")
+
 package com.sebastianvm.musicplayer.ui.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import kotlin.time.Duration.Companion.seconds
 
 class TrackProgressStatePreviewParameterProvider : PreviewParameterProvider<TrackProgressState> {
     override val values = sequenceOf(
         TrackProgressState(
-            progress = 0.percent,
-            currentPlaybackTime = "0:00",
-            trackLength = "3:00"
+            currentPlaybackTime = 0.seconds,
+            trackLength = 180.seconds
         ),
         TrackProgressState(
-            progress = 50.percent,
-            currentPlaybackTime = "1:30",
-            trackLength = "3:00"
+            currentPlaybackTime = 90.seconds,
+            trackLength = 180.seconds
         ),
         TrackProgressState(
-            progress = 100.percent,
-            currentPlaybackTime = "3:00",
-            trackLength = "3:00"
+            currentPlaybackTime = 180.seconds,
+            trackLength = 180.seconds
         )
     )
 }

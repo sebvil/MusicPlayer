@@ -35,12 +35,8 @@ class PlaybackManagerImpl @Inject constructor(
         mediaPlaybackClient.releaseController()
     }
 
-    override fun play() {
-        mediaPlaybackClient.play()
-    }
-
-    override fun pause() {
-        mediaPlaybackClient.pause()
+    override fun togglePlay() {
+        mediaPlaybackClient.togglePlay()
     }
 
     override fun next() {

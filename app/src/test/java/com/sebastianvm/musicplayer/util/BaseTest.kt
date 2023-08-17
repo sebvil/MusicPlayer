@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.util
 
-import com.sebastianvm.musicplayer.CoroutineTestExtension
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.extension.RegisterExtension

@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
 
 interface PlaybackManager {
 
@@ -20,10 +21,7 @@ interface PlaybackManager {
     fun disconnectFromService()
 
     @FakeCommandMethod
-    fun play()
-
-    @FakeCommandMethod
-    fun pause()
+    fun togglePlay()
 
     @FakeCommandMethod
     fun next()
@@ -74,15 +72,19 @@ interface PlaybackManager {
     fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
 }
 
-data class PlaybackState(
-    val mediaItemMetadata: MediaItemMetadata?,
-    val isPlaying: Boolean,
-    val currentPlayTimeMs: Long
-)
+sealed interface PlaybackState
 
-data class MediaItemMetadata(
+data class TrackPlayingState(
+    val trackInfo: TrackInfo,
+    val isPlaying: Boolean,
+    val currentPlayTime: Duration
+) : PlaybackState
+
+data object NotPlayingState : PlaybackState
+
+data class TrackInfo(
     val title: String,
     val artists: String,
     val artworkUri: String,
-    val trackDurationMs: Long
+    val trackLength: Duration
 )

@@ -17,9 +17,6 @@
     <!--    Cannot name "continue" as this is reserved by Kotlin-->
     <string name="continue_string">Continue</string>
 
-    <string name="album_art_for_album">Album art for %1$s</string>
-    <string name="placeholder_album_art">Placeholder album art</string>
-
     <string name="storage_permission_needed">Storage Permission Needed</string>
     <string name="grant_storage_permissions">In order to read your music library, please grant storage permission.</string>
     <string name="dismiss">Dismiss</string>

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer
+package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManagerImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl

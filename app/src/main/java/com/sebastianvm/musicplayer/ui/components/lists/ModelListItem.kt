@@ -178,10 +178,7 @@ fun Album.toModelListItemState(): ModelListItemState {
         supportingContent = supportingContent,
         mediaArtImageState = MediaArtImageState(
             imageUri = imageUri,
-            contentDescription = R.string.album_art_for_album,
-            backupImage = com.sebastianvm.musicplayer.ui.icons.Icons.Album,
-            backupContentDescription = R.string.placeholder_album_art,
-            args = listOf(albumName)
+            backupImage = com.sebastianvm.musicplayer.ui.icons.Icons.Album
         ),
         trailingButtonType = TrailingButtonType.More
     )

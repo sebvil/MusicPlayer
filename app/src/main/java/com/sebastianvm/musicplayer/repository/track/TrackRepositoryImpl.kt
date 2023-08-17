@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.track
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
@@ -130,10 +129,7 @@ class TrackRepositoryImpl @Inject constructor(
                         trackListName = it.albumName,
                         mediaArtImageState = MediaArtImageState(
                             it.imageUri,
-                            contentDescription = R.string.album_art_for_album,
-                            backupImage = Icons.Album,
-                            backupContentDescription = R.string.placeholder_album_art,
-                            args = listOf(it.albumName)
+                            backupImage = Icons.Album
                         )
                     )
                 }

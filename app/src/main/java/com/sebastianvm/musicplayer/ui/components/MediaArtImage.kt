@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
@@ -16,11 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImage
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
@@ -36,20 +33,14 @@ class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaAr
         get() = drawableResources.map {
             MediaArtImageState(
                 imageUri = "",
-                contentDescription = R.string.album_art_for_album,
-                backupContentDescription = R.string.placeholder_album_art,
                 backupImage = it,
-                args = listOf("album")
             )
         }
 }
 
 data class MediaArtImageState(
     val imageUri: String,
-    @StringRes val contentDescription: Int,
     val backupImage: IconState,
-    @StringRes val backupContentDescription: Int,
-    val args: List<Any> = listOf()
 )
 
 @ComponentPreviews
@@ -72,12 +63,7 @@ fun MediaArtImage(
 ) {
     MediaArtImage(
         uri = mediaArtImageState.imageUri,
-        contentDescription = stringResource(
-            id = mediaArtImageState.contentDescription,
-            formatArgs = mediaArtImageState.args.toTypedArray()
-        ),
         backupImage = mediaArtImageState.backupImage,
-        backupContentDescription = stringResource(id = mediaArtImageState.backupContentDescription),
         modifier = modifier,
         alignment = alignment,
         contentScale = contentScale,
@@ -91,19 +77,13 @@ fun MediaArtImage(
 @Composable
 fun MediaArtImage(
     uri: String,
-    contentDescription: String,
     backupImage: IconState,
-    backupContentDescription: String,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha
 ) {
-    var actualContentDescription by remember {
-        mutableStateOf(backupContentDescription)
-    }
-
     var actualBackgroundColor by remember {
         mutableStateOf(backgroundColor)
     }
@@ -131,7 +111,7 @@ fun MediaArtImage(
         model = uri,
         placeholder = backupImage.painter(),
         error = backupImage.painter(),
-        contentDescription = actualContentDescription,
+        contentDescription = null,
         contentScale = contentScale,
         alignment = alignment,
         alpha = alpha,
@@ -139,7 +119,6 @@ fun MediaArtImage(
         onSuccess = {
             actualBackgroundColor = Color.Transparent
             useColorFilter = false
-            actualContentDescription = contentDescription
         },
         colorFilter = colorFilter,
     )
