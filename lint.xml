@@ -5,4 +5,5 @@
     </issue>
 
     <issue id="UnusedResources" severity="error" />
+    <issue id="AutoboxingStateCreation" severity="error" />
 </lint>
