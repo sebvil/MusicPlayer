@@ -65,7 +65,6 @@ import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimatedPlayerCard(
     state: PlayerViewState,
@@ -340,7 +339,7 @@ fun AnimatedPlayerCard(
 @Composable
 private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
-    val colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.onPrimary)
+    val colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primary)
     val interactions = remember { mutableStateListOf<Interaction>() }
     LaunchedEffect(interactionSource) {
         interactionSource.interactions.collect { interaction ->
@@ -374,7 +373,7 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
         },
         valueRange = 0f..1f,
         onValueChangeFinished = {
-            onProgressBarValueChange((sliderPosition * Percentage.MAX).toInt())
+            onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
         },
         modifier = Modifier
             .layoutId("progressBar"),
@@ -382,13 +381,14 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
         thumb = {
             val size by animateIntAsState(
                 if (interactions.isNotEmpty()) {
-                    12
+                    PROGRESS_BAR_THUMB_SIZE_LARGE
                 } else {
-                    8
+                    PROGRESS_BAR_THUMB_SIZE_SMALL
                 },
                 label = "size"
             )
             val offset by remember(size) {
+                @Suppress("MagicNumber")
                 derivedStateOf {
                     (-4 * size / 8 + 10).coerceAtLeast(0).dp
                 }
@@ -406,11 +406,18 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
     )
 }
 
+private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
+private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
+
 @ComponentPreviews
 @Composable
 private fun ProgressbarPreview() {
     ThemedPreview {
-        ProgressSlider(progress = 0f, onProgressBarValueChange = {})
+        Column {
+            ProgressSlider(progress = 0f, onProgressBarValueChange = {})
+            ProgressSlider(progress = 0.5f, onProgressBarValueChange = {})
+            ProgressSlider(progress = 1f, onProgressBarValueChange = {})
+        }
     }
 }
 

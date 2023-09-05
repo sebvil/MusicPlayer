@@ -37,7 +37,7 @@ class MainViewModel(
     }
 
     init {
-        playbackManager.getPlaybackState().onEach { playbackState ->
+        playbackManager.getPlaybackState().onEach { (playbackState, currentPlayTime) ->
             when (playbackState) {
                 is TrackPlayingState -> {
                     val trackInfo = playbackState.trackInfo
@@ -53,7 +53,7 @@ class MainViewModel(
                                     artists = trackInfo.artists
                                 ),
                                 trackProgressState = TrackProgressState(
-                                    currentPlaybackTime = playbackState.currentPlayTime,
+                                    currentPlaybackTime = currentPlayTime,
                                     trackLength = trackInfo.trackLength
                                 ),
                                 playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
