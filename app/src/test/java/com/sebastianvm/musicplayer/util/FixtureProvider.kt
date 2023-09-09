@@ -18,7 +18,7 @@ object FixtureProvider {
                     trackLength = 0.seconds
                 ),
                 isPlaying = false,
-                currentPlayTime = 0.seconds
+                currentTrackProgress = 0.seconds
             ),
             TrackPlayingState(
                 trackInfo = TrackInfo(
@@ -28,7 +28,7 @@ object FixtureProvider {
                     trackLength = 250.seconds
                 ),
                 isPlaying = false,
-                currentPlayTime = 125.seconds
+                currentTrackProgress = 125.seconds
             ),
         )
     }

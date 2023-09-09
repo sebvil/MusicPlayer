@@ -21,13 +21,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
@@ -41,9 +39,6 @@ class MediaPlaybackClient @Inject constructor(
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
 
     private val _playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
-    private val _currentPosition: MutableStateFlow<Duration> = MutableStateFlow(Duration.ZERO)
-    val currentPosition: Flow<Duration>
-        get() = _currentPosition
     val playbackState
         get() = _playbackState
 
@@ -54,30 +49,36 @@ class MediaPlaybackClient @Inject constructor(
     private fun updatePlaybackState() {
         _playbackState.update {
             controller?.let { nonNullController ->
-                when {
-                    nonNullController.mediaMetadata == MediaMetadata.EMPTY -> {
-                        NotPlayingState
-                    }
-
-                    nonNullController.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> {
-                        NotPlayingState
-                    }
-
-                    else -> {
-                        TrackPlayingState(
-                            trackInfo = TrackInfo(
-                                title = nonNullController.mediaMetadata.title?.toString().orEmpty(),
-                                artists = nonNullController.mediaMetadata.artist?.toString()
-                                    .orEmpty(),
-                                artworkUri = nonNullController.mediaMetadata.artworkUri?.toString()
-                                    .orEmpty(),
-                                trackLength = nonNullController.mediaMetadata.duration.milliseconds
-                            ),
-                            isPlaying = nonNullController.isPlaying,
-                        )
-                    }
-                }
+                getUpdatedPlaybackState(nonNullController)
             } ?: NotPlayingState
+        }
+    }
+
+    private fun getUpdatedPlaybackState(controller: MediaController): PlaybackState {
+        return when {
+            controller.mediaMetadata == MediaMetadata.EMPTY -> {
+                NotPlayingState
+            }
+
+            controller.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> {
+                NotPlayingState
+            }
+
+            else -> {
+                TrackPlayingState(
+                    trackInfo = TrackInfo(
+                        title = controller.mediaMetadata.title?.toString().orEmpty(),
+                        artists = controller.mediaMetadata.artist?.toString()
+                            .orEmpty(),
+                        artworkUri = controller.mediaMetadata.artworkUri?.toString()
+                            .orEmpty(),
+                        trackLength = controller.mediaMetadata.duration.milliseconds
+                    ),
+                    isPlaying = controller.isPlaying,
+                    currentTrackProgress = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
+                        .orZero().milliseconds
+                )
+            }
         }
     }
 
@@ -100,9 +101,8 @@ class MediaPlaybackClient @Inject constructor(
                 @Suppress("MagicNumber")
                 delay(500)
                 if (!isUpdatingPosition) {
-                    _currentPosition.update {
-                        controller?.contentPosition.takeUnless { it == C.TIME_UNSET }
-                            .orZero().milliseconds
+                    playbackState.update {
+                        controller?.let { getUpdatedPlaybackState(it) } ?: NotPlayingState
                     }
                 }
             }
@@ -225,8 +225,9 @@ class MediaPlaybackClient @Inject constructor(
 
     fun seekToTrackPosition(position: Long) {
         isUpdatingPosition = true
-        _currentPosition.update {
-            position.milliseconds
+        playbackState.update {
+            (it as? TrackPlayingState)?.copy(currentTrackProgress = position.milliseconds)
+                ?: NotPlayingState
         }
         controller?.also { controllerNotNull ->
             controllerNotNull.seekTo(position)

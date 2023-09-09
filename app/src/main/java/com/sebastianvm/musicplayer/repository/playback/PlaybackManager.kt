@@ -12,7 +12,7 @@ import kotlin.time.Duration
 interface PlaybackManager {
 
     @FakeQueryMethod
-    fun getPlaybackState(): Flow<Pair<PlaybackState, Duration>>
+    fun getPlaybackState(): Flow<PlaybackState>
 
     @FakeCommandMethod
     fun connectToService()
@@ -77,6 +77,7 @@ sealed interface PlaybackState
 data class TrackPlayingState(
     val trackInfo: TrackInfo,
     val isPlaying: Boolean,
+    val currentTrackProgress: Duration
 ) : PlaybackState
 
 data object NotPlayingState : PlaybackState

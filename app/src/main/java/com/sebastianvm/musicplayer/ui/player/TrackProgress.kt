@@ -14,7 +14,11 @@ data class TrackProgressState(
     val trackLength: Duration
 ) {
     val progress: Percentage
-        get() = Percentage(
-            currentPlaybackTime.inWholeMilliseconds.toFloat() / trackLength.inWholeMilliseconds.toFloat()
-        )
+        get() = if (trackLength == Duration.ZERO) {
+            Percentage(0f)
+        } else {
+            Percentage(
+                currentPlaybackTime.inWholeMilliseconds.toFloat() / trackLength.inWholeMilliseconds.toFloat()
+            )
+        }
 }

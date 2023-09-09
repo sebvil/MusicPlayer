@@ -179,11 +179,15 @@ class MediaPlaybackService : MediaLibraryService() {
                     return@run
                 }
                 withContext(mainDispatcher) {
-                    preparePlaylist(
-                        initialWindowIndex = queuedTracks.indexOfFirst { it.uniqueQueueItemId == nowPlayingId },
-                        mediaItems = queuedTracks.map { it.toMediaItem() },
-                        position = lastRecordedPosition
-                    )
+                    val firstIndex =
+                        queuedTracks.indexOfFirst { it.uniqueQueueItemId == nowPlayingId }
+                    if (firstIndex != -1) {
+                        preparePlaylist(
+                            initialWindowIndex = firstIndex,
+                            mediaItems = queuedTracks.map { it.toMediaItem() },
+                            position = lastRecordedPosition
+                        )
+                    }
                 }
             }
         }
