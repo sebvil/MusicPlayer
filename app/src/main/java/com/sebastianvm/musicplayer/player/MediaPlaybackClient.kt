@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -14,11 +15,11 @@ import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.duration
+import com.sebastianvm.musicplayer.util.extensions.orZero
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,41 +31,54 @@ import kotlin.time.Duration.Companion.milliseconds
 @Singleton
 class MediaPlaybackClient @Inject constructor(
     @ApplicationContext private val context: Context,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher
+    private val externalScope: CoroutineScope,
 ) {
 
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
-    private val mediaController: MediaController?
+    private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
 
     private val _playbackState: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
     val playbackState
         get() = _playbackState
 
-    private fun updatePlaybackState(
-        controller: MediaController?,
-    ) {
+    private var isUpdatingPosition = false
+
+    private var timeUpdatesJob: Job? = null
+
+    private fun updatePlaybackState() {
         _playbackState.update {
             controller?.let { nonNullController ->
-                if (nonNullController.mediaMetadata == MediaMetadata.EMPTY) {
-                    NotPlayingState
-                } else {
-                    TrackPlayingState(
-                        trackInfo = TrackInfo(
-                            title = nonNullController.mediaMetadata.title?.toString().orEmpty(),
-                            artists = nonNullController.mediaMetadata.artist?.toString().orEmpty(),
-                            artworkUri = nonNullController.mediaMetadata.artworkUri?.toString()
-                                .orEmpty(),
-                            trackLength = nonNullController.mediaMetadata.duration.milliseconds
-                        ),
-                        isPlaying = nonNullController.isPlaying,
-                        currentPlayTime = (
-                            nonNullController.contentPosition.takeUnless { it == C.TIME_UNSET }
-                                ?: 0L
-                            ).milliseconds
-                    )
-                }
+                getUpdatedPlaybackState(nonNullController)
             } ?: NotPlayingState
+        }
+    }
+
+    private fun getUpdatedPlaybackState(controller: MediaController): PlaybackState {
+        return when {
+            controller.mediaMetadata == MediaMetadata.EMPTY -> {
+                NotPlayingState
+            }
+
+            controller.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> {
+                NotPlayingState
+            }
+
+            else -> {
+                TrackPlayingState(
+                    trackInfo = TrackInfo(
+                        title = controller.mediaMetadata.title?.toString().orEmpty(),
+                        artists = controller.mediaMetadata.artist?.toString()
+                            .orEmpty(),
+                        artworkUri = controller.mediaMetadata.artworkUri?.toString()
+                            .orEmpty(),
+                        trackLength = controller.mediaMetadata.duration.milliseconds
+                    ),
+                    isPlaying = controller.isPlaying,
+                    currentTrackProgress = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
+                        .orZero().milliseconds
+                )
+            }
         }
     }
 
@@ -77,28 +91,66 @@ class MediaPlaybackClient @Inject constructor(
 
     fun releaseController() {
         MediaController.releaseFuture(mediaControllerFuture)
+        timeUpdatesJob?.cancel()
+        timeUpdatesJob = null
     }
 
     private fun launchCurrentPlayTimeUpdates() {
-        CoroutineScope(mainDispatcher).launch {
+        externalScope.launch {
             while (true) {
                 @Suppress("MagicNumber")
-                delay(1000)
-                updatePlaybackState(mediaController)
+                delay(500)
+                if (!isUpdatingPosition) {
+                    playbackState.update {
+                        controller?.let { getUpdatedPlaybackState(it) } ?: NotPlayingState
+                    }
+                }
             }
         }
     }
 
     private fun setController() {
-        val controller = this.mediaController ?: return
+        val controller = this.controller ?: return
         controller.addListener(
             object : Player.Listener {
+
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    updatePlaybackState(mediaController)
+                    Log.i("PlaybackClient", "isPlayingChanged(isPlaying = $isPlaying)")
+                    if (isUpdatingPosition) return
+                    updatePlaybackState()
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    Log.i(
+                        "PlaybackClient",
+                        "onPlaybackStateChanged(playbackState = $playbackState)"
+                    )
                 }
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    updatePlaybackState(mediaController)
+                    Log.i(
+                        "PlaybackClient",
+                        "onMediaMetadataChanged(mediaMetadata = $mediaMetadata)"
+                    )
+                    updatePlaybackState()
+                }
+
+                override fun onIsLoadingChanged(isLoading: Boolean) {
+                    Log.i("PlaybackClient", "onIsLoadingChanged(isLoading = $isLoading)")
+                    if (!isLoading) {
+                        isUpdatingPosition = false
+                    }
+                }
+
+                override fun onPositionDiscontinuity(
+                    oldPosition: Player.PositionInfo,
+                    newPosition: Player.PositionInfo,
+                    reason: Int
+                ) {
+                    Log.i(
+                        "PlaybackClient",
+                        "onPositionDiscontinuity(oldPosition = ${oldPosition.contentPositionMs}, newPosition = ${newPosition.contentPositionMs}, reason = $reason)"
+                    )
                 }
             }
         )
@@ -106,28 +158,28 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     fun togglePlay() {
-        if (mediaController?.isPlaying == true) {
-            mediaController?.pause()
+        if (controller?.isPlaying == true) {
+            controller?.pause()
         } else {
-            mediaController?.play()
+            controller?.play()
         }
     }
 
     fun next() {
-        mediaController?.seekToNext()
+        controller?.seekToNext()
     }
 
     fun prev() {
-        mediaController?.seekToPrevious()
+        controller?.seekToPrevious()
     }
 
     fun moveQueueItem(currentIndex: Int, newIndex: Int) {
-        mediaController?.moveMediaItem(currentIndex, newIndex)
+        controller?.moveMediaItem(currentIndex, newIndex)
     }
 
     fun playQueueItem(index: Int) {
-        mediaController?.seekToDefaultPosition(index)
-        mediaController?.play()
+        controller?.seekToDefaultPosition(index)
+        controller?.play()
     }
 
     fun playMediaItems(
@@ -148,7 +200,7 @@ class MediaPlaybackClient @Inject constructor(
         playWhenReady: Boolean,
         position: Long
     ) {
-        mediaController?.let { mediaController ->
+        controller?.let { mediaController ->
             mediaController.playWhenReady = playWhenReady
             mediaController.stop()
             mediaController.clearMediaItems()
@@ -160,7 +212,7 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     fun addToQueue(mediaItems: List<MediaItem>): Int {
-        return mediaController?.let { controllerNotNull ->
+        return controller?.let { controllerNotNull ->
             val nextIndex = controllerNotNull.nextMediaItemIndex
             if (nextIndex == C.INDEX_UNSET) {
                 controllerNotNull.addMediaItems(mediaItems)
@@ -172,7 +224,12 @@ class MediaPlaybackClient @Inject constructor(
     }
 
     fun seekToTrackPosition(position: Long) {
-        mediaController?.also { controllerNotNull ->
+        isUpdatingPosition = true
+        playbackState.update {
+            (it as? TrackPlayingState)?.copy(currentTrackProgress = position.milliseconds)
+                ?: NotPlayingState
+        }
+        controller?.also { controllerNotNull ->
             controllerNotNull.seekTo(position)
         }
     }

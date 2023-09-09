@@ -29,18 +29,17 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
     { spring() }
 
 @Composable
 fun AppScreenHost(
-    viewModel: MainViewModel,
+    mainState: MainState,
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
+    onProgressBarValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.systemBars,
     content: @Composable () -> Unit
@@ -84,11 +83,10 @@ fun AppScreenHost(
             }
         }
     }
-    val state by viewModel.stateFlow.collectAsStateWithLifecycle()
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
         Box(modifier = modifier) {
             content()
-            (state as? Data)?.state?.playerViewState?.let {
+            mainState.playerViewState?.let {
                 AnimatedPlayerCard(
                     state = it,
                     transition = transition,
@@ -109,7 +107,8 @@ fun AppScreenHost(
                     onPlayToggled = onPlayToggled,
                     onDismissPlayer = {
                         isFullScreen = false
-                    }
+                    },
+                    onProgressBarValueChange = onProgressBarValueChange
                 )
             }
         }

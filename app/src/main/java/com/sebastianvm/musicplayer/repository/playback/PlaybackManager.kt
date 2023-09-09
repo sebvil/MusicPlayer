@@ -77,7 +77,7 @@ sealed interface PlaybackState
 data class TrackPlayingState(
     val trackInfo: TrackInfo,
     val isPlaying: Boolean,
-    val currentPlayTime: Duration
+    val currentTrackProgress: Duration
 ) : PlaybackState
 
 data object NotPlayingState : PlaybackState

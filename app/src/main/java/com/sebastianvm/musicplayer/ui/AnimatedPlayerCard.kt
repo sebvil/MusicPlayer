@@ -5,27 +5,42 @@ import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.layoutId
@@ -43,6 +58,7 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
+import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
@@ -58,6 +74,7 @@ fun AnimatedPlayerCard(
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
     onDismissPlayer: () -> Unit,
+    onProgressBarValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val progress by transition.animateFloat(
@@ -309,13 +326,97 @@ fun AnimatedPlayerCard(
                     )
                 }
             }
-            // TODO explore using slider
-            LinearProgressIndicator(
-                progress = state.trackProgressState.progress.percent,
-                modifier = Modifier
-                    .layoutId("progressBar"),
-                trackColor = MaterialTheme.colorScheme.onPrimary
+
+            ProgressSlider(
+                progress = state.trackProgressState.progress?.percent ?: 0f,
+                onProgressBarValueChange = onProgressBarValueChange
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primary)
+    val interactions = remember { mutableStateListOf<Interaction>() }
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> interactions.add(interaction)
+                is PressInteraction.Release -> interactions.remove(interaction.press)
+                is PressInteraction.Cancel -> interactions.remove(interaction.press)
+                is DragInteraction.Start -> interactions.add(interaction)
+                is DragInteraction.Stop -> interactions.remove(interaction.start)
+                is DragInteraction.Cancel -> interactions.remove(interaction.start)
+            }
+        }
+    }
+    var manualSliderPosition by remember {
+        mutableFloatStateOf(progress)
+    }
+    val sliderPosition by remember(progress, interactions) {
+        derivedStateOf {
+            if (interactions.isEmpty()) {
+                progress
+            } else {
+                manualSliderPosition
+            }
+        }
+    }
+
+    Slider(
+        value = sliderPosition,
+        onValueChange = {
+            manualSliderPosition = it
+        },
+        valueRange = 0f..1f,
+        onValueChangeFinished = {
+            onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
+        },
+        modifier = Modifier
+            .layoutId("progressBar"),
+        colors = colors,
+        thumb = {
+            val size by animateIntAsState(
+                if (interactions.isNotEmpty()) {
+                    PROGRESS_BAR_THUMB_SIZE_LARGE
+                } else {
+                    PROGRESS_BAR_THUMB_SIZE_SMALL
+                },
+                label = "size"
+            )
+            val offset by remember(size) {
+                @Suppress("MagicNumber")
+                derivedStateOf {
+                    (-4 * size / 8 + 10).coerceAtLeast(0).dp
+                }
+            }
+            Icon(
+                imageVector = Icons.Filled.Circle,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(size.dp)
+                    .offset(x = offset, y = offset),
+                tint = colors.thumbColor
+            )
+        },
+        interactionSource = interactionSource
+    )
+}
+
+private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
+private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
+
+@ComponentPreviews
+@Composable
+private fun ProgressbarPreview() {
+    ThemedPreview {
+        Column {
+            ProgressSlider(progress = 0f, onProgressBarValueChange = {})
+            ProgressSlider(progress = 0.5f, onProgressBarValueChange = {})
+            ProgressSlider(progress = 1f, onProgressBarValueChange = {})
         }
     }
 }
@@ -337,7 +438,8 @@ private fun PlayerCardPreview(
             onPreviousButtonClicked = {},
             onNextButtonClicked = {},
             onPlayToggled = {},
-            onDismissPlayer = {}
+            onDismissPlayer = {},
+            onProgressBarValueChange = {}
         )
     }
 }

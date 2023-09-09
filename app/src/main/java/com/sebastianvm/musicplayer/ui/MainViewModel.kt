@@ -53,7 +53,7 @@ class MainViewModel(
                                     artists = trackInfo.artists
                                 ),
                                 trackProgressState = TrackProgressState(
-                                    currentPlaybackTime = playbackState.currentPlayTime,
+                                    currentPlaybackTime = playbackState.currentTrackProgress,
                                     trackLength = trackInfo.trackLength
                                 ),
                                 playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY

@@ -54,7 +54,7 @@ class MainViewModelTest : BaseTest() {
                                 artists = playbackState.trackInfo.artists
                             ),
                             trackProgressState = TrackProgressState(
-                                currentPlaybackTime = playbackState.currentPlayTime,
+                                currentPlaybackTime = playbackState.currentTrackProgress,
                                 trackLength = playbackState.trackInfo.trackLength
                             ),
                             playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
