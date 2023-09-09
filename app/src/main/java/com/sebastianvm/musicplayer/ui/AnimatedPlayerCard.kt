@@ -328,7 +328,7 @@ fun AnimatedPlayerCard(
             }
 
             ProgressSlider(
-                progress = state.trackProgressState.progress?.percent ?: 0f,
+                progress = state.trackProgressState.progress.percent,
                 onProgressBarValueChange = onProgressBarValueChange
             )
         }
