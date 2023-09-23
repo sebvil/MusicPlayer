@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesReposit
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class PlaylistListViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<PlaylistListState, PlaylistListUserAction>() {
+) : OldBaseViewModel<PlaylistListState, PlaylistListUserAction>() {
 
     init {
         playlistRepository.getPlaylists().onEach { playlists ->

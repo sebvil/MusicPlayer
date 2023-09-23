@@ -9,16 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class BaseViewModel<S : State, A : UserAction>(
-    initialState: S,
-    viewModelScope: CoroutineScope? = null
-) :
+abstract class OldBaseViewModel<S : State, A : UserAction>(viewModelScope: CoroutineScope? = null) :
     ViewModel() {
 
     protected val vmScope: CoroutineScope = viewModelScope ?: this.viewModelScope
 
-    private val _state: MutableStateFlow<S> = MutableStateFlow(initialState)
-    val stateFlow: StateFlow<S> = _state
+    private val _state: MutableStateFlow<UiState<S>> = MutableStateFlow(Loading)
+    val stateFlow: StateFlow<UiState<S>> = _state
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val state get() = _state.value
@@ -36,8 +33,15 @@ abstract class BaseViewModel<S : State, A : UserAction>(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    fun setState(func: (S) -> S) {
-        _state.update(func)
+    fun setState(func: (UiState<S>) -> UiState<S>) {
+        _state.update {
+            func(it)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    fun setDataState(func: (S) -> S) {
+        setState { Data(func((it as? Data)?.state ?: defaultState)) }
     }
 
     protected fun addNavEvent(navEvent: NavEvent) {
@@ -49,4 +53,5 @@ abstract class BaseViewModel<S : State, A : UserAction>(
     }
 
     abstract fun handle(action: A)
+    abstract val defaultState: S
 }

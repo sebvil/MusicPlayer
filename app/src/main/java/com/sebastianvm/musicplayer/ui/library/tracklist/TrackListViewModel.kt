@@ -12,8 +12,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import dagger.Module
@@ -34,7 +34,7 @@ class TrackListViewModel @Inject constructor(
     sortPreferencesRepository: SortPreferencesRepository,
     private val args: TrackListArguments,
     private val playbackManager: PlaybackManager
-) : BaseViewModel<TrackListState, TrackListUserAction>() {
+) : OldBaseViewModel<TrackListState, TrackListUserAction>() {
 
     init {
         with(trackRepository) {

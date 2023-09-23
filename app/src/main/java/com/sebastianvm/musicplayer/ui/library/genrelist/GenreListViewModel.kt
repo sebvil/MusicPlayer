@@ -8,8 +8,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class GenreListViewModel @Inject constructor(
     genreRepository: GenreRepository,
     private val preferencesRepository: SortPreferencesRepository
-) : BaseViewModel<GenreListState, GenreListUserAction>() {
+) : OldBaseViewModel<GenreListState, GenreListUserAction>() {
 
     init {
         combineToPair(

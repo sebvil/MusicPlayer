@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class SortBottomSheetViewModel @Inject constructor(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>() {
+) : OldBaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>() {
 
     override val defaultState: SortBottomSheetState by lazy {
         val sortOptions = getSortOptionsForScreen(arguments.listType)

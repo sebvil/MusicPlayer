@@ -31,7 +31,11 @@ class MainViewModelTest : BaseTest() {
     }
 
     private fun generateViewModel(): MainViewModel {
-        return MainViewModel(viewModelScope = testScope, playbackManager = playbackManager)
+        return MainViewModel(
+            initialState = MainState(playerViewState = null),
+            viewModelScope = testScope,
+            playbackManager = playbackManager
+        )
     }
 
     @ParameterizedTest
@@ -40,9 +44,9 @@ class MainViewModelTest : BaseTest() {
         testScope.runSafeTest {
             with(generateViewModel()) {
                 playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(dataState).isEqualTo(MainState(playerViewState = null))
+                Truth.assertThat(state).isEqualTo(MainState(playerViewState = null))
                 playbackManager.getPlaybackStateValue.emit(playbackState)
-                Truth.assertThat(dataState).isEqualTo(
+                Truth.assertThat(state).isEqualTo(
                     MainState(
                         playerViewState = PlayerViewState(
                             mediaArtImageState = MediaArtImageState(
@@ -62,7 +66,7 @@ class MainViewModelTest : BaseTest() {
                     )
                 )
                 playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(dataState).isEqualTo(MainState(playerViewState = null))
+                Truth.assertThat(state).isEqualTo(MainState(playerViewState = null))
             }
         }
 
@@ -115,7 +119,7 @@ class MainViewModelTest : BaseTest() {
     @ValueSource(ints = [10, 20, 30, 50])
     fun `ProgressBarClicked seeks to position in track when there is playback info`(position: Int) {
         with(generateViewModel()) {
-            setDataState {
+            setState {
                 it.copy(
                     playerViewState = PlayerViewState(
                         mediaArtImageState = MediaArtImageState(

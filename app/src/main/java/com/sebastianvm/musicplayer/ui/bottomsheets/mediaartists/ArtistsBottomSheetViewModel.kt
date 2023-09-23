@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class ArtistsBottomSheetViewModel @Inject constructor(
     arguments: ArtistsMenuArguments,
     artistRepository: ArtistRepository
-) : BaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>() {
+) : OldBaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>() {
     init {
         artistRepository.getArtists(arguments.mediaType, arguments.mediaId).onEach { artists ->
             setDataState {

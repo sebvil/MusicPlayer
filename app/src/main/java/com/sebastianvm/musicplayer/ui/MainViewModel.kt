@@ -22,26 +22,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel(
+    initialState: MainState,
     viewModelScope: CoroutineScope?,
     private val playbackManager: PlaybackManager
-) : BaseViewModel<MainState, MainUserAction>(viewModelScope = viewModelScope) {
+) : BaseViewModel<MainState, MainUserAction>(
+    initialState = initialState,
+    viewModelScope = viewModelScope
+) {
 
     @Inject
     constructor(playbackManager: PlaybackManager) : this(
+        initialState = MainState(playerViewState = null),
         viewModelScope = null,
         playbackManager = playbackManager
     )
-
-    override val defaultState: MainState by lazy {
-        MainState(playerViewState = null)
-    }
 
     init {
         playbackManager.getPlaybackState().onEach { playbackState ->
             when (playbackState) {
                 is TrackPlayingState -> {
                     val trackInfo = playbackState.trackInfo
-                    setDataState {
+                    setState {
                         it.copy(
                             playerViewState = PlayerViewState(
                                 mediaArtImageState = MediaArtImageState(
@@ -63,7 +64,7 @@ class MainViewModel(
                 }
 
                 is NotPlayingState -> {
-                    setDataState { it.copy(playerViewState = null) }
+                    setState { it.copy(playerViewState = null) }
                 }
             }
         }.launchIn(vmScope)
@@ -89,7 +90,7 @@ class MainViewModel(
 
             is MainUserAction.ProgressBarClicked -> {
                 val trackLengthMs =
-                    dataState?.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
+                    state.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
                         ?: return
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
