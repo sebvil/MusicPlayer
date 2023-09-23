@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun <S : State, A : UserAction> Screen(
-    screenViewModel: BaseViewModel<S, A>,
+    screenViewModel: OldBaseViewModel<S, A>,
     navigationDelegate: NavigationDelegate,
     modifier: Modifier = Modifier,
     screen: @Composable (S, ScreenDelegate<A>) -> Unit

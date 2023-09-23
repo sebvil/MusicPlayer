@@ -9,8 +9,8 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
@@ -39,7 +39,7 @@ class TrackSearchViewModel @Inject constructor(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository
-) : BaseViewModel<TrackSearchState, TrackSearchUserAction>() {
+) : OldBaseViewModel<TrackSearchState, TrackSearchUserAction>() {
 
     private val query = MutableStateFlow("")
     private val playlistTrackIds: MutableSet<Long> = mutableSetOf()

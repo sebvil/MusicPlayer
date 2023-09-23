@@ -12,7 +12,7 @@ abstract class BaseTest {
     protected val dispatcher: TestDispatcher = coroutineExtension.dispatcher
 
     companion object {
-        @JvmStatic
+        @JvmField
         @RegisterExtension
         val coroutineExtension = CoroutineTestExtension()
     }
