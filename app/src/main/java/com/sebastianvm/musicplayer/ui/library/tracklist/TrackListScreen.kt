@@ -21,6 +21,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.toSortableListType
+import com.sebastianvm.musicplayer.ui.MainUserAction
+import com.sebastianvm.musicplayer.ui.MainViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
@@ -41,7 +43,8 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 fun TrackListRoute(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    viewModel: TrackListViewModel = hiltViewModel()
+    viewModel: TrackListViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
@@ -60,7 +63,12 @@ fun TrackListRoute(
         TrackListScreen(
             state = state,
             onTrackClicked = { trackIndex ->
-                viewModel.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
+                mainViewModel.handle(
+                    MainUserAction.PlayMedia(
+                        mediaGroup = state.trackListType,
+                        initialTrackIndex = trackIndex
+                    )
+                )
             },
             onDismissPlaybackErrorDialog = {
                 viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)

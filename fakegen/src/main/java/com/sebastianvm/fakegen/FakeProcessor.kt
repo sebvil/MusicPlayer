@@ -132,6 +132,12 @@ class FakeProcessor(
                 "FakeQueryMethod" -> {
                     imports.add("kotlinx.coroutines.flow.MutableSharedFlow")
                     buildString {
+                        append(
+                            "\tprivate val _${functionName}Invocations: MutableList<List<Any>> = mutableListOf()\n\n"
+                        )
+                        append("\tval ${functionName}Invocations: List<List<Any>>\n")
+                        append("\t\tget() = _${functionName}Invocations\n\n")
+
                         append("\toverride ")
                         if (modifiers.contains("suspend")) {
                             append("suspend ")
@@ -145,6 +151,10 @@ class FakeProcessor(
                                 return ""
                             }
                         append("$returnType {\n")
+
+                        append("\t\t_${functionName}Invocations.add(listOf(")
+                        append(function.parameters.joinToString { it.name?.asString() ?: "" })
+                        append("))\n")
                         append("\t\treturn ")
                         val flowRegex = Regex("Flow<(.*)>")
                         val matches = flowRegex.find(returnType)

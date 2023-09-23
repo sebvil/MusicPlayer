@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui
 
 import com.google.common.truth.Truth
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManagerImpl
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -146,6 +147,21 @@ class MainViewModelTest : BaseTest() {
         with(generateViewModel()) {
             handle(MainUserAction.ProgressBarClicked(50))
             Truth.assertThat(playbackManager.seekToTrackPositionInvocations).isEmpty()
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [10, 20, 30, 50])
+    fun `PlayMedia triggers playback`(trackIndex: Int) {
+        with(generateViewModel()) {
+            handle(
+                MainUserAction.PlayMedia(
+                    mediaGroup = MediaGroup.AllTracks,
+                    initialTrackIndex = trackIndex
+                )
+            )
+            Truth.assertThat(playbackManager.playMediaInvocations)
+                .containsExactly(listOf(MediaGroup.AllTracks, trackIndex))
         }
     }
 }
