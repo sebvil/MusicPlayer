@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui
 
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -95,6 +96,13 @@ class MainViewModel(
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
+
+            is MainUserAction.PlayMedia -> {
+                playbackManager.playMedia(
+                    mediaGroup = action.mediaGroup,
+                    initialTrackIndex = action.initialTrackIndex
+                ).launchIn(vmScope)
+            }
         }
     }
 }
@@ -108,4 +116,5 @@ sealed interface MainUserAction : UserAction {
     data object NextButtonClicked : MainUserAction
     data object PreviousButtonClicked : MainUserAction
     data class ProgressBarClicked(val position: Int) : MainUserAction
+    data class PlayMedia(val mediaGroup: MediaGroup, val initialTrackIndex: Int) : MainUserAction
 }

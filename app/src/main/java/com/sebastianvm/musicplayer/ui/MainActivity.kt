@@ -20,6 +20,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
+import com.ramcosta.composedestinations.navigation.dependency
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +67,10 @@ class MainActivity : ComponentActivity() {
                             DestinationsNavHost(
                                 navGraph = NavGraphs.root,
                                 navController = navController,
-                                engine = rememberAnimatedNavHostEngine()
+                                engine = rememberAnimatedNavHostEngine(),
+                                dependenciesContainerBuilder = {
+                                    dependency(viewModel)
+                                }
                             )
                         }
                     }

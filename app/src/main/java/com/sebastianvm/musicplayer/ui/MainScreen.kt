@@ -33,6 +33,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -67,7 +68,8 @@ import kotlinx.coroutines.launch
 @Destination
 @Composable
 fun MainScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    mainViewModel: MainViewModel
 ) {
     MainScreenLayout(
         searchScreen = {
@@ -77,7 +79,13 @@ fun MainScreen(
             )
         }
     ) { page ->
-        Screens(page = page, navigator = navigator)
+        Screens(
+            page = page,
+            navigator = navigator,
+            playMedia = { mediaGroup: MediaGroup, initialTrackIndex: Int ->
+                mainViewModel.handle(MainUserAction.PlayMedia(mediaGroup, initialTrackIndex))
+            }
+        )
     }
 }
 
@@ -88,7 +96,7 @@ fun MainScreenLayout(
     modifier: Modifier = Modifier,
     content: @Composable (page: TopLevelScreen) -> Unit
 ) {
-    val pages = TopLevelScreen.values()
+    val pages = TopLevelScreen.entries
     val pagerState = rememberPagerState {
         pages.size
     }
@@ -132,6 +140,7 @@ fun MainScreenLayout(
 fun Screens(
     page: TopLevelScreen,
     navigator: DestinationsNavigator,
+    playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
     trackListViewModel: TrackListViewModel = hiltViewModel(),
     artistListViewModel: ArtistListViewModel = hiltViewModel(),
@@ -157,7 +166,7 @@ fun Screens(
                 TrackListLayout(
                     state = state,
                     onTrackClicked = { trackIndex ->
-                        trackListViewModel.handle(TrackListUserAction.TrackClicked(trackIndex = trackIndex))
+                        playMedia(state.trackListType, trackIndex)
                     },
                     openSortMenu = { args ->
                         navigator.navigate(SortBottomSheetDestination(args))

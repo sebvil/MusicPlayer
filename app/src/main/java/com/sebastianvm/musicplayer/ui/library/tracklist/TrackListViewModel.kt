@@ -94,32 +94,6 @@ class TrackListViewModel @Inject constructor(
                     )
                 }
             }
-
-            is TrackListUserAction.TrackClicked -> {
-                val playTracksFlow = playbackManager.playMedia(
-                    mediaGroup = args.trackListType,
-                    initialTrackIndex = action.trackIndex
-                )
-                playTracksFlow.onEach { result ->
-                    when (result) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
-                            setDataState {
-                                it.copy(
-                                    playbackResult = result
-                                )
-                            }
-                        }
-
-                        is PlaybackResult.Success -> {
-                            setDataState {
-                                it.copy(
-                                    playbackResult = null
-                                )
-                            }
-                        }
-                    }
-                }.launchIn(viewModelScope)
-            }
         }
     }
 
@@ -162,6 +136,5 @@ object InitialTrackListArgumentsForNavModule {
 }
 
 sealed interface TrackListUserAction : UserAction {
-    data class TrackClicked(val trackIndex: Int) : TrackListUserAction
     data object DismissPlaybackErrorDialog : TrackListUserAction
 }
