@@ -6,7 +6,6 @@ import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
@@ -57,7 +56,6 @@ class TrackContextMenuViewModel @Inject constructor(
 
     private val trackId = arguments.trackId
     private val mediaGroup = arguments.mediaGroup
-    private val trackIndex = arguments.trackIndex
     private val positionInPlaylist = arguments.positionInPlaylist
 
     init {
@@ -105,21 +103,6 @@ class TrackContextMenuViewModel @Inject constructor(
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
-            is ContextMenuItem.Play -> {
-                val playMediaFlow = playbackManager.playMedia(mediaGroup, trackIndex)
-                playMediaFlow.onEach { result ->
-                    when (result) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> setDataState {
-                            it.copy(
-                                playbackResult = result
-                            )
-                        }
-
-                        is PlaybackResult.Success -> {}
-                    }
-                }.launchIn(viewModelScope)
-            }
-
             is ContextMenuItem.AddToQueue -> {
                 playbackManager.addToQueue(listOf(track))
             }

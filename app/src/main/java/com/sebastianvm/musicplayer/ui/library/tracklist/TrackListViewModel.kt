@@ -4,8 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -33,7 +31,6 @@ class TrackListViewModel @Inject constructor(
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val args: TrackListArguments,
-    private val playbackManager: PlaybackManager
 ) : OldBaseViewModel<TrackListState, TrackListUserAction>() {
 
     init {
@@ -85,17 +82,7 @@ class TrackListViewModel @Inject constructor(
         }
     }
 
-    override fun handle(action: TrackListUserAction) {
-        when (action) {
-            is TrackListUserAction.DismissPlaybackErrorDialog -> {
-                setDataState {
-                    it.copy(
-                        playbackResult = null
-                    )
-                }
-            }
-        }
-    }
+    override fun handle(action: TrackListUserAction) = Unit
 
     override val defaultState: TrackListState by lazy {
         TrackListState(
@@ -105,7 +92,6 @@ class TrackListViewModel @Inject constructor(
                 sortButtonState = null,
                 headerState = HeaderState.None
             ),
-            playbackResult = null
         )
     }
 }
@@ -120,7 +106,6 @@ data class TrackListArguments(val trackListType: TrackList)
 data class TrackListState(
     val modelListState: ModelListState,
     val trackListType: TrackList,
-    val playbackResult: PlaybackResult? = null
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -135,6 +120,4 @@ object InitialTrackListArgumentsForNavModule {
     }
 }
 
-sealed interface TrackListUserAction : UserAction {
-    data object DismissPlaybackErrorDialog : TrackListUserAction
-}
+sealed interface TrackListUserAction : UserAction

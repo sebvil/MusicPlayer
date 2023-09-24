@@ -56,7 +56,6 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListLayout
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
@@ -69,7 +68,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     navigator: DestinationsNavigator,
-    mainViewModel: MainViewModel
+    handlePlayback: PlaybackHandler
 ) {
     MainScreenLayout(
         searchScreen = {
@@ -83,7 +82,7 @@ fun MainScreen(
             page = page,
             navigator = navigator,
             playMedia = { mediaGroup: MediaGroup, initialTrackIndex: Int ->
-                mainViewModel.handle(MainUserAction.PlayMedia(mediaGroup, initialTrackIndex))
+                handlePlayback(mediaGroup, initialTrackIndex)
             }
         )
     }
@@ -170,9 +169,6 @@ fun Screens(
                     },
                     openSortMenu = { args ->
                         navigator.navigate(SortBottomSheetDestination(args))
-                    },
-                    onDismissPlaybackErrorDialog = {
-                        trackListViewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
                     },
                     openTrackContextMenu = { args ->
                         navigator.navigate(TrackContextMenuDestination(args))

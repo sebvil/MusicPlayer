@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.repository.playback
 import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
@@ -63,32 +62,6 @@ class PlaybackManagerImpl @Inject constructor(
         emit(PlaybackResult.Success)
     }
 
-    override fun playAllTracks(initialTrackIndex: Int): Flow<PlaybackResult> =
-        playTracks(initialTrackIndex) {
-            trackRepository.getAllTracks().first().map { it.toMediaItem() }
-        }
-
-    override fun playGenre(
-        genreId: Long,
-        initialTrackIndex: Int
-    ): Flow<PlaybackResult> = playTracks(initialTrackIndex) {
-        trackRepository.getTracksForGenre(genreId).first().map { it.toMediaItem() }
-    }
-
-    override fun playAlbum(albumId: Long, initialTrackIndex: Int): Flow<PlaybackResult> =
-        playTracks(initialTrackIndex) {
-            trackRepository.getTracksForAlbum(albumId).first().map { it.toMediaItem() }
-        }
-
-    override fun playArtist(artistId: Long): Flow<PlaybackResult> = playTracks {
-        trackRepository.getTracksForArtist(artistId).first().map { it.toMediaItem() }
-    }
-
-    override fun playPlaylist(playlistId: Long, initialTrackIndex: Int): Flow<PlaybackResult> =
-        playTracks(initialTrackIndex) {
-            trackRepository.getTracksForPlaylist(playlistId).first().map { it.toMediaItem() }
-        }
-
     override fun playSingleTrack(trackId: Long): Flow<PlaybackResult> =
         playTracks(initialTrackIndex = 0) {
             listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
@@ -109,20 +82,8 @@ class PlaybackManagerImpl @Inject constructor(
         }
     }
 
-    override fun moveQueueItem(previousIndex: Int, newIndex: Int) {
-        mediaPlaybackClient.moveQueueItem(previousIndex, newIndex)
-    }
-
-    override fun playQueueItem(index: Int) {
-        mediaPlaybackClient.playQueueItem(index)
-    }
-
     override fun addToQueue(tracks: List<Track>) {
         mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
-    }
-
-    override fun getQueue(): Flow<List<TrackWithQueueId>> {
-        return playbackInfoDataSource.getSavedPlaybackInfo().map { it.queuedTracks }
     }
 
     override fun seekToTrackPosition(position: Long) {

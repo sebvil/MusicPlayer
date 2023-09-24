@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
@@ -58,22 +57,6 @@ class AlbumContextMenuViewModel @Inject constructor(
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
-            is ContextMenuItem.PlayFromBeginning -> {
-                playbackManager.playAlbum(albumId).onEach { result ->
-                    when (result) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
-                            setDataState {
-                                it.copy(
-                                    playbackResult = result
-                                )
-                            }
-                        }
-
-                        is PlaybackResult.Success -> {}
-                    }
-                }.launchIn(viewModelScope)
-            }
-
             is ContextMenuItem.AddToQueue -> {
                 playbackManager.addToQueue(tracks)
             }

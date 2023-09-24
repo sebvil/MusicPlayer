@@ -21,6 +21,7 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,7 +70,16 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 engine = rememberAnimatedNavHostEngine(),
                                 dependenciesContainerBuilder = {
-                                    dependency(viewModel)
+                                    val handlePlayback =
+                                        PlaybackHandler { mediaGroup: MediaGroup, initialTrackIndex: Int ->
+                                            viewModel.handle(
+                                                MainUserAction.PlayMedia(
+                                                    mediaGroup,
+                                                    initialTrackIndex
+                                                )
+                                            )
+                                        }
+                                    dependency(handlePlayback)
                                 }
                             )
                         }
@@ -89,3 +99,4 @@ class MainActivity : ComponentActivity() {
         viewModel.handle(MainUserAction.DisconnectFromMusicService)
     }
 }
+
