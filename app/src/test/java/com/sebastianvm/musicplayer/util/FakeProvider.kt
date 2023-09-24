@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.util
 
+import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepositoryImpl
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManagerImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepositoryImpl
@@ -14,4 +15,7 @@ object FakeProvider {
 
     val sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
         get() = FakeSortPreferencesRepositoryImpl()
+
+    val albumRepository: FakeAlbumRepositoryImpl
+        get() = FakeAlbumRepositoryImpl()
 }

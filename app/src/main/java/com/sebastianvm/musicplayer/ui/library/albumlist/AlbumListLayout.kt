@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 
@@ -11,6 +13,7 @@ import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 fun AlbumListLayout(
     state: AlbumListState,
     navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
+    openSortMenu: (args: SortMenuArguments) -> Unit,
     openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -18,7 +21,9 @@ fun AlbumListLayout(
         state = state.modelListState,
         modifier = modifier,
         onBackButtonClicked = {},
-        onSortButtonClicked = null,
+        onSortButtonClicked = {
+            openSortMenu(SortMenuArguments(listType = SortableListType.Albums))
+        },
         onItemClicked = { _, item ->
             navigateToAlbum(
                 TrackListArgumentsForNav(

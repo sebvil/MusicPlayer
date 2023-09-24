@@ -4,7 +4,6 @@ import com.google.common.truth.Truth
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManagerImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -23,13 +22,11 @@ import org.junit.jupiter.params.provider.MethodSource
 
 class TrackListViewModelTest : BaseTest() {
 
-    private lateinit var playbackManager: FakePlaybackManagerImpl
     private lateinit var trackRepository: FakeTrackRepositoryImpl
     private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
 
     @BeforeEach
     fun beforeEach() {
-        playbackManager = FakeProvider.playbackManager
         trackRepository = FakeProvider.trackRepository
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
@@ -80,28 +77,45 @@ class TrackListViewModelTest : BaseTest() {
     @MethodSource("com.sebastianvm.musicplayer.util.FixtureProvider#trackListSortPreferences")
     fun `init subscribes to changes in sort order`(
         sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
-    ) =
-        testScope.runSafeTest {
-            with(generateViewModel()) {
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
-                    MediaSortPreferences(
-                        sortOption = SortOptions.TrackListSortOptions.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
-                    )
+    ) = testScope.runSafeTest {
+        with(generateViewModel()) {
+            sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
+                MediaSortPreferences(
+                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                    sortOrder = MediaSortOrder.ASCENDING
                 )
-                Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
-                    SortButtonState(
-                        text = SortOptions.TrackListSortOptions.TRACK.stringId,
-                        sortOrder = MediaSortOrder.ASCENDING
-                    )
+            )
+            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+                SortButtonState(
+                    text = SortOptions.TrackListSortOptions.TRACK.stringId,
+                    sortOrder = MediaSortOrder.ASCENDING
                 )
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
-                Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
-                    SortButtonState(
-                        text = sortPreferences.sortOption.stringId,
-                        sortOrder = sortPreferences.sortOrder
-                    )
+            )
+            sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
+            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+                SortButtonState(
+                    text = sortPreferences.sortOption.stringId,
+                    sortOrder = sortPreferences.sortOrder
                 )
-            }
+            )
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.sebastianvm.musicplayer.util.FixtureProvider#trackListSortPreferences")
+    fun `init does not subscribe to changes in sort order for album`(
+        sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
+    ) = testScope.runSafeTest {
+        with(generateViewModel(trackList = MediaGroup.Album(albumId = 0))) {
+            sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
+                MediaSortPreferences(
+                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                    sortOrder = MediaSortOrder.ASCENDING
+                )
+            )
+            Truth.assertThat(state.modelListState.sortButtonState).isNull()
+            sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
+            Truth.assertThat(state.modelListState.sortButtonState).isNull()
+        }
+    }
 }

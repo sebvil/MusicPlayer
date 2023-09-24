@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -31,9 +30,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class TrackListViewModel
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-constructor(
+class TrackListViewModel(
     initialState: TrackListState,
     viewModelScope: CoroutineScope?,
     trackRepository: TrackRepository,

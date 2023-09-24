@@ -2,6 +2,7 @@
 
 package com.sebastianvm.musicplayer.util
 
+import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -92,6 +93,29 @@ object FixtureProvider {
         return trackListSortOptions().flatMap { option ->
             sortOrders().map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
+            }
+        }
+    }
+
+    @JvmStatic
+    fun albumSortPreferences(): Stream<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
+        return SortOptions.AlbumListSortOptions.entries.stream().flatMap { option ->
+            sortOrders().map { order ->
+                MediaSortPreferences(sortOption = option, sortOrder = order)
+            }
+        }
+    }
+
+    fun albumFixtures(): Stream<Album> {
+        return longStream().flatMap { long ->
+            stringStream().map { string ->
+                Album(
+                    id = long,
+                    albumName = string,
+                    artists = string,
+                    year = long,
+                    imageUri = string
+                )
             }
         }
     }
