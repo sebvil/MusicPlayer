@@ -99,4 +99,3 @@ class MainActivity : ComponentActivity() {
         viewModel.handle(MainUserAction.DisconnectFromMusicService)
     }
 }
-

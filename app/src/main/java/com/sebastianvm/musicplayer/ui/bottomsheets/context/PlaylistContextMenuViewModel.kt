@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
@@ -24,7 +23,6 @@ import javax.inject.Inject
 class PlaylistContextMenuViewModel @Inject constructor(
     arguments: PlaylistContextMenuArguments,
     private val playlistRepository: PlaylistRepository,
-    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val playlistId = arguments.playlistId

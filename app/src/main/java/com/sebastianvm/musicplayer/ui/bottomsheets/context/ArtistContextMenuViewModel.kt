@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.navArgs
@@ -22,7 +21,6 @@ import javax.inject.Inject
 class ArtistContextMenuViewModel @Inject constructor(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
-    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val artistId = arguments.artistId
