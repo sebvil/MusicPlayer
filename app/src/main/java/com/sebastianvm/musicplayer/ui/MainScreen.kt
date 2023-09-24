@@ -44,9 +44,11 @@ import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
+import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
+import com.sebastianvm.musicplayer.ui.library.albumlist.toUiState
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
@@ -186,7 +188,7 @@ fun Screens(
         TopLevelScreen.ALBUMS -> {
             val uiState by albumListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState,
+                uiState = uiState.toUiState(),
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -201,6 +203,9 @@ fun Screens(
                     state = state,
                     navigateToAlbum = { args ->
                         navigator.navigate(TrackListRouteDestination(args))
+                    },
+                    openSortMenu = { args ->
+                        navigator.navigate(SortBottomSheetDestination(args))
                     },
                     openAlbumContextMenu = { args ->
                         navigator.navigate(AlbumContextMenuDestination(args))
