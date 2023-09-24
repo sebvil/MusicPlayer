@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 sealed interface MediaGroup : Parcelable {
     @Serializable
     @Parcelize
-    object AllTracks : TrackList
+    data object AllTracks : TrackList
 
     @Serializable
     @Parcelize

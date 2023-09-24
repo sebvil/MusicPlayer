@@ -2,10 +2,12 @@ package com.sebastianvm.musicplayer.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -42,8 +44,6 @@ import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
-import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
@@ -55,8 +55,7 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListUserAction
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListLayout
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListRoute
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -106,31 +105,31 @@ fun MainScreenLayout(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    Box(modifier = modifier) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            searchScreen()
-
-            ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
-                pages.forEachIndexed { index, page ->
-                    Tab(
-                        selected = currentScreen == page,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.scrollToPage(index)
-                            }
-                        },
-                        text = { Text(text = stringResource(id = page.screenName)) }
-                    )
-                }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)
+    ) {
+        searchScreen()
+        ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
+            pages.forEachIndexed { index, page ->
+                Tab(
+                    selected = currentScreen == page,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    },
+                    text = { Text(text = stringResource(id = page.screenName)) }
+                )
             }
+        }
 
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                beyondBoundsPageCount = 1
-            ) { pageIndex ->
-                content(pages[pageIndex])
-            }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            beyondBoundsPageCount = 1
+        ) { pageIndex ->
+            content(pages[pageIndex])
         }
     }
 }
@@ -141,7 +140,6 @@ fun Screens(
     navigator: DestinationsNavigator,
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
-    trackListViewModel: TrackListViewModel = hiltViewModel(),
     artistListViewModel: ArtistListViewModel = hiltViewModel(),
     albumListViewModel: AlbumListViewModel = hiltViewModel(),
     genreListViewModel: GenreListViewModel = hiltViewModel(),
@@ -149,33 +147,12 @@ fun Screens(
 ) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
-            val uiState by trackListViewModel.stateFlow.collectAsStateWithLifecycle()
-            UiStateScreen(
-                uiState = uiState,
+            TrackListRoute(
+                navigator = navigator,
+                handlePlayback = playMedia,
                 modifier = modifier.fillMaxSize(),
-                emptyScreen = {
-                    StoragePermissionNeededEmptyScreen(
-                        message = R.string.no_tracks_found,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                    )
-                }
-            ) { state ->
-                TrackListLayout(
-                    state = state,
-                    onTrackClicked = { trackIndex ->
-                        playMedia(state.trackListType, trackIndex)
-                    },
-                    openSortMenu = { args ->
-                        navigator.navigate(SortBottomSheetDestination(args))
-                    },
-                    openTrackContextMenu = { args ->
-                        navigator.navigate(TrackContextMenuDestination(args))
-                    },
-                    modifier = Modifier
-                )
-            }
+                viewModel = hiltViewModel()
+            )
         }
 
         TopLevelScreen.ARTISTS -> {

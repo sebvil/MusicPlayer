@@ -15,10 +15,6 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.LibraryScanService
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.uri.UriUtils
@@ -31,11 +27,7 @@ class MusicRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     @IODispatcher private val ioDispatcher: CoroutineDispatcher,
     private val musicDatabase: MusicDatabase,
-    private val trackRepository: TrackRepository,
-    private val artistRepository: ArtistRepository,
-    private val genreRepository: GenreRepository,
-    private val albumRepository: AlbumRepository,
-    private val playlistRepository: PlaylistRepository
+    private val trackRepository: TrackRepository
 ) : MusicRepository {
 
     private val trackSet = mutableSetOf<Track>()

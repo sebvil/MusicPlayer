@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.navArgs
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class GenreContextMenuViewModel @Inject constructor(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
-    private val playbackManager: PlaybackManager
 ) : BaseContextMenuViewModel() {
 
     private val genreId = arguments.genreId

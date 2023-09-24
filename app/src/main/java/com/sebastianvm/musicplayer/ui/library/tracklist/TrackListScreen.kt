@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -39,13 +41,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Composable
 fun TrackListRoute(
     navigator: DestinationsNavigator,
+    handlePlayback: PlaybackHandler,
     modifier: Modifier = Modifier,
     viewModel: TrackListViewModel = hiltViewModel(),
-    handlePlayback: PlaybackHandler
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
-        uiState = uiState,
+        uiState = uiState.toUiState(),
         modifier = modifier
             .fillMaxSize(),
         emptyScreen = {
@@ -111,7 +113,7 @@ fun TrackListScreen(
             openTrackContextMenu = openTrackContextMenu,
             modifier = Modifier
                 .padding(paddingValues)
-                .statusBarsPadding()
+                .windowInsetsPadding(WindowInsets.statusBars)
         )
     }
 }

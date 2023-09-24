@@ -255,7 +255,11 @@ fun ContextMenuLayout(
 }
 
 @Composable
-fun ContextSheetRow(state: ContextMenuItem, onClick: () -> Unit) {
+fun ContextSheetRow(
+    state: ContextMenuItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     ListItem(
         headlineContent = {
             Text(
@@ -265,7 +269,7 @@ fun ContextSheetRow(state: ContextMenuItem, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         },
-        modifier = Modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() },
         leadingContent = {
             Icon(
                 imageVector = state.icon.icon(),

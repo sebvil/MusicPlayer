@@ -107,6 +107,7 @@ class FakeProcessor(
             }
         }
 
+        @Suppress("CyclomaticComplexMethod")
         override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit): String {
             val annotations =
                 function.annotations.filter {
@@ -132,12 +133,7 @@ class FakeProcessor(
                 "FakeQueryMethod" -> {
                     imports.add("kotlinx.coroutines.flow.MutableSharedFlow")
                     buildString {
-                        append(
-                            "\tprivate val _${functionName}Invocations: MutableList<List<Any>> = mutableListOf()\n\n"
-                        )
-                        append("\tval ${functionName}Invocations: List<List<Any>>\n")
-                        append("\t\tget() = _${functionName}Invocations\n\n")
-
+                        append(generateInvocationsList(functionName))
                         append("\toverride ")
                         if (modifiers.contains("suspend")) {
                             append("suspend ")
@@ -172,11 +168,7 @@ class FakeProcessor(
 
                 "FakeCommandMethod" -> {
                     buildString {
-                        append(
-                            "\tprivate val _${functionName}Invocations: MutableList<List<Any>> = mutableListOf()\n\n"
-                        )
-                        append("\tval ${functionName}Invocations: List<List<Any>>\n")
-                        append("\t\tget() = _${functionName}Invocations\n\n")
+                        append(generateInvocationsList(functionName))
                         append("\toverride ")
                         if (modifiers.contains("suspend")) {
                             append("suspend ")
@@ -211,6 +203,16 @@ class FakeProcessor(
                 else -> {
                     ""
                 }
+            }
+        }
+
+        private fun generateInvocationsList(functionName: String): String {
+            return buildString {
+                append(
+                    "\tprivate val _${functionName}Invocations: MutableList<List<Any>> = mutableListOf()\n\n"
+                )
+                append("\tval ${functionName}Invocations: List<List<Any>>\n")
+                append("\t\tget() = _${functionName}Invocations\n\n")
             }
         }
 
