@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
@@ -20,8 +21,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -34,34 +33,17 @@ class TrackListViewModel @Inject constructor(
 ) : OldBaseViewModel<TrackListState, TrackListUserAction>() {
 
     init {
-        with(trackRepository) {
-            combine(
-                getTracksForMedia(args.trackListType),
-                getTrackListMetadata(args.trackListType),
-                if (args.trackListType !is MediaGroup.Album) {
-                    sortPreferencesRepository.getTrackListSortPreferences(
-                        args.trackListType
-                    )
-                } else {
-                    flowOf(null)
-                }
-
-            ) { newTrackList, trackListMetadata, sortPrefs ->
-                Triple(newTrackList, trackListMetadata, sortPrefs)
-            }.onEach { (newTrackList, trackListMetadata, sortPrefs) ->
+        trackRepository.getTrackListWithMetaData(args.trackListType)
+            .onEach { trackListWithMetadata ->
+                val newTrackList = trackListWithMetadata.trackList
+                val trackListMetadata = trackListWithMetadata.metaData
                 if (newTrackList.isEmpty()) {
                     setState { Empty }
                 } else {
                     setDataState {
                         it.copy(
-                            modelListState = ModelListState(
-                                items = newTrackList,
-                                sortButtonState = sortPrefs?.let {
-                                    SortButtonState(
-                                        text = sortPrefs.sortOption.stringId,
-                                        sortOrder = sortPrefs.sortOrder
-                                    )
-                                },
+                            modelListState = it.modelListState.copy(
+                                items = newTrackList.map { track -> track.toModelListItemState() },
                                 headerState = when {
                                     trackListMetadata == null -> HeaderState.None
                                     trackListMetadata.mediaArtImageState != null -> {
@@ -79,7 +61,20 @@ class TrackListViewModel @Inject constructor(
                     }
                 }
             }.launchIn(viewModelScope)
-        }
+
+        sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+            .onEach { sortPrefs ->
+                setDataState {
+                    it.copy(
+                        modelListState = it.modelListState.copy(
+                            sortButtonState = SortButtonState(
+                                text = sortPrefs.sortOption.stringId,
+                                sortOrder = sortPrefs.sortOrder
+                            )
+                        ),
+                    )
+                }
+            }.launchIn(viewModelScope)
     }
 
     override fun handle(action: TrackListUserAction) = Unit

@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
-    fun getPlaylistsCount(): Flow<Int>
     fun getPlaylists(): Flow<List<Playlist>>
     fun getPlaylistName(playlistId: Long): Flow<String>
     fun createPlaylist(playlistName: String): Flow<Long?>

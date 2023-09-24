@@ -16,10 +16,6 @@ class ArtistRepositoryImpl @Inject constructor(
     private val artistDao: ArtistDao
 ) : ArtistRepository {
 
-    override fun getArtistsCount(): Flow<Int> {
-        return artistDao.getArtistsCount().distinctUntilChanged()
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getArtists(): Flow<List<Artist>> {
         return sortPreferencesRepository.getArtistListSortOrder().flatMapLatest { sortOrder ->

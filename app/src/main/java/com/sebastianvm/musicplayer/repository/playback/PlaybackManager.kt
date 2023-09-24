@@ -29,9 +29,6 @@ interface PlaybackManager {
     fun prev()
 
     @FakeQueryMethod
-    fun playSingleTrack(trackId: Long): Flow<PlaybackResult>
-
-    @FakeQueryMethod
     fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0): Flow<PlaybackResult>
 
     @FakeCommandMethod

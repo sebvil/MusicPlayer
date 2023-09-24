@@ -24,9 +24,6 @@ import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -152,18 +149,6 @@ class MusicRepositoryImpl @Inject constructor(
         return tag.split("&", ",", "/").map {
             it.trim()
         }
-    }
-
-    override fun getCounts(): Flow<CountHolder> {
-        return combine(
-            trackRepository.getTracksCount(),
-            artistRepository.getArtistsCount(),
-            albumRepository.getAlbumsCount(),
-            genreRepository.getGenresCount(),
-            playlistRepository.getPlaylistsCount()
-        ) { tracksCount, artistsCount, albumCounts, genreCounts, playlistCounts ->
-            CountHolder(tracksCount, artistsCount, albumCounts, genreCounts, playlistCounts)
-        }.distinctUntilChanged()
     }
 
     // TODO makes this work for API 29

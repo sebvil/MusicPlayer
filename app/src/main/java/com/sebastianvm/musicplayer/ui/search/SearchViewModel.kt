@@ -106,7 +106,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        playbackManager.playSingleTrack(trackId).onEach { result ->
+        playbackManager.playMedia(MediaGroup.SingleTrack(trackId)).onEach { result ->
             when (result) {
                 is PlaybackResult.Loading, is PlaybackResult.Error -> {
                     setDataState {

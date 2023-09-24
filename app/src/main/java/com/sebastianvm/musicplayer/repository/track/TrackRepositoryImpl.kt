@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
+import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
@@ -18,14 +19,13 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -43,11 +43,7 @@ class TrackRepositoryImpl @Inject constructor(
     private val albumRepository: AlbumRepository
 ) : TrackRepository {
 
-    override fun getTracksCount(): Flow<Int> {
-        return trackDao.getTracksCount().distinctUntilChanged()
-    }
-
-    override fun getAllTracks(): Flow<List<Track>> {
+    private fun getAllTracks(): Flow<List<Track>> {
         return sortPreferencesRepository.getTrackListSortPreferences(trackList = MediaGroup.AllTracks)
             .flatMapLatest { mediaSortPreferences ->
                 trackDao.getAllTracks(
@@ -61,15 +57,15 @@ class TrackRepositoryImpl @Inject constructor(
         return trackDao.getTrack(trackId).distinctUntilChanged()
     }
 
-    override fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
+    fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
         return trackDao.getTracksForArtist(artistId).distinctUntilChanged()
     }
 
-    override fun getTracksForAlbum(albumId: Long): Flow<List<Track>> {
+    fun getTracksForAlbum(albumId: Long): Flow<List<Track>> {
         return trackDao.getTracksForAlbum(albumId).distinctUntilChanged()
     }
 
-    override fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
+    fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
         return sortPreferencesRepository.getTrackListSortPreferences(
             trackList = MediaGroup.Genre(
                 genreId = genreId
@@ -83,7 +79,7 @@ class TrackRepositoryImpl @Inject constructor(
         }.distinctUntilChanged()
     }
 
-    override fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
+    fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
         return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
             .flatMapLatest { sortPreferences ->
                 trackDao.getTracksForPlaylist(
@@ -94,25 +90,27 @@ class TrackRepositoryImpl @Inject constructor(
             }.distinctUntilChanged()
     }
 
-    override fun getTracksForMedia(
-        trackList: TrackList
-    ): Flow<List<ModelListItemState>> {
-        return when (trackList) {
+    override fun getTracksForMedia(mediaGroup: MediaGroup): Flow<List<Track>> {
+        return when (mediaGroup) {
             is MediaGroup.AllTracks -> getAllTracks()
-                .map { tracks -> tracks.map { it.toModelListItemState() } }
-
-            is MediaGroup.Genre -> getTracksForGenre(trackList.genreId)
-                .map { tracks -> tracks.map { it.toModelListItemState() } }
-
-            is MediaGroup.Playlist -> playlistRepository.getTracksInPlaylist(trackList.playlistId)
-                .map { tracks -> tracks.map { it.toModelListItemState() } }
-
-            is MediaGroup.Album -> getTracksForAlbum(trackList.albumId)
-                .map { tracks -> tracks.map { it.toModelListItemState() } }
+            is MediaGroup.Genre -> getTracksForGenre(mediaGroup.genreId)
+            is MediaGroup.Playlist -> getTracksForPlaylist(mediaGroup.playlistId)
+            is MediaGroup.Album -> getTracksForAlbum(mediaGroup.albumId)
+            is MediaGroup.Artist -> getTracksForArtist(mediaGroup.artistId)
+            is MediaGroup.SingleTrack -> getTrack(mediaGroup.trackId).map { listOf(it.track) }
         }
     }
 
-    override fun getTrackListMetadata(
+    override fun getTrackListWithMetaData(trackList: TrackList): Flow<TrackListWithMetadata> {
+        return combine(
+            getTrackListMetadata(trackList),
+            getTracksForMedia(mediaGroup = trackList),
+        ) { metadata, tracks ->
+            TrackListWithMetadata(metadata, tracks)
+        }
+    }
+
+    private fun getTrackListMetadata(
         trackList: TrackList
     ): Flow<TrackListMetadata?> {
         return when (trackList) {
