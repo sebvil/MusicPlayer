@@ -107,6 +107,7 @@ class FakeProcessor(
             }
         }
 
+        @Suppress("CyclomaticComplexMethod")
         override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit): String {
             val annotations =
                 function.annotations.filter {
