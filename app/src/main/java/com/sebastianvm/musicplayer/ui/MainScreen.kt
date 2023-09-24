@@ -56,7 +56,6 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListRoute
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
@@ -141,7 +140,6 @@ fun Screens(
     navigator: DestinationsNavigator,
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
-    trackListViewModel: TrackListViewModel = hiltViewModel(),
     artistListViewModel: ArtistListViewModel = hiltViewModel(),
     albumListViewModel: AlbumListViewModel = hiltViewModel(),
     genreListViewModel: GenreListViewModel = hiltViewModel(),
@@ -151,9 +149,9 @@ fun Screens(
         TopLevelScreen.ALL_SONGS -> {
             TrackListRoute(
                 navigator = navigator,
-                modifier = modifier.fillMaxSize(),
                 handlePlayback = playMedia,
-                viewModel = trackListViewModel
+                modifier = modifier.fillMaxSize(),
+                viewModel = hiltViewModel()
             )
         }
 

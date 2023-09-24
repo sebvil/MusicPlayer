@@ -41,9 +41,9 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 @Composable
 fun TrackListRoute(
     navigator: DestinationsNavigator,
+    handlePlayback: PlaybackHandler,
     modifier: Modifier = Modifier,
     viewModel: TrackListViewModel = hiltViewModel(),
-    handlePlayback: PlaybackHandler
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
