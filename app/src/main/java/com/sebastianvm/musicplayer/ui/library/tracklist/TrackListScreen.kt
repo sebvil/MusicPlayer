@@ -21,12 +21,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.toSortableListType
-import com.sebastianvm.musicplayer.ui.MainUserAction
-import com.sebastianvm.musicplayer.ui.MainViewModel
+import com.sebastianvm.musicplayer.ui.PlaybackHandler
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -44,7 +41,7 @@ fun TrackListRoute(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     viewModel: TrackListViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel
+    handlePlayback: PlaybackHandler
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
@@ -63,15 +60,10 @@ fun TrackListRoute(
         TrackListScreen(
             state = state,
             onTrackClicked = { trackIndex ->
-                mainViewModel.handle(
-                    MainUserAction.PlayMedia(
-                        mediaGroup = state.trackListType,
-                        initialTrackIndex = trackIndex
-                    )
+                handlePlayback(
+                    mediaGroup = state.trackListType,
+                    initialTrackIndex = trackIndex
                 )
-            },
-            onDismissPlaybackErrorDialog = {
-                viewModel.handle(TrackListUserAction.DismissPlaybackErrorDialog)
             },
             openTrackContextMenu = { navigator.navigate(TrackContextMenuDestination(it)) },
             navigateToTrackSearchScreen = { navigator.navigate(TrackSearchScreenDestination(it)) },
@@ -85,7 +77,6 @@ fun TrackListRoute(
 fun TrackListScreen(
     state: TrackListState,
     onTrackClicked: (trackIndex: Int) -> Unit,
-    onDismissPlaybackErrorDialog: () -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
     openSortMenu: (args: SortMenuArguments) -> Unit,
     navigateToTrackSearchScreen: (args: TrackSearchArguments) -> Unit,
@@ -118,7 +109,6 @@ fun TrackListScreen(
             onTrackClicked = onTrackClicked,
             openSortMenu = openSortMenu,
             openTrackContextMenu = openTrackContextMenu,
-            onDismissPlaybackErrorDialog = onDismissPlaybackErrorDialog,
             modifier = Modifier
                 .padding(paddingValues)
                 .statusBarsPadding()
@@ -132,19 +122,9 @@ fun TrackListLayout(
     onTrackClicked: (trackIndex: Int) -> Unit,
     openSortMenu: (args: SortMenuArguments) -> Unit,
     openTrackContextMenu: (args: TrackContextMenuArguments) -> Unit,
-    onDismissPlaybackErrorDialog: () -> Unit,
     modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit = {}
 ) {
-    PlaybackStatusIndicator(
-        playbackResult = state.playbackResult,
-        delegate = object : PlaybackStatusIndicatorDelegate {
-            override fun onDismissRequest() {
-                onDismissPlaybackErrorDialog()
-            }
-        }
-    )
-
     ModelList(
         state = state.modelListState,
         modifier = modifier,

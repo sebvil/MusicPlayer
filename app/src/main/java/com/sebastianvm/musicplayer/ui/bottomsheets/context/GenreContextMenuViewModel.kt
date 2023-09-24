@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.navArgs
@@ -39,22 +38,6 @@ class GenreContextMenuViewModel @Inject constructor(
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {
-            is ContextMenuItem.PlayAllSongs -> {
-                playbackManager.playGenre(genreId).onEach { result ->
-                    when (result) {
-                        is PlaybackResult.Loading, is PlaybackResult.Error -> {
-                            setDataState {
-                                it.copy(
-                                    playbackResult = result
-                                )
-                            }
-                        }
-
-                        is PlaybackResult.Success -> {}
-                    }
-                }.launchIn(viewModelScope)
-            }
-
             is ContextMenuItem.ViewGenre -> {
                 addNavEvent(
                     NavEvent.NavigateToScreen(

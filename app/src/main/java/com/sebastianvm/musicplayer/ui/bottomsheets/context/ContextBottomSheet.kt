@@ -30,8 +30,8 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.PlaybackHandler
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
@@ -39,13 +39,21 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 @Composable
 fun ContextBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: BaseContextMenuViewModel
+    sheetViewModel: BaseContextMenuViewModel,
+    handlePlayback: () -> Unit
 ) {
     Screen(
         screenViewModel = sheetViewModel,
         navigationDelegate = NavigationDelegateImpl(navigator)
     ) { state, screenDelegate ->
-        ContextMenuLayout(state = state, screenDelegate = screenDelegate)
+        ContextMenuLayout(
+            state = state,
+            handlePlayback = {
+                handlePlayback()
+                navigator.navigateUp()
+            },
+            screenDelegate = screenDelegate
+        )
     }
 }
 
@@ -57,9 +65,13 @@ fun ContextBottomSheet(
 @Composable
 fun TrackContextMenu(
     navigator: DestinationsNavigator,
-    viewModel: TrackContextMenuViewModel = hiltViewModel()
+    arguments: TrackContextMenuArguments,
+    handlePlayback: PlaybackHandler,
+    viewModel: TrackContextMenuViewModel = hiltViewModel(),
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
+        handlePlayback(mediaGroup = arguments.mediaGroup, initialTrackIndex = arguments.trackIndex)
+    }
 }
 
 @RootNavGraph
@@ -70,9 +82,13 @@ fun TrackContextMenu(
 @Composable
 fun ArtistContextMenu(
     navigator: DestinationsNavigator,
+    arguments: ArtistContextMenuArguments,
+    handlePlayback: PlaybackHandler,
     viewModel: ArtistContextMenuViewModel = hiltViewModel()
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
+        handlePlayback(mediaGroup = MediaGroup.Artist(arguments.artistId), initialTrackIndex = 0)
+    }
 }
 
 @RootNavGraph
@@ -83,9 +99,13 @@ fun ArtistContextMenu(
 @Composable
 fun AlbumContextMenu(
     navigator: DestinationsNavigator,
+    arguments: AlbumContextMenuArguments,
+    handlePlayback: PlaybackHandler,
     viewModel: AlbumContextMenuViewModel = hiltViewModel()
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
+        handlePlayback(mediaGroup = MediaGroup.Album(arguments.albumId), initialTrackIndex = 0)
+    }
 }
 
 @RootNavGraph
@@ -96,9 +116,13 @@ fun AlbumContextMenu(
 @Composable
 fun GenreContextMenu(
     navigator: DestinationsNavigator,
+    arguments: GenreContextMenuArguments,
+    handlePlayback: PlaybackHandler,
     viewModel: GenreContextMenuViewModel = hiltViewModel()
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
+        handlePlayback(mediaGroup = MediaGroup.Genre(arguments.genreId), initialTrackIndex = 0)
+    }
 }
 
 @RootNavGraph
@@ -109,9 +133,16 @@ fun GenreContextMenu(
 @Composable
 fun PlaylistContextMenu(
     navigator: DestinationsNavigator,
+    arguments: PlaylistContextMenuArguments,
+    handlePlayback: PlaybackHandler,
     viewModel: PlaylistContextMenuViewModel = hiltViewModel()
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel)
+    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
+        handlePlayback(
+            mediaGroup = MediaGroup.Playlist(arguments.playlistId),
+            initialTrackIndex = 0
+        )
+    }
 }
 
 interface DeletePlaylistConfirmationDialogDelegate {
@@ -148,18 +179,10 @@ fun DeletePlaylistConfirmationDialog(
 @Composable
 fun ContextMenuLayout(
     state: ContextMenuState,
+    handlePlayback: () -> Unit,
     screenDelegate: ScreenDelegate<BaseContextMenuUserAction>,
     modifier: Modifier = Modifier
 ) {
-    PlaybackStatusIndicator(
-        playbackResult = state.playbackResult,
-        delegate = object : PlaybackStatusIndicatorDelegate {
-            override fun onDismissRequest() {
-                screenDelegate.handle(BaseContextMenuUserAction.DismissPlaybackErrorDialog)
-            }
-        }
-    )
-
     if (state.showDeleteConfirmationDialog) {
         DeletePlaylistConfirmationDialog(
             playlistName = state.menuTitle,
@@ -199,31 +222,56 @@ fun ContextMenuLayout(
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 LazyColumn {
                     items(listItems, key = { it.text }) {
-                        ListItem(
-                            headlineContent = {
-                                Text(
-                                    text = stringResource(id = it.text),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
-                            modifier = Modifier.clickable {
-                                screenDelegate.handle(
-                                    BaseContextMenuUserAction.RowClicked(it)
-                                )
-                            },
-                            leadingContent = {
-                                Icon(
-                                    imageVector = it.icon.icon(),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                        when (it) {
+                            ContextMenuItem.AddToPlaylist,
+                            ContextMenuItem.AddToQueue,
+                            ContextMenuItem.DeletePlaylist,
+                            ContextMenuItem.RemoveFromPlaylist,
+                            ContextMenuItem.ViewAlbum,
+                            ContextMenuItem.ViewArtist,
+                            ContextMenuItem.ViewArtists,
+                            ContextMenuItem.ViewGenre,
+                            ContextMenuItem.ViewPlaylist -> {
+                                ContextSheetRow(state = it) {
+                                    screenDelegate.handle(
+                                        BaseContextMenuUserAction.RowClicked(it)
+                                    )
+                                }
                             }
-                        )
+
+                            ContextMenuItem.Play,
+                            ContextMenuItem.PlayAllSongs,
+                            ContextMenuItem.PlayFromBeginning -> {
+                                ContextSheetRow(state = it) {
+                                    handlePlayback()
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun ContextSheetRow(state: ContextMenuItem, onClick: () -> Unit) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = stringResource(id = state.text),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        modifier = Modifier.clickable { onClick() },
+        leadingContent = {
+            Icon(
+                imageVector = state.icon.icon(),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    )
 }
