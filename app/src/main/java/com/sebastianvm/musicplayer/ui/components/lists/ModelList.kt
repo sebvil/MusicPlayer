@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -124,13 +125,13 @@ fun ModelList(
         }
     when (val headerState = state.headerState) {
         is HeaderState.None -> {
-            content(modifier, PaddingValues())
+            content(modifier, LocalPaddingValues.current)
         }
 
         is HeaderState.Simple -> {
             Column(modifier) {
                 TopBar(title = headerState.title, onBackButtonClicked = onBackButtonClicked)
-                content(Modifier, PaddingValues())
+                content(Modifier, LocalPaddingValues.current)
             }
         }
 
@@ -276,7 +277,8 @@ private fun HeaderWithImageModelList(
             PaddingValues(
                 top = (fullHeaderHeaderHeightDp + offset).coerceAtLeast(
                     0.dp
-                )
+                ),
+                bottom = LocalPaddingValues.current.calculateBottomPadding()
             )
         )
     }
