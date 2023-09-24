@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.ArtworkProvider
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -175,9 +176,10 @@ class MediaTree @Inject constructor(
             )
 
             KeyType.ALL_TRACKS -> {
-                trackRepository.getAllTracks().first().mapIndexed { index, track ->
-                    track.buildMediaItem(parent = parentKey, index = index.toLong())
-                }
+                trackRepository.getTracksForMedia(MediaGroup.AllTracks).first()
+                    .mapIndexed { index, track ->
+                        track.buildMediaItem(parent = parentKey, index = index.toLong())
+                    }
             }
 
             KeyType.ALBUMS_ROOT -> {
@@ -194,7 +196,7 @@ class MediaTree @Inject constructor(
             KeyType.GENRES_ROOT -> null
             KeyType.PLAYLISTS_ROOT -> null
             KeyType.ALBUM -> {
-                trackRepository.getTracksForAlbum(parentKey.itemIndexOrId).first()
+                trackRepository.getTracksForMedia(MediaGroup.Album(parentKey.itemIndexOrId)).first()
                     .mapIndexed { index, track ->
                         track.buildMediaItem(parent = parentKey, index = index.toLong())
                     }

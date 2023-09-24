@@ -62,23 +62,11 @@ class PlaybackManagerImpl @Inject constructor(
         emit(PlaybackResult.Success)
     }
 
-    override fun playSingleTrack(trackId: Long): Flow<PlaybackResult> =
-        playTracks(initialTrackIndex = 0) {
-            listOf(trackRepository.getTrack(trackId).first().track.toMediaItem())
-        }
-
     override fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int): Flow<PlaybackResult> {
         return playTracks(initialTrackIndex) {
-            when (mediaGroup) {
-                is MediaGroup.AllTracks -> trackRepository.getAllTracks()
-                is MediaGroup.SingleTrack -> trackRepository.getTrack(mediaGroup.trackId)
-                    .map { listOf(it.track) }
-
-                is MediaGroup.Artist -> trackRepository.getTracksForArtist(mediaGroup.artistId)
-                is MediaGroup.Album -> trackRepository.getTracksForAlbum(mediaGroup.albumId)
-                is MediaGroup.Genre -> trackRepository.getTracksForGenre(mediaGroup.genreId)
-                is MediaGroup.Playlist -> trackRepository.getTracksForPlaylist(mediaGroup.playlistId)
-            }.map { tracks -> tracks.map { it.toMediaItem() } }.first()
+            trackRepository.getTracksForMedia(mediaGroup).map { tracks ->
+                tracks.map { it.toMediaItem() }
+            }.first()
         }
     }
 

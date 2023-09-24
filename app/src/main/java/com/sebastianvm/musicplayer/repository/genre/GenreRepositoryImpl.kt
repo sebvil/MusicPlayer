@@ -13,9 +13,6 @@ class GenreRepositoryImpl @Inject constructor(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val genreDao: GenreDao
 ) : GenreRepository {
-    override fun getGenresCount(): Flow<Int> {
-        return genreDao.getGenresCount().distinctUntilChanged()
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getGenres(): Flow<List<Genre>> {

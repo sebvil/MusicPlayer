@@ -20,10 +20,6 @@ class AlbumRepositoryImpl @Inject constructor(
     private val albumDao: AlbumDao
 ) : AlbumRepository {
 
-    override fun getAlbumsCount(): Flow<Int> {
-        return albumDao.getAlbumsCount().distinctUntilChanged()
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAlbums(): Flow<List<Album>> {
         return sortPreferencesRepository.getAlbumListSortPreferences()
