@@ -3,6 +3,7 @@
 package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -86,7 +87,8 @@ object FixtureProvider {
     private fun trackListSortOptions(): Stream<SortOptions.TrackListSortOptions> =
         SortOptions.TrackListSortOptions.entries.stream()
 
-    private fun sortOrders() = MediaSortOrder.entries.stream()
+    @JvmStatic
+    fun sortOrders() = MediaSortOrder.entries.stream()
 
     @JvmStatic
     fun trackListSortPreferences(): Stream<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
@@ -115,6 +117,17 @@ object FixtureProvider {
                     artists = string,
                     year = long,
                     imageUri = string
+                )
+            }
+        }
+    }
+
+    fun artistFixtures(): Stream<Artist> {
+        return longStream().flatMap { long ->
+            stringStream().map { string ->
+                Artist(
+                    id = long,
+                    artistName = string
                 )
             }
         }
