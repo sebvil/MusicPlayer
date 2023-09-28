@@ -29,19 +29,20 @@ class ArtistsBottomSheetViewModel @Inject constructor(
     artistRepository: ArtistRepository
 ) : OldBaseViewModel<ArtistsBottomSheetState, ArtistsBottomSheetUserAction>() {
     init {
-        artistRepository.getArtists(arguments.mediaType, arguments.mediaId).onEach { artists ->
-            setDataState {
-                it.copy(
-                    modelListState = ModelListState(
-                        items = artists.map { artist ->
-                            artist.toModelListItemState(
-                                trailingButtonType = null
-                            )
-                        }
+        artistRepository.getArtistsForMedia(arguments.mediaType, arguments.mediaId)
+            .onEach { artists ->
+                setDataState {
+                    it.copy(
+                        modelListState = ModelListState(
+                            items = artists.map { artist ->
+                                artist.toModelListItemState(
+                                    trailingButtonType = null
+                                )
+                            }
+                        )
                     )
-                )
-            }
-        }.launchIn(viewModelScope)
+                }
+            }.launchIn(viewModelScope)
     }
 
     override fun handle(action: ArtistsBottomSheetUserAction) {

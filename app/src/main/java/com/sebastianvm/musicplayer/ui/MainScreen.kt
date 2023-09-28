@@ -52,6 +52,7 @@ import com.sebastianvm.musicplayer.ui.library.albumlist.toUiState
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
+import com.sebastianvm.musicplayer.ui.library.artistlist.toUiState
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListLayout
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListUserAction
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
@@ -160,7 +161,7 @@ fun Screens(
         TopLevelScreen.ARTISTS -> {
             val uiState by artistListViewModel.stateFlow.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState,
+                uiState = uiState.toUiState(),
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(

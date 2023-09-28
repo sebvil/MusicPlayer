@@ -9,48 +9,78 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
-import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.util.coroutines.combineToPair
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ArtistListViewModel @Inject constructor(
+class ArtistListViewModel(
+    initialState: ArtistListState,
+    viewModelScope: CoroutineScope?,
     artistRepository: ArtistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : OldBaseViewModel<ArtistListState, ArtistListUserAction>() {
+) : BaseViewModel<ArtistListState, ArtistListUserAction>(
+    initialState = initialState,
+    viewModelScope = viewModelScope
+) {
+
+    @Inject
+    constructor(
+        artistRepository: ArtistRepository,
+        sortPreferencesRepository: SortPreferencesRepository
+    ) : this(
+        initialState = ArtistListState(
+            modelListState = ModelListState(
+                items = listOf(),
+                sortButtonState = SortButtonState(
+                    text = R.string.artist_name,
+                    sortOrder = MediaSortOrder.ASCENDING
+                ),
+                headerState = HeaderState.None
+            ),
+            isLoading = true
+        ),
+        viewModelScope = null,
+        artistRepository = artistRepository,
+        sortPreferencesRepository = sortPreferencesRepository
+    )
 
     init {
-        combineToPair(
-            artistRepository.getArtists(),
-            sortPreferencesRepository.getArtistListSortOrder()
-        ).onEach { (artists, sortOrder) ->
-            if (artists.isEmpty()) {
-                setState { Empty }
-            } else {
-                setDataState {
-                    it.copy(
-                        modelListState = ModelListState(
-                            items = artists.map { artist ->
-                                artist.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                            },
-                            sortButtonState = SortButtonState(
-                                text = R.string.artist_name,
-                                sortOrder = sortOrder
-                            ),
-                            headerState = HeaderState.None
-                        )
-                    )
-                }
+        artistRepository.getArtists().onEach { artists ->
+            setState {
+                it.copy(
+                    modelListState = it.modelListState.copy(
+                        items = artists.map { artist ->
+                            artist.toModelListItemState(trailingButtonType = TrailingButtonType.More)
+                        },
+                    ),
+                    isLoading = false
+                )
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(vmScope)
+        sortPreferencesRepository.getArtistListSortOrder().onEach { sortOrder ->
+            setState {
+                it.copy(
+                    modelListState = it.modelListState.copy(
+                        sortButtonState = SortButtonState(
+                            text = R.string.artist_name,
+                            sortOrder = sortOrder
+                        ),
+                    )
+                )
+            }
+        }.launchIn(vmScope)
     }
 
     override fun handle(action: ArtistListUserAction) {
@@ -62,25 +92,21 @@ class ArtistListViewModel @Inject constructor(
             }
         }
     }
-
-    override val defaultState: ArtistListState by lazy {
-        ArtistListState(
-            modelListState = ModelListState(
-                items = listOf(),
-                sortButtonState = SortButtonState(
-                    text = R.string.artist_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                ),
-                headerState = HeaderState.None
-            )
-        )
-    }
 }
 
 data class ArtistListState(
-    val modelListState: ModelListState
+    val modelListState: ModelListState,
+    val isLoading: Boolean
 ) : State
 
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction
+}
+
+fun ArtistListState.toUiState(): UiState<ArtistListState> {
+    return when {
+        isLoading -> Loading
+        modelListState.items.isEmpty() -> Empty
+        else -> Data(this)
+    }
 }
