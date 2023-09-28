@@ -4,6 +4,7 @@ package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -128,6 +129,17 @@ object FixtureProvider {
                 Artist(
                     id = long,
                     artistName = string
+                )
+            }
+        }
+    }
+
+    fun genreFixtures(): Stream<Genre> {
+        return longStream().flatMap { long ->
+            stringStream().map { string ->
+                Genre(
+                    id = long,
+                    genreName = string
                 )
             }
         }
