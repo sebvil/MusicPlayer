@@ -1,13 +1,16 @@
 package com.sebastianvm.musicplayer.ui.artist
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.navArgs
-import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.AlbumType
 import dagger.Module
@@ -16,21 +19,39 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class ArtistViewModel @Inject constructor(
+class ArtistViewModel(
+    initialState: ArtistState,
+    viewModelScope: CoroutineScope?,
     arguments: ArtistArguments,
     artistRepository: ArtistRepository
-) : OldBaseViewModel<ArtistState, ArtistUserAction>() {
+) : BaseViewModel<ArtistState, ArtistUserAction>(
+    initialState = initialState,
+    viewModelScope = viewModelScope
+) {
+
+    @Inject
+    constructor(arguments: ArtistArguments, artistRepository: ArtistRepository) : this(
+        initialState = ArtistState(
+            artistName = "",
+            listItems = listOf(),
+            isLoading = true
+        ),
+        viewModelScope = null,
+        arguments = arguments,
+        artistRepository = artistRepository
+    )
+
     private val artistId = arguments.artistId
 
     init {
-        viewModelScope.launch {
-            val artistWithAlbums = artistRepository.getArtist(artistId).first()
-            setDataState {
+        artistRepository.getArtist(artistId).onEach { artistWithAlbums ->
+            setState {
                 it.copy(
                     artistName = artistWithAlbums.artist.artistName,
                     listItems = buildList {
@@ -42,20 +63,14 @@ class ArtistViewModel @Inject constructor(
                             add(ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON))
                         }
                         addAll(artistWithAlbums.artistAppearsOn.map { album -> album.toAlbumRowItem() })
-                    }
+                    },
+                    isLoading = false
                 )
             }
-        }
+        }.launchIn(vmScope)
     }
 
     override fun handle(action: ArtistUserAction) = Unit
-
-    override val defaultState: ArtistState by lazy {
-        ArtistState(
-            artistName = "",
-            listItems = listOf()
-        )
-    }
 }
 
 private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
@@ -64,7 +79,8 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
 
 data class ArtistState(
     val artistName: String,
-    val listItems: List<ArtistScreenItem>
+    val listItems: List<ArtistScreenItem>,
+    val isLoading: Boolean
 ) : State
 
 @InstallIn(ViewModelComponent::class)
@@ -80,3 +96,11 @@ object ArtistArgumentsModule {
 data class ArtistArguments(val artistId: Long)
 
 sealed interface ArtistUserAction : UserAction
+
+fun ArtistState.toUiState(): UiState<ArtistState> {
+    return when {
+        isLoading -> Loading
+        listItems.isEmpty() -> Empty
+        else -> Data(this)
+    }
+}
