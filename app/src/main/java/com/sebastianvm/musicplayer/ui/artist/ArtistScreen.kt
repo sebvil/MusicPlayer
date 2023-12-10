@@ -45,7 +45,10 @@ fun ArtistRoute(
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+    UiStateScreen(
+        uiState = uiState.toUiState(),
+        emptyScreen = {}
+    ) { state ->
         ArtistScreen(
             state = state,
             navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },

@@ -27,12 +27,12 @@ interface TrackDao {
     @Transaction
     @Query(
         "SELECT * FROM Track ORDER BY " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
     fun getAllTracks(
         sortOption: SortOptions.TrackListSortOptions,
@@ -46,10 +46,10 @@ interface TrackDao {
     @Transaction
     @Query(
         "SELECT Track.* FROM Track " +
-            "INNER JOIN ArtistTrackCrossRef " +
-            "ON Track.id = ArtistTrackCrossRef.trackId " +
-            "WHERE ArtistTrackCrossRef.artistId=:artistId " +
-            "ORDER BY trackName COLLATE LOCALIZED ASC"
+                "INNER JOIN ArtistTrackCrossRef " +
+                "ON Track.id = ArtistTrackCrossRef.trackId " +
+                "WHERE ArtistTrackCrossRef.artistId=:artistId " +
+                "ORDER BY trackName COLLATE LOCALIZED ASC"
     )
     fun getTracksForArtist(artistId: Long): Flow<List<Track>>
 
@@ -60,15 +60,15 @@ interface TrackDao {
     @Transaction
     @Query(
         "SELECT Track.* FROM Track " +
-            "INNER JOIN GenreTrackCrossRef " +
-            "ON Track.id = GenreTrackCrossRef.trackId " +
-            "WHERE GenreTrackCrossRef.genreId=:genreId ORDER BY " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
+                "INNER JOIN GenreTrackCrossRef " +
+                "ON Track.id = GenreTrackCrossRef.trackId " +
+                "WHERE GenreTrackCrossRef.genreId=:genreId ORDER BY " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
     fun getTracksForGenre(
         genreId: Long,
@@ -78,17 +78,17 @@ interface TrackDao {
 
     @Query(
         "SELECT Track.* FROM Track " +
-            "INNER JOIN PlaylistTrackCrossRef " +
-            "ON Track.id = PlaylistTrackCrossRef.trackId " +
-            "WHERE PlaylistTrackCrossRef.playlistId=:playlistId ORDER BY " +
-            "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='ASCENDING' THEN position END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='DESCENDING' THEN position END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
+                "INNER JOIN PlaylistTrackCrossRef " +
+                "ON Track.id = PlaylistTrackCrossRef.trackId " +
+                "WHERE PlaylistTrackCrossRef.playlistId=:playlistId ORDER BY " +
+                "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='ASCENDING' THEN position END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='CUSTOM' AND :sortOrder='DESCENDING' THEN position END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='ASCENDING' THEN trackName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='TRACK' AND :sortOrder='DESCENDING' THEN trackName END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='ASCENDING' THEN albumName END COLLATE LOCALIZED ASC, " +
+                "CASE WHEN:sortOption='ALBUM' AND :sortOrder='DESCENDING' THEN albumName END COLLATE LOCALIZED DESC"
     )
     fun getTracksForPlaylist(
         playlistId: Long,
@@ -107,4 +107,5 @@ interface TrackDao {
         albumsForArtists: Set<AlbumsForArtist>,
         appearsOnForArtists: Set<AppearsOnForArtist>
     )
+
 }
