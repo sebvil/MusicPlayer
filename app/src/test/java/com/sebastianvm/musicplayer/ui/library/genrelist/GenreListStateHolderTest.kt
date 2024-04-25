@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class GenreListViewModelTest : BaseTest() {
+class GenreListStateHolderTest : BaseTest() {
     private lateinit var genreRepository: FakeGenreRepositoryImpl
     private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
 
@@ -28,8 +28,8 @@ class GenreListViewModelTest : BaseTest() {
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    private fun generateViewModel(): GenreListViewModel {
-        return GenreListViewModel(
+    private fun generateViewModel(): GenreListStateHolder {
+        return GenreListStateHolder(
             initialState = GenreListState(
                 modelListState = ModelListState(
                     items = listOf(),

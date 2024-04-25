@@ -34,24 +34,30 @@ import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @RootNavGraph
-@Destination(navArgsDelegate = ArtistArguments::class)
+@Destination
 @Composable
 fun ArtistRoute(
     destinationsNavigator: DestinationsNavigator,
-    viewModel: ArtistViewModel = viewModel()
+    arguments: ArtistArguments,
+    viewModel: StateHolder<UiState<ArtistState>, ArtistUserAction> = stateHolder { dependencyContainer ->
+        ArtistStateHolder(
+            arguments = arguments,
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository
+        )
+    }
 ) {
-    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
-    UiStateScreen(uiState = uiState.toUiState(), emptyScreen = {}) { state ->
-        ArtistScreen(
-            state = state,
+    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+        ArtistScreen(state = state,
             navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },
             openAlbumContextMenu = { destinationsNavigator.navigate(AlbumContextMenuDestination(it)) },
-            navigateBack = { destinationsNavigator.navigateUp() }
-        )
+            navigateBack = { destinationsNavigator.navigateUp() })
     }
 }
 
@@ -67,23 +73,18 @@ fun ArtistScreen(
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
 
-    ScreenScaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    ScreenScaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
-                title = { Text(text = state.artistName) },
-                navigationIcon = {
-                    IconButton(onClick = { navigateBack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
+            LargeTopAppBar(title = { Text(text = state.artistName) }, navigationIcon = {
+                IconButton(onClick = { navigateBack() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
+                }
+            }, scrollBehavior = scrollBehavior
             )
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         ArtistLayout(
             state = state,
             navigateToAlbum = navigateToAlbum,
@@ -113,21 +114,17 @@ fun ArtistLayout(
                 }
 
                 is ArtistScreenItem.AlbumRowItem -> {
-                    ModelListItem(
-                        state = item.state,
-                        modifier = Modifier.clickable {
-                            navigateToAlbum(
-                                TrackListArgumentsForNav(
-                                    trackListType = MediaGroup.Album(
-                                        albumId = item.id
-                                    )
+                    ModelListItem(state = item.state, modifier = Modifier.clickable {
+                        navigateToAlbum(
+                            TrackListArgumentsForNav(
+                                trackListType = MediaGroup.Album(
+                                    albumId = item.id
                                 )
                             )
-                        },
-                        onMoreClicked = {
-                            openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
-                        }
-                    )
+                        )
+                    }, onMoreClicked = {
+                        openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
+                    })
                 }
             }
         }

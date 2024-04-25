@@ -6,8 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.ui.MainViewModel
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.artist.ArtistViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
@@ -22,11 +20,7 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsBottomShe
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
-import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListViewModel
 import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchViewModel
@@ -45,14 +39,6 @@ class MusicPlayerApplication : Application() {
                 handle: SavedStateHandle
             ): T {
                 when (modelClass) {
-                    ArtistViewModel::class.java -> {
-                        val args = handle.navArgs<ArtistArguments>()
-                        return ArtistViewModel(
-                            arguments = args,
-                            artistRepository = dependencyContainer.repositoryProvider.artistRepository
-                        ) as T
-                    }
-
                     AlbumContextMenuViewModel::class.java -> {
                         val args = handle.navArgs<AlbumContextMenuArguments>()
                         return AlbumContextMenuViewModel(
@@ -129,33 +115,10 @@ class MusicPlayerApplication : Application() {
                         ) as T
                     }
 
-                    ArtistListViewModel::class.java -> {
-                        return ArtistListViewModel(
-                            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-                            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-                        ) as T
-                    }
-
-                    GenreListViewModel::class.java -> {
-                        return GenreListViewModel(
-                            genreRepository = dependencyContainer.repositoryProvider.genreRepository,
-                            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-                        ) as T
-                    }
-
                     PlaylistListViewModel::class.java -> {
                         return PlaylistListViewModel(
                             playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
                             sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-                        ) as T
-                    }
-
-                    TrackListViewModel::class.java -> {
-                        val args = handle.navArgs<TrackListArgumentsForNav>()
-                        return TrackListViewModel(
-                            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
-                            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-                            args = args.toTrackListArguments()
                         ) as T
                     }
 

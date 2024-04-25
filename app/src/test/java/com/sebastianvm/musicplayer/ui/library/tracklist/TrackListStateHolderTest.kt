@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class TrackListViewModelTest : BaseTest() {
+class TrackListStateHolderTest : BaseTest() {
 
     private lateinit var trackRepository: FakeTrackRepositoryImpl
     private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
@@ -31,8 +31,8 @@ class TrackListViewModelTest : BaseTest() {
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    private fun generateViewModel(trackList: TrackList = MediaGroup.AllTracks): TrackListViewModel {
-        return TrackListViewModel(
+    private fun generateViewModel(trackList: TrackList = MediaGroup.AllTracks): TrackListStateHolder {
+        return TrackListStateHolder(
             initialState = TrackListState(
                 trackListType = trackList,
                 modelListState = ModelListState(
