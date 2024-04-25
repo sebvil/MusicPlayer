@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.ui.util.mvvm
 
-sealed interface UiState<out T>
+sealed interface UiState<out T> : State
 
 data object Loading : UiState<Nothing>
 data object Empty : UiState<Nothing>

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class AlbumListViewModelTest : BaseTest() {
+class AlbumListStateHolderTest : BaseTest() {
 
     private lateinit var albumRepository: FakeAlbumRepositoryImpl
     private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
@@ -30,8 +30,8 @@ class AlbumListViewModelTest : BaseTest() {
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    private fun generateViewModel(): AlbumListViewModel {
-        return AlbumListViewModel(
+    private fun generateViewModel(): AlbumListStateHolder {
+        return AlbumListStateHolder(
             initialState = AlbumListState(
                 modelListState = ModelListState(
                     items = listOf(),

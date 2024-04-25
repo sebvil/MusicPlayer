@@ -46,8 +46,9 @@ import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestinatio
 import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
-import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
-import com.sebastianvm.musicplayer.ui.library.albumlist.toUiState
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListState
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListStateHolder
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
@@ -63,6 +64,9 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 import kotlinx.coroutines.launch
 
@@ -145,7 +149,12 @@ fun Screens(
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
     artistListViewModel: ArtistListViewModel = viewModel(),
-    albumListViewModel: AlbumListViewModel = viewModel(),
+    albumListStateHolder: StateHolder<UiState<AlbumListState>, AlbumListUserAction> = stateHolder { dependencyContainer ->
+        AlbumListStateHolder(
+            albumRepository = dependencyContainer.repositoryProvider.albumRepository,
+            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+        )
+    },
     genreListViewModel: GenreListViewModel = viewModel(),
     playlistListViewModel: PlaylistListViewModel = viewModel()
 ) {
@@ -188,9 +197,9 @@ fun Screens(
         }
 
         TopLevelScreen.ALBUMS -> {
-            val uiState by albumListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by albumListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState.toUiState(),
+                uiState = uiState,
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(

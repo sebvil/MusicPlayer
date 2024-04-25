@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsBottomShe
 import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortBottomSheetViewModel
 import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
@@ -127,13 +126,6 @@ class MusicPlayerApplication : Application() {
                             ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
                             playbackManager = dependencyContainer.repositoryProvider.playbackManager,
                             defaultDispatcher = dependencyContainer.dispatcherProvider.defaultDispatcher
-                        ) as T
-                    }
-
-                    AlbumListViewModel::class.java -> {
-                        return AlbumListViewModel(
-                            albumRepository = dependencyContainer.repositoryProvider.albumRepository,
-                            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
                         ) as T
                     }
 
