@@ -11,26 +11,20 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRefKeys
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
-import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @Dao
 abstract class PlaylistDao {
 
-    @IODispatcher
-    @Inject
-    lateinit var ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    @DefaultDispatcher
-    @Inject
-    lateinit var defaultDispatcher: CoroutineDispatcher
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     @Query("SELECT COUNT(*) FROM Playlist")
     abstract fun getPlaylistsCount(): Flow<Int>

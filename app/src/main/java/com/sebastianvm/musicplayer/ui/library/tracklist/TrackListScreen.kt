@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -35,6 +34,7 @@ import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackSearchScreenDestination
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 
 @RootNavGraph
 @Destination(navArgsDelegate = TrackListArgumentsForNav::class)
@@ -43,9 +43,9 @@ fun TrackListRoute(
     navigator: DestinationsNavigator,
     handlePlayback: PlaybackHandler,
     modifier: Modifier = Modifier,
-    viewModel: TrackListViewModel = hiltViewModel(),
+    trackListViewModel: TrackListViewModel = viewModel(),
 ) {
-    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by trackListViewModel.stateFlow.collectAsStateWithLifecycle()
     UiStateScreen(
         uiState = uiState.toUiState(),
         modifier = modifier

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.model.MediaWithArtists
@@ -13,20 +12,11 @@ import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-@HiltViewModel
-class AlbumContextMenuViewModel @Inject constructor(
+class AlbumContextMenuViewModel(
     arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager
@@ -114,13 +104,3 @@ class AlbumContextMenuViewModel @Inject constructor(
 }
 
 data class AlbumContextMenuArguments(val albumId: Long)
-
-@InstallIn(ViewModelComponent::class)
-@Module
-object AlbumContextMenuArgumentsModule {
-    @Provides
-    @ViewModelScoped
-    fun albumContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): AlbumContextMenuArguments {
-        return savedStateHandle.navArgs()
-    }
-}

@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -35,6 +34,7 @@ import com.sebastianvm.musicplayer.ui.PlaybackHandler
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 
 @Composable
 fun ContextBottomSheet(
@@ -67,7 +67,7 @@ fun TrackContextMenu(
     navigator: DestinationsNavigator,
     arguments: TrackContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: TrackContextMenuViewModel = hiltViewModel(),
+    viewModel: TrackContextMenuViewModel = viewModel(),
 ) {
     ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
         handlePlayback(mediaGroup = arguments.mediaGroup, initialTrackIndex = arguments.trackIndex)
@@ -84,7 +84,7 @@ fun ArtistContextMenu(
     navigator: DestinationsNavigator,
     arguments: ArtistContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: ArtistContextMenuViewModel = hiltViewModel()
+    viewModel: ArtistContextMenuViewModel = viewModel()
 ) {
     ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
         handlePlayback(mediaGroup = MediaGroup.Artist(arguments.artistId), initialTrackIndex = 0)
@@ -101,7 +101,7 @@ fun AlbumContextMenu(
     navigator: DestinationsNavigator,
     arguments: AlbumContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: AlbumContextMenuViewModel = hiltViewModel()
+    viewModel: AlbumContextMenuViewModel = viewModel()
 ) {
     ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
         handlePlayback(mediaGroup = MediaGroup.Album(arguments.albumId), initialTrackIndex = 0)
@@ -118,7 +118,7 @@ fun GenreContextMenu(
     navigator: DestinationsNavigator,
     arguments: GenreContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: GenreContextMenuViewModel = hiltViewModel()
+    viewModel: GenreContextMenuViewModel = viewModel()
 ) {
     ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
         handlePlayback(mediaGroup = MediaGroup.Genre(arguments.genreId), initialTrackIndex = 0)
@@ -135,7 +135,7 @@ fun PlaylistContextMenu(
     navigator: DestinationsNavigator,
     arguments: PlaylistContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: PlaylistContextMenuViewModel = hiltViewModel()
+    viewModel: PlaylistContextMenuViewModel = viewModel()
 ) {
     ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
         handlePlayback(

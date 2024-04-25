@@ -12,31 +12,33 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.EXTRA_NOTIFICATION_ID
+import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.ui.MainActivity
-import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class LibraryScanService : Service() {
 
-    @Inject
-    @MainDispatcher
-    lateinit var mainDispatcher: CoroutineDispatcher
+    private val dependencyContainer by lazy {
+        (application as MusicPlayerApplication).dependencyContainer
+    }
+
+    private val mainDispatcher: CoroutineDispatcher by lazy {
+        dependencyContainer.dispatcherProvider.mainDispatcher
+    }
 
     private var isRunning = false
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
 
-    @Inject
-    lateinit var musicRepository: MusicRepository
+    private val musicRepository: MusicRepository by lazy {
+        dependencyContainer.repositoryProvider.musicRepository
+    }
 
     var job: Job? = null
 

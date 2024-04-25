@@ -7,17 +7,15 @@ import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.util.PreferencesUtil
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class PlaybackInfoDataSourceImpl @Inject constructor(
+class PlaybackInfoDataSourceImpl(
     private val mediaQueueDao: MediaQueueDao,
     private val playbackInfoDataStore: DataStore<Preferences>,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher
 ) : PlaybackInfoDataSource {
     override suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo) {
         playbackInfoDataStore.edit { savedPrefs ->

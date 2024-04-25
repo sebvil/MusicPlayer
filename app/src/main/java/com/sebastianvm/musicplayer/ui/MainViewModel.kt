@@ -15,28 +15,18 @@ import com.sebastianvm.musicplayer.ui.player.TrackProgressState
 import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-@HiltViewModel
 class MainViewModel(
-    initialState: MainState,
-    viewModelScope: CoroutineScope?,
+    initialState: MainState = MainState(playerViewState = null),
+    viewModelScope: CoroutineScope? = null,
     private val playbackManager: PlaybackManager
 ) : BaseViewModel<MainState, MainUserAction>(
     initialState = initialState,
     viewModelScope = viewModelScope
 ) {
-
-    @Inject
-    constructor(playbackManager: PlaybackManager) : this(
-        initialState = MainState(playerViewState = null),
-        viewModelScope = null,
-        playbackManager = playbackManager
-    )
 
     init {
         playbackManager.getPlaybackState().onEach { playbackState ->

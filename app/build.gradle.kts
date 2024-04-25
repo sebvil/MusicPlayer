@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
-    alias(libs.plugins.com.google.dagger.hilt.android)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
@@ -84,10 +83,6 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.datastore)
 
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
     // Coil
     implementation(libs.coil)
 
@@ -98,8 +93,6 @@ dependencies {
 
     // Integration with activities
     implementation(libs.activity.compose)
-    // Hilt navigation
-    implementation(libs.hilt.navigation.compose)
 
     // Material components
     implementation(libs.compose.material3)

@@ -1,11 +1,9 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
 import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -15,20 +13,12 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.not
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
 
-@HiltViewModel
-class SortBottomSheetViewModel @Inject constructor(
+class SortBottomSheetViewModel(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository
 ) : OldBaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>() {
@@ -137,16 +127,6 @@ data class SortBottomSheetState(
     val selectedSort: SortOptions,
     val sortOrder: MediaSortOrder
 ) : State
-
-@InstallIn(ViewModelComponent::class)
-@Module
-object SortMenuArgumentsModule {
-    @Provides
-    @ViewModelScoped
-    fun sortMenuArgumentsProvider(savedStateHandle: SavedStateHandle): SortMenuArguments {
-        return savedStateHandle.navArgs()
-    }
-}
 
 private fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
     return when (listType) {

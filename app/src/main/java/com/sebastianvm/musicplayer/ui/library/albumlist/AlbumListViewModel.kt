@@ -13,40 +13,26 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-@HiltViewModel
 class AlbumListViewModel(
-    initialState: AlbumListState,
-    viewModelScope: CoroutineScope?,
+    initialState: AlbumListState = AlbumListState(
+        ModelListState(
+            items = listOf(),
+            sortButtonState = null,
+            headerState = HeaderState.None
+        ),
+        isLoading = true
+    ),
+    viewModelScope: CoroutineScope? = null,
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<AlbumListState, AlbumListUserAction>(
     initialState = initialState,
     viewModelScope = viewModelScope
 ) {
-
-    @Inject
-    constructor(
-        albumRepository: AlbumRepository,
-        sortPreferencesRepository: SortPreferencesRepository
-    ) : this(
-        initialState = AlbumListState(
-            ModelListState(
-                items = listOf(),
-                sortButtonState = null,
-                headerState = HeaderState.None
-            ),
-            isLoading = true
-        ),
-        viewModelScope = null,
-        albumRepository = albumRepository,
-        sortPreferencesRepository = sortPreferencesRepository
-    )
 
     init {
         albumRepository.getAlbums().onEach { albums ->

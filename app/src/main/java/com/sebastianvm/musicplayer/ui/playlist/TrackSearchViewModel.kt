@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
@@ -8,19 +7,12 @@ import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
 import com.sebastianvm.musicplayer.util.coroutines.combineToPair
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,11 +23,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-@HiltViewModel
-class TrackSearchViewModel @Inject constructor(
+class TrackSearchViewModel(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository
@@ -162,16 +152,6 @@ data class TrackSearchState(
     val hideTracksInPlaylist: Boolean = true,
     val showToast: Boolean = false
 ) : State
-
-@InstallIn(ViewModelComponent::class)
-@Module
-object TrackSearchArgumentsModule {
-    @Provides
-    @ViewModelScoped
-    fun trackSearchArgumentsProvider(savedStateHandle: SavedStateHandle): TrackSearchArguments {
-        return savedStateHandle.navArgs()
-    }
-}
 
 sealed interface TrackSearchUserAction : UserAction {
     data class TextChanged(val newText: String) : TrackSearchUserAction

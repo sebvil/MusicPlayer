@@ -29,8 +29,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -42,16 +40,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
 data class SearchQueryState(val term: String, val mode: SearchMode)
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-@HiltViewModel
-class SearchViewModel @Inject constructor(
+class SearchViewModel(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val defaultDispatcher: CoroutineDispatcher
 ) : OldBaseViewModel<SearchState, SearchUserAction>() {
 
     override val defaultState: SearchState by lazy {

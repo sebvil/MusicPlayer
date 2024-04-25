@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.model.MediaWithArtists
@@ -14,18 +13,10 @@ import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.ui.navArgs
 import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class TrackContextMenuArguments(
     val trackId: Long,
@@ -34,18 +25,7 @@ data class TrackContextMenuArguments(
     val positionInPlaylist: Long? = null
 )
 
-@InstallIn(ViewModelComponent::class)
-@Module
-object TrackContextMenuArgumentsModule {
-    @Provides
-    @ViewModelScoped
-    fun trackContextMenuArgumentsProvider(savedStateHandle: SavedStateHandle): TrackContextMenuArguments {
-        return savedStateHandle.navArgs()
-    }
-}
-
-@HiltViewModel
-class TrackContextMenuViewModel @Inject constructor(
+class TrackContextMenuViewModel(
     arguments: TrackContextMenuArguments,
     trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,

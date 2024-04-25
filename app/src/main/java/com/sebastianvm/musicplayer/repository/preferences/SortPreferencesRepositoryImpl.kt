@@ -11,9 +11,8 @@ import com.sebastianvm.musicplayer.util.sort.not
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class SortPreferencesRepositoryImpl @Inject constructor(
+class SortPreferencesRepositoryImpl(
     private val sortPreferencesDataStore: DataStore<SortPreferences>
 ) : SortPreferencesRepository {
 

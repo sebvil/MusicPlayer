@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -64,6 +63,7 @@ import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -76,7 +76,7 @@ fun MainScreen(
     MainScreenLayout(
         searchScreen = {
             SearchScreen(
-                screenViewModel = hiltViewModel(),
+                screenViewModel = viewModel(),
                 navigationDelegate = NavigationDelegateImpl(navigator)
             )
         }
@@ -144,10 +144,10 @@ fun Screens(
     navigator: DestinationsNavigator,
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
-    artistListViewModel: ArtistListViewModel = hiltViewModel(),
-    albumListViewModel: AlbumListViewModel = hiltViewModel(),
-    genreListViewModel: GenreListViewModel = hiltViewModel(),
-    playlistListViewModel: PlaylistListViewModel = hiltViewModel()
+    artistListViewModel: ArtistListViewModel = viewModel(),
+    albumListViewModel: AlbumListViewModel = viewModel(),
+    genreListViewModel: GenreListViewModel = viewModel(),
+    playlistListViewModel: PlaylistListViewModel = viewModel()
 ) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
@@ -155,7 +155,7 @@ fun Screens(
                 navigator = navigator,
                 handlePlayback = playMedia,
                 modifier = modifier.fillMaxSize(),
-                viewModel = hiltViewModel()
+                trackListViewModel = viewModel()
             )
         }
 

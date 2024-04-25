@@ -8,8 +8,6 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -20,14 +18,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PlaylistRepositoryImpl @Inject constructor(
+class PlaylistRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val playlistDao: PlaylistDao,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val defaultDispatcher: CoroutineDispatcher
 ) : PlaylistRepository {
 
     override fun getPlaylists(): Flow<List<Playlist>> {

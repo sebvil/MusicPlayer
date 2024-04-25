@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -22,6 +21,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 
 @Suppress("ViewModelForwarding")
 @RootNavGraph
@@ -33,7 +33,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 fun ArtistsBottomSheet(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    sheetViewModel: ArtistsBottomSheetViewModel = hiltViewModel()
+    sheetViewModel: ArtistsBottomSheetViewModel = viewModel()
 ) {
     Screen(
         screenViewModel = sheetViewModel,

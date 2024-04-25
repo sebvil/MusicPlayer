@@ -4,7 +4,7 @@ accompanist = "0.33.2-alpha"
 activity-compose = "1.9.0"
 android-junit5 = "1.9.3.0"
 coil = "2.5.0"
-com-google-devtools = "1.9.21-1.0.15"
+com-google-devtools = "1.9.23-1.0.20"
 compose = "1.6.6"
 compose-compiler = "1.5.12"
 compose-destinations = "1.9.55"
@@ -14,8 +14,6 @@ datastore = "1.1.0"
 detekt = "1.23.4"
 detekt-compose = "0.2.1"
 google-truth = "1.1.5"
-hilt = "2.49"
-hilt-navigation-compose = "1.2.0"
 junit-jupiter = "5.10.0"
 kotlin = "1.9.23"
 kotlinx-collections-immutable = "0.3.6"
@@ -44,9 +42,6 @@ compose-destinations-animations-core = { module = "io.github.raamcosta.compose-d
 compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 google-truth = { group = "com.google.truth", name = "truth", version.ref = "google-truth" }
-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
@@ -72,7 +67,6 @@ ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", v
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-com-google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-google-devtools" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 org-jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
