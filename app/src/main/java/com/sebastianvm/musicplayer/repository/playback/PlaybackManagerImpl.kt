@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -15,13 +14,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class PlaybackManagerImpl @Inject constructor(
+class PlaybackManagerImpl(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val playbackInfoDataSource: PlaybackInfoDataSource,
     private val trackRepository: TrackRepository,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher
 ) : PlaybackManager {
     override fun getPlaybackState(): Flow<PlaybackState> =
         mediaPlaybackClient.playbackState

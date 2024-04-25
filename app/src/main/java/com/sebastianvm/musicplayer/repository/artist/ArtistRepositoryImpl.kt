@@ -9,9 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import javax.inject.Inject
 
-class ArtistRepositoryImpl @Inject constructor(
+class ArtistRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val artistDao: ArtistDao
 ) : ArtistRepository {

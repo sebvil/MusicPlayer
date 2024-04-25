@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -35,6 +34,7 @@ import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 
 @Suppress("ViewModelForwarding")
 @RootNavGraph
@@ -42,7 +42,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 @Composable
 fun TrackSearchScreen(
     navigator: DestinationsNavigator,
-    screenViewModel: TrackSearchViewModel = hiltViewModel()
+    screenViewModel: TrackSearchViewModel = viewModel()
 ) {
     Screen(
         screenViewModel = screenViewModel,

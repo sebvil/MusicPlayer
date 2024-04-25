@@ -7,9 +7,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import javax.inject.Inject
 
-class GenreRepositoryImpl @Inject constructor(
+class GenreRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val genreDao: GenreDao
 ) : GenreRepository {

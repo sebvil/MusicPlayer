@@ -17,9 +17,8 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class MediaTree @Inject constructor(
+class MediaTree(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository

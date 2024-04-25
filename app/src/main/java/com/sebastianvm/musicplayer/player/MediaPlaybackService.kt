@@ -16,15 +16,13 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
-import com.sebastianvm.musicplayer.util.coroutines.DefaultDispatcher
-import com.sebastianvm.musicplayer.util.coroutines.MainDispatcher
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -34,24 +32,32 @@ import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MediaPlaybackService : MediaLibraryService() {
 
-    @Inject
-    lateinit var playbackManager: PlaybackManager
+    private val dependencyContainer by lazy {
+        (application as MusicPlayerApplication).dependencyContainer
+    }
 
-    @Inject
-    @MainDispatcher
-    lateinit var mainDispatcher: CoroutineDispatcher
+    private val playbackManager: PlaybackManager by lazy {
+        dependencyContainer.repositoryProvider.playbackManager
+    }
 
-    @Inject
-    @DefaultDispatcher
-    lateinit var defaultDispatcher: CoroutineDispatcher
+    private val mainDispatcher: CoroutineDispatcher by lazy {
+        dependencyContainer.dispatcherProvider.mainDispatcher
+    }
 
-    @Inject
-    lateinit var mediaTree: MediaTree
+    private val defaultDispatcher: CoroutineDispatcher by lazy {
+        dependencyContainer.dispatcherProvider.defaultDispatcher
+    }
+
+    private val mediaTree: MediaTree by lazy {
+        MediaTree(
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+            albumRepository = dependencyContainer.repositoryProvider.albumRepository
+        )
+    }
 
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
@@ -59,11 +65,9 @@ class MediaPlaybackService : MediaLibraryService() {
 
     override fun onCreate() {
         super.onCreate()
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(C.USAGE_MEDIA)
+        val audioAttributes = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
             .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-            .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL)
-            .build()
+            .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL).build()
         player = ExoPlayer.Builder(this)
             .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true).build()
 
@@ -99,73 +103,72 @@ class MediaPlaybackService : MediaLibraryService() {
                 player.play()
             }
         })
-        mediaSession = MediaLibrarySession.Builder(
-            this,
-            player,
-            object : MediaLibrarySession.Callback {
-                override fun onGetLibraryRoot(
-                    session: MediaLibrarySession,
-                    browser: MediaSession.ControllerInfo,
-                    params: LibraryParams?
-                ): ListenableFuture<LibraryResult<MediaItem>> {
-                    Log.i("000Player", "get root")
-                    return Futures.immediateFuture(
-                        LibraryResult.ofItem(
-                            mediaTree.getRoot(),
-                            params
+        mediaSession =
+            MediaLibrarySession.Builder(
+                this, player,
+                object : MediaLibrarySession.Callback {
+                    override fun onGetLibraryRoot(
+                        session: MediaLibrarySession,
+                        browser: MediaSession.ControllerInfo,
+                        params: LibraryParams?
+                    ): ListenableFuture<LibraryResult<MediaItem>> {
+                        Log.i("000Player", "get root")
+                        return Futures.immediateFuture(
+                            LibraryResult.ofItem(
+                                mediaTree.getRoot(), params
+                            )
                         )
-                    )
-                }
+                    }
 
-                override fun onGetChildren(
-                    session: MediaLibrarySession,
-                    browser: MediaSession.ControllerInfo,
-                    parentId: String,
-                    page: Int,
-                    pageSize: Int,
-                    params: LibraryParams?
-                ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-                    Log.i("000Player", "get parent: $parentId")
-                    return mediaTree.getCachedChildren(parentId)?.let {
-                        Log.i("000Player", "cached children: ${it.map { child -> child.mediaId }}")
-                        Futures.immediateFuture(LibraryResult.ofItemList(it, params))
-                    } ?: CoroutineScope(mainDispatcher).async {
-                        mediaTree.getChildren(parentId)?.let {
-                            Log.i("000Player", "children: ${it.map { child -> child.mediaId }}")
-                            LibraryResult.ofItemList(it, params)
-                        } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                    }.asListenableFuture()
-                }
-
-                override fun onGetItem(
-                    session: MediaLibrarySession,
-                    browser: MediaSession.ControllerInfo,
-                    mediaId: String
-                ): ListenableFuture<LibraryResult<MediaItem>> {
-                    Log.i("000Player", "get item: $mediaId")
-                    return mediaTree.getCachedMediaItem(mediaId)
-                        ?.let { Futures.immediateFuture(LibraryResult.ofItem(it, null)) }
-                        ?: CoroutineScope(mainDispatcher).future {
-                            mediaTree.getItem(mediaId)?.let {
-                                LibraryResult.ofItem(it, null)
+                    override fun onGetChildren(
+                        session: MediaLibrarySession,
+                        browser: MediaSession.ControllerInfo,
+                        parentId: String,
+                        page: Int,
+                        pageSize: Int,
+                        params: LibraryParams?
+                    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+                        Log.i("000Player", "get parent: $parentId")
+                        return mediaTree.getCachedChildren(parentId)?.let {
+                            Log.i("000Player", "cached children: ${it.map { child -> child.mediaId }}")
+                            Futures.immediateFuture(LibraryResult.ofItemList(it, params))
+                        } ?: CoroutineScope(mainDispatcher).async {
+                            mediaTree.getChildren(parentId)?.let {
+                                Log.i("000Player", "children: ${it.map { child -> child.mediaId }}")
+                                LibraryResult.ofItemList(it, params)
                             } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                        }
-                }
+                        }.asListenableFuture()
+                    }
 
-                override fun onAddMediaItems(
-                    mediaSession: MediaSession,
-                    controller: MediaSession.ControllerInfo,
-                    mediaItems: MutableList<MediaItem>
-                ): ListenableFuture<MutableList<MediaItem>> {
-                    val newMediaItems = mediaItems.map {
-                        it.buildUpon().apply {
-                            uri = UriUtils.getTrackUri(it.mediaId.toLong())
-                        }.build()
-                    }.toMutableList()
-                    return Futures.immediateFuture(newMediaItems)
+                    override fun onGetItem(
+                        session: MediaLibrarySession,
+                        browser: MediaSession.ControllerInfo,
+                        mediaId: String
+                    ): ListenableFuture<LibraryResult<MediaItem>> {
+                        Log.i("000Player", "get item: $mediaId")
+                        return mediaTree.getCachedMediaItem(mediaId)
+                            ?.let { Futures.immediateFuture(LibraryResult.ofItem(it, null)) }
+                            ?: CoroutineScope(mainDispatcher).future {
+                                mediaTree.getItem(mediaId)?.let {
+                                    LibraryResult.ofItem(it, null)
+                                } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                            }
+                    }
+
+                    override fun onAddMediaItems(
+                        mediaSession: MediaSession,
+                        controller: MediaSession.ControllerInfo,
+                        mediaItems: MutableList<MediaItem>
+                    ): ListenableFuture<MutableList<MediaItem>> {
+                        val newMediaItems = mediaItems.map {
+                            it.buildUpon().apply {
+                                uri = UriUtils.getTrackUri(it.mediaId.toLong())
+                            }.build()
+                        }.toMutableList()
+                        return Futures.immediateFuture(newMediaItems)
+                    }
                 }
-            }
-        ).build()
+            ).build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {

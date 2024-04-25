@@ -1,21 +1,17 @@
 package com.sebastianvm.musicplayer.repository.album
 
-import android.content.Context
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumWithTracks
 import com.sebastianvm.musicplayer.database.entities.BasicAlbum
 import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import javax.inject.Inject
 
-class AlbumRepositoryImpl @Inject constructor(
-    @ApplicationContext val context: Context,
+class AlbumRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val albumDao: AlbumDao
 ) : AlbumRepository {

@@ -17,20 +17,16 @@ import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.orZero
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
-@Singleton
-class MediaPlaybackClient @Inject constructor(
-    @ApplicationContext private val context: Context,
+class MediaPlaybackClient(
+    private val context: Context,
     private val externalScope: CoroutineScope,
 ) {
 

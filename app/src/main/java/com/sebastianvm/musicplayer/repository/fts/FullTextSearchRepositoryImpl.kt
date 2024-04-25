@@ -11,11 +11,8 @@ import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class FullTextSearchRepositoryImpl @Inject constructor(
+class FullTextSearchRepositoryImpl(
     private val trackFtsDao: TrackFtsDao,
     private val artistFtsDao: ArtistFtsDao,
     private val albumFtsDao: AlbumFtsDao,

@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesReposit
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -31,11 +30,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TrackRepositoryImpl @Inject constructor(
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+class TrackRepositoryImpl(
+    private val ioDispatcher: CoroutineDispatcher,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val trackDao: TrackDao,
     private val playlistRepository: PlaylistRepository,

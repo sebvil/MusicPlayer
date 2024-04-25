@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -32,6 +31,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 @Suppress("ViewModelForwarding")
@@ -40,7 +40,7 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 @Composable
 fun SortBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: SortBottomSheetViewModel = hiltViewModel()
+    sheetViewModel: SortBottomSheetViewModel = viewModel()
 ) {
     Screen(
         screenViewModel = sheetViewModel,

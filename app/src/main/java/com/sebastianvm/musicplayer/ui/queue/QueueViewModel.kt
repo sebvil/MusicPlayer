@@ -15,10 +15,8 @@
 // import dagger.hilt.android.lifecycle.HiltViewModel
 // import dagger.hilt.android.scopes.ViewModelScoped
 // import kotlinx.coroutines.launch
-// import javax.inject.Inject
-//
-// @HiltViewModel
-// class QueueViewModel @Inject constructor(
+// //
+// // class QueueViewModel(
 //    initialState: QueueState,
 //    private val playbackManager: PlaybackManager,
 // ) : DeprecatedBaseViewModel<QueueState, QueueUserAction>(

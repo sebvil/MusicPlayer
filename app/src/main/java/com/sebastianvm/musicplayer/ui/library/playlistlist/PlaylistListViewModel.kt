@@ -10,14 +10,11 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PlaylistListViewModel @Inject constructor(
+class PlaylistListViewModel(
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
 ) : OldBaseViewModel<PlaylistListState, PlaylistListUserAction>() {

@@ -16,44 +16,30 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
 class GenreListViewModel(
-    initialState: GenreListState,
-    viewModelScope: CoroutineScope?,
+    initialState: GenreListState = GenreListState(
+        modelListState = ModelListState(
+            items = listOf(),
+            sortButtonState = SortButtonState(
+                text = R.string.genre_name,
+                sortOrder = MediaSortOrder.ASCENDING
+            ),
+            headerState = HeaderState.None
+        ),
+        isLoading = true
+    ),
+    viewModelScope: CoroutineScope? = null,
     genreRepository: GenreRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<GenreListState, GenreListUserAction>(
     initialState = initialState,
     viewModelScope = viewModelScope
 ) {
-
-    @Inject
-    constructor(
-        genreRepository: GenreRepository,
-        sortPreferencesRepository: SortPreferencesRepository
-    ) : this(
-        initialState = GenreListState(
-            modelListState = ModelListState(
-                items = listOf(),
-                sortButtonState = SortButtonState(
-                    text = R.string.genre_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                ),
-                headerState = HeaderState.None
-            ),
-            isLoading = true
-        ),
-        viewModelScope = null,
-        genreRepository = genreRepository,
-        sortPreferencesRepository = sortPreferencesRepository
-    )
 
     init {
         genreRepository.getGenres().onEach { genres ->

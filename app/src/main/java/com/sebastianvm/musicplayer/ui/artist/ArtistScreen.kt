@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -35,20 +34,18 @@ import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
+import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 
 @RootNavGraph
 @Destination(navArgsDelegate = ArtistArguments::class)
 @Composable
 fun ArtistRoute(
     destinationsNavigator: DestinationsNavigator,
-    viewModel: ArtistViewModel = hiltViewModel()
+    viewModel: ArtistViewModel = viewModel()
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
 
-    UiStateScreen(
-        uiState = uiState.toUiState(),
-        emptyScreen = {}
-    ) { state ->
+    UiStateScreen(uiState = uiState.toUiState(), emptyScreen = {}) { state ->
         ArtistScreen(
             state = state,
             navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },

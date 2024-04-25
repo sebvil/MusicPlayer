@@ -17,44 +17,30 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
 class ArtistListViewModel(
-    initialState: ArtistListState,
-    viewModelScope: CoroutineScope?,
+    initialState: ArtistListState = ArtistListState(
+        modelListState = ModelListState(
+            items = listOf(),
+            sortButtonState = SortButtonState(
+                text = R.string.artist_name,
+                sortOrder = MediaSortOrder.ASCENDING
+            ),
+            headerState = HeaderState.None
+        ),
+        isLoading = true
+    ),
+    viewModelScope: CoroutineScope? = null,
     artistRepository: ArtistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
 ) : BaseViewModel<ArtistListState, ArtistListUserAction>(
     initialState = initialState,
     viewModelScope = viewModelScope
 ) {
-
-    @Inject
-    constructor(
-        artistRepository: ArtistRepository,
-        sortPreferencesRepository: SortPreferencesRepository
-    ) : this(
-        initialState = ArtistListState(
-            modelListState = ModelListState(
-                items = listOf(),
-                sortButtonState = SortButtonState(
-                    text = R.string.artist_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                ),
-                headerState = HeaderState.None
-            ),
-            isLoading = true
-        ),
-        viewModelScope = null,
-        artistRepository = artistRepository,
-        sortPreferencesRepository = sortPreferencesRepository
-    )
 
     init {
         artistRepository.getArtists().onEach { artists ->

@@ -16,16 +16,13 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.util.coroutines.IODispatcher
 import com.sebastianvm.musicplayer.util.uri.UriUtils
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class MusicRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @IODispatcher private val ioDispatcher: CoroutineDispatcher,
+class MusicRepositoryImpl(
+    private val context: Context,
+    private val ioDispatcher: CoroutineDispatcher,
     private val musicDatabase: MusicDatabase,
     private val trackRepository: TrackRepository
 ) : MusicRepository {
