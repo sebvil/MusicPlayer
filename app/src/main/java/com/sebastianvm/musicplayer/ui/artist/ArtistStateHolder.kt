@@ -27,7 +27,6 @@ class ArtistStateHolder(
 
     private val artistId = arguments.artistId
 
-
     override val state: StateFlow<UiState<ArtistState>> =
         artistRepository.getArtist(artistId).map { artistWithAlbums ->
             val listItems = buildList {
@@ -50,7 +49,7 @@ class ArtistStateHolder(
                     )
                 )
             }
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: ArtistUserAction) = Unit
 }

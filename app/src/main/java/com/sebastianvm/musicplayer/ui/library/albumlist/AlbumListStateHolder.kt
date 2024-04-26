@@ -48,11 +48,9 @@ class AlbumListStateHolder(
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
-
+    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: AlbumListUserAction) = Unit
-
 }
 
 data class AlbumListState(val modelListState: ModelListState) : State

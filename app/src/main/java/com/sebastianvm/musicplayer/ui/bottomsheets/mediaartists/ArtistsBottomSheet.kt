@@ -9,21 +9,25 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
-@Suppress("ViewModelForwarding")
+@Suppress("StateHolderForwarding")
 @RootNavGraph
 @Destination(
     navArgsDelegate = ArtistsMenuArguments::class,
@@ -32,22 +36,34 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 @Composable
 fun ArtistsBottomSheet(
     navigator: DestinationsNavigator,
+    arguments: ArtistsMenuArguments,
     modifier: Modifier = Modifier,
-    sheetViewModel: ArtistsBottomSheetViewModel = viewModel()
+    stateHolder: StateHolder<UiState<ArtistsBottomSheetState>, ArtistsBottomSheetUserAction> =
+        stateHolder { dependencyContainer ->
+            ArtistsBottomSheetStateHolder(
+                arguments = arguments,
+                artistRepository = dependencyContainer.repositoryProvider.artistRepository
+            )
+        }
 ) {
-    Screen(
-        screenViewModel = sheetViewModel,
-        navigationDelegate = NavigationDelegateImpl(navigator),
+    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+
+    UiStateScreen(
+        uiState = uiState,
+        emptyScreen = {},
         modifier = modifier
-    ) { state, screenDelegate ->
-        ArtistsBottomSheetLayout(state = state, screenDelegate = screenDelegate)
+    ) { state ->
+        ArtistsBottomSheetLayout(
+            state = state,
+            navigator = navigator,
+        )
     }
 }
 
 @Composable
 fun ArtistsBottomSheetLayout(
     state: ArtistsBottomSheetState,
-    screenDelegate: ScreenDelegate<ArtistsBottomSheetUserAction>,
+    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -70,9 +86,9 @@ fun ArtistsBottomSheetLayout(
             state = state.modelListState,
             onBackButtonClicked = {},
             onItemClicked = { _, item ->
-                screenDelegate.handle(
-                    ArtistsBottomSheetUserAction.ArtistRowClicked(
-                        item.id
+                navigator.navigate(
+                    ArtistRouteDestination(
+                        ArtistArguments(artistId = item.id)
                     )
                 )
             }

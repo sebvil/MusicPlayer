@@ -48,8 +48,7 @@ class GenreListStateHolder(
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
-
+    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: GenreListUserAction) {
         when (action) {

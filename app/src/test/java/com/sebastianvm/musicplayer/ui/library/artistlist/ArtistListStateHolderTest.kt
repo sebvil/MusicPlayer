@@ -5,13 +5,16 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.currentState
+import com.sebastianvm.musicplayer.util.getDataState
 import com.sebastianvm.musicplayer.util.runSafeTest
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import org.junit.jupiter.api.BeforeEach
@@ -31,15 +34,7 @@ class ArtistListStateHolderTest : BaseTest() {
 
     private fun generateViewModel(): ArtistListStateHolder {
         return ArtistListStateHolder(
-            initialState = ArtistListState(
-                modelListState = ModelListState(
-                    items = listOf(),
-                    sortButtonState = null,
-                    headerState = HeaderState.None
-                ),
-                isLoading = true
-            ),
-            viewModelScope = testScope,
+            stateHolderScope = testScope,
             artistRepository = artistRepository,
             sortPreferencesRepository = sortPreferencesRepository
         )
@@ -49,19 +44,21 @@ class ArtistListStateHolderTest : BaseTest() {
     fun `init subscribes to changes in track list`() =
         testScope.runSafeTest {
             with(generateViewModel()) {
-                Truth.assertThat(state.isLoading).isTrue()
+                Truth.assertThat(currentState).isEqualTo(Loading)
 
                 artistRepository.getArtistsValue.emit(listOf())
-                Truth.assertThat(state.modelListState.items).isEmpty()
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                sortPreferencesRepository.getArtistListSortOrderValue.emit(MediaSortOrder.ASCENDING)
+                Truth.assertThat(currentState).isEqualTo(Empty)
 
                 val artists = FixtureProvider.artistFixtures().toList()
                 artistRepository.getArtistsValue.emit(artists)
-                Truth.assertThat(state.modelListState.items)
+                Truth.assertThat(
+                    getDataState().modelListState.items
+                )
                     .isEqualTo(artists.map { it.toModelListItemState(trailingButtonType = TrailingButtonType.More) })
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                Truth.assertThat(
+                    getDataState().modelListState.headerState
+                ).isEqualTo(HeaderState.None)
             }
         }
 
@@ -72,14 +69,19 @@ class ArtistListStateHolderTest : BaseTest() {
     ) = testScope.runSafeTest {
         with(generateViewModel()) {
             sortPreferencesRepository.getArtistListSortOrderValue.emit(MediaSortOrder.ASCENDING)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            artistRepository.getArtistsValue.emit(FixtureProvider.artistFixtures().toList())
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = R.string.artist_name,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
             sortPreferencesRepository.getArtistListSortOrderValue.emit(sortOrder)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = R.string.artist_name,
                     sortOrder = sortOrder

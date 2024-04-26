@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.Serializable
 
@@ -33,7 +34,9 @@ class TrackListStateHolder(
 
     override val state: StateFlow<UiState<TrackListState>> = combine(
         trackRepository.getTrackListWithMetaData(args.trackListType),
-        sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+        args.trackListType.takeUnless { it is MediaGroup.Album }?.let {
+            sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+        } ?: flowOf(null)
     ) { trackListWithMetadata, sortPrefs ->
         if (trackListWithMetadata.trackList.isEmpty()) {
             Empty
@@ -43,16 +46,18 @@ class TrackListStateHolder(
                     modelListState = ModelListState(
                         items = trackListWithMetadata.trackList.map { track -> track.toModelListItemState() },
                         headerState = trackListWithMetadata.metaData.toHeaderState(),
-                        sortButtonState = SortButtonState(
-                            text = sortPrefs.sortOption.stringId,
-                            sortOrder = sortPrefs.sortOrder
-                        )
+                        sortButtonState = sortPrefs?.let {
+                            SortButtonState(
+                                text = sortPrefs.sortOption.stringId,
+                                sortOrder = sortPrefs.sortOrder
+                            )
+                        }
                     ),
                     trackListType = args.trackListType
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: TrackListUserAction) = Unit
 }
@@ -71,7 +76,6 @@ data class TrackListState(
 ) : State
 
 sealed interface TrackListUserAction : UserAction
-
 
 fun TrackListMetadata?.toHeaderState(): HeaderState {
     return when {

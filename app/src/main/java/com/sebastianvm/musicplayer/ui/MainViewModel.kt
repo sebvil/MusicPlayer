@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration
 
 class MainViewModel(
     private val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
@@ -54,8 +55,7 @@ class MainViewModel(
                     is NotPlayingState -> null
                 }
             )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, MainState(playerViewState = null))
-
+        }.stateIn(stateHolderScope, SharingStarted.Eagerly, MainState(playerViewState = null))
 
     override fun handle(action: MainUserAction) {
         when (action) {
@@ -76,9 +76,7 @@ class MainViewModel(
             is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MainUserAction.ProgressBarClicked -> {
-                val trackLengthMs =
-                    state.value.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
-                        ?: return
+                val trackLengthMs = action.trackLength.inWholeMilliseconds
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
@@ -101,6 +99,6 @@ sealed interface MainUserAction : UserAction {
     data object PlayToggled : MainUserAction
     data object NextButtonClicked : MainUserAction
     data object PreviousButtonClicked : MainUserAction
-    data class ProgressBarClicked(val position: Int) : MainUserAction
+    data class ProgressBarClicked(val position: Int, val trackLength: Duration) : MainUserAction
     data class PlayMedia(val mediaGroup: MediaGroup, val initialTrackIndex: Int) : MainUserAction
 }

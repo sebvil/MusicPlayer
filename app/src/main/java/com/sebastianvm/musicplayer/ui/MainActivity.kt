@@ -60,9 +60,9 @@ class MainActivity : ComponentActivity() {
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
                             onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
                             onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) },
-                            onProgressBarValueChange = { progress ->
+                            onProgressBarValueChange = { progress, trackLength ->
                                 viewModel.handle(
-                                    MainUserAction.ProgressBarClicked(progress)
+                                    MainUserAction.ProgressBarClicked(progress, trackLength)
                                 )
                             }
                         ) {

@@ -6,7 +6,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlin.coroutines.CoroutineContext
 
-
 class CloseableCoroutineScope(context: CoroutineContext) : java.io.Closeable, CoroutineScope {
     override val coroutineContext: CoroutineContext = context
 

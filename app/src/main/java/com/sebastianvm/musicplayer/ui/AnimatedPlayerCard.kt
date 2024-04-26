@@ -64,6 +64,7 @@ import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProv
 import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
+import kotlin.time.Duration
 
 @Composable
 fun AnimatedPlayerCard(
@@ -74,7 +75,7 @@ fun AnimatedPlayerCard(
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
     onDismissPlayer: () -> Unit,
-    onProgressBarValueChange: (Int) -> Unit,
+    onProgressBarValueChange: (Int, Duration) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val progress by transition.animateFloat(
@@ -329,7 +330,9 @@ fun AnimatedPlayerCard(
 
             ProgressSlider(
                 progress = state.trackProgressState.progress.percent,
-                onProgressBarValueChange = onProgressBarValueChange
+                onProgressBarValueChange = { position ->
+                    onProgressBarValueChange(position, state.trackProgressState.trackLength)
+                }
             )
         }
     }
@@ -439,7 +442,7 @@ private fun PlayerCardPreview(
             onNextButtonClicked = {},
             onPlayToggled = {},
             onDismissPlayer = {},
-            onProgressBarValueChange = {}
+            onProgressBarValueChange = { _, _ -> }
         )
     }
 }

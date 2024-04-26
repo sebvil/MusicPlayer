@@ -58,20 +58,20 @@ import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListState
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListStateHolder
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListUserAction
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
-import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListState
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListStateHolder
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListUserAction
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListRoute
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListState
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListStateHolder
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -83,10 +83,7 @@ fun MainScreen(
 ) {
     MainScreenLayout(
         searchScreen = {
-            SearchScreen(
-                screenViewModel = viewModel(),
-                navigationDelegate = NavigationDelegateImpl(navigator)
-            )
+            SearchScreen(navigator = navigator)
         }
     ) { page ->
         Screens(
@@ -152,33 +149,43 @@ fun Screens(
     navigator: DestinationsNavigator,
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
-    artistListStateHolder: StateHolder<UiState<ArtistListState>, ArtistListUserAction> = stateHolder { dependencyContainer ->
-        ArtistListStateHolder(
-            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
-        )
-    },
-    albumListStateHolder: StateHolder<UiState<AlbumListState>, AlbumListUserAction> = stateHolder { dependencyContainer ->
-        AlbumListStateHolder(
-            albumRepository = dependencyContainer.repositoryProvider.albumRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
-        )
-    },
-    genreListStateHolder: StateHolder<UiState<GenreListState>, GenreListUserAction> = stateHolder { dependencyContainer ->
-        GenreListStateHolder(
-            genreRepository = dependencyContainer.repositoryProvider.genreRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
-        )
-    },
-    trackListStateHolder: StateHolder<UiState<TrackListState>, TrackListUserAction> = stateHolder { dependencyContainer ->
+    artistListStateHolder: StateHolder<UiState<ArtistListState>, ArtistListUserAction> =
+        stateHolder { dependencyContainer ->
+            ArtistListStateHolder(
+                artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    albumListStateHolder: StateHolder<UiState<AlbumListState>, AlbumListUserAction> =
+        stateHolder { dependencyContainer ->
+            AlbumListStateHolder(
+                albumRepository = dependencyContainer.repositoryProvider.albumRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    genreListStateHolder: StateHolder<UiState<GenreListState>, GenreListUserAction> =
+        stateHolder { dependencyContainer ->
+            GenreListStateHolder(
+                genreRepository = dependencyContainer.repositoryProvider.genreRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    trackListStateHolder: StateHolder<UiState<TrackListState>, TrackListUserAction> =
+        stateHolder { dependencyContainer ->
 
-        TrackListStateHolder(
-            args = TrackListArguments(trackListType = MediaGroup.AllTracks),
-            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
-        )
-    },
-    playlistListViewModel: PlaylistListViewModel = viewModel()
+            TrackListStateHolder(
+                args = TrackListArguments(trackListType = MediaGroup.AllTracks),
+                trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    playlistListStateHolder: StateHolder<UiState<PlaylistListState>, PlaylistListUserAction> =
+        stateHolder { dependencyContainer ->
+            PlaylistListStateHolder(
+                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
+            )
+        }
 ) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
@@ -275,7 +282,7 @@ fun Screens(
         }
 
         TopLevelScreen.PLAYLISTS -> {
-            val uiState by playlistListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by playlistListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
                 modifier = modifier.fillMaxSize(),

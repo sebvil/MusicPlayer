@@ -51,8 +51,7 @@ class ArtistListStateHolder(
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
-
+    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
@@ -72,4 +71,3 @@ data class ArtistListState(
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction
 }
-

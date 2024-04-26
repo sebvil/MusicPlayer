@@ -1,79 +1,72 @@
 package com.sebastianvm.musicplayer.ui.bottomsheets.sort
 
 import android.os.Parcelable
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.NavEvent
+import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.not
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-class SortBottomSheetViewModel(
+class SortBottomSheetStateHolder(
     private val arguments: SortMenuArguments,
-    private val sortPreferencesRepository: SortPreferencesRepository
-) : OldBaseViewModel<SortBottomSheetState, SortBottomSheetUserAction>() {
+    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+) : StateHolder<UiState<SortBottomSheetState>, SortBottomSheetUserAction> {
 
-    override val defaultState: SortBottomSheetState by lazy {
-        val sortOptions = getSortOptionsForScreen(arguments.listType)
-        SortBottomSheetState(
-            sortOptions = sortOptions,
-            selectedSort = sortOptions.first(),
-            sortOrder = MediaSortOrder.ASCENDING
-        )
-    }
+    override val state: StateFlow<UiState<SortBottomSheetState>> =
+        when (val listType = arguments.listType) {
+            is SortableListType.Tracks -> {
+                sortPreferencesRepository.getTrackListSortPreferences(
+                    trackList = listType.trackList
+                )
+            }
 
-    private val selectedSort: SortOptions
-        get() = ((state as? Data)?.state ?: defaultState).selectedSort
+            is SortableListType.Albums -> {
+                sortPreferencesRepository.getAlbumListSortPreferences()
+            }
 
-    private val sortOrder: MediaSortOrder
-        get() = ((state as? Data)?.state ?: defaultState).sortOrder
-
-    init {
-        viewModelScope.launch {
-            val sortPreferences = when (val listType = arguments.listType) {
-                is SortableListType.Tracks -> {
-                    sortPreferencesRepository.getTrackListSortPreferences(
-                        trackList = listType.trackList
-                    )
-                }
-
-                is SortableListType.Albums -> {
-                    sortPreferencesRepository.getAlbumListSortPreferences()
-                }
-
-                is SortableListType.Playlist -> {
-                    sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
-                }
-            }.first()
-            setDataState {
-                it.copy(
+            is SortableListType.Playlist -> {
+                sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
+            }
+        }.map { sortPreferences ->
+            val sortOptions = getSortOptionsForScreen(arguments.listType)
+            Data(
+                SortBottomSheetState(
+                    sortOptions = sortOptions,
                     selectedSort = sortPreferences.sortOption,
                     sortOrder = sortPreferences.sortOrder
                 )
-            }
-        }
-    }
+            )
+        }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: SortBottomSheetUserAction) {
         when (action) {
             is SortBottomSheetUserAction.MediaSortOptionClicked -> {
                 val newSortOption = action.newSortOption
+                val selectedSort = action.selectedSort
+                val sortOrder = action.currentSortOrder
                 val newSortOrder = if (newSortOption == selectedSort) {
                     !sortOrder
                 } else {
                     sortOrder
                 }
-                viewModelScope.launch {
+                stateHolderScope.launch {
                     when (val listType = arguments.listType) {
                         is SortableListType.Tracks -> {
                             require(newSortOption is SortOptions.TrackListSortOptions) {
@@ -113,7 +106,6 @@ class SortBottomSheetViewModel(
                             )
                         }
                     }
-                    addNavEvent(NavEvent.NavigateUp)
                 }
             }
         }
@@ -131,15 +123,15 @@ data class SortBottomSheetState(
 private fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
     return when (listType) {
         is SortableListType.Tracks -> {
-            SortOptions.TrackListSortOptions.values().toList()
+            SortOptions.TrackListSortOptions.entries
         }
 
         is SortableListType.Albums -> {
-            SortOptions.AlbumListSortOptions.values().toList()
+            SortOptions.AlbumListSortOptions.entries
         }
 
         is SortableListType.Playlist -> {
-            SortOptions.PlaylistSortOptions.values().toList()
+            SortOptions.PlaylistSortOptions.entries
         }
     }
 }
@@ -158,5 +150,9 @@ sealed class SortableListType : Parcelable {
 }
 
 sealed interface SortBottomSheetUserAction : UserAction {
-    data class MediaSortOptionClicked(val newSortOption: SortOptions) : SortBottomSheetUserAction
+    data class MediaSortOptionClicked(
+        val newSortOption: SortOptions,
+        val selectedSort: SortOptions,
+        val currentSortOrder: MediaSortOrder,
+    ) : SortBottomSheetUserAction
 }

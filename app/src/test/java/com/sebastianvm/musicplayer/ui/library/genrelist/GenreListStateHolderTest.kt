@@ -5,12 +5,14 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.getDataState
 import com.sebastianvm.musicplayer.util.runSafeTest
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import org.junit.jupiter.api.BeforeEach
@@ -30,15 +32,7 @@ class GenreListStateHolderTest : BaseTest() {
 
     private fun generateViewModel(): GenreListStateHolder {
         return GenreListStateHolder(
-            initialState = GenreListState(
-                modelListState = ModelListState(
-                    items = listOf(),
-                    sortButtonState = null,
-                    headerState = HeaderState.None
-                ),
-                isLoading = true
-            ),
-            viewModelScope = testScope,
+            stateHolderScope = testScope,
             genreRepository = genreRepository,
             sortPreferencesRepository = sortPreferencesRepository
         )
@@ -48,19 +42,20 @@ class GenreListStateHolderTest : BaseTest() {
     fun `init subscribes to changes in track list`() =
         testScope.runSafeTest {
             with(generateViewModel()) {
-                Truth.assertThat(state.isLoading).isTrue()
+                Truth.assertThat(state.value).isEqualTo(Loading)
 
                 genreRepository.getGenresValue.emit(listOf())
-                Truth.assertThat(state.modelListState.items).isEmpty()
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
-
+                sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
+                Truth.assertThat(state.value).isEqualTo(Empty)
                 val genres = FixtureProvider.genreFixtures().toList()
                 genreRepository.getGenresValue.emit(genres)
-                Truth.assertThat(state.modelListState.items)
+                Truth.assertThat(
+                    getDataState().modelListState.items
+                )
                     .isEqualTo(genres.map { it.toModelListItemState() })
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                Truth.assertThat(
+                    getDataState().modelListState.headerState
+                ).isEqualTo(HeaderState.None)
             }
         }
 
@@ -71,14 +66,19 @@ class GenreListStateHolderTest : BaseTest() {
     ) = testScope.runSafeTest {
         with(generateViewModel()) {
             sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            genreRepository.getGenresValue.emit(FixtureProvider.genreFixtures().toList())
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = R.string.genre_name,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
             sortPreferencesRepository.getGenreListSortOrderValue.emit(sortOrder)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = R.string.genre_name,
                     sortOrder = sortOrder

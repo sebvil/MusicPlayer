@@ -54,10 +54,12 @@ fun ArtistRoute(
     val uiState by viewModel.state.collectAsStateWithLifecycle()
 
     UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
-        ArtistScreen(state = state,
+        ArtistScreen(
+            state = state,
             navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },
             openAlbumContextMenu = { destinationsNavigator.navigate(AlbumContextMenuDestination(it)) },
-            navigateBack = { destinationsNavigator.navigateUp() })
+            navigateBack = { destinationsNavigator.navigateUp() }
+        )
     }
 }
 
@@ -73,18 +75,23 @@ fun ArtistScreen(
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
 
-    ScreenScaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    ScreenScaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(title = { Text(text = state.artistName) }, navigationIcon = {
-                IconButton(onClick = { navigateBack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            }, scrollBehavior = scrollBehavior
+            LargeTopAppBar(
+                title = { Text(text = state.artistName) },
+                navigationIcon = {
+                    IconButton(onClick = { navigateBack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
             )
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         ArtistLayout(
             state = state,
             navigateToAlbum = navigateToAlbum,
@@ -114,17 +121,21 @@ fun ArtistLayout(
                 }
 
                 is ArtistScreenItem.AlbumRowItem -> {
-                    ModelListItem(state = item.state, modifier = Modifier.clickable {
-                        navigateToAlbum(
-                            TrackListArgumentsForNav(
-                                trackListType = MediaGroup.Album(
-                                    albumId = item.id
+                    ModelListItem(
+                        state = item.state,
+                        modifier = Modifier.clickable {
+                            navigateToAlbum(
+                                TrackListArgumentsForNav(
+                                    trackListType = MediaGroup.Album(
+                                        albumId = item.id
+                                    )
                                 )
                             )
-                        )
-                    }, onMoreClicked = {
-                        openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
-                    })
+                        },
+                        onMoreClicked = {
+                            openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
+                        }
+                    )
                 }
             }
         }

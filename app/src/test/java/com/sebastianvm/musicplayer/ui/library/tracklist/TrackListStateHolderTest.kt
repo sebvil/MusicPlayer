@@ -6,12 +6,14 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepositoryImpl
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
+import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.getDataState
 import com.sebastianvm.musicplayer.util.runSafeTest
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -33,16 +35,7 @@ class TrackListStateHolderTest : BaseTest() {
 
     private fun generateViewModel(trackList: TrackList = MediaGroup.AllTracks): TrackListStateHolder {
         return TrackListStateHolder(
-            initialState = TrackListState(
-                trackListType = trackList,
-                modelListState = ModelListState(
-                    items = listOf(),
-                    sortButtonState = null,
-                    headerState = HeaderState.None
-                ),
-                isLoading = true
-            ),
-            viewModelScope = testScope,
+            stateHolderScope = testScope,
             trackRepository = trackRepository,
             sortPreferencesRepository = sortPreferencesRepository,
             args = TrackListArguments(trackList),
@@ -54,22 +47,31 @@ class TrackListStateHolderTest : BaseTest() {
     fun `init subscribes to changes in track list`(trackListWithMetadata: TrackListWithMetadata) =
         testScope.runSafeTest {
             with(generateViewModel()) {
-                Truth.assertThat(state.isLoading).isTrue()
+                Truth.assertThat(state.value).isEqualTo(Loading)
                 trackRepository.getTrackListWithMetaDataValue.emit(
                     TrackListWithMetadata(
                         metaData = null,
                         trackList = listOf()
                     )
                 )
-                Truth.assertThat(state.modelListState.items).isEmpty()
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
+                    MediaSortPreferences(
+                        sortOption = SortOptions.TrackListSortOptions.TRACK,
+                        sortOrder = MediaSortOrder.ASCENDING
+                    )
+                )
+                Truth.assertThat(state.value).isEqualTo(Empty)
                 trackRepository.getTrackListWithMetaDataValue.emit(trackListWithMetadata)
-                Truth.assertThat(state.modelListState.items)
-                    .isEqualTo(trackListWithMetadata.trackList.map { it.toModelListItemState() })
-                Truth.assertThat(state.modelListState.headerState)
-                    .isEqualTo(trackListWithMetadata.metaData.toHeaderState())
-                Truth.assertThat(state.isLoading).isFalse()
+                if (trackListWithMetadata.trackList.isEmpty()) {
+                    Truth.assertThat(state.value).isEqualTo(Empty)
+                } else {
+                    Truth.assertThat(
+                        getDataState().modelListState.items
+                    ).isEqualTo(trackListWithMetadata.trackList.map { it.toModelListItemState() })
+                    Truth.assertThat(
+                        getDataState().modelListState.headerState
+                    ).isEqualTo(trackListWithMetadata.metaData.toHeaderState())
+                }
             }
         }
 
@@ -85,14 +87,21 @@ class TrackListStateHolderTest : BaseTest() {
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            trackRepository.getTrackListWithMetaDataValue.emit(
+                FixtureProvider.trackListWithMetadataFixtures().toList().first()
+            )
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = SortOptions.TrackListSortOptions.TRACK.stringId,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
             sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = sortPreferences.sortOption.stringId,
                     sortOrder = sortPreferences.sortOrder
@@ -113,9 +122,16 @@ class TrackListStateHolderTest : BaseTest() {
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
-            Truth.assertThat(state.modelListState.sortButtonState).isNull()
+            trackRepository.getTrackListWithMetaDataValue.emit(
+                FixtureProvider.trackListWithMetadataFixtures().toList().first()
+            )
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isNull()
             sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
-            Truth.assertThat(state.modelListState.sortButtonState).isNull()
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isNull()
         }
     }
 }
