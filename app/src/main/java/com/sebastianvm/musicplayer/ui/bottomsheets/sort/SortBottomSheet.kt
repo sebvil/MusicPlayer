@@ -20,39 +20,55 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-@Suppress("ViewModelForwarding")
 @RootNavGraph
 @Destination(navArgsDelegate = SortMenuArguments::class, style = DestinationStyleBottomSheet::class)
 @Composable
 fun SortBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: SortBottomSheetViewModel = viewModel()
+    arguments: SortMenuArguments,
+    sheetStateHolder: StateHolder<UiState<SortBottomSheetState>, SortBottomSheetUserAction> =
+        stateHolder { dependencyContainer: DependencyContainer ->
+            SortBottomSheetStateHolder(
+                arguments = arguments,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        }
 ) {
-    Screen(
-        screenViewModel = sheetViewModel,
-        navigationDelegate = NavigationDelegateImpl(navigator)
-    ) { state, screenDelegate ->
-        SortBottomSheet(state = state, screenDelegate = screenDelegate)
+    val uiState by sheetStateHolder.state.collectAsStateWithLifecycle()
+    UiStateScreen(
+        uiState = uiState,
+        emptyScreen = {}
+    ) { state ->
+        SortBottomSheet(
+            state = state,
+            navigator = navigator,
+            screenDelegate = sheetStateHolder::handle,
+        )
     }
 }
 
 @Composable
 fun SortBottomSheet(
     state: SortBottomSheetState,
+    navigator: DestinationsNavigator,
     screenDelegate: ScreenDelegate<SortBottomSheetUserAction>,
     modifier: Modifier = Modifier
 ) {
@@ -76,9 +92,12 @@ fun SortBottomSheet(
                         .clickable {
                             screenDelegate.handle(
                                 SortBottomSheetUserAction.MediaSortOptionClicked(
-                                    row
+                                    newSortOption = row,
+                                    selectedSort = state.selectedSort,
+                                    currentSortOrder = state.sortOrder
                                 )
                             )
+                            navigator.navigateUp()
                         }
                         .let {
                             if (state.selectedSort == row) {

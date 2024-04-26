@@ -34,18 +34,26 @@ import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @RootNavGraph
-@Destination(navArgsDelegate = ArtistArguments::class)
+@Destination
 @Composable
 fun ArtistRoute(
     destinationsNavigator: DestinationsNavigator,
-    viewModel: ArtistViewModel = viewModel()
+    arguments: ArtistArguments,
+    viewModel: StateHolder<UiState<ArtistState>, ArtistUserAction> = stateHolder { dependencyContainer ->
+        ArtistStateHolder(
+            arguments = arguments,
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository
+        )
+    }
 ) {
-    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
 
-    UiStateScreen(uiState = uiState.toUiState(), emptyScreen = {}) { state ->
+    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
         ArtistScreen(
             state = state,
             navigateToAlbum = { destinationsNavigator.navigate(TrackListRouteDestination(it)) },

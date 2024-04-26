@@ -46,24 +46,32 @@ import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestinatio
 import com.sebastianvm.musicplayer.ui.destinations.SortBottomSheetDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListLayout
-import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListViewModel
-import com.sebastianvm.musicplayer.ui.library.albumlist.toUiState
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListState
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListStateHolder
+import com.sebastianvm.musicplayer.ui.library.albumlist.AlbumListUserAction
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListLayout
+import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListState
+import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListStateHolder
 import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListUserAction
-import com.sebastianvm.musicplayer.ui.library.artistlist.ArtistListViewModel
-import com.sebastianvm.musicplayer.ui.library.artistlist.toUiState
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListLayout
+import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListState
+import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListStateHolder
 import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListUserAction
-import com.sebastianvm.musicplayer.ui.library.genrelist.GenreListViewModel
-import com.sebastianvm.musicplayer.ui.library.genrelist.toUiState
 import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListLayout
-import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListViewModel
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListState
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListStateHolder
+import com.sebastianvm.musicplayer.ui.library.playlistlist.PlaylistListUserAction
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArguments
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListRoute
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListState
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListStateHolder
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import kotlinx.coroutines.launch
 
 @RootNavGraph(start = true)
@@ -75,10 +83,7 @@ fun MainScreen(
 ) {
     MainScreenLayout(
         searchScreen = {
-            SearchScreen(
-                screenViewModel = viewModel(),
-                navigationDelegate = NavigationDelegateImpl(navigator)
-            )
+            SearchScreen(navigator = navigator)
         }
     ) { page ->
         Screens(
@@ -144,10 +149,43 @@ fun Screens(
     navigator: DestinationsNavigator,
     playMedia: (mediaGroup: MediaGroup, initialTrackIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
-    artistListViewModel: ArtistListViewModel = viewModel(),
-    albumListViewModel: AlbumListViewModel = viewModel(),
-    genreListViewModel: GenreListViewModel = viewModel(),
-    playlistListViewModel: PlaylistListViewModel = viewModel()
+    artistListStateHolder: StateHolder<UiState<ArtistListState>, ArtistListUserAction> =
+        stateHolder { dependencyContainer ->
+            ArtistListStateHolder(
+                artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    albumListStateHolder: StateHolder<UiState<AlbumListState>, AlbumListUserAction> =
+        stateHolder { dependencyContainer ->
+            AlbumListStateHolder(
+                albumRepository = dependencyContainer.repositoryProvider.albumRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    genreListStateHolder: StateHolder<UiState<GenreListState>, GenreListUserAction> =
+        stateHolder { dependencyContainer ->
+            GenreListStateHolder(
+                genreRepository = dependencyContainer.repositoryProvider.genreRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    trackListStateHolder: StateHolder<UiState<TrackListState>, TrackListUserAction> =
+        stateHolder { dependencyContainer ->
+
+            TrackListStateHolder(
+                args = TrackListArguments(trackListType = MediaGroup.AllTracks),
+                trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
+    playlistListStateHolder: StateHolder<UiState<PlaylistListState>, PlaylistListUserAction> =
+        stateHolder { dependencyContainer ->
+            PlaylistListStateHolder(
+                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
+            )
+        }
 ) {
     when (page) {
         TopLevelScreen.ALL_SONGS -> {
@@ -155,14 +193,14 @@ fun Screens(
                 navigator = navigator,
                 handlePlayback = playMedia,
                 modifier = modifier.fillMaxSize(),
-                trackListViewModel = viewModel()
+                trackListStateHolder = trackListStateHolder
             )
         }
 
         TopLevelScreen.ARTISTS -> {
-            val uiState by artistListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by artistListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState.toUiState(),
+                uiState = uiState,
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -181,16 +219,16 @@ fun Screens(
                     navigateToArtistScreen = { args ->
                         navigator.navigate(ArtistRouteDestination(args))
                     },
-                    changeSort = { artistListViewModel.handle(ArtistListUserAction.SortByButtonClicked) },
+                    changeSort = { artistListStateHolder.handle(ArtistListUserAction.SortByButtonClicked) },
                     modifier = Modifier
                 )
             }
         }
 
         TopLevelScreen.ALBUMS -> {
-            val uiState by albumListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by albumListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState.toUiState(),
+                uiState = uiState,
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -217,9 +255,9 @@ fun Screens(
         }
 
         TopLevelScreen.GENRES -> {
-            val uiState by genreListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by genreListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
-                uiState = uiState.toUiState(),
+                uiState = uiState,
                 modifier = modifier.fillMaxSize(),
                 emptyScreen = {
                     StoragePermissionNeededEmptyScreen(
@@ -235,7 +273,7 @@ fun Screens(
                     navigateToGenre = { args ->
                         navigator.navigate(TrackListRouteDestination(args))
                     },
-                    changeSort = { genreListViewModel.handle(GenreListUserAction.SortByButtonClicked) },
+                    changeSort = { genreListStateHolder.handle(GenreListUserAction.SortByButtonClicked) },
                     openGenreContextMenu = { args ->
                         navigator.navigate(GenreContextMenuDestination(args))
                     }
@@ -244,7 +282,7 @@ fun Screens(
         }
 
         TopLevelScreen.PLAYLISTS -> {
-            val uiState by playlistListViewModel.stateFlow.collectAsStateWithLifecycle()
+            val uiState by playlistListStateHolder.state.collectAsStateWithLifecycle()
             UiStateScreen(
                 uiState = uiState,
                 modifier = modifier.fillMaxSize(),

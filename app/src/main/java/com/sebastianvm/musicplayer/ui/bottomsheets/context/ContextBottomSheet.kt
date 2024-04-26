@@ -1,4 +1,4 @@
-@file:Suppress("ViewModelForwarding")
+@file:Suppress("stateHolderForwarding")
 
 package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
@@ -20,10 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -31,28 +33,40 @@ import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.PlaybackHandler
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
+import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
+import com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
+import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.ui.destinations.ArtistsBottomSheetDestination
+import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @Composable
 fun ContextBottomSheet(
     navigator: DestinationsNavigator,
-    sheetViewModel: BaseContextMenuViewModel,
-    handlePlayback: () -> Unit
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction>,
+    handlePlayback: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Screen(
-        screenViewModel = sheetViewModel,
-        navigationDelegate = NavigationDelegateImpl(navigator)
-    ) { state, screenDelegate ->
+    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+
+    UiStateScreen(
+        uiState = uiState,
+        emptyScreen = {},
+        modifier = modifier
+    ) { state ->
         ContextMenuLayout(
             state = state,
+            navigator = navigator,
             handlePlayback = {
                 handlePlayback()
                 navigator.navigateUp()
             },
-            screenDelegate = screenDelegate
+            screenDelegate = stateHolder::handle
         )
     }
 }
@@ -67,11 +81,26 @@ fun TrackContextMenu(
     navigator: DestinationsNavigator,
     arguments: TrackContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: TrackContextMenuViewModel = viewModel(),
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction> =
+        stateHolder { dependencyContainer ->
+            TrackContextMenuStateHolder(
+                arguments = arguments,
+                trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+                playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+            )
+        },
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
-        handlePlayback(mediaGroup = arguments.mediaGroup, initialTrackIndex = arguments.trackIndex)
-    }
+    ContextBottomSheet(
+        navigator = navigator,
+        stateHolder = stateHolder,
+        handlePlayback = {
+            handlePlayback(
+                mediaGroup = arguments.mediaGroup,
+                initialTrackIndex = arguments.trackIndex
+            )
+        }
+    )
 }
 
 @RootNavGraph
@@ -84,11 +113,24 @@ fun ArtistContextMenu(
     navigator: DestinationsNavigator,
     arguments: ArtistContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: ArtistContextMenuViewModel = viewModel()
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction> =
+        stateHolder { dependencyContainer ->
+            ArtistContextMenuStateHolder(
+                arguments = arguments,
+                artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+            )
+        }
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
-        handlePlayback(mediaGroup = MediaGroup.Artist(arguments.artistId), initialTrackIndex = 0)
-    }
+    ContextBottomSheet(
+        navigator = navigator,
+        stateHolder = stateHolder,
+        handlePlayback = {
+            handlePlayback(
+                mediaGroup = MediaGroup.Artist(arguments.artistId),
+                initialTrackIndex = 0
+            )
+        }
+    )
 }
 
 @RootNavGraph
@@ -101,11 +143,25 @@ fun AlbumContextMenu(
     navigator: DestinationsNavigator,
     arguments: AlbumContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: AlbumContextMenuViewModel = viewModel()
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction> =
+        stateHolder { dependencyContainer ->
+            AlbumContextMenuStateHolder(
+                arguments = arguments,
+                albumRepository = dependencyContainer.repositoryProvider.albumRepository,
+                playbackManager = dependencyContainer.repositoryProvider.playbackManager
+            )
+        }
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
-        handlePlayback(mediaGroup = MediaGroup.Album(arguments.albumId), initialTrackIndex = 0)
-    }
+    ContextBottomSheet(
+        navigator = navigator,
+        stateHolder = stateHolder,
+        handlePlayback = {
+            handlePlayback(
+                mediaGroup = MediaGroup.Album(arguments.albumId),
+                initialTrackIndex = 0
+            )
+        }
+    )
 }
 
 @RootNavGraph
@@ -118,11 +174,24 @@ fun GenreContextMenu(
     navigator: DestinationsNavigator,
     arguments: GenreContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: GenreContextMenuViewModel = viewModel()
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction> =
+        stateHolder { dependencyContainer ->
+            GenreContextMenuStateHolder(
+                arguments = arguments,
+                genreRepository = dependencyContainer.repositoryProvider.genreRepository,
+            )
+        }
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
-        handlePlayback(mediaGroup = MediaGroup.Genre(arguments.genreId), initialTrackIndex = 0)
-    }
+    ContextBottomSheet(
+        navigator = navigator,
+        stateHolder = stateHolder,
+        handlePlayback = {
+            handlePlayback(
+                mediaGroup = MediaGroup.Genre(arguments.genreId),
+                initialTrackIndex = 0
+            )
+        }
+    )
 }
 
 @RootNavGraph
@@ -135,14 +204,24 @@ fun PlaylistContextMenu(
     navigator: DestinationsNavigator,
     arguments: PlaylistContextMenuArguments,
     handlePlayback: PlaybackHandler,
-    viewModel: PlaylistContextMenuViewModel = viewModel()
+    stateHolder: StateHolder<UiState<ContextMenuState>, BaseContextMenuUserAction> =
+        stateHolder { dependencyContainer ->
+            PlaylistContextMenuStateHolder(
+                arguments = arguments,
+                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+            )
+        }
 ) {
-    ContextBottomSheet(navigator = navigator, sheetViewModel = viewModel) {
-        handlePlayback(
-            mediaGroup = MediaGroup.Playlist(arguments.playlistId),
-            initialTrackIndex = 0
-        )
-    }
+    ContextBottomSheet(
+        navigator = navigator,
+        stateHolder = stateHolder,
+        handlePlayback = {
+            handlePlayback(
+                mediaGroup = MediaGroup.Playlist(arguments.playlistId),
+                initialTrackIndex = 0
+            )
+        }
+    )
 }
 
 interface DeletePlaylistConfirmationDialogDelegate {
@@ -179,6 +258,7 @@ fun DeletePlaylistConfirmationDialog(
 @Composable
 fun ContextMenuLayout(
     state: ContextMenuState,
+    navigator: DestinationsNavigator,
     handlePlayback: () -> Unit,
     screenDelegate: ScreenDelegate<BaseContextMenuUserAction>,
     modifier: Modifier = Modifier
@@ -193,6 +273,7 @@ fun ContextMenuLayout(
 
                 override fun onSubmit() {
                     screenDelegate.handle(BaseContextMenuUserAction.ConfirmDeleteClicked)
+                    navigator.navigateUp()
                 }
             }
         )
@@ -226,12 +307,7 @@ fun ContextMenuLayout(
                             ContextMenuItem.AddToPlaylist,
                             ContextMenuItem.AddToQueue,
                             ContextMenuItem.DeletePlaylist,
-                            ContextMenuItem.RemoveFromPlaylist,
-                            ContextMenuItem.ViewAlbum,
-                            ContextMenuItem.ViewArtist,
-                            ContextMenuItem.ViewArtists,
-                            ContextMenuItem.ViewGenre,
-                            ContextMenuItem.ViewPlaylist -> {
+                            ContextMenuItem.RemoveFromPlaylist -> {
                                 ContextSheetRow(state = it) {
                                     screenDelegate.handle(
                                         BaseContextMenuUserAction.RowClicked(it)
@@ -244,6 +320,68 @@ fun ContextMenuLayout(
                             ContextMenuItem.PlayFromBeginning -> {
                                 ContextSheetRow(state = it) {
                                     handlePlayback()
+                                }
+                            }
+
+                            is ContextMenuItem.ViewAlbum -> {
+                                ContextSheetRow(state = it) {
+                                    navigator.navigate(
+                                        TrackListRouteDestination(
+                                            TrackListArgumentsForNav(
+                                                trackListType = MediaGroup.Album(
+                                                    it.albumId
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+
+                            is ContextMenuItem.ViewArtist ->
+                                ContextSheetRow(state = it) {
+                                    navigator.navigate(
+                                        ArtistRouteDestination(
+                                            ArtistArguments(
+                                                artistId = it.artistId
+                                            )
+                                        )
+                                    )
+                                }
+
+                            is ContextMenuItem.ViewArtists -> {
+                                ContextSheetRow(state = it) {
+                                    navigator.navigate(
+                                        ArtistsBottomSheetDestination(
+                                            ArtistsMenuArguments(
+                                                mediaType = it.mediaType,
+                                                mediaId = it.mediaId
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+
+                            is ContextMenuItem.ViewGenre -> {
+                                ContextSheetRow(state = it) {
+                                    navigator.navigate(
+                                        TrackListRouteDestination(
+                                            TrackListArgumentsForNav(
+                                                trackListType = MediaGroup.Genre(it.genreId)
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+
+                            is ContextMenuItem.ViewPlaylist -> {
+                                ContextSheetRow(state = it) {
+                                    navigator.navigate(
+                                        TrackListRouteDestination(
+                                            TrackListArgumentsForNav(
+                                                trackListType = MediaGroup.Playlist(it.playlistId)
+                                            )
+                                        )
+                                    )
                                 }
                             }
                         }

@@ -24,33 +24,45 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegateImpl
-import com.sebastianvm.musicplayer.ui.util.compose.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
-@Suppress("ViewModelForwarding")
+@Suppress("StateHolderForwarding")
 @RootNavGraph
 @Destination(navArgsDelegate = TrackSearchArguments::class)
 @Composable
 fun TrackSearchScreen(
     navigator: DestinationsNavigator,
-    screenViewModel: TrackSearchViewModel = viewModel()
+    arguments: TrackSearchArguments,
+    screenStateHolder: StateHolder<UiState<TrackSearchState>, TrackSearchUserAction> =
+        stateHolder { dependencyContainer ->
+            TrackSearchStateHolder(
+                arguments = arguments,
+                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+                ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
+            )
+        }
 ) {
-    Screen(
-        screenViewModel = screenViewModel,
-        navigationDelegate = NavigationDelegateImpl(navigator)
-    ) { state, delegate ->
+    val uiState by screenStateHolder.state.collectAsStateWithLifecycle()
+    UiStateScreen(
+        uiState = uiState,
+        emptyScreen = {}
+    ) { state ->
         TrackSearchLayout(
             state = state,
-            screenDelegate = delegate
+            navigator = navigator,
+            screenDelegate = screenStateHolder::handle
         )
     }
 }
@@ -101,6 +113,7 @@ fun AddTrackConfirmationDialog(
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
+    navigator: DestinationsNavigator,
     screenDelegate: ScreenDelegate<TrackSearchUserAction>,
     modifier: Modifier = Modifier
 ) {
@@ -140,7 +153,7 @@ fun TrackSearchLayout(
     ) {
         SearchField(
             onTextChanged = { screenDelegate.handle(TrackSearchUserAction.TextChanged(it)) },
-            onUpButtonClicked = { screenDelegate.handle(TrackSearchUserAction.UpButtonClicked) },
+            onUpButtonClicked = { navigator.navigateUp() },
             focusRequester = focusRequester
         )
 

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.ui
 
+import androidx.lifecycle.ViewModel
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -12,54 +13,49 @@ import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
 import com.sebastianvm.musicplayer.ui.player.TrackProgressState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import kotlinx.coroutines.CoroutineScope
+import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration
 
 class MainViewModel(
-    initialState: MainState = MainState(playerViewState = null),
-    viewModelScope: CoroutineScope? = null,
+    private val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager
-) : BaseViewModel<MainState, MainUserAction>(
-    initialState = initialState,
-    viewModelScope = viewModelScope
-) {
+) : StateHolder<MainState, MainUserAction>, ViewModel(stateHolderScope) {
 
-    init {
-        playbackManager.getPlaybackState().onEach { playbackState ->
-            when (playbackState) {
-                is TrackPlayingState -> {
-                    val trackInfo = playbackState.trackInfo
-                    setState {
-                        it.copy(
-                            playerViewState = PlayerViewState(
-                                mediaArtImageState = MediaArtImageState(
-                                    imageUri = trackInfo.artworkUri,
-                                    backupImage = Icons.Album,
-                                ),
-                                trackInfoState = TrackInfoState(
-                                    trackName = trackInfo.title,
-                                    artists = trackInfo.artists
-                                ),
-                                trackProgressState = TrackProgressState(
-                                    currentPlaybackTime = playbackState.currentTrackProgress,
-                                    trackLength = trackInfo.trackLength
-                                ),
-                                playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
-                            )
+    override val state: StateFlow<MainState> =
+        playbackManager.getPlaybackState().map { playbackState ->
+            MainState(
+                playerViewState = when (playbackState) {
+                    is TrackPlayingState -> {
+                        PlayerViewState(
+                            mediaArtImageState = MediaArtImageState(
+                                imageUri = playbackState.trackInfo.artworkUri,
+                                backupImage = Icons.Album
+                            ),
+                            trackInfoState = TrackInfoState(
+                                trackName = playbackState.trackInfo.title,
+                                artists = playbackState.trackInfo.artists,
+                            ),
+                            trackProgressState = TrackProgressState(
+                                currentPlaybackTime = playbackState.currentTrackProgress,
+                                trackLength = playbackState.trackInfo.trackLength
+                            ),
+                            playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY,
                         )
                     }
-                }
 
-                is NotPlayingState -> {
-                    setState { it.copy(playerViewState = null) }
+                    is NotPlayingState -> null
                 }
-            }
-        }.launchIn(vmScope)
-    }
+            )
+        }.stateIn(stateHolderScope, SharingStarted.Eagerly, MainState(playerViewState = null))
 
     override fun handle(action: MainUserAction) {
         when (action) {
@@ -80,9 +76,7 @@ class MainViewModel(
             is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
 
             is MainUserAction.ProgressBarClicked -> {
-                val trackLengthMs =
-                    state.playerViewState?.trackProgressState?.trackLength?.inWholeMilliseconds
-                        ?: return
+                val trackLengthMs = action.trackLength.inWholeMilliseconds
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
@@ -91,7 +85,7 @@ class MainViewModel(
                 playbackManager.playMedia(
                     mediaGroup = action.mediaGroup,
                     initialTrackIndex = action.initialTrackIndex
-                ).launchIn(vmScope)
+                ).launchIn(stateHolderScope)
             }
         }
     }
@@ -105,6 +99,6 @@ sealed interface MainUserAction : UserAction {
     data object PlayToggled : MainUserAction
     data object NextButtonClicked : MainUserAction
     data object PreviousButtonClicked : MainUserAction
-    data class ProgressBarClicked(val position: Int) : MainUserAction
+    data class ProgressBarClicked(val position: Int, val trackLength: Duration) : MainUserAction
     data class PlayMedia(val mediaGroup: MediaGroup, val initialTrackIndex: Int) : MainUserAction
 }

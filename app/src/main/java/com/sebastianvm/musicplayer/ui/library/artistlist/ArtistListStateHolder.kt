@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.library.artistlist
 
-import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -9,70 +8,55 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class ArtistListViewModel(
-    initialState: ArtistListState = ArtistListState(
-        modelListState = ModelListState(
-            items = listOf(),
-            sortButtonState = SortButtonState(
-                text = R.string.artist_name,
-                sortOrder = MediaSortOrder.ASCENDING
-            ),
-            headerState = HeaderState.None
-        ),
-        isLoading = true
-    ),
-    viewModelScope: CoroutineScope? = null,
+class ArtistListStateHolder(
+    private val stateHolderScope: CoroutineScope = stateHolderScope(),
     artistRepository: ArtistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository
-) : BaseViewModel<ArtistListState, ArtistListUserAction>(
-    initialState = initialState,
-    viewModelScope = viewModelScope
-) {
+) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
 
-    init {
-        artistRepository.getArtists().onEach { artists ->
-            setState {
-                it.copy(
-                    modelListState = it.modelListState.copy(
+    override val state: StateFlow<UiState<ArtistListState>> = combine(
+        artistRepository.getArtists(),
+        sortPreferencesRepository.getArtistListSortOrder()
+    ) { artists, sortOrder ->
+        if (artists.isEmpty()) {
+            Empty
+        } else {
+            Data(
+                ArtistListState(
+                    modelListState = ModelListState(
                         items = artists.map { artist ->
                             artist.toModelListItemState(trailingButtonType = TrailingButtonType.More)
                         },
-                    ),
-                    isLoading = false
-                )
-            }
-        }.launchIn(vmScope)
-        sortPreferencesRepository.getArtistListSortOrder().onEach { sortOrder ->
-            setState {
-                it.copy(
-                    modelListState = it.modelListState.copy(
                         sortButtonState = SortButtonState(
                             text = R.string.artist_name,
                             sortOrder = sortOrder
                         ),
+                        headerState = HeaderState.None
                     )
                 )
-            }
-        }.launchIn(vmScope)
-    }
+            )
+        }
+    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
             is ArtistListUserAction.SortByButtonClicked -> {
-                viewModelScope.launch {
+                stateHolderScope.launch {
                     sortPreferencesRepository.toggleArtistListSortOrder()
                 }
             }
@@ -82,17 +66,8 @@ class ArtistListViewModel(
 
 data class ArtistListState(
     val modelListState: ModelListState,
-    val isLoading: Boolean
 ) : State
 
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction
-}
-
-fun ArtistListState.toUiState(): UiState<ArtistListState> {
-    return when {
-        isLoading -> Loading
-        modelListState.items.isEmpty() -> Empty
-        else -> Data(this)
-    }
 }

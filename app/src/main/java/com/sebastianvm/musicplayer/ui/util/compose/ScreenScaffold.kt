@@ -7,36 +7,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.OldBaseViewModel
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
-import kotlinx.coroutines.Dispatchers
-
-@Composable
-fun <S : State, A : UserAction> Screen(
-    screenViewModel: OldBaseViewModel<S, A>,
-    navigationDelegate: NavigationDelegate,
-    modifier: Modifier = Modifier,
-    screen: @Composable (S, ScreenDelegate<A>) -> Unit
-) {
-    val uiState by screenViewModel.stateFlow.collectAsState(context = Dispatchers.Main)
-    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
-    UiStateScreen(uiState = uiState, emptyScreen = {}, modifier = modifier) { state ->
-        screen(
-            state,
-            ScreenDelegate { action -> screenViewModel.handle(action) }
-        )
-    }
-}
 
 @Composable
 fun ScreenScaffold(

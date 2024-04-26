@@ -12,8 +12,10 @@ import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
 import com.sebastianvm.musicplayer.ui.player.TrackProgressState
+import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
+import com.sebastianvm.musicplayer.util.currentState
 import com.sebastianvm.musicplayer.util.runSafeTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,8 +35,7 @@ class MainViewModelTest : BaseTest() {
 
     private fun generateViewModel(): MainViewModel {
         return MainViewModel(
-            initialState = MainState(playerViewState = null),
-            viewModelScope = testScope,
+            stateHolderScope = CloseableCoroutineScope(testScope.coroutineContext),
             playbackManager = playbackManager
         )
     }
@@ -45,9 +46,9 @@ class MainViewModelTest : BaseTest() {
         testScope.runSafeTest {
             with(generateViewModel()) {
                 playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(state).isEqualTo(MainState(playerViewState = null))
+                Truth.assertThat(currentState).isEqualTo(MainState(playerViewState = null))
                 playbackManager.getPlaybackStateValue.emit(playbackState)
-                Truth.assertThat(state).isEqualTo(
+                Truth.assertThat(currentState).isEqualTo(
                     MainState(
                         playerViewState = PlayerViewState(
                             mediaArtImageState = MediaArtImageState(
@@ -67,7 +68,7 @@ class MainViewModelTest : BaseTest() {
                     )
                 )
                 playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(state).isEqualTo(MainState(playerViewState = null))
+                Truth.assertThat(currentState).isEqualTo(MainState(playerViewState = null))
             }
         }
 
@@ -120,33 +121,9 @@ class MainViewModelTest : BaseTest() {
     @ValueSource(ints = [10, 20, 30, 50])
     fun `ProgressBarClicked seeks to position in track when there is playback info`(position: Int) {
         with(generateViewModel()) {
-            setState {
-                it.copy(
-                    playerViewState = PlayerViewState(
-                        mediaArtImageState = MediaArtImageState(
-                            imageUri = "",
-                            backupImage = Icons.Album
-                        ),
-                        trackInfoState = TrackInfoState(trackName = "", artists = ""),
-                        trackProgressState = TrackProgressState(
-                            currentPlaybackTime = 0.seconds,
-                            trackLength = 100.seconds
-                        ),
-                        playbackIcon = PlaybackIcon.PLAY
-                    )
-                )
-            }
-            handle(MainUserAction.ProgressBarClicked(position))
+            handle(MainUserAction.ProgressBarClicked(position, 100.seconds))
             Truth.assertThat(playbackManager.seekToTrackPositionInvocations)
                 .containsExactly(listOf((position * 1_000).toLong()))
-        }
-    }
-
-    @Test
-    fun `ProgressBarClicked does not seeks to position in track when there is no playback info`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.ProgressBarClicked(50))
-            Truth.assertThat(playbackManager.seekToTrackPositionInvocations).isEmpty()
         }
     }
 

@@ -34,20 +34,31 @@ import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
 import com.sebastianvm.musicplayer.ui.destinations.TrackSearchScreenDestination
 import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
-import com.sebastianvm.musicplayer.ui.util.mvvm.viewModel
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @RootNavGraph
-@Destination(navArgsDelegate = TrackListArgumentsForNav::class)
+@Destination
 @Composable
 fun TrackListRoute(
     navigator: DestinationsNavigator,
     handlePlayback: PlaybackHandler,
     modifier: Modifier = Modifier,
-    trackListViewModel: TrackListViewModel = viewModel(),
+    arguments: TrackListArgumentsForNav? = null,
+    trackListStateHolder: StateHolder<UiState<TrackListState>, TrackListUserAction> =
+        stateHolder { dependencyContainer ->
+            TrackListStateHolder(
+                arguments?.toTrackListArguments()
+                    ?: TrackListArguments(trackListType = MediaGroup.AllTracks),
+                trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+            )
+        },
 ) {
-    val uiState by trackListViewModel.stateFlow.collectAsStateWithLifecycle()
+    val uiState by trackListStateHolder.state.collectAsStateWithLifecycle()
     UiStateScreen(
-        uiState = uiState.toUiState(),
+        uiState = uiState,
         modifier = modifier
             .fillMaxSize(),
         emptyScreen = {

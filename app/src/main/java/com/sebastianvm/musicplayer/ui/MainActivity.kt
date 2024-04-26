@@ -54,15 +54,15 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     navController.navigatorProvider += bottomSheetNavigator
                     M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
-                        val state by viewModel.stateFlow.collectAsState()
+                        val state by viewModel.state.collectAsState()
                         AppScreenHost(
                             mainState = state,
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
                             onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
                             onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) },
-                            onProgressBarValueChange = { progress ->
+                            onProgressBarValueChange = { progress, trackLength ->
                                 viewModel.handle(
-                                    MainUserAction.ProgressBarClicked(progress)
+                                    MainUserAction.ProgressBarClicked(progress, trackLength)
                                 )
                             }
                         ) {

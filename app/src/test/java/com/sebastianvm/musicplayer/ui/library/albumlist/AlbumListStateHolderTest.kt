@@ -4,12 +4,15 @@ import com.google.common.truth.Truth
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
+import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.currentState
+import com.sebastianvm.musicplayer.util.getDataState
 import com.sebastianvm.musicplayer.util.runSafeTest
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -19,7 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class AlbumListViewModelTest : BaseTest() {
+class AlbumListStateHolderTest : BaseTest() {
 
     private lateinit var albumRepository: FakeAlbumRepositoryImpl
     private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
@@ -30,17 +33,9 @@ class AlbumListViewModelTest : BaseTest() {
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    private fun generateViewModel(): AlbumListViewModel {
-        return AlbumListViewModel(
-            initialState = AlbumListState(
-                modelListState = ModelListState(
-                    items = listOf(),
-                    sortButtonState = null,
-                    headerState = HeaderState.None
-                ),
-                isLoading = true
-            ),
-            viewModelScope = testScope,
+    private fun generateViewModel(): AlbumListStateHolder {
+        return AlbumListStateHolder(
+            stateHolderScope = testScope,
             albumRepository = albumRepository,
             sortPreferencesRepository = sortPreferencesRepository
         )
@@ -50,19 +45,26 @@ class AlbumListViewModelTest : BaseTest() {
     fun `init subscribes to changes in track list`() =
         testScope.runSafeTest {
             with(generateViewModel()) {
-                Truth.assertThat(state.isLoading).isTrue()
+                Truth.assertThat(currentState).isEqualTo(Loading)
 
                 albumRepository.getAlbumsValue.emit(listOf())
-                Truth.assertThat(state.modelListState.items).isEmpty()
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                sortPreferencesRepository.getAlbumListSortPreferencesValue.emit(
+                    MediaSortPreferences(
+                        sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                        sortOrder = MediaSortOrder.ASCENDING
+                    )
+                )
+                Truth.assertThat(currentState).isEqualTo(Empty)
 
                 val albums = FixtureProvider.albumFixtures().toList()
                 albumRepository.getAlbumsValue.emit(albums)
-                Truth.assertThat(state.modelListState.items)
+                Truth.assertThat(
+                    getDataState().modelListState.items
+                )
                     .isEqualTo(albums.map { it.toModelListItemState() })
-                Truth.assertThat(state.modelListState.headerState).isEqualTo(HeaderState.None)
-                Truth.assertThat(state.isLoading).isFalse()
+                Truth.assertThat(
+                    getDataState().modelListState.headerState
+                ).isEqualTo(HeaderState.None)
             }
         }
 
@@ -78,14 +80,19 @@ class AlbumListViewModelTest : BaseTest() {
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            albumRepository.getAlbumsValue.emit(FixtureProvider.albumFixtures().toList())
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = SortOptions.AlbumListSortOptions.ALBUM.stringId,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             )
             sortPreferencesRepository.getAlbumListSortPreferencesValue.emit(sortPreferences)
-            Truth.assertThat(state.modelListState.sortButtonState).isEqualTo(
+            Truth.assertThat(
+                getDataState().modelListState.sortButtonState
+            ).isEqualTo(
                 SortButtonState(
                     text = sortPreferences.sortOption.stringId,
                     sortOrder = sortPreferences.sortOrder

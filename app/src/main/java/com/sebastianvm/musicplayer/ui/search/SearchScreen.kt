@@ -27,20 +27,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
@@ -52,10 +57,14 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.navigation.NavigationDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.events.HandleNavEvents
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
     this.pointerInput(key1 = null) {
@@ -65,15 +74,36 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
         }
     }
 
-@Suppress("ViewModelForwarding")
 @Composable
 fun SearchScreen(
-    screenViewModel: SearchViewModel,
-    navigationDelegate: NavigationDelegate,
-    modifier: Modifier = Modifier
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier,
+    screenStateHolder: StateHolder<UiState<SearchState>, SearchUserAction> = stateHolder { dependencyContainer ->
+        SearchStateHolder(
+            ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
+            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+        )
+    },
 ) {
-    val uiState by screenViewModel.stateFlow.collectAsStateWithLifecycle()
-    HandleNavEvents(viewModel = screenViewModel, navigationDelegate = navigationDelegate)
+    val uiState by screenStateHolder.state.collectAsStateWithLifecycle()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(uiState, lifecycle) {
+        // If the date of birth is valid and the validation is in progress,
+        // navigate to the next screen when `lifecycle` is at least STARTED,
+        // which is the default Lifecycle.State for the `flowWithLifecycle` operator.
+        snapshotFlow { uiState }
+            .filterIsInstance<Data<SearchState>>()
+            .map { it.state.navigationState }
+            .flowWithLifecycle(lifecycle)
+            .collect { destination ->
+                if (destination != null) {
+                    screenStateHolder.handle(SearchUserAction.NavigationCompleted)
+                    navigator.navigate(destination)
+                }
+            }
+    }
+
     UiStateScreen(
         uiState = uiState,
         modifier = modifier,
@@ -84,7 +114,7 @@ fun SearchScreen(
         SearchScreen(
             state
         ) {
-            screenViewModel.handle(it)
+            screenStateHolder.handle(it)
         }
     }
 }
@@ -251,12 +281,18 @@ fun SearchLayout(
                     state = item,
                     modifier = Modifier
                         .clickable {
-                            screenDelegate.handle(SearchUserAction.SearchResultClicked(item.id))
+                            screenDelegate.handle(
+                                SearchUserAction.SearchResultClicked(
+                                    id = item.id,
+                                    mediaType = state.selectedOption
+                                )
+                            )
                         },
                     onMoreClicked = {
                         screenDelegate.handle(
                             SearchUserAction.SearchResultOverflowMenuIconClicked(
-                                item.id
+                                id = item.id,
+                                mediaType = state.selectedOption
                             )
                         )
                     }

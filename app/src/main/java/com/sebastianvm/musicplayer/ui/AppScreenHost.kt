@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlin.time.Duration
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
     { spring() }
@@ -39,7 +40,7 @@ fun AppScreenHost(
     onPreviousButtonClicked: () -> Unit,
     onNextButtonClicked: () -> Unit,
     onPlayToggled: () -> Unit,
-    onProgressBarValueChange: (Int) -> Unit,
+    onProgressBarValueChange: (Int, Duration) -> Unit,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.systemBars,
     content: @Composable () -> Unit

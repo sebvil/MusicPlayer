@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.ui.bottomsheets.context
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Artist
 import com.sebastianvm.musicplayer.ui.icons.Delete
@@ -15,11 +16,15 @@ import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
 
 sealed class ContextMenuItem(val icon: IconState, @StringRes val text: Int) {
-    data object ViewArtists : ContextMenuItem(Icons.Artist, R.string.view_artists)
-    data object ViewArtist : ContextMenuItem(Icons.Artist, R.string.view_artist)
-    data object ViewAlbum : ContextMenuItem(Icons.Album, R.string.view_album)
-    data object ViewGenre : ContextMenuItem(Icons.Genre, R.string.view_genre)
-    data object ViewPlaylist : ContextMenuItem(Icons.Playlist, R.string.view_playlist)
+    data class ViewArtists(val mediaType: MediaWithArtists, val mediaId: Long) :
+        ContextMenuItem(Icons.Artist, R.string.view_artists)
+
+    data class ViewArtist(val artistId: Long) : ContextMenuItem(Icons.Artist, R.string.view_artist)
+    data class ViewAlbum(val albumId: Long) : ContextMenuItem(Icons.Album, R.string.view_album)
+    data class ViewGenre(val genreId: Long) : ContextMenuItem(Icons.Genre, R.string.view_genre)
+    data class ViewPlaylist(val playlistId: Long) :
+        ContextMenuItem(Icons.Playlist, R.string.view_playlist)
+
     data object Play : ContextMenuItem(Icons.PlayArrow, R.string.play)
     data object PlayFromBeginning :
         ContextMenuItem(Icons.PlayArrow, R.string.play_from_beginning)
