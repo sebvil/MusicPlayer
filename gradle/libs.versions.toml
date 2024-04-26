@@ -15,6 +15,7 @@ detekt = "1.23.4"
 detekt-compose = "0.2.1"
 google-truth = "1.1.5"
 junit-jupiter = "5.10.0"
+kotest = "5.8.1"
 kotlin = "1.9.23"
 kotlinx-collections-immutable = "0.3.6"
 kotlinx-coroutines = "1.7.3"
@@ -43,6 +44,8 @@ compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:
 constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 google-truth = { group = "com.google.truth", name = "truth", version.ref = "google-truth" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
