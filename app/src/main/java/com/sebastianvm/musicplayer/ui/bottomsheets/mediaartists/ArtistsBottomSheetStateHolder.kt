@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
+import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -37,7 +37,7 @@ class ArtistsBottomSheetStateHolder(
                         )
                     )
                 )
-            }.stateIn(stateHolderScope, Eagerly, Loading)
+            }.stateIn(stateHolderScope, Lazily, Loading)
 
     override fun handle(action: ArtistsBottomSheetUserAction) = Unit
 }

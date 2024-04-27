@@ -1,10 +1,8 @@
 package com.sebastianvm.musicplayer.ui
 
-import com.google.common.truth.Truth
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManagerImpl
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
-import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
@@ -13,132 +11,109 @@ import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState
 import com.sebastianvm.musicplayer.ui.player.TrackProgressState
 import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
-import com.sebastianvm.musicplayer.util.BaseTest
-import com.sebastianvm.musicplayer.util.FakeProvider
-import com.sebastianvm.musicplayer.util.currentState
-import com.sebastianvm.musicplayer.util.runSafeTest
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
+import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.testStateHolderState
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.core.test.TestScope
+import io.kotest.datatest.withData
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import kotlin.time.Duration.Companion.seconds
 
-class MainViewModelTest : BaseTest() {
+class MainViewModelTest : FreeSpec({
 
-    private lateinit var playbackManager: FakePlaybackManagerImpl
+    lateinit var playbackManagerDep: FakePlaybackManager
 
-    @BeforeEach
-    fun beforeEach() {
-        playbackManager = FakeProvider.playbackManager
+    beforeTest {
+        playbackManagerDep = FakePlaybackManager()
     }
 
-    private fun generateViewModel(): MainViewModel {
+    fun TestScope.getSubject(): MainViewModel {
         return MainViewModel(
-            stateHolderScope = CloseableCoroutineScope(testScope.coroutineContext),
-            playbackManager = playbackManager
+            stateHolderScope = CloseableCoroutineScope(coroutineContext),
+            playbackManager = playbackManagerDep
         )
     }
 
-    @ParameterizedTest
-    @MethodSource("com.sebastianvm.musicplayer.util.FixtureProvider#playbackStateFixtures")
-    fun `init sets state correctly and subscribes to changes`(playbackState: TrackPlayingState) =
-        testScope.runSafeTest {
-            with(generateViewModel()) {
-                playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(currentState).isEqualTo(MainState(playerViewState = null))
-                playbackManager.getPlaybackStateValue.emit(playbackState)
-                Truth.assertThat(currentState).isEqualTo(
-                    MainState(
-                        playerViewState = PlayerViewState(
-                            mediaArtImageState = MediaArtImageState(
-                                imageUri = playbackState.trackInfo.artworkUri,
-                                backupImage = Icons.Album
-                            ),
-                            trackInfoState = TrackInfoState(
-                                trackName = playbackState.trackInfo.title,
-                                artists = playbackState.trackInfo.artists
-                            ),
-                            trackProgressState = TrackProgressState(
-                                currentPlaybackTime = playbackState.currentTrackProgress,
-                                trackLength = playbackState.trackInfo.trackLength
-                            ),
-                            playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
-                        )
+    "init sets state correctly and subscribes to changes" - {
+        withData(FixtureProvider.playbackStateFixtures().toList()) { playbackState ->
+            val subject = getSubject()
+            testStateHolderState(subject) {
+                playbackManagerDep.getPlaybackStateValue.emit(NotPlayingState)
+                awaitItem() shouldBe MainState(playerViewState = null)
+                playbackManagerDep.getPlaybackStateValue.emit(playbackState)
+                awaitItem() shouldBe MainState(
+                    playerViewState = PlayerViewState(
+                        mediaArtImageState = MediaArtImageState(
+                            imageUri = playbackState.trackInfo.artworkUri,
+                            backupImage = Icons.Album
+                        ),
+                        trackInfoState = TrackInfoState(
+                            trackName = playbackState.trackInfo.title,
+                            artists = playbackState.trackInfo.artists
+                        ),
+                        trackProgressState = TrackProgressState(
+                            currentPlaybackTime = playbackState.currentTrackProgress,
+                            trackLength = playbackState.trackInfo.trackLength
+                        ),
+                        playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
                     )
                 )
-                playbackManager.getPlaybackStateValue.emit(NotPlayingState)
-                Truth.assertThat(currentState).isEqualTo(MainState(playerViewState = null))
+
+                playbackManagerDep.getPlaybackStateValue.emit(NotPlayingState)
+                awaitItem() shouldBe MainState(playerViewState = null)
             }
         }
-
-    @Test
-    fun `ConnectToMusicService connects to service`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.ConnectToMusicService)
-            Truth.assertThat(playbackManager.connectToServiceInvocations)
-                .containsExactly(listOf<Any>())
-        }
     }
 
-    @Test
-    fun `DisconnectFromMusicService disconnects from service`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.DisconnectFromMusicService)
-            Truth.assertThat(playbackManager.disconnectFromServiceInvocations)
-                .containsExactly(listOf<Any>())
-        }
+    "ConnectToMusicService connects to service" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.ConnectToMusicService)
+        playbackManagerDep.connectToServiceInvocations shouldContainExactly listOf(
+            FakePlaybackManager.ConnectToServiceInvocations
+        )
     }
 
-    @Test
-    fun `PlayToggled toggles play`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.PlayToggled)
-            Truth.assertThat(playbackManager.togglePlayInvocations)
-                .containsExactly(listOf<Any>())
-        }
+    "DisconnectFromMusicService disconnects from service" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.DisconnectFromMusicService)
+        playbackManagerDep.disconnectFromServiceInvocations shouldContainExactly listOf(
+            FakePlaybackManager.DisconnectFromServiceInvocations
+        )
     }
 
-    @Test
-    fun `NextButtonClicked seeks next song`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.NextButtonClicked)
-            Truth.assertThat(playbackManager.nextInvocations)
-                .containsExactly(listOf<Any>())
-        }
+    "PlayToggled toggles play" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.PlayToggled)
+        playbackManagerDep.togglePlayInvocations shouldContainExactly listOf(emptyList())
     }
 
-    @Test
-    fun `PreviousButtonClicked seeks prev song`() {
-        with(generateViewModel()) {
-            handle(MainUserAction.PreviousButtonClicked)
-            Truth.assertThat(playbackManager.prevInvocations)
-                .containsExactly(listOf<Any>())
-        }
+    "NextButtonClicked seeks next song" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.NextButtonClicked)
+        playbackManagerDep.nextInvocations shouldContainExactly listOf(emptyList())
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = [10, 20, 30, 50])
-    fun `ProgressBarClicked seeks to position in track when there is playback info`(position: Int) {
-        with(generateViewModel()) {
-            handle(MainUserAction.ProgressBarClicked(position, 100.seconds))
-            Truth.assertThat(playbackManager.seekToTrackPositionInvocations)
-                .containsExactly(listOf((position * 1_000).toLong()))
-        }
+    "PreviousButtonClicked seeks prev song" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.PreviousButtonClicked)
+        playbackManagerDep.prevInvocations shouldContainExactly listOf(emptyList())
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = [10, 20, 30, 50])
-    fun `PlayMedia triggers playback`(trackIndex: Int) {
-        with(generateViewModel()) {
-            handle(
-                MainUserAction.PlayMedia(
-                    mediaGroup = MediaGroup.AllTracks,
-                    initialTrackIndex = trackIndex
-                )
+    "ProgressBarClicked seeks to position in track when there is playback info" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.ProgressBarClicked(10, 100.seconds))
+        playbackManagerDep.seekToTrackPositionInvocations shouldContainExactly listOf(listOf((10 * 1_000).toLong()))
+    }
+
+    "PlayMedia triggers playback" {
+        val subject = getSubject()
+        subject.handle(MainUserAction.PlayMedia(MediaGroup.AllTracks, 1))
+        playbackManagerDep.playMediaInvocations shouldContainExactly listOf(
+            listOf(
+                MediaGroup.AllTracks,
+                1
             )
-            Truth.assertThat(playbackManager.playMediaInvocations)
-                .containsExactly(listOf(MediaGroup.AllTracks, trackIndex))
-        }
+        )
     }
-}
+})

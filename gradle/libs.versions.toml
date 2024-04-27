@@ -2,7 +2,6 @@
 agp = "8.4.0-rc02"
 accompanist = "0.33.2-alpha"
 activity-compose = "1.9.0"
-android-junit5 = "1.9.3.0"
 coil = "2.5.0"
 com-google-devtools = "1.9.23-1.0.20"
 compose = "1.6.6"
@@ -13,8 +12,6 @@ core-ktx = "1.13.0"
 datastore = "1.1.0"
 detekt = "1.23.4"
 detekt-compose = "0.2.1"
-google-truth = "1.1.5"
-junit-jupiter = "5.10.0"
 kotest = "5.8.1"
 kotlin = "1.9.23"
 kotlinx-collections-immutable = "0.3.6"
@@ -25,6 +22,7 @@ material-3 = "1.2.1"
 media3-exoplayer = "1.3.1"
 recyclerview = "1.3.2"
 room-runtime = "2.6.1"
+turbine = "1.1.0"
 vectordrawable = "1.1.0"
 
 [libraries]
@@ -42,13 +40,11 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences", v
 compose-destinations-animations-core = { module = "io.github.raamcosta.compose-destinations:animations-core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "compose-destinations" }
 constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
-google-truth = { group = "com.google.truth", name = "truth", version.ref = "google-truth" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-viewmodel-ktx" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-viewmodel-ktx" }
@@ -61,6 +57,7 @@ media3-session = { module = "androidx.media3:media3-session", version.ref = "med
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
 detekt-ktlint = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
@@ -74,7 +71,12 @@ com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-g
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 org-jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "android-junit5" }
 
 [bundles]
+testing = [
+    "kotest-assertions-core",
+    "kotest-framework-datatest",
+    "kotest-runner-junit5",
+    "turbine"
+]
 

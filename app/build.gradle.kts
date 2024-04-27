@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
-    alias(libs.plugins.android.junit5)
 }
 
 android {
@@ -47,9 +46,13 @@ android {
         viewBinding = true
     }
 
+    @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            all {
+                it.useJUnitPlatform()
+            }
         }
     }
 
@@ -124,13 +127,8 @@ dependencies {
 
     // TESTING
 
-    // Junit
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.google.truth)
-    testImplementation(libs.kotest.runner.junit5)
-    testImplementation(libs.kotest.assertions.core)
-    // Coroutines tests
-    testImplementation(libs.kotlinx.coroutines.test)
+    // Testing
+    testImplementation(libs.bundles.testing)
 
     implementation(project(":fakegen"))
     kspTest(project(":fakegen"))

@@ -17,7 +17,7 @@
 //    @get:Rule
 // //    val composeTestRule = createComposeRule()
 //
-//    private fun generateViewModel(): ArtistListViewModel {
+//    private fun getSubject(): ArtistListViewModel {
 //        return mockk(relaxed = true) {
 //            every { state } returns MutableStateFlow(
 //                ArtistListState(
@@ -36,7 +36,7 @@
 //    @Test
 //    fun testArtistRowsAreShown() {
 //        // Start the app
-//        val screenViewModel = generateViewModel()
+//        val screenViewModel = getSubject()
 //        composeTestRule.setContent {
 //            ArtistListScreen(
 //                screenViewModel = screenViewModel,
@@ -53,7 +53,7 @@
 //    @Test
 //    fun testArtistRowClicked() {
 //        // Start the app
-//        val screenViewModel = generateViewModel()
+//        val screenViewModel = getSubject()
 //        composeTestRule.setContent {
 //            ArtistListScreen(
 //                screenViewModel = screenViewModel,
