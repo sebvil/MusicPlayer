@@ -88,8 +88,8 @@ internal fun ScreenPreview(screen: @Composable () -> Unit) {
 //    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
 // )
 // @Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
-annotation class ScreenPreviews
+annotation class PreviewScreens
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-annotation class ComponentPreviews
+annotation class PreviewComponents

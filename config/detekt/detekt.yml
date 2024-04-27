@@ -740,8 +740,8 @@ style:
   UnusedPrivateMember:
     active: true
     ignoreAnnotated:
-      - "ComponentPreviews"
-      - "ScreenPreviews"
+      - "PreviewComponents"
+      - "PreviewScreens"
       - "Preview"
     allowedNames: ''
   UnusedPrivateProperty:
