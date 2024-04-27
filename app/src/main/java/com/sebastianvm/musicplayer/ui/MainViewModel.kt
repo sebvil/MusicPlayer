@@ -55,7 +55,7 @@ class MainViewModel(
                     is NotPlayingState -> null
                 }
             )
-        }.stateIn(stateHolderScope, SharingStarted.Eagerly, MainState(playerViewState = null))
+        }.stateIn(stateHolderScope, SharingStarted.Lazily, MainState(playerViewState = null))
 
     override fun handle(action: MainUserAction) {
         when (action) {

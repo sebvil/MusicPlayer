@@ -1,101 +1,91 @@
 package com.sebastianvm.musicplayer.ui.library.genrelist
 
-import com.google.common.truth.Truth
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
-import com.sebastianvm.musicplayer.util.BaseTest
 import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
-import com.sebastianvm.musicplayer.util.getDataState
-import com.sebastianvm.musicplayer.util.runSafeTest
+import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
+import com.sebastianvm.musicplayer.util.testStateHolderState
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.core.test.TestScope
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 
-class GenreListStateHolderTest : BaseTest() {
-    private lateinit var genreRepository: FakeGenreRepositoryImpl
-    private lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
+class GenreListStateHolderTest : FreeSpec({
 
-    @BeforeEach
-    fun beforeEach() {
+    lateinit var genreRepository: FakeGenreRepositoryImpl
+    lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
+
+    beforeTest {
         genreRepository = FakeProvider.genreRepository
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    private fun generateViewModel(): GenreListStateHolder {
+    fun TestScope.getSubject(): GenreListStateHolder {
         return GenreListStateHolder(
-            stateHolderScope = testScope,
+            stateHolderScope = this,
             genreRepository = genreRepository,
             sortPreferencesRepository = sortPreferencesRepository
         )
     }
 
-    @Test
-    fun `init subscribes to changes in track list`() =
-        testScope.runSafeTest {
-            with(generateViewModel()) {
-                Truth.assertThat(state.value).isEqualTo(Loading)
-
-                genreRepository.getGenresValue.emit(listOf())
-                sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
-                Truth.assertThat(state.value).isEqualTo(Empty)
-                val genres = FixtureProvider.genreFixtures().toList()
-                genreRepository.getGenresValue.emit(genres)
-                Truth.assertThat(
-                    getDataState().modelListState.items
-                )
-                    .isEqualTo(genres.map { it.toModelListItemState() })
-                Truth.assertThat(
-                    getDataState().modelListState.headerState
-                ).isEqualTo(HeaderState.None)
-            }
-        }
-
-    @ParameterizedTest
-    @MethodSource("com.sebastianvm.musicplayer.util.FixtureProvider#sortOrders")
-    fun `init subscribes to changes in sort order`(
-        sortOrder: MediaSortOrder
-    ) = testScope.runSafeTest {
-        with(generateViewModel()) {
+    "init subscribes to changes in genre list" {
+        val subject = getSubject()
+        testStateHolderState(subject) {
+            awaitItem() shouldBe Loading
+            genreRepository.getGenresValue.emit(emptyList())
             sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
-            genreRepository.getGenresValue.emit(FixtureProvider.genreFixtures().toList())
-            Truth.assertThat(
-                getDataState().modelListState.sortButtonState
-            ).isEqualTo(
-                SortButtonState(
-                    text = R.string.genre_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )
-            )
-            sortPreferencesRepository.getGenreListSortOrderValue.emit(sortOrder)
-            Truth.assertThat(
-                getDataState().modelListState.sortButtonState
-            ).isEqualTo(
-                SortButtonState(
-                    text = R.string.genre_name,
-                    sortOrder = sortOrder
-                )
-            )
+            awaitItem() shouldBe Empty
+
+            val genres = FixtureProvider.genreFixtures().toList()
+            genreRepository.getGenresValue.emit(genres)
+            with(awaitItem()) {
+                shouldBeInstanceOf<Data<GenreListState>>()
+                state.modelListState.items shouldBe genres.map {
+                    it.toModelListItemState()
+                }
+                state.modelListState.headerState shouldBe HeaderState.None
+            }
         }
     }
 
-    @Test
-    fun `SortByButtonClicked toggles sort order`() =
-        testScope.runSafeTest {
-            with(generateViewModel()) {
-                handle(GenreListUserAction.SortByButtonClicked)
-                Truth.assertThat(sortPreferencesRepository.toggleGenreListSortOrderInvocations)
-                    .containsExactly(
-                        listOf<Any>()
-                    )
+    "init subscribes to changes in sort order" {
+        val subject = getSubject()
+        testStateHolderState(subject) {
+            awaitItem() shouldBe Loading
+            genreRepository.getGenresValue.emit(FixtureProvider.genreFixtures().toList())
+            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
+            with(awaitItem()) {
+                shouldBeInstanceOf<Data<GenreListState>>()
+                state.modelListState.sortButtonState shouldBe SortButtonState(
+                    text = R.string.genre_name,
+                    sortOrder = MediaSortOrder.ASCENDING
+                )
+            }
+
+            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.DESCENDING)
+            with(awaitItem()) {
+                shouldBeInstanceOf<Data<GenreListState>>()
+                state.modelListState.sortButtonState shouldBe SortButtonState(
+                    text = R.string.genre_name,
+                    sortOrder = MediaSortOrder.DESCENDING,
+                )
             }
         }
-}
+    }
+
+    "sortByButtonClicked toggles sort order" {
+        val subject = getSubject()
+        subject.handle(GenreListUserAction.SortByButtonClicked)
+        advanceUntilIdle()
+        sortPreferencesRepository.toggleGenreListSortOrderInvocations shouldBe listOf(listOf())
+    }
+})

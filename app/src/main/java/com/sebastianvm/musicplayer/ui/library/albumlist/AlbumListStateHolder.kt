@@ -48,7 +48,7 @@ class AlbumListStateHolder(
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
+    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: AlbumListUserAction) = Unit
 }

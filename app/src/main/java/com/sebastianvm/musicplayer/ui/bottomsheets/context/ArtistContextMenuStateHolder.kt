@@ -30,7 +30,7 @@ class ArtistContextMenuStateHolder(
                     )
                 )
             )
-        }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
+        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun onRowClicked(row: ContextMenuItem) {
         error("Invalid row for artist context menu $row")

@@ -40,7 +40,7 @@ class PlaylistContextMenuStateHolder(
                     showDeleteConfirmationDialog = showDeleteConfirmationDialog
                 )
             )
-        }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
+        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun onRowClicked(row: ContextMenuItem) {
         when (row) {

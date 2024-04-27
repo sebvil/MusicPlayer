@@ -51,7 +51,7 @@ class ArtistListStateHolder(
                 )
             )
         }
-    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
+    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {

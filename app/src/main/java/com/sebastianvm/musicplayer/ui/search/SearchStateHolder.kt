@@ -106,7 +106,7 @@ class SearchStateHolder(
                 navigationState = destination,
             )
         )
-    }.stateIn(stateHolderScope, SharingStarted.Eagerly, Loading)
+    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     private fun onTrackSearchResultClicked(trackId: Long) {
         playbackManager.playMedia(MediaGroup.SingleTrack(trackId)).onEach { result ->
