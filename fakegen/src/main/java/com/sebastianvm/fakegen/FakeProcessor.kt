@@ -42,7 +42,6 @@ class FakeProcessor(
         if (!symbols.iterator().hasNext()) return emptyList()
 
         symbols.forEach {
-            logger.warn("Processing ${it.simpleName.getShortName()}")
             if (it.classKind != ClassKind.INTERFACE) {
                 logger.error("Only interface can be annotated with @FakeClass", it)
                 return@forEach

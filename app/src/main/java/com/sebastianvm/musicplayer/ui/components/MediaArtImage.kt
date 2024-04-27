@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImage
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
+import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.compose.painter
 
@@ -43,7 +43,7 @@ data class MediaArtImageState(
     val backupImage: IconState,
 )
 
-@ComponentPreviews
+@PreviewComponents
 @Composable
 private fun MediaArtImagePreview(
     @PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState

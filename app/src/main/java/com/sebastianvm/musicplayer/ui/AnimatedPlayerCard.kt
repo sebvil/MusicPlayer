@@ -61,7 +61,7 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.util.compose.ComponentPreviews
+import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 import kotlin.time.Duration
@@ -412,7 +412,7 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
 private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
 
-@ComponentPreviews
+@PreviewComponents
 @Composable
 private fun ProgressbarPreview() {
     ThemedPreview {
@@ -424,7 +424,7 @@ private fun ProgressbarPreview() {
     }
 }
 
-@ComponentPreviews
+@PreviewComponents
 @Composable
 private fun PlayerCardPreview(
     @PreviewParameter(

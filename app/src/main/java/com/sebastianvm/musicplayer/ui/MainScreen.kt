@@ -67,8 +67,8 @@ import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListState
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListStateHolder
 import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListUserAction
 import com.sebastianvm.musicplayer.ui.search.SearchScreen
+import com.sebastianvm.musicplayer.ui.util.compose.PreviewScreens
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreviews
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
@@ -324,7 +324,7 @@ fun Screens(
     }
 }
 
-@ScreenPreviews
+@PreviewScreens
 @Composable
 private fun MainScreenPreview() {
     ScreenPreview {

@@ -1,8 +1,8 @@
 [versions]
 agp = "8.4.0-rc02"
-accompanist = "0.33.2-alpha"
+accompanist = "0.34.0"
 activity-compose = "1.9.0"
-coil = "2.5.0"
+coil = "2.6.0"
 com-google-devtools = "1.9.23-1.0.20"
 compose = "1.6.6"
 compose-compiler = "1.5.12"
@@ -10,14 +10,14 @@ compose-destinations = "1.9.55"
 constraintlayout-compose = "1.1.0-alpha13"
 core-ktx = "1.13.0"
 datastore = "1.1.0"
-detekt = "1.23.4"
-detekt-compose = "0.2.1"
+detekt = "1.23.6"
+detekt-compose = "0.3.18"
 kotest = "5.8.1"
 kotlin = "1.9.23"
-kotlinx-collections-immutable = "0.3.6"
-kotlinx-coroutines = "1.7.3"
-kotlinx-serialization-json = "1.6.2"
-lifecycle-viewmodel-ktx = "2.7.0"
+kotlinx-collections-immutable = "0.3.7"
+kotlinx-coroutines = "1.8.0"
+kotlinx-serialization-json = "1.6.3"
+lifecycle = "2.7.0"
 material-3 = "1.2.1"
 media3-exoplayer = "1.3.1"
 recyclerview = "1.3.2"
@@ -46,10 +46,10 @@ kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref 
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle-viewmodel-ktx" }
-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-viewmodel-ktx" }
-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-ktx" }
-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material-3" }
 material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material-3" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3-exoplayer" }
