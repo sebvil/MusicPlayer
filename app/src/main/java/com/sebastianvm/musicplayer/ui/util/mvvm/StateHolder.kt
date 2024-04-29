@@ -13,9 +13,9 @@ interface StateHolder<S : State, A : UserAction> {
 }
 
 @Composable
-fun <S : State, A : UserAction> stateHolder(
-    factory: (dependencyContainer: DependencyContainer) -> StateHolder<S, A>
-): StateHolder<S, A> {
+fun <S : State, A : UserAction, SH : StateHolder<S, A>> stateHolder(
+    factory: (dependencyContainer: DependencyContainer) -> SH
+): SH {
     val dependencyContainer =
         (LocalContext.current.applicationContext as MusicPlayerApplication).dependencyContainer
     return remember {

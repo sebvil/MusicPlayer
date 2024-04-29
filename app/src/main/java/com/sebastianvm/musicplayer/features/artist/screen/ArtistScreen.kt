@@ -1,0 +1,172 @@
+package com.sebastianvm.musicplayer.features.artist.screen
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
+import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+
+@RootNavGraph
+@Destination
+@Composable
+fun ArtistRoute(
+    navigator: DestinationsNavigator,
+    arguments: ArtistArguments,
+    stateHolder: StateHolder<UiState<ArtistState>, ArtistUserAction> = stateHolder { dependencyContainer ->
+        ArtistStateHolder(
+            arguments = arguments,
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+            albumContextMenuStateHolderFactory = AlbumContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            )
+        )
+    }
+) {
+    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+
+    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+        ArtistScreen(
+            state = state,
+            handle = stateHolder::handle,
+            navigateToAlbum = { navigator.navigate(TrackListRouteDestination(it)) },
+            openAlbumContextMenu = { TODO() },
+            navigateBack = { navigator.navigateUp() }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ArtistScreen(
+    state: ArtistState,
+    handle: Handler<ArtistUserAction>,
+    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
+    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val topBarState = rememberTopAppBarState()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
+
+    ScreenScaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            LargeTopAppBar(
+                title = { Text(text = state.artistName) },
+                navigationIcon = {
+                    IconButton(onClick = { navigateBack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        ArtistLayout(
+            state = state,
+            handle = handle,
+            navigateToAlbum = navigateToAlbum,
+            openAlbumContextMenu = openAlbumContextMenu,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ArtistLayout(
+    state: ArtistState,
+    handle: Handler<ArtistUserAction>,
+    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
+    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
+        items(items = state.listItems) { item ->
+            when (item) {
+                is ArtistScreenItem.SectionHeaderItem -> {
+                    ListItem(headlineContent = {
+                        Text(
+                            text = stringResource(id = item.sectionType.sectionName),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    })
+                }
+
+                is ArtistScreenItem.AlbumRowItem -> {
+                    ModelListItem(
+                        state = item.state,
+                        modifier = Modifier.clickable {
+                            navigateToAlbum(
+                                TrackListArgumentsForNav(
+                                    trackListType = MediaGroup.Album(
+                                        albumId = item.id
+                                    )
+                                )
+                            )
+                        },
+                        onMoreClicked = {
+                            openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(ArtistUserAction.AlbumContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            AlbumContextMenu(
+                albumContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+}

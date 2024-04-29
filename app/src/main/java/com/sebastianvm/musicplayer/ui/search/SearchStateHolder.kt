@@ -2,28 +2,34 @@ package com.sebastianvm.musicplayer.ui.search
 
 import com.google.common.annotations.VisibleForTesting
 import com.ramcosta.composedestinations.spec.Direction
+import com.sebastianvm.musicplayer.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
+import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
+import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
-import com.sebastianvm.musicplayer.ui.artist.ArtistArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.GenreContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.context.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.destinations.AlbumContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.ArtistContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.ArtistRouteDestination
-import com.sebastianvm.musicplayer.ui.destinations.GenreContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.PlaylistContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.TrackContextMenuDestination
-import com.sebastianvm.musicplayer.ui.destinations.TrackListRouteDestination
-import com.sebastianvm.musicplayer.ui.library.tracklist.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -48,15 +54,32 @@ import kotlinx.coroutines.flow.update
 
 data class SearchQuery(val term: String, val mode: SearchMode)
 
+data class ContextMenuObjectIds(
+    val albumId: Long? = null,
+    val artistId: Long? = null,
+    val genreId: Long? = null,
+    val trackId: Long? = null,
+    val playlistId: Long? = null
+)
+
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
+    private val albumContextMenuStateHolderFactory: AlbumContextMenuStateHolderFactory,
+    private val artistContextMenuStateHolderFactory: ArtistContextMenuStateHolderFactory,
+    private val genreContextMenuStateHolderFactory: GenreContextMenuStateHolderFactory,
+    private val trackContextMenuStateHolderFactory: TrackContextMenuStateHolderFactory,
+    private val playlistContextMenuStateHolderFactory: PlaylistContextMenuStateHolderFactory,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<SearchState>, SearchUserAction> {
 
     private val query =
         MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
+
+    private val contextMenuObjectId: MutableStateFlow<ContextMenuObjectIds> = MutableStateFlow(
+        ContextMenuObjectIds()
+    )
 
     private val searchResults = query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
         when (newQuery.mode) {
@@ -96,14 +119,52 @@ class SearchStateHolder(
         query.map { it.mode },
         searchResults,
         playbackResult,
-        destination
-    ) { selectedOption, results, playbackResult, destination ->
+        destination,
+        contextMenuObjectId
+    ) { selectedOption, results, playbackResult, destination, contextMenuObjectIds ->
         Data(
             state = SearchState(
                 selectedOption = selectedOption,
                 searchResults = results,
                 playbackResult = playbackResult,
                 navigationState = destination,
+                albumContextMenuStateHolder = contextMenuObjectIds.albumId?.let { albumId ->
+                    albumContextMenuStateHolderFactory.getStateHolder(
+                        AlbumContextMenuArguments(
+                            albumId = albumId
+                        )
+                    )
+                },
+                artistContextMenuStateHolder = contextMenuObjectIds.artistId?.let { artistId ->
+                    artistContextMenuStateHolderFactory.getStateHolder(
+                        ArtistContextMenuArguments(
+                            artistId = artistId
+                        )
+                    )
+                },
+                genreContextMenuStateHolder = contextMenuObjectIds.genreId?.let { genreId ->
+                    genreContextMenuStateHolderFactory.getStateHolder(
+                        GenreContextMenuArguments(
+                            genreId = genreId
+                        )
+                    )
+                },
+                playlistContextMenuStateHolder = contextMenuObjectIds.playlistId?.let { playlistId ->
+                    playlistContextMenuStateHolderFactory.getStateHolder(
+                        PlaylistContextMenuArguments(
+                            playlistId = playlistId
+                        )
+                    )
+                },
+                trackContextMenuStateHolder = contextMenuObjectIds.trackId?.let { trackId ->
+                    trackContextMenuStateHolderFactory.getStateHolder(
+                        TrackContextMenuArguments(
+                            trackId = trackId,
+                            trackList = SourceTrackList.SearchResults
+                        )
+                    )
+                }
+
             )
         )
     }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -155,48 +216,23 @@ class SearchStateHolder(
     }
 
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
-        destination.update {
-            TrackContextMenuDestination(
-                TrackContextMenuArguments(
-                    trackId = trackId,
-                    mediaGroup = MediaGroup.SingleTrack(
-                        trackId = trackId
-                    )
-                )
-            )
-        }
+        contextMenuObjectId.update { it.copy(trackId = trackId) }
     }
 
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
-        destination.update {
-            ArtistContextMenuDestination(
-                ArtistContextMenuArguments(artistId = artistId)
-            )
-        }
+        contextMenuObjectId.update { it.copy(artistId = artistId) }
     }
 
     private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
-        destination.update {
-            AlbumContextMenuDestination(
-                AlbumContextMenuArguments(albumId = albumId)
-            )
-        }
+        contextMenuObjectId.update { it.copy(albumId = albumId) }
     }
 
     private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
-        destination.update {
-            GenreContextMenuDestination(
-                GenreContextMenuArguments(genreId = genreId)
-            )
-        }
+        contextMenuObjectId.update { it.copy(genreId = genreId) }
     }
 
     private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
-        destination.update {
-            PlaylistContextMenuDestination(
-                PlaylistContextMenuArguments(playlistId = playlistId)
-            )
-        }
+        contextMenuObjectId.update { it.copy(playlistId = playlistId) }
     }
 
     @Suppress("CyclomaticComplexMethod")
@@ -229,6 +265,45 @@ class SearchStateHolder(
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.DismissPlaybackErrorDialog -> playbackResult.update { null }
             is SearchUserAction.NavigationCompleted -> destination.update { null }
+            is SearchUserAction.AlbumContextMenuDismissed -> {
+                contextMenuObjectId.update {
+                    it.copy(
+                        albumId = null
+                    )
+                }
+            }
+
+            is SearchUserAction.ArtistContextMenuDismissed -> {
+                contextMenuObjectId.update {
+                    it.copy(
+                        artistId = null
+                    )
+                }
+            }
+
+            is SearchUserAction.GenreContextMenuDismissed -> {
+                contextMenuObjectId.update {
+                    it.copy(
+                        genreId = null
+                    )
+                }
+            }
+
+            is SearchUserAction.PlaylistContextMenuDismissed -> {
+                contextMenuObjectId.update {
+                    it.copy(
+                        playlistId = null
+                    )
+                }
+            }
+
+            is SearchUserAction.TrackContextMenuDismissed -> {
+                contextMenuObjectId.update {
+                    it.copy(
+                        trackId = null
+                    )
+                }
+            }
         }
     }
 
@@ -242,7 +317,12 @@ data class SearchState(
     val selectedOption: SearchMode,
     val searchResults: List<ModelListItemState>,
     val playbackResult: PlaybackResult?,
-    val navigationState: Direction?
+    val navigationState: Direction?,
+    val albumContextMenuStateHolder: AlbumContextMenuStateHolder?,
+    val artistContextMenuStateHolder: ArtistContextMenuStateHolder?,
+    val genreContextMenuStateHolder: GenreContextMenuStateHolder?,
+    val playlistContextMenuStateHolder: PlaylistContextMenuStateHolder?,
+    val trackContextMenuStateHolder: TrackContextMenuStateHolder?,
 ) : State
 
 sealed interface SearchUserAction : UserAction {
@@ -250,6 +330,11 @@ sealed interface SearchUserAction : UserAction {
     data class SearchResultOverflowMenuIconClicked(val id: Long, val mediaType: SearchMode) :
         SearchUserAction
 
+    data object AlbumContextMenuDismissed : SearchUserAction
+    data object ArtistContextMenuDismissed : SearchUserAction
+    data object GenreContextMenuDismissed : SearchUserAction
+    data object PlaylistContextMenuDismissed : SearchUserAction
+    data object TrackContextMenuDismissed : SearchUserAction
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
     data object DismissPlaybackErrorDialog : SearchUserAction

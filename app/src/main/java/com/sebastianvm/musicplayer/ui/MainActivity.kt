@@ -11,9 +11,9 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -22,6 +22,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
 import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.NavGraphs
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     navController.navigatorProvider += bottomSheetNavigator
                     M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
-                        val state by viewModel.state.collectAsState()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
                         AppScreenHost(
                             mainState = state,
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },

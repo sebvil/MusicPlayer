@@ -7,7 +7,9 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +50,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
+import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -58,7 +71,7 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
@@ -82,6 +95,26 @@ fun SearchScreen(
         SearchStateHolder(
             ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
             playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+            albumContextMenuStateHolderFactory = AlbumContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            ),
+            artistContextMenuStateHolderFactory = ArtistContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            ),
+            genreContextMenuStateHolderFactory = GenreContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            ),
+            playlistContextMenuStateHolderFactory = PlaylistContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            ),
+            trackContextMenuStateHolderFactory = TrackContextMenuStateHolderFactory(
+                dependencyContainer = dependencyContainer,
+                navigator = navigator
+            )
         )
     },
 ) {
@@ -112,10 +145,9 @@ fun SearchScreen(
         }
     ) { state ->
         SearchScreen(
-            state
-        ) {
-            screenStateHolder.handle(it)
-        }
+            state = state,
+            handle = screenStateHolder::handle,
+        )
     }
 }
 
@@ -123,15 +155,15 @@ fun SearchScreen(
 @Composable
 fun SearchScreen(
     state: SearchState,
+    handle: Handler<SearchUserAction>,
     modifier: Modifier = Modifier,
-    screenDelegate: ScreenDelegate<SearchUserAction> = ScreenDelegate {}
 ) {
     var isSearchActive by remember {
         mutableStateOf(false)
     }
 
     var query by remember {
-        screenDelegate.handle(SearchUserAction.TextChanged(""))
+        handle(SearchUserAction.TextChanged(""))
         mutableStateOf("")
     }
 
@@ -145,7 +177,7 @@ fun SearchScreen(
         query = query,
         onQueryChange = {
             query = it
-            screenDelegate.handle(SearchUserAction.TextChanged(it))
+            handle(SearchUserAction.TextChanged(it))
         },
         onSearch = {},
         modifier = modifier,
@@ -154,7 +186,7 @@ fun SearchScreen(
             isSearchActive = it
             if (!it) {
                 query = ""
-                screenDelegate.handle(SearchUserAction.TextChanged(""))
+                handle(SearchUserAction.TextChanged(""))
             }
         },
         leadingIcon = {
@@ -162,7 +194,7 @@ fun SearchScreen(
                 IconButton(onClick = {
                     isSearchActive = false
                     query = ""
-                    screenDelegate.handle(SearchUserAction.TextChanged(""))
+                    handle(SearchUserAction.TextChanged(""))
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -224,7 +256,7 @@ fun SearchScreen(
                 IconButton(
                     onClick = {
                         query = ""
-                        screenDelegate.handle(SearchUserAction.TextChanged(""))
+                        handle(SearchUserAction.TextChanged(""))
                     }
                 ) {
                     Icon(
@@ -239,15 +271,16 @@ fun SearchScreen(
         }
     ) {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-            SearchLayout(state = state, screenDelegate = screenDelegate)
+            SearchLayout(state = state, handle = handle)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchLayout(
     state: SearchState,
-    screenDelegate: ScreenDelegate<SearchUserAction>,
+    handle: Handler<SearchUserAction>,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -256,7 +289,7 @@ fun SearchLayout(
         playbackResult = state.playbackResult,
         delegate = object : PlaybackStatusIndicatorDelegate {
             override fun onDismissRequest() {
-                screenDelegate.handle(SearchUserAction.DismissPlaybackErrorDialog)
+                handle(SearchUserAction.DismissPlaybackErrorDialog)
             }
         }
     )
@@ -272,7 +305,7 @@ fun SearchLayout(
             modifier = Modifier.padding(vertical = 16.dp),
             getDisplayName = { stringResource(id = res) },
             onNewOptionSelected = { newOption ->
-                screenDelegate.handle(SearchUserAction.SearchModeChanged(newOption))
+                handle(SearchUserAction.SearchModeChanged(newOption))
             }
         )
         LazyColumn(contentPadding = LocalPaddingValues.current) {
@@ -281,7 +314,7 @@ fun SearchLayout(
                     state = item,
                     modifier = Modifier
                         .clickable {
-                            screenDelegate.handle(
+                            handle(
                                 SearchUserAction.SearchResultClicked(
                                     id = item.id,
                                     mediaType = state.selectedOption
@@ -289,7 +322,7 @@ fun SearchLayout(
                             )
                         },
                     onMoreClicked = {
-                        screenDelegate.handle(
+                        handle(
                             SearchUserAction.SearchResultOverflowMenuIconClicked(
                                 id = item.id,
                                 mediaType = state.selectedOption
@@ -298,6 +331,76 @@ fun SearchLayout(
                     }
                 )
             }
+        }
+    }
+
+    state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(SearchUserAction.AlbumContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            AlbumContextMenu(
+                stateHolder = albumContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.artistContextMenuStateHolder?.let { artistContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(SearchUserAction.ArtistContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            ArtistContextMenu(
+                stateHolder = artistContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.genreContextMenuStateHolder?.let { genreContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(SearchUserAction.GenreContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            GenreContextMenu(
+                stateHolder = genreContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.trackContextMenuStateHolder?.let { trackContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(SearchUserAction.GenreContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            TrackContextMenu(
+                stateHolder = trackContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.playlistContextMenuStateHolder?.let { playlistContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(SearchUserAction.PlaylistContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            PlaylistContextMenu(
+                stateHolder = playlistContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
         }
     }
 }

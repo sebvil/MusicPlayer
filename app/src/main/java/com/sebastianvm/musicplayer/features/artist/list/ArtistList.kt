@@ -1,0 +1,84 @@
+package com.sebastianvm.musicplayer.features.artist.list
+
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.destinations.ArtistRouteDestination
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
+import com.sebastianvm.musicplayer.ui.components.UiStateScreen
+import com.sebastianvm.musicplayer.ui.components.lists.ModelList
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+
+@Composable
+fun ArtistList(
+    stateHolder: ArtistListStateHolder,
+    navigator: DestinationsNavigator,
+    modifier: Modifier = Modifier
+) {
+    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+    UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
+        StoragePermissionNeededEmptyScreen(
+            message = R.string.no_artists_found,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        )
+    }) { state ->
+        ArtistList(
+            state = state,
+            handle = stateHolder::handle,
+            navigateToArtistScreen = { args ->
+                navigator.navigate(ArtistRouteDestination(args))
+            },
+            modifier = Modifier
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ArtistList(
+    state: ArtistListState,
+    handle: Handler<ArtistListUserAction>,
+    navigateToArtistScreen: (ArtistArguments) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ModelList(
+        state = state.modelListState,
+        modifier = modifier,
+        onBackButtonClicked = {},
+        onSortButtonClicked = {
+            handle(ArtistListUserAction.SortByButtonClicked)
+        },
+        onItemClicked = { _, item -> navigateToArtistScreen(ArtistArguments(item.id)) },
+        onItemMoreIconClicked = { _, item ->
+            handle(ArtistListUserAction.ArtistMoreIconClicked(item.id))
+        }
+    )
+
+    state.artistContextMenuStateHolder?.let { artistContextMenuStateHolder ->
+        ModalBottomSheet(
+            onDismissRequest = {
+                handle(ArtistListUserAction.ArtistContextMenuDismissed)
+            },
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            ArtistContextMenu(
+                stateHolder = artistContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+}
