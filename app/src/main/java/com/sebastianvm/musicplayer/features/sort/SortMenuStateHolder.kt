@@ -1,13 +1,11 @@
-package com.sebastianvm.musicplayer.ui.bottomsheets.sort
+package com.sebastianvm.musicplayer.features.sort
 
 import android.os.Parcelable
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
+import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -23,41 +21,49 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-class SortBottomSheetStateHolder(
+class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
-) : StateHolder<UiState<SortBottomSheetState>, SortBottomSheetUserAction> {
+) : StateHolder<SortMenuState, SortMenuUserAction> {
 
-    override val state: StateFlow<UiState<SortBottomSheetState>> =
-        when (val listType = arguments.listType) {
-            is SortableListType.Tracks -> {
-                sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = listType.trackList
-                )
-            }
-
-            is SortableListType.Albums -> {
-                sortPreferencesRepository.getAlbumListSortPreferences()
-            }
-
-            is SortableListType.Playlist -> {
-                sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
-            }
-        }.map { sortPreferences ->
-            val sortOptions = getSortOptionsForScreen(arguments.listType)
-            Data(
-                SortBottomSheetState(
-                    sortOptions = sortOptions,
-                    selectedSort = sortPreferences.sortOption,
-                    sortOrder = sortPreferences.sortOrder
-                )
+    private val sortPreferences = when (val listType = arguments.listType) {
+        is SortableListType.Tracks -> {
+            sortPreferencesRepository.getTrackListSortPreferences(
+                trackList = listType.trackList
             )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }
 
-    override fun handle(action: SortBottomSheetUserAction) {
+        is SortableListType.Albums -> {
+            sortPreferencesRepository.getAlbumListSortPreferences()
+        }
+
+        is SortableListType.Playlist -> {
+            sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
+        }
+    }
+    private val sortOptions = getSortOptionsForScreen(arguments.listType)
+
+    override val state: StateFlow<SortMenuState> =
+        sortPreferences.map { sortPreferences ->
+            SortMenuState(
+                sortOptions = sortOptions,
+                selectedSort = sortPreferences.sortOption,
+                sortOrder = sortPreferences.sortOrder,
+            )
+        }.stateIn(
+            stateHolderScope,
+            SharingStarted.Lazily,
+            SortMenuState(
+                sortOptions = sortOptions,
+                selectedSort = null,
+                sortOrder = MediaSortOrder.ASCENDING,
+            )
+        )
+
+    override fun handle(action: SortMenuUserAction) {
         when (action) {
-            is SortBottomSheetUserAction.MediaSortOptionClicked -> {
+            is SortMenuUserAction.MediaSortOptionClicked -> {
                 val newSortOption = action.newSortOption
                 val selectedSort = action.selectedSort
                 val sortOrder = action.currentSortOrder
@@ -112,12 +118,12 @@ class SortBottomSheetStateHolder(
     }
 }
 
-data class SortMenuArguments(val listType: SortableListType)
+data class SortMenuArguments(val listType: SortableListType) : Arguments
 
-data class SortBottomSheetState(
+data class SortMenuState(
     val sortOptions: List<SortOptions>,
-    val selectedSort: SortOptions,
-    val sortOrder: MediaSortOrder
+    val selectedSort: SortOptions?,
+    val sortOrder: MediaSortOrder,
 ) : State
 
 private fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
@@ -149,10 +155,10 @@ sealed class SortableListType : Parcelable {
     data class Playlist(val playlistId: Long) : SortableListType()
 }
 
-sealed interface SortBottomSheetUserAction : UserAction {
+sealed interface SortMenuUserAction : UserAction {
     data class MediaSortOptionClicked(
         val newSortOption: SortOptions,
         val selectedSort: SortOptions,
         val currentSortOrder: MediaSortOrder,
-    ) : SortBottomSheetUserAction
+    ) : SortMenuUserAction
 }

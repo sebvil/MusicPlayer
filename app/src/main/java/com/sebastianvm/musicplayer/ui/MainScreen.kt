@@ -38,12 +38,13 @@ import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHold
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistList
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListStateHolder
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.search.SearchScreen
+import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListStateHolder
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.ui.search.SearchScreen
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewScreens
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
@@ -134,8 +135,9 @@ fun Screens(
             sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
             albumContextMenuStateHolderFactory = AlbumContextMenuStateHolderFactory(
                 dependencyContainer = dependencyContainer,
-                navigator = navigator
-            )
+                navigator = navigator,
+            ),
+            sortMenuStateHolderFactory = SortMenuStateHolderFactory(dependencyContainer)
         )
     },
     genreListStateHolder: GenreListStateHolder = stateHolder { dependencyContainer ->
@@ -156,7 +158,8 @@ fun Screens(
             trackContextMenuStateHolderFactory = TrackContextMenuStateHolderFactory(
                 dependencyContainer = dependencyContainer,
                 navigator = navigator
-            )
+            ),
+            sortMenuStateHolderFactory = SortMenuStateHolderFactory(dependencyContainer)
         )
     },
     playlistListStateHolder: PlaylistListStateHolder = stateHolder { dependencyContainer ->

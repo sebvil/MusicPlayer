@@ -1,18 +1,16 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
@@ -21,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScr
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 @Composable
 fun GenreList(
@@ -28,7 +27,7 @@ fun GenreList(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
-    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_genres_found,
@@ -78,11 +77,10 @@ fun GenreList(
     )
 
     state.genreContextMenuStateHolder?.let { genreContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(GenreListUserAction.GenreContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             GenreContextMenu(
                 stateHolder = genreContextMenuStateHolder,

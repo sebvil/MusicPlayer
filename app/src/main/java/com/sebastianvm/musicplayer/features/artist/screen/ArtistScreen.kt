@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +13,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -23,12 +21,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -42,6 +39,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @RootNavGraph
@@ -61,7 +59,7 @@ fun ArtistRoute(
         )
     }
 ) {
-    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+    val uiState by stateHolder.currentState
 
     UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
         ArtistScreen(
@@ -157,11 +155,10 @@ fun ArtistLayout(
     }
 
     state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(ArtistUserAction.AlbumContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             AlbumContextMenu(
                 albumContextMenuStateHolder,

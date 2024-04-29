@@ -24,7 +24,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -36,6 +35,7 @@ import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @Suppress("StateHolderForwarding")
@@ -54,7 +54,7 @@ fun TrackSearchScreen(
             )
         }
 ) {
-    val uiState by screenStateHolder.state.collectAsStateWithLifecycle()
+    val uiState by screenStateHolder.currentState
     UiStateScreen(
         uiState = uiState,
         emptyScreen = {}

@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -15,13 +14,14 @@ import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.icons.PlayArrow
 import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 @Composable
 fun AlbumContextMenu(
     stateHolder: AlbumContextMenuStateHolder,
     modifier: Modifier = Modifier
 ) {
-    val state by stateHolder.state.collectAsStateWithLifecycle()
+    val state by stateHolder.currentState
     AlbumContextMenu(state = state, handle = stateHolder::handle, modifier = modifier)
 }
 

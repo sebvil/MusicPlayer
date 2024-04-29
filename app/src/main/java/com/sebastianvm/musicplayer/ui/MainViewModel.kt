@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -58,6 +59,7 @@ class MainViewModel(
         }.stateIn(stateHolderScope, SharingStarted.Lazily, MainState(playerViewState = null))
 
     override fun handle(action: MainUserAction) {
+        viewModelScope
         when (action) {
             is MainUserAction.ConnectToMusicService -> {
                 playbackManager.connectToService()

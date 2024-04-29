@@ -1,29 +1,26 @@
 package com.sebastianvm.musicplayer.features.album.list
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.destinations.SortBottomSheetDestination
+import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.ui.bottomsheets.sort.SortableListType
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 @Composable
 fun AlbumList(
@@ -31,7 +28,7 @@ fun AlbumList(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
-    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_albums_found,
@@ -46,9 +43,6 @@ fun AlbumList(
             navigateToAlbum = { args ->
                 navigator.navigate(TrackListRouteDestination(args))
             },
-            openSortMenu = { args ->
-                navigator.navigate(SortBottomSheetDestination(args))
-            },
         )
     }
 }
@@ -59,7 +53,6 @@ fun AlbumList(
     state: AlbumListState,
     handle: Handler<AlbumListUserAction>,
     navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
-    openSortMenu: (args: SortMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModelList(
@@ -67,7 +60,7 @@ fun AlbumList(
         modifier = modifier,
         onBackButtonClicked = {},
         onSortButtonClicked = {
-            openSortMenu(SortMenuArguments(listType = SortableListType.Albums))
+            handle(AlbumListUserAction.SortButtonClicked)
         },
         onItemClicked = { _, item ->
             navigateToAlbum(
@@ -84,14 +77,26 @@ fun AlbumList(
     )
 
     state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(AlbumListUserAction.AlbumContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             AlbumContextMenu(
-                albumContextMenuStateHolder,
+                stateHolder = albumContextMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.sortMenuStateHolder?.let { sortMenuStateHolder ->
+        BottomSheet(
+            onDismissRequest = {
+                handle(AlbumListUserAction.SortMenuDismissed)
+            },
+        ) {
+            SortMenu(
+                stateHolder = sortMenuStateHolder,
                 modifier = Modifier.navigationBarsPadding()
             )
         }

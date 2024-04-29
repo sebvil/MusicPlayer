@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -26,6 +25,7 @@ import com.sebastianvm.musicplayer.NavGraphs
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 class MainActivity : ComponentActivity() {
 
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     navController.navigatorProvider += bottomSheetNavigator
                     M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
-                        val state by viewModel.state.collectAsStateWithLifecycle()
+                        val state by viewModel.currentState
                         AppScreenHost(
                             mainState = state,
                             onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },

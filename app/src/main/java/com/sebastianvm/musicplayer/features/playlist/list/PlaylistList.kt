@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -10,7 +9,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,9 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
@@ -30,6 +28,7 @@ import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 @Composable
 fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
@@ -55,7 +54,7 @@ fun PlaylistList(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
-    val uiState by stateHolder.state.collectAsStateWithLifecycle()
+    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         EmptyScreen(
             message = {
@@ -133,11 +132,10 @@ fun PlaylistListLayout(
     )
 
     state.playlistContextMenuStateHolder?.let { playlistContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(PlaylistListUserAction.PlaylistContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             PlaylistContextMenu(
                 stateHolder = playlistContextMenuStateHolder,

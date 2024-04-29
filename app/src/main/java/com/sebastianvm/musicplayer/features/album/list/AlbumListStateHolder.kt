@@ -4,6 +4,10 @@ import androidx.compose.runtime.Stable
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolder
+import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -30,16 +34,24 @@ class AlbumListStateHolder(
     stateHolderScope: CoroutineScope = stateHolderScope(),
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
+    sortMenuStateHolderFactory: SortMenuStateHolderFactory,
     private val albumContextMenuStateHolderFactory: AlbumContextMenuStateHolderFactory
 ) : StateHolder<UiState<AlbumListState>, AlbumListUserAction> {
 
     private val contextMenuAlbumId: MutableStateFlow<Long?> = MutableStateFlow(null)
+    private val showSortMenu: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val sortMenuStateHolder = sortMenuStateHolderFactory.getStateHolder(
+        SortMenuArguments(
+            SortableListType.Albums
+        )
+    )
 
     override val state: StateFlow<UiState<AlbumListState>> = combine(
         albumRepository.getAlbums(),
         sortPreferencesRepository.getAlbumListSortPreferences(),
-        contextMenuAlbumId
-    ) { albums, sortPrefs, contextMenuAlbumId ->
+        contextMenuAlbumId,
+        showSortMenu
+    ) { albums, sortPrefs, contextMenuAlbumId, showSortMenu ->
         if (albums.isEmpty()) {
             Empty
         } else {
@@ -61,6 +73,11 @@ class AlbumListStateHolder(
                                 albumId
                             )
                         )
+                    },
+                    sortMenuStateHolder = if (showSortMenu) {
+                        sortMenuStateHolder
+                    } else {
+                        null
                     }
                 )
             )
@@ -76,6 +93,14 @@ class AlbumListStateHolder(
             is AlbumListUserAction.AlbumContextMenuDismissed -> {
                 contextMenuAlbumId.update { null }
             }
+
+            is AlbumListUserAction.SortButtonClicked -> {
+                showSortMenu.update { true }
+            }
+
+            is AlbumListUserAction.SortMenuDismissed -> {
+                showSortMenu.update { false }
+            }
         }
     }
 }
@@ -83,10 +108,13 @@ class AlbumListStateHolder(
 @Stable
 data class AlbumListState(
     val modelListState: ModelListState,
-    val albumContextMenuStateHolder: AlbumContextMenuStateHolder? = null
+    val albumContextMenuStateHolder: AlbumContextMenuStateHolder? = null,
+    val sortMenuStateHolder: SortMenuStateHolder?,
 ) : State
 
 sealed interface AlbumListUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : AlbumListUserAction
     data object AlbumContextMenuDismissed : AlbumListUserAction
+    data object SortButtonClicked : AlbumListUserAction
+    data object SortMenuDismissed : AlbumListUserAction
 }

@@ -1,6 +1,10 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
+import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolder
+import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolder
@@ -36,18 +40,25 @@ class TrackListStateHolder(
     stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
+    sortMenuStateHolderFactory: SortMenuStateHolderFactory,
     private val trackContextMenuStateHolderFactory: TrackContextMenuStateHolderFactory
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
     private val contextMenuTrackId = MutableStateFlow<Long?>(null)
 
+    private val sortMenuStateHolder = sortMenuStateHolderFactory.getStateHolder(
+        SortMenuArguments(SortableListType.Tracks(args.trackListType))
+    )
+
+    private val showSortMenu = MutableStateFlow(false)
     override val state: StateFlow<UiState<TrackListState>> = combine(
         trackRepository.getTrackListWithMetaData(args.trackListType),
         args.trackListType.takeUnless { it is MediaGroup.Album }?.let {
             sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
         } ?: flowOf(null),
-        contextMenuTrackId
-    ) { trackListWithMetadata, sortPrefs, contextMenuTrackId ->
+        contextMenuTrackId,
+        showSortMenu
+    ) { trackListWithMetadata, sortPrefs, contextMenuTrackId, showSortMenu ->
         if (trackListWithMetadata.trackList.isEmpty()) {
             Empty
         } else {
@@ -79,6 +90,11 @@ class TrackListStateHolder(
                                 }
                             )
                         )
+                    },
+                    sortMenuStateHolder = if (showSortMenu) {
+                        sortMenuStateHolder
+                    } else {
+                        null
                     }
                 )
             )
@@ -93,6 +109,14 @@ class TrackListStateHolder(
 
             TrackListUserAction.TrackContextMenuDismissed -> {
                 contextMenuTrackId.update { null }
+            }
+
+            is TrackListUserAction.SortButtonClicked -> {
+                showSortMenu.update { true }
+            }
+
+            is TrackListUserAction.SortMenuDismissed -> {
+                showSortMenu.update { false }
             }
         }
     }
@@ -109,12 +133,15 @@ data class TrackListArguments(val trackListType: TrackList)
 data class TrackListState(
     val modelListState: ModelListState,
     val trackListType: TrackList,
-    val trackContextMenuStateHolder: TrackContextMenuStateHolder?
+    val trackContextMenuStateHolder: TrackContextMenuStateHolder?,
+    val sortMenuStateHolder: SortMenuStateHolder?
 ) : State
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackMoreIconClicked(val trackId: Long) : TrackListUserAction
     data object TrackContextMenuDismissed : TrackListUserAction
+    data object SortButtonClicked : TrackListUserAction
+    data object SortMenuDismissed : TrackListUserAction
 }
 
 fun TrackListMetadata?.toHeaderState(): HeaderState {

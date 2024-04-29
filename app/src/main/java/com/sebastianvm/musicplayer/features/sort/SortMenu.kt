@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.bottomsheets.sort
+package com.sebastianvm.musicplayer.features.sort
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,52 +24,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-@RootNavGraph
-@Destination(navArgsDelegate = SortMenuArguments::class, style = DestinationStyleBottomSheet::class)
 @Composable
-fun SortBottomSheet(
-    navigator: DestinationsNavigator,
-    arguments: SortMenuArguments,
-    sheetStateHolder: StateHolder<UiState<SortBottomSheetState>, SortBottomSheetUserAction> =
-        stateHolder { dependencyContainer: DependencyContainer ->
-            SortBottomSheetStateHolder(
-                arguments = arguments,
-                sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
-            )
-        }
-) {
-    val uiState by sheetStateHolder.state.collectAsStateWithLifecycle()
-    UiStateScreen(
-        uiState = uiState,
-        emptyScreen = {}
-    ) { state ->
-        SortBottomSheet(
-            state = state,
-            navigator = navigator,
-            screenDelegate = sheetStateHolder::handle,
-        )
-    }
+fun SortMenu(stateHolder: SortMenuStateHolder, modifier: Modifier = Modifier) {
+    val state by stateHolder.currentState
+    SortMenu(
+        state = state,
+        handle = stateHolder::handle,
+        modifier = modifier
+    )
+
 }
 
 @Composable
-fun SortBottomSheet(
-    state: SortBottomSheetState,
-    navigator: DestinationsNavigator,
-    screenDelegate: ScreenDelegate<SortBottomSheetUserAction>,
+fun SortMenu(
+    state: SortMenuState,
+    handle: Handler<SortMenuUserAction>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -87,27 +61,29 @@ fun SortBottomSheet(
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         LazyColumn {
             items(state.sortOptions, key = { it }) { row ->
+                val clickableModifier = state.selectedSort?.let {
+                    Modifier.clickable {
+                        handle(
+                            SortMenuUserAction.MediaSortOptionClicked(
+                                newSortOption = row,
+                                selectedSort = state.selectedSort,
+                                currentSortOrder = state.sortOrder
+                            )
+                        )
+                    }
+                } ?: Modifier
+
+                val backgroundModifier = if (state.selectedSort == row) {
+                    Modifier.background(
+                        color = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                } else {
+                    Modifier
+                }
                 ListItem(
                     modifier = Modifier
-                        .clickable {
-                            screenDelegate.handle(
-                                SortBottomSheetUserAction.MediaSortOptionClicked(
-                                    newSortOption = row,
-                                    selectedSort = state.selectedSort,
-                                    currentSortOrder = state.sortOrder
-                                )
-                            )
-                            navigator.navigateUp()
-                        }
-                        .let {
-                            if (state.selectedSort == row) {
-                                it.background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant
-                                )
-                            } else {
-                                it
-                            }
-                        },
+                        .then(clickableModifier)
+                        .then(backgroundModifier),
                     headlineContent = {
                         Text(
                             text = stringResource(id = row.stringId),

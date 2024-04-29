@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.search
+package com.sebastianvm.musicplayer.features.search
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,10 +44,10 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
@@ -74,6 +72,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.filterIsInstance
@@ -118,7 +117,7 @@ fun SearchScreen(
         )
     },
 ) {
-    val uiState by screenStateHolder.state.collectAsStateWithLifecycle()
+    val uiState by screenStateHolder.currentState
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(uiState, lifecycle) {
@@ -335,11 +334,10 @@ fun SearchLayout(
     }
 
     state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(SearchUserAction.AlbumContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             AlbumContextMenu(
                 stateHolder = albumContextMenuStateHolder,
@@ -349,11 +347,10 @@ fun SearchLayout(
     }
 
     state.artistContextMenuStateHolder?.let { artistContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(SearchUserAction.ArtistContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             ArtistContextMenu(
                 stateHolder = artistContextMenuStateHolder,
@@ -363,11 +360,10 @@ fun SearchLayout(
     }
 
     state.genreContextMenuStateHolder?.let { genreContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(SearchUserAction.GenreContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             GenreContextMenu(
                 stateHolder = genreContextMenuStateHolder,
@@ -377,11 +373,10 @@ fun SearchLayout(
     }
 
     state.trackContextMenuStateHolder?.let { trackContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(SearchUserAction.GenreContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             TrackContextMenu(
                 stateHolder = trackContextMenuStateHolder,
@@ -391,11 +386,10 @@ fun SearchLayout(
     }
 
     state.playlistContextMenuStateHolder?.let { playlistContextMenuStateHolder ->
-        ModalBottomSheet(
+        BottomSheet(
             onDismissRequest = {
                 handle(SearchUserAction.PlaylistContextMenuDismissed)
             },
-            windowInsets = WindowInsets(0.dp)
         ) {
             PlaylistContextMenu(
                 stateHolder = playlistContextMenuStateHolder,

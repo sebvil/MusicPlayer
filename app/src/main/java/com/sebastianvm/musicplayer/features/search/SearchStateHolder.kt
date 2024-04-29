@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.search
+package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
 import com.ramcosta.composedestinations.spec.Direction
