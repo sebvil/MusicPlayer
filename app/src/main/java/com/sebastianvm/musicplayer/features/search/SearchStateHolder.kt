@@ -26,12 +26,9 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
@@ -98,7 +95,7 @@ class SearchStateHolder(
     private val trackContextMenuStateHolderFactory: StateHolderFactory<TrackContextMenuArguments, TrackContextMenuStateHolder>,
     private val playlistContextMenuStateHolderFactory: StateHolderFactory<PlaylistContextMenuArguments, PlaylistContextMenuStateHolder>,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
-) : StateHolder<UiState<SearchState>, SearchUserAction> {
+) : StateHolder<SearchState, SearchUserAction> {
 
     private val query =
         MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
@@ -140,57 +137,66 @@ class SearchStateHolder(
 
     private val playbackResult = MutableStateFlow<PlaybackResult?>(null)
 
-    override val state: StateFlow<UiState<SearchState>> = combine(
+    override val state: StateFlow<SearchState> = combine(
         query.map { it.mode },
         searchResults,
         playbackResult,
         contextMenuObjectId
     ) { selectedOption, results, playbackResult, contextMenuObjectIds ->
-        Data(
-            state = SearchState(
-                selectedOption = selectedOption,
-                searchResults = results,
-                playbackResult = playbackResult,
-                albumContextMenuStateHolder = contextMenuObjectIds.albumId?.let { albumId ->
-                    albumContextMenuStateHolderFactory.getStateHolder(
-                        AlbumContextMenuArguments(
-                            albumId = albumId
-                        )
+        SearchState(
+            selectedOption = selectedOption,
+            searchResults = results,
+            playbackResult = playbackResult,
+            albumContextMenuStateHolder = contextMenuObjectIds.albumId?.let { albumId ->
+                albumContextMenuStateHolderFactory.getStateHolder(
+                    AlbumContextMenuArguments(
+                        albumId = albumId
                     )
-                },
-                artistContextMenuStateHolder = contextMenuObjectIds.artistId?.let { artistId ->
-                    artistContextMenuStateHolderFactory.getStateHolder(
-                        ArtistContextMenuArguments(
-                            artistId = artistId
-                        )
+                )
+            },
+            artistContextMenuStateHolder = contextMenuObjectIds.artistId?.let { artistId ->
+                artistContextMenuStateHolderFactory.getStateHolder(
+                    ArtistContextMenuArguments(
+                        artistId = artistId
                     )
-                },
-                genreContextMenuStateHolder = contextMenuObjectIds.genreId?.let { genreId ->
-                    genreContextMenuStateHolderFactory.getStateHolder(
-                        GenreContextMenuArguments(
-                            genreId = genreId
-                        )
+                )
+            },
+            genreContextMenuStateHolder = contextMenuObjectIds.genreId?.let { genreId ->
+                genreContextMenuStateHolderFactory.getStateHolder(
+                    GenreContextMenuArguments(
+                        genreId = genreId
                     )
-                },
-                playlistContextMenuStateHolder = contextMenuObjectIds.playlistId?.let { playlistId ->
-                    playlistContextMenuStateHolderFactory.getStateHolder(
-                        PlaylistContextMenuArguments(
-                            playlistId = playlistId
-                        )
+                )
+            },
+            playlistContextMenuStateHolder = contextMenuObjectIds.playlistId?.let { playlistId ->
+                playlistContextMenuStateHolderFactory.getStateHolder(
+                    PlaylistContextMenuArguments(
+                        playlistId = playlistId
                     )
-                },
-                trackContextMenuStateHolder = contextMenuObjectIds.trackId?.let { trackId ->
-                    trackContextMenuStateHolderFactory.getStateHolder(
-                        TrackContextMenuArguments(
-                            trackId = trackId,
-                            trackList = SourceTrackList.SearchResults
-                        )
+                )
+            },
+            trackContextMenuStateHolder = contextMenuObjectIds.trackId?.let { trackId ->
+                trackContextMenuStateHolderFactory.getStateHolder(
+                    TrackContextMenuArguments(
+                        trackId = trackId,
+                        trackList = SourceTrackList.SearchResults
                     )
-                }
+                )
+            }
 
-            )
         )
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+    }.stateIn(
+        stateHolderScope, SharingStarted.Lazily, SearchState(
+            selectedOption = SearchMode.SONGS,
+            searchResults = emptyList(),
+            playbackResult = null,
+            albumContextMenuStateHolder = null,
+            artistContextMenuStateHolder = null,
+            genreContextMenuStateHolder = null,
+            playlistContextMenuStateHolder = null,
+            trackContextMenuStateHolder = null
+        )
+    )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
         playbackManager.playMedia(MediaGroup.SingleTrack(trackId)).onEach { result ->
@@ -294,6 +300,7 @@ class SearchStateHolder(
             is SearchUserAction.NavigationCompleted -> {
 //                destination.update { null }
             }
+
             is SearchUserAction.AlbumContextMenuDismissed -> {
                 contextMenuObjectId.update {
                     it.copy(

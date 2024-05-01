@@ -14,6 +14,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
@@ -46,8 +47,10 @@ fun MainScreen(stateHolder: MainStateHolder, modifier: Modifier = Modifier) {
 
 @Composable
 fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        SearchScreen(screenStateHolder = state.searchStateHolder)
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        SearchScreen(
+            screenStateHolder = state.searchStateHolder,
+        )
         MainScreenPager(state = state)
 
     }

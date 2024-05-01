@@ -38,7 +38,6 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
@@ -56,7 +55,6 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -76,34 +74,12 @@ fun SearchScreen(
     screenStateHolder: SearchStateHolder,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by screenStateHolder.currentState
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-
-//    LaunchedEffect(uiState, lifecycle) {
-//        snapshotFlow { uiState }
-//            .filterIsInstance<Data<SearchState>>()
-//            .map { it.state.navigationState }
-//            .flowWithLifecycle(lifecycle)
-//            .collect { destination ->
-//                if (destination != null) {
-//                    screenStateHolder.handle(SearchUserAction.NavigationCompleted)
-//                    navigator.navigate(destination)
-//                }
-//            }
-//    }
-
-    UiStateScreen(
-        uiState = uiState,
-        modifier = modifier,
-        emptyScreen = {
-            Text(text = stringResource(R.string.no_results))
-        }
-    ) { state ->
-        SearchScreen(
-            state = state,
-            handle = screenStateHolder::handle,
-        )
-    }
+    val state by screenStateHolder.currentState
+    SearchScreen(
+        state = state,
+        handle = screenStateHolder::handle,
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
