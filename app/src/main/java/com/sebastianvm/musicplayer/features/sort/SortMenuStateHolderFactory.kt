@@ -1,14 +1,16 @@
 package com.sebastianvm.musicplayer.features.sort
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolderFactory
 
-class SortMenuStateHolderFactory(private val dependencyContainer: DependencyContainer) :
-    StateHolderFactory<SortMenuArguments, SortMenuStateHolder> {
-    override fun getStateHolder(arguments: SortMenuArguments): SortMenuStateHolder {
-        return SortMenuStateHolder(
-            arguments,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository
+
+@Composable
+fun sortMenuStateHolderFactory(): StateHolderFactory<SortMenuArguments, SortMenuStateHolder> {
+    return stateHolderFactory { dependencyContainer, args ->
+        SortMenuStateHolder(
+            arguments = args,
+            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
         )
     }
 }

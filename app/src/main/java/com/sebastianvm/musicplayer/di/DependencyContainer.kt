@@ -1,7 +1,10 @@
 package com.sebastianvm.musicplayer.di
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
+import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.database.MusicDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,3 +37,7 @@ class DependencyContainer(private val appContext: Context) {
             applicationScope = applicationScope
         )
 }
+
+@Composable
+fun dependencies(): DependencyContainer =
+    (LocalContext.current.applicationContext as MusicPlayerApplication).dependencyContainer

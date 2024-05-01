@@ -3,14 +3,17 @@ package com.sebastianvm.musicplayer.features.artist.screen
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
@@ -22,13 +25,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.Serializable
+
+interface ArtistScreenDelegate {
+    fun goBack()
+    fun navigateToAlbum(arguments: TrackListArguments)
+}
 
 class ArtistStateHolder(
     stateHolderScope: CoroutineScope = stateHolderScope(),
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
-    private val albumContextMenuStateHolderFactory: AlbumContextMenuStateHolderFactory
+    private val delegate: ArtistScreenDelegate,
+    private val albumContextMenuStateHolderFactory: StateHolderFactory<AlbumContextMenuArguments, AlbumContextMenuStateHolder>
 ) : StateHolder<UiState<ArtistState>, ArtistUserAction> {
 
     private val artistId = arguments.artistId
@@ -75,6 +83,14 @@ class ArtistStateHolder(
             is ArtistUserAction.AlbumMoreIconClicked -> {
                 contextMenuAlbumId.update { action.albumId }
             }
+
+            is ArtistUserAction.BackClicked -> {
+                delegate.goBack()
+            }
+
+            is ArtistUserAction.AlbumClicked -> {
+                delegate.navigateToAlbum(TrackListArguments(MediaGroup.Album(albumId = action.albumId)))
+            }
         }
     }
 }
@@ -89,10 +105,11 @@ data class ArtistState(
     val albumContextMenuStateHolder: AlbumContextMenuStateHolder?
 ) : State
 
-@Serializable
-data class ArtistArguments(val artistId: Long)
+data class ArtistArguments(val artistId: Long) : Arguments
 
 sealed interface ArtistUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
+    data class AlbumClicked(val albumId: Long) : ArtistUserAction
     data object AlbumContextMenuDismissed : ArtistUserAction
+    data object BackClicked : ArtistUserAction
 }

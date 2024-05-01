@@ -6,6 +6,7 @@ import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -137,7 +138,7 @@ class TrackSearchStateHolder(
     }
 }
 
-data class TrackSearchArguments(val playlistId: Long)
+data class TrackSearchArguments(val playlistId: Long) : Arguments
 
 data class TrackSearchState(
     val trackSearchResults: List<ModelListItemState>,

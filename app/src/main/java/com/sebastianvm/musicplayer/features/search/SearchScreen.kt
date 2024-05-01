@@ -28,12 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -44,20 +42,13 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
-import androidx.lifecycle.flowWithLifecycle
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -68,15 +59,9 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 
 fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
     this.pointerInput(key1 = null) {
@@ -88,53 +73,24 @@ fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
 
 @Composable
 fun SearchScreen(
-    navigator: DestinationsNavigator,
+    screenStateHolder: SearchStateHolder,
     modifier: Modifier = Modifier,
-    screenStateHolder: StateHolder<UiState<SearchState>, SearchUserAction> = stateHolder { dependencyContainer ->
-        SearchStateHolder(
-            ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
-            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
-            albumContextMenuStateHolderFactory = AlbumContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            ),
-            artistContextMenuStateHolderFactory = ArtistContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            ),
-            genreContextMenuStateHolderFactory = GenreContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            ),
-            playlistContextMenuStateHolderFactory = PlaylistContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            ),
-            trackContextMenuStateHolderFactory = TrackContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            )
-        )
-    },
 ) {
     val uiState by screenStateHolder.currentState
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    LaunchedEffect(uiState, lifecycle) {
-        // If the date of birth is valid and the validation is in progress,
-        // navigate to the next screen when `lifecycle` is at least STARTED,
-        // which is the default Lifecycle.State for the `flowWithLifecycle` operator.
-        snapshotFlow { uiState }
-            .filterIsInstance<Data<SearchState>>()
-            .map { it.state.navigationState }
-            .flowWithLifecycle(lifecycle)
-            .collect { destination ->
-                if (destination != null) {
-                    screenStateHolder.handle(SearchUserAction.NavigationCompleted)
-                    navigator.navigate(destination)
-                }
-            }
-    }
+//    LaunchedEffect(uiState, lifecycle) {
+//        snapshotFlow { uiState }
+//            .filterIsInstance<Data<SearchState>>()
+//            .map { it.state.navigationState }
+//            .flowWithLifecycle(lifecycle)
+//            .collect { destination ->
+//                if (destination != null) {
+//                    screenStateHolder.handle(SearchUserAction.NavigationCompleted)
+//                    navigator.navigate(destination)
+//                }
+//            }
+//    }
 
     UiStateScreen(
         uiState = uiState,

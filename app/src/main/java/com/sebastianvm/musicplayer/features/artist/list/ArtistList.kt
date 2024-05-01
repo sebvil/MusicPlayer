@@ -8,12 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.ArtistRouteDestination
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -23,7 +20,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 @Composable
 fun ArtistList(
     stateHolder: ArtistListStateHolder,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     val uiState by stateHolder.currentState
@@ -38,9 +34,6 @@ fun ArtistList(
         ArtistList(
             state = state,
             handle = stateHolder::handle,
-            navigateToArtistScreen = { args ->
-                navigator.navigate(ArtistRouteDestination(args))
-            },
             modifier = Modifier
         )
     }
@@ -51,7 +44,6 @@ fun ArtistList(
 fun ArtistList(
     state: ArtistListState,
     handle: Handler<ArtistListUserAction>,
-    navigateToArtistScreen: (ArtistArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModelList(
@@ -61,7 +53,7 @@ fun ArtistList(
         onSortButtonClicked = {
             handle(ArtistListUserAction.SortByButtonClicked)
         },
-        onItemClicked = { _, item -> navigateToArtistScreen(ArtistArguments(item.id)) },
+        onItemClicked = { _, item -> handle(ArtistListUserAction.ArtistClicked(item.id)) },
         onItemMoreIconClicked = { _, item ->
             handle(ArtistListUserAction.ArtistMoreIconClicked(item.id))
         }

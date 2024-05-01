@@ -1,14 +1,15 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolder
-import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.sort.SortableListType
+import com.sebastianvm.musicplayer.features.sort.sortMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.menu.trackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -17,13 +18,16 @@ import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,15 +37,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.Serializable
 
 class TrackListStateHolder(
     private val args: TrackListArguments,
     stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
-    sortMenuStateHolderFactory: SortMenuStateHolderFactory,
-    private val trackContextMenuStateHolderFactory: TrackContextMenuStateHolderFactory
+    sortMenuStateHolderFactory: StateHolderFactory<SortMenuArguments, SortMenuStateHolder>,
+    private val trackContextMenuStateHolderFactory: StateHolderFactory<TrackContextMenuArguments, TrackContextMenuStateHolder>
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
     private val contextMenuTrackId = MutableStateFlow<Long?>(null)
@@ -122,13 +125,7 @@ class TrackListStateHolder(
     }
 }
 
-@Serializable
-data class TrackListArgumentsForNav(val trackListType: TrackList?) {
-    fun toTrackListArguments() =
-        TrackListArguments(trackListType ?: MediaGroup.AllTracks)
-}
-
-data class TrackListArguments(val trackListType: TrackList)
+data class TrackListArguments(val trackListType: TrackList) : Arguments
 
 data class TrackListState(
     val modelListState: ModelListState,
@@ -155,5 +152,21 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
         }
 
         else -> HeaderState.Simple(title = trackListName)
+    }
+}
+
+
+@Composable
+fun rememberTrackListStateHolder(args: TrackListArguments): TrackListStateHolder {
+    val sortMenuStateHolderFactory = sortMenuStateHolderFactory()
+    val trackContextMenuStateHolderFactory = trackContextMenuStateHolderFactory()
+    return stateHolder { dependencies ->
+        TrackListStateHolder(
+            args = args,
+            trackRepository = dependencies.repositoryProvider.trackRepository,
+            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+            sortMenuStateHolderFactory = sortMenuStateHolderFactory,
+            trackContextMenuStateHolderFactory = trackContextMenuStateHolderFactory
+        )
     }
 }

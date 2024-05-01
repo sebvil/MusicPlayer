@@ -8,14 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenu
-import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -25,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 @Composable
 fun AlbumList(
     stateHolder: AlbumListStateHolder,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     val uiState by stateHolder.currentState
@@ -40,9 +35,6 @@ fun AlbumList(
         AlbumList(
             state = state,
             handle = stateHolder::handle,
-            navigateToAlbum = { args ->
-                navigator.navigate(TrackListRouteDestination(args))
-            },
         )
     }
 }
@@ -52,7 +44,6 @@ fun AlbumList(
 fun AlbumList(
     state: AlbumListState,
     handle: Handler<AlbumListUserAction>,
-    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModelList(
@@ -63,13 +54,7 @@ fun AlbumList(
             handle(AlbumListUserAction.SortButtonClicked)
         },
         onItemClicked = { _, item ->
-            navigateToAlbum(
-                TrackListArgumentsForNav(
-                    trackListType = MediaGroup.Album(
-                        item.id
-                    )
-                )
-            )
+            handle(AlbumListUserAction.AlbumClicked(item.id))
         },
         onItemMoreIconClicked = { _, item ->
             handle(AlbumListUserAction.AlbumMoreIconClicked(item.id))

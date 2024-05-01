@@ -1,27 +1,23 @@
 package com.sebastianvm.musicplayer.features.search
 
+import androidx.compose.runtime.Composable
 import com.google.common.annotations.VisibleForTesting
-import com.ramcosta.composedestinations.spec.Direction
-import com.sebastianvm.musicplayer.destinations.ArtistRouteDestination
-import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.album.menu.albumContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolderFactory
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.menu.artistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.genre.menu.genreContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolderFactory
-import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
+import com.sebastianvm.musicplayer.features.playlist.menu.playlistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.menu.trackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
@@ -34,8 +30,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,15 +60,43 @@ data class ContextMenuObjectIds(
     val playlistId: Long? = null
 )
 
+
+data class SearchState(
+    val selectedOption: SearchMode,
+    val searchResults: List<ModelListItemState>,
+    val playbackResult: PlaybackResult?,
+    val albumContextMenuStateHolder: AlbumContextMenuStateHolder?,
+    val artistContextMenuStateHolder: ArtistContextMenuStateHolder?,
+    val genreContextMenuStateHolder: GenreContextMenuStateHolder?,
+    val playlistContextMenuStateHolder: PlaylistContextMenuStateHolder?,
+    val trackContextMenuStateHolder: TrackContextMenuStateHolder?,
+) : State
+
+sealed interface SearchUserAction : UserAction {
+    data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
+    data class SearchResultOverflowMenuIconClicked(val id: Long, val mediaType: SearchMode) :
+        SearchUserAction
+
+    data object AlbumContextMenuDismissed : SearchUserAction
+    data object ArtistContextMenuDismissed : SearchUserAction
+    data object GenreContextMenuDismissed : SearchUserAction
+    data object PlaylistContextMenuDismissed : SearchUserAction
+    data object TrackContextMenuDismissed : SearchUserAction
+    data class TextChanged(val newText: String) : SearchUserAction
+    data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
+    data object DismissPlaybackErrorDialog : SearchUserAction
+    data object NavigationCompleted : SearchUserAction
+}
+
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-    private val albumContextMenuStateHolderFactory: AlbumContextMenuStateHolderFactory,
-    private val artistContextMenuStateHolderFactory: ArtistContextMenuStateHolderFactory,
-    private val genreContextMenuStateHolderFactory: GenreContextMenuStateHolderFactory,
-    private val trackContextMenuStateHolderFactory: TrackContextMenuStateHolderFactory,
-    private val playlistContextMenuStateHolderFactory: PlaylistContextMenuStateHolderFactory,
+    private val albumContextMenuStateHolderFactory: StateHolderFactory<AlbumContextMenuArguments, AlbumContextMenuStateHolder>,
+    private val artistContextMenuStateHolderFactory: StateHolderFactory<ArtistContextMenuArguments, ArtistContextMenuStateHolder>,
+    private val genreContextMenuStateHolderFactory: StateHolderFactory<GenreContextMenuArguments, GenreContextMenuStateHolder>,
+    private val trackContextMenuStateHolderFactory: StateHolderFactory<TrackContextMenuArguments, TrackContextMenuStateHolder>,
+    private val playlistContextMenuStateHolderFactory: StateHolderFactory<PlaylistContextMenuArguments, PlaylistContextMenuStateHolder>,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<SearchState>, SearchUserAction> {
 
@@ -113,21 +139,18 @@ class SearchStateHolder(
     }
 
     private val playbackResult = MutableStateFlow<PlaybackResult?>(null)
-    private val destination = MutableStateFlow<Direction?>(null)
 
     override val state: StateFlow<UiState<SearchState>> = combine(
         query.map { it.mode },
         searchResults,
         playbackResult,
-        destination,
         contextMenuObjectId
-    ) { selectedOption, results, playbackResult, destination, contextMenuObjectIds ->
+    ) { selectedOption, results, playbackResult, contextMenuObjectIds ->
         Data(
             state = SearchState(
                 selectedOption = selectedOption,
                 searchResults = results,
                 playbackResult = playbackResult,
-                navigationState = destination,
                 albumContextMenuStateHolder = contextMenuObjectIds.albumId?.let { albumId ->
                     albumContextMenuStateHolderFactory.getStateHolder(
                         AlbumContextMenuArguments(
@@ -184,35 +207,39 @@ class SearchStateHolder(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-        destination.update {
-            ArtistRouteDestination(
-                ArtistArguments(artistId = artistId)
-            )
-        }
+//        destination.update {
+//            ArtistRouteDestination(
+//                ArtistArguments(artistId = artistId)
+//            )
+//        }
+        TODO("navigation")
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
-        destination.update {
-            TrackListRouteDestination(
-                TrackListArgumentsForNav(trackListType = MediaGroup.Album(albumId = albumId))
-            )
-        }
+        TODO("navigation")
+//        destination.update {
+//            TrackListRouteDestination(
+//                TrackListArgumentsForNav(trackListType = MediaGroup.Album(albumId = albumId))
+//            )
+//        }
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
-        destination.update {
-            TrackListRouteDestination(
-                TrackListArgumentsForNav(trackListType = MediaGroup.Genre(genreId = genreId))
-            )
-        }
+        TODO("navigation")
+//        destination.update {
+//            TrackListRouteDestination(
+//                TrackListArgumentsForNav(trackListType = MediaGroup.Genre(genreId = genreId))
+//            )
+//        }
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
-        destination.update {
-            TrackListRouteDestination(
-                TrackListArgumentsForNav(trackListType = MediaGroup.Playlist(playlistId = playlistId))
-            )
-        }
+        TODO("navigation")
+//        destination.update {
+//            TrackListRouteDestination(
+//                TrackListArgumentsForNav(trackListType = MediaGroup.Playlist(playlistId = playlistId))
+//            )
+//        }
     }
 
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
@@ -264,7 +291,9 @@ class SearchStateHolder(
 
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.DismissPlaybackErrorDialog -> playbackResult.update { null }
-            is SearchUserAction.NavigationCompleted -> destination.update { null }
+            is SearchUserAction.NavigationCompleted -> {
+//                destination.update { null }
+            }
             is SearchUserAction.AlbumContextMenuDismissed -> {
                 contextMenuObjectId.update {
                     it.copy(
@@ -313,30 +342,24 @@ class SearchStateHolder(
     }
 }
 
-data class SearchState(
-    val selectedOption: SearchMode,
-    val searchResults: List<ModelListItemState>,
-    val playbackResult: PlaybackResult?,
-    val navigationState: Direction?,
-    val albumContextMenuStateHolder: AlbumContextMenuStateHolder?,
-    val artistContextMenuStateHolder: ArtistContextMenuStateHolder?,
-    val genreContextMenuStateHolder: GenreContextMenuStateHolder?,
-    val playlistContextMenuStateHolder: PlaylistContextMenuStateHolder?,
-    val trackContextMenuStateHolder: TrackContextMenuStateHolder?,
-) : State
 
-sealed interface SearchUserAction : UserAction {
-    data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
-    data class SearchResultOverflowMenuIconClicked(val id: Long, val mediaType: SearchMode) :
-        SearchUserAction
+@Composable
+fun rememberSearchStateHolder(): SearchStateHolder {
+    val albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory()
+    val artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory()
+    val genreContextMenuStateHolderFactory = genreContextMenuStateHolderFactory()
+    val trackContextMenuStateHolderFactory = trackContextMenuStateHolderFactory()
+    val playlistContextMenuStateHolderFactory = playlistContextMenuStateHolderFactory()
 
-    data object AlbumContextMenuDismissed : SearchUserAction
-    data object ArtistContextMenuDismissed : SearchUserAction
-    data object GenreContextMenuDismissed : SearchUserAction
-    data object PlaylistContextMenuDismissed : SearchUserAction
-    data object TrackContextMenuDismissed : SearchUserAction
-    data class TextChanged(val newText: String) : SearchUserAction
-    data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
-    data object DismissPlaybackErrorDialog : SearchUserAction
-    data object NavigationCompleted : SearchUserAction
+    return stateHolder { dependencyContainer ->
+        SearchStateHolder(
+            ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
+            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+            albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory,
+            artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory,
+            genreContextMenuStateHolderFactory = genreContextMenuStateHolderFactory,
+            trackContextMenuStateHolderFactory = trackContextMenuStateHolderFactory,
+            playlistContextMenuStateHolderFactory = playlistContextMenuStateHolderFactory,
+        )
+    }
 }

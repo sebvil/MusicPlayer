@@ -21,53 +21,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolderFactory
-import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
-@RootNavGraph
-@Destination
 @Composable
-fun ArtistRoute(
-    navigator: DestinationsNavigator,
-    arguments: ArtistArguments,
-    stateHolder: StateHolder<UiState<ArtistState>, ArtistUserAction> = stateHolder { dependencyContainer ->
-        ArtistStateHolder(
-            arguments = arguments,
-            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-            albumContextMenuStateHolderFactory = AlbumContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer,
-                navigator = navigator
-            )
-        )
-    }
+fun ArtistScreen(
+    stateHolder: ArtistStateHolder,
+    modifier: Modifier = Modifier,
 ) {
     val uiState by stateHolder.currentState
 
-    UiStateScreen(uiState = uiState, emptyScreen = {}) { state ->
+    UiStateScreen(uiState = uiState, emptyScreen = {}, modifier) { state ->
         ArtistScreen(
             state = state,
             handle = stateHolder::handle,
-            navigateToAlbum = { navigator.navigate(TrackListRouteDestination(it)) },
-            openAlbumContextMenu = { TODO() },
-            navigateBack = { navigator.navigateUp() }
         )
     }
 }
@@ -77,9 +51,6 @@ fun ArtistRoute(
 fun ArtistScreen(
     state: ArtistState,
     handle: Handler<ArtistUserAction>,
-    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
-    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
-    navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val topBarState = rememberTopAppBarState()
@@ -91,7 +62,9 @@ fun ArtistScreen(
             LargeTopAppBar(
                 title = { Text(text = state.artistName) },
                 navigationIcon = {
-                    IconButton(onClick = { navigateBack() }) {
+                    IconButton(onClick = {
+                        handle(ArtistUserAction.BackClicked)
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(id = R.string.back)
@@ -105,8 +78,6 @@ fun ArtistScreen(
         ArtistLayout(
             state = state,
             handle = handle,
-            navigateToAlbum = navigateToAlbum,
-            openAlbumContextMenu = openAlbumContextMenu,
             modifier = Modifier.padding(paddingValues)
         )
     }
@@ -117,8 +88,6 @@ fun ArtistScreen(
 fun ArtistLayout(
     state: ArtistState,
     handle: Handler<ArtistUserAction>,
-    navigateToAlbum: (TrackListArgumentsForNav) -> Unit,
-    openAlbumContextMenu: (AlbumContextMenuArguments) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
@@ -137,16 +106,10 @@ fun ArtistLayout(
                     ModelListItem(
                         state = item.state,
                         modifier = Modifier.clickable {
-                            navigateToAlbum(
-                                TrackListArgumentsForNav(
-                                    trackListType = MediaGroup.Album(
-                                        albumId = item.id
-                                    )
-                                )
-                            )
+                            handle(ArtistUserAction.AlbumClicked(item.id))
                         },
                         onMoreClicked = {
-                            openAlbumContextMenu(AlbumContextMenuArguments(albumId = item.id))
+                            handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
                         }
                     )
                 }

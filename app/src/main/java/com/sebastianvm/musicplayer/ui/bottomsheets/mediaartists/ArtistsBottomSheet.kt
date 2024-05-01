@@ -13,13 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.destinations.ArtistRouteDestination
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -28,14 +22,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
 @Suppress("StateHolderForwarding")
-@RootNavGraph
-@Destination(
-    navArgsDelegate = ArtistsMenuArguments::class,
-    style = DestinationStyleBottomSheet::class
-)
+//@RootNavGraph
+//@Destination(
+//    navArgsDelegate = ArtistsMenuArguments::class,
+//    style = DestinationStyleBottomSheet::class
+//)
 @Composable
 fun ArtistsBottomSheet(
-    navigator: DestinationsNavigator,
     arguments: ArtistsMenuArguments,
     modifier: Modifier = Modifier,
     stateHolder: StateHolder<UiState<ArtistsBottomSheetState>, ArtistsBottomSheetUserAction> =
@@ -55,7 +48,6 @@ fun ArtistsBottomSheet(
     ) { state ->
         ArtistsBottomSheetLayout(
             state = state,
-            navigator = navigator,
         )
     }
 }
@@ -63,7 +55,6 @@ fun ArtistsBottomSheet(
 @Composable
 fun ArtistsBottomSheetLayout(
     state: ArtistsBottomSheetState,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -86,11 +77,11 @@ fun ArtistsBottomSheetLayout(
             state = state.modelListState,
             onBackButtonClicked = {},
             onItemClicked = { _, item ->
-                navigator.navigate(
-                    ArtistRouteDestination(
-                        ArtistArguments(artistId = item.id)
-                    )
-                )
+//                navigator.navigate(
+//                    ArtistRouteDestination(
+//                        ArtistArguments(artistId = item.id)
+//                    )
+//                )
             }
         )
     }

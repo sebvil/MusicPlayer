@@ -8,13 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
-import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -24,7 +20,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 @Composable
 fun GenreList(
     stateHolder: GenreListStateHolder,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     val uiState by stateHolder.currentState
@@ -39,9 +34,6 @@ fun GenreList(
         GenreList(
             state = state,
             handle = stateHolder::handle,
-            navigateToGenreScreen = { args ->
-                navigator.navigate(TrackListRouteDestination(args))
-            },
             modifier = Modifier
         )
     }
@@ -52,7 +44,6 @@ fun GenreList(
 fun GenreList(
     state: GenreListState,
     handle: Handler<GenreListUserAction>,
-    navigateToGenreScreen: (TrackListArgumentsForNav) -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModelList(
@@ -63,13 +54,7 @@ fun GenreList(
             handle(GenreListUserAction.SortByButtonClicked)
         },
         onItemClicked = { _, item ->
-            navigateToGenreScreen(
-                TrackListArgumentsForNav(
-                    MediaGroup.Genre(
-                        item.id
-                    )
-                )
-            )
+            handle(GenreListUserAction.GenreClicked(item.id))
         },
         onItemMoreIconClicked = { _, item ->
             handle(GenreListUserAction.GenreMoreIconClicked(item.id))

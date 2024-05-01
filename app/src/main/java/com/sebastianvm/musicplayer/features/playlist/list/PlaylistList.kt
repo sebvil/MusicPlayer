@@ -17,13 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.TrackListRouteDestination
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
-import com.sebastianvm.musicplayer.features.track.list.TrackListArgumentsForNav
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -51,7 +47,6 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 @Composable
 fun PlaylistList(
     stateHolder: PlaylistListStateHolder,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     val uiState by stateHolder.currentState
@@ -78,9 +73,6 @@ fun PlaylistList(
             state = state,
             handle = stateHolder::handle,
             isCreatePlaylistDialogOpen = false,
-            navigateToPlaylist = { args ->
-                navigator.navigate(TrackListRouteDestination(args))
-            },
         )
     }
 }
@@ -91,7 +83,6 @@ fun PlaylistListLayout(
     state: PlaylistListState,
     handle: Handler<PlaylistListUserAction>,
     isCreatePlaylistDialogOpen: Boolean,
-    navigateToPlaylist: (TrackListArgumentsForNav) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isCreatePlaylistDialogOpen) {
@@ -118,13 +109,14 @@ fun PlaylistListLayout(
         onBackButtonClicked = {},
         onSortButtonClicked = null,
         onItemClicked = { _, item ->
-            navigateToPlaylist(
-                TrackListArgumentsForNav(
-                    trackListType = MediaGroup.Genre(
-                        item.id
-                    )
-                )
-            )
+            TODO("navigation")
+//            navigateToPlaylist(
+//                TrackListArgumentsForNav(
+//                    trackListType = MediaGroup.Genre(
+//                        item.id
+//                    )
+//                )
+//            )
         },
         onItemMoreIconClicked = { _, item ->
             handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))

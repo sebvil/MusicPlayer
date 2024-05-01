@@ -17,16 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.destinations.TrackSearchScreenDestination
 import com.sebastianvm.musicplayer.features.sort.SortMenu
-import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -35,37 +29,11 @@ import com.sebastianvm.musicplayer.ui.playlist.TrackSearchArguments
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
-@RootNavGraph
-@Destination
-@Composable
-fun TrackListRoute(
-    navigator: DestinationsNavigator,
-    modifier: Modifier = Modifier,
-    arguments: TrackListArgumentsForNav? = null,
-    trackListStateHolder: TrackListStateHolder = stateHolder { dependencyContainer ->
-        TrackListStateHolder(
-            arguments?.toTrackListArguments()
-                ?: TrackListArguments(trackListType = MediaGroup.AllTracks),
-            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-            trackContextMenuStateHolderFactory = TrackContextMenuStateHolderFactory(
-                dependencyContainer = dependencyContainer, navigator = navigator
-            ),
-            sortMenuStateHolderFactory = SortMenuStateHolderFactory(dependencyContainer)
-        )
-    },
-) {
-    TrackList(
-        stateHolder = trackListStateHolder, navigator = navigator, modifier = modifier
-    )
-}
 
 @Composable
 fun TrackList(
     stateHolder: TrackListStateHolder,
-    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier
 ) {
     val uiState by stateHolder.currentState
@@ -82,9 +50,13 @@ fun TrackList(
             onTrackClicked = {
                 TODO()
             },
-            navigateToTrackSearchScreen = { navigator.navigate(TrackSearchScreenDestination(it)) },
+            navigateToTrackSearchScreen = {
+//                navigator.navigate(TrackSearchScreenDestination(it))
+            },
 
-            navigateBack = { navigator.navigateUp() })
+            navigateBack = {
+//                navigator.navigateUp()
+            })
     }
 }
 

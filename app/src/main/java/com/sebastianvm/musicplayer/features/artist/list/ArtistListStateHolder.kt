@@ -1,9 +1,11 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.artist.menu.artistContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -16,8 +18,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,10 +32,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+interface ArtistListDelegate {
+    fun showArtist(arguments: ArtistArguments)
+}
+
+data class ArtistListState(
+    val modelListState: ModelListState,
+    val artistContextMenuStateHolder: ArtistContextMenuStateHolder?
+) : State
+
+sealed interface ArtistListUserAction : UserAction {
+    data object SortByButtonClicked : ArtistListUserAction
+    data class ArtistMoreIconClicked(val artistId: Long) : ArtistListUserAction
+    data object ArtistContextMenuDismissed : ArtistListUserAction
+    data class ArtistClicked(val artistId: Long) : ArtistListUserAction
+}
+
 class ArtistListStateHolder(
     artistRepository: ArtistRepository,
+    private val delegate: ArtistListDelegate,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val artistContextMenuStateHolderFactory: ArtistContextMenuStateHolderFactory,
+    private val artistContextMenuStateHolderFactory: StateHolderFactory<ArtistContextMenuArguments, ArtistContextMenuStateHolder>,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
 
@@ -81,17 +102,29 @@ class ArtistListStateHolder(
             is ArtistListUserAction.ArtistContextMenuDismissed -> {
                 contextMenuArtistId.update { null }
             }
+
+            is ArtistListUserAction.ArtistClicked -> {
+                delegate.showArtist(ArtistArguments(action.artistId))
+            }
         }
     }
 }
 
-data class ArtistListState(
-    val modelListState: ModelListState,
-    val artistContextMenuStateHolder: ArtistContextMenuStateHolder?
-) : State
 
-sealed interface ArtistListUserAction : UserAction {
-    data object SortByButtonClicked : ArtistListUserAction
-    data class ArtistMoreIconClicked(val artistId: Long) : ArtistListUserAction
-    data object ArtistContextMenuDismissed : ArtistListUserAction
+@Composable
+fun rememberArtistListStateHolder(): ArtistListStateHolder {
+    val artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory()
+    return stateHolder { dependencies ->
+        ArtistListStateHolder(
+            artistRepository = dependencies.repositoryProvider.artistRepository,
+            delegate = object : ArtistListDelegate {
+                override fun showArtist(arguments: ArtistArguments) {
+                    TODO("navigation")
+                }
+            },
+            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+            artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory
+        )
+    }
 }
+
