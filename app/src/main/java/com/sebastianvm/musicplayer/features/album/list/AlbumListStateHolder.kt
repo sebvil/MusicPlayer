@@ -5,10 +5,12 @@ import androidx.compose.runtime.Stable
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.album.menu.albumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolder
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.sort.sortMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -18,6 +20,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -35,9 +38,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-interface AlbumListDelegate {
-    fun showAlbum(arguments: TrackListArguments)
-}
+interface AlbumListDelegate : Delegate, NavController
 
 @Stable
 data class AlbumListState(
@@ -123,7 +124,12 @@ class AlbumListStateHolder(
             }
 
             is AlbumListUserAction.AlbumClicked -> {
-                delegate.showAlbum(TrackListArguments(MediaGroup.Album(action.albumId)))
+                delegate.push(
+                    TrackList(
+                        arguments = TrackListArguments(MediaGroup.Album(action.albumId)),
+                        navController = delegate
+                    )
+                )
             }
         }
     }
@@ -131,17 +137,13 @@ class AlbumListStateHolder(
 
 
 @Composable
-fun rememberAlbumListStateHolder(): AlbumListStateHolder {
+fun rememberAlbumListStateHolder(navController: NavController): AlbumListStateHolder {
     val albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory()
     val sortMenuStateHolderFactory = sortMenuStateHolderFactory()
     return stateHolder { dependencies ->
         AlbumListStateHolder(
             albumRepository = dependencies.repositoryProvider.albumRepository,
-            delegate = object : AlbumListDelegate {
-                override fun showAlbum(arguments: TrackListArguments) {
-                    TODO("navigation")
-                }
-            },
+            delegate = object : AlbumListDelegate, NavController by navController {},
             sortMenuStateHolderFactory = sortMenuStateHolderFactory,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory

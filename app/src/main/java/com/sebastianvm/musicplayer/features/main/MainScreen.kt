@@ -21,6 +21,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.album.list.AlbumList
 import com.sebastianvm.musicplayer.features.artist.list.ArtistList
 import com.sebastianvm.musicplayer.features.genre.list.GenreList
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistList
 import com.sebastianvm.musicplayer.features.search.SearchScreen
@@ -29,12 +30,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.launch
 
-data object MainScreen : Screen<NoArguments> {
+data class MainScreen(val navController: NavController) : Screen<NoArguments> {
     override val arguments: NoArguments = NoArguments
 
     @Composable
     override fun Content(modifier: Modifier) {
-        val stateHolder = rememberMainStateHolder()
+        val stateHolder = rememberMainStateHolder(navController)
         MainScreen(stateHolder = stateHolder)
     }
 }
@@ -82,9 +83,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
     }
 
     HorizontalPager(
-        state = pagerState,
-        modifier = modifier.fillMaxSize(),
-        beyondBoundsPageCount = 1
+        state = pagerState, modifier = modifier.fillMaxSize(), beyondBoundsPageCount = 1
     ) { pageIndex ->
         when (pages[pageIndex]) {
             TopLevelScreen.ALL_SONGS -> {
@@ -111,9 +110,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
 }
 
 enum class TopLevelScreen(@StringRes val screenName: Int) {
-    ALL_SONGS(R.string.all_songs),
-    ARTISTS(R.string.artists),
-    ALBUMS(R.string.albums),
-    GENRES(R.string.genres),
-    PLAYLISTS(R.string.playlists)
+    ALL_SONGS(R.string.all_songs), ARTISTS(R.string.artists), ALBUMS(R.string.albums), GENRES(R.string.genres), PLAYLISTS(
+        R.string.playlists
+    )
 }

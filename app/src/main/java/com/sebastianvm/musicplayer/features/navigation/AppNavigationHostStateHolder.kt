@@ -4,9 +4,13 @@ import com.sebastianvm.musicplayer.features.main.MainScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 data class AppNavigationState(val backStack: List<Screen<*>>) : State
@@ -16,28 +20,40 @@ sealed interface AppNavigationAction : UserAction {
     data object PopBackStack : AppNavigationAction
 }
 
-class AppNavigationHostStateHolder : StateHolder<AppNavigationState, AppNavigationAction> {
+class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolderScope()) :
+    StateHolder<AppNavigationState, AppNavigationAction> {
 
-    private val _state = MutableStateFlow(AppNavigationState(listOf(MainScreen)))
+    private val navController = object : NavController {
+        override fun push(screen: Screen<*>) {
+            handle(AppNavigationAction.ShowScreen(screen))
+        }
 
-    override val state: StateFlow<AppNavigationState>
-        get() = _state.asStateFlow()
+        override fun pop() {
+            handle(AppNavigationAction.PopBackStack)
+        }
+    }
+
+    private val backStack: MutableStateFlow<List<Screen<*>>> = MutableStateFlow(
+        listOf(
+            MainScreen(navController)
+        )
+    )
+
+    override val state: StateFlow<AppNavigationState> = backStack.map {
+        AppNavigationState(it)
+    }.stateIn(stateHolderScope, SharingStarted.Lazily, AppNavigationState(backStack.value))
 
     override fun handle(action: AppNavigationAction) {
         when (action) {
             is AppNavigationAction.ShowScreen -> {
-                _state.update {
-                    it.copy(
-                        backStack = it.backStack + action.screen
-                    )
+                backStack.update {
+                    it + action.screen
                 }
             }
 
             AppNavigationAction.PopBackStack -> {
-                _state.update {
-                    it.copy(
-                        backStack = it.backStack.dropLast(1)
-                    )
+                backStack.update {
+                    it.dropLast(1)
                 }
             }
         }

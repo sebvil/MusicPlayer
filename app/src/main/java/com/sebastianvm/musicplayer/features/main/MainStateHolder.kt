@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.features.artist.list.ArtistListStateHolder
 import com.sebastianvm.musicplayer.features.artist.list.rememberArtistListStateHolder
 import com.sebastianvm.musicplayer.features.genre.list.GenreListStateHolder
 import com.sebastianvm.musicplayer.features.genre.list.rememberGenreListStateHolder
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListStateHolder
 import com.sebastianvm.musicplayer.features.playlist.list.rememberPlaylistListStateHolder
 import com.sebastianvm.musicplayer.features.search.SearchStateHolder
@@ -60,11 +61,14 @@ class MainStateHolder(
 }
 
 @Composable
-fun rememberMainStateHolder(): MainStateHolder {
+fun rememberMainStateHolder(navController: NavController): MainStateHolder {
     val trackListStateHolder =
-        rememberTrackListStateHolder(args = TrackListArguments(trackListType = MediaGroup.AllTracks))
-    val artistListStateHolder = rememberArtistListStateHolder()
-    val albumListStateHolder = rememberAlbumListStateHolder()
+        rememberTrackListStateHolder(
+            args = TrackListArguments(trackListType = MediaGroup.AllTracks),
+            navController
+        )
+    val artistListStateHolder = rememberArtistListStateHolder(navController)
+    val albumListStateHolder = rememberAlbumListStateHolder(navController)
     val genreListStateHolder = rememberGenreListStateHolder()
     val playlistListStateHolder = rememberPlaylistListStateHolder()
     val searchStateHolder = rememberSearchStateHolder()

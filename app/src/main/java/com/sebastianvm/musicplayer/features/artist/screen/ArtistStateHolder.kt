@@ -1,14 +1,19 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
+import com.sebastianvm.musicplayer.features.album.menu.albumContextMenuStateHolderFactory
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -16,6 +21,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.AlbumType
 import kotlinx.coroutines.CoroutineScope
@@ -26,9 +32,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-interface ArtistScreenDelegate {
-    fun goBack()
-    fun navigateToAlbum(arguments: TrackListArguments)
+interface ArtistScreenDelegate : Delegate, NavController
+
+data class ArtistState(
+    val artistName: String,
+    val listItems: List<ArtistScreenItem>,
+    val albumContextMenuStateHolder: AlbumContextMenuStateHolder?
+) : State
+
+data class ArtistArguments(val artistId: Long) : Arguments
+
+sealed interface ArtistUserAction : UserAction {
+    data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
+    data class AlbumClicked(val albumId: Long) : ArtistUserAction
+    data object AlbumContextMenuDismissed : ArtistUserAction
+    data object BackClicked : ArtistUserAction
 }
 
 class ArtistStateHolder(
@@ -85,11 +103,16 @@ class ArtistStateHolder(
             }
 
             is ArtistUserAction.BackClicked -> {
-                delegate.goBack()
+                delegate.pop()
             }
 
             is ArtistUserAction.AlbumClicked -> {
-                delegate.navigateToAlbum(TrackListArguments(MediaGroup.Album(albumId = action.albumId)))
+                delegate.push(
+                    TrackList(
+                        arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
+                        navController = delegate
+                    )
+                )
             }
         }
     }
@@ -99,17 +122,19 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
     return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
 }
 
-data class ArtistState(
-    val artistName: String,
-    val listItems: List<ArtistScreenItem>,
-    val albumContextMenuStateHolder: AlbumContextMenuStateHolder?
-) : State
+@Composable
+fun rememberArtistStateHolder(
+    arguments: ArtistArguments,
+    navController: NavController
+): ArtistStateHolder {
+    val albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory()
+    return stateHolder { dependencyContainer ->
+        ArtistStateHolder(
+            arguments = arguments,
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+            delegate = object : ArtistScreenDelegate, NavController by navController {},
+            albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory
+        )
 
-data class ArtistArguments(val artistId: Long) : Arguments
-
-sealed interface ArtistUserAction : UserAction {
-    data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
-    data class AlbumClicked(val albumId: Long) : ArtistUserAction
-    data object AlbumContextMenuDismissed : ArtistUserAction
-    data object BackClicked : ArtistUserAction
+    }
 }

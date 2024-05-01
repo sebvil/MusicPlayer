@@ -6,6 +6,8 @@ import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArgumen
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.artist.menu.artistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -14,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -32,9 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-interface ArtistListDelegate {
-    fun showArtist(arguments: ArtistArguments)
-}
+interface ArtistListDelegate : Delegate, NavController
 
 data class ArtistListState(
     val modelListState: ModelListState,
@@ -104,7 +105,12 @@ class ArtistListStateHolder(
             }
 
             is ArtistListUserAction.ArtistClicked -> {
-                delegate.showArtist(ArtistArguments(action.artistId))
+                delegate.push(
+                    ArtistScreen(
+                        arguments = ArtistArguments(action.artistId),
+                        navController = delegate
+                    )
+                )
             }
         }
     }
@@ -112,16 +118,12 @@ class ArtistListStateHolder(
 
 
 @Composable
-fun rememberArtistListStateHolder(): ArtistListStateHolder {
+fun rememberArtistListStateHolder(navController: NavController): ArtistListStateHolder {
     val artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory()
     return stateHolder { dependencies ->
         ArtistListStateHolder(
             artistRepository = dependencies.repositoryProvider.artistRepository,
-            delegate = object : ArtistListDelegate {
-                override fun showArtist(arguments: ArtistArguments) {
-                    TODO("navigation")
-                }
-            },
+            delegate = object : ArtistListDelegate, NavController by navController {},
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory
         )

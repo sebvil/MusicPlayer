@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.features.track.list
 
 import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuStateHolder
 import com.sebastianvm.musicplayer.features.sort.SortableListType
@@ -20,6 +21,7 @@ import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
+import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -38,8 +40,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
+interface TrackListDelegate : Delegate, NavController
+
 class TrackListStateHolder(
     private val args: TrackListArguments,
+    private val delegate: TrackListDelegate,
     stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
@@ -49,9 +54,11 @@ class TrackListStateHolder(
 
     private val contextMenuTrackId = MutableStateFlow<Long?>(null)
 
-    private val sortMenuStateHolder = sortMenuStateHolderFactory.getStateHolder(
-        SortMenuArguments(SortableListType.Tracks(args.trackListType))
-    )
+    private val sortMenuStateHolder by lazy {
+        sortMenuStateHolderFactory.getStateHolder(
+            SortMenuArguments(SortableListType.Tracks(args.trackListType))
+        )
+    }
 
     private val showSortMenu = MutableStateFlow(false)
     override val state: StateFlow<UiState<TrackListState>> = combine(
@@ -121,6 +128,10 @@ class TrackListStateHolder(
             is TrackListUserAction.SortMenuDismissed -> {
                 showSortMenu.update { false }
             }
+
+            is TrackListUserAction.BackClicked -> {
+                delegate.pop()
+            }
         }
     }
 }
@@ -139,6 +150,7 @@ sealed interface TrackListUserAction : UserAction {
     data object TrackContextMenuDismissed : TrackListUserAction
     data object SortButtonClicked : TrackListUserAction
     data object SortMenuDismissed : TrackListUserAction
+    data object BackClicked : TrackListUserAction
 }
 
 fun TrackListMetadata?.toHeaderState(): HeaderState {
@@ -157,12 +169,16 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
 
 
 @Composable
-fun rememberTrackListStateHolder(args: TrackListArguments): TrackListStateHolder {
+fun rememberTrackListStateHolder(
+    args: TrackListArguments,
+    navController: NavController
+): TrackListStateHolder {
     val sortMenuStateHolderFactory = sortMenuStateHolderFactory()
     val trackContextMenuStateHolderFactory = trackContextMenuStateHolderFactory()
     return stateHolder { dependencies ->
         TrackListStateHolder(
             args = args,
+            delegate = object : TrackListDelegate, NavController by navController {},
             trackRepository = dependencies.repositoryProvider.trackRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             sortMenuStateHolderFactory = sortMenuStateHolderFactory,
