@@ -1,12 +1,14 @@
 package com.sebastianvm.musicplayer.features.sort
 
 import android.os.Parcelable
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -161,4 +163,14 @@ sealed interface SortMenuUserAction : UserAction {
         val selectedSort: SortOptions,
         val currentSortOrder: MediaSortOrder,
     ) : SortMenuUserAction
+}
+
+@Composable
+fun rememberSortMenuStateHolder(arguments: SortMenuArguments): SortMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        SortMenuStateHolder(
+            arguments = arguments,
+            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
+        )
+    }
 }

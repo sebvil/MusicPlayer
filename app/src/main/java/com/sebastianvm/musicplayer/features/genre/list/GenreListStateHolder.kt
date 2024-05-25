@@ -2,12 +2,10 @@ package com.sebastianvm.musicplayer.features.genre.list
 
 import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuDelegate
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.genre.menu.genreContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -17,43 +15,42 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-interface GenreListDelegate : Delegate, NavController
+data class GenreListState(
+    val modelListState: ModelListState,
+) : State
+
+sealed interface GenreListUserAction : UserAction {
+    data object SortByButtonClicked : GenreListUserAction
+    data class GenreClicked(val genreId: Long) : GenreListUserAction
+    data class GenreMoreIconClicked(val genreId: Long) : GenreListUserAction
+}
 
 class GenreListStateHolder(
     genreRepository: GenreRepository,
-    private val delegate: GenreListDelegate,
+    private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val genreContextMenuStateHolderFactory:
-    StateHolderFactory<GenreContextMenuArguments, GenreContextMenuDelegate, GenreContextMenuStateHolder>,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
-
-    private val _contextMenuGenreId = MutableStateFlow<Long?>(null)
 
     override val state: StateFlow<UiState<GenreListState>> = combine(
         genreRepository.getGenres(),
         sortPreferencesRepository.getGenreListSortOrder(),
-        _contextMenuGenreId,
-    ) { genres, sortOrder, contextMenuGenreId ->
+    ) { genres, sortOrder ->
         if (genres.isEmpty()) {
             Empty
         } else {
@@ -68,23 +65,6 @@ class GenreListStateHolder(
                             sortOrder = sortOrder
                         )
                     ),
-                    genreContextMenuStateHolder = contextMenuGenreId?.let { genreId ->
-                        genreContextMenuStateHolderFactory.getStateHolder(
-                            GenreContextMenuArguments(
-                                genreId
-                            ),
-                            delegate = object : GenreContextMenuDelegate {
-                                override fun push(screen: Screen<*>) {
-                                    _contextMenuGenreId.update { null }
-                                    delegate.push(screen)
-                                }
-
-                                override fun pop() {
-                                    _contextMenuGenreId.update { null }
-                                }
-                            }
-                        )
-                    }
                 )
             )
         }
@@ -99,18 +79,20 @@ class GenreListStateHolder(
             }
 
             is GenreListUserAction.GenreMoreIconClicked -> {
-                _contextMenuGenreId.update { action.genreId }
-            }
-
-            is GenreListUserAction.GenreContextMenuDismissed -> {
-                _contextMenuGenreId.update { null }
+                navController.push(
+                    GenreContextMenu(
+                        arguments = GenreContextMenuArguments(action.genreId),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                )
             }
 
             is GenreListUserAction.GenreClicked -> {
-                delegate.push(
+                navController.push(
                     TrackList(
                         arguments = TrackListArguments(trackListType = MediaGroup.Genre(action.genreId)),
-                        navController = delegate
+                        navController = navController
                     )
                 )
             }
@@ -118,27 +100,13 @@ class GenreListStateHolder(
     }
 }
 
-data class GenreListState(
-    val modelListState: ModelListState,
-    val genreContextMenuStateHolder: GenreContextMenuStateHolder?
-) : State
-
-sealed interface GenreListUserAction : UserAction {
-    data object SortByButtonClicked : GenreListUserAction
-    data class GenreClicked(val genreId: Long) : GenreListUserAction
-    data class GenreMoreIconClicked(val genreId: Long) : GenreListUserAction
-    data object GenreContextMenuDismissed : GenreListUserAction
-}
-
 @Composable
 fun rememberGenreListStateHolder(navController: NavController): GenreListStateHolder {
-    val genreContextMenuStateHolderFactory = genreContextMenuStateHolderFactory()
     return stateHolder { dependencies ->
         GenreListStateHolder(
             genreRepository = dependencies.repositoryProvider.genreRepository,
-            delegate = object : GenreListDelegate, NavController by navController {},
+            navController = navController,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            genreContextMenuStateHolderFactory = genreContextMenuStateHolderFactory
         )
     }
 }

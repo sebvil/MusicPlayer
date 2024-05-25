@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.features.track.list
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
@@ -18,12 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.Screen
-import com.sebastianvm.musicplayer.features.sort.SortMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -124,37 +119,4 @@ fun TrackListLayout(
             handle(TrackListUserAction.TrackMoreIconClicked(trackId = item.id))
         }
     )
-
-    state.trackContextMenuStateHolder?.let { trackContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = { handle(TrackListUserAction.TrackContextMenuDismissed) },
-        ) {
-            TrackContextMenu(
-                stateHolder = trackContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.sortMenuStateHolder?.let { sortMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = { handle(TrackListUserAction.SortMenuDismissed) },
-        ) {
-            SortMenu(
-                stateHolder = sortMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.artistsMenuStateHolder?.let { artistMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = { handle(TrackListUserAction.ArtistsMenuDismissed) },
-        ) {
-            ArtistsMenu(
-                stateHolder = artistMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
 }

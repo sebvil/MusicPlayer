@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -9,6 +11,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class PlaylistContextMenuArguments(val playlistId: Long) : Arguments
-
-interface PlaylistContextMenuDelegate : NavController
 
 sealed interface PlaylistContextMenuState : State {
     data class Data(
@@ -44,7 +45,7 @@ sealed interface PlaylistContextMenuUserAction : UserAction {
 class PlaylistContextMenuStateHolder(
     arguments: PlaylistContextMenuArguments,
     private val playlistRepository: PlaylistRepository,
-    private val delegate: PlaylistContextMenuDelegate,
+    private val navController: NavController,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<PlaylistContextMenuState, PlaylistContextMenuUserAction> {
 
@@ -70,14 +71,16 @@ class PlaylistContextMenuStateHolder(
             }
 
             is PlaylistContextMenuUserAction.ViewPlaylistClicked -> {
-                delegate.push(
+                navController.push(
                     TrackList(
                         arguments = TrackListArguments(
                             MediaGroup.Playlist(
                                 playlistId
                             )
-                        ), navController = delegate
-                    )
+                        ),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
                 )
             }
 
@@ -96,5 +99,19 @@ class PlaylistContextMenuStateHolder(
                 showDeleteConfirmationDialog.update { false }
             }
         }
+    }
+}
+
+@Composable
+fun rememberPlaylistContextMenuStateHolder(
+    arguments: PlaylistContextMenuArguments,
+    navController: NavController
+): PlaylistContextMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        PlaylistContextMenuStateHolder(
+            arguments = arguments,
+            playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+            navController = navController
+        )
     }
 }

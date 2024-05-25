@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,8 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -122,17 +119,4 @@ fun PlaylistListLayout(
             handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
         }
     )
-
-    state.playlistContextMenuStateHolder?.let { playlistContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(PlaylistListUserAction.PlaylistContextMenuDismissed)
-            },
-        ) {
-            PlaylistContextMenu(
-                stateHolder = playlistContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
 }

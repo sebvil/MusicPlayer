@@ -25,9 +25,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+
+data class SortMenu(override val arguments: SortMenuArguments) : Screen<SortMenuArguments> {
+    @Composable
+    override fun Content(modifier: Modifier) {
+        SortMenu(
+            stateHolder = rememberSortMenuStateHolder(arguments = arguments),
+            modifier = modifier
+        )
+    }
+}
 
 @Composable
 fun SortMenu(stateHolder: SortMenuStateHolder, modifier: Modifier = Modifier) {

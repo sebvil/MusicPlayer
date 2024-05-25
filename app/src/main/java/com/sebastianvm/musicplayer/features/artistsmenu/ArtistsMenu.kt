@@ -15,10 +15,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+
+data class ArtistsMenu(
+    override val arguments: ArtistsMenuArguments,
+    val navController: NavController
+) : Screen<ArtistsMenuArguments> {
+
+    @Composable
+    override fun Content(modifier: Modifier) {
+        ArtistsMenu(
+            stateHolder = rememberArtistsMenuStateHolder(
+                arguments = arguments,
+                navController = navController
+            ),
+            modifier = modifier
+        )
+    }
+}
 
 @Composable
 fun ArtistsMenu(stateHolder: ArtistsMenuStateHolder, modifier: Modifier = Modifier) {

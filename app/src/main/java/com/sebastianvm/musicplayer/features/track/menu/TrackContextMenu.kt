@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.icons.Album
@@ -16,6 +18,24 @@ import com.sebastianvm.musicplayer.ui.icons.PlaylistRemove
 import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+
+
+data class TrackContextMenu(
+    override val arguments: TrackContextMenuArguments,
+    val navController: NavController
+) : Screen<TrackContextMenuArguments> {
+
+    @Composable
+    override fun Content(modifier: Modifier) {
+        TrackContextMenu(
+            stateHolder = rememberTrackContextMenuStateHolder(
+                arguments,
+                navController
+            ),
+            modifier = modifier
+        )
+    }
+}
 
 @Composable
 fun TrackContextMenu(

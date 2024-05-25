@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.list
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -9,9 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
@@ -60,30 +56,4 @@ fun AlbumList(
             handle(AlbumListUserAction.AlbumMoreIconClicked(item.id))
         }
     )
-
-    state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(AlbumListUserAction.AlbumContextMenuDismissed)
-            },
-        ) {
-            AlbumContextMenu(
-                stateHolder = albumContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.sortMenuStateHolder?.let { sortMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(AlbumListUserAction.SortMenuDismissed)
-            },
-        ) {
-            SortMenu(
-                stateHolder = sortMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
 }

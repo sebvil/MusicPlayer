@@ -13,10 +13,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-data class AppNavigationState(val backStack: List<Screen<*>>) : State
+data class BackStackEntry(val screen: Screen<*>, val presentationMode: NavOptions.PresentationMode)
+data class AppNavigationState(val backStack: List<BackStackEntry>) : State
 
 sealed interface AppNavigationAction : UserAction {
-    data class ShowScreen(val screen: Screen<*>) : AppNavigationAction
+    data class ShowScreen(val screen: Screen<*>, val navOptions: NavOptions) : AppNavigationAction
     data object PopBackStack : AppNavigationAction
 }
 
@@ -24,8 +25,8 @@ class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolde
     StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController = object : NavController {
-        override fun push(screen: Screen<*>) {
-            handle(AppNavigationAction.ShowScreen(screen))
+        override fun push(screen: Screen<*>, navOptions: NavOptions) {
+            handle(AppNavigationAction.ShowScreen(screen, navOptions))
         }
 
         override fun pop() {
@@ -33,9 +34,9 @@ class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolde
         }
     }
 
-    private val backStack: MutableStateFlow<List<Screen<*>>> = MutableStateFlow(
+    private val backStack: MutableStateFlow<List<BackStackEntry>> = MutableStateFlow(
         listOf(
-            MainScreen(navController)
+            BackStackEntry(MainScreen(navController), NavOptions.PresentationMode.Screen)
         )
     )
 
@@ -47,7 +48,12 @@ class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolde
         when (action) {
             is AppNavigationAction.ShowScreen -> {
                 backStack.update {
-                    it + action.screen
+                    val entry = BackStackEntry(action.screen, action.navOptions.presentationMode)
+                    if (action.navOptions.popCurrent) {
+                        it.dropLast(1) + entry
+                    } else {
+                        it + entry
+                    }
                 }
             }
 

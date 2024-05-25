@@ -8,7 +8,6 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,12 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -207,7 +200,6 @@ fun SearchScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchLayout(
     state: SearchState,
@@ -262,71 +254,6 @@ fun SearchLayout(
                     }
                 )
             }
-        }
-    }
-
-    state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(SearchUserAction.AlbumContextMenuDismissed)
-            },
-        ) {
-            AlbumContextMenu(
-                stateHolder = albumContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.artistContextMenuStateHolder?.let { artistContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(SearchUserAction.ArtistContextMenuDismissed)
-            },
-        ) {
-            ArtistContextMenu(
-                stateHolder = artistContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.genreContextMenuStateHolder?.let { genreContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(SearchUserAction.GenreContextMenuDismissed)
-            },
-        ) {
-            GenreContextMenu(
-                stateHolder = genreContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.trackContextMenuStateHolder?.let { trackContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(SearchUserAction.GenreContextMenuDismissed)
-            },
-        ) {
-            TrackContextMenu(
-                stateHolder = trackContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
-        }
-    }
-
-    state.playlistContextMenuStateHolder?.let { playlistContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(SearchUserAction.PlaylistContextMenuDismissed)
-            },
-        ) {
-            PlaylistContextMenu(
-                stateHolder = playlistContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
         }
     }
 }

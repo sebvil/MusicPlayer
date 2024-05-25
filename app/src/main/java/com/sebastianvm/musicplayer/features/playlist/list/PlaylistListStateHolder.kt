@@ -1,11 +1,11 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import androidx.compose.runtime.Composable
-import com.sebastianvm.musicplayer.features.navigation.Screen
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolder
-import com.sebastianvm.musicplayer.features.playlist.menu.playlistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -16,7 +16,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
@@ -42,7 +41,6 @@ data class PlaylistListState(
 sealed interface PlaylistListUserAction : UserAction {
     data object SortByClicked : PlaylistListUserAction
     data class PlaylistMoreIconClicked(val playlistId: Long) : PlaylistListUserAction
-    data object PlaylistContextMenuDismissed : PlaylistListUserAction
     data class CreatePlaylistButtonClicked(val playlistName: String) : PlaylistListUserAction
     data object DismissPlaylistCreationErrorDialog : PlaylistListUserAction
 }
@@ -51,21 +49,18 @@ class PlaylistListStateHolder(
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val playlistContextMenuStateHolderFactory:
-    StateHolderFactory<PlaylistContextMenuArguments, PlaylistContextMenuDelegate, PlaylistContextMenuStateHolder>,
+    private val navController: NavController,
 ) : StateHolder<UiState<PlaylistListState>, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
     private val isCreatePlaylistDialogOpen = MutableStateFlow(false)
-    private val _contextMenuPlaylistId = MutableStateFlow<Long?>(null)
 
     override val state: StateFlow<UiState<PlaylistListState>> =
         combine(
             playlistRepository.getPlaylists(),
             isPlayListCreationErrorDialogOpen,
             isCreatePlaylistDialogOpen,
-            _contextMenuPlaylistId
-        ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, contextMenuPlaylistId ->
+        ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen ->
             if (playlists.isEmpty()) {
                 Empty
             } else {
@@ -78,21 +73,6 @@ class PlaylistListStateHolder(
                         ),
                         isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
                         isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
-                        playlistContextMenuStateHolder = contextMenuPlaylistId?.let { playlistId ->
-                            playlistContextMenuStateHolderFactory.getStateHolder(
-                                arguments = PlaylistContextMenuArguments(playlistId),
-                                delegate = object : PlaylistContextMenuDelegate {
-                                    override fun push(screen: Screen<*>) {
-                                        _contextMenuPlaylistId.update { null }
-                                        push(screen)
-                                    }
-
-                                    override fun pop() {
-                                        _contextMenuPlaylistId.update { null }
-                                    }
-                                }
-                            )
-                        }
                     )
                 )
             }
@@ -123,24 +103,25 @@ class PlaylistListStateHolder(
             }
 
             is PlaylistListUserAction.PlaylistMoreIconClicked -> {
-                _contextMenuPlaylistId.update { action.playlistId }
-            }
-
-            is PlaylistListUserAction.PlaylistContextMenuDismissed -> {
-                _contextMenuPlaylistId.update { null }
+                navController.push(
+                    PlaylistContextMenu(
+                        arguments = PlaylistContextMenuArguments(playlistId = action.playlistId),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                )
             }
         }
     }
 }
 
 @Composable
-fun rememberPlaylistListStateHolder(): PlaylistListStateHolder {
-    val playlistContextMenuStateHolderFactory = playlistContextMenuStateHolderFactory()
+fun rememberPlaylistListStateHolder(navController: NavController): PlaylistListStateHolder {
     return stateHolder { dependencyContainer ->
         PlaylistListStateHolder(
             playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
             sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-            playlistContextMenuStateHolderFactory = playlistContextMenuStateHolderFactory,
+            navController = navController
         )
     }
 }

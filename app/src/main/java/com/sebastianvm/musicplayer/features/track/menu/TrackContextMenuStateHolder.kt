@@ -1,7 +1,13 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -9,10 +15,10 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,11 +41,6 @@ sealed interface SourceTrackList {
 }
 
 data class TrackContextMenuArguments(val trackId: Long, val trackList: SourceTrackList) : Arguments
-interface TrackContextMenuDelegate : Delegate {
-    fun showAlbum(arguments: TrackListArguments)
-    fun showArtist(arguments: ArtistArguments)
-    fun showArtists(arguments: ArtistsMenuArguments)
-}
 
 sealed interface TrackContextMenuState : State {
     data class Data(
@@ -77,7 +78,7 @@ class TrackContextMenuStateHolder(
     private val trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
-    private val delegate: TrackContextMenuDelegate,
+    private val navController: NavController,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
 
@@ -120,18 +121,41 @@ class TrackContextMenuStateHolder(
             }
 
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
-                delegate.showAlbum(TrackListArguments(MediaGroup.Album(albumId = action.albumId)))
+                navController.push(
+                    TrackList(
+                        arguments = TrackListArguments(
+                            MediaGroup.Album(
+                                albumId = action.albumId
+                            )
+                        ),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
+                )
             }
 
             is TrackContextMenuUserAction.ViewArtistClicked -> {
-                delegate.showArtist(ArtistArguments(artistId = action.artistId))
+                navController.push(
+                    ArtistScreen(
+                        arguments = ArtistArguments(artistId = action.artistId),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
+                )
             }
 
             TrackContextMenuUserAction.ViewArtistsClicked -> {
-                delegate.showArtists(
-                    ArtistsMenuArguments(
-                        mediaType = MediaWithArtists.Track,
-                        mediaId = trackId
+                navController.push(
+                    ArtistsMenu(
+                        arguments = ArtistsMenuArguments(
+                            mediaType = MediaWithArtists.Track,
+                            mediaId = trackId
+                        ),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(
+                        popCurrent = true,
+                        NavOptions.PresentationMode.BottomSheet
                     )
                 )
             }
@@ -145,5 +169,22 @@ class TrackContextMenuStateHolder(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun rememberTrackContextMenuStateHolder(
+    arguments: TrackContextMenuArguments,
+    navController: NavController
+): TrackContextMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        TrackContextMenuStateHolder(
+            arguments = arguments,
+            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+            playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
+            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+            navController = navController
+        )
     }
 }

@@ -1,14 +1,16 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class ArtistContextMenuArguments(val artistId: Long) : Arguments
-interface ArtistContextMenuDelegate : Delegate, NavController
 
 sealed interface ArtistContextMenuState : State {
     data class Data(
@@ -36,7 +37,7 @@ sealed interface ArtistContextMenuUserAction : UserAction {
 class ArtistContextMenuStateHolder(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
-    private val delegate: ArtistContextMenuDelegate,
+    private val navController: NavController,
     stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<ArtistContextMenuState, ArtistContextMenuUserAction> {
 
@@ -56,13 +57,28 @@ class ArtistContextMenuStateHolder(
             }
 
             ArtistContextMenuUserAction.ViewArtistClicked -> {
-                delegate.push(
+                navController.push(
                     ArtistScreen(
                         arguments = ArtistArguments(artistId = artistId),
-                        navController = delegate
-                    )
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun rememberArtistContextMenuStateHolder(
+    arguments: ArtistContextMenuArguments,
+    navController: NavController
+): ArtistContextMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        ArtistContextMenuStateHolder(
+            arguments = arguments,
+            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
+            navController = navController,
+        )
     }
 }

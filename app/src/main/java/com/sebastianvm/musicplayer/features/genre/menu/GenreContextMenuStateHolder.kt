@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -9,6 +11,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +20,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class GenreContextMenuArguments(val genreId: Long) : Arguments
-interface GenreContextMenuDelegate : NavController
 
 sealed interface GenreContextMenuState : State {
     data class Data(
@@ -36,7 +38,7 @@ sealed interface GenreContextMenuUserAction : UserAction {
 class GenreContextMenuStateHolder(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
-    private val delegate: GenreContextMenuDelegate,
+    private val navController: NavController,
     stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<GenreContextMenuState, GenreContextMenuUserAction> {
 
@@ -56,13 +58,28 @@ class GenreContextMenuStateHolder(
             }
 
             GenreContextMenuUserAction.ViewGenreClicked -> {
-                delegate.push(
+                navController.push(
                     TrackList(
                         arguments = TrackListArguments(MediaGroup.Genre(genreId)),
-                        navController = delegate
-                    )
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun rememberGenreContextMenuStateHolder(
+    arguments: GenreContextMenuArguments,
+    navController: NavController
+): GenreContextMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        GenreContextMenuStateHolder(
+            arguments = arguments,
+            genreRepository = dependencyContainer.repositoryProvider.genreRepository,
+            navController = navController,
+        )
     }
 }

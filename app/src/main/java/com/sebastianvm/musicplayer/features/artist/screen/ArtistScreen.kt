@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -33,15 +30,19 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-data class ArtistScreen(override val arguments: ArtistArguments, val navController: NavController) :
-    Screen<ArtistArguments> {
+data class ArtistScreen(
+    override val arguments: ArtistArguments,
+    val navController: NavController,
+) : Screen<ArtistArguments> {
     @Composable
     override fun Content(modifier: Modifier) {
-        val stateHolder = rememberArtistStateHolder(
-            arguments = arguments,
-            navController = navController
+        ArtistScreen(
+            stateHolder = rememberArtistStateHolder(
+                arguments = arguments,
+                navController = navController
+            ),
+            modifier = modifier,
         )
-        ArtistScreen(stateHolder = stateHolder, modifier = modifier)
     }
 }
 
@@ -97,7 +98,6 @@ fun ArtistScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArtistLayout(
     state: ArtistState,
@@ -128,19 +128,6 @@ fun ArtistLayout(
                     )
                 }
             }
-        }
-    }
-
-    state.albumContextMenuStateHolder?.let { albumContextMenuStateHolder ->
-        BottomSheet(
-            onDismissRequest = {
-                handle(ArtistUserAction.AlbumContextMenuDismissed)
-            },
-        ) {
-            AlbumContextMenu(
-                albumContextMenuStateHolder,
-                modifier = Modifier.navigationBarsPadding()
-            )
         }
     }
 }

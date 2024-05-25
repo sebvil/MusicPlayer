@@ -1,19 +1,24 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
+import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +29,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class AlbumContextMenuArguments(val albumId: Long) : Arguments
-interface AlbumContextMenuDelegate : Delegate, NavController
 
 sealed interface AlbumContextMenuState : State {
     data class Data(
@@ -55,7 +59,7 @@ class AlbumContextMenuStateHolder(
     albumRepository: AlbumRepository,
     private val trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
-    private val delegate: AlbumContextMenuDelegate,
+    private val navController: NavController,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<AlbumContextMenuState, AlbumContextMenuUserAction> {
 
@@ -88,27 +92,56 @@ class AlbumContextMenuStateHolder(
             }
 
             AlbumContextMenuUserAction.ViewAlbumClicked -> {
-                delegate.push(
+                navController.push(
                     TrackList(
                         arguments = TrackListArguments(MediaGroup.Album(albumId = albumId)),
-                        navController = delegate
-                    )
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
                 )
             }
 
             is AlbumContextMenuUserAction.ViewArtistClicked -> {
-                delegate.push(
+                navController.push(
                     ArtistScreen(
                         arguments = ArtistArguments(action.artistId),
-                        navController = delegate
-                    )
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(popCurrent = true)
                 )
             }
 
             AlbumContextMenuUserAction.ViewArtistsClicked -> {
-                // TODO bottom sheet nav
-//                delegate.showArtists(albumId = albumId)
+                navController.push(
+                    ArtistsMenu(
+                        arguments = ArtistsMenuArguments(
+                            mediaType = MediaWithArtists.Album,
+                            mediaId = albumId
+                        ),
+                        navController = navController
+                    ),
+                    navOptions = NavOptions(
+                        popCurrent = true,
+                        presentationMode = NavOptions.PresentationMode.BottomSheet
+                    )
+                )
             }
         }
+    }
+}
+
+@Composable
+fun rememberAlbumContextMenuStateHolder(
+    arguments: AlbumContextMenuArguments,
+    navController: NavController
+): AlbumContextMenuStateHolder {
+    return stateHolder { dependencyContainer ->
+        AlbumContextMenuStateHolder(
+            arguments = arguments,
+            albumRepository = dependencyContainer.repositoryProvider.albumRepository,
+            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
+            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+            navController = navController,
+        )
     }
 }
