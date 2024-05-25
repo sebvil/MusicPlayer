@@ -19,7 +19,6 @@ import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-
 data class TrackContextMenu(
     override val arguments: TrackContextMenuArguments,
     val navController: NavController

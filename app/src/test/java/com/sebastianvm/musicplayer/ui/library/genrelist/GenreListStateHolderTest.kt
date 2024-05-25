@@ -4,6 +4,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.genre.list.GenreListState
 import com.sebastianvm.musicplayer.features.genre.list.GenreListStateHolder
 import com.sebastianvm.musicplayer.features.genre.list.GenreListUserAction
+import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -36,7 +37,8 @@ class GenreListStateHolderTest : FreeSpec({
         return GenreListStateHolder(
             stateHolderScope = this,
             genreRepository = genreRepository,
-            sortPreferencesRepository = sortPreferencesRepository
+            sortPreferencesRepository = sortPreferencesRepository,
+            navController = FakeNavController()
         )
     }
 

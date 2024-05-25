@@ -16,7 +16,6 @@ import com.sebastianvm.musicplayer.ui.icons.PlayArrow
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-
 data class ArtistContextMenu(
     override val arguments: ArtistContextMenuArguments,
     val navController: NavController

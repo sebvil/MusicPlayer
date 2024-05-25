@@ -63,7 +63,6 @@ sealed interface SearchUserAction : UserAction {
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
     data object DismissPlaybackErrorDialog : SearchUserAction
-    data object NavigationCompleted : SearchUserAction
 }
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -108,7 +107,9 @@ class SearchStateHolder(
     private val playbackResult = MutableStateFlow<PlaybackResult?>(null)
 
     override val state: StateFlow<SearchState> = combine(
-        query.map { it.mode }, searchResults, playbackResult
+        query.map { it.mode },
+        searchResults,
+        playbackResult
     ) { selectedOption, results, playbackResult ->
         SearchState(
             selectedOption = selectedOption,
@@ -116,7 +117,9 @@ class SearchStateHolder(
             playbackResult = playbackResult,
         )
     }.stateIn(
-        scope = stateHolderScope, started = SharingStarted.Lazily, initialValue = SearchState(
+        scope = stateHolderScope,
+        started = SharingStarted.Lazily,
+        initialValue = SearchState(
             selectedOption = SearchMode.SONGS,
             searchResults = emptyList(),
             playbackResult = null,
@@ -239,9 +242,6 @@ class SearchStateHolder(
 
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
             is SearchUserAction.DismissPlaybackErrorDialog -> playbackResult.update { null }
-            is SearchUserAction.NavigationCompleted -> {
-//                destination.update { null }
-            }
         }
     }
 

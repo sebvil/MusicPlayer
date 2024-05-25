@@ -64,7 +64,6 @@
     <string name="no_albums_found">No albums found. Try refreshing your library</string>
     <string name="no_playlists_try_creating_one">No playlists. Try creating one!</string>
     <string name="hide_player">Hide player</string>
-    <string name="no_results">No results</string>
     <string name="loading">Loading</string>
 
 </resources>

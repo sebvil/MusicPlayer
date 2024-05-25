@@ -83,5 +83,3 @@ fun rememberArtistsMenuStateHolder(
         )
     }
 }
-
-

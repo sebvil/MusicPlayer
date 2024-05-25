@@ -172,7 +172,6 @@ class TrackContextMenuStateHolder(
     }
 }
 
-
 @Composable
 fun rememberTrackContextMenuStateHolder(
     arguments: TrackContextMenuArguments,

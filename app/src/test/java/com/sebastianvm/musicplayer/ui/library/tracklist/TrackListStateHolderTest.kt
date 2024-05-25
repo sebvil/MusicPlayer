@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui.library.tracklist
 
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
+import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListState
 import com.sebastianvm.musicplayer.features.track.list.TrackListStateHolder
@@ -42,6 +43,7 @@ class TrackListStateHolderTest : FreeSpec({
             trackRepository = trackRepository,
             sortPreferencesRepository = sortPreferencesRepository,
             args = TrackListArguments(trackList),
+            navController = FakeNavController()
         )
     }
 

@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-
 data class AlbumContextMenu(
     override val arguments: AlbumContextMenuArguments,
     val navController: NavController
