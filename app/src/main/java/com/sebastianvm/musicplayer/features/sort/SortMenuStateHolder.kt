@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -167,7 +167,7 @@ sealed interface SortMenuUserAction : UserAction {
 
 @Composable
 fun rememberSortMenuStateHolder(arguments: SortMenuArguments): SortMenuStateHolder {
-    return stateHolder { dependencyContainer ->
+    return rememberStateHolder { dependencyContainer ->
         SortMenuStateHolder(
             arguments = arguments,
             sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,

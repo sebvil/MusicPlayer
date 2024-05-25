@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -135,7 +135,7 @@ fun rememberAlbumContextMenuStateHolder(
     arguments: AlbumContextMenuArguments,
     navController: NavController
 ): AlbumContextMenuStateHolder {
-    return stateHolder { dependencyContainer ->
+    return rememberStateHolder { dependencyContainer ->
         AlbumContextMenuStateHolder(
             arguments = arguments,
             albumRepository = dependencyContainer.repositoryProvider.albumRepository,

@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
-
-interface NavController : Delegate {
+interface NavController {
     fun push(screen: Screen<*>, navOptions: NavOptions = NavOptions())
     fun pop()
 }

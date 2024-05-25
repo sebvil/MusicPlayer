@@ -14,7 +14,7 @@ interface StateHolder<S : State, A : UserAction> {
 }
 
 @Composable
-fun <S : State, A : UserAction, SH : StateHolder<S, A>> stateHolder(
+fun <S : State, A : UserAction, SH : StateHolder<S, A>> rememberStateHolder(
     factory: (dependencyContainer: DependencyContainer) -> SH
 ): SH {
     val dependencyContainer =

@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,7 +117,7 @@ class PlaylistListStateHolder(
 
 @Composable
 fun rememberPlaylistListStateHolder(navController: NavController): PlaylistListStateHolder {
-    return stateHolder { dependencyContainer ->
+    return rememberStateHolder { dependencyContainer ->
         PlaylistListStateHolder(
             playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
             sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,

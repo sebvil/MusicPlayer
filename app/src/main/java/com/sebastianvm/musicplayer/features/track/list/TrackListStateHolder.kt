@@ -26,7 +26,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -145,7 +145,7 @@ fun rememberTrackListStateHolder(
     args: TrackListArguments,
     navController: NavController
 ): TrackListStateHolder {
-    return stateHolder { dependencies ->
+    return rememberStateHolder { dependencies ->
         TrackListStateHolder(
             args = args,
             navController = navController,

@@ -27,11 +27,10 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,8 +46,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-
-interface SearchDelegate : Delegate, NavController
 
 data class SearchQuery(val term: String, val mode: SearchMode)
 
@@ -73,7 +70,7 @@ sealed interface SearchUserAction : UserAction {
 class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-    private val delegate: SearchDelegate,
+    private val navController: NavController,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SearchState, SearchUserAction> {
 
@@ -141,69 +138,74 @@ class SearchStateHolder(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-        delegate.push(ArtistScreen(ArtistArguments(artistId), delegate))
+        navController.push(ArtistScreen(ArtistArguments(artistId), navController))
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
-        delegate.push(TrackList(TrackListArguments(MediaGroup.Album(albumId)), delegate))
+        navController.push(TrackList(TrackListArguments(MediaGroup.Album(albumId)), navController))
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
-        delegate.push(TrackList(TrackListArguments(MediaGroup.Genre(genreId)), delegate))
+        navController.push(TrackList(TrackListArguments(MediaGroup.Genre(genreId)), navController))
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
-        delegate.push(TrackList(TrackListArguments(MediaGroup.Playlist(playlistId)), delegate))
+        navController.push(
+            TrackList(
+                TrackListArguments(MediaGroup.Playlist(playlistId)),
+                navController
+            )
+        )
     }
 
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
-        delegate.push(
+        navController.push(
             TrackContextMenu(
                 arguments = TrackContextMenuArguments(
                     trackId = trackId,
                     trackList = SourceTrackList.SearchResults
                 ),
-                navController = delegate
+                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
     }
 
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
-        delegate.push(
+        navController.push(
             ArtistContextMenu(
                 arguments = ArtistContextMenuArguments(artistId = artistId),
-                navController = delegate
+                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
     }
 
     private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
-        delegate.push(
+        navController.push(
             AlbumContextMenu(
                 arguments = AlbumContextMenuArguments(albumId = albumId),
-                navController = delegate
+                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
     }
 
     private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
-        delegate.push(
+        navController.push(
             GenreContextMenu(
                 arguments = GenreContextMenuArguments(genreId = genreId),
-                navController = delegate
+                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
     }
 
     private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
-        delegate.push(
+        navController.push(
             PlaylistContextMenu(
                 arguments = PlaylistContextMenuArguments(playlistId = playlistId),
-                navController = delegate
+                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
@@ -251,11 +253,11 @@ class SearchStateHolder(
 
 @Composable
 fun rememberSearchStateHolder(navController: NavController): SearchStateHolder {
-    return stateHolder { dependencyContainer ->
+    return rememberStateHolder { dependencyContainer ->
         SearchStateHolder(
             ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
             playbackManager = dependencyContainer.repositoryProvider.playbackManager,
-            delegate = object : SearchDelegate, NavController by navController {},
+            navController = navController,
         )
     }
 }

@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.AlbumType
 import kotlinx.coroutines.CoroutineScope
@@ -111,7 +111,7 @@ fun rememberArtistStateHolder(
     arguments: ArtistArguments,
     navController: NavController
 ): ArtistStateHolder {
-    return stateHolder { dependencyContainer ->
+    return rememberStateHolder { dependencyContainer ->
         ArtistStateHolder(
             arguments = arguments,
             artistRepository = dependencyContainer.repositoryProvider.artistRepository,

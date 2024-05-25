@@ -21,7 +21,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -102,7 +102,7 @@ class GenreListStateHolder(
 
 @Composable
 fun rememberGenreListStateHolder(navController: NavController): GenreListStateHolder {
-    return stateHolder { dependencies ->
+    return rememberStateHolder { dependencies ->
         GenreListStateHolder(
             genreRepository = dependencies.repositoryProvider.genreRepository,
             navController = navController,
