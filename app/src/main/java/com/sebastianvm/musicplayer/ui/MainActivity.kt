@@ -36,17 +36,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             M3AppTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.currentState
                     AppScreenHost(
-                        mainState = state, handle = viewModel::handle
+                        mainState = state,
+                        handle = viewModel::handle
                     ) {
-                        AppNavigationHost(stateHolder = remember {
-                            AppNavigationHostStateHolder()
-                        })
+                        AppNavigationHost(
+                            stateHolder = remember {
+                                AppNavigationHostStateHolder()
+                            }
+                        )
                     }
-
                 }
             }
         }

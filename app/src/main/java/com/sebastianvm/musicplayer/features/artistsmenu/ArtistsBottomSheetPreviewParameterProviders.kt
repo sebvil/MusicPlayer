@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
+package com.sebastianvm.musicplayer.features.artistsmenu
 
 // class ArtistsBottomSheetStatePreviewParameterProvider :
 //    PreviewParameterProvider<ArtistsBottomSheetState> {

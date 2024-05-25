@@ -26,32 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-
-@Suppress("StateHolderForwarding")
-//@/RootNavGraph
-//@Destination(navArgsDelegate = TrackSearchArguments::class)
-@Composable
-fun TrackSearchScreen(
-    stateHolder: TrackSearchStateHolder,
-    modifier: Modifier
-) {
-    val uiState by stateHolder.currentState
-    UiStateScreen(
-        uiState = uiState,
-        emptyScreen = {},
-        modifier = modifier
-    ) { state ->
-        TrackSearchLayout(
-            state = state,
-            handle = stateHolder::handle
-        )
-    }
-}
 
 @Composable
 fun AddTrackConfirmationDialog(

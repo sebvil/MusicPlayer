@@ -29,26 +29,10 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.features.navigation.AppNavigationHost
-import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
     { spring() }
-
-
-@Composable
-fun MainScreen(stateHolder: MainViewModel, modifier: Modifier = Modifier) {
-    val state by stateHolder.currentState
-    AppScreenHost(
-        mainState = state, handle = stateHolder::handle
-    ) {
-        AppNavigationHost(stateHolder = remember {
-            AppNavigationHostStateHolder()
-        })
-    }
-}
 
 @Composable
 fun AppScreenHost(
@@ -78,13 +62,15 @@ fun AppScreenHost(
     val transition = updateTransition(targetState = isFullScreen, label = "player animation")
 
     val paddingHorizontal by transition.animateDp(
-        transitionSpec = transitionSpec(), label = "padding horizontal"
+        transitionSpec = transitionSpec(),
+        label = "padding horizontal"
     ) { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else 8.dp
     }
 
     val paddingBottom by transition.animateDp(
-        transitionSpec = transitionSpec(), label = "padding bottom"
+        transitionSpec = transitionSpec(),
+        label = "padding bottom"
     ) { targetIsFullScreen ->
         if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
     }
@@ -99,7 +85,8 @@ fun AppScreenHost(
         Box(modifier = modifier) {
             content()
             mainState.playerViewState?.let {
-                AnimatedPlayerCard(state = it,
+                AnimatedPlayerCard(
+                    state = it,
                     transition = transition,
                     statusBarPadding = statusBarPadding,
                     modifier = Modifier
@@ -122,10 +109,12 @@ fun AppScreenHost(
                     onProgressBarValueChange = { position, trackLength ->
                         handle(
                             MainUserAction.ProgressBarClicked(
-                                position, trackLength
+                                position,
+                                trackLength
                             )
                         )
-                    })
+                    }
+                )
             }
         }
     }

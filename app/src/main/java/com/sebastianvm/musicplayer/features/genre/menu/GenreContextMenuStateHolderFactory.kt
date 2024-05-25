@@ -5,23 +5,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolderFactory
 import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolderFactory
 
 @Composable
-fun genreContextMenuStateHolderFactory(): StateHolderFactory<GenreContextMenuArguments, GenreContextMenuStateHolder> {
-    return stateHolderFactory { dependencyContainer, args ->
+fun genreContextMenuStateHolderFactory(): StateHolderFactory<GenreContextMenuArguments, GenreContextMenuDelegate, GenreContextMenuStateHolder> {
+    return stateHolderFactory { dependencyContainer, args, delegate ->
         GenreContextMenuStateHolder(
             arguments = args,
             genreRepository = dependencyContainer.repositoryProvider.genreRepository,
-            delegate = object : GenreContextMenuDelegate {
-                override fun showGenre(genreId: Long) {
-                    TODO("navigation")
-//                    navigator.navigate(
-//                        TrackListRouteDestination(
-//                            TrackListArgumentsForNav(
-//                                trackListType = MediaGroup.Genre(genreId)
-//                            )
-//                        )
-//                    )
-                }
-            }
+            delegate = delegate,
         )
     }
 }

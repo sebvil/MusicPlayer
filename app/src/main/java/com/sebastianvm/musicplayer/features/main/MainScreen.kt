@@ -53,10 +53,8 @@ fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
             screenStateHolder = state.searchStateHolder,
         )
         MainScreenPager(state = state)
-
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -72,45 +70,52 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
     }
     val coroutineScope = rememberCoroutineScope()
 
-    ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
-        pages.forEachIndexed { index, page ->
-            Tab(selected = currentScreen == page, onClick = {
-                coroutineScope.launch {
-                    pagerState.scrollToPage(index)
-                }
-            }, text = { Text(text = stringResource(id = page.screenName)) })
+    Column(modifier = modifier) {
+        ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
+            pages.forEachIndexed { index, page ->
+                Tab(selected = currentScreen == page, onClick = {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(index)
+                    }
+                }, text = { Text(text = stringResource(id = page.screenName)) })
+            }
         }
-    }
 
-    HorizontalPager(
-        state = pagerState, modifier = modifier.fillMaxSize(), beyondBoundsPageCount = 1
-    ) { pageIndex ->
-        when (pages[pageIndex]) {
-            TopLevelScreen.ALL_SONGS -> {
-                TrackList(stateHolder = state.trackListStateHolder)
-            }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            beyondBoundsPageCount = 1
+        ) { pageIndex ->
+            when (pages[pageIndex]) {
+                TopLevelScreen.ALL_SONGS -> {
+                    TrackList(stateHolder = state.trackListStateHolder)
+                }
 
-            TopLevelScreen.ARTISTS -> {
-                ArtistList(stateHolder = state.artistListStateHolder)
-            }
+                TopLevelScreen.ARTISTS -> {
+                    ArtistList(stateHolder = state.artistListStateHolder)
+                }
 
-            TopLevelScreen.ALBUMS -> {
-                AlbumList(stateHolder = state.albumListStateHolder)
-            }
+                TopLevelScreen.ALBUMS -> {
+                    AlbumList(stateHolder = state.albumListStateHolder)
+                }
 
-            TopLevelScreen.GENRES -> {
-                GenreList(stateHolder = state.genreListStateHolder)
-            }
+                TopLevelScreen.GENRES -> {
+                    GenreList(stateHolder = state.genreListStateHolder)
+                }
 
-            TopLevelScreen.PLAYLISTS -> {
-                PlaylistList(stateHolder = state.playlistListStateHolder)
+                TopLevelScreen.PLAYLISTS -> {
+                    PlaylistList(stateHolder = state.playlistListStateHolder)
+                }
             }
         }
     }
 }
 
 enum class TopLevelScreen(@StringRes val screenName: Int) {
-    ALL_SONGS(R.string.all_songs), ARTISTS(R.string.artists), ALBUMS(R.string.albums), GENRES(R.string.genres), PLAYLISTS(
+    ALL_SONGS(
+        R.string.all_songs
+    ),
+    ARTISTS(R.string.artists), ALBUMS(R.string.albums), GENRES(R.string.genres), PLAYLISTS(
         R.string.playlists
     )
 }

@@ -1,5 +1,10 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.track.list.TrackList
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -19,11 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class AlbumContextMenuArguments(val albumId: Long) : Arguments
-interface AlbumContextMenuDelegate : Delegate {
-    fun showAlbum(albumId: Long)
-    fun showArtists(albumId: Long)
-    fun showArtist(artistId: Long)
-}
+interface AlbumContextMenuDelegate : Delegate, NavController
 
 sealed interface AlbumContextMenuState : State {
     data class Data(
@@ -87,15 +88,26 @@ class AlbumContextMenuStateHolder(
             }
 
             AlbumContextMenuUserAction.ViewAlbumClicked -> {
-                delegate.showAlbum(albumId = albumId)
+                delegate.push(
+                    TrackList(
+                        arguments = TrackListArguments(MediaGroup.Album(albumId = albumId)),
+                        navController = delegate
+                    )
+                )
             }
 
             is AlbumContextMenuUserAction.ViewArtistClicked -> {
-                delegate.showArtist(artistId = action.artistId)
+                delegate.push(
+                    ArtistScreen(
+                        arguments = ArtistArguments(action.artistId),
+                        navController = delegate
+                    )
+                )
             }
 
             AlbumContextMenuUserAction.ViewArtistsClicked -> {
-                delegate.showArtists(albumId = albumId)
+                // TODO bottom sheet nav
+//                delegate.showArtists(albumId = albumId)
             }
         }
     }

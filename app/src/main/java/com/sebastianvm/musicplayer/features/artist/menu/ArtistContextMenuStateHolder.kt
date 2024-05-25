@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
@@ -14,9 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class ArtistContextMenuArguments(val artistId: Long) : Arguments
-interface ArtistContextMenuDelegate : Delegate {
-    fun showArtist(artistId: Long)
-}
+interface ArtistContextMenuDelegate : Delegate, NavController
 
 sealed interface ArtistContextMenuState : State {
     data class Data(
@@ -25,12 +26,6 @@ sealed interface ArtistContextMenuState : State {
     ) : ArtistContextMenuState
 
     data object Loading : ArtistContextMenuState
-}
-
-sealed interface ViewArtistRow {
-    data class SingleArtist(val artistId: Long) : ViewArtistRow
-    data object MultipleArtists : ViewArtistRow
-    data object NoArtists : ViewArtistRow
 }
 
 sealed interface ArtistContextMenuUserAction : UserAction {
@@ -61,7 +56,12 @@ class ArtistContextMenuStateHolder(
             }
 
             ArtistContextMenuUserAction.ViewArtistClicked -> {
-                delegate.showArtist(artistId = artistId)
+                delegate.push(
+                    ArtistScreen(
+                        arguments = ArtistArguments(artistId = artistId),
+                        navController = delegate
+                    )
+                )
             }
         }
     }

@@ -69,9 +69,9 @@ fun rememberMainStateHolder(navController: NavController): MainStateHolder {
         )
     val artistListStateHolder = rememberArtistListStateHolder(navController)
     val albumListStateHolder = rememberAlbumListStateHolder(navController)
-    val genreListStateHolder = rememberGenreListStateHolder()
+    val genreListStateHolder = rememberGenreListStateHolder(navController)
     val playlistListStateHolder = rememberPlaylistListStateHolder()
-    val searchStateHolder = rememberSearchStateHolder()
+    val searchStateHolder = rememberSearchStateHolder(navController)
     return remember {
         MainStateHolder(
             trackListStateHolder = trackListStateHolder,
@@ -82,7 +82,4 @@ fun rememberMainStateHolder(navController: NavController): MainStateHolder {
             searchStateHolder = searchStateHolder
         )
     }
-
-
 }
-

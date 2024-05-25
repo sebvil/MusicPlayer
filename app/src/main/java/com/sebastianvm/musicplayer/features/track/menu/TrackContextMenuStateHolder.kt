@@ -1,5 +1,9 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -32,9 +36,9 @@ sealed interface SourceTrackList {
 
 data class TrackContextMenuArguments(val trackId: Long, val trackList: SourceTrackList) : Arguments
 interface TrackContextMenuDelegate : Delegate {
-    fun showAlbum(albumId: Long)
-    fun showArtists(trackId: Long)
-    fun showArtist(artistId: Long)
+    fun showAlbum(arguments: TrackListArguments)
+    fun showArtist(arguments: ArtistArguments)
+    fun showArtists(arguments: ArtistsMenuArguments)
 }
 
 sealed interface TrackContextMenuState : State {
@@ -116,15 +120,20 @@ class TrackContextMenuStateHolder(
             }
 
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
-                delegate.showAlbum(albumId = action.albumId)
+                delegate.showAlbum(TrackListArguments(MediaGroup.Album(albumId = action.albumId)))
             }
 
             is TrackContextMenuUserAction.ViewArtistClicked -> {
-                delegate.showArtist(artistId = action.artistId)
+                delegate.showArtist(ArtistArguments(artistId = action.artistId))
             }
 
             TrackContextMenuUserAction.ViewArtistsClicked -> {
-                delegate.showArtists(trackId = trackId)
+                delegate.showArtists(
+                    ArtistsMenuArguments(
+                        mediaType = MediaWithArtists.Track,
+                        mediaId = trackId
+                    )
+                )
             }
 
             is TrackContextMenuUserAction.RemoveFromPlaylistClicked -> {

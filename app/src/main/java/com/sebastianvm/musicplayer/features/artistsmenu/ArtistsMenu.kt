@@ -1,6 +1,7 @@
-package com.sebastianvm.musicplayer.ui.bottomsheets.mediaartists
+package com.sebastianvm.musicplayer.features.artistsmenu
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -16,45 +17,29 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
 
-@Suppress("StateHolderForwarding")
-//@RootNavGraph
-//@Destination(
-//    navArgsDelegate = ArtistsMenuArguments::class,
-//    style = DestinationStyleBottomSheet::class
-//)
 @Composable
-fun ArtistsBottomSheet(
-    arguments: ArtistsMenuArguments,
-    modifier: Modifier = Modifier,
-    stateHolder: StateHolder<UiState<ArtistsBottomSheetState>, ArtistsBottomSheetUserAction> =
-        stateHolder { dependencyContainer ->
-            ArtistsBottomSheetStateHolder(
-                arguments = arguments,
-                artistRepository = dependencyContainer.repositoryProvider.artistRepository
-            )
-        }
-) {
+fun ArtistsMenu(stateHolder: ArtistsMenuStateHolder, modifier: Modifier = Modifier) {
     val uiState by stateHolder.currentState
-
     UiStateScreen(
         uiState = uiState,
-        emptyScreen = {},
-        modifier = modifier
+        modifier = modifier.fillMaxSize(),
+        emptyScreen = {}
     ) { state ->
-        ArtistsBottomSheetLayout(
+        ArtistsMenu(
             state = state,
+            handle = stateHolder::handle,
+            modifier = Modifier
         )
     }
 }
 
 @Composable
-fun ArtistsBottomSheetLayout(
-    state: ArtistsBottomSheetState,
+fun ArtistsMenu(
+    state: ArtistsMenuState,
+    handle: Handler<ArtistsMenuUserAction>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -77,11 +62,7 @@ fun ArtistsBottomSheetLayout(
             state = state.modelListState,
             onBackButtonClicked = {},
             onItemClicked = { _, item ->
-//                navigator.navigate(
-//                    ArtistRouteDestination(
-//                        ArtistArguments(artistId = item.id)
-//                    )
-//                )
+                handle(ArtistsMenuUserAction.ArtistClicked(item.id))
             }
         )
     }

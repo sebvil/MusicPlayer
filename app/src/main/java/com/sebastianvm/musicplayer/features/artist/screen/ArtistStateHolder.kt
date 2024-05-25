@@ -3,9 +3,11 @@ package com.sebastianvm.musicplayer.features.artist.screen
 import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuDelegate
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.album.menu.albumContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -54,16 +56,17 @@ class ArtistStateHolder(
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
     private val delegate: ArtistScreenDelegate,
-    private val albumContextMenuStateHolderFactory: StateHolderFactory<AlbumContextMenuArguments, AlbumContextMenuStateHolder>
+    private val albumContextMenuStateHolderFactory:
+    StateHolderFactory<AlbumContextMenuArguments, AlbumContextMenuDelegate, AlbumContextMenuStateHolder>
 ) : StateHolder<UiState<ArtistState>, ArtistUserAction> {
 
     private val artistId = arguments.artistId
-    private val contextMenuAlbumId: MutableStateFlow<Long?> = MutableStateFlow(null)
+    private val _contextMenuAlbumId: MutableStateFlow<Long?> = MutableStateFlow(null)
 
     override val state: StateFlow<UiState<ArtistState>> =
         combine(
             artistRepository.getArtist(artistId),
-            contextMenuAlbumId
+            _contextMenuAlbumId
         ) { artistWithAlbums, contextMenuAlbumId ->
             val listItems = buildList {
                 if (artistWithAlbums.artistAlbums.isNotEmpty()) {
@@ -84,7 +87,17 @@ class ArtistStateHolder(
                         listItems = listItems,
                         albumContextMenuStateHolder = contextMenuAlbumId?.let { albumId ->
                             albumContextMenuStateHolderFactory.getStateHolder(
-                                AlbumContextMenuArguments(albumId = albumId)
+                                arguments = AlbumContextMenuArguments(albumId = albumId),
+                                delegate = object : AlbumContextMenuDelegate {
+                                    override fun push(screen: Screen<*>) {
+                                        _contextMenuAlbumId.update { null }
+                                        push(screen)
+                                    }
+
+                                    override fun pop() {
+                                        _contextMenuAlbumId.update { null }
+                                    }
+                                }
                             )
                         }
                     )
@@ -95,11 +108,11 @@ class ArtistStateHolder(
     override fun handle(action: ArtistUserAction) {
         when (action) {
             is ArtistUserAction.AlbumContextMenuDismissed -> {
-                contextMenuAlbumId.update { null }
+                _contextMenuAlbumId.update { null }
             }
 
             is ArtistUserAction.AlbumMoreIconClicked -> {
-                contextMenuAlbumId.update { action.albumId }
+                _contextMenuAlbumId.update { action.albumId }
             }
 
             is ArtistUserAction.BackClicked -> {
@@ -135,6 +148,5 @@ fun rememberArtistStateHolder(
             delegate = object : ArtistScreenDelegate, NavController by navController {},
             albumContextMenuStateHolderFactory = albumContextMenuStateHolderFactory
         )
-
     }
 }

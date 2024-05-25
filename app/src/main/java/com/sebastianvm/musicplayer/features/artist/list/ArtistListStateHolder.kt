@@ -3,11 +3,13 @@ package com.sebastianvm.musicplayer.features.artist.list
 import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuDelegate
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.artist.menu.artistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -53,15 +55,16 @@ class ArtistListStateHolder(
     artistRepository: ArtistRepository,
     private val delegate: ArtistListDelegate,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val artistContextMenuStateHolderFactory: StateHolderFactory<ArtistContextMenuArguments, ArtistContextMenuStateHolder>,
+    private val artistContextMenuStateHolderFactory:
+    StateHolderFactory<ArtistContextMenuArguments, ArtistContextMenuDelegate, ArtistContextMenuStateHolder>,
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
 
-    private val contextMenuArtistId = MutableStateFlow<Long?>(null)
+    private val _contextMenuArtistId = MutableStateFlow<Long?>(null)
     override val state: StateFlow<UiState<ArtistListState>> = combine(
         artistRepository.getArtists(),
         sortPreferencesRepository.getArtistListSortOrder(),
-        contextMenuArtistId,
+        _contextMenuArtistId,
     ) { artists, sortOrder, contextMenuArtistId ->
         if (artists.isEmpty()) {
             Empty
@@ -80,7 +83,17 @@ class ArtistListStateHolder(
                     ),
                     artistContextMenuStateHolder = contextMenuArtistId?.let { artistId ->
                         artistContextMenuStateHolderFactory.getStateHolder(
-                            ArtistContextMenuArguments(artistId)
+                            ArtistContextMenuArguments(artistId),
+                            delegate = object : ArtistContextMenuDelegate {
+                                override fun push(screen: Screen<*>) {
+                                    _contextMenuArtistId.update { null }
+                                    delegate.push(screen)
+                                }
+
+                                override fun pop() {
+                                    _contextMenuArtistId.update { null }
+                                }
+                            }
                         )
                     }
                 )
@@ -97,11 +110,11 @@ class ArtistListStateHolder(
             }
 
             is ArtistListUserAction.ArtistMoreIconClicked -> {
-                contextMenuArtistId.update { action.artistId }
+                _contextMenuArtistId.update { action.artistId }
             }
 
             is ArtistListUserAction.ArtistContextMenuDismissed -> {
-                contextMenuArtistId.update { null }
+                _contextMenuArtistId.update { null }
             }
 
             is ArtistListUserAction.ArtistClicked -> {
@@ -116,7 +129,6 @@ class ArtistListStateHolder(
     }
 }
 
-
 @Composable
 fun rememberArtistListStateHolder(navController: NavController): ArtistListStateHolder {
     val artistContextMenuStateHolderFactory = artistContextMenuStateHolderFactory()
@@ -129,4 +141,3 @@ fun rememberArtistListStateHolder(navController: NavController): ArtistListState
         )
     }
 }
-

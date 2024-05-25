@@ -11,6 +11,3 @@ interface Screen<Args : Arguments> {
     @Composable
     fun Content(modifier: Modifier)
 }
-
-@Composable
-fun <Args : Arguments> Screen<Args>.Content() = Content(modifier = Modifier)

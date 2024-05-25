@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.features.sort.SortMenu
@@ -29,7 +30,6 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
-
 
 data class TrackList(override val arguments: TrackListArguments, val navController: NavController) :
     Screen<TrackListArguments> {
@@ -75,18 +75,22 @@ fun TrackList(
     contentWindowInsets: WindowInsets = WindowInsets(0),
 ) {
     Scaffold(
-        modifier = modifier, floatingActionButton = {
+        modifier = modifier,
+        floatingActionButton = {
             if (state.trackListType is MediaGroup.Playlist) {
-                ExtendedFloatingActionButton(text = { Text(text = stringResource(id = R.string.add_tracks)) },
+                ExtendedFloatingActionButton(
+                    text = { Text(text = stringResource(id = R.string.add_tracks)) },
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.Add, contentDescription = null
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null
                         )
                     },
                     onClick = {
 //                        val trackListType = state.trackListType
 //                        navigateToTrackSearchScreen(TrackSearchArguments(playlistId = trackListType.playlistId))
-                    })
+                    }
+                )
             }
         },
         contentWindowInsets = contentWindowInsets
@@ -106,7 +110,8 @@ fun TrackListLayout(
     handle: Handler<TrackListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    ModelList(state = state.modelListState,
+    ModelList(
+        state = state.modelListState,
         modifier = modifier,
         onBackButtonClicked = {
             handle(TrackListUserAction.BackClicked)
@@ -117,7 +122,8 @@ fun TrackListLayout(
         },
         onItemMoreIconClicked = { _, item ->
             handle(TrackListUserAction.TrackMoreIconClicked(trackId = item.id))
-        })
+        }
+    )
 
     state.trackContextMenuStateHolder?.let { trackContextMenuStateHolder ->
         BottomSheet(
@@ -135,7 +141,19 @@ fun TrackListLayout(
             onDismissRequest = { handle(TrackListUserAction.SortMenuDismissed) },
         ) {
             SortMenu(
-                stateHolder = sortMenuStateHolder, modifier = Modifier.navigationBarsPadding()
+                stateHolder = sortMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
+            )
+        }
+    }
+
+    state.artistsMenuStateHolder?.let { artistMenuStateHolder ->
+        BottomSheet(
+            onDismissRequest = { handle(TrackListUserAction.ArtistsMenuDismissed) },
+        ) {
+            ArtistsMenu(
+                stateHolder = artistMenuStateHolder,
+                modifier = Modifier.navigationBarsPadding()
             )
         }
     }

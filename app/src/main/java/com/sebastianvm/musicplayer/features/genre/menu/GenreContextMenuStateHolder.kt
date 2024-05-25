@@ -1,8 +1,11 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.track.list.TrackList
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -14,9 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class GenreContextMenuArguments(val genreId: Long) : Arguments
-interface GenreContextMenuDelegate : Delegate {
-    fun showGenre(genreId: Long)
-}
+interface GenreContextMenuDelegate : NavController
 
 sealed interface GenreContextMenuState : State {
     data class Data(
@@ -55,7 +56,12 @@ class GenreContextMenuStateHolder(
             }
 
             GenreContextMenuUserAction.ViewGenreClicked -> {
-                delegate.showGenre(genreId = genreId)
+                delegate.push(
+                    TrackList(
+                        arguments = TrackListArguments(MediaGroup.Genre(genreId)),
+                        navController = delegate
+                    )
+                )
             }
         }
     }

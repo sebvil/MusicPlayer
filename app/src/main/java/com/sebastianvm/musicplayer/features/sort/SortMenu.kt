@@ -37,7 +37,6 @@ fun SortMenu(stateHolder: SortMenuStateHolder, modifier: Modifier = Modifier) {
         handle = stateHolder::handle,
         modifier = modifier
     )
-
 }
 
 @Composable

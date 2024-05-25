@@ -15,7 +15,9 @@ fun AppNavigationHost(stateHolder: AppNavigationHostStateHolder, modifier: Modif
 
 @Composable
 fun AppNavigationHost(
-    state: AppNavigationState, handle: Handler<AppNavigationAction>, modifier: Modifier = Modifier
+    state: AppNavigationState,
+    handle: Handler<AppNavigationAction>,
+    modifier: Modifier = Modifier
 ) {
     val screens = state.backStack
     BackHandler(screens.size > 1) {

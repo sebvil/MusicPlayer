@@ -1,7 +1,9 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import androidx.compose.runtime.Composable
+import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuStateHolder
 import com.sebastianvm.musicplayer.features.playlist.menu.playlistContextMenuStateHolderFactory
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -30,7 +32,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 data class PlaylistListState(
     val modelListState: ModelListState,
     val isCreatePlaylistDialogOpen: Boolean,
@@ -50,19 +51,20 @@ class PlaylistListStateHolder(
     private val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val playlistContextMenuStateHolderFactory: StateHolderFactory<PlaylistContextMenuArguments, PlaylistContextMenuStateHolder>,
+    private val playlistContextMenuStateHolderFactory:
+    StateHolderFactory<PlaylistContextMenuArguments, PlaylistContextMenuDelegate, PlaylistContextMenuStateHolder>,
 ) : StateHolder<UiState<PlaylistListState>, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
     private val isCreatePlaylistDialogOpen = MutableStateFlow(false)
-    private val contextMenuPlaylistId = MutableStateFlow<Long?>(null)
+    private val _contextMenuPlaylistId = MutableStateFlow<Long?>(null)
 
     override val state: StateFlow<UiState<PlaylistListState>> =
         combine(
             playlistRepository.getPlaylists(),
             isPlayListCreationErrorDialogOpen,
             isCreatePlaylistDialogOpen,
-            contextMenuPlaylistId
+            _contextMenuPlaylistId
         ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, contextMenuPlaylistId ->
             if (playlists.isEmpty()) {
                 Empty
@@ -78,7 +80,17 @@ class PlaylistListStateHolder(
                         isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
                         playlistContextMenuStateHolder = contextMenuPlaylistId?.let { playlistId ->
                             playlistContextMenuStateHolderFactory.getStateHolder(
-                                PlaylistContextMenuArguments(playlistId)
+                                arguments = PlaylistContextMenuArguments(playlistId),
+                                delegate = object : PlaylistContextMenuDelegate {
+                                    override fun push(screen: Screen<*>) {
+                                        _contextMenuPlaylistId.update { null }
+                                        push(screen)
+                                    }
+
+                                    override fun pop() {
+                                        _contextMenuPlaylistId.update { null }
+                                    }
+                                }
                             )
                         }
                     )
@@ -111,11 +123,11 @@ class PlaylistListStateHolder(
             }
 
             is PlaylistListUserAction.PlaylistMoreIconClicked -> {
-                contextMenuPlaylistId.update { action.playlistId }
+                _contextMenuPlaylistId.update { action.playlistId }
             }
 
             is PlaylistListUserAction.PlaylistContextMenuDismissed -> {
-                contextMenuPlaylistId.update { null }
+                _contextMenuPlaylistId.update { null }
             }
         }
     }

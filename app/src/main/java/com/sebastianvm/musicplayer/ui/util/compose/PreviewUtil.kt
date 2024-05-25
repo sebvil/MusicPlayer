@@ -51,13 +51,7 @@ internal fun ThemedPreview(
 @Composable
 internal fun ScreenPreview(screen: @Composable () -> Unit) {
     M3AppTheme {
-//        NavHostWrapper {
-//            Scaffold { padding ->
-//                Box(modifier = Modifier.padding(padding)) {
-//                    screen()
-//                }
-//            }
-//        }
+        screen()
     }
 }
 

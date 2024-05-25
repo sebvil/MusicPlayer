@@ -1,8 +1,11 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
+import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.track.list.TrackList
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Delegate
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -18,9 +21,7 @@ import kotlinx.coroutines.launch
 
 data class PlaylistContextMenuArguments(val playlistId: Long) : Arguments
 
-interface PlaylistContextMenuDelegate : Delegate {
-    fun showPlaylist(playlistId: Long)
-}
+interface PlaylistContextMenuDelegate : NavController
 
 sealed interface PlaylistContextMenuState : State {
     data class Data(
@@ -69,7 +70,15 @@ class PlaylistContextMenuStateHolder(
             }
 
             is PlaylistContextMenuUserAction.ViewPlaylistClicked -> {
-                delegate.showPlaylist(playlistId = playlistId)
+                delegate.push(
+                    TrackList(
+                        arguments = TrackListArguments(
+                            MediaGroup.Playlist(
+                                playlistId
+                            )
+                        ), navController = delegate
+                    )
+                )
             }
 
             is PlaylistContextMenuUserAction.DeletePlaylistClicked -> {
