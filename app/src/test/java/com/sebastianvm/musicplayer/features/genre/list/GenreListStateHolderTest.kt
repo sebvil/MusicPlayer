@@ -1,15 +1,11 @@
-package com.sebastianvm.musicplayer.ui.library.artistlist
+package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.features.artist.list.ArtistListState
-import com.sebastianvm.musicplayer.features.artist.list.ArtistListStateHolder
-import com.sebastianvm.musicplayer.features.artist.list.ArtistListUserAction
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepositoryImpl
+import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepositoryImpl
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -24,41 +20,39 @@ import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 
-class ArtistListStateHolderTest : FreeSpec({
+class GenreListStateHolderTest : FreeSpec({
 
-    lateinit var artistRepository: FakeArtistRepositoryImpl
+    lateinit var genreRepository: FakeGenreRepositoryImpl
     lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
 
     beforeTest {
-        artistRepository = FakeProvider.artistRepository
+        genreRepository = FakeProvider.genreRepository
         sortPreferencesRepository = FakeProvider.sortPreferencesRepository
     }
 
-    fun TestScope.getSubject(): ArtistListStateHolder {
-        return ArtistListStateHolder(
+    fun TestScope.getSubject(): GenreListStateHolder {
+        return GenreListStateHolder(
             stateHolderScope = this,
-            artistRepository = artistRepository,
+            genreRepository = genreRepository,
             sortPreferencesRepository = sortPreferencesRepository,
             navController = FakeNavController()
         )
     }
 
-    "init subscribes to changes in artist list" {
+    "init subscribes to changes in genre list" {
         val subject = getSubject()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            artistRepository.getArtistsValue.emit(emptyList())
-            sortPreferencesRepository.getArtistListSortOrderValue.emit(MediaSortOrder.ASCENDING)
+            genreRepository.getGenresValue.emit(emptyList())
+            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
             awaitItem() shouldBe Empty
 
-            val artists = FixtureProvider.artistFixtures().toList()
-            artistRepository.getArtistsValue.emit(artists)
+            val genres = FixtureProvider.genreFixtures().toList()
+            genreRepository.getGenresValue.emit(genres)
             with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
-                state.modelListState.items shouldBe artists.map {
-                    it.toModelListItemState(
-                        trailingButtonType = TrailingButtonType.More
-                    )
+                shouldBeInstanceOf<Data<GenreListState>>()
+                state.modelListState.items shouldBe genres.map {
+                    it.toModelListItemState()
                 }
                 state.modelListState.headerState shouldBe HeaderState.None
             }
@@ -69,21 +63,21 @@ class ArtistListStateHolderTest : FreeSpec({
         val subject = getSubject()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            artistRepository.getArtistsValue.emit(FixtureProvider.artistFixtures().toList())
-            sortPreferencesRepository.getArtistListSortOrderValue.emit(MediaSortOrder.ASCENDING)
+            genreRepository.getGenresValue.emit(FixtureProvider.genreFixtures().toList())
+            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
             with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
+                shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(
-                    text = R.string.artist_name,
+                    text = R.string.genre_name,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
             }
 
-            sortPreferencesRepository.getArtistListSortOrderValue.emit(MediaSortOrder.DESCENDING)
+            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.DESCENDING)
             with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
+                shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(
-                    text = R.string.artist_name,
+                    text = R.string.genre_name,
                     sortOrder = MediaSortOrder.DESCENDING,
                 )
             }
@@ -92,8 +86,8 @@ class ArtistListStateHolderTest : FreeSpec({
 
     "sortByButtonClicked toggles sort order" {
         val subject = getSubject()
-        subject.handle(ArtistListUserAction.SortByButtonClicked)
+        subject.handle(GenreListUserAction.SortByButtonClicked)
         advanceUntilIdle()
-        sortPreferencesRepository.toggleArtistListSortOrderInvocations shouldBe listOf(listOf())
+        sortPreferencesRepository.toggleGenreListSortOrderInvocations shouldBe listOf(listOf())
     }
 })

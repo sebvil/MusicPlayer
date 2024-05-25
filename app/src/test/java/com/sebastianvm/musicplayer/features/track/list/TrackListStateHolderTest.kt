@@ -1,11 +1,7 @@
-package com.sebastianvm.musicplayer.ui.library.tracklist
+package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListState
-import com.sebastianvm.musicplayer.features.track.list.TrackListStateHolder
-import com.sebastianvm.musicplayer.features.track.list.toHeaderState
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
