@@ -24,58 +24,21 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
-import com.sebastianvm.musicplayer.ui.util.mvvm.ScreenDelegate
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
-import com.sebastianvm.musicplayer.ui.util.mvvm.stateHolder
-
-@Suppress("StateHolderForwarding")
-@RootNavGraph
-@Destination(navArgsDelegate = TrackSearchArguments::class)
-@Composable
-fun TrackSearchScreen(
-    navigator: DestinationsNavigator,
-    arguments: TrackSearchArguments,
-    screenStateHolder: StateHolder<UiState<TrackSearchState>, TrackSearchUserAction> =
-        stateHolder { dependencyContainer ->
-            TrackSearchStateHolder(
-                arguments = arguments,
-                playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
-                ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
-            )
-        }
-) {
-    val uiState by screenStateHolder.state.collectAsStateWithLifecycle()
-    UiStateScreen(
-        uiState = uiState,
-        emptyScreen = {}
-    ) { state ->
-        TrackSearchLayout(
-            state = state,
-            navigator = navigator,
-            screenDelegate = screenStateHolder::handle
-        )
-    }
-}
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 @Composable
 fun AddTrackConfirmationDialog(
     state: AddTrackConfirmationDialogState,
-    screenDelegate: ScreenDelegate<TrackSearchUserAction>,
+    handle: Handler<TrackSearchUserAction>,
     updateTrackName: (String) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {
-            screenDelegate.handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
+            handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
         },
         title = {
             Text(text = stringResource(R.string.add_to_playlist_question))
@@ -86,7 +49,7 @@ fun AddTrackConfirmationDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    screenDelegate.handle(
+                    handle(
                         TrackSearchUserAction.ConfirmAddTrackToPlaylist(
                             state.trackId,
                             state.trackName
@@ -101,7 +64,7 @@ fun AddTrackConfirmationDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    screenDelegate.handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
+                    handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
                 }
             ) {
                 Text("Cancel")
@@ -113,8 +76,7 @@ fun AddTrackConfirmationDialog(
 @Composable
 fun TrackSearchLayout(
     state: TrackSearchState,
-    navigator: DestinationsNavigator,
-    screenDelegate: ScreenDelegate<TrackSearchUserAction>,
+    handle: Handler<TrackSearchUserAction>,
     modifier: Modifier = Modifier
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -125,7 +87,7 @@ fun TrackSearchLayout(
     state.addTrackConfirmationDialogState?.also {
         AddTrackConfirmationDialog(
             state = it,
-            screenDelegate = screenDelegate,
+            handle = handle,
             updateTrackName = { newName -> trackName = newName }
         )
     }
@@ -140,7 +102,7 @@ fun TrackSearchLayout(
                 ),
                 Toast.LENGTH_SHORT
             ).show()
-            screenDelegate.handle(TrackSearchUserAction.ToastShown)
+            handle(TrackSearchUserAction.ToastShown)
         }
     }
 
@@ -152,8 +114,10 @@ fun TrackSearchLayout(
             .clickable { focusRequester.requestFocus() }
     ) {
         SearchField(
-            onTextChanged = { screenDelegate.handle(TrackSearchUserAction.TextChanged(it)) },
-            onUpButtonClicked = { navigator.navigateUp() },
+            onTextChanged = { handle(TrackSearchUserAction.TextChanged(it)) },
+            onUpButtonClicked = {
+//                navigator.navigateUp()
+            },
             focusRequester = focusRequester
         )
 
@@ -161,7 +125,7 @@ fun TrackSearchLayout(
             leadingContent = {
                 Switch(
                     checked = state.hideTracksInPlaylist,
-                    onCheckedChange = { screenDelegate.handle(TrackSearchUserAction.HideTracksCheckToggled) }
+                    onCheckedChange = { handle(TrackSearchUserAction.HideTracksCheckToggled) }
                 )
             },
             headlineContent = {
@@ -177,7 +141,7 @@ fun TrackSearchLayout(
                     state = item,
                     modifier = Modifier
                         .clickable {
-                            screenDelegate.handle(
+                            handle(
                                 TrackSearchUserAction.TrackClicked(
                                     trackId = item.id,
                                     trackName = item.headlineContent

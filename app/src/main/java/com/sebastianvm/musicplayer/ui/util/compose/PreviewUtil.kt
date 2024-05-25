@@ -1,12 +1,8 @@
 package com.sebastianvm.musicplayer.ui.util.compose
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
@@ -55,13 +51,7 @@ internal fun ThemedPreview(
 @Composable
 internal fun ScreenPreview(screen: @Composable () -> Unit) {
     M3AppTheme {
-        NavHostWrapper {
-            Scaffold { padding ->
-                Box(modifier = Modifier.padding(padding)) {
-                    screen()
-                }
-            }
-        }
+        screen()
     }
 }
 

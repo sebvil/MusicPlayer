@@ -29,7 +29,7 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import kotlin.time.Duration
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
     { spring() }
@@ -37,10 +37,7 @@ fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAn
 @Composable
 fun AppScreenHost(
     mainState: MainState,
-    onPreviousButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    onPlayToggled: () -> Unit,
-    onProgressBarValueChange: (Int, Duration) -> Unit,
+    handle: Handler<MainUserAction>,
     modifier: Modifier = Modifier,
     windowInsets: WindowInsets = WindowInsets.systemBars,
     content: @Composable () -> Unit
@@ -103,13 +100,20 @@ fun AppScreenHost(
                         .clickable(enabled = !isFullScreen) {
                             isFullScreen = !isFullScreen
                         },
-                    onPreviousButtonClicked = onPreviousButtonClicked,
-                    onNextButtonClicked = onNextButtonClicked,
-                    onPlayToggled = onPlayToggled,
+                    onPreviousButtonClicked = { handle(MainUserAction.PreviousButtonClicked) },
+                    onNextButtonClicked = { handle(MainUserAction.NextButtonClicked) },
+                    onPlayToggled = { handle(MainUserAction.PlayToggled) },
                     onDismissPlayer = {
                         isFullScreen = false
                     },
-                    onProgressBarValueChange = onProgressBarValueChange
+                    onProgressBarValueChange = { position, trackLength ->
+                        handle(
+                            MainUserAction.ProgressBarClicked(
+                                position,
+                                trackLength
+                            )
+                        )
+                    }
                 )
             }
         }

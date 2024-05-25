@@ -81,7 +81,7 @@ class SortPreferencesRepositoryImpl(
         return when (trackList) {
             is MediaGroup.AllTracks -> getAllTrackListSortPreferences()
             is MediaGroup.Genre -> getGenreTrackListSortPreferences(trackListId)
-            else -> throw IllegalArgumentException("Invalid trackListType for getTrackListSortPreferences")
+            else -> throw IllegalArgumentException("Invalid trackListType $trackList for getTrackListSortPreferences")
         }
     }
 

@@ -7,24 +7,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
-import com.ramcosta.composedestinations.navigation.dependency
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.ui.components.M3ModalBottomSheetLayout
+import com.sebastianvm.musicplayer.features.navigation.AppNavigationHost
+import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 class MainActivity : ComponentActivity() {
 
@@ -32,16 +25,12 @@ class MainActivity : ComponentActivity() {
         (this.application as MusicPlayerApplication).viewModelFactory
     }
 
-    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         StrictMode.setThreadPolicy(
-            ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build()
+            ThreadPolicy.Builder().detectAll().penaltyLog().build()
         )
 
         setContent {
@@ -50,40 +39,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val bottomSheetNavigator = rememberBottomSheetNavigator()
-                    val navController = rememberNavController()
-                    navController.navigatorProvider += bottomSheetNavigator
-                    M3ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator) {
-                        val state by viewModel.state.collectAsState()
-                        AppScreenHost(
-                            mainState = state,
-                            onPreviousButtonClicked = { viewModel.handle(MainUserAction.PreviousButtonClicked) },
-                            onPlayToggled = { viewModel.handle(MainUserAction.PlayToggled) },
-                            onNextButtonClicked = { viewModel.handle(MainUserAction.NextButtonClicked) },
-                            onProgressBarValueChange = { progress, trackLength ->
-                                viewModel.handle(
-                                    MainUserAction.ProgressBarClicked(progress, trackLength)
-                                )
+                    val state by viewModel.currentState
+                    AppScreenHost(
+                        mainState = state,
+                        handle = viewModel::handle
+                    ) {
+                        AppNavigationHost(
+                            stateHolder = remember {
+                                AppNavigationHostStateHolder()
                             }
-                        ) {
-                            DestinationsNavHost(
-                                navGraph = NavGraphs.root,
-                                navController = navController,
-                                engine = rememberAnimatedNavHostEngine(),
-                                dependenciesContainerBuilder = {
-                                    val handlePlayback =
-                                        PlaybackHandler { mediaGroup: MediaGroup, initialTrackIndex: Int ->
-                                            viewModel.handle(
-                                                MainUserAction.PlayMedia(
-                                                    mediaGroup,
-                                                    initialTrackIndex
-                                                )
-                                            )
-                                        }
-                                    dependency(handlePlayback)
-                                }
-                            )
-                        }
+                        )
                     }
                 }
             }
