@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -54,10 +55,6 @@ android {
                 it.useJUnitPlatform()
             }
         }
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     ksp {

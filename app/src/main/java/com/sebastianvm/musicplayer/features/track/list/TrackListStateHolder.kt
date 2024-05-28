@@ -7,11 +7,11 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class TrackListArguments(val trackListType: TrackList) : Arguments
 
@@ -43,7 +44,10 @@ data class TrackListState(
 ) : State
 
 sealed interface TrackListUserAction : UserAction {
-    data class TrackMoreIconClicked(val trackId: Long) : TrackListUserAction
+    data class TrackMoreIconClicked(val trackId: Long, val trackPositionInList: Int) :
+        TrackListUserAction
+
+    data class TrackClicked(val trackIndex: Int) : TrackListUserAction
     data object SortButtonClicked : TrackListUserAction
     data object BackClicked : TrackListUserAction
 }
@@ -51,9 +55,10 @@ sealed interface TrackListUserAction : UserAction {
 class TrackListStateHolder(
     private val args: TrackListArguments,
     private val navController: NavController,
-    stateHolderScope: CoroutineScope = stateHolderScope(),
+    private val stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
-    sortPreferencesRepository: SortPreferencesRepository
+    sortPreferencesRepository: SortPreferencesRepository,
+    private val playbackManager: PlaybackManager,
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
     override val state: StateFlow<UiState<TrackListState>> = combine(
@@ -90,15 +95,8 @@ class TrackListStateHolder(
                     TrackContextMenu(
                         arguments = TrackContextMenuArguments(
                             trackId = action.trackId,
-                            trackList = when (args.trackListType) {
-                                is MediaGroup.Album -> SourceTrackList.Album
-                                MediaGroup.AllTracks -> SourceTrackList.AllTracks
-                                is MediaGroup.Genre -> SourceTrackList.Genre
-                                is MediaGroup.Playlist -> SourceTrackList.Playlist(
-                                    trackList = args.trackListType,
-                                    trackPositionInPlaylist = 0 // TODO handle position
-                                )
-                            }
+                            trackPositionInList = action.trackPositionInList,
+                            trackList = args.trackListType,
                         ),
                         navController
                     ),
@@ -121,6 +119,15 @@ class TrackListStateHolder(
 
             is TrackListUserAction.BackClicked -> {
                 navController.pop()
+            }
+
+            is TrackListUserAction.TrackClicked -> {
+                stateHolderScope.launch {
+                    playbackManager.playMedia(
+                        mediaGroup = args.trackListType,
+                        initialTrackIndex = action.trackIndex
+                    )
+                }
             }
         }
     }
@@ -151,6 +158,7 @@ fun rememberTrackListStateHolder(
             navController = navController,
             trackRepository = dependencies.repositoryProvider.trackRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+            playbackManager = dependencies.repositoryProvider.playbackManager
         )
     }
 }

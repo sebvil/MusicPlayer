@@ -30,6 +30,10 @@ class MediaPlaybackClient(
     private val externalScope: CoroutineScope,
 ) {
 
+    init {
+        Log.i("Playback", "Initializing MediaPlaybackClient $this")
+    }
+
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
@@ -83,6 +87,9 @@ class MediaPlaybackClient(
             SessionToken(context, ComponentName(context, MediaPlaybackService::class.java))
         mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
         mediaControllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
+
+        Log.i("Playback", "Initializing Controller, future = $mediaControllerFuture")
+
     }
 
     fun releaseController() {

@@ -28,14 +28,15 @@ class DependencyContainer(private val appContext: Context) {
         JetpackDataStoreProvider(appContext)
     }
 
-    val repositoryProvider: RepositoryProvider
-        get() = RepositoryProvider(
+    val repositoryProvider: RepositoryProvider by lazy {
+        RepositoryProvider(
             context = appContext,
             dispatcherProvider = dispatcherProvider,
             database = database,
             jetpackDataStoreProvider = jetpackDataStoreProvider,
             applicationScope = applicationScope
         )
+    }
 }
 
 @Composable

@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.icons.Album
 import com.sebastianvm.musicplayer.ui.icons.Artist
 import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.ui.icons.PlayArrow
 import com.sebastianvm.musicplayer.ui.icons.PlaylistRemove
 import com.sebastianvm.musicplayer.ui.icons.QueueAdd
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -55,16 +54,6 @@ private fun TrackContextMenu(
         is TrackContextMenuState.Data -> {
             ContextMenu(menuTitle = state.trackName, modifier = modifier) {
                 LazyColumn {
-                    item {
-                        MenuItem(
-                            text = stringResource(id = R.string.play),
-                            icon = Icons.PlayArrow.icon(),
-                            onItemClicked = {
-                                handle(TrackContextMenuUserAction.PlayTrackClicked)
-                            }
-                        )
-                    }
-
                     item {
                         MenuItem(
                             text = stringResource(id = R.string.add_to_queue),

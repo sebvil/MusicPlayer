@@ -29,7 +29,7 @@ interface PlaybackManager {
     fun prev()
 
     @FakeQueryMethod
-    fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0): Flow<PlaybackResult>
+    suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0)
 
     @FakeCommandMethod
     fun seekToTrackPosition(position: Long)
