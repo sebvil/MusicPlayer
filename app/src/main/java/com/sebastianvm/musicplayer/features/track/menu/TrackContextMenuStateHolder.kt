@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.model.MediaWithArtists
+import com.sebastianvm.musicplayer.player.HasTracks
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -28,19 +29,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-sealed interface SourceTrackList {
-
-    data object AllTracks : SourceTrackList
-    data object SearchResults : SourceTrackList
-    data object Album : SourceTrackList
-    data object Genre : SourceTrackList
-    data class Playlist(
-        val trackList: MediaGroup.Playlist,
-        val trackPositionInPlaylist: Long
-    ) : SourceTrackList
-}
-
-data class TrackContextMenuArguments(val trackId: Long, val trackList: SourceTrackList) : Arguments
+data class TrackContextMenuArguments(
+    val trackId: Long,
+    val trackPositionInList: Int,
+    val trackList: HasTracks
+) : Arguments
 
 sealed interface TrackContextMenuState : State {
     data class Data(
@@ -65,7 +58,6 @@ data class RemoveFromPlaylistRow(val playlistId: Long, val trackPositionInPlayli
 
 sealed interface TrackContextMenuUserAction : UserAction {
     data object AddToQueueClicked : TrackContextMenuUserAction
-    data object PlayTrackClicked : TrackContextMenuUserAction
     data object ViewArtistsClicked : TrackContextMenuUserAction
     data class ViewArtistClicked(val artistId: Long) : TrackContextMenuUserAction
     data class ViewAlbumClicked(val albumId: Long) : TrackContextMenuUserAction
@@ -74,7 +66,7 @@ sealed interface TrackContextMenuUserAction : UserAction {
 }
 
 class TrackContextMenuStateHolder(
-    arguments: TrackContextMenuArguments,
+    private val arguments: TrackContextMenuArguments,
     private val trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
@@ -94,15 +86,15 @@ class TrackContextMenuStateHolder(
                     1 -> ViewArtistRow.SingleArtist(track.artists[0])
                     else -> ViewArtistRow.MultipleArtists
                 },
-                viewAlbumState = if (arguments.trackList is SourceTrackList.Album) {
+                viewAlbumState = if (arguments.trackList is MediaGroup.Album) {
                     null
                 } else {
                     ViewAlbumRow(track.track.albumId)
                 },
-                removeFromPlaylistRow = (arguments.trackList as? SourceTrackList.Playlist)?.let {
+                removeFromPlaylistRow = (arguments.trackList as? MediaGroup.Playlist)?.let {
                     RemoveFromPlaylistRow(
-                        it.trackList.playlistId,
-                        it.trackPositionInPlaylist
+                        playlistId = it.playlistId,
+                        trackPositionInPlaylist = arguments.trackPositionInList.toLong()
                     )
                 },
             )
@@ -115,9 +107,6 @@ class TrackContextMenuStateHolder(
                     val track = trackRepository.getTrack(trackId).first().track
                     playbackManager.addToQueue(listOf(track))
                 }
-            }
-
-            TrackContextMenuUserAction.PlayTrackClicked -> {
             }
 
             is TrackContextMenuUserAction.ViewAlbumClicked -> {

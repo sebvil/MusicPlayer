@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -21,13 +19,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration
 
 class MainViewModel(
-    private val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
+    stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager
 ) : StateHolder<MainState, MainUserAction>, ViewModel(stateHolderScope) {
 
@@ -59,7 +56,6 @@ class MainViewModel(
         }.stateIn(stateHolderScope, SharingStarted.Lazily, MainState(playerViewState = null))
 
     override fun handle(action: MainUserAction) {
-        viewModelScope
         when (action) {
             is MainUserAction.ConnectToMusicService -> {
                 playbackManager.connectToService()
@@ -82,13 +78,6 @@ class MainViewModel(
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
-
-            is MainUserAction.PlayMedia -> {
-                playbackManager.playMedia(
-                    mediaGroup = action.mediaGroup,
-                    initialTrackIndex = action.initialTrackIndex
-                ).launchIn(stateHolderScope)
-            }
         }
     }
 }
@@ -102,5 +91,4 @@ sealed interface MainUserAction : UserAction {
     data object NextButtonClicked : MainUserAction
     data object PreviousButtonClicked : MainUserAction
     data class ProgressBarClicked(val position: Int, val trackLength: Duration) : MainUserAction
-    data class PlayMedia(val mediaGroup: MediaGroup, val initialTrackIndex: Int) : MainUserAction
 }

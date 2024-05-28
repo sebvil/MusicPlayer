@@ -84,13 +84,14 @@ class RepositoryProvider(
             ioDispatcher = dispatcherProvider.ioDispatcher
         )
 
-    val playbackManager: PlaybackManager
-        get() = PlaybackManagerImpl(
+    val playbackManager: PlaybackManager by lazy {
+        PlaybackManagerImpl(
             mediaPlaybackClient = mediaPlaybackClient,
             playbackInfoDataSource = playbackInfoDataSource,
             ioDispatcher = dispatcherProvider.ioDispatcher,
             trackRepository = trackRepository
         )
+    }
 
     val searchRepository: FullTextSearchRepository
         get() = FullTextSearchRepositoryImpl(

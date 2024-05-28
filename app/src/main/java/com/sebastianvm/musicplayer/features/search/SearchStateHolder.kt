@@ -16,7 +16,6 @@ import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.menu.SourceTrackList
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -41,11 +40,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class SearchQuery(val term: String, val mode: SearchMode)
 
@@ -127,17 +125,9 @@ class SearchStateHolder(
     )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        playbackManager.playMedia(MediaGroup.SingleTrack(trackId)).onEach { result ->
-            when (result) {
-                is PlaybackResult.Loading, is PlaybackResult.Error -> {
-                    playbackResult.update { result }
-                }
-
-                is PlaybackResult.Success -> {
-                    playbackResult.update { null }
-                }
-            }
-        }.launchIn(stateHolderScope)
+        stateHolderScope.launch {
+            playbackManager.playMedia(MediaGroup.SingleTrack(trackId))
+        }
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
@@ -166,7 +156,8 @@ class SearchStateHolder(
             TrackContextMenu(
                 arguments = TrackContextMenuArguments(
                     trackId = trackId,
-                    trackList = SourceTrackList.SearchResults
+                    trackPositionInList = 0,
+                    trackList = MediaGroup.SingleTrack(trackId)
                 ),
                 navController = navController
             ),

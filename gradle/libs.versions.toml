@@ -3,18 +3,17 @@ agp = "8.4.1"
 accompanist = "0.34.0"
 activity-compose = "1.9.0"
 coil = "2.6.0"
-com-google-devtools = "1.9.23-1.0.20"
-compose = "1.6.6"
-compose-compiler = "1.5.12"
+com-google-devtools = "2.0.0-1.0.21"
+compose = "1.6.7"
 constraintlayout-compose = "1.1.0-alpha13"
-core-ktx = "1.13.0"
-datastore = "1.1.0"
+core-ktx = "1.13.1"
+datastore = "1.1.1"
 detekt = "1.23.6"
-detekt-compose = "0.3.18"
-kotest = "5.8.1"
-kotlin = "1.9.23"
+detekt-compose = "0.4.1"
+kotest = "5.9.0"
+kotlin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
-kotlinx-coroutines = "1.8.0"
+kotlinx-coroutines = "1.8.1"
 kotlinx-serialization-json = "1.6.3"
 lifecycle = "2.7.0"
 material-3 = "1.2.1"
@@ -22,7 +21,7 @@ media3-exoplayer = "1.3.1"
 recyclerview = "1.3.2"
 room-runtime = "2.6.1"
 turbine = "1.1.0"
-vectordrawable = "1.1.0"
+vectordrawable = "1.2.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -62,6 +61,7 @@ ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", v
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-google-devtools" }

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
@@ -11,7 +10,6 @@ import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -44,24 +42,18 @@ class PlaybackManagerImpl(
         mediaPlaybackClient.prev()
     }
 
-    private fun playTracks(
+    private suspend fun playTracks(
         initialTrackIndex: Int = 0,
         tracksGetter: suspend () -> List<MediaItem>
-    ): Flow<PlaybackResult> = flow {
-        emit(PlaybackResult.Loading)
+    ) {
         val mediaItems = withContext(ioDispatcher) {
             tracksGetter()
         }
-        if (mediaItems.isEmpty()) {
-            emit(PlaybackResult.Error(R.string.error_collection_empty))
-            return@flow
-        }
         mediaPlaybackClient.playMediaItems(initialTrackIndex, mediaItems)
-        emit(PlaybackResult.Success)
     }
 
-    override fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int): Flow<PlaybackResult> {
-        return playTracks(initialTrackIndex) {
+    override suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int) {
+        playTracks(initialTrackIndex) {
             trackRepository.getTracksForMedia(mediaGroup).map { tracks ->
                 tracks.map { it.toMediaItem() }
             }.first()
