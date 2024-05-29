@@ -4,14 +4,14 @@ import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
-import com.sebastianvm.musicplayer.repository.track.FakeTrackRepositoryImpl
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
+import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
-import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -22,48 +22,53 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.coroutines.flow.update
 
 class TrackListStateHolderTest : FreeSpec({
 
-    lateinit var trackRepository: FakeTrackRepositoryImpl
-    lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
+    lateinit var trackRepositoryDep: FakeTrackRepository
+    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+    lateinit var playbackManagerDep: FakePlaybackManager
 
     beforeTest {
-        trackRepository = FakeProvider.trackRepository
-        sortPreferencesRepository = FakeProvider.sortPreferencesRepository
+        trackRepositoryDep = FakeTrackRepository()
+        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+        playbackManagerDep = FakePlaybackManager()
     }
 
     fun TestScope.getSubject(trackList: TrackList = MediaGroup.AllTracks): TrackListStateHolder {
         return TrackListStateHolder(
             stateHolderScope = this,
-            trackRepository = trackRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
+            trackRepository = trackRepositoryDep,
+            sortPreferencesRepository = sortPreferencesRepositoryDep,
             args = TrackListArguments(trackList),
-            navController = FakeNavController()
+            navController = FakeNavController(),
+            playbackManager = playbackManagerDep
         )
     }
 
     "init subscribes to changes in track list" - {
         withData(
-            FixtureProvider.trackListWithMetadataFixtures().toList()
+            FixtureProvider.trackListWithMetadataFixtures()
         ) { trackListWithMetadata ->
             val subject = getSubject()
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepository.getTrackListWithMetaDataValue.emit(
-                    TrackListWithMetadata(
-                        metaData = null,
-                        trackList = listOf()
-                    )
+                trackRepositoryDep.trackListsWithMetadata.update {
+                    it + (
+                        MediaGroup.AllTracks to TrackListWithMetadata(
+                            metaData = null,
+                            trackList = listOf()
+                        )
+                        )
+                }
+                sortPreferencesRepositoryDep.allTracksSortPreferences.value = MediaSortPreferences(
+                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                    sortOrder = MediaSortOrder.ASCENDING
                 )
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
-                    MediaSortPreferences(
-                        sortOption = SortOptions.TrackListSortOptions.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
-                    )
-                )
+
                 awaitItem() shouldBe Empty
-                trackRepository.getTrackListWithMetaDataValue.emit(trackListWithMetadata)
+                trackRepositoryDep.trackListsWithMetadata.update { it + (MediaGroup.AllTracks to trackListWithMetadata) }
 
                 if (trackListWithMetadata.trackList.isEmpty()) {
                     expectNoEvents()
@@ -80,7 +85,7 @@ class TrackListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in sort order" - {
         withData(
-            FixtureProvider.trackListSortPreferences().toList()
+            FixtureProvider.trackListSortPreferences()
         ) { sortPreferences ->
             val subject = getSubject()
             val initialSortPreferences = MediaSortPreferences(
@@ -89,12 +94,15 @@ class TrackListStateHolderTest : FreeSpec({
             )
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepository.getTrackListWithMetaDataValue.emit(
-                    FixtureProvider.trackListWithMetadataFixtures().toList().first()
-                )
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
-                    initialSortPreferences
-                )
+                trackRepositoryDep.trackListsWithMetadata.update {
+                    it + (
+                        MediaGroup.AllTracks to FixtureProvider.trackListWithMetadataFixtures()
+                            .first()
+                        )
+                }
+
+                sortPreferencesRepositoryDep.allTracksSortPreferences.value = initialSortPreferences
+
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<TrackListState>>()
                     state.modelListState.sortButtonState shouldBe SortButtonState(
@@ -103,7 +111,7 @@ class TrackListStateHolderTest : FreeSpec({
                     )
                 }
 
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
+                sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
 
                 if (sortPreferences == initialSortPreferences) {
                     expectNoEvents()
@@ -121,25 +129,23 @@ class TrackListStateHolderTest : FreeSpec({
     }
 
     "init does not subscribe to changes in sort order for album" - {
-        withData(FixtureProvider.trackListSortPreferences().toList()) { sortPreferences ->
+        withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
             val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepository.getTrackListWithMetaDataValue.emit(
-                    FixtureProvider.trackListWithMetadataFixtures().toList().first()
-                )
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(
-                    MediaSortPreferences(
-                        sortOption = SortOptions.TrackListSortOptions.TRACK,
-                        sortOrder = MediaSortOrder.ASCENDING
-                    )
-                )
+                trackRepositoryDep.trackListsWithMetadata.update {
+                    it + (
+                        MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
+                            .first()
+                        )
+                }
+
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<TrackListState>>()
                     state.modelListState.sortButtonState shouldBe null
                 }
 
-                sortPreferencesRepository.getTrackListSortPreferencesValue.emit(sortPreferences)
+                sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
                 expectNoEvents()
             }
         }

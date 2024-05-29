@@ -125,9 +125,6 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
 
-    implementation(project(":fakegen"))
-    kspTest(project(":fakegen"))
-
     detektPlugins(libs.detekt.ktlint)
     detektPlugins(libs.detekt.compose)
 }

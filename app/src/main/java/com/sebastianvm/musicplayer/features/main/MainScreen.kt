@@ -118,4 +118,3 @@ enum class TopLevelScreen(@StringRes val screenName: Int) {
         R.string.playlists
     )
 }
-

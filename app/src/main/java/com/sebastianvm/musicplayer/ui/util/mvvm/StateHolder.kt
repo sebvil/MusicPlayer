@@ -27,4 +27,3 @@ fun <S : State, A : UserAction, SH : StateHolder<S, A>> rememberStateHolder(
 val <S : State, A : UserAction> StateHolder<S, A>.currentState: androidx.compose.runtime.State<S>
     @Composable
     get() = state.collectAsStateWithLifecycle()
-

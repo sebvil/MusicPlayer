@@ -57,7 +57,6 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
 detekt-ktlint = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
-ksp-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "com-google-devtools" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

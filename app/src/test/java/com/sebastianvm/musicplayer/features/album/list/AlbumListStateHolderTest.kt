@@ -1,15 +1,14 @@
 package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepositoryImpl
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
-import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -23,12 +22,12 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 class AlbumListStateHolderTest : FreeSpec({
 
-    lateinit var albumRepository: FakeAlbumRepositoryImpl
-    lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
+    lateinit var albumRepository: FakeAlbumRepository
+    lateinit var sortPreferencesRepository: FakeSortPreferencesRepository
 
     beforeTest {
-        albumRepository = FakeProvider.albumRepository
-        sortPreferencesRepository = FakeProvider.sortPreferencesRepository
+        albumRepository = FakeAlbumRepository()
+        sortPreferencesRepository = FakeSortPreferencesRepository()
     }
 
     fun TestScope.getSubject(): AlbumListStateHolder {
@@ -44,16 +43,16 @@ class AlbumListStateHolderTest : FreeSpec({
         val subject = getSubject()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            albumRepository.getAlbumsValue.emit(listOf())
-            sortPreferencesRepository.getAlbumListSortPreferencesValue.emit(
+            albumRepository.albums.value = listOf()
+            sortPreferencesRepository.albumListSortPreferences.value =
                 MediaSortPreferences(
                     sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                     sortOrder = MediaSortOrder.ASCENDING
                 )
-            )
+
             awaitItem() shouldBe Empty
             val albums = FixtureProvider.albumFixtures().toList()
-            albumRepository.getAlbumsValue.emit(albums)
+            albumRepository.albums.value = albums
             val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
             item.state.modelListState.items shouldBe albums.map { it.toModelListItemState() }
             item.state.modelListState.headerState shouldBe HeaderState.None
@@ -69,8 +68,8 @@ class AlbumListStateHolderTest : FreeSpec({
             )
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                albumRepository.getAlbumsValue.emit(FixtureProvider.albumFixtures().toList())
-                sortPreferencesRepository.getAlbumListSortPreferencesValue.emit(initialPrefs)
+                albumRepository.albums.value = FixtureProvider.albumFixtures().toList()
+                sortPreferencesRepository.albumListSortPreferences.value = initialPrefs
 
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<AlbumListState>>()
@@ -81,7 +80,7 @@ class AlbumListStateHolderTest : FreeSpec({
                 }
 
                 if (sortPreferences != initialPrefs) {
-                    sortPreferencesRepository.getAlbumListSortPreferencesValue.emit(sortPreferences)
+                    sortPreferencesRepository.albumListSortPreferences.value = sortPreferences
                     with(awaitItem()) {
                         shouldBeInstanceOf<Data<AlbumListState>>()
                         state.modelListState.sortButtonState shouldBe SortButtonState(

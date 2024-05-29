@@ -97,9 +97,8 @@ class FakePlaybackManager(
     val playMediaInvocations: List<List<Any>>
         get() = _playMediaInvocations
 
-    override fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int): Flow<PlaybackResult> {
+    override suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int) {
         _playMediaInvocations.add(listOf(mediaGroup, initialTrackIndex))
-        return playMediaValue
     }
 
     private val _prevInvocations: MutableList<List<Any>> = mutableListOf()
