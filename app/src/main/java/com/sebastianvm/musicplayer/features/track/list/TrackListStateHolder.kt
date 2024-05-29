@@ -146,7 +146,6 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
     }
 }
 
-
 fun getTrackListStateHolder(
     dependencies: DependencyContainer,
     args: TrackListArguments,
@@ -160,4 +159,3 @@ fun getTrackListStateHolder(
         playbackManager = dependencies.repositoryProvider.playbackManager
     )
 }
-

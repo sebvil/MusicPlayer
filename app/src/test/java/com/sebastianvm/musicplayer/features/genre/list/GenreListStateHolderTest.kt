@@ -2,15 +2,14 @@ package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepositoryImpl
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepositoryImpl
+import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
+import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
-import com.sebastianvm.musicplayer.util.FakeProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
@@ -22,12 +21,12 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 class GenreListStateHolderTest : FreeSpec({
 
-    lateinit var genreRepository: FakeGenreRepositoryImpl
-    lateinit var sortPreferencesRepository: FakeSortPreferencesRepositoryImpl
+    lateinit var genreRepository: FakeGenreRepository
+    lateinit var sortPreferencesRepository: FakeSortPreferencesRepository
 
     beforeTest {
-        genreRepository = FakeProvider.genreRepository
-        sortPreferencesRepository = FakeProvider.sortPreferencesRepository
+        genreRepository = FakeGenreRepository()
+        sortPreferencesRepository = FakeSortPreferencesRepository()
     }
 
     fun TestScope.getSubject(): GenreListStateHolder {
@@ -41,14 +40,13 @@ class GenreListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in genre list" {
         val subject = getSubject()
+        genreRepository.genres.value = emptyList()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            genreRepository.getGenresValue.emit(emptyList())
-            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
             awaitItem() shouldBe Empty
 
             val genres = FixtureProvider.genreFixtures().toList()
-            genreRepository.getGenresValue.emit(genres)
+            genreRepository.genres.value = genres
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.items shouldBe genres.map {
@@ -61,10 +59,10 @@ class GenreListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in sort order" {
         val subject = getSubject()
+        genreRepository.genres.value = FixtureProvider.genreFixtures().toList()
+        sortPreferencesRepository.genreListSortOrder.value = MediaSortOrder.ASCENDING
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            genreRepository.getGenresValue.emit(FixtureProvider.genreFixtures().toList())
-            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.ASCENDING)
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(
@@ -73,7 +71,7 @@ class GenreListStateHolderTest : FreeSpec({
                 )
             }
 
-            sortPreferencesRepository.getGenreListSortOrderValue.emit(MediaSortOrder.DESCENDING)
+            sortPreferencesRepository.genreListSortOrder.value = MediaSortOrder.DESCENDING
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(
@@ -88,6 +86,6 @@ class GenreListStateHolderTest : FreeSpec({
         val subject = getSubject()
         subject.handle(GenreListUserAction.SortByButtonClicked)
         advanceUntilIdle()
-        sortPreferencesRepository.toggleGenreListSortOrderInvocations shouldBe listOf(listOf())
+        sortPreferencesRepository.genreListSortOrder.value shouldBe MediaSortOrder.DESCENDING
     }
 })

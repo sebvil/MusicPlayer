@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui
 
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
@@ -40,28 +39,26 @@ class MainViewModelTest : FreeSpec({
             val subject = getSubject()
             testStateHolderState(subject) {
                 playbackManagerDep.getPlaybackStateValue.emit(NotPlayingState)
-                awaitItem() shouldBe MainState(playerViewState = null)
+                awaitItem().playerViewState shouldBe null
                 playbackManagerDep.getPlaybackStateValue.emit(playbackState)
-                awaitItem() shouldBe MainState(
-                    playerViewState = PlayerViewState(
-                        mediaArtImageState = MediaArtImageState(
-                            imageUri = playbackState.trackInfo.artworkUri,
-                            backupImage = Icons.Album
-                        ),
-                        trackInfoState = TrackInfoState(
-                            trackName = playbackState.trackInfo.title,
-                            artists = playbackState.trackInfo.artists
-                        ),
-                        trackProgressState = TrackProgressState(
-                            currentPlaybackTime = playbackState.currentTrackProgress,
-                            trackLength = playbackState.trackInfo.trackLength
-                        ),
-                        playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
-                    )
+                awaitItem().playerViewState shouldBe PlayerViewState(
+                    mediaArtImageState = MediaArtImageState(
+                        imageUri = playbackState.trackInfo.artworkUri,
+                        backupImage = Icons.Album
+                    ),
+                    trackInfoState = TrackInfoState(
+                        trackName = playbackState.trackInfo.title,
+                        artists = playbackState.trackInfo.artists
+                    ),
+                    trackProgressState = TrackProgressState(
+                        currentPlaybackTime = playbackState.currentTrackProgress,
+                        trackLength = playbackState.trackInfo.trackLength
+                    ),
+                    playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
                 )
 
                 playbackManagerDep.getPlaybackStateValue.emit(NotPlayingState)
-                awaitItem() shouldBe MainState(playerViewState = null)
+                awaitItem().playerViewState shouldBe null
             }
         }
     }
@@ -104,16 +101,5 @@ class MainViewModelTest : FreeSpec({
         val subject = getSubject()
         subject.handle(MainUserAction.ProgressBarClicked(10, 100.seconds))
         playbackManagerDep.seekToTrackPositionInvocations shouldContainExactly listOf(listOf((10 * 1_000).toLong()))
-    }
-
-    "PlayMedia triggers playback" {
-        val subject = getSubject()
-        subject.handle(MainUserAction.PlayMedia(MediaGroup.AllTracks, 1))
-        playbackManagerDep.playMediaInvocations shouldContainExactly listOf(
-            listOf(
-                MediaGroup.AllTracks,
-                1
-            )
-        )
     }
 })

@@ -6,7 +6,7 @@ import androidx.room.Relation
 
 data class FullAlbumInfo(
     @Embedded
-    val album: BasicAlbum,
+    val album: Album,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",

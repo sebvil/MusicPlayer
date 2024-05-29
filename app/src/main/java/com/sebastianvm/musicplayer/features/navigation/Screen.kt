@@ -71,5 +71,4 @@ abstract class BaseScreen<Args : Arguments, SH : StateHolder<*, *>> : Screen<Arg
         _saveableStateHolder?.removeState(key)
         _saveableStateHolder = null
     }
-
 }

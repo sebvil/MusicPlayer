@@ -44,7 +44,9 @@ fun AppNavigationHost(stateHolder: AppNavigationHostStateHolder, modifier: Modif
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigationHost(
-    state: AppNavigationState, handle: Handler<AppNavigationAction>, modifier: Modifier = Modifier
+    state: AppNavigationState,
+    handle: Handler<AppNavigationAction>,
+    modifier: Modifier = Modifier
 ) {
     val backStack = state.backStack
     var progress by remember { mutableFloatStateOf(0f) }
@@ -56,7 +58,6 @@ fun AppNavigationHost(
             backEvent.collect {
                 inPredictiveBack = true
                 progress = it.progress
-
             }
             inPredictiveBack = false
             handle(AppNavigationAction.PopBackStack)
@@ -65,9 +66,7 @@ fun AppNavigationHost(
         }
     }
 
-
     val screens = backStack.getScreensByMode(NavOptions.PresentationMode.Screen)
-
 
     val transitionState = remember {
         // The state returned here cannot be nullable cause it produces the input of the
@@ -105,12 +104,14 @@ fun AppNavigationHost(
                 delayMillis = fadeThreshold
             )
             if (this.targetState.size > this.initialState.size) {
-                (scaleIn(
-                    animationSpec = enterAnimationSpec,
-                    initialScale = 0.9f
-                ) + fadeIn(
-                    animationSpec = enterAnimationSpec
-                )).togetherWith(
+                (
+                    scaleIn(
+                        animationSpec = enterAnimationSpec,
+                        initialScale = 0.9f
+                    ) + fadeIn(
+                        animationSpec = enterAnimationSpec
+                    )
+                    ).togetherWith(
                     scaleOut(
                         animationSpec = exitAnimationSpec,
                         targetScale = 1.1f
@@ -119,13 +120,14 @@ fun AppNavigationHost(
                     )
                 )
             } else {
-
-                (fadeIn(
-                    animationSpec = enterAnimationSpec
-                ) + scaleIn(
-                    animationSpec = enterAnimationSpec,
-                    initialScale = 1.1f
-                )).togetherWith(
+                (
+                    fadeIn(
+                        animationSpec = enterAnimationSpec
+                    ) + scaleIn(
+                        animationSpec = enterAnimationSpec,
+                        initialScale = 1.1f
+                    )
+                    ).togetherWith(
                     scaleOut(
                         animationSpec = exitAnimationSpec,
                         targetScale = 0.9f
@@ -136,8 +138,8 @@ fun AppNavigationHost(
             }.apply {
                 targetContentZIndex = targetState.size.toFloat()
             }
-        }) {
-
+        }
+    ) {
         it.lastOrNull()?.Content(saveableStateHolder = saveableStateHolder, modifier = modifier)
     }
 
@@ -176,7 +178,8 @@ fun AppNavigationHost(
             BottomSheet(
                 onDismissRequest = {
                     handle(AppNavigationAction.PopBackStack)
-                }, sheetState = sheetState
+                },
+                sheetState = sheetState
             ) {
                 target?.Content(
                     saveableStateHolder = saveableStateHolder,

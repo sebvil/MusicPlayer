@@ -16,14 +16,12 @@ import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
-import java.util.stream.Stream
 import kotlin.time.Duration.Companion.seconds
 
 object FixtureProvider {
 
-    @JvmStatic
-    fun playbackStateFixtures(): Stream<TrackPlayingState> {
-        return Stream.of(
+    fun playbackStateFixtures(): List<TrackPlayingState> {
+        return listOf(
             TrackPlayingState(
                 trackInfo = TrackInfo(
                     title = "",
@@ -47,12 +45,12 @@ object FixtureProvider {
         )
     }
 
-    private fun longStream(): Stream<Long> = Stream.of(0, 1, 2, 3)
-    private fun stringStream() = Stream.of("", "Hello, World!")
+    private fun longList(): List<Long> = listOf(0, 1, 2, 3)
+    private fun stringList() = listOf("", "Hello, World!")
 
-    private fun trackFixtures(): Stream<Track> {
-        return longStream().flatMap { long ->
-            stringStream().map { string ->
+    private fun trackFixtures(): List<Track> {
+        return longList().flatMap { long ->
+            stringList().map { string ->
                 Track(
                     id = long,
                     trackName = string,
@@ -67,9 +65,8 @@ object FixtureProvider {
         }
     }
 
-    @JvmStatic
-    fun trackListWithMetadataFixtures(): Stream<TrackListWithMetadata> {
-        val metadataStream = Stream.of(
+    fun trackListWithMetadataFixtures(): List<TrackListWithMetadata> {
+        val metadataList = listOf(
             TrackListMetadata(trackListName = "Track list", mediaArtImageState = null),
             TrackListMetadata(
                 trackListName = "Track list",
@@ -77,22 +74,20 @@ object FixtureProvider {
             ),
             null
         )
-        return metadataStream.flatMap {
-            Stream.of(
+        return metadataList.flatMap {
+            listOf(
                 TrackListWithMetadata(metaData = it, trackList = trackFixtures().toList()),
                 TrackListWithMetadata(metaData = it, trackList = listOf())
             )
         }
     }
 
-    private fun trackListSortOptions(): Stream<SortOptions.TrackListSortOptions> =
-        SortOptions.TrackListSortOptions.entries.stream()
+    private fun trackListSortOptions(): List<SortOptions.TrackListSortOptions> =
+        SortOptions.TrackListSortOptions.entries
 
-    @JvmStatic
-    fun sortOrders() = MediaSortOrder.entries.stream()
+    fun sortOrders() = MediaSortOrder.entries
 
-    @JvmStatic
-    fun trackListSortPreferences(): Stream<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+    fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return trackListSortOptions().flatMap { option ->
             sortOrders().map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
@@ -100,18 +95,17 @@ object FixtureProvider {
         }
     }
 
-    @JvmStatic
-    fun albumSortPreferences(): Stream<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
-        return SortOptions.AlbumListSortOptions.entries.stream().flatMap { option ->
+    fun albumSortPreferences(): List<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
+        return SortOptions.AlbumListSortOptions.entries.flatMap { option ->
             sortOrders().map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }
         }
     }
 
-    fun albumFixtures(): Stream<Album> {
-        return longStream().flatMap { long ->
-            stringStream().map { string ->
+    fun albumFixtures(): List<Album> {
+        return longList().flatMap { long ->
+            stringList().map { string ->
                 Album(
                     id = long,
                     albumName = string,
@@ -123,9 +117,9 @@ object FixtureProvider {
         }
     }
 
-    fun artistFixtures(): Stream<Artist> {
-        return longStream().flatMap { long ->
-            stringStream().map { string ->
+    fun artistFixtures(): List<Artist> {
+        return longList().flatMap { long ->
+            stringList().map { string ->
                 Artist(
                     id = long,
                     artistName = string
@@ -134,9 +128,9 @@ object FixtureProvider {
         }
     }
 
-    fun genreFixtures(): Stream<Genre> {
-        return longStream().flatMap { long ->
-            stringStream().map { string ->
+    fun genreFixtures(): List<Genre> {
+        return longList().flatMap { long ->
+            stringList().map { string ->
                 Genre(
                     id = long,
                     genreName = string
