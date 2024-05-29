@@ -37,7 +37,7 @@ class ArtistContextMenuStateHolder(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,
-    stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<ArtistContextMenuState, ArtistContextMenuUserAction> {
 
     private val artistId = arguments.artistId

@@ -41,7 +41,7 @@ sealed interface ArtistUserAction : UserAction {
 }
 
 class ArtistStateHolder(
-    stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,

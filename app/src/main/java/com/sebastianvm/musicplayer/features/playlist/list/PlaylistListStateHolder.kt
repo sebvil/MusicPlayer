@@ -45,7 +45,7 @@ sealed interface PlaylistListUserAction : UserAction {
 }
 
 class PlaylistListStateHolder(
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,

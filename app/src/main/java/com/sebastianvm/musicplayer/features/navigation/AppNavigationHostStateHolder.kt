@@ -27,7 +27,7 @@ sealed interface AppNavigationAction : UserAction {
     data object PopBackStack : AppNavigationAction
 }
 
-class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolderScope()) :
+class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope = stateHolderScope()) :
     StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController = object : NavController {

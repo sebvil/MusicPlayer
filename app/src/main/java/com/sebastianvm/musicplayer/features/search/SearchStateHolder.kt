@@ -67,7 +67,7 @@ class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SearchState, SearchUserAction> {
 
     private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))

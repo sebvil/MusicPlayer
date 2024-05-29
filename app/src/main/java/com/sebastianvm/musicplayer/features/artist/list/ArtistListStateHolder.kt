@@ -44,7 +44,7 @@ class ArtistListStateHolder(
     artistRepository: ArtistRepository,
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
     override val state: StateFlow<UiState<ArtistListState>> = combine(
         artistRepository.getArtists(),

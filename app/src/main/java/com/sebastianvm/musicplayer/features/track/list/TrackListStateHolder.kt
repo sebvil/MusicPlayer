@@ -54,7 +54,7 @@ sealed interface TrackListUserAction : UserAction {
 class TrackListStateHolder(
     private val args: TrackListArguments,
     private val navController: NavController,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
