@@ -15,15 +15,16 @@ interface StateHolder<S : State, A : UserAction> {
 
 @Composable
 fun <S : State, A : UserAction, SH : StateHolder<S, A>> rememberStateHolder(
-    factory: (dependencyContainer: DependencyContainer) -> SH
+    factory: (dependencies: DependencyContainer) -> SH
 ): SH {
-    val dependencyContainer =
-        (LocalContext.current.applicationContext as MusicPlayerApplication).dependencyContainer
+    val dependencies =
+        (LocalContext.current.applicationContext as MusicPlayerApplication).dependencies
     return remember {
-        factory(dependencyContainer)
+        factory(dependencies)
     }
 }
 
 val <S : State, A : UserAction> StateHolder<S, A>.currentState: androidx.compose.runtime.State<S>
     @Composable
     get() = state.collectAsStateWithLifecycle()
+

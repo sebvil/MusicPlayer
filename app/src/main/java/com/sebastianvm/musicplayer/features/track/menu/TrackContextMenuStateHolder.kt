@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
-import androidx.compose.runtime.Composable
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -19,7 +19,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -161,18 +160,16 @@ class TrackContextMenuStateHolder(
     }
 }
 
-@Composable
-fun rememberTrackContextMenuStateHolder(
+fun getTrackContextMenuStateHolder(
+    dependencies: DependencyContainer,
     arguments: TrackContextMenuArguments,
     navController: NavController
 ): TrackContextMenuStateHolder {
-    return rememberStateHolder { dependencyContainer ->
-        TrackContextMenuStateHolder(
-            arguments = arguments,
-            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
-            playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
-            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
-            navController = navController
-        )
-    }
+    return TrackContextMenuStateHolder(
+        arguments = arguments,
+        trackRepository = dependencies.repositoryProvider.trackRepository,
+        playlistRepository = dependencies.repositoryProvider.playlistRepository,
+        playbackManager = dependencies.repositoryProvider.playbackManager,
+        navController = navController
+    )
 }

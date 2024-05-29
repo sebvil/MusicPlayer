@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.ViewModel
+import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -28,6 +29,8 @@ class MainViewModel(
     private val playbackManager: PlaybackManager
 ) : StateHolder<MainState, MainUserAction>, ViewModel(stateHolderScope) {
 
+    private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
+
     override val state: StateFlow<MainState> =
         playbackManager.getPlaybackState().map { playbackState ->
             MainState(
@@ -51,9 +54,17 @@ class MainViewModel(
                     }
 
                     is NotPlayingState -> null
-                }
+                },
+                navigationHostStateHolder = appNavigationHostStateHolder
             )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, MainState(playerViewState = null))
+        }.stateIn(
+            stateHolderScope,
+            SharingStarted.Lazily,
+            MainState(
+                playerViewState = null,
+                navigationHostStateHolder = appNavigationHostStateHolder
+            )
+        )
 
     override fun handle(action: MainUserAction) {
         when (action) {
@@ -82,7 +93,10 @@ class MainViewModel(
     }
 }
 
-data class MainState(val playerViewState: PlayerViewState?) : State
+data class MainState(
+    val playerViewState: PlayerViewState?,
+    val navigationHostStateHolder: AppNavigationHostStateHolder
+) : State
 
 sealed interface MainUserAction : UserAction {
     data object ConnectToMusicService : MainUserAction

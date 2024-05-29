@@ -35,27 +35,27 @@ import kotlinx.coroutines.withContext
 
 class MediaPlaybackService : MediaLibraryService() {
 
-    private val dependencyContainer by lazy {
-        (application as MusicPlayerApplication).dependencyContainer
+    private val dependencies by lazy {
+        (application as MusicPlayerApplication).dependencies
     }
 
     private val playbackManager: PlaybackManager by lazy {
-        dependencyContainer.repositoryProvider.playbackManager
+        dependencies.repositoryProvider.playbackManager
     }
 
     private val mainDispatcher: CoroutineDispatcher by lazy {
-        dependencyContainer.dispatcherProvider.mainDispatcher
+        dependencies.dispatcherProvider.mainDispatcher
     }
 
     private val defaultDispatcher: CoroutineDispatcher by lazy {
-        dependencyContainer.dispatcherProvider.defaultDispatcher
+        dependencies.dispatcherProvider.defaultDispatcher
     }
 
     private val mediaTree: MediaTree by lazy {
         MediaTree(
-            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-            trackRepository = dependencyContainer.repositoryProvider.trackRepository,
-            albumRepository = dependencyContainer.repositoryProvider.albumRepository
+            artistRepository = dependencies.repositoryProvider.artistRepository,
+            trackRepository = dependencies.repositoryProvider.trackRepository,
+            albumRepository = dependencies.repositoryProvider.albumRepository
         )
     }
 
@@ -130,7 +130,10 @@ class MediaPlaybackService : MediaLibraryService() {
                     ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
                         Log.i("000Player", "get parent: $parentId")
                         return mediaTree.getCachedChildren(parentId)?.let {
-                            Log.i("000Player", "cached children: ${it.map { child -> child.mediaId }}")
+                            Log.i(
+                                "000Player",
+                                "cached children: ${it.map { child -> child.mediaId }}"
+                            )
                             Futures.immediateFuture(LibraryResult.ofItemList(it, params))
                         } ?: CoroutineScope(mainDispatcher).async {
                             mediaTree.getChildren(parentId)?.let {

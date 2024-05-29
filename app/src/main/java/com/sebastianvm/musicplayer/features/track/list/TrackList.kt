@@ -16,8 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -26,10 +27,14 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 data class TrackList(override val arguments: TrackListArguments, val navController: NavController) :
-    Screen<TrackListArguments> {
+    BaseScreen<TrackListArguments, TrackListStateHolder>() {
+
+    override fun createStateHolder(dependencies: DependencyContainer): TrackListStateHolder {
+        return getTrackListStateHolder(dependencies, arguments, navController)
+    }
+
     @Composable
-    override fun Content(modifier: Modifier) {
-        val stateHolder = rememberTrackListStateHolder(arguments, navController)
+    override fun Content(stateHolder: TrackListStateHolder, modifier: Modifier) {
         TrackList(
             stateHolder = stateHolder,
             modifier = modifier,

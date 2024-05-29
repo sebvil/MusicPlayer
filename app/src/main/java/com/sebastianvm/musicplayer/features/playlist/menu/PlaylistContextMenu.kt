@@ -9,8 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.icons.Delete
@@ -23,15 +24,16 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,
     val navController: NavController
-) : Screen<PlaylistContextMenuArguments> {
+) : BaseScreen<PlaylistContextMenuArguments, PlaylistContextMenuStateHolder>() {
+
+    override fun createStateHolder(dependencies: DependencyContainer): PlaylistContextMenuStateHolder {
+        return getPlaylistContextMenuStateHolder(dependencies, arguments, navController)
+    }
 
     @Composable
-    override fun Content(modifier: Modifier) {
+    override fun Content(stateHolder: PlaylistContextMenuStateHolder, modifier: Modifier) {
         PlaylistContextMenu(
-            stateHolder = rememberPlaylistContextMenuStateHolder(
-                arguments,
-                navController
-            ),
+            stateHolder = stateHolder,
             modifier = modifier
         )
     }

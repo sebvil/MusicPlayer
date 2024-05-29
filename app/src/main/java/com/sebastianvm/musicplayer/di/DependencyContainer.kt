@@ -41,4 +41,4 @@ class DependencyContainer(private val appContext: Context) {
 
 @Composable
 fun dependencies(): DependencyContainer =
-    (LocalContext.current.applicationContext as MusicPlayerApplication).dependencyContainer
+    (LocalContext.current.applicationContext as MusicPlayerApplication).dependencies

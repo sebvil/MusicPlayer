@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
-import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -21,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -100,13 +99,13 @@ class GenreListStateHolder(
     }
 }
 
-@Composable
-fun rememberGenreListStateHolder(navController: NavController): GenreListStateHolder {
-    return rememberStateHolder { dependencies ->
-        GenreListStateHolder(
-            genreRepository = dependencies.repositoryProvider.genreRepository,
-            navController = navController,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        )
-    }
+fun getGenreListStateHolder(
+    dependencies: DependencyContainer,
+    navController: NavController
+): GenreListStateHolder {
+    return GenreListStateHolder(
+        genreRepository = dependencies.repositoryProvider.genreRepository,
+        navController = navController,
+        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+    )
 }

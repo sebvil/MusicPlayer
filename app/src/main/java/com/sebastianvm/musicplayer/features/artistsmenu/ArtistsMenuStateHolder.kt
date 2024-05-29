@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
-import androidx.compose.runtime.Composable
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -16,7 +16,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
@@ -70,16 +69,14 @@ class ArtistsMenuStateHolder(
     }
 }
 
-@Composable
-fun rememberArtistsMenuStateHolder(
+fun getArtistsMenuStateHolder(
+    dependencies: DependencyContainer,
     arguments: ArtistsMenuArguments,
     navController: NavController
 ): ArtistsMenuStateHolder {
-    return rememberStateHolder { dependencyContainer ->
-        ArtistsMenuStateHolder(
-            arguments = arguments,
-            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-            navController = navController
-        )
-    }
+    return ArtistsMenuStateHolder(
+        arguments = arguments,
+        artistRepository = dependencies.repositoryProvider.artistRepository,
+        navController = navController
+    )
 }

@@ -89,7 +89,6 @@ class MediaPlaybackClient(
         mediaControllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
 
         Log.i("Playback", "Initializing Controller, future = $mediaControllerFuture")
-
     }
 
     fun releaseController() {

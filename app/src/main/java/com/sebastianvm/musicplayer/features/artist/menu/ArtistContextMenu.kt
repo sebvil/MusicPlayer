@@ -6,8 +6,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.icons.Artist
@@ -19,15 +20,16 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 data class ArtistContextMenu(
     override val arguments: ArtistContextMenuArguments,
     val navController: NavController
-) : Screen<ArtistContextMenuArguments> {
+) : BaseScreen<ArtistContextMenuArguments, ArtistContextMenuStateHolder>() {
+
+    override fun createStateHolder(dependencies: DependencyContainer): ArtistContextMenuStateHolder {
+        return getArtistContextMenuStateHolder(dependencies, arguments, navController)
+    }
 
     @Composable
-    override fun Content(modifier: Modifier) {
+    override fun Content(stateHolder: ArtistContextMenuStateHolder, modifier: Modifier) {
         ArtistContextMenu(
-            stateHolder = rememberArtistContextMenuStateHolder(
-                arguments,
-                navController
-            ),
+            stateHolder = stateHolder,
             modifier = modifier,
         )
     }

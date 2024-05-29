@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
-import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenu
@@ -26,7 +26,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -147,18 +146,18 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
     }
 }
 
-@Composable
-fun rememberTrackListStateHolder(
+
+fun getTrackListStateHolder(
+    dependencies: DependencyContainer,
     args: TrackListArguments,
     navController: NavController
 ): TrackListStateHolder {
-    return rememberStateHolder { dependencies ->
-        TrackListStateHolder(
-            args = args,
-            navController = navController,
-            trackRepository = dependencies.repositoryProvider.trackRepository,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager
-        )
-    }
+    return TrackListStateHolder(
+        args = args,
+        navController = navController,
+        trackRepository = dependencies.repositoryProvider.trackRepository,
+        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+        playbackManager = dependencies.repositoryProvider.playbackManager
+    )
 }
+
