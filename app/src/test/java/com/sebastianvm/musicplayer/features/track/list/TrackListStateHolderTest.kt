@@ -52,20 +52,20 @@ class TrackListStateHolderTest : FreeSpec({
             FixtureProvider.trackListWithMetadataFixtures()
         ) { trackListWithMetadata ->
             val subject = getSubject()
+            trackRepositoryDep.trackListsWithMetadata.update {
+                it + (
+                    MediaGroup.AllTracks to TrackListWithMetadata(
+                        metaData = null,
+                        trackList = listOf()
+                    )
+                    )
+            }
+            sortPreferencesRepositoryDep.allTracksSortPreferences.value = MediaSortPreferences(
+                sortOption = SortOptions.TrackListSortOptions.TRACK,
+                sortOrder = MediaSortOrder.ASCENDING
+            )
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepositoryDep.trackListsWithMetadata.update {
-                    it + (
-                        MediaGroup.AllTracks to TrackListWithMetadata(
-                            metaData = null,
-                            trackList = listOf()
-                        )
-                        )
-                }
-                sortPreferencesRepositoryDep.allTracksSortPreferences.value = MediaSortPreferences(
-                    sortOption = SortOptions.TrackListSortOptions.TRACK,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )
 
                 awaitItem() shouldBe Empty
                 trackRepositoryDep.trackListsWithMetadata.update { it + (MediaGroup.AllTracks to trackListWithMetadata) }
@@ -92,16 +92,17 @@ class TrackListStateHolderTest : FreeSpec({
                 sortOption = SortOptions.TrackListSortOptions.TRACK,
                 sortOrder = MediaSortOrder.ASCENDING
             )
+            trackRepositoryDep.trackListsWithMetadata.update {
+                it + (
+                    MediaGroup.AllTracks to FixtureProvider.trackListWithMetadataFixtures()
+                        .first()
+                    )
+            }
+
+            sortPreferencesRepositoryDep.allTracksSortPreferences.value = initialSortPreferences
+
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepositoryDep.trackListsWithMetadata.update {
-                    it + (
-                        MediaGroup.AllTracks to FixtureProvider.trackListWithMetadataFixtures()
-                            .first()
-                        )
-                }
-
-                sortPreferencesRepositoryDep.allTracksSortPreferences.value = initialSortPreferences
 
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<TrackListState>>()
@@ -131,14 +132,15 @@ class TrackListStateHolderTest : FreeSpec({
     "init does not subscribe to changes in sort order for album" - {
         withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
             val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
+            trackRepositoryDep.trackListsWithMetadata.update {
+                it + (
+                    MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
+                        .first()
+                    )
+            }
+
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                trackRepositoryDep.trackListsWithMetadata.update {
-                    it + (
-                        MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
-                            .first()
-                        )
-                }
 
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<TrackListState>>()

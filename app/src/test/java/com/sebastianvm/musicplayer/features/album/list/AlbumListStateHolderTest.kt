@@ -41,15 +41,14 @@ class AlbumListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in track list" {
         val subject = getSubject()
+        albumRepository.albums.value = emptyList()
+        sortPreferencesRepository.albumListSortPreferences.value =
+            MediaSortPreferences(
+                sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                sortOrder = MediaSortOrder.ASCENDING
+            )
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            albumRepository.albums.value = listOf()
-            sortPreferencesRepository.albumListSortPreferences.value =
-                MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )
-
             awaitItem() shouldBe Empty
             val albums = FixtureProvider.albumFixtures().toList()
             albumRepository.albums.value = albums
@@ -66,10 +65,11 @@ class AlbumListStateHolderTest : FreeSpec({
                 sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                 sortOrder = MediaSortOrder.ASCENDING
             )
+            albumRepository.albums.value = FixtureProvider.albumFixtures().toList()
+            sortPreferencesRepository.albumListSortPreferences.value = initialPrefs
+
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
-                albumRepository.albums.value = FixtureProvider.albumFixtures().toList()
-                sortPreferencesRepository.albumListSortPreferences.value = initialPrefs
 
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<AlbumListState>>()

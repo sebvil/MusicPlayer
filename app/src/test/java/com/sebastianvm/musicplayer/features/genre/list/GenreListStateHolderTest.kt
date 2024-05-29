@@ -40,10 +40,9 @@ class GenreListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in genre list" {
         val subject = getSubject()
+        genreRepository.genres.value = emptyList()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            genreRepository.genres.value = emptyList()
-            sortPreferencesRepository.genreListSortOrder.value = MediaSortOrder.ASCENDING
             awaitItem() shouldBe Empty
 
             val genres = FixtureProvider.genreFixtures().toList()
@@ -60,10 +59,10 @@ class GenreListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in sort order" {
         val subject = getSubject()
+        genreRepository.genres.value = FixtureProvider.genreFixtures().toList()
+        sortPreferencesRepository.genreListSortOrder.value = MediaSortOrder.ASCENDING
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
-            genreRepository.genres.value = FixtureProvider.genreFixtures().toList()
-            sortPreferencesRepository.genreListSortOrder.value = MediaSortOrder.ASCENDING
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<GenreListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(

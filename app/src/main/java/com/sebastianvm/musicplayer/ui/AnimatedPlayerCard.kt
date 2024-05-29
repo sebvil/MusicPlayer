@@ -315,7 +315,7 @@ fun AnimatedPlayerCard(
                 IconButton(onClick = onPlayToggled) {
                     Icon(
                         imageVector = state.playbackIcon.icon,
-                        contentDescription = stringResource(R.string.previous),
+                        contentDescription = stringResource(state.playbackIcon.contentDescription),
                         modifier = Modifier.size(buttonSize)
                     )
                 }

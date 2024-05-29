@@ -9,6 +9,7 @@
     <string name="genres">Genres</string>
     <string name="playlists">Playlists</string>
     <string name="play">Play</string>
+    <string name="pause">Pause</string>
     <string name="play_from_beginning">Play from beginning</string>
     <string name="play_all_songs">Play all songs</string>
 
@@ -43,7 +44,6 @@
     <string name="add_to_queue">Add to queue</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="remove_from_playlist">Remove from playlist</string>
-    <string name="error_collection_empty">This collection is empty!</string>
     <string name="ok">OK</string>
     <string name="playback_error">Playback error</string>
     <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
