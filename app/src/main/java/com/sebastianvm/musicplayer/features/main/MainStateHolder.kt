@@ -20,6 +20,8 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,7 +43,8 @@ class MainStateHolder(
     albumListStateHolder: AlbumListStateHolder,
     genreListStateHolder: GenreListStateHolder,
     playlistListStateHolder: PlaylistListStateHolder,
-    searchStateHolder: SearchStateHolder
+    searchStateHolder: SearchStateHolder,
+    override val stateHolderScope: CoroutineScope = stateHolderScope()
 ) : StateHolder<MainState, MainUserAction> {
 
     private val _state = MutableStateFlow(

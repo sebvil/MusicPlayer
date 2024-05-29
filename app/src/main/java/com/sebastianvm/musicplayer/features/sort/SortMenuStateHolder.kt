@@ -25,7 +25,7 @@ import kotlinx.serialization.Serializable
 class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SortMenuState, SortMenuUserAction> {
 
     private val sortPreferences = when (val listType = arguments.listType) {

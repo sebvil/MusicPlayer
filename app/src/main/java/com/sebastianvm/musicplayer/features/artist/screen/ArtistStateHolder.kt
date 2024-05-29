@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
+import android.util.Log
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
@@ -22,10 +23,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.AlbumType
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class ArtistState(
     val artistName: String,
@@ -41,8 +44,7 @@ sealed interface ArtistUserAction : UserAction {
 }
 
 class ArtistStateHolder(
-    stateHolderScope: CoroutineScope = stateHolderScope(),
-    arguments: ArtistArguments,
+    override val stateHolderScope: CoroutineScope = stateHolderScope(), arguments: ArtistArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,
 ) : StateHolder<UiState<ArtistState>, ArtistUserAction> {
@@ -72,6 +74,15 @@ class ArtistStateHolder(
                 )
             }
         }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+
+    init {
+        stateHolderScope.launch {
+            while (true) {
+                delay(1000)
+                Log.i("SCOPE", "I'm alive!")
+            }
+        }
+    }
 
     override fun handle(action: ArtistUserAction) {
         when (action) {

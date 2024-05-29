@@ -59,7 +59,7 @@ class AlbumContextMenuStateHolder(
     private val trackRepository: TrackRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<AlbumContextMenuState, AlbumContextMenuUserAction> {
 
     private val albumId = arguments.albumId

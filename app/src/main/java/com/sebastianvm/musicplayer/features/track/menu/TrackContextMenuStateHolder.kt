@@ -70,7 +70,7 @@ class TrackContextMenuStateHolder(
     private val playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
 
     private val trackId = arguments.trackId

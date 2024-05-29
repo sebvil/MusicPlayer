@@ -44,7 +44,7 @@ sealed interface AlbumListUserAction : UserAction {
 }
 
 class AlbumListStateHolder(
-    stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,

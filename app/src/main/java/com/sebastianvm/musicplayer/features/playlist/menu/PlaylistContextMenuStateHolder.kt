@@ -45,7 +45,7 @@ class PlaylistContextMenuStateHolder(
     arguments: PlaylistContextMenuArguments,
     private val playlistRepository: PlaylistRepository,
     private val navController: NavController,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<PlaylistContextMenuState, PlaylistContextMenuUserAction> {
 
     private val playlistId = arguments.playlistId

@@ -38,7 +38,7 @@ class GenreContextMenuStateHolder(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
     private val navController: NavController,
-    stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<GenreContextMenuState, GenreContextMenuUserAction> {
 
     private val genreId = arguments.genreId

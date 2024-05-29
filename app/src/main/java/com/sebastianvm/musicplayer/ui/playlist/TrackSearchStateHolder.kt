@@ -33,7 +33,7 @@ class TrackSearchStateHolder(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<TrackSearchState>, TrackSearchUserAction> {
 
     private val query = MutableStateFlow("")

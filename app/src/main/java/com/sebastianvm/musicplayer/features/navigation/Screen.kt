@@ -1,19 +1,14 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.di.dependencies
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import kotlinx.coroutines.cancel
 
 interface Screen<Args : Arguments, SH : StateHolder<*, *>> {
 
@@ -46,17 +41,6 @@ abstract class BaseScreen<Args : Arguments, SH : StateHolder<*, *>> : Screen<Arg
         _saveableStateHolder = saveableStateHolder
         val dependencies = dependencies()
         saveableStateHolder.SaveableStateProvider(key) {
-            var compositionCount by rememberSaveable {
-                mutableIntStateOf(0)
-            }
-
-            LaunchedEffect(Unit) {
-                compositionCount++
-                Log.i(
-                    "Composition",
-                    "Composition count for ${this@BaseScreen::class.simpleName}: $compositionCount"
-                )
-            }
             Content(
                 stateHolder = remember {
                     getOrCreateStateHolder(dependencies)
@@ -68,6 +52,7 @@ abstract class BaseScreen<Args : Arguments, SH : StateHolder<*, *>> : Screen<Arg
 
     override fun onCleared() {
         super.onCleared()
+        stateHolder?.stateHolderScope?.cancel(message = "Screen cleared")
         _saveableStateHolder?.removeState(key)
         _saveableStateHolder = null
     }

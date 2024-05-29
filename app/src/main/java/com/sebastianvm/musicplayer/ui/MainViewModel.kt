@@ -25,9 +25,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration
 
 class MainViewModel(
-    stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
+
 
     private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
 

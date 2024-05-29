@@ -43,7 +43,7 @@ class GenreListStateHolder(
     genreRepository: GenreRepository,
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val stateHolderScope: CoroutineScope = stateHolderScope(),
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
 
     override val state: StateFlow<UiState<GenreListState>> = combine(
