@@ -29,7 +29,6 @@ class MainViewModel(
     private val playbackManager: PlaybackManager
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
-
     private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
 
     override val state: StateFlow<MainState> =
