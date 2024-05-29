@@ -27,7 +27,7 @@ import kotlin.time.Duration
 class MainViewModel(
     stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager
-) : StateHolder<MainState, MainUserAction>, ViewModel(stateHolderScope) {
+) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
     private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
 

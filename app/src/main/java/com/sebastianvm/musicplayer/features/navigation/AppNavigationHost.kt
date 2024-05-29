@@ -1,11 +1,16 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -15,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -24,6 +30,7 @@ import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,29 +47,97 @@ fun AppNavigationHost(
     state: AppNavigationState, handle: Handler<AppNavigationAction>, modifier: Modifier = Modifier
 ) {
     val backStack = state.backStack
-    BackHandler(backStack.size > 1) {
-        handle(AppNavigationAction.PopBackStack)
+    var progress by remember { mutableFloatStateOf(0f) }
+    var inPredictiveBack by remember { mutableStateOf(false) }
+
+    PredictiveBackHandler(backStack.size > 1) { backEvent ->
+        progress = 0f
+        try {
+            backEvent.collect {
+                inPredictiveBack = true
+                progress = it.progress
+
+            }
+            inPredictiveBack = false
+            handle(AppNavigationAction.PopBackStack)
+        } catch (e: CancellationException) {
+            inPredictiveBack = false
+        }
     }
 
+
     val screens = backStack.getScreensByMode(NavOptions.PresentationMode.Screen)
-    val saveableStateHolder = rememberSaveableStateHolder()
-    AnimatedContent(targetState = screens, label = "screens", transitionSpec = {
-        if (this.targetState.size > this.initialState.size) {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Start,
-                animationSpec = tween(ANIMATION_DURATION_MS)
-            ).togetherWith(
-                fadeOut(tween(ANIMATION_DURATION_MS))
-            )
-        } else {
-            (EnterTransition.None).togetherWith(
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.End,
-                    animationSpec = tween(ANIMATION_DURATION_MS)
-                )
-            ).apply { targetContentZIndex = -1f }
+
+
+    val transitionState = remember {
+        // The state returned here cannot be nullable cause it produces the input of the
+        // transitionSpec passed into the AnimatedContent and that must match the non-nullable
+        // scope exposed by the transitions on the NavHost and composable APIs.
+        SeekableTransitionState(screens)
+    }
+
+    if (inPredictiveBack) {
+        LaunchedEffect(progress) {
+            transitionState.seekTo(progress, screens.dropLast(1))
         }
-    }) {
+    } else {
+        LaunchedEffect(screens) {
+            // This ensures we don't animate after the back gesture is cancelled and we
+            // are already on the current state
+            if (transitionState.currentState != screens) {
+                transitionState.animateTo(screens)
+            }
+        }
+    }
+
+    val transition = rememberTransition(transitionState, label = "backstack")
+
+    val saveableStateHolder = rememberSaveableStateHolder()
+    transition.AnimatedContent(
+        transitionSpec = {
+            val easing = CubicBezierEasing(a = 0.1f, b = 0.1f, c = 0f, d = 1f)
+            val fadeThreshold = ANIMATION_DURATION_MS * 35 / 100
+
+            val exitAnimationSpec = tween<Float>(durationMillis = fadeThreshold, easing = easing)
+            val enterAnimationSpec = tween<Float>(
+                durationMillis = ANIMATION_DURATION_MS - fadeThreshold,
+                easing = easing,
+                delayMillis = fadeThreshold
+            )
+            if (this.targetState.size > this.initialState.size) {
+                (scaleIn(
+                    animationSpec = enterAnimationSpec,
+                    initialScale = 0.9f
+                ) + fadeIn(
+                    animationSpec = enterAnimationSpec
+                )).togetherWith(
+                    scaleOut(
+                        animationSpec = exitAnimationSpec,
+                        targetScale = 1.1f
+                    ) + fadeOut(
+                        animationSpec = exitAnimationSpec
+                    )
+                )
+            } else {
+
+                (fadeIn(
+                    animationSpec = enterAnimationSpec
+                ) + scaleIn(
+                    animationSpec = enterAnimationSpec,
+                    initialScale = 1.1f
+                )).togetherWith(
+                    scaleOut(
+                        animationSpec = exitAnimationSpec,
+                        targetScale = 0.9f
+                    ) + fadeOut(
+                        animationSpec = exitAnimationSpec
+                    )
+                )
+            }.apply {
+                targetContentZIndex = targetState.size.toFloat()
+            }
+        }) {
+
         it.lastOrNull()?.Content(saveableStateHolder = saveableStateHolder, modifier = modifier)
     }
 
@@ -93,6 +168,7 @@ fun AppNavigationHost(
             sheetState.show()
         }
     }
+
     val showBottomSheet = current != null
 
     if (showBottomSheet) {
@@ -100,8 +176,7 @@ fun AppNavigationHost(
             BottomSheet(
                 onDismissRequest = {
                     handle(AppNavigationAction.PopBackStack)
-                },
-                sheetState = sheetState
+                }, sheetState = sheetState
             ) {
                 target?.Content(
                     saveableStateHolder = saveableStateHolder,
@@ -116,4 +191,4 @@ fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): Li
     return this.filter { it.presentationMode == mode }.map { it.screen }
 }
 
-private const val ANIMATION_DURATION_MS = 500
+private const val ANIMATION_DURATION_MS = AnimationConstants.DefaultDurationMillis
