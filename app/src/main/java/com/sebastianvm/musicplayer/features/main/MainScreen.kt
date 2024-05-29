@@ -10,19 +10,18 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.list.AlbumList
 import com.sebastianvm.musicplayer.features.artist.list.ArtistList
 import com.sebastianvm.musicplayer.features.genre.list.GenreList
+import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistList
 import com.sebastianvm.musicplayer.features.search.SearchScreen
 import com.sebastianvm.musicplayer.features.track.list.TrackList
@@ -30,12 +29,16 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.launch
 
-data class MainScreen(val navController: NavController) : Screen<NoArguments> {
+data class MainScreen(val navController: NavController) :
+    BaseScreen<NoArguments, MainStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
+    override fun createStateHolder(dependencies: DependencyContainer): MainStateHolder {
+        return getMainStateHolder(dependencies, navController)
+    }
+
     @Composable
-    override fun Content(modifier: Modifier) {
-        val stateHolder = rememberMainStateHolder(navController)
+    override fun Content(stateHolder: MainStateHolder, modifier: Modifier) {
         MainScreen(stateHolder = stateHolder)
     }
 }
@@ -63,11 +66,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState {
         pages.size
     }
-    val currentScreen: TopLevelScreen by remember {
-        derivedStateOf {
-            pages[pagerState.currentPage]
-        }
-    }
+    val currentScreen: TopLevelScreen = pages[pagerState.currentPage]
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier) {
@@ -119,3 +118,4 @@ enum class TopLevelScreen(@StringRes val screenName: Int) {
         R.string.playlists
     )
 }
+

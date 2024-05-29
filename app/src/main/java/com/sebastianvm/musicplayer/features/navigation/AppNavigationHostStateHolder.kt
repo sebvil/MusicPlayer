@@ -13,11 +13,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-data class BackStackEntry(val screen: Screen<*>, val presentationMode: NavOptions.PresentationMode)
+data class BackStackEntry(
+    val screen: Screen<*, *>,
+    val presentationMode: NavOptions.PresentationMode
+)
+
 data class AppNavigationState(val backStack: List<BackStackEntry>) : State
 
 sealed interface AppNavigationAction : UserAction {
-    data class ShowScreen(val screen: Screen<*>, val navOptions: NavOptions) : AppNavigationAction
+    data class ShowScreen(val screen: Screen<*, *>, val navOptions: NavOptions) :
+        AppNavigationAction
+
     data object PopBackStack : AppNavigationAction
 }
 
@@ -25,7 +31,7 @@ class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolde
     StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController = object : NavController {
-        override fun push(screen: Screen<*>, navOptions: NavOptions) {
+        override fun push(screen: Screen<*, *>, navOptions: NavOptions) {
             handle(AppNavigationAction.ShowScreen(screen, navOptions))
         }
 
@@ -59,6 +65,8 @@ class AppNavigationHostStateHolder(stateHolderScope: CoroutineScope = stateHolde
 
             AppNavigationAction.PopBackStack -> {
                 backStack.update {
+                    val last = it.last()
+                    last.screen.onCleared()
                     it.dropLast(1)
                 }
             }

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.list
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -25,7 +25,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -108,13 +107,13 @@ class AlbumListStateHolder(
     }
 }
 
-@Composable
-fun rememberAlbumListStateHolder(navController: NavController): AlbumListStateHolder {
-    return rememberStateHolder { dependencies ->
-        AlbumListStateHolder(
-            albumRepository = dependencies.repositoryProvider.albumRepository,
-            navController = navController,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        )
-    }
+fun getAlbumListStateHolder(
+    dependencies: DependencyContainer,
+    navController: NavController
+): AlbumListStateHolder {
+    return AlbumListStateHolder(
+        albumRepository = dependencies.repositoryProvider.albumRepository,
+        navController = navController,
+        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+    )
 }

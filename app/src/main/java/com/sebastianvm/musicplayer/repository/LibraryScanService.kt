@@ -23,12 +23,12 @@ import kotlinx.coroutines.launch
 
 class LibraryScanService : Service() {
 
-    private val dependencyContainer by lazy {
-        (application as MusicPlayerApplication).dependencyContainer
+    private val dependencies by lazy {
+        (application as MusicPlayerApplication).dependencies
     }
 
     private val mainDispatcher: CoroutineDispatcher by lazy {
-        dependencyContainer.dispatcherProvider.mainDispatcher
+        dependencies.dispatcherProvider.mainDispatcher
     }
 
     private var isRunning = false
@@ -37,7 +37,7 @@ class LibraryScanService : Service() {
     private lateinit var notificationBuilder: NotificationCompat.Builder
 
     private val musicRepository: MusicRepository by lazy {
-        dependencyContainer.repositoryProvider.musicRepository
+        dependencies.repositoryProvider.musicRepository
     }
 
     var job: Job? = null

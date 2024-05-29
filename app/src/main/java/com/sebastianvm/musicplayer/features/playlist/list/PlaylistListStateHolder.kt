@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
-import androidx.compose.runtime.Composable
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
@@ -18,7 +18,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,13 +114,13 @@ class PlaylistListStateHolder(
     }
 }
 
-@Composable
-fun rememberPlaylistListStateHolder(navController: NavController): PlaylistListStateHolder {
-    return rememberStateHolder { dependencyContainer ->
-        PlaylistListStateHolder(
-            playlistRepository = dependencyContainer.repositoryProvider.playlistRepository,
-            sortPreferencesRepository = dependencyContainer.repositoryProvider.sortPreferencesRepository,
-            navController = navController
-        )
-    }
+fun getPlaylistListStateHolder(
+    dependencies: DependencyContainer,
+    navController: NavController
+): PlaylistListStateHolder {
+    return PlaylistListStateHolder(
+        playlistRepository = dependencies.repositoryProvider.playlistRepository,
+        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+        navController = navController
+    )
 }

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
-import androidx.compose.runtime.Composable
 import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -19,7 +19,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import com.sebastianvm.musicplayer.util.AlbumType
 import kotlinx.coroutines.CoroutineScope
@@ -106,16 +105,14 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
     return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
 }
 
-@Composable
-fun rememberArtistStateHolder(
+fun getArtistStateHolder(
+    dependencies: DependencyContainer,
     arguments: ArtistArguments,
     navController: NavController
 ): ArtistStateHolder {
-    return rememberStateHolder { dependencyContainer ->
-        ArtistStateHolder(
-            arguments = arguments,
-            artistRepository = dependencyContainer.repositoryProvider.artistRepository,
-            navController = navController,
-        )
-    }
+    return ArtistStateHolder(
+        arguments = arguments,
+        artistRepository = dependencies.repositoryProvider.artistRepository,
+        navController = navController,
+    )
 }

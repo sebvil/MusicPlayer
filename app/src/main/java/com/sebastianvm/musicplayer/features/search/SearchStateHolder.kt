@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.search
 
-import androidx.compose.runtime.Composable
 import com.google.common.annotations.VisibleForTesting
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
@@ -29,7 +29,6 @@ import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.rememberStateHolder
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -242,13 +241,13 @@ class SearchStateHolder(
     }
 }
 
-@Composable
-fun rememberSearchStateHolder(navController: NavController): SearchStateHolder {
-    return rememberStateHolder { dependencyContainer ->
-        SearchStateHolder(
-            ftsRepository = dependencyContainer.repositoryProvider.searchRepository,
-            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
-            navController = navController,
-        )
-    }
+fun getSearchStateHolder(
+    dependencies: DependencyContainer,
+    navController: NavController
+): SearchStateHolder {
+    return SearchStateHolder(
+        ftsRepository = dependencies.repositoryProvider.searchRepository,
+        playbackManager = dependencies.repositoryProvider.playbackManager,
+        navController = navController,
+    )
 }

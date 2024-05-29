@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.ui.MainViewModel
 
 class MusicPlayerApplication : Application() {
 
-    val dependencyContainer by lazy { DependencyContainer(this) }
+    val dependencies by lazy { DependencyContainer(this) }
 
     val viewModelFactory: AbstractSavedStateViewModelFactory =
         object : AbstractSavedStateViewModelFactory() {
@@ -22,7 +22,7 @@ class MusicPlayerApplication : Application() {
                 when (modelClass) {
                     MainViewModel::class.java -> {
                         return MainViewModel(
-                            playbackManager = dependencyContainer.repositoryProvider.playbackManager,
+                            playbackManager = dependencies.repositoryProvider.playbackManager,
                         ) as T
                     }
 

@@ -1,10 +1,15 @@
 package com.sebastianvm.musicplayer.designsystem.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,6 +27,22 @@ fun BottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
         sheetState = sheetState,
+        dragHandle = {
+            Surface(
+                modifier = modifier
+                    .padding(vertical = 12.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.extraLarge
+            ) {
+                Box(
+                    Modifier
+                        .size(
+                            width = 32.dp,
+                            height = 4.dp
+                        )
+                )
+            }
+        },
         windowInsets = WindowInsets(0.dp),
     ) {
         content()

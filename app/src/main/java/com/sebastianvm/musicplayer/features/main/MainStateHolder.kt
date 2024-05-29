@@ -1,21 +1,21 @@
 package com.sebastianvm.musicplayer.features.main
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import android.util.Log
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.list.AlbumListStateHolder
-import com.sebastianvm.musicplayer.features.album.list.rememberAlbumListStateHolder
+import com.sebastianvm.musicplayer.features.album.list.getAlbumListStateHolder
 import com.sebastianvm.musicplayer.features.artist.list.ArtistListStateHolder
-import com.sebastianvm.musicplayer.features.artist.list.rememberArtistListStateHolder
+import com.sebastianvm.musicplayer.features.artist.list.getArtistListStateHolder
 import com.sebastianvm.musicplayer.features.genre.list.GenreListStateHolder
-import com.sebastianvm.musicplayer.features.genre.list.rememberGenreListStateHolder
+import com.sebastianvm.musicplayer.features.genre.list.getGenreListStateHolder
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListStateHolder
-import com.sebastianvm.musicplayer.features.playlist.list.rememberPlaylistListStateHolder
+import com.sebastianvm.musicplayer.features.playlist.list.getPlaylistListStateHolder
 import com.sebastianvm.musicplayer.features.search.SearchStateHolder
-import com.sebastianvm.musicplayer.features.search.rememberSearchStateHolder
+import com.sebastianvm.musicplayer.features.search.getSearchStateHolder
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListStateHolder
-import com.sebastianvm.musicplayer.features.track.list.rememberTrackListStateHolder
+import com.sebastianvm.musicplayer.features.track.list.getTrackListStateHolder
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -57,29 +57,33 @@ class MainStateHolder(
     override val state: StateFlow<MainState>
         get() = _state.asStateFlow()
 
+    init {
+        Log.i("MAIN", "initializing")
+    }
+
     override fun handle(action: MainUserAction) = Unit
 }
 
-@Composable
-fun rememberMainStateHolder(navController: NavController): MainStateHolder {
-    val trackListStateHolder =
-        rememberTrackListStateHolder(
-            args = TrackListArguments(trackListType = MediaGroup.AllTracks),
-            navController
-        )
-    val artistListStateHolder = rememberArtistListStateHolder(navController)
-    val albumListStateHolder = rememberAlbumListStateHolder(navController)
-    val genreListStateHolder = rememberGenreListStateHolder(navController)
-    val playlistListStateHolder = rememberPlaylistListStateHolder(navController)
-    val searchStateHolder = rememberSearchStateHolder(navController)
-    return remember {
-        MainStateHolder(
-            trackListStateHolder = trackListStateHolder,
-            artistListStateHolder = artistListStateHolder,
-            albumListStateHolder = albumListStateHolder,
-            genreListStateHolder = genreListStateHolder,
-            playlistListStateHolder = playlistListStateHolder,
-            searchStateHolder = searchStateHolder
-        )
-    }
+fun getMainStateHolder(
+    dependencies: DependencyContainer,
+    navController: NavController
+): MainStateHolder {
+    val trackListStateHolder = getTrackListStateHolder(
+        dependencies = dependencies,
+        args = TrackListArguments(trackListType = MediaGroup.AllTracks),
+        navController = navController
+    )
+    val artistListStateHolder = getArtistListStateHolder(dependencies, navController)
+    val albumListStateHolder = getAlbumListStateHolder(dependencies, navController)
+    val genreListStateHolder = getGenreListStateHolder(dependencies, navController)
+    val playlistListStateHolder = getPlaylistListStateHolder(dependencies, navController)
+    val searchStateHolder = getSearchStateHolder(dependencies, navController)
+    return MainStateHolder(
+        trackListStateHolder = trackListStateHolder,
+        artistListStateHolder = artistListStateHolder,
+        albumListStateHolder = albumListStateHolder,
+        genreListStateHolder = genreListStateHolder,
+        playlistListStateHolder = playlistListStateHolder,
+        searchStateHolder = searchStateHolder
+    )
 }

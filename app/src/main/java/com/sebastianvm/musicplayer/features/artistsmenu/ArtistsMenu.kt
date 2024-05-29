@@ -1,10 +1,8 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -13,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.Screen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -25,15 +23,16 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 data class ArtistsMenu(
     override val arguments: ArtistsMenuArguments,
     val navController: NavController
-) : Screen<ArtistsMenuArguments> {
+) : BaseScreen<ArtistsMenuArguments, ArtistsMenuStateHolder>() {
+
+    override fun createStateHolder(dependencies: DependencyContainer): ArtistsMenuStateHolder {
+        return getArtistsMenuStateHolder(dependencies, arguments, navController)
+    }
 
     @Composable
-    override fun Content(modifier: Modifier) {
+    override fun Content(stateHolder: ArtistsMenuStateHolder, modifier: Modifier) {
         ArtistsMenu(
-            stateHolder = rememberArtistsMenuStateHolder(
-                arguments = arguments,
-                navController = navController
-            ),
+            stateHolder = stateHolder,
             modifier = modifier
         )
     }
@@ -44,7 +43,7 @@ fun ArtistsMenu(stateHolder: ArtistsMenuStateHolder, modifier: Modifier = Modifi
     val uiState by stateHolder.currentState
     UiStateScreen(
         uiState = uiState,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         emptyScreen = {}
     ) { state ->
         ArtistsMenu(
@@ -73,7 +72,6 @@ fun ArtistsMenu(
                     style = MaterialTheme.typography.titleMedium
                 )
             },
-            modifier = Modifier.padding(top = 12.dp)
         )
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
