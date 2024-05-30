@@ -1,6 +1,16 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.sort.SortMenu
+import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortableListType
+import com.sebastianvm.musicplayer.features.track.list.TrackList
+import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -22,27 +32,29 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 class AlbumListStateHolderTest : FreeSpec({
 
-    lateinit var albumRepository: FakeAlbumRepository
-    lateinit var sortPreferencesRepository: FakeSortPreferencesRepository
+    lateinit var albumRepositoryDep: FakeAlbumRepository
+    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+    lateinit var navControllerDep: FakeNavController
 
     beforeTest {
-        albumRepository = FakeAlbumRepository()
-        sortPreferencesRepository = FakeSortPreferencesRepository()
+        albumRepositoryDep = FakeAlbumRepository()
+        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+        navControllerDep = FakeNavController()
     }
 
     fun TestScope.getSubject(): AlbumListStateHolder {
         return AlbumListStateHolder(
             stateHolderScope = this,
-            albumRepository = albumRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
-            navController = FakeNavController()
+            albumRepository = albumRepositoryDep,
+            sortPreferencesRepository = sortPreferencesRepositoryDep,
+            navController = navControllerDep
         )
     }
 
     "init subscribes to changes in track list" {
         val subject = getSubject()
-        albumRepository.albums.value = emptyList()
-        sortPreferencesRepository.albumListSortPreferences.value =
+        albumRepositoryDep.albums.value = emptyList()
+        sortPreferencesRepositoryDep.albumListSortPreferences.value =
             MediaSortPreferences(
                 sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                 sortOrder = MediaSortOrder.ASCENDING
@@ -51,7 +63,7 @@ class AlbumListStateHolderTest : FreeSpec({
             awaitItem() shouldBe Loading
             awaitItem() shouldBe Empty
             val albums = FixtureProvider.albumFixtures().toList()
-            albumRepository.albums.value = albums
+            albumRepositoryDep.albums.value = albums
             val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
             item.state.modelListState.items shouldBe albums.map { it.toModelListItemState() }
             item.state.modelListState.headerState shouldBe HeaderState.None
@@ -65,8 +77,8 @@ class AlbumListStateHolderTest : FreeSpec({
                 sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                 sortOrder = MediaSortOrder.ASCENDING
             )
-            albumRepository.albums.value = FixtureProvider.albumFixtures().toList()
-            sortPreferencesRepository.albumListSortPreferences.value = initialPrefs
+            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures().toList()
+            sortPreferencesRepositoryDep.albumListSortPreferences.value = initialPrefs
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
@@ -80,7 +92,7 @@ class AlbumListStateHolderTest : FreeSpec({
                 }
 
                 if (sortPreferences != initialPrefs) {
-                    sortPreferencesRepository.albumListSortPreferences.value = sortPreferences
+                    sortPreferencesRepositoryDep.albumListSortPreferences.value = sortPreferences
                     with(awaitItem()) {
                         shouldBeInstanceOf<Data<AlbumListState>>()
                         state.modelListState.sortButtonState shouldBe SortButtonState(
@@ -92,4 +104,46 @@ class AlbumListStateHolderTest : FreeSpec({
             }
         }
     }
-})
+
+    "handle" - {
+        "AlbumMoreIconClicked navigates to AlbumContextMenu" {
+            val subject = getSubject()
+            subject.handle(AlbumListUserAction.AlbumMoreIconClicked(ALBUM_ID))
+            navControllerDep.backStack.last() shouldBe BackStackEntry(
+                screen = AlbumContextMenu(
+                    arguments = AlbumContextMenuArguments(ALBUM_ID),
+                    navController = navControllerDep
+                ),
+                presentationMode = NavOptions.PresentationMode.BottomSheet
+            )
+        }
+
+        "SortButtonClicked navigates to SortMenu" {
+            val subject = getSubject()
+            subject.handle(AlbumListUserAction.SortButtonClicked)
+            navControllerDep.backStack.last() shouldBe BackStackEntry(
+                screen = SortMenu(
+                    arguments = SortMenuArguments(listType = SortableListType.Albums)
+                ),
+                presentationMode = NavOptions.PresentationMode.BottomSheet
+            )
+        }
+
+        "AlbumClicked navigates to TrackList" {
+            val subject = getSubject()
+            subject.handle(AlbumListUserAction.AlbumClicked(ALBUM_ID))
+
+            navControllerDep.backStack.last() shouldBe BackStackEntry(
+                screen = TrackList(
+                    arguments = TrackListArguments(MediaGroup.Album(ALBUM_ID)),
+                    navController = navControllerDep
+                ),
+                presentationMode = NavOptions.PresentationMode.Screen
+            )
+        }
+    }
+}) {
+    companion object {
+        private const val ALBUM_ID = 1L
+    }
+}

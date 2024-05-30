@@ -8,7 +8,7 @@ class FakeNavController : NavController {
             backStack.removeLast()
             backStack.add(entry)
         } else {
-            backStack.removeLast()
+            backStack.add(entry)
         }
     }
 
