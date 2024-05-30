@@ -105,36 +105,36 @@ fun AppNavigationHost(
             )
             if (this.targetState.size > this.initialState.size) {
                 (
-                    scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 0.9f
-                    ) + fadeIn(
-                        animationSpec = enterAnimationSpec
+                        scaleIn(
+                            animationSpec = enterAnimationSpec,
+                            initialScale = 0.9f
+                        ) + fadeIn(
+                            animationSpec = enterAnimationSpec
+                        )
+                        ).togetherWith(
+                        scaleOut(
+                            animationSpec = exitAnimationSpec,
+                            targetScale = 1.1f
+                        ) + fadeOut(
+                            animationSpec = exitAnimationSpec
+                        )
                     )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 1.1f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
             } else {
                 (
-                    fadeIn(
-                        animationSpec = enterAnimationSpec
-                    ) + scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 1.1f
+                        fadeIn(
+                            animationSpec = enterAnimationSpec
+                        ) + scaleIn(
+                            animationSpec = enterAnimationSpec,
+                            initialScale = 1.1f
+                        )
+                        ).togetherWith(
+                        scaleOut(
+                            animationSpec = exitAnimationSpec,
+                            targetScale = 0.9f
+                        ) + fadeOut(
+                            animationSpec = exitAnimationSpec
+                        )
                     )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 0.9f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
             }.apply {
                 targetContentZIndex = targetState.size.toFloat()
             }
@@ -181,7 +181,7 @@ fun AppNavigationHost(
                 },
                 sheetState = sheetState
             ) {
-                target?.Content(
+                current?.Content(
                     saveableStateHolder = saveableStateHolder,
                     modifier = Modifier.navigationBarsPadding()
                 )

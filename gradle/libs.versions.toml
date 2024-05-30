@@ -15,6 +15,7 @@ kotlin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization-json = "1.6.3"
+kover = "0.8.0"
 lifecycle = "2.8.1"
 material-3 = "1.3.0-beta02"
 media3-exoplayer = "1.3.1"
@@ -61,12 +62,13 @@ detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "det
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-google-devtools" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 org-jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [bundles]
 testing = [
