@@ -43,7 +43,9 @@ fun BottomSheet(
                 )
             }
         },
-        windowInsets = WindowInsets(0.dp),
+        contentWindowInsets = {
+            WindowInsets(0.dp)
+        },
     ) {
         content()
     }

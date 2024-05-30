@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
@@ -112,7 +113,7 @@ fun ModelList(
                     ModelListItem(
                         state = item,
                         modifier = Modifier
-                            .animateItemPlacement()
+                            .animateItem()
                             .clickable {
                                 onItemClicked(index, item)
                             },
@@ -252,7 +253,9 @@ private fun HeaderWithImageModelList(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = offset)
+                .offset {
+                    IntOffset(x = 0, y = offset.roundToPx())
+                }
                 .onSizeChanged { size ->
                     fullHeaderHeight = size.height
                 },

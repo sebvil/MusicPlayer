@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -390,19 +392,23 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
                 },
                 label = "size"
             )
-            val offset by remember(size) {
-                @Suppress("MagicNumber")
-                derivedStateOf {
-                    (-4 * size / 8 + 10).coerceAtLeast(0).dp
-                }
-            }
+            val offset = (-4 * size / 8 + 8).coerceAtLeast(0).dp
+
             Icon(
                 imageVector = Icons.Filled.Circle,
                 contentDescription = null,
                 modifier = Modifier
                     .size(size.dp)
-                    .offset(x = offset, y = offset),
+                    .offset { IntOffset(x = 0, y = offset.roundToPx()) },
                 tint = colors.thumbColor
+            )
+        },
+        track = {
+            SliderDefaults.Track(
+                sliderState = it,
+                modifier = Modifier.height(4.dp),
+                drawStopIndicator = null,
+                thumbTrackGapSize = 0.000000000.dp
             )
         },
         interactionSource = interactionSource
