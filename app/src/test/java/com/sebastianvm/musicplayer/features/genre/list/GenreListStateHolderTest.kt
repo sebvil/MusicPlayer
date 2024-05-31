@@ -91,7 +91,6 @@ class GenreListStateHolderTest : FreeSpec({
         }
     }
 
-
     "handle" - {
         "SortByButtonClicked toggles sort order" {
             val subject = getSubject()
@@ -123,7 +122,6 @@ class GenreListStateHolderTest : FreeSpec({
                 presentationMode = NavOptions.PresentationMode.BottomSheet
             )
         }
-
     }
 }) {
 

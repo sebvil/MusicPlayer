@@ -39,7 +39,7 @@ object FixtureProvider {
                     artworkUri = "path/to/image",
                     trackLength = 250.seconds
                 ),
-                isPlaying = false,
+                isPlaying = true,
                 currentTrackProgress = 125.seconds
             ),
         )
