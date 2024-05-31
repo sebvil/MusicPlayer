@@ -98,7 +98,11 @@ fun AppScreenHost(
                         .onPlaced { coordinates ->
                             height = coordinates.boundsInParent().height
                         }
-                        .clickable(enabled = !isFullScreen) {
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            enabled = !isFullScreen,
+                        ) {
                             isFullScreen = !isFullScreen
                         },
                     onPreviousButtonClicked = { handle(MainUserAction.PreviousButtonClicked) },

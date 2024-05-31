@@ -1,35 +1,43 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.sebastianvm.musicplayer.features.player
 
-import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.TwoWayConverter
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -42,28 +50,22 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ChainStyle
-import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.compose.MotionLayout
-import androidx.constraintlayout.compose.MotionScene
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.transitionSpec
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
@@ -81,252 +83,277 @@ fun AnimatedPlayerCard(
     onProgressBarValueChange: (Int, Duration) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val progress by transition.animateFloat(
-        transitionSpec = transitionSpec(),
-        label = "progress animation"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) 1f else 0f
-    }
-
-    val buttonSize by transition.animateDp(
-        transitionSpec = transitionSpec(),
-        label = "button size"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) 48.dp else 24.dp
-    }
-
-    val titleTextSize by transition.animateValue(
-        typeConverter = TwoWayConverter(
-            convertToVector = {
-                AnimationVector1D(
-                    it.value
+    SharedTransitionLayout(modifier = modifier) {
+        AnimatedContent(
+            targetState = transition.targetState,
+            label = "playerTransition"
+        ) { isFullScreen ->
+            if (isFullScreen) {
+                FullScreenPlayer(
+                    state = state,
+                    statusBarPadding = statusBarPadding,
+                    onPreviousButtonClicked = onPreviousButtonClicked,
+                    onNextButtonClicked = onNextButtonClicked,
+                    onPlayToggled = onPlayToggled,
+                    onDismissPlayer = onDismissPlayer,
+                    onProgressBarValueChange = onProgressBarValueChange,
+                    animatedVisibilityScope = this@AnimatedContent,
+                    sharedTransitionScope = this@SharedTransitionLayout
                 )
-            },
-            convertFromVector = {
-                TextUnit(it.value, TextUnitType.Sp)
-            }
-        ),
-        transitionSpec = transitionSpec(),
-        label = "text style"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) MaterialTheme.typography.headlineSmall.fontSize else MaterialTheme.typography.titleSmall.fontSize
-    }
-
-    val artistTextSize by transition.animateValue(
-        typeConverter = TwoWayConverter(
-            convertToVector = {
-                AnimationVector1D(
-                    it.value
+            } else {
+                FloatingPlayerCard(
+                    state = state,
+                    onPreviousButtonClicked = onPreviousButtonClicked,
+                    onNextButtonClicked = onNextButtonClicked,
+                    onPlayToggled = onPlayToggled,
+                    onProgressBarValueChange = onProgressBarValueChange,
+                    animatedVisibilityScope = this@AnimatedContent,
+                    sharedTransitionScope = this@SharedTransitionLayout,
                 )
-            },
-            convertFromVector = {
-                TextUnit(it.value, TextUnitType.Sp)
             }
-        ),
-        transitionSpec = transitionSpec(),
-        label = "text style"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) MaterialTheme.typography.titleLarge.fontSize else MaterialTheme.typography.bodyMedium.fontSize
+        }
     }
+}
 
-    ElevatedCard(modifier = modifier) {
-        val fullScreenPadding = 26.dp
-        val cardPadding = 12.dp
-        val itemPadding = 8.dp
-        MotionLayout(
-            motionScene = MotionScene {
-                val image = createRefFor("image")
-                val text = createRefFor("text")
-                val playbackControls = createRefFor("playbackControls")
-                val progressBar = createRefFor("progressBar")
-                val box = createRefFor("box")
-                val hidePlayerButton = createRefFor("hidePlayer")
-                val trackTime = createRefFor("trackTime")
-                val fullScreenConstraints = constraintSet {
-                    val chain = createVerticalChain(
-                        image.withChainParams(bottomMargin = itemPadding),
-                        text.withChainParams(topMargin = itemPadding, bottomMargin = itemPadding),
-                        playbackControls.withChainParams(
-                            topMargin = itemPadding,
-                            bottomMargin = itemPadding
-                        ),
-                        progressBar.withChainParams(
-                            topMargin = itemPadding,
-                            bottomMargin = itemPadding
-                        ),
-                        trackTime.withChainParams(topMargin = itemPadding),
-                        chainStyle = ChainStyle.Packed
-                    )
 
-                    constrain(hidePlayerButton) {
-                        top.linkTo(parent.top, margin = statusBarPadding)
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                    }
-                    constrain(box) {
-                        height = Dimension.matchParent
-                        width = Dimension.matchParent
-                    }
-                    constrain(chain) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                    constrain(image) {
-                        width = Dimension.fillToConstraints
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                        end.linkTo(parent.end, margin = fullScreenPadding)
-                    }
-                    constrain(text) {
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                        end.linkTo(parent.end, margin = fullScreenPadding)
-                        width = Dimension.matchParent
-                    }
-
-                    constrain(playbackControls) {
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                        end.linkTo(parent.end, margin = fullScreenPadding)
-                        width = Dimension.matchParent
-                    }
-                    constrain(progressBar) {
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                        end.linkTo(parent.end, margin = fullScreenPadding)
-                        width = Dimension.matchParent
-                    }
-                    constrain(trackTime) {
-                        start.linkTo(parent.start, margin = fullScreenPadding)
-                        end.linkTo(parent.end, margin = fullScreenPadding)
-                        width = Dimension.matchParent
-                    }
-                }
-                val regularConstraints = constraintSet {
-                    constrain(box) {
-                        height = Dimension.value(0.dp)
-                        width = Dimension.value(0.dp)
-                    }
-                    val chain = createVerticalChain(
-                        text,
-                        playbackControls.withChainParams(),
-                        progressBar.withChainParams(
-                            topMargin = 2.dp,
-                            bottomMargin = 2.dp
-                        ),
-                        chainStyle = ChainStyle.Packed
-                    )
-
-                    constrain(chain) {
-                        top.linkTo(parent.top, margin = cardPadding)
-                        bottom.linkTo(parent.bottom)
-                    }
-
-                    constrain(image) {
-                        top.linkTo(text.top)
-                        bottom.linkTo(text.bottom)
-                        start.linkTo(parent.start, margin = cardPadding)
-                        height = Dimension.fillToConstraints
-                    }
-
-                    constrain(text) {
-                        start.linkTo(image.end, margin = itemPadding)
-                        end.linkTo(parent.end, margin = cardPadding)
-                        width = Dimension.fillToConstraints
-                    }
-                    constrain(playbackControls) {
-                        end.linkTo(parent.end, margin = cardPadding)
-                        start.linkTo(parent.start, margin = cardPadding)
-                    }
-                    constrain(progressBar) {
-                        start.linkTo(parent.start, margin = cardPadding)
-                        end.linkTo(parent.end, margin = cardPadding)
-                        width = Dimension.matchParent
-                    }
-                }
-                defaultTransition(from = regularConstraints, to = fullScreenConstraints)
-            },
-            progress = progress
+@Composable
+private fun FloatingPlayerCard(
+    state: PlayerViewState,
+    onPreviousButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    onPlayToggled: () -> Unit,
+    onProgressBarValueChange: (Int, Duration) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope,
+    modifier: Modifier = Modifier
+) {
+    with(sharedTransitionScope) {
+        ElevatedCard(
+            modifier = modifier.sharedBounds(
+                rememberSharedContentState(
+                    key = CONTAINER_SHARED_TRANSITION_KEY
+                ),
+                animatedVisibilityScope = animatedVisibilityScope,
+            ),
+            colors = CardDefaults.elevatedCardColors()
+                .copy(containerColor = MaterialTheme.colorScheme.playerContainerColor)
         ) {
-            if (progress != 0f) {
-                IconButton(
-                    onClick = onDismissPlayer,
-                    modifier = Modifier
-                        .layoutId("hidePlayer")
-                        .alpha(progress)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.KeyboardArrowDown,
-                        contentDescription = stringResource(R.string.hide_player),
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = state.trackInfoState.trackName,
+                            modifier = Modifier
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        key = TITLE_SHARED_TRANSITION_KEY
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                ),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    },
+                    supportingContent = {
+                        Text(
+                            text = state.trackInfoState.artists,
+                            modifier = Modifier.sharedBounds(
+                                rememberSharedContentState(
+                                    key = ARTIST_SHARED_TRANSITION_KEY
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    },
+                    leadingContent = {
+                        MediaArtImage(
+                            mediaArtImageState = state.mediaArtImageState,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = IMAGE_SHARED_TRANSITION_KEY
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .alpha(progress)
-                        .layoutId("trackTime")
+                        .sharedElement(
+                            rememberSharedContentState(
+                                key = BUTTONS_SHARED_TRANSITION_KEY
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
                 ) {
-                    Text(
-                        text = state.trackProgressState.currentPlaybackTime.toDisplayableString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = state.trackProgressState.trackLength.toDisplayableString(),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    IconButton(onClick = onPreviousButtonClicked) {
+                        Icon(
+                            imageVector = Icons.Default.SkipPrevious,
+                            contentDescription = stringResource(R.string.previous),
+                        )
+                    }
+                    IconButton(onClick = onPlayToggled) {
+                        Icon(
+                            imageVector = state.playbackIcon.icon,
+                            contentDescription = stringResource(state.playbackIcon.contentDescription),
+                        )
+                    }
+                    IconButton(onClick = onNextButtonClicked) {
+                        Icon(
+                            imageVector = Icons.Default.SkipNext,
+                            contentDescription = stringResource(R.string.previous),
+                        )
+                    }
                 }
+
+                ProgressSlider(
+                    progress = state.trackProgressState.progress.percent,
+                    onProgressBarValueChange = { position ->
+                        onProgressBarValueChange(position, state.trackProgressState.trackLength)
+                    },
+                    modifier = Modifier.sharedElement(
+                        rememberSharedContentState(
+                            key = PROGRESS_BAR_SHARED_TRANSITION_KEY
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                )
             }
-            Box(modifier = Modifier.layoutId("box"))
+        }
+    }
+}
+
+@Composable
+private fun FullScreenPlayer(
+    state: PlayerViewState,
+    statusBarPadding: Dp,
+    onPreviousButtonClicked: () -> Unit,
+    onNextButtonClicked: () -> Unit,
+    onPlayToggled: () -> Unit,
+    onDismissPlayer: () -> Unit,
+    onProgressBarValueChange: (Int, Duration) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope,
+    modifier: Modifier = Modifier
+) {
+    with(sharedTransitionScope) {
+        Column(
+            modifier = modifier
+                .background(color = MaterialTheme.colorScheme.playerContainerColor)
+                .padding(horizontal = 16.dp)
+                .padding(top = statusBarPadding)
+                .sharedBounds(
+                    rememberSharedContentState(
+                        key = CONTAINER_SHARED_TRANSITION_KEY
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            IconButton(
+                onClick = onDismissPlayer,
+                modifier = Modifier.align(Alignment.Start)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.hide_player),
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            val imageMaxSize = 350.dp
             MediaArtImage(
                 mediaArtImageState = state.mediaArtImageState,
-                modifier = Modifier.layoutId("image")
-            )
-            Column(
                 modifier = Modifier
+                    .sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
                     .fillMaxWidth()
-                    .layoutId("text")
-            ) {
-                Text(
-                    text = state.trackInfoState.trackName,
-                    modifier = Modifier.padding(vertical = 2.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = titleTextSize,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-                Text(
-                    text = state.trackInfoState.artists,
-                    modifier = Modifier.padding(vertical = 2.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = artistTextSize,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-            }
+                    .sharedElement(
+                        rememberSharedContentState(
+                            key = IMAGE_SHARED_TRANSITION_KEY
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    ),
+                contentScale = ContentScale.Fit
+            )
 
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = state.trackInfoState.trackName,
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(
+                                key = TITLE_SHARED_TRANSITION_KEY
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        text = state.trackInfoState.artists,
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(
+                                key = ARTIST_SHARED_TRANSITION_KEY
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+
+            )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
-                    .layoutId("playbackControls")
+                    .fillMaxWidth()
+                    .sharedElement(
+                        rememberSharedContentState(
+                            key = BUTTONS_SHARED_TRANSITION_KEY
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
             ) {
                 IconButton(onClick = onPreviousButtonClicked) {
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier.size(buttonSize)
+                        modifier = Modifier.size(48.dp),
                     )
                 }
                 IconButton(onClick = onPlayToggled) {
                     Icon(
                         imageVector = state.playbackIcon.icon,
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
-                        modifier = Modifier.size(buttonSize)
+                        modifier = Modifier.size(48.dp)
                     )
                 }
                 IconButton(onClick = onNextButtonClicked) {
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier.size(buttonSize)
+                        modifier = Modifier.size(48.dp),
                     )
                 }
             }
@@ -335,15 +362,34 @@ fun AnimatedPlayerCard(
                 progress = state.trackProgressState.progress.percent,
                 onProgressBarValueChange = { position ->
                     onProgressBarValueChange(position, state.trackProgressState.trackLength)
-                }
+                },
+                modifier = Modifier.sharedElement(
+                    rememberSharedContentState(
+                        key = PROGRESS_BAR_SHARED_TRANSITION_KEY
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                )
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = state.trackProgressState.currentPlaybackTime.toDisplayableString())
+                Text(text = state.trackProgressState.trackLength.toDisplayableString())
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> Unit) {
+private fun ProgressSlider(
+    progress: Float,
+    onProgressBarValueChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primary)
     val interactions = remember { mutableStateListOf<Interaction>() }
@@ -381,8 +427,7 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
         onValueChangeFinished = {
             onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
         },
-        modifier = Modifier
-            .layoutId("progressBar"),
+        modifier = modifier,
         colors = colors,
         thumb = {
             val size by animateIntAsState(
@@ -412,8 +457,9 @@ private fun ProgressSlider(progress: Float, onProgressBarValueChange: (Int) -> U
                 thumbTrackGapSize = 0.000000000.dp
             )
         },
-        interactionSource = interactionSource
-    )
+        interactionSource = interactionSource,
+
+        )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
@@ -453,3 +499,36 @@ private fun PlayerCardPreview(
         )
     }
 }
+
+@PreviewComponents
+@Composable
+private fun FloatingPlayerCardPreview(
+    @PreviewParameter(
+        PlayerViewStatePreviewParameterProvider::class,
+        limit = 1
+    ) state: PlayerViewState
+) {
+    val transition = updateTransition(targetState = false, label = "player animation")
+    ThemedPreview {
+        AnimatedPlayerCard(
+            state = state,
+            statusBarPadding = 16.dp,
+            transition = transition,
+            onPreviousButtonClicked = {},
+            onNextButtonClicked = {},
+            onPlayToggled = {},
+            onDismissPlayer = {},
+            onProgressBarValueChange = { _, _ -> }
+        )
+    }
+}
+
+private const val CONTAINER_SHARED_TRANSITION_KEY = "container"
+private const val IMAGE_SHARED_TRANSITION_KEY = "image"
+private const val TITLE_SHARED_TRANSITION_KEY = "title"
+private const val ARTIST_SHARED_TRANSITION_KEY = "artist"
+private const val BUTTONS_SHARED_TRANSITION_KEY = "buttons"
+private const val PROGRESS_BAR_SHARED_TRANSITION_KEY = "progresBar"
+
+private val ColorScheme.playerContainerColor
+    get() = this.surfaceContainerLow
