@@ -59,7 +59,6 @@ class MainStateHolder(
     override val state: StateFlow<MainState>
         get() = _state.asStateFlow()
 
-
     override fun handle(action: MainUserAction) = Unit
 }
 
