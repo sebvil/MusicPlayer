@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.main
 
-import android.util.Log
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.album.list.AlbumListStateHolder
 import com.sebastianvm.musicplayer.features.album.list.getAlbumListStateHolder
@@ -60,9 +59,6 @@ class MainStateHolder(
     override val state: StateFlow<MainState>
         get() = _state.asStateFlow()
 
-    init {
-        Log.i("MAIN", "initializing")
-    }
 
     override fun handle(action: MainUserAction) = Unit
 }
