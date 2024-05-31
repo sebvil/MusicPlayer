@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.ui
 
+import com.sebastianvm.musicplayer.designsystem.icons.Album
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.icons.Album
-import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.TrackInfoState

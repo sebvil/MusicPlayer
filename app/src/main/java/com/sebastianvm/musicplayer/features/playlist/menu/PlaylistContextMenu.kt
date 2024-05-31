@@ -9,15 +9,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.icons.Delete
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
+import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
+import com.sebastianvm.musicplayer.designsystem.icons.Playlist
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseScreen
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
-import com.sebastianvm.musicplayer.ui.icons.Delete
-import com.sebastianvm.musicplayer.ui.icons.Icons
-import com.sebastianvm.musicplayer.ui.icons.PlayArrow
-import com.sebastianvm.musicplayer.ui.icons.Playlist
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 

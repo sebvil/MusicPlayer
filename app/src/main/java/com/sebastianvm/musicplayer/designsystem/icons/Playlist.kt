@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.icons
+package com.sebastianvm.musicplayer.designsystem.icons
 
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import com.sebastianvm.musicplayer.ui.util.compose.IconState

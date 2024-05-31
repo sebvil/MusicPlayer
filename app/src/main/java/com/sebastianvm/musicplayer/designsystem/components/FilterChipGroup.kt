@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.components.chip
+package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

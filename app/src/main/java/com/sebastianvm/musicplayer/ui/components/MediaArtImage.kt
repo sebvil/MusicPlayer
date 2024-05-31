@@ -18,8 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import coil.compose.AsyncImage
-import com.sebastianvm.musicplayer.ui.icons.Album
-import com.sebastianvm.musicplayer.ui.icons.Icons
+import com.sebastianvm.musicplayer.designsystem.icons.Album
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
