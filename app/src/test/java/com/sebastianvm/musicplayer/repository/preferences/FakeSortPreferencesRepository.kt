@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
+typealias SortPreferencesMap = Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>
+
 class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     val albumListSortPreferences: MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> =
@@ -35,8 +37,10 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
             )
         )
 
-    val genreTracksSortPreferences:
-        MutableStateFlow<Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>> =
+    val genreTracksSortPreferences: MutableStateFlow<SortPreferencesMap> =
+        MutableStateFlow(emptyMap())
+
+    val playlistTracksSortPreferences: MutableStateFlow<SortPreferencesMap> =
         MutableStateFlow(emptyMap())
 
     override suspend fun modifyTrackListSortPreferences(
@@ -47,6 +51,10 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
             is MediaGroup.AllTracks -> allTracksSortPreferences.value = newPreferences
             is MediaGroup.Genre -> genreTracksSortPreferences.update {
                 it + (trackList.genreId to newPreferences)
+            }
+
+            is MediaGroup.Playlist -> playlistTracksSortPreferences.update {
+                it + (trackList.playlistId to newPreferences)
             }
 
             else -> error("Cannot sort $trackList")
@@ -60,6 +68,13 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
         return when (trackList) {
             is MediaGroup.AllTracks -> allTracksSortPreferences
             is MediaGroup.Genre -> genreTracksSortPreferences.map {
+                it[trackListId] ?: MediaSortPreferences(
+                    SortOptions.TrackListSortOptions.TRACK,
+                    MediaSortOrder.ASCENDING
+                )
+            }
+
+            is MediaGroup.Playlist -> playlistTracksSortPreferences.map {
                 it[trackListId] ?: MediaSortPreferences(
                     SortOptions.TrackListSortOptions.TRACK,
                     MediaSortOrder.ASCENDING

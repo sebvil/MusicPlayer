@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.di.dependencies
@@ -13,11 +12,12 @@ import kotlinx.coroutines.cancel
 interface Screen<Args : Arguments, SH : StateHolder<*, *>> {
 
     val arguments: Args
+    val key: Any
 
     fun createStateHolder(dependencies: DependencyContainer): SH
 
     @Composable
-    fun Content(saveableStateHolder: SaveableStateHolder, modifier: Modifier)
+    fun Content(modifier: Modifier)
 
     fun onCleared() = Unit
 }
@@ -32,28 +32,22 @@ abstract class BaseScreen<Args : Arguments, SH : StateHolder<*, *>> : Screen<Arg
     @Composable
     abstract fun Content(stateHolder: SH, modifier: Modifier)
 
-    private var _saveableStateHolder: SaveableStateHolder? = null
-    private val key
-        get() = this.toString()
+    override val key = this.toString()
 
     @Composable
-    final override fun Content(saveableStateHolder: SaveableStateHolder, modifier: Modifier) {
-        _saveableStateHolder = saveableStateHolder
+    final override fun Content(modifier: Modifier) {
         val dependencies = dependencies()
-        saveableStateHolder.SaveableStateProvider(key) {
-            Content(
-                stateHolder = remember {
-                    getOrCreateStateHolder(dependencies)
-                },
-                modifier = modifier
-            )
-        }
+
+        Content(
+            stateHolder = remember {
+                getOrCreateStateHolder(dependencies)
+            },
+            modifier = modifier
+        )
     }
 
     override fun onCleared() {
         super.onCleared()
         stateHolder?.stateHolderScope?.cancel(message = "Screen cleared")
-        _saveableStateHolder?.removeState(key)
-        _saveableStateHolder = null
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -48,7 +50,6 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.chip.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
@@ -97,102 +98,109 @@ fun SearchScreen(
 
     val context = LocalContext.current
 
+    val onActiveChange: (Boolean) -> Unit = {
+        isSearchActive = it
+        if (!it) {
+            query = ""
+            handle(SearchUserAction.TextChanged(""))
+        }
+    }
     SearchBar(
-        query = query,
-        onQueryChange = {
-            query = it
-            handle(SearchUserAction.TextChanged(it))
-        },
-        onSearch = {},
-        modifier = modifier,
-        active = isSearchActive,
-        onActiveChange = {
-            isSearchActive = it
-            if (!it) {
-                query = ""
-                handle(SearchUserAction.TextChanged(""))
-            }
-        },
-        leadingIcon = {
-            if (isSearchActive) {
-                IconButton(onClick = {
-                    isSearchActive = false
-                    query = ""
-                    handle(SearchUserAction.TextChanged(""))
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            } else {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "")
-            }
-        },
-        trailingIcon = {
-            if (!isSearchActive) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopStart)
-                ) {
-                    IconButton(
-                        onClick = {
-                            isDropdownManuExpanded = !isDropdownManuExpanded
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = query,
+                onQueryChange = {
+                    query = it
+                    handle(SearchUserAction.TextChanged(it))
+                },
+                onSearch = {},
+                expanded = isSearchActive,
+                onExpandedChange = onActiveChange,
+                placeholder = {
+                    Text(text = stringResource(R.string.search_media))
+                },
+                leadingIcon = {
+                    if (isSearchActive) {
+                        IconButton(onClick = {
+                            isSearchActive = false
+                            query = ""
+                            handle(SearchUserAction.TextChanged(""))
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(id = R.string.more)
-                        )
+                    } else {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
-                    DropdownMenu(
-                        expanded = isDropdownManuExpanded,
-                        onDismissRequest = { isDropdownManuExpanded = false }
-                    ) {
-                        PermissionHandler(
-                            permission = Permission.ReadAudio,
-                            dialogTitle = R.string.storage_permission_needed,
-                            message = R.string.grant_storage_permissions,
-                            onPermissionGranted = {
-                                startForegroundService(
-                                    context,
-                                    Intent(context, LibraryScanService::class.java)
-                                )
-                                isDropdownManuExpanded = false
-                            }
-                        ) { onClick ->
-                            DropdownMenuItem(
-                                text = { Text(stringResource(id = R.string.refresh_library)) },
+                },
+                trailingIcon = {
+                    if (!isSearchActive) {
+                        Box(
+                            modifier = Modifier
+                                .wrapContentSize(Alignment.TopStart)
+                        ) {
+                            IconButton(
                                 onClick = {
-                                    onClick()
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.Refresh,
-                                        contentDescription = null
+                                    isDropdownManuExpanded = !isDropdownManuExpanded
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = R.string.more)
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = isDropdownManuExpanded,
+                                onDismissRequest = { isDropdownManuExpanded = false }
+                            ) {
+                                PermissionHandler(
+                                    permission = Permission.ReadAudio,
+                                    dialogTitle = R.string.storage_permission_needed,
+                                    message = R.string.grant_storage_permissions,
+                                    onPermissionGranted = {
+                                        startForegroundService(
+                                            context,
+                                            Intent(context, LibraryScanService::class.java)
+                                        )
+                                        isDropdownManuExpanded = false
+                                    }
+                                ) { onClick ->
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(id = R.string.refresh_library)) },
+                                        onClick = {
+                                            onClick()
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.Refresh,
+                                                contentDescription = null
+                                            )
+                                        }
                                     )
                                 }
+                            }
+                        }
+                    } else if (query.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                query = ""
+                                handle(SearchUserAction.TextChanged(""))
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = R.string.back)
                             )
                         }
                     }
-                }
-            } else if (query.isNotEmpty()) {
-                IconButton(
-                    onClick = {
-                        query = ""
-                        handle(SearchUserAction.TextChanged(""))
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            }
+                },
+            )
         },
-        placeholder = {
-            Text(text = stringResource(R.string.search_media))
-        }
+        expanded = isSearchActive,
+        onExpandedChange = onActiveChange,
+        modifier = modifier,
     ) {
         Box(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
             SearchLayout(state = state, handle = handle)

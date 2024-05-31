@@ -28,10 +28,10 @@ import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
-import com.sebastianvm.musicplayer.ui.icons.Album
 
 enum class TrailingButtonType {
     More, Plus, Check
@@ -178,7 +178,7 @@ fun Album.toModelListItemState(): ModelListItemState {
         supportingContent = supportingContent,
         mediaArtImageState = MediaArtImageState(
             imageUri = imageUri,
-            backupImage = com.sebastianvm.musicplayer.ui.icons.Icons.Album
+            backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album
         ),
         trailingButtonType = TrailingButtonType.More
     )

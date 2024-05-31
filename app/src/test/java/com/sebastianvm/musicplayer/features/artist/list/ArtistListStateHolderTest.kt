@@ -1,7 +1,13 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
+import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
@@ -22,32 +28,34 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 
 class ArtistListStateHolderTest : FreeSpec({
 
-    lateinit var artistRepository: FakeArtistRepository
-    lateinit var sortPreferencesRepository: FakeSortPreferencesRepository
+    lateinit var artistRepositoryDep: FakeArtistRepository
+    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+    lateinit var navControllerDep: FakeNavController
 
     beforeTest {
-        artistRepository = FakeArtistRepository()
-        sortPreferencesRepository = FakeSortPreferencesRepository()
+        artistRepositoryDep = FakeArtistRepository()
+        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+        navControllerDep = FakeNavController()
     }
 
     fun TestScope.getSubject(): ArtistListStateHolder {
         return ArtistListStateHolder(
             stateHolderScope = this,
-            artistRepository = artistRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
-            navController = FakeNavController()
+            artistRepository = artistRepositoryDep,
+            sortPreferencesRepository = sortPreferencesRepositoryDep,
+            navController = navControllerDep
         )
     }
 
     "init subscribes to changes in artist list" {
         val subject = getSubject()
-        artistRepository.artists.value = emptyList()
+        artistRepositoryDep.artists.value = emptyList()
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
             awaitItem() shouldBe Empty
 
             val artists = FixtureProvider.artistFixtures().toList()
-            artistRepository.artists.value = artists
+            artistRepositoryDep.artists.value = artists
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<ArtistListState>>()
                 state.modelListState.items shouldBe artists.map {
@@ -62,8 +70,8 @@ class ArtistListStateHolderTest : FreeSpec({
 
     "init subscribes to changes in sort order" {
         val subject = getSubject()
-        artistRepository.artists.value = FixtureProvider.artistFixtures().toList()
-        sortPreferencesRepository.artistListSortOrder.value = MediaSortOrder.ASCENDING
+        artistRepositoryDep.artists.value = FixtureProvider.artistFixtures().toList()
+        sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.ASCENDING
         testStateHolderState(subject) {
             awaitItem() shouldBe Loading
 
@@ -75,7 +83,7 @@ class ArtistListStateHolderTest : FreeSpec({
                 )
             }
 
-            sortPreferencesRepository.artistListSortOrder.value = MediaSortOrder.DESCENDING
+            sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.DESCENDING
             with(awaitItem()) {
                 shouldBeInstanceOf<Data<ArtistListState>>()
                 state.modelListState.sortButtonState shouldBe SortButtonState(
@@ -86,10 +94,42 @@ class ArtistListStateHolderTest : FreeSpec({
         }
     }
 
-    "sortByButtonClicked toggles sort order" {
-        val subject = getSubject()
-        subject.handle(ArtistListUserAction.SortByButtonClicked)
-        advanceUntilIdle()
-        sortPreferencesRepository.artistListSortOrder.value shouldBe MediaSortOrder.DESCENDING
+    "handle" - {
+
+        "SortByButtonClicked toggles sort order" {
+            val subject = getSubject()
+            subject.handle(ArtistListUserAction.SortByButtonClicked)
+            advanceUntilIdle()
+            sortPreferencesRepositoryDep.artistListSortOrder.value shouldBe MediaSortOrder.DESCENDING
+        }
+
+        "ArtistClicked navigates to ArtistScreen" {
+            val subject = getSubject()
+            subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
+            navControllerDep.backStack.last() shouldBe BackStackEntry(
+                screen = ArtistScreen(
+                    arguments = ArtistArguments(ARTIST_ID),
+                    navController = navControllerDep
+                ),
+                presentationMode = NavOptions.PresentationMode.Screen
+            )
+        }
+
+        "ArtistMoreIconClicked navigates to ArtistContextMenu" {
+            val subject = getSubject()
+            subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
+            navControllerDep.backStack.last() shouldBe BackStackEntry(
+                screen = ArtistContextMenu(
+                    arguments = ArtistContextMenuArguments(ARTIST_ID),
+                    navController = navControllerDep
+                ),
+                presentationMode = NavOptions.PresentationMode.BottomSheet
+            )
+        }
     }
-})
+}) {
+
+    companion object {
+        private const val ARTIST_ID = 1L
+    }
+}

@@ -13,7 +13,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -49,6 +48,17 @@ fun AppNavigationHost(
     modifier: Modifier = Modifier
 ) {
     val backStack = state.backStack
+    val saveableStateHolder = rememberSaveableStateHolder()
+
+    var lastBackStack by remember { mutableStateOf(backStack) }
+    LaunchedEffect(backStack) {
+        if (backStack.size < lastBackStack.size) {
+            val poppedScreen = lastBackStack.last()
+            saveableStateHolder.removeState(poppedScreen.screen.key)
+        }
+        lastBackStack = backStack
+    }
+
     var progress by remember { mutableFloatStateOf(0f) }
     var inPredictiveBack by remember { mutableStateOf(false) }
 
@@ -91,7 +101,6 @@ fun AppNavigationHost(
 
     val transition = rememberTransition(transitionState, label = "backstack")
 
-    val saveableStateHolder = rememberSaveableStateHolder()
     transition.AnimatedContent(
         transitionSpec = {
             val easing = CubicBezierEasing(a = 0.1f, b = 0.1f, c = 0f, d = 1f)
@@ -140,7 +149,11 @@ fun AppNavigationHost(
             }
         }
     ) {
-        it.lastOrNull()?.Content(saveableStateHolder = saveableStateHolder, modifier = modifier)
+        it.lastOrNull()?.let { screen ->
+            saveableStateHolder.SaveableStateProvider(screen.key) {
+                screen.Content(modifier = modifier)
+            }
+        }
     }
 
     val bottomSheets = backStack.getScreensByMode(NavOptions.PresentationMode.BottomSheet)
@@ -181,10 +194,11 @@ fun AppNavigationHost(
                 },
                 sheetState = sheetState
             ) {
-                target?.Content(
-                    saveableStateHolder = saveableStateHolder,
-                    modifier = Modifier.navigationBarsPadding()
-                )
+                current?.let { screen ->
+                    saveableStateHolder.SaveableStateProvider(screen.key) {
+                        screen.Content(modifier = modifier)
+                    }
+                }
             }
         }
     }

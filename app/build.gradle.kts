@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -138,4 +139,16 @@ detekt {
     enableCompilerPlugin.set(true)
     config.setFrom(file("../config/detekt/detekt.yml"))
     autoCorrect = true
+}
+
+
+kover {
+    reports {
+        filters {
+            includes {
+                // inclusion rules - classes only those that will be present in reports
+                classes("*StateHolder", "*ViewModel")
+            }
+        }
+    }
 }

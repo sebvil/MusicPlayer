@@ -1,13 +1,13 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.ViewModel
+import com.sebastianvm.musicplayer.designsystem.icons.Album
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.icons.Album
-import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState

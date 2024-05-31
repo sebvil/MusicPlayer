@@ -60,11 +60,15 @@ class TrackListStateHolder(
     private val playbackManager: PlaybackManager,
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
+    private val sortPreferences = if (args.trackListType is MediaGroup.Album) {
+        flowOf(null)
+    } else {
+        sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+    }
+
     override val state: StateFlow<UiState<TrackListState>> = combine(
         trackRepository.getTrackListWithMetaData(args.trackListType),
-        args.trackListType.takeUnless { it is MediaGroup.Album }?.let {
-            sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
-        } ?: flowOf(null),
+        sortPreferences,
     ) { trackListWithMetadata, sortPrefs ->
         if (trackListWithMetadata.trackList.isEmpty()) {
             Empty

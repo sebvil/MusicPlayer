@@ -92,13 +92,15 @@ class FakePlaybackManager(
         _nextInvocations.clear()
     }
 
-    private val _playMediaInvocations: MutableList<List<Any>> = mutableListOf()
+    data class PlayMediaArguments(val mediaGroup: MediaGroup, val initialTrackIndex: Int)
 
-    val playMediaInvocations: List<List<Any>>
+    private val _playMediaInvocations: MutableList<PlayMediaArguments> = mutableListOf()
+
+    val playMediaInvocations: List<PlayMediaArguments>
         get() = _playMediaInvocations
 
     override suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int) {
-        _playMediaInvocations.add(listOf(mediaGroup, initialTrackIndex))
+        _playMediaInvocations.add(PlayMediaArguments(mediaGroup, initialTrackIndex))
     }
 
     private val _prevInvocations: MutableList<List<Any>> = mutableListOf()

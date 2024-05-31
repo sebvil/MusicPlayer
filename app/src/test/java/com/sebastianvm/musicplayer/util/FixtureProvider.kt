@@ -8,11 +8,11 @@ import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
+import com.sebastianvm.musicplayer.designsystem.icons.Album
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.icons.Album
-import com.sebastianvm.musicplayer.ui.icons.Icons
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -39,7 +39,7 @@ object FixtureProvider {
                     artworkUri = "path/to/image",
                     trackLength = 250.seconds
                 ),
-                isPlaying = false,
+                isPlaying = true,
                 currentTrackProgress = 125.seconds
             ),
         )

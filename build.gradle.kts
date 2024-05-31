@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.kover) apply false
 }

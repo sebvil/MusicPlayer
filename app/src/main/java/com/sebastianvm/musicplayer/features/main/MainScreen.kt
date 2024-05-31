@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.main
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -59,7 +58,6 @@ fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
     val pages = TopLevelScreen.entries
@@ -83,7 +81,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            beyondBoundsPageCount = 1
+            beyondViewportPageCount = 1
         ) { pageIndex ->
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
