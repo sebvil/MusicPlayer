@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.Transition
@@ -63,6 +63,7 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.player.Percentage
 import com.sebastianvm.musicplayer.ui.player.PlayerViewState
 import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
+import com.sebastianvm.musicplayer.ui.transitionSpec
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString

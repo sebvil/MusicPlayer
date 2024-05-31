@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.features.player.AnimatedPlayerCard
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
