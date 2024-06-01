@@ -7,15 +7,15 @@ import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -130,20 +130,30 @@ class SearchStateHolder(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-        navController.push(ArtistScreen(ArtistArguments(artistId), navController))
+        navController.push(ArtistUiComponent(ArtistArguments(artistId), navController))
     }
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
-        navController.push(TrackList(TrackListArguments(MediaGroup.Album(albumId)), navController))
+        navController.push(
+            TrackListUiComponent(
+                TrackListArguments(MediaGroup.Album(albumId)),
+                navController
+            )
+        )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
-        navController.push(TrackList(TrackListArguments(MediaGroup.Genre(genreId)), navController))
+        navController.push(
+            TrackListUiComponent(
+                TrackListArguments(MediaGroup.Genre(genreId)),
+                navController
+            )
+        )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
         navController.push(
-            TrackList(
+            TrackListUiComponent(
                 TrackListArguments(MediaGroup.Playlist(playlistId)),
                 navController
             )

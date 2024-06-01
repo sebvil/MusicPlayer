@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -90,7 +90,7 @@ class ArtistListStateHolder(
 
             is ArtistListUserAction.ArtistClicked -> {
                 navController.push(
-                    ArtistScreen(
+                    ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
                         navController = navController
                     )

@@ -4,7 +4,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -107,7 +107,7 @@ class ArtistListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = ArtistScreen(
+                uiComponent = ArtistUiComponent(
                     arguments = ArtistArguments(ARTIST_ID),
                     navController = navControllerDep
                 ),
@@ -119,7 +119,7 @@ class ArtistListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = ArtistContextMenu(
+                uiComponent = ArtistContextMenu(
                     arguments = ArtistContextMenuArguments(ARTIST_ID),
                     navController = navControllerDep
                 ),

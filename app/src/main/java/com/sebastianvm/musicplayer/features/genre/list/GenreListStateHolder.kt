@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -89,7 +89,7 @@ class GenreListStateHolder(
 
             is GenreListUserAction.GenreClicked -> {
                 navController.push(
-                    TrackList(
+                    TrackListUiComponent(
                         arguments = TrackListArguments(trackListType = MediaGroup.Genre(action.genreId)),
                         navController = navController
                     )

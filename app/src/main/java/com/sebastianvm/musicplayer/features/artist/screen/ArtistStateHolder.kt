@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
@@ -91,7 +91,7 @@ class ArtistStateHolder(
 
             is ArtistUserAction.AlbumClicked -> {
                 navController.push(
-                    TrackList(
+                    TrackListUiComponent(
                         arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
                         navController = navController
                     )

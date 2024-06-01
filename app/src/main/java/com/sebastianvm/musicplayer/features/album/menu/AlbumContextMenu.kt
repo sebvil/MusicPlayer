@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
 import com.sebastianvm.musicplayer.designsystem.icons.QueueAdd
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -22,7 +22,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 data class AlbumContextMenu(
     override val arguments: AlbumContextMenuArguments,
     val navController: NavController
-) : BaseScreen<AlbumContextMenuArguments, AlbumContextMenuStateHolder>() {
+) : BaseUiComponent<AlbumContextMenuArguments, AlbumContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): AlbumContextMenuStateHolder {
         return getAlbumContextMenuStateHolder(dependencies, arguments, navController)

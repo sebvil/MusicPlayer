@@ -30,13 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 data class SortMenu(override val arguments: SortMenuArguments) :
-    BaseScreen<SortMenuArguments, SortMenuStateHolder>() {
+    BaseUiComponent<SortMenuArguments, SortMenuStateHolder>() {
     override fun createStateHolder(dependencies: DependencyContainer): SortMenuStateHolder {
         return getSortMenuStateHolder(dependencies, arguments)
     }

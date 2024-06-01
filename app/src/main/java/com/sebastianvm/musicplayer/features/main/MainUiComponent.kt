@@ -2,7 +2,10 @@ package com.sebastianvm.musicplayer.features.main
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ScrollableTabRow
@@ -16,24 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.album.list.AlbumList
-import com.sebastianvm.musicplayer.features.artist.list.ArtistList
-import com.sebastianvm.musicplayer.features.genre.list.GenreList
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.playlist.list.PlaylistList
-import com.sebastianvm.musicplayer.features.search.SearchScreen
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.launch
 
-data class MainScreen(val navController: NavController) :
-    BaseScreen<NoArguments, MainStateHolder>() {
+data class MainUiComponent(val navController: NavController) :
+    BaseUiComponent<NoArguments, MainStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: DependencyContainer): MainStateHolder {
-        return getMainStateHolder(dependencies, navController)
+        return getMainStateHolder(navController)
     }
 
     @Composable
@@ -51,9 +48,7 @@ fun MainScreen(stateHolder: MainStateHolder, modifier: Modifier = Modifier) {
 @Composable
 fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        SearchScreen(
-            screenStateHolder = state.searchStateHolder,
-        )
+        state.searchUiComponent.Content(modifier = Modifier)
         MainScreenPager(state = state)
     }
 }
@@ -85,23 +80,27 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
         ) { pageIndex ->
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
-                    TrackList(stateHolder = state.trackListStateHolder)
+                    state.trackListUiComponent.Content(
+                        modifier = Modifier.consumeWindowInsets(
+                            WindowInsets.systemBars
+                        )
+                    )
                 }
 
                 TopLevelScreen.ARTISTS -> {
-                    ArtistList(stateHolder = state.artistListStateHolder)
+                    state.artistListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.ALBUMS -> {
-                    AlbumList(stateHolder = state.albumListStateHolder)
+                    state.albumListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.GENRES -> {
-                    GenreList(stateHolder = state.genreListStateHolder)
+                    state.genreListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.PLAYLISTS -> {
-                    PlaylistList(stateHolder = state.playlistListStateHolder)
+                    state.playlistListUiComponent.Content(modifier = Modifier)
                 }
             }
         }
@@ -109,10 +108,9 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
 }
 
 enum class TopLevelScreen(@StringRes val screenName: Int) {
-    ALL_SONGS(
-        R.string.all_songs
-    ),
-    ARTISTS(R.string.artists), ALBUMS(R.string.albums), GENRES(R.string.genres), PLAYLISTS(
-        R.string.playlists
-    )
+    ALL_SONGS(R.string.all_songs),
+    ARTISTS(R.string.artists),
+    ALBUMS(R.string.albums),
+    GENRES(R.string.genres),
+    PLAYLISTS(R.string.playlists)
 }

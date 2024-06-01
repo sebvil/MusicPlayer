@@ -8,8 +8,8 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
@@ -110,7 +110,7 @@ class AlbumListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(AlbumListUserAction.AlbumMoreIconClicked(ALBUM_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = AlbumContextMenu(
+                uiComponent = AlbumContextMenu(
                     arguments = AlbumContextMenuArguments(ALBUM_ID),
                     navController = navControllerDep
                 ),
@@ -122,7 +122,7 @@ class AlbumListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(AlbumListUserAction.SortButtonClicked)
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = SortMenu(
+                uiComponent = SortMenu(
                     arguments = SortMenuArguments(listType = SortableListType.Albums)
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet
@@ -134,7 +134,7 @@ class AlbumListStateHolderTest : FreeSpec({
             subject.handle(AlbumListUserAction.AlbumClicked(ALBUM_ID))
 
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = TrackList(
+                uiComponent = TrackListUiComponent(
                     arguments = TrackListArguments(MediaGroup.Album(ALBUM_ID)),
                     navController = navControllerDep
                 ),

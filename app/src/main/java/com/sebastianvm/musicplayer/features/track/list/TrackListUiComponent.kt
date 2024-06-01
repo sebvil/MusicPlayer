@@ -1,9 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -17,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
@@ -26,8 +24,11 @@ import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-data class TrackList(override val arguments: TrackListArguments, val navController: NavController) :
-    BaseScreen<TrackListArguments, TrackListStateHolder>() {
+data class TrackListUiComponent(
+    override val arguments: TrackListArguments,
+    val navController: NavController
+) :
+    BaseUiComponent<TrackListArguments, TrackListStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): TrackListStateHolder {
         return getTrackListStateHolder(dependencies, arguments, navController)
@@ -38,7 +39,6 @@ data class TrackList(override val arguments: TrackListArguments, val navControll
         TrackList(
             stateHolder = stateHolder,
             modifier = modifier,
-            contentWindowInsets = WindowInsets.systemBars
         )
     }
 }
@@ -47,7 +47,6 @@ data class TrackList(override val arguments: TrackListArguments, val navControll
 fun TrackList(
     stateHolder: TrackListStateHolder,
     modifier: Modifier = Modifier,
-    contentWindowInsets: WindowInsets = WindowInsets(0)
 ) {
     val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
@@ -61,7 +60,6 @@ fun TrackList(
         TrackList(
             state = state,
             handle = stateHolder::handle,
-            contentWindowInsets = contentWindowInsets
         )
     }
 }
@@ -71,7 +69,6 @@ fun TrackList(
     state: TrackListState,
     handle: Handler<TrackListUserAction>,
     modifier: Modifier = Modifier,
-    contentWindowInsets: WindowInsets = WindowInsets(0),
 ) {
     Scaffold(
         modifier = modifier,
@@ -92,7 +89,6 @@ fun TrackList(
                 )
             }
         },
-        contentWindowInsets = contentWindowInsets
     ) { paddingValues ->
         TrackListLayout(
             state = state,

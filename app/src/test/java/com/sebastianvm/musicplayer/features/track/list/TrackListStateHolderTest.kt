@@ -199,7 +199,7 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(TrackListUserAction.SortButtonClicked)
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = SortMenu(
+                uiComponent = SortMenu(
                     arguments = SortMenuArguments(listType = SortableListType.Tracks(trackList = MediaGroup.AllTracks))
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet,
@@ -222,7 +222,7 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(TrackListUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = TrackContextMenu(
+                uiComponent = TrackContextMenu(
                     arguments = TrackContextMenuArguments(
                         trackId = TRACK_ID,
                         trackPositionInList = TRACK_INDEX,
@@ -236,7 +236,7 @@ class TrackListStateHolderTest : FreeSpec({
 
         "BackClicked navigates back" {
             navControllerDep.push(
-                screen = TrackList(
+                uiComponent = TrackListUiComponent(
                     arguments = TrackListArguments(MediaGroup.AllTracks),
                     navController = navControllerDep
                 )

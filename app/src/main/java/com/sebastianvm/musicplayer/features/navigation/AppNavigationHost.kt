@@ -54,7 +54,7 @@ fun AppNavigationHost(
     LaunchedEffect(backStack) {
         if (backStack.size < lastBackStack.size) {
             val poppedScreen = lastBackStack.last()
-            saveableStateHolder.removeState(poppedScreen.screen.key)
+            saveableStateHolder.removeState(poppedScreen.uiComponent.key)
         }
         lastBackStack = backStack
     }
@@ -204,8 +204,8 @@ fun AppNavigationHost(
     }
 }
 
-fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<Screen<*, *>> {
-    return this.filter { it.presentationMode == mode }.map { it.screen }
+fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<UiComponent<*, *>> {
+    return this.filter { it.presentationMode == mode }.map { it.uiComponent }
 }
 
 private const val ANIMATION_DURATION_MS = AnimationConstants.DefaultDurationMillis
