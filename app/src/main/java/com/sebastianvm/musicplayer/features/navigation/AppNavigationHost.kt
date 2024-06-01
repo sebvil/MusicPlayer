@@ -114,36 +114,36 @@ fun AppNavigationHost(
             )
             if (this.targetState.size > this.initialState.size) {
                 (
-                        scaleIn(
-                            animationSpec = enterAnimationSpec,
-                            initialScale = 0.9f
-                        ) + fadeIn(
-                            animationSpec = enterAnimationSpec
-                        )
-                        ).togetherWith(
-                        scaleOut(
-                            animationSpec = exitAnimationSpec,
-                            targetScale = 1.1f
-                        ) + fadeOut(
-                            animationSpec = exitAnimationSpec
-                        )
+                    scaleIn(
+                        animationSpec = enterAnimationSpec,
+                        initialScale = 0.9f
+                    ) + fadeIn(
+                        animationSpec = enterAnimationSpec
                     )
+                    ).togetherWith(
+                    scaleOut(
+                        animationSpec = exitAnimationSpec,
+                        targetScale = 1.1f
+                    ) + fadeOut(
+                        animationSpec = exitAnimationSpec
+                    )
+                )
             } else {
                 (
-                        fadeIn(
-                            animationSpec = enterAnimationSpec
-                        ) + scaleIn(
-                            animationSpec = enterAnimationSpec,
-                            initialScale = 1.1f
-                        )
-                        ).togetherWith(
-                        scaleOut(
-                            animationSpec = exitAnimationSpec,
-                            targetScale = 0.9f
-                        ) + fadeOut(
-                            animationSpec = exitAnimationSpec
-                        )
+                    fadeIn(
+                        animationSpec = enterAnimationSpec
+                    ) + scaleIn(
+                        animationSpec = enterAnimationSpec,
+                        initialScale = 1.1f
                     )
+                    ).togetherWith(
+                    scaleOut(
+                        animationSpec = exitAnimationSpec,
+                        targetScale = 0.9f
+                    ) + fadeOut(
+                        animationSpec = exitAnimationSpec
+                    )
+                )
             }.apply {
                 targetContentZIndex = targetState.size.toFloat()
             }

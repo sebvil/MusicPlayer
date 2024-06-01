@@ -31,7 +31,6 @@ data class GenreListUiComponent(val navController: NavController) :
     }
 }
 
-
 @Composable
 fun GenreList(
     stateHolder: GenreListStateHolder,

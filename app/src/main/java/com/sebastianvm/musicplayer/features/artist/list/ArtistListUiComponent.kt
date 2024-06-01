@@ -17,7 +17,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-
 data class ArtistListUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, ArtistListStateHolder>() {
     override val arguments: NoArguments = NoArguments
@@ -31,7 +30,6 @@ data class ArtistListUiComponent(val navController: NavController) :
         return getArtistListStateHolder(dependencies = dependencies, navController = navController)
     }
 }
-
 
 @Composable
 fun ArtistList(

@@ -31,7 +31,6 @@ data class AlbumListUiComponent(val navController: NavController) :
     }
 }
 
-
 @Composable
 fun AlbumList(
     stateHolder: AlbumListStateHolder,

@@ -27,7 +27,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-
 data class PlaylistListUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, PlaylistListStateHolder>() {
     override val arguments: NoArguments = NoArguments
@@ -44,7 +43,6 @@ data class PlaylistListUiComponent(val navController: NavController) :
         )
     }
 }
-
 
 @Composable
 fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {

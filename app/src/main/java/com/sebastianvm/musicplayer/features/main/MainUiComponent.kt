@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.Content
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
@@ -89,15 +88,15 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
                 }
 
                 TopLevelScreen.ARTISTS -> {
-                    state.artistListUiComponent.Content()
+                    state.artistListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.ALBUMS -> {
-                    state.albumListUiComponent.Content()
+                    state.albumListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.GENRES -> {
-                    state.genreListUiComponent.Content()
+                    state.genreListUiComponent.Content(modifier = Modifier)
                 }
 
                 TopLevelScreen.PLAYLISTS -> {

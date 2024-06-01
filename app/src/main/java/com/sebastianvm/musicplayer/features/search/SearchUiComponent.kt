@@ -59,7 +59,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.collections.immutable.toImmutableList
 
-
 data class SearchUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, SearchStateHolder>() {
     override val arguments: NoArguments = NoArguments

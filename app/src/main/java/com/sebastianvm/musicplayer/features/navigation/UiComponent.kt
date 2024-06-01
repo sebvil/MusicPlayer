@@ -51,9 +51,3 @@ abstract class BaseUiComponent<Args : Arguments, SH : StateHolder<*, *>> : UiCom
         stateHolder?.stateHolderScope?.cancel(message = "Screen cleared")
     }
 }
-
-
-@Composable
-fun <Args : Arguments, SH : StateHolder<*, *>> UiComponent<Args, SH>.Content() {
-    Content(modifier = Modifier)
-}
