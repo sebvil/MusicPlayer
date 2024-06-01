@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.model.MediaWithArtists
+import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-data class ArtistsMenuArguments(val mediaType: MediaWithArtists, val mediaId: Long) : Arguments
+data class ArtistsMenuArguments(val media: HasArtists) : Arguments
 
 data class ArtistsMenuState(val modelListState: ModelListState) : State
 
@@ -39,7 +39,7 @@ class ArtistsMenuStateHolder(
 ) : StateHolder<UiState<ArtistsMenuState>, ArtistsMenuUserAction> {
 
     override val state: StateFlow<UiState<ArtistsMenuState>> =
-        artistRepository.getArtistsForMedia(arguments.mediaType, arguments.mediaId)
+        artistRepository.getArtistsForMedia(arguments.media)
             .map { artists ->
                 Data(
                     ArtistsMenuState(

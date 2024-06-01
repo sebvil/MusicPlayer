@@ -6,7 +6,8 @@ import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
-import com.sebastianvm.musicplayer.model.MediaWithArtists
+import com.sebastianvm.musicplayer.player.HasArtists
+import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -44,28 +45,29 @@ class FakeArtistRepository : ArtistRepository {
         }.filterNotNull()
     }
 
-    override fun getArtistsForMedia(mediaType: MediaWithArtists, id: Long): Flow<List<Artist>> {
-        return when (mediaType) {
-            MediaWithArtists.Album -> {
+    override fun getArtistsForMedia(media: HasArtists): Flow<List<Artist>> {
+        return when (media) {
+            is MediaGroup.Album -> {
                 combine(
                     artists,
                     albumsForArtists,
                     appearsOnForArtists
                 ) { artists, albumsForArtists, appearsOnForArtists ->
-                    albumsForArtists.filter { it.albumId == id }.flatMap { album ->
+                    albumsForArtists.filter { it.albumId == media.albumId }.flatMap { album ->
                         artists.filter { album.artistId == it.id }
                     }.ifEmpty {
-                        appearsOnForArtists.filter { it.albumId == id }.flatMap { album ->
-                            artists.filter { album.artistId == it.id }
-                        }
+                        appearsOnForArtists.filter { it.albumId == media.albumId }
+                            .flatMap { album ->
+                                artists.filter { album.artistId == it.id }
+                            }
                     }
                 }
             }
 
-            MediaWithArtists.Track -> {
+            is MediaGroup.SingleTrack -> {
                 combine(artists, artistTrackCrossRefs) { artists, artistTrackCrossRefs ->
 
-                    artistTrackCrossRefs.filter { it.trackId == id }
+                    artistTrackCrossRefs.filter { it.trackId == media.trackId }
                         .flatMap { artistTrackCrossRef ->
                             artists.filter { it.id == artistTrackCrossRef.artistId }
                         }

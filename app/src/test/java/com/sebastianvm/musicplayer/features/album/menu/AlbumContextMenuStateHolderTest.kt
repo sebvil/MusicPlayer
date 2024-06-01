@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
@@ -170,10 +169,7 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
             subject.handle(AlbumContextMenuUserAction.ViewArtistsClicked)
             navControllerDep.backStack.last() shouldBe BackStackEntry(
                 ArtistsMenu(
-                    arguments = ArtistsMenuArguments(
-                        mediaType = MediaWithArtists.Album,
-                        mediaId = album.id
-                    ),
+                    arguments = ArtistsMenuArguments(MediaGroup.Album(albumId = album.id)),
                     navController = navControllerDep
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet

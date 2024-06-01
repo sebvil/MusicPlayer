@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.HasTracks
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -133,10 +132,7 @@ class TrackContextMenuStateHolder(
             TrackContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     ArtistsMenu(
-                        arguments = ArtistsMenuArguments(
-                            mediaType = MediaWithArtists.Track,
-                            mediaId = trackId
-                        ),
+                        arguments = ArtistsMenuArguments(MediaGroup.SingleTrack(trackId)),
                         navController = navController
                     ),
                     navOptions = NavOptions(

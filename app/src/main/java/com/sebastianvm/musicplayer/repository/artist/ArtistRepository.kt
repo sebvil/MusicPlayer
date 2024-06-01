@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.repository.artist
 
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
-import com.sebastianvm.musicplayer.model.MediaWithArtists
+import com.sebastianvm.musicplayer.player.HasArtists
 import kotlinx.coroutines.flow.Flow
 
 interface ArtistRepository {
@@ -10,5 +10,5 @@ interface ArtistRepository {
 
     fun getArtist(artistId: Long): Flow<ArtistWithAlbums>
 
-    fun getArtistsForMedia(mediaType: MediaWithArtists, id: Long): Flow<List<Artist>>
+    fun getArtistsForMedia(media: HasArtists): Flow<List<Artist>>
 }

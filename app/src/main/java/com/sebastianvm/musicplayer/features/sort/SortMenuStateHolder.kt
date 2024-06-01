@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.sort
 
-import android.os.Parcelable
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -19,8 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
 class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
@@ -143,17 +140,10 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
     }
 }
 
-@Serializable
-@Parcelize
-sealed class SortableListType : Parcelable {
-    @Serializable
-    data class Tracks(val trackList: TrackList) : SortableListType()
-
-    @Serializable
-    data object Albums : SortableListType()
-
-    @Serializable
-    data class Playlist(val playlistId: Long) : SortableListType()
+sealed interface SortableListType {
+    data class Tracks(val trackList: TrackList) : SortableListType
+    data object Albums : SortableListType
+    data class Playlist(val playlistId: Long) : SortableListType
 }
 
 sealed interface SortMenuUserAction : UserAction {
