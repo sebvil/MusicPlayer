@@ -7,9 +7,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -19,12 +17,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.SkipNext
@@ -58,55 +59,73 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
-import com.sebastianvm.musicplayer.ui.player.Percentage
-import com.sebastianvm.musicplayer.ui.player.PlayerViewState
-import com.sebastianvm.musicplayer.ui.player.PlayerViewStatePreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
-import kotlin.time.Duration
+import kotlinx.coroutines.flow.Flow
+
+class PlayerUiComponent(
+    private val delegate: PlayerDelegate,
+    private val props: Flow<PlayerProps>
+) : BaseUiComponent<NoArguments, PlayerStateHolder>() {
+    override val arguments: NoArguments = NoArguments
+
+    override fun createStateHolder(dependencies: DependencyContainer): PlayerStateHolder {
+        return getPlayerStateHolder(dependencies = dependencies, delegate = delegate, props = props)
+    }
+
+    @Composable
+    override fun Content(stateHolder: PlayerStateHolder, modifier: Modifier) {
+        Player(stateHolder = stateHolder, modifier = modifier)
+    }
+}
+
+@Composable
+fun Player(stateHolder: PlayerStateHolder, modifier: Modifier = Modifier) {
+    val state by stateHolder.currentState
+    when (val currentState = state) {
+        PlayerState.NotPlaying -> Unit
+        is PlayerState.Playing -> {
+            AnimatedPlayerCard(
+                state = currentState,
+                handle = stateHolder::handle,
+                modifier = modifier
+            )
+        }
+    }
+}
 
 @Composable
 fun AnimatedPlayerCard(
-    state: PlayerViewState,
-    transition: Transition<Boolean>,
-    statusBarPadding: Dp,
-    onPreviousButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    onPlayToggled: () -> Unit,
-    onDismissPlayer: () -> Unit,
-    onProgressBarValueChange: (Int, Duration) -> Unit,
+    state: PlayerState.Playing,
+    handle: Handler<PlayerUserAction>,
     modifier: Modifier = Modifier
 ) {
     SharedTransitionLayout(modifier = modifier) {
         AnimatedContent(
-            targetState = transition.targetState,
+            targetState = state.isFullscreen,
             label = "playerTransition"
         ) { isFullScreen ->
             if (isFullScreen) {
                 FullScreenPlayer(
                     state = state,
-                    statusBarPadding = statusBarPadding,
-                    onPreviousButtonClicked = onPreviousButtonClicked,
-                    onNextButtonClicked = onNextButtonClicked,
-                    onPlayToggled = onPlayToggled,
-                    onDismissPlayer = onDismissPlayer,
-                    onProgressBarValueChange = onProgressBarValueChange,
+                    handle = handle,
                     animatedVisibilityScope = this@AnimatedContent,
                     sharedTransitionScope = this@SharedTransitionLayout
                 )
             } else {
                 FloatingPlayerCard(
                     state = state,
-                    onPreviousButtonClicked = onPreviousButtonClicked,
-                    onNextButtonClicked = onNextButtonClicked,
-                    onPlayToggled = onPlayToggled,
-                    onProgressBarValueChange = onProgressBarValueChange,
+                    handle = handle,
                     animatedVisibilityScope = this@AnimatedContent,
                     sharedTransitionScope = this@SharedTransitionLayout,
                 )
@@ -117,11 +136,8 @@ fun AnimatedPlayerCard(
 
 @Composable
 private fun FloatingPlayerCard(
-    state: PlayerViewState,
-    onPreviousButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    onPlayToggled: () -> Unit,
-    onProgressBarValueChange: (Int, Duration) -> Unit,
+    state: PlayerState.Playing,
+    handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier = Modifier
@@ -197,19 +213,25 @@ private fun FloatingPlayerCard(
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
                 ) {
-                    IconButton(onClick = onPreviousButtonClicked) {
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.PreviousButtonClicked)
+                    }) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
                             contentDescription = stringResource(R.string.previous),
                         )
                     }
-                    IconButton(onClick = onPlayToggled) {
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.PlayToggled)
+                    }) {
                         Icon(
                             imageVector = state.playbackIcon.icon,
                             contentDescription = stringResource(state.playbackIcon.contentDescription),
                         )
                     }
-                    IconButton(onClick = onNextButtonClicked) {
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.NextButtonClicked)
+                    }) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
                             contentDescription = stringResource(R.string.previous),
@@ -220,7 +242,12 @@ private fun FloatingPlayerCard(
                 ProgressSlider(
                     progress = state.trackProgressState.progress.percent,
                     onProgressBarValueChange = { position ->
-                        onProgressBarValueChange(position, state.trackProgressState.trackLength)
+                        handle(
+                            PlayerUserAction.ProgressBarClicked(
+                                position = position,
+                                trackLength = state.trackProgressState.trackLength
+                            )
+                        )
                     },
                     modifier = Modifier.sharedElement(
                         rememberSharedContentState(
@@ -236,13 +263,8 @@ private fun FloatingPlayerCard(
 
 @Composable
 private fun FullScreenPlayer(
-    state: PlayerViewState,
-    statusBarPadding: Dp,
-    onPreviousButtonClicked: () -> Unit,
-    onNextButtonClicked: () -> Unit,
-    onPlayToggled: () -> Unit,
-    onDismissPlayer: () -> Unit,
-    onProgressBarValueChange: (Int, Duration) -> Unit,
+    state: PlayerState.Playing,
+    handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier = Modifier
@@ -252,7 +274,11 @@ private fun FullScreenPlayer(
             modifier = modifier
                 .background(color = MaterialTheme.colorScheme.playerContainerColor)
                 .padding(horizontal = 16.dp)
-                .padding(top = statusBarPadding)
+                .padding(
+                    top = WindowInsets.statusBars
+                        .asPaddingValues()
+                        .calculateTopPadding()
+                )
                 .sharedBounds(
                     rememberSharedContentState(
                         key = CONTAINER_SHARED_TRANSITION_KEY
@@ -262,7 +288,9 @@ private fun FullScreenPlayer(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             IconButton(
-                onClick = onDismissPlayer,
+                onClick = {
+                    handle(PlayerUserAction.DismissFullScreenPlayer)
+                },
                 modifier = Modifier.align(Alignment.Start)
             ) {
                 Icon(
@@ -334,21 +362,27 @@ private fun FullScreenPlayer(
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
             ) {
-                IconButton(onClick = onPreviousButtonClicked) {
+                IconButton(onClick = {
+                    handle(PlayerUserAction.PreviousButtonClicked)
+                }) {
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
                         modifier = Modifier.size(48.dp),
                     )
                 }
-                IconButton(onClick = onPlayToggled) {
+                IconButton(onClick = {
+                    handle(PlayerUserAction.PlayToggled)
+                }) {
                     Icon(
                         imageVector = state.playbackIcon.icon,
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
                         modifier = Modifier.size(48.dp)
                     )
                 }
-                IconButton(onClick = onNextButtonClicked) {
+                IconButton(onClick = {
+                    handle(PlayerUserAction.NextButtonClicked)
+                }) {
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = stringResource(R.string.previous),
@@ -360,7 +394,12 @@ private fun FullScreenPlayer(
             ProgressSlider(
                 progress = state.trackProgressState.progress.percent,
                 onProgressBarValueChange = { position ->
-                    onProgressBarValueChange(position, state.trackProgressState.trackLength)
+                    handle(
+                        PlayerUserAction.ProgressBarClicked(
+                            position = position,
+                            trackLength = state.trackProgressState.trackLength
+                        )
+                    )
                 },
                 modifier = Modifier.sharedElement(
                     rememberSharedContentState(
@@ -480,44 +519,14 @@ private fun ProgressbarPreview() {
 @Composable
 private fun PlayerCardPreview(
     @PreviewParameter(
-        PlayerViewStatePreviewParameterProvider::class,
+        PlayerStatePreviewParameterProvider::class,
         limit = 1
-    ) state: PlayerViewState
+    ) state: PlayerState.Playing
 ) {
-    val transition = updateTransition(targetState = true, label = "player animation")
     ThemedPreview {
         AnimatedPlayerCard(
             state = state,
-            statusBarPadding = 16.dp,
-            transition = transition,
-            onPreviousButtonClicked = {},
-            onNextButtonClicked = {},
-            onPlayToggled = {},
-            onDismissPlayer = {},
-            onProgressBarValueChange = { _, _ -> }
-        )
-    }
-}
-
-@PreviewComponents
-@Composable
-private fun FloatingPlayerCardPreview(
-    @PreviewParameter(
-        PlayerViewStatePreviewParameterProvider::class,
-        limit = 1
-    ) state: PlayerViewState
-) {
-    val transition = updateTransition(targetState = false, label = "player animation")
-    ThemedPreview {
-        AnimatedPlayerCard(
-            state = state,
-            statusBarPadding = 16.dp,
-            transition = transition,
-            onPreviousButtonClicked = {},
-            onNextButtonClicked = {},
-            onPlayToggled = {},
-            onDismissPlayer = {},
-            onProgressBarValueChange = { _, _ -> }
+            handle = {}
         )
     }
 }

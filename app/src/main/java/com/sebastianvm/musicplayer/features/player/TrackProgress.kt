@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.player
+package com.sebastianvm.musicplayer.features.player
 
 import kotlin.time.Duration
 
