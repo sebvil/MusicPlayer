@@ -9,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,33 +21,34 @@ import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScr
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class TrackListUiComponent(
     override val arguments: TrackListArguments,
     val navController: NavController
 ) :
-    BaseUiComponent<TrackListArguments, TrackListStateHolder>() {
+    BaseUiComponent<TrackListArguments, UiState<TrackListState>, TrackListUserAction, TrackListStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): TrackListStateHolder {
         return getTrackListStateHolder(dependencies, arguments, navController)
     }
 
     @Composable
-    override fun Content(stateHolder: TrackListStateHolder, modifier: Modifier) {
-        TrackList(
-            stateHolder = stateHolder,
-            modifier = modifier,
-        )
+    override fun Content(
+        state: UiState<TrackListState>,
+        handle: Handler<TrackListUserAction>,
+        modifier: Modifier
+    ) {
+        TrackList(uiState = state, handle = handle, modifier = modifier)
     }
 }
 
 @Composable
 fun TrackList(
-    stateHolder: TrackListStateHolder,
+    uiState: UiState<TrackListState>,
+    handle: Handler<TrackListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_tracks_found,
@@ -59,7 +59,7 @@ fun TrackList(
     }) { state ->
         TrackList(
             state = state,
-            handle = stateHolder::handle,
+            handle = handle,
         )
     }
 }

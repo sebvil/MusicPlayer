@@ -56,11 +56,10 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.collections.immutable.toImmutableList
 
 data class SearchUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, SearchStateHolder>() {
+    BaseUiComponent<NoArguments, SearchState, SearchUserAction, SearchStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: DependencyContainer): SearchStateHolder {
@@ -68,22 +67,13 @@ data class SearchUiComponent(val navController: NavController) :
     }
 
     @Composable
-    override fun Content(stateHolder: SearchStateHolder, modifier: Modifier) {
-        SearchScreen(screenStateHolder = stateHolder, modifier = modifier)
+    override fun Content(
+        state: SearchState,
+        handle: Handler<SearchUserAction>,
+        modifier: Modifier
+    ) {
+        SearchScreen(state = state, handle = handle, modifier = modifier)
     }
-}
-
-@Composable
-fun SearchScreen(
-    screenStateHolder: SearchStateHolder,
-    modifier: Modifier = Modifier,
-) {
-    val state by screenStateHolder.currentState
-    SearchScreen(
-        state = state,
-        handle = screenStateHolder::handle,
-        modifier = modifier
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

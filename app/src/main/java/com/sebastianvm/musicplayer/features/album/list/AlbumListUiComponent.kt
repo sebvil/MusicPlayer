@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.features.album.list
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
@@ -15,15 +14,19 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class AlbumListUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, AlbumListStateHolder>() {
+    BaseUiComponent<NoArguments, UiState<AlbumListState>, AlbumListUserAction, AlbumListStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     @Composable
-    override fun Content(stateHolder: AlbumListStateHolder, modifier: Modifier) {
-        AlbumList(stateHolder = stateHolder, modifier = modifier)
+    override fun Content(
+        state: UiState<AlbumListState>,
+        handle: Handler<AlbumListUserAction>,
+        modifier: Modifier
+    ) {
+        AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
 
     override fun createStateHolder(dependencies: DependencyContainer): AlbumListStateHolder {
@@ -33,10 +36,10 @@ data class AlbumListUiComponent(val navController: NavController) :
 
 @Composable
 fun AlbumList(
-    stateHolder: AlbumListStateHolder,
+    uiState: UiState<AlbumListState>,
+    handle: Handler<AlbumListUserAction>,
     modifier: Modifier = Modifier
 ) {
-    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         StoragePermissionNeededEmptyScreen(
             message = R.string.no_albums_found,
@@ -47,7 +50,7 @@ fun AlbumList(
     }) { state ->
         AlbumList(
             state = state,
-            handle = stateHolder::handle,
+            handle = handle,
         )
     }
 }

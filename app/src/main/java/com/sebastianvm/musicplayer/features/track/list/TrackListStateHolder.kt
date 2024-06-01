@@ -4,8 +4,8 @@ import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
@@ -109,7 +109,7 @@ class TrackListStateHolder(
 
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
-                    SortMenu(
+                    SortMenuUiComponent(
                         arguments = SortMenuArguments(
                             listType = SortableListType.Tracks(
                                 trackList = args.trackListType

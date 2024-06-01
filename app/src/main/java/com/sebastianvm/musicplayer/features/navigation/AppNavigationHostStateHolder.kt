@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import com.sebastianvm.musicplayer.features.main.MainUiComponent
+import com.sebastianvm.musicplayer.features.home.HomeUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -42,7 +42,7 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
 
     private val backStack: MutableStateFlow<List<BackStackEntry>> = MutableStateFlow(
         listOf(
-            BackStackEntry(MainUiComponent(navController), NavOptions.PresentationMode.Screen)
+            BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
         )
     )
 

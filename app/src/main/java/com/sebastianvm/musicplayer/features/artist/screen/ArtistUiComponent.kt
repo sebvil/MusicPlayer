@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -29,37 +28,41 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class ArtistUiComponent(
     override val arguments: ArtistArguments,
     val navController: NavController,
-) : BaseUiComponent<ArtistArguments, ArtistStateHolder>() {
+) : BaseUiComponent<ArtistArguments, UiState<ArtistState>, ArtistUserAction, ArtistStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): ArtistStateHolder {
         return getArtistStateHolder(dependencies, arguments, navController)
     }
 
     @Composable
-    override fun Content(stateHolder: ArtistStateHolder, modifier: Modifier) {
+    override fun Content(
+        state: UiState<ArtistState>,
+        handle: Handler<ArtistUserAction>,
+        modifier: Modifier
+    ) {
         ArtistScreen(
-            stateHolder = stateHolder,
-            modifier = modifier,
+            uiState = state,
+            handle = handle,
+            modifier = modifier
         )
     }
 }
 
 @Composable
 fun ArtistScreen(
-    stateHolder: ArtistStateHolder,
+    uiState: UiState<ArtistState>,
+    handle: Handler<ArtistUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by stateHolder.currentState
-
     UiStateScreen(uiState = uiState, emptyScreen = {}, modifier) { state ->
         ArtistScreen(
             state = state,
-            handle = stateHolder::handle,
+            handle = handle,
         )
     }
 }

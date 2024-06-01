@@ -5,7 +5,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.ui.MainViewModel
+import com.sebastianvm.musicplayer.features.main.MainViewModel
 
 class MusicPlayerApplication : Application() {
 

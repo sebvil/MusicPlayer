@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
@@ -88,7 +88,7 @@ class AlbumListStateHolder(
 
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
-                    SortMenu(
+                    SortMenuUiComponent(
                         arguments = SortMenuArguments(listType = SortableListType.Albums)
                     ),
                     navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

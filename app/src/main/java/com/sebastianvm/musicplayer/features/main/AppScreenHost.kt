@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.features.main
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -27,27 +28,46 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
-fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
-    { spring() }
-
 @Composable
-fun AppScreenHost(
-    mainState: MainState,
+fun MainApp(
+    state: MainState,
     handle: Handler<MainUserAction>,
     modifier: Modifier = Modifier,
-    windowInsets: WindowInsets = WindowInsets.systemBars,
-    content: @Composable () -> Unit
 ) {
-    val navBarPadding = windowInsets.asPaddingValues().calculateBottomPadding()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // If `lifecycleOwner` changes, dispose and reset the effect
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                handle(MainUserAction.ConnectToMusicService)
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                handle(MainUserAction.DisconnectFromMusicService)
+            }
+        }
+
+        // Add the observer to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        // When the effect leaves the Composition, remove the observer
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    val navBarPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
     var height by remember {
         mutableFloatStateOf(0f)
     }
     val density = LocalDensity.current
     val playerBottomPadding = 4.dp
 
-    val isFullScreen = mainState.isFullscreen
+    val isFullScreen = state.isFullscreen
 
     BackHandler(enabled = isFullScreen) {
         if (isFullScreen) {
@@ -78,8 +98,8 @@ fun AppScreenHost(
     }
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
         Box(modifier = modifier) {
-            content()
-            mainState.playerUiComponent.Content(
+            state.appNavigationHostUiComponent.Content(modifier = Modifier)
+            state.playerUiComponent.Content(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -99,3 +119,6 @@ fun AppScreenHost(
         }
     }
 }
+
+private fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
+    { spring() }

@@ -11,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,15 +24,19 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class PlaylistListUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, PlaylistListStateHolder>() {
+    BaseUiComponent<NoArguments, UiState<PlaylistListState>, PlaylistListUserAction, PlaylistListStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     @Composable
-    override fun Content(stateHolder: PlaylistListStateHolder, modifier: Modifier) {
-        PlaylistList(stateHolder = stateHolder, modifier = modifier)
+    override fun Content(
+        state: UiState<PlaylistListState>,
+        handle: Handler<PlaylistListUserAction>,
+        modifier: Modifier
+    ) {
+        PlaylistList(uiState = state, handle = handle, modifier = modifier)
     }
 
     override fun createStateHolder(dependencies: DependencyContainer): PlaylistListStateHolder {
@@ -64,10 +67,10 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 
 @Composable
 fun PlaylistList(
-    stateHolder: PlaylistListStateHolder,
+    uiState: UiState<PlaylistListState>,
+    handle: Handler<PlaylistListUserAction>,
     modifier: Modifier = Modifier
 ) {
-    val uiState by stateHolder.currentState
     UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
         EmptyScreen(
             message = {
@@ -89,7 +92,7 @@ fun PlaylistList(
     }) { state ->
         PlaylistListLayout(
             state = state,
-            handle = stateHolder::handle,
+            handle = handle,
             isCreatePlaylistDialogOpen = false,
         )
     }

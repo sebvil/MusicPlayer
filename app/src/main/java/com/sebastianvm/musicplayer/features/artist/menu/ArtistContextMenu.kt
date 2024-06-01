@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.features.artist.menu
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
@@ -15,33 +14,24 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 data class ArtistContextMenu(
     override val arguments: ArtistContextMenuArguments,
     val navController: NavController
-) : BaseUiComponent<ArtistContextMenuArguments, ArtistContextMenuStateHolder>() {
+) : BaseUiComponent<ArtistContextMenuArguments, ArtistContextMenuState, ArtistContextMenuUserAction, ArtistContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): ArtistContextMenuStateHolder {
         return getArtistContextMenuStateHolder(dependencies, arguments, navController)
     }
 
     @Composable
-    override fun Content(stateHolder: ArtistContextMenuStateHolder, modifier: Modifier) {
-        ArtistContextMenu(
-            stateHolder = stateHolder,
-            modifier = modifier,
-        )
+    override fun Content(
+        state: ArtistContextMenuState,
+        handle: Handler<ArtistContextMenuUserAction>,
+        modifier: Modifier
+    ) {
+        ArtistContextMenu(state = state, handle = handle, modifier = modifier)
     }
-}
-
-@Composable
-fun ArtistContextMenu(
-    stateHolder: ArtistContextMenuStateHolder,
-    modifier: Modifier = Modifier
-) {
-    val state by stateHolder.currentState
-    ArtistContextMenu(state = state, handle = stateHolder::handle, modifier = modifier)
 }
 
 @Composable
