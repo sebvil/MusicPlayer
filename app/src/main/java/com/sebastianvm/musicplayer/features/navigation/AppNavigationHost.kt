@@ -54,7 +54,7 @@ fun AppNavigationHost(
     LaunchedEffect(backStack) {
         if (backStack.size < lastBackStack.size) {
             val poppedScreen = lastBackStack.last()
-            saveableStateHolder.removeState(poppedScreen.screen.key)
+            saveableStateHolder.removeState(poppedScreen.uiComponent.key)
         }
         lastBackStack = backStack
     }
@@ -114,36 +114,36 @@ fun AppNavigationHost(
             )
             if (this.targetState.size > this.initialState.size) {
                 (
-                    scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 0.9f
-                    ) + fadeIn(
-                        animationSpec = enterAnimationSpec
+                        scaleIn(
+                            animationSpec = enterAnimationSpec,
+                            initialScale = 0.9f
+                        ) + fadeIn(
+                            animationSpec = enterAnimationSpec
+                        )
+                        ).togetherWith(
+                        scaleOut(
+                            animationSpec = exitAnimationSpec,
+                            targetScale = 1.1f
+                        ) + fadeOut(
+                            animationSpec = exitAnimationSpec
+                        )
                     )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 1.1f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
             } else {
                 (
-                    fadeIn(
-                        animationSpec = enterAnimationSpec
-                    ) + scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 1.1f
+                        fadeIn(
+                            animationSpec = enterAnimationSpec
+                        ) + scaleIn(
+                            animationSpec = enterAnimationSpec,
+                            initialScale = 1.1f
+                        )
+                        ).togetherWith(
+                        scaleOut(
+                            animationSpec = exitAnimationSpec,
+                            targetScale = 0.9f
+                        ) + fadeOut(
+                            animationSpec = exitAnimationSpec
+                        )
                     )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 0.9f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
             }.apply {
                 targetContentZIndex = targetState.size.toFloat()
             }
@@ -204,8 +204,8 @@ fun AppNavigationHost(
     }
 }
 
-fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<Screen<*, *>> {
-    return this.filter { it.presentationMode == mode }.map { it.screen }
+fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<UiComponent<*, *>> {
+    return this.filter { it.presentationMode == mode }.map { it.uiComponent }
 }
 
 private const val ANIMATION_DURATION_MS = AnimationConstants.DefaultDurationMillis

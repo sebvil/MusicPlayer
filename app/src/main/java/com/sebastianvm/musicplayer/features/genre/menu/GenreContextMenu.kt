@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Genre
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -20,7 +20,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 data class GenreContextMenu(
     override val arguments: GenreContextMenuArguments,
     val navController: NavController
-) : BaseScreen<GenreContextMenuArguments, GenreContextMenuStateHolder>() {
+) : BaseUiComponent<GenreContextMenuArguments, GenreContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): GenreContextMenuStateHolder {
         return getGenreContextMenuStateHolder(dependencies, arguments, navController)

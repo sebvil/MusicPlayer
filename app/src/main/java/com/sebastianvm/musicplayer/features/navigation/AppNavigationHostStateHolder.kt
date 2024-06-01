@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import com.sebastianvm.musicplayer.features.main.MainScreen
+import com.sebastianvm.musicplayer.features.main.MainUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -14,14 +14,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 data class BackStackEntry(
-    val screen: Screen<*, *>,
+    val uiComponent: UiComponent<*, *>,
     val presentationMode: NavOptions.PresentationMode
 )
 
 data class AppNavigationState(val backStack: List<BackStackEntry>) : State
 
 sealed interface AppNavigationAction : UserAction {
-    data class ShowScreen(val screen: Screen<*, *>, val navOptions: NavOptions) :
+    data class ShowScreen(val uiComponent: UiComponent<*, *>, val navOptions: NavOptions) :
         AppNavigationAction
 
     data object PopBackStack : AppNavigationAction
@@ -31,8 +31,8 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
     StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController = object : NavController {
-        override fun push(screen: Screen<*, *>, navOptions: NavOptions) {
-            handle(AppNavigationAction.ShowScreen(screen, navOptions))
+        override fun push(uiComponent: UiComponent<*, *>, navOptions: NavOptions) {
+            handle(AppNavigationAction.ShowScreen(uiComponent, navOptions))
         }
 
         override fun pop() {
@@ -42,7 +42,7 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
 
     private val backStack: MutableStateFlow<List<BackStackEntry>> = MutableStateFlow(
         listOf(
-            BackStackEntry(MainScreen(navController), NavOptions.PresentationMode.Screen)
+            BackStackEntry(MainUiComponent(navController), NavOptions.PresentationMode.Screen)
         )
     )
 
@@ -54,7 +54,8 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
         when (action) {
             is AppNavigationAction.ShowScreen -> {
                 backStack.update {
-                    val entry = BackStackEntry(action.screen, action.navOptions.presentationMode)
+                    val entry =
+                        BackStackEntry(action.uiComponent, action.navOptions.presentationMode)
                     if (action.navOptions.popCurrent) {
                         it.dropLast(1) + entry
                     } else {
@@ -66,7 +67,7 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
             AppNavigationAction.PopBackStack -> {
                 backStack.update {
                     val last = it.last()
-                    last.screen.onCleared()
+                    last.uiComponent.onCleared()
                     it.dropLast(1)
                 }
             }

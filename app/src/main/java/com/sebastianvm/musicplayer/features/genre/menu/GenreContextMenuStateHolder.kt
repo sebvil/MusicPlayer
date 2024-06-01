@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.features.genre.menu
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
@@ -58,7 +58,7 @@ class GenreContextMenuStateHolder(
 
             GenreContextMenuUserAction.ViewGenreClicked -> {
                 navController.push(
-                    TrackList(
+                    TrackListUiComponent(
                         arguments = TrackListArguments(MediaGroup.Genre(genreId)),
                         navController = navController
                     ),

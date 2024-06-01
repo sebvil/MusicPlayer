@@ -89,11 +89,11 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             trackRepositoryDep.trackListsWithMetadata.update {
                 it + (
-                    MediaGroup.AllTracks to TrackListWithMetadata(
-                        metaData = null,
-                        trackList = listOf()
-                    )
-                    )
+                        MediaGroup.AllTracks to TrackListWithMetadata(
+                            metaData = null,
+                            trackList = listOf()
+                        )
+                        )
             }
             sortPreferencesRepositoryDep.allTracksSortPreferences.value = MediaSortPreferences(
                 sortOption = SortOptions.TrackListSortOptions.TRACK,
@@ -136,9 +136,9 @@ class TrackListStateHolderTest : FreeSpec({
                 )
                 trackRepositoryDep.trackListsWithMetadata.update {
                     it + (
-                        trackListType to FixtureProvider.trackListWithMetadataFixtures()
-                            .first()
-                        )
+                            trackListType to FixtureProvider.trackListWithMetadataFixtures()
+                                .first()
+                            )
                 }
 
                 updateSortPreferences(trackListType, initialSortPreferences)
@@ -175,9 +175,9 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
             trackRepositoryDep.trackListsWithMetadata.update {
                 it + (
-                    MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
-                        .first()
-                    )
+                        MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
+                            .first()
+                        )
             }
 
             testStateHolderState(subject) {
@@ -199,7 +199,7 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(TrackListUserAction.SortButtonClicked)
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = SortMenu(
+                uiComponent = SortMenu(
                     arguments = SortMenuArguments(listType = SortableListType.Tracks(trackList = MediaGroup.AllTracks))
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet,
@@ -222,7 +222,7 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(TrackListUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = TrackContextMenu(
+                uiComponent = TrackContextMenu(
                     arguments = TrackContextMenuArguments(
                         trackId = TRACK_ID,
                         trackPositionInList = TRACK_INDEX,
@@ -236,7 +236,7 @@ class TrackListStateHolderTest : FreeSpec({
 
         "BackClicked navigates back" {
             navControllerDep.push(
-                screen = TrackList(
+                uiComponent = TrackListUiComponent(
                     arguments = TrackListArguments(MediaGroup.AllTracks),
                     navController = navControllerDep
                 )

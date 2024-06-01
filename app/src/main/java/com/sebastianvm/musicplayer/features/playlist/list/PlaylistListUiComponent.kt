@@ -17,11 +17,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+
+
+data class PlaylistListUiComponent(val navController: NavController) :
+    BaseUiComponent<NoArguments, PlaylistListStateHolder>() {
+    override val arguments: NoArguments = NoArguments
+
+    @Composable
+    override fun Content(stateHolder: PlaylistListStateHolder, modifier: Modifier) {
+        PlaylistList(stateHolder = stateHolder, modifier = modifier)
+    }
+
+    override fun createStateHolder(dependencies: DependencyContainer): PlaylistListStateHolder {
+        return getPlaylistListStateHolder(
+            dependencies = dependencies,
+            navController = navController
+        )
+    }
+}
+
 
 @Composable
 fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {

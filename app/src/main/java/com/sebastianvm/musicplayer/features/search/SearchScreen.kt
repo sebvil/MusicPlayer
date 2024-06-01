@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
+import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -52,16 +55,24 @@ import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.collections.immutable.toImmutableList
 
-fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
-    this.pointerInput(key1 = null) {
-        awaitEachGesture {
-            awaitFirstDown(requireUnconsumed = false)
-            focusManager.clearFocus()
-        }
+
+data class SearchUiComponent(val navController: NavController) :
+    BaseUiComponent<NoArguments, SearchStateHolder>() {
+    override val arguments: NoArguments = NoArguments
+
+    override fun createStateHolder(dependencies: DependencyContainer): SearchStateHolder {
+        return getSearchStateHolder(dependencies, navController)
     }
+
+    @Composable
+    override fun Content(stateHolder: SearchStateHolder, modifier: Modifier) {
+        SearchScreen(screenStateHolder = stateHolder, modifier = modifier)
+    }
+}
 
 @Composable
 fun SearchScreen(
@@ -265,3 +276,11 @@ fun SearchLayout(
         }
     }
 }
+
+private fun Modifier.clearFocusOnTouch(focusManager: FocusManager): Modifier =
+    this.pointerInput(key1 = null) {
+        awaitEachGesture {
+            awaitFirstDown(requireUnconsumed = false)
+            focusManager.clearFocus()
+        }
+    }

@@ -22,7 +22,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.BaseScreen
+import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -31,10 +31,10 @@ import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
-data class ArtistScreen(
+data class ArtistUiComponent(
     override val arguments: ArtistArguments,
     val navController: NavController,
-) : BaseScreen<ArtistArguments, ArtistStateHolder>() {
+) : BaseUiComponent<ArtistArguments, ArtistStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): ArtistStateHolder {
         return getArtistStateHolder(dependencies, arguments, navController)

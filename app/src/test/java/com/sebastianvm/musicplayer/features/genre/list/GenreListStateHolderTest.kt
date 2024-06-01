@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
@@ -103,7 +103,7 @@ class GenreListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(GenreListUserAction.GenreClicked(GENRE_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = TrackList(
+                uiComponent = TrackListUiComponent(
                     arguments = TrackListArguments(trackListType = MediaGroup.Genre(GENRE_ID)),
                     navController = navControllerDep,
                 ),
@@ -115,7 +115,7 @@ class GenreListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(GenreListUserAction.GenreMoreIconClicked(GENRE_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                screen = GenreContextMenu(
+                uiComponent = GenreContextMenu(
                     arguments = GenreContextMenuArguments(GENRE_ID),
                     navController = navControllerDep
                 ),

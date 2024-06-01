@@ -2,13 +2,13 @@ package com.sebastianvm.musicplayer.features.track.menu
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistScreen
+import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackList
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.HasTracks
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -110,7 +110,7 @@ class TrackContextMenuStateHolder(
 
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
                 navController.push(
-                    TrackList(
+                    TrackListUiComponent(
                         arguments = TrackListArguments(
                             MediaGroup.Album(
                                 albumId = action.albumId
@@ -124,7 +124,7 @@ class TrackContextMenuStateHolder(
 
             is TrackContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
-                    ArtistScreen(
+                    ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
                         navController = navController
                     ),
