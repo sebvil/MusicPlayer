@@ -107,7 +107,7 @@ dependencies {
     // Glide
     implementation(libs.coil.compose)
 
-    implementation(libs.constraintlayout.compose)
+    implementation(libs.reorderable)
 
     // End Jetpack Compose
 

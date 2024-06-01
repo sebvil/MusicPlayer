@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.features.player
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -13,10 +14,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlin.time.Duration
 
 sealed interface PlayerState : State {
@@ -26,6 +29,7 @@ sealed interface PlayerState : State {
         val trackProgressState: TrackProgressState,
         val playbackIcon: PlaybackIcon,
         val isFullscreen: Boolean,
+        val queueUiComponent: QueueUiComponent?
     ) : PlayerState
 
     data object NotPlaying : PlayerState
@@ -37,6 +41,8 @@ sealed interface PlayerUserAction : UserAction {
     data object PreviousButtonClicked : PlayerUserAction
     data class ProgressBarClicked(val position: Int, val trackLength: Duration) : PlayerUserAction
     data object DismissFullScreenPlayer : PlayerUserAction
+    data object QueueTapped : PlayerUserAction
+    data object DismissQueue : PlayerUserAction
 }
 
 data class PlayerProps(val isFullscreen: Boolean)
@@ -52,8 +58,16 @@ class PlayerStateHolder(
     props: Flow<PlayerProps>,
 ) : StateHolder<PlayerState, PlayerUserAction> {
 
+    private val queueUiComponent = QueueUiComponent
+
+    private val showQueue: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     override val state: StateFlow<PlayerState> =
-        combine(playbackManager.getPlaybackState(), props) { playbackState, props ->
+        combine(
+            playbackManager.getPlaybackState(),
+            props,
+            showQueue
+        ) { playbackState, props, showQueue ->
             when (playbackState) {
                 is TrackPlayingState -> {
                     PlayerState.Playing(
@@ -70,7 +84,8 @@ class PlayerStateHolder(
                             trackLength = playbackState.trackInfo.trackLength
                         ),
                         playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY,
-                        isFullscreen = props.isFullscreen
+                        isFullscreen = props.isFullscreen,
+                        queueUiComponent = if (showQueue) queueUiComponent else null
                     )
                 }
 
@@ -100,6 +115,14 @@ class PlayerStateHolder(
 
             is PlayerUserAction.DismissFullScreenPlayer -> {
                 delegate.dismissFullScreenPlayer()
+            }
+
+            is PlayerUserAction.QueueTapped -> {
+                showQueue.update { true }
+            }
+
+            is PlayerUserAction.DismissQueue -> {
+                showQueue.update { false }
             }
         }
     }

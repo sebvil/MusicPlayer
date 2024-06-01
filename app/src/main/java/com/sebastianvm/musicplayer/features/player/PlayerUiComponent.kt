@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
+@file:OptIn(ExperimentalSharedTransitionApi::class, ExperimentalSharedTransitionApi::class)
 
 package com.sebastianvm.musicplayer.features.player
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -14,11 +15,13 @@ import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -27,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
@@ -112,27 +116,44 @@ fun AnimatedPlayerCard(
     handle: Handler<PlayerUserAction>,
     modifier: Modifier = Modifier
 ) {
-    SharedTransitionLayout(modifier = modifier) {
-        AnimatedContent(
-            targetState = state.isFullscreen,
-            label = "playerTransition"
-        ) { isFullScreen ->
-            if (isFullScreen) {
-                FullScreenPlayer(
-                    state = state,
-                    handle = handle,
-                    animatedVisibilityScope = this@AnimatedContent,
-                    sharedTransitionScope = this@SharedTransitionLayout
-                )
-            } else {
-                FloatingPlayerCard(
-                    state = state,
-                    handle = handle,
-                    animatedVisibilityScope = this@AnimatedContent,
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                )
+    BackHandler(enabled = state.queueUiComponent != null) {
+        handle(PlayerUserAction.DismissQueue)
+    }
+
+    Box(modifier = modifier) {
+        SharedTransitionLayout {
+            AnimatedContent(
+                targetState = state.isFullscreen,
+                label = "playerTransition"
+            ) { isFullScreen ->
+                if (isFullScreen) {
+                    FullScreenPlayer(
+                        state = state,
+                        handle = handle,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        sharedTransitionScope = this@SharedTransitionLayout
+                    )
+                } else {
+                    FloatingPlayerCard(
+                        state = state,
+                        handle = handle,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                    )
+                }
             }
         }
+
+        state.queueUiComponent?.Content(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .padding(
+                    top = WindowInsets.statusBars
+                        .asPaddingValues()
+                        .calculateTopPadding()
+                )
+        )
     }
 }
 
@@ -301,17 +322,32 @@ private fun FullScreenPlayer(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(
-                onClick = {
-                    handle(PlayerUserAction.DismissFullScreenPlayer)
-                },
-                modifier = Modifier.align(Alignment.Start)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.hide_player),
-                    modifier = Modifier.size(48.dp)
-                )
+                IconButton(
+                    onClick = {
+                        handle(PlayerUserAction.DismissFullScreenPlayer)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.KeyboardArrowDown,
+                        contentDescription = stringResource(R.string.hide_player),
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        handle(PlayerUserAction.QueueTapped)
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
+                        contentDescription = stringResource(R.string.hide_player),
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
 
@@ -526,7 +562,7 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-        )
+    )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
@@ -570,7 +606,6 @@ private enum class SharedContentStateKey {
     PlayPauseButton,
     ProgressBar
 }
-
 
 private val ColorScheme.playerContainerColor
     get() = this.surfaceContainerLow

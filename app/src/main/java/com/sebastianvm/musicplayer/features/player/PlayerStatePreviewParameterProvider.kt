@@ -15,7 +15,8 @@ class PlayerStatePreviewParameterProvider :
                             trackInfoState = trackInfoState,
                             playbackIcon = icon,
                             trackProgressState = progressState,
-                            isFullscreen = true
+                            isFullscreen = true,
+                            queueUiComponent = null
                         )
                     }
                 }
