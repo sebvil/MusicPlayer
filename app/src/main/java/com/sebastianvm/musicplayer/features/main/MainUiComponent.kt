@@ -100,7 +100,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
                 }
 
                 TopLevelScreen.PLAYLISTS -> {
-                    state.playlistListUiComponent.Content()
+                    state.playlistListUiComponent.Content(modifier = Modifier)
                 }
             }
         }
