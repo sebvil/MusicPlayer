@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Artist
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
@@ -95,16 +94,6 @@ private fun AlbumContextMenu(
                                 )
                             }
                         }
-                    }
-
-                    item {
-                        MenuItem(
-                            text = stringResource(id = R.string.view_album),
-                            icon = Icons.Album.icon(),
-                            onItemClicked = {
-                                handle(AlbumContextMenuUserAction.ViewAlbumClicked)
-                            }
-                        )
                     }
                 }
             }

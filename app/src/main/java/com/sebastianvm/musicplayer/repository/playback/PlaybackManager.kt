@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +23,7 @@ interface PlaybackManager {
 
     fun seekToTrackPosition(position: Long)
 
-    fun addToQueue(tracks: List<Track>)
+    suspend fun addToQueue(mediaGroup: MediaGroup)
 
     suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
 

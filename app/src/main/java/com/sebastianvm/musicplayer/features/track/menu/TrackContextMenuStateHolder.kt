@@ -23,7 +23,6 @@ import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -103,8 +102,7 @@ class TrackContextMenuStateHolder(
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope.launch {
-                    val track = trackRepository.getTrack(trackId).first().track
-                    playbackManager.addToQueue(listOf(track))
+                    playbackManager.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
                 }
             }
 

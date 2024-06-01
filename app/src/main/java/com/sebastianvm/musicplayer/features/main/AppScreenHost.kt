@@ -41,7 +41,6 @@ fun MainApp(
     modifier: Modifier = Modifier,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    // If `lifecycleOwner` changes, dispose and reset the effect
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
@@ -50,11 +49,7 @@ fun MainApp(
                 handle(MainUserAction.DisconnectFromMusicService)
             }
         }
-
-        // Add the observer to the lifecycle
         lifecycleOwner.lifecycle.addObserver(observer)
-
-        // When the effect leaves the Composition, remove the observer
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
