@@ -48,7 +48,7 @@ fun MainScreen(stateHolder: MainStateHolder, modifier: Modifier = Modifier) {
 @Composable
 fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        state.searchUiComponent.Content()
+        state.searchUiComponent.Content(modifier = Modifier)
         MainScreenPager(state = state)
     }
 }
