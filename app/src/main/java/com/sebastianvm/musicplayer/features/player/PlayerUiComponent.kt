@@ -148,7 +148,7 @@ private fun FloatingPlayerCard(
         ElevatedCard(
             modifier = modifier.sharedBounds(
                 rememberSharedContentState(
-                    key = CONTAINER_SHARED_TRANSITION_KEY
+                    key = SharedContentStateKey.Container
                 ),
                 animatedVisibilityScope = animatedVisibilityScope,
             ),
@@ -163,7 +163,7 @@ private fun FloatingPlayerCard(
                             modifier = Modifier
                                 .sharedBounds(
                                     rememberSharedContentState(
-                                        key = TITLE_SHARED_TRANSITION_KEY
+                                        key = SharedContentStateKey.Title
                                     ),
                                     animatedVisibilityScope = animatedVisibilityScope,
                                 ),
@@ -179,7 +179,7 @@ private fun FloatingPlayerCard(
                             text = state.trackInfoState.artists,
                             modifier = Modifier.sharedBounds(
                                 rememberSharedContentState(
-                                    key = ARTIST_SHARED_TRANSITION_KEY
+                                    key = SharedContentStateKey.Artist
                                 ),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             ),
@@ -196,7 +196,7 @@ private fun FloatingPlayerCard(
                                 .size(48.dp)
                                 .sharedElement(
                                     rememberSharedContentState(
-                                        key = IMAGE_SHARED_TRANSITION_KEY
+                                        key = SharedContentStateKey.Image
                                     ),
                                     animatedVisibilityScope = animatedVisibilityScope,
                                 )
@@ -208,12 +208,6 @@ private fun FloatingPlayerCard(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .sharedElement(
-                            rememberSharedContentState(
-                                key = BUTTONS_SHARED_TRANSITION_KEY
-                            ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
                 ) {
                     IconButton(onClick = {
                         handle(PlayerUserAction.PreviousButtonClicked)
@@ -221,6 +215,12 @@ private fun FloatingPlayerCard(
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
                             contentDescription = stringResource(R.string.previous),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.PreviousButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
                         )
                     }
                     IconButton(onClick = {
@@ -229,6 +229,12 @@ private fun FloatingPlayerCard(
                         Icon(
                             imageVector = state.playbackIcon.icon,
                             contentDescription = stringResource(state.playbackIcon.contentDescription),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.PlayPauseButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
                         )
                     }
                     IconButton(onClick = {
@@ -237,6 +243,12 @@ private fun FloatingPlayerCard(
                         Icon(
                             imageVector = Icons.Default.SkipNext,
                             contentDescription = stringResource(R.string.previous),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.NextButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
                         )
                     }
                 }
@@ -253,7 +265,7 @@ private fun FloatingPlayerCard(
                     },
                     modifier = Modifier.sharedElement(
                         rememberSharedContentState(
-                            key = PROGRESS_BAR_SHARED_TRANSITION_KEY
+                            key = SharedContentStateKey.ProgressBar
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
@@ -283,7 +295,7 @@ private fun FullScreenPlayer(
                 )
                 .sharedBounds(
                     rememberSharedContentState(
-                        key = CONTAINER_SHARED_TRANSITION_KEY
+                        key = SharedContentStateKey.Container
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
                 ),
@@ -311,7 +323,7 @@ private fun FullScreenPlayer(
                     .fillMaxWidth()
                     .sharedElement(
                         rememberSharedContentState(
-                            key = IMAGE_SHARED_TRANSITION_KEY
+                            key = SharedContentStateKey.Image
                         ),
                         animatedVisibilityScope = animatedVisibilityScope,
                     ),
@@ -324,7 +336,7 @@ private fun FullScreenPlayer(
                         text = state.trackInfoState.trackName,
                         modifier = Modifier.sharedBounds(
                             rememberSharedContentState(
-                                key = TITLE_SHARED_TRANSITION_KEY
+                                key = SharedContentStateKey.Title
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
@@ -340,7 +352,7 @@ private fun FullScreenPlayer(
                         text = state.trackInfoState.artists,
                         modifier = Modifier.sharedBounds(
                             rememberSharedContentState(
-                                key = ARTIST_SHARED_TRANSITION_KEY
+                                key = SharedContentStateKey.Artist
                             ),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
@@ -357,12 +369,6 @@ private fun FullScreenPlayer(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .sharedElement(
-                        rememberSharedContentState(
-                            key = BUTTONS_SHARED_TRANSITION_KEY
-                        ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
             ) {
                 IconButton(onClick = {
                     handle(PlayerUserAction.PreviousButtonClicked)
@@ -370,7 +376,14 @@ private fun FullScreenPlayer(
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.PreviousButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     )
                 }
                 IconButton(onClick = {
@@ -379,7 +392,14 @@ private fun FullScreenPlayer(
                     Icon(
                         imageVector = state.playbackIcon.icon,
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier
+                            .size(48.dp)
+                            .sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.PlayPauseButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
                     )
                 }
                 IconButton(onClick = {
@@ -388,7 +408,14 @@ private fun FullScreenPlayer(
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .sharedElement(
+                                rememberSharedContentState(
+                                    key = SharedContentStateKey.NextButton
+                                ),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     )
                 }
             }
@@ -405,7 +432,7 @@ private fun FullScreenPlayer(
                 },
                 modifier = Modifier.sharedElement(
                     rememberSharedContentState(
-                        key = PROGRESS_BAR_SHARED_TRANSITION_KEY
+                        key = SharedContentStateKey.ProgressBar
                     ),
                     animatedVisibilityScope = animatedVisibilityScope,
                 )
@@ -499,7 +526,7 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-    )
+        )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
@@ -533,12 +560,17 @@ private fun PlayerCardPreview(
     }
 }
 
-private const val CONTAINER_SHARED_TRANSITION_KEY = "container"
-private const val IMAGE_SHARED_TRANSITION_KEY = "image"
-private const val TITLE_SHARED_TRANSITION_KEY = "title"
-private const val ARTIST_SHARED_TRANSITION_KEY = "artist"
-private const val BUTTONS_SHARED_TRANSITION_KEY = "buttons"
-private const val PROGRESS_BAR_SHARED_TRANSITION_KEY = "progresBar"
+private enum class SharedContentStateKey {
+    Container,
+    Image,
+    Title,
+    Artist,
+    PreviousButton,
+    NextButton,
+    PlayPauseButton,
+    ProgressBar
+}
+
 
 private val ColorScheme.playerContainerColor
     get() = this.surfaceContainerLow
