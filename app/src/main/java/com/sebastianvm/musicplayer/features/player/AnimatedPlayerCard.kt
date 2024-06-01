@@ -115,7 +115,6 @@ fun AnimatedPlayerCard(
     }
 }
 
-
 @Composable
 private fun FloatingPlayerCard(
     state: PlayerViewState,
@@ -459,7 +458,7 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-        )
+    )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
