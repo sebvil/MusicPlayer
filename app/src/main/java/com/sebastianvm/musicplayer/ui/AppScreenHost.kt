@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.features.player.AnimatedPlayerCard
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
@@ -97,7 +98,11 @@ fun AppScreenHost(
                         .onPlaced { coordinates ->
                             height = coordinates.boundsInParent().height
                         }
-                        .clickable(enabled = !isFullScreen) {
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            enabled = !isFullScreen,
+                        ) {
                             isFullScreen = !isFullScreen
                         },
                     onPreviousButtonClicked = { handle(MainUserAction.PreviousButtonClicked) },
