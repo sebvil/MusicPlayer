@@ -1,11 +1,9 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -16,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class ArtistContextMenuArguments(val artistId: Long) : Arguments
 
@@ -30,13 +29,12 @@ sealed interface ArtistContextMenuState : State {
 
 sealed interface ArtistContextMenuUserAction : UserAction {
     data object PlayArtistClicked : ArtistContextMenuUserAction
-    data object ViewArtistClicked : ArtistContextMenuUserAction
 }
 
 class ArtistContextMenuStateHolder(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
-    private val navController: NavController,
+    private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<ArtistContextMenuState, ArtistContextMenuUserAction> {
 
@@ -53,16 +51,9 @@ class ArtistContextMenuStateHolder(
     override fun handle(action: ArtistContextMenuUserAction) {
         when (action) {
             ArtistContextMenuUserAction.PlayArtistClicked -> {
-            }
-
-            ArtistContextMenuUserAction.ViewArtistClicked -> {
-                navController.push(
-                    ArtistUiComponent(
-                        arguments = ArtistArguments(artistId = artistId),
-                        navController = navController
-                    ),
-                    navOptions = NavOptions(popCurrent = true)
-                )
+                stateHolderScope.launch {
+                    playbackManager.playMedia(mediaGroup = MediaGroup.Artist(artistId))
+                }
             }
         }
     }
@@ -71,11 +62,10 @@ class ArtistContextMenuStateHolder(
 fun getArtistContextMenuStateHolder(
     dependencies: DependencyContainer,
     arguments: ArtistContextMenuArguments,
-    navController: NavController
 ): ArtistContextMenuStateHolder {
     return ArtistContextMenuStateHolder(
         arguments = arguments,
         artistRepository = dependencies.repositoryProvider.artistRepository,
-        navController = navController,
+        playbackManager = dependencies.repositoryProvider.playbackManager,
     )
 }

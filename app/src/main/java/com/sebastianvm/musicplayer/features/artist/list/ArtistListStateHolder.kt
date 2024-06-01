@@ -81,8 +81,7 @@ class ArtistListStateHolder(
             is ArtistListUserAction.ArtistMoreIconClicked -> {
                 navController.push(
                     ArtistContextMenu(
-                        arguments = ArtistContextMenuArguments(artistId = action.artistId),
-                        navController = navController
+                        arguments = ArtistContextMenuArguments(artistId = action.artistId)
                     ),
                     navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
                 )

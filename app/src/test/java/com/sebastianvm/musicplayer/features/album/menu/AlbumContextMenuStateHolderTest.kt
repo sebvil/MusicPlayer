@@ -111,7 +111,6 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
 
     "handle" - {
         "AddToQueueClicked adds tracks to queue" {
-            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
             val album = FixtureProvider.albumFixtures().first()
             val subject = getSubject(album.id)
             subject.handle(AlbumContextMenuUserAction.AddToQueueClicked)
@@ -122,7 +121,6 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
         }
 
         "PlayAlbumClicked plays album" {
-            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
             val album = FixtureProvider.albumFixtures().first()
             val subject = getSubject(album.id)
             subject.handle(AlbumContextMenuUserAction.PlayAlbumClicked)
@@ -136,7 +134,6 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
         }
 
         "ViewArtistClicked shows artist screen" {
-            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
             navControllerDep.push(
                 AlbumContextMenu(
                     arguments = AlbumContextMenuArguments(
@@ -159,7 +156,6 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
         }
 
         "ViewArtistsClicked shows artists menu" {
-            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
             navControllerDep.push(
                 AlbumContextMenu(
                     arguments = AlbumContextMenuArguments(

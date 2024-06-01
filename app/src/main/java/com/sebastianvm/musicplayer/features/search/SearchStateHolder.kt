@@ -177,8 +177,7 @@ class SearchStateHolder(
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
         navController.push(
             ArtistContextMenu(
-                arguments = ArtistContextMenuArguments(artistId = artistId),
-                navController = navController
+                arguments = ArtistContextMenuArguments(artistId = artistId)
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
