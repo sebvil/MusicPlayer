@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.features.main
+package com.sebastianvm.musicplayer.features.home
 
 import com.sebastianvm.musicplayer.features.album.list.AlbumListUiComponent
 import com.sebastianvm.musicplayer.features.artist.list.ArtistListUiComponent
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-data class MainState(
+data class HomeState(
     val trackListUiComponent: TrackListUiComponent,
     val artistListUiComponent: ArtistListUiComponent,
     val albumListUiComponent: AlbumListUiComponent,
@@ -27,9 +27,9 @@ data class MainState(
     val searchUiComponent: SearchUiComponent
 ) : State
 
-sealed interface MainUserAction : UserAction
+sealed interface HomeUserAction : UserAction
 
-class MainStateHolder(
+class HomeStateHolder(
     trackListUiComponent: TrackListUiComponent,
     artistListUiComponent: ArtistListUiComponent,
     albumListUiComponent: AlbumListUiComponent,
@@ -37,10 +37,10 @@ class MainStateHolder(
     playlistListUiComponent: PlaylistListUiComponent,
     searchUiComponent: SearchUiComponent,
     override val stateHolderScope: CoroutineScope = stateHolderScope()
-) : StateHolder<MainState, MainUserAction> {
+) : StateHolder<HomeState, HomeUserAction> {
 
     private val _state = MutableStateFlow(
-        MainState(
+        HomeState(
             trackListUiComponent,
             artistListUiComponent,
             albumListUiComponent,
@@ -49,15 +49,15 @@ class MainStateHolder(
             searchUiComponent
         )
     )
-    override val state: StateFlow<MainState>
+    override val state: StateFlow<HomeState>
         get() = _state.asStateFlow()
 
-    override fun handle(action: MainUserAction) = Unit
+    override fun handle(action: HomeUserAction) = Unit
 }
 
-fun getMainStateHolder(
+fun getHomeStateHolder(
     navController: NavController
-): MainStateHolder {
+): HomeStateHolder {
     val trackListUiComponent = TrackListUiComponent(
         arguments = TrackListArguments(trackListType = MediaGroup.AllTracks),
         navController = navController
@@ -67,7 +67,7 @@ fun getMainStateHolder(
     val genreListUiComponent = GenreListUiComponent(navController)
     val playlistListUiComponent = PlaylistListUiComponent(navController)
     val searchUiComponent = SearchUiComponent(navController)
-    return MainStateHolder(
+    return HomeStateHolder(
         trackListUiComponent = trackListUiComponent,
         artistListUiComponent = artistListUiComponent,
         albumListUiComponent = albumListUiComponent,

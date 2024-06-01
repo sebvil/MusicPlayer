@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.features.main
+package com.sebastianvm.musicplayer.features.home
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -25,36 +25,36 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.launch
 
-data class MainUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, MainStateHolder>() {
+data class HomeUiComponent(val navController: NavController) :
+    BaseUiComponent<NoArguments, HomeStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: DependencyContainer): MainStateHolder {
-        return getMainStateHolder(navController)
+    override fun createStateHolder(dependencies: DependencyContainer): HomeStateHolder {
+        return getHomeStateHolder(navController)
     }
 
     @Composable
-    override fun Content(stateHolder: MainStateHolder, modifier: Modifier) {
-        MainScreen(stateHolder = stateHolder)
+    override fun Content(stateHolder: HomeStateHolder, modifier: Modifier) {
+        HomeScreen(stateHolder = stateHolder)
     }
 }
 
 @Composable
-fun MainScreen(stateHolder: MainStateHolder, modifier: Modifier = Modifier) {
+fun HomeScreen(stateHolder: HomeStateHolder, modifier: Modifier = Modifier) {
     val state by stateHolder.currentState
-    MainScreen(state = state, modifier = modifier)
+    HomeScreen(state = state, modifier = modifier)
 }
 
 @Composable
-fun MainScreen(state: MainState, modifier: Modifier = Modifier) {
+fun HomeScreen(state: HomeState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         state.searchUiComponent.Content(modifier = Modifier)
-        MainScreenPager(state = state)
+        HomeScreenPager(state = state)
     }
 }
 
 @Composable
-fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
+fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
     val pages = TopLevelScreen.entries
     val pagerState = rememberPagerState {
         pages.size
@@ -107,7 +107,7 @@ fun MainScreenPager(state: MainState, modifier: Modifier = Modifier) {
     }
 }
 
-enum class TopLevelScreen(@StringRes val screenName: Int) {
+private enum class TopLevelScreen(@StringRes val screenName: Int) {
     ALL_SONGS(R.string.all_songs),
     ARTISTS(R.string.artists),
     ALBUMS(R.string.albums),
