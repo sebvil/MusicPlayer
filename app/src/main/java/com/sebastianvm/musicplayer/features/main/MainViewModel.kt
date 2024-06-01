@@ -1,8 +1,8 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.features.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
+import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostUiComponent
 import com.sebastianvm.musicplayer.features.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.player.PlayerProps
 import com.sebastianvm.musicplayer.features.player.PlayerUiComponent
@@ -24,7 +24,7 @@ class MainViewModel(
     private val playbackManager: PlaybackManager
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
-    private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
+    private val appNavigationHostUiComponent = AppNavigationHostUiComponent()
 
     private val playerProps: MutableStateFlow<PlayerProps> =
         MutableStateFlow(PlayerProps(isFullscreen = false))
@@ -41,7 +41,7 @@ class MainViewModel(
     override val state: StateFlow<MainState> = playerProps.map { props ->
         MainState(
             playerUiComponent = playerUiComponent,
-            navigationHostStateHolder = appNavigationHostStateHolder,
+            appNavigationHostUiComponent = appNavigationHostUiComponent,
             isFullscreen = props.isFullscreen,
         )
     }.stateIn(
@@ -49,7 +49,7 @@ class MainViewModel(
         started = SharingStarted.Lazily,
         initialValue = MainState(
             playerUiComponent = playerUiComponent,
-            navigationHostStateHolder = appNavigationHostStateHolder,
+            appNavigationHostUiComponent = appNavigationHostUiComponent,
             isFullscreen = false,
         )
     )
@@ -77,7 +77,7 @@ class MainViewModel(
 
 data class MainState(
     val playerUiComponent: PlayerUiComponent,
-    val navigationHostStateHolder: AppNavigationHostStateHolder,
+    val appNavigationHostUiComponent: AppNavigationHostUiComponent,
     val isFullscreen: Boolean,
 ) : State
 

@@ -5,7 +5,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
@@ -19,33 +18,24 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,
     val navController: NavController
-) : BaseUiComponent<PlaylistContextMenuArguments, PlaylistContextMenuStateHolder>() {
+) : BaseUiComponent<PlaylistContextMenuArguments, PlaylistContextMenuState, PlaylistContextMenuUserAction, PlaylistContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): PlaylistContextMenuStateHolder {
         return getPlaylistContextMenuStateHolder(dependencies, arguments, navController)
     }
 
     @Composable
-    override fun Content(stateHolder: PlaylistContextMenuStateHolder, modifier: Modifier) {
-        PlaylistContextMenu(
-            stateHolder = stateHolder,
-            modifier = modifier
-        )
+    override fun Content(
+        state: PlaylistContextMenuState,
+        handle: Handler<PlaylistContextMenuUserAction>,
+        modifier: Modifier
+    ) {
+        PlaylistContextMenu(state = state, handle = handle, modifier = modifier)
     }
-}
-
-@Composable
-fun PlaylistContextMenu(
-    stateHolder: PlaylistContextMenuStateHolder,
-    modifier: Modifier = Modifier
-) {
-    val state by stateHolder.currentState
-    PlaylistContextMenu(state = state, handle = stateHolder::handle, modifier = modifier)
 }
 
 @Composable

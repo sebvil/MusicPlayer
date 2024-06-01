@@ -9,7 +9,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -20,29 +19,37 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.components.lists.ModelList
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class ArtistsMenu(
     override val arguments: ArtistsMenuArguments,
     val navController: NavController
-) : BaseUiComponent<ArtistsMenuArguments, ArtistsMenuStateHolder>() {
+) : BaseUiComponent<ArtistsMenuArguments, UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): ArtistsMenuStateHolder {
         return getArtistsMenuStateHolder(dependencies, arguments, navController)
     }
 
     @Composable
-    override fun Content(stateHolder: ArtistsMenuStateHolder, modifier: Modifier) {
+    override fun Content(
+        state: UiState<ArtistsMenuState>,
+        handle: Handler<ArtistsMenuUserAction>,
+        modifier: Modifier
+    ) {
         ArtistsMenu(
-            stateHolder = stateHolder,
+            uiState = state,
+            handle = handle,
             modifier = modifier
         )
     }
 }
 
 @Composable
-fun ArtistsMenu(stateHolder: ArtistsMenuStateHolder, modifier: Modifier = Modifier) {
-    val uiState by stateHolder.currentState
+fun ArtistsMenu(
+    uiState: UiState<ArtistsMenuState>,
+    handle: Handler<ArtistsMenuUserAction>,
+    modifier: Modifier = Modifier
+) {
     UiStateScreen(
         uiState = uiState,
         modifier = modifier,
@@ -50,7 +57,7 @@ fun ArtistsMenu(stateHolder: ArtistsMenuStateHolder, modifier: Modifier = Modifi
     ) { state ->
         ArtistsMenu(
             state = state,
-            handle = stateHolder::handle,
+            handle = handle,
             modifier = Modifier
         )
     }

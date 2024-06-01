@@ -23,7 +23,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -32,32 +31,22 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-data class SortMenu(override val arguments: SortMenuArguments) :
-    BaseUiComponent<SortMenuArguments, SortMenuStateHolder>() {
+data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
+    BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
     override fun createStateHolder(dependencies: DependencyContainer): SortMenuStateHolder {
         return getSortMenuStateHolder(dependencies, arguments)
     }
 
     @Composable
-    override fun Content(stateHolder: SortMenuStateHolder, modifier: Modifier) {
-        SortMenu(
-            stateHolder = stateHolder,
-            modifier = modifier
-        )
+    override fun Content(
+        state: SortMenuState,
+        handle: Handler<SortMenuUserAction>,
+        modifier: Modifier
+    ) {
+        SortMenu(state = state, handle = handle, modifier = modifier)
     }
-}
-
-@Composable
-fun SortMenu(stateHolder: SortMenuStateHolder, modifier: Modifier = Modifier) {
-    val state by stateHolder.currentState
-    SortMenu(
-        state = state,
-        handle = stateHolder::handle,
-        modifier = modifier
-    )
 }
 
 @Composable

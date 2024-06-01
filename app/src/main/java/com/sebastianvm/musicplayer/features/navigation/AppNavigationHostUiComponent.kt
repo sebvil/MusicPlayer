@@ -26,17 +26,30 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
+import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-@Composable
-fun AppNavigationHost(stateHolder: AppNavigationHostStateHolder, modifier: Modifier = Modifier) {
-    val state by stateHolder.currentState
-    rememberSaveableStateHolder().SaveableStateProvider(key = "main") {
-        AppNavigationHost(state, stateHolder::handle, modifier)
+class AppNavigationHostUiComponent :
+    BaseUiComponent<NoArguments, AppNavigationState, AppNavigationAction, AppNavigationHostStateHolder>() {
+    override val arguments: NoArguments = NoArguments
+
+    override fun createStateHolder(dependencies: DependencyContainer): AppNavigationHostStateHolder {
+        return AppNavigationHostStateHolder()
+    }
+
+    @Composable
+    override fun Content(
+        state: AppNavigationState,
+        handle: Handler<AppNavigationAction>,
+        modifier: Modifier
+    ) {
+        rememberSaveableStateHolder().SaveableStateProvider(key = "main") {
+            AppNavigationHost(state = state, handle = handle, modifier = modifier)
+        }
     }
 }
 

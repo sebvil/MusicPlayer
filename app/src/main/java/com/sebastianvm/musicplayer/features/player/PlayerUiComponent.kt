@@ -69,14 +69,13 @@ import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 import kotlinx.coroutines.flow.Flow
 
 class PlayerUiComponent(
     private val delegate: PlayerDelegate,
     private val props: Flow<PlayerProps>
-) : BaseUiComponent<NoArguments, PlayerStateHolder>() {
+) : BaseUiComponent<NoArguments, PlayerState, PlayerUserAction, PlayerStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: DependencyContainer): PlayerStateHolder {
@@ -84,20 +83,23 @@ class PlayerUiComponent(
     }
 
     @Composable
-    override fun Content(stateHolder: PlayerStateHolder, modifier: Modifier) {
-        Player(stateHolder = stateHolder, modifier = modifier)
+    override fun Content(
+        state: PlayerState,
+        handle: Handler<PlayerUserAction>,
+        modifier: Modifier
+    ) {
+        Player(state = state, handle = handle, modifier = modifier)
     }
 }
 
 @Composable
-fun Player(stateHolder: PlayerStateHolder, modifier: Modifier = Modifier) {
-    val state by stateHolder.currentState
-    when (val currentState = state) {
+fun Player(state: PlayerState, handle: Handler<PlayerUserAction>, modifier: Modifier = Modifier) {
+    when (state) {
         PlayerState.NotPlaying -> Unit
         is PlayerState.Playing -> {
             AnimatedPlayerCard(
-                state = currentState,
-                handle = stateHolder::handle,
+                state = state,
+                handle = handle,
                 modifier = modifier
             )
         }

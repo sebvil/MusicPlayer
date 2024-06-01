@@ -1,12 +1,17 @@
 package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.di.dependencies
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
+import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.cancel
 
 interface UiComponent<Args : Arguments, SH : StateHolder<*, *>> {
@@ -22,7 +27,8 @@ interface UiComponent<Args : Arguments, SH : StateHolder<*, *>> {
     fun onCleared() = Unit
 }
 
-abstract class BaseUiComponent<Args : Arguments, SH : StateHolder<*, *>> : UiComponent<Args, SH> {
+abstract class BaseUiComponent<Args : Arguments, S : State, UA : UserAction, SH : StateHolder<S, UA>> :
+    UiComponent<Args, SH> {
     private var stateHolder: SH? = null
 
     private fun getOrCreateStateHolder(dependencies: DependencyContainer): SH {
@@ -30,7 +36,7 @@ abstract class BaseUiComponent<Args : Arguments, SH : StateHolder<*, *>> : UiCom
     }
 
     @Composable
-    abstract fun Content(stateHolder: SH, modifier: Modifier)
+    abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
 
     override val key = this.toString()
 
@@ -38,10 +44,13 @@ abstract class BaseUiComponent<Args : Arguments, SH : StateHolder<*, *>> : UiCom
     final override fun Content(modifier: Modifier) {
         val dependencies = dependencies()
 
+        val stateHolder = remember {
+            getOrCreateStateHolder(dependencies)
+        }
+        val state by stateHolder.currentState
         Content(
-            stateHolder = remember {
-                getOrCreateStateHolder(dependencies)
-            },
+            state = state,
+            handle = stateHolder::handle,
             modifier = modifier
         )
     }

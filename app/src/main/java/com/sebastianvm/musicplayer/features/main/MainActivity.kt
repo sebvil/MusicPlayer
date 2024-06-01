@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.features.main
 
 import android.os.Bundle
 import android.os.StrictMode
@@ -13,7 +13,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.features.navigation.AppNavigationHost
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
@@ -38,26 +37,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.currentState
-                    AppScreenHost(
-                        mainState = state,
+                    MainApp(
+                        state = state,
                         handle = viewModel::handle
-                    ) {
-                        AppNavigationHost(
-                            stateHolder = state.navigationHostStateHolder
-                        )
-                    }
+                    )
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.handle(MainUserAction.ConnectToMusicService)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        viewModel.handle(MainUserAction.DisconnectFromMusicService)
     }
 }

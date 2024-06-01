@@ -12,7 +12,6 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,12 +20,12 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 import kotlinx.coroutines.launch
 
 data class HomeUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, HomeStateHolder>() {
+    BaseUiComponent<NoArguments, HomeState, HomeUserAction, HomeStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: DependencyContainer): HomeStateHolder {
@@ -34,15 +33,9 @@ data class HomeUiComponent(val navController: NavController) :
     }
 
     @Composable
-    override fun Content(stateHolder: HomeStateHolder, modifier: Modifier) {
-        HomeScreen(stateHolder = stateHolder)
+    override fun Content(state: HomeState, handle: Handler<HomeUserAction>, modifier: Modifier) {
+        HomeScreen(state = state, modifier = modifier)
     }
-}
-
-@Composable
-fun HomeScreen(stateHolder: HomeStateHolder, modifier: Modifier = Modifier) {
-    val state by stateHolder.currentState
-    HomeScreen(state = state, modifier = modifier)
 }
 
 @Composable

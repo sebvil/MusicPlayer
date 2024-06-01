@@ -4,8 +4,8 @@ import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.sort.SortMenu
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
@@ -199,7 +199,7 @@ class TrackListStateHolderTest : FreeSpec({
             val subject = getSubject()
             subject.handle(TrackListUserAction.SortButtonClicked)
             navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = SortMenu(
+                uiComponent = SortMenuUiComponent(
                     arguments = SortMenuArguments(listType = SortableListType.Tracks(trackList = MediaGroup.AllTracks))
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet,
