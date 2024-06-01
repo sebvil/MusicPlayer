@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +13,15 @@ class FakePlaybackManager(
 
     val getPlaybackStateValue: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
 
-    private val _addToQueueInvocations: MutableList<List<Any>> = mutableListOf()
+    private val _addToQueueInvocations: MutableList<AddToQueueArguments> = mutableListOf()
 
-    val addToQueueInvocations: List<List<Any>>
+    data class AddToQueueArguments(val mediaGroup: MediaGroup)
+
+    val addToQueueInvocations: List<AddToQueueArguments>
         get() = _addToQueueInvocations
 
-    override fun addToQueue(tracks: List<Track>) {
-        _addToQueueInvocations.add(listOf(tracks))
+    override suspend fun addToQueue(mediaGroup: MediaGroup) {
+        _addToQueueInvocations.add(AddToQueueArguments(mediaGroup))
     }
 
     fun resetAddToQueueInvocations() {

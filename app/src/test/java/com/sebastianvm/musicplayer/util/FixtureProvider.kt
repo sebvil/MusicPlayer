@@ -48,7 +48,7 @@ object FixtureProvider {
     private fun longList(): List<Long> = listOf(0, 1, 2, 3)
     private fun stringList() = listOf("", "Hello, World!")
 
-    private fun trackFixtures(): List<Track> {
+    fun trackFixtures(): List<Track> {
         return longList().flatMap { long ->
             stringList().map { string ->
                 Track(

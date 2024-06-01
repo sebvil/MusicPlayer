@@ -7,8 +7,6 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.model.MediaWithArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -22,7 +20,6 @@ import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -50,7 +47,6 @@ sealed interface AlbumContextMenuUserAction : UserAction {
     data object PlayAlbumClicked : AlbumContextMenuUserAction
     data object ViewArtistsClicked : AlbumContextMenuUserAction
     data class ViewArtistClicked(val artistId: Long) : AlbumContextMenuUserAction
-    data object ViewAlbumClicked : AlbumContextMenuUserAction
 }
 
 class AlbumContextMenuStateHolder(
@@ -81,23 +77,14 @@ class AlbumContextMenuStateHolder(
         when (action) {
             is AlbumContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope.launch {
-                    val tracks =
-                        trackRepository.getTracksForMedia(MediaGroup.Album(albumId)).first()
-                    playbackManager.addToQueue(tracks)
+                    playbackManager.addToQueue(MediaGroup.Album(albumId))
                 }
             }
 
             AlbumContextMenuUserAction.PlayAlbumClicked -> {
-            }
-
-            AlbumContextMenuUserAction.ViewAlbumClicked -> {
-                navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(MediaGroup.Album(albumId = albumId)),
-                        navController = navController
-                    ),
-                    navOptions = NavOptions(popCurrent = true)
-                )
+                stateHolderScope.launch {
+                    playbackManager.playMedia(mediaGroup = MediaGroup.Album(albumId))
+                }
             }
 
             is AlbumContextMenuUserAction.ViewArtistClicked -> {

@@ -120,8 +120,7 @@ class ArtistListStateHolderTest : FreeSpec({
             subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
             navControllerDep.backStack.last() shouldBe BackStackEntry(
                 uiComponent = ArtistContextMenu(
-                    arguments = ArtistContextMenuArguments(ARTIST_ID),
-                    navController = navControllerDep
+                    arguments = ArtistContextMenuArguments(ARTIST_ID)
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet
             )

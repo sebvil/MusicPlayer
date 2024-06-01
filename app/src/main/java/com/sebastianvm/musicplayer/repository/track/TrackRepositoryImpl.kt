@@ -55,15 +55,15 @@ class TrackRepositoryImpl(
         return trackDao.getTrack(trackId).distinctUntilChanged()
     }
 
-    fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
+    private fun getTracksForArtist(artistId: Long): Flow<List<Track>> {
         return trackDao.getTracksForArtist(artistId).distinctUntilChanged()
     }
 
-    fun getTracksForAlbum(albumId: Long): Flow<List<Track>> {
+    private fun getTracksForAlbum(albumId: Long): Flow<List<Track>> {
         return trackDao.getTracksForAlbum(albumId).distinctUntilChanged()
     }
 
-    fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
+    private fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
         return sortPreferencesRepository.getTrackListSortPreferences(
             trackList = MediaGroup.Genre(
                 genreId = genreId
@@ -77,7 +77,7 @@ class TrackRepositoryImpl(
         }.distinctUntilChanged()
     }
 
-    fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
+    private fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
         return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
             .flatMapLatest { sortPreferences ->
                 trackDao.getTracksForPlaylist(

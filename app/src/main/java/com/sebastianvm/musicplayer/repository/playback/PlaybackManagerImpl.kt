@@ -60,8 +60,13 @@ class PlaybackManagerImpl(
         }
     }
 
-    override fun addToQueue(tracks: List<Track>) {
+    private fun addToQueue(tracks: List<Track>) {
         mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
+    }
+
+    override suspend fun addToQueue(mediaGroup: MediaGroup) {
+        val tracks = trackRepository.getTracksForMedia(mediaGroup).first()
+        addToQueue(tracks)
     }
 
     override fun seekToTrackPosition(position: Long) {
