@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.player
+package com.sebastianvm.musicplayer.features.player
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -11,8 +11,3 @@ enum class PlaybackIcon(val icon: ImageVector, @StringRes val contentDescription
     PLAY(icon = Icons.Default.PlayArrow, contentDescription = R.string.play),
     PAUSE(icon = Icons.Default.Pause, contentDescription = R.string.pause)
 }
-
-data class PlaybackControlsState(
-    val trackProgressState: TrackProgressState,
-    val playbackIcon: PlaybackIcon
-)

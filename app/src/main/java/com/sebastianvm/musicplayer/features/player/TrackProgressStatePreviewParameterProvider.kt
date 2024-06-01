@@ -1,6 +1,6 @@
 @file:Suppress("MagicNumber")
 
-package com.sebastianvm.musicplayer.ui.player
+package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import kotlin.time.Duration.Companion.seconds

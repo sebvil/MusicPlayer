@@ -1,20 +1,21 @@
-package com.sebastianvm.musicplayer.ui.player
+package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
 
-class PlayerViewStatePreviewParameterProvider :
-    PreviewParameterProvider<PlayerViewState> {
-    override val values: Sequence<PlayerViewState> =
+class PlayerStatePreviewParameterProvider :
+    PreviewParameterProvider<PlayerState.Playing> {
+    override val values: Sequence<PlayerState.Playing> =
         MediaArtImageStatePreviewParamsProvider().values.flatMap { mediaArtImageState ->
             TrackProgressStatePreviewParameterProvider().values.flatMap { progressState ->
                 PlaybackIcon.entries.flatMap { icon ->
                     TrackInfoStatePreviewParameterProvider().values.map { trackInfoState ->
-                        PlayerViewState(
+                        PlayerState.Playing(
                             mediaArtImageState = mediaArtImageState,
                             trackInfoState = trackInfoState,
                             playbackIcon = icon,
-                            trackProgressState = progressState
+                            trackProgressState = progressState,
+                            isFullscreen = true
                         )
                     }
                 }

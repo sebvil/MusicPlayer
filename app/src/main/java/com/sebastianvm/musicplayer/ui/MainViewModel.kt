@@ -1,28 +1,23 @@
 package com.sebastianvm.musicplayer.ui
 
 import androidx.lifecycle.ViewModel
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
+import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostStateHolder
-import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
+import com.sebastianvm.musicplayer.features.player.PlayerDelegate
+import com.sebastianvm.musicplayer.features.player.PlayerProps
+import com.sebastianvm.musicplayer.features.player.PlayerUiComponent
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.player.Percentage
-import com.sebastianvm.musicplayer.ui.player.PlaybackIcon
-import com.sebastianvm.musicplayer.ui.player.PlayerViewState
-import com.sebastianvm.musicplayer.ui.player.TrackInfoState
-import com.sebastianvm.musicplayer.ui.player.TrackProgressState
 import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Duration
+import kotlinx.coroutines.flow.update
 
 class MainViewModel(
     override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
@@ -31,40 +26,33 @@ class MainViewModel(
 
     private val appNavigationHostStateHolder = AppNavigationHostStateHolder()
 
-    override val state: StateFlow<MainState> =
-        playbackManager.getPlaybackState().map { playbackState ->
-            MainState(
-                playerViewState = when (playbackState) {
-                    is TrackPlayingState -> {
-                        PlayerViewState(
-                            mediaArtImageState = MediaArtImageState(
-                                imageUri = playbackState.trackInfo.artworkUri,
-                                backupImage = Icons.Album
-                            ),
-                            trackInfoState = TrackInfoState(
-                                trackName = playbackState.trackInfo.title,
-                                artists = playbackState.trackInfo.artists,
-                            ),
-                            trackProgressState = TrackProgressState(
-                                currentPlaybackTime = playbackState.currentTrackProgress,
-                                trackLength = playbackState.trackInfo.trackLength
-                            ),
-                            playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY,
-                        )
-                    }
+    private val playerProps: MutableStateFlow<PlayerProps> =
+        MutableStateFlow(PlayerProps(isFullscreen = false))
 
-                    is NotPlayingState -> null
-                },
-                navigationHostStateHolder = appNavigationHostStateHolder
-            )
-        }.stateIn(
-            stateHolderScope,
-            SharingStarted.Lazily,
-            MainState(
-                playerViewState = null,
-                navigationHostStateHolder = appNavigationHostStateHolder
-            )
+    private val playerUiComponent = PlayerUiComponent(
+        delegate = object : PlayerDelegate {
+            override fun dismissFullScreenPlayer() {
+                playerProps.update { it.copy(isFullscreen = false) }
+            }
+        },
+        props = playerProps,
+    )
+
+    override val state: StateFlow<MainState> = playerProps.map { props ->
+        MainState(
+            playerUiComponent = playerUiComponent,
+            navigationHostStateHolder = appNavigationHostStateHolder,
+            isFullscreen = props.isFullscreen,
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = MainState(
+            playerUiComponent = playerUiComponent,
+            navigationHostStateHolder = appNavigationHostStateHolder,
+            isFullscreen = false,
+        )
+    )
 
     override fun handle(action: MainUserAction) {
         when (action) {
@@ -76,33 +64,26 @@ class MainViewModel(
                 playbackManager.disconnectFromService()
             }
 
-            is MainUserAction.PlayToggled -> {
-                playbackManager.togglePlay()
+            is MainUserAction.ExpandPlayer -> {
+                playerProps.update { it.copy(isFullscreen = true) }
             }
 
-            is MainUserAction.NextButtonClicked -> playbackManager.next()
-
-            is MainUserAction.PreviousButtonClicked -> playbackManager.prev()
-
-            is MainUserAction.ProgressBarClicked -> {
-                val trackLengthMs = action.trackLength.inWholeMilliseconds
-                val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
-                playbackManager.seekToTrackPosition(time)
+            is MainUserAction.CollapsePlayer -> {
+                playerProps.update { it.copy(isFullscreen = false) }
             }
         }
     }
 }
 
 data class MainState(
-    val playerViewState: PlayerViewState?,
-    val navigationHostStateHolder: AppNavigationHostStateHolder
+    val playerUiComponent: PlayerUiComponent,
+    val navigationHostStateHolder: AppNavigationHostStateHolder,
+    val isFullscreen: Boolean,
 ) : State
 
 sealed interface MainUserAction : UserAction {
     data object ConnectToMusicService : MainUserAction
     data object DisconnectFromMusicService : MainUserAction
-    data object PlayToggled : MainUserAction
-    data object NextButtonClicked : MainUserAction
-    data object PreviousButtonClicked : MainUserAction
-    data class ProgressBarClicked(val position: Int, val trackLength: Duration) : MainUserAction
+    data object ExpandPlayer : MainUserAction
+    data object CollapsePlayer : MainUserAction
 }

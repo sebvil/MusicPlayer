@@ -5,12 +5,14 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakePlaybackManager(
-    val getPlaybackStateValue: MutableSharedFlow<PlaybackState> = MutableSharedFlow(),
     val getSavedPlaybackInfoValue: MutableSharedFlow<PlaybackInfo> = MutableSharedFlow(),
     val playMediaValue: MutableSharedFlow<PlaybackResult> = MutableSharedFlow()
 ) : PlaybackManager {
+
+    val getPlaybackStateValue: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
 
     private val _addToQueueInvocations: MutableList<List<Any>> = mutableListOf()
 
