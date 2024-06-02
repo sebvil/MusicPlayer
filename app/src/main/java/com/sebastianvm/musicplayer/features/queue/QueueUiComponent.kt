@@ -5,16 +5,22 @@ import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -40,9 +46,19 @@ object QueueUiComponent :
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifier = Modifier) {
+    when (state) {
+        is QueueState.Data -> Queue(state, handle, modifier)
+        is QueueState.Loading -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Modifier = Modifier) {
     val lazyListState = rememberLazyListState()
     var isDragInProgress by remember {
         mutableStateOf(false)
@@ -59,52 +75,59 @@ fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifie
     }
 
     val view = LocalView.current
-    LazyColumn(state = lazyListState, modifier = modifier) {
-        items(queueItems, key = { it.position }) { item ->
-            ReorderableItem(reorderableLazyListState, key = item.position) { isDragging ->
-                // Item content
-                val isNowPlayingItem = item.id == state.nowPlayingId
-                val backgroundColor = when {
-                    isNowPlayingItem -> {
-                        MaterialTheme.colorScheme.primaryContainer
-                    }
 
-                    isDragging -> {
+    Column {
+        Text(
+            text = "Now playing"
+        )
+        ModelListItem(
+            state = state.nowPlayingItem.modelListItemState,
+            backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+        )
+
+        Text(
+            text = "Next up"
+        )
+
+        LazyColumn(state = lazyListState, modifier = modifier) {
+            items(queueItems, key = { it.position }) { item ->
+                ReorderableItem(reorderableLazyListState, key = item.position) { isDragging ->
+
+                    val backgroundColor = if (isDragging) {
                         MaterialTheme.colorScheme.surfaceContainerHigh
-                    }
-
-                    else -> {
+                    } else {
                         MaterialTheme.colorScheme.surface
                     }
-                }
-                val elevation by animateDpAsState(
-                    if (isDragging) 4.dp else 0.dp,
-                    label = "elevation"
-                )
 
-                Surface(shadowElevation = elevation) {
-                    ModelListItem(
-                        state = item.modelListItemState,
-                        modifier = Modifier
-                            .clickable {
-                                handle(QueueUserAction.TrackClicked(item.position.toInt()))
-                            }
-                            .longPressDraggableHandle(
-                                onDragStarted = {
-                                    isDragInProgress = true
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                                    }
-                                },
-                                onDragStopped = {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
-                                    }
-//                                handle(QueueUserAction.DragEnded)
-                                },
-                            ),
-                        backgroundColor = backgroundColor,
+                    val elevation by animateDpAsState(
+                        if (isDragging) 4.dp else 0.dp,
+                        label = "elevation"
                     )
+
+                    Surface(shadowElevation = elevation) {
+                        ModelListItem(
+                            state = item.modelListItemState,
+                            modifier = Modifier
+                                .clickable {
+                                    handle(QueueUserAction.TrackClicked(item.position.toInt()))
+                                }
+                                .longPressDraggableHandle(
+                                    onDragStarted = {
+                                        isDragInProgress = true
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
+                                        }
+                                    },
+                                    onDragStopped = {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
+                                        }
+//                                handle(QueueUserAction.DragEnded)
+                                    },
+                                ),
+                            backgroundColor = backgroundColor,
+                        )
+                    }
                 }
             }
         }

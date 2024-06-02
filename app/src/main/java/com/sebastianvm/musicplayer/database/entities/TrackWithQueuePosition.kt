@@ -4,7 +4,7 @@ import androidx.media3.common.MediaItem
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
 
-data class TrackWithQueueId(
+data class TrackWithQueuePosition(
     val id: Long,
     val trackName: String,
     val trackNumber: Long,
@@ -13,18 +13,18 @@ data class TrackWithQueueId(
     val albumId: Long,
     val artists: String,
     val path: String,
-    val uniqueQueueItemId: Long
+    val queuePosition: Long
 ) {
     private fun toTrack(): Track =
         Track(id, trackName, trackNumber, trackDurationMs, albumName, albumId, artists, path)
 
     fun toMediaItem(): MediaItem {
         val item = toTrack().toMediaItem()
-        return item.buildUpon().setTag(uniqueQueueItemId).build()
+        return item.buildUpon().setTag(queuePosition).build()
     }
 
     companion object {
-        fun fromMediaItem(mediaItem: MediaItem): TrackWithQueueId = TrackWithQueueId(
+        fun fromMediaItem(mediaItem: MediaItem): TrackWithQueuePosition = TrackWithQueuePosition(
             id = mediaItem.mediaId.toLong(),
             trackName = "",
             trackNumber = 0,
@@ -33,7 +33,7 @@ data class TrackWithQueueId(
             albumId = 0,
             artists = "",
             path = "",
-            uniqueQueueItemId = mediaItem.uniqueId
+            queuePosition = mediaItem.uniqueId
         )
     }
 }

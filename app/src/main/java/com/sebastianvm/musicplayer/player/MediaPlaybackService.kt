@@ -17,9 +17,11 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.database.entities.TrackWithQueuePosition
+import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
+import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
@@ -43,6 +45,10 @@ class MediaPlaybackService : MediaLibraryService() {
         dependencies.repositoryProvider.playbackManager
     }
 
+    private val queueRepository: QueueRepository by lazy {
+        dependencies.repositoryProvider.queueRepository
+    }
+
     private val mainDispatcher: CoroutineDispatcher by lazy {
         dependencies.dispatcherProvider.mainDispatcher
     }
@@ -61,7 +67,7 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<TrackWithQueueId>> = MutableStateFlow(listOf())
+    private val queue: MutableStateFlow<List<TrackWithQueuePosition>> = MutableStateFlow(listOf())
 
     override fun onCreate() {
         super.onCreate()
@@ -79,21 +85,21 @@ class MediaPlaybackService : MediaLibraryService() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
@@ -221,9 +227,16 @@ class MediaPlaybackService : MediaLibraryService() {
         mediaSession.release()
     }
 
-    suspend fun savePlaybackInfo() {
+    suspend fun saveQueue() {
         val id = player.currentMediaItem?.uniqueId ?: 0L
         val contentPosition = player.contentPosition
+        queueRepository.saveQueue(
+            nowPlayingInfo = NowPlayingInfo(
+                nowPlayingPositionInQueue = player.currentTimeline.,
+                lastRecordedPosition = contentPosition,
+                queuedTrackIds = queue.value.map { it.uniqueQueueItemId }
+            )
+        )
         playbackManager.modifySavedPlaybackInfo(
             PlaybackInfo(
                 queuedTracks = queue.value,
@@ -237,7 +250,7 @@ class MediaPlaybackService : MediaLibraryService() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
             val newQueue = (0 until timeline.windowCount).map {
-                TrackWithQueueId.fromMediaItem(
+                TrackWithQueuePosition.fromMediaItem(
                     mediaItem = timeline.getWindow(
                         it,
                         Timeline.Window()

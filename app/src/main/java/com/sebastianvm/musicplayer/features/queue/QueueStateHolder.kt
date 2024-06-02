@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -9,19 +9,19 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 
-data class QueueState(
-    val queueItems: List<ModelListItemStateWithPosition>,
-    val nowPlayingId: Long
-) : State
+sealed interface QueueState : State {
+    data class Data(
+        val nowPlayingItem: ModelListItemStateWithPosition,
+        val queueItems: List<ModelListItemStateWithPosition>,
+    ) : QueueState
 
-data class MovedItem(val from: Int, val to: Int)
+    data object Loading : QueueState
+}
 
 sealed interface QueueUserAction : UserAction {
     data class ItemSelectedForDrag(val position: Int) : QueueUserAction
@@ -33,38 +33,28 @@ sealed interface QueueUserAction : UserAction {
 
 class QueueStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val playbackManager: PlaybackManager
+    queueRepository: QueueRepository,
 ) :
     StateHolder<QueueState, QueueUserAction> {
 
-    private val movedItem: MutableStateFlow<MovedItem?> = MutableStateFlow(null)
-
     override val state: StateFlow<QueueState> =
-        combine(playbackManager.getSavedPlaybackInfo(), movedItem) { savedPlaybackInfo, movedItem ->
-            QueueState(
-                queueItems = savedPlaybackInfo.queuedTracks.map { track ->
+        queueRepository.getQueue().map { queue ->
+            QueueState.Data(
+                queueItems = queue.nextUp.map { track ->
                     track.toModelListItemStateWithPosition()
-                }.toMutableList().apply {
-                    if (movedItem != null) {
-                        add(movedItem.to, removeAt(movedItem.from))
-                    }
-                }.toList(),
-                nowPlayingId = savedPlaybackInfo.nowPlayingId
+                },
+                nowPlayingItem = queue.nowPlayingTrack.toModelListItemStateWithPosition()
             )
         }.stateIn(
             scope = stateHolderScope,
             started = SharingStarted.Lazily,
-            initialValue = QueueState(
-                queueItems = emptyList(),
-                nowPlayingId = 0L
-            )
+            initialValue = QueueState.Loading
         )
 
     override fun handle(action: QueueUserAction) {
         when (action) {
             is QueueUserAction.DragEnded -> TODO()
             is QueueUserAction.ItemMoved -> {
-                movedItem.update { MovedItem(from = action.from, to = action.to) }
             }
 
             is QueueUserAction.ItemSelectedForDrag -> TODO()
@@ -75,5 +65,5 @@ class QueueStateHolder(
 }
 
 fun getQueueStateHolder(dependencies: DependencyContainer): QueueStateHolder {
-    return QueueStateHolder(playbackManager = dependencies.repositoryProvider.playbackManager)
+    return QueueStateHolder(queueRepository = dependencies.repositoryProvider.queueRepository)
 }
