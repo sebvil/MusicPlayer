@@ -11,7 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,8 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
@@ -89,13 +93,13 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
     }
     val view = LocalView.current
 
-
     LazyColumn(state = lazyListState, modifier = modifier) {
         item {
             Text(
                 text = stringResource(R.string.now_playing),
                 modifier = Modifier.padding(all = 12.dp),
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 20.sp
             )
         }
         item(key = state.nowPlayingItem.position) {
@@ -109,50 +113,53 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
             Text(
                 text = stringResource(R.string.next_up),
                 modifier = Modifier.padding(all = 12.dp),
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 20.sp
             )
         }
         items(queueItems, key = { item -> item.position }) { item ->
-            // TODO update modelListItem here
             ReorderableItem(reorderableLazyListState, key = item.position) { isDragging ->
-                val backgroundColor = if (isDragging) {
-                    MaterialTheme.colorScheme.surfaceContainerHigh
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-
                 val elevation by animateDpAsState(
                     if (isDragging) 4.dp else 0.dp,
                     label = "elevation"
                 )
 
-                Surface(shadowElevation = elevation) {
+                Surface(tonalElevation = elevation, shadowElevation = elevation) {
                     ModelListItem(
                         state = item.modelListItemState,
                         modifier = Modifier
                             .clickable {
                                 handle(QueueUserAction.TrackClicked(item.position))
-                            }
-                            .longPressDraggableHandle(
-                                onDragStarted = {
-                                    draggedItemInitialIndex = item.position
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                                    }
-                                },
-                                onDragStopped = {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
-                                    }
-                                    handle(
-                                        QueueUserAction.DragEnded(
-                                            from = draggedItemInitialIndex,
-                                            to = draggedItemFinalIndex + state.nowPlayingItem.position + 1
+                            },
+                        trailingContent = {
+                            IconButton(
+                                onClick = {},
+                                modifier = Modifier.draggableHandle(
+                                    onDragStarted = {
+                                        draggedItemInitialIndex = item.position
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
+                                        }
+                                    },
+                                    onDragStopped = {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
+                                        }
+                                        handle(
+                                            QueueUserAction.DragEnded(
+                                                from = draggedItemInitialIndex,
+                                                to = draggedItemFinalIndex + state.nowPlayingItem.position + 1
+                                            )
                                         )
-                                    )
-                                },
-                            ),
-                        backgroundColor = backgroundColor,
+                                    },
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DragIndicator,
+                                    contentDescription = stringResource(R.string.drag)
+                                )
+                            }
+                        },
                     )
                 }
             }

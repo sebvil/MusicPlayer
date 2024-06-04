@@ -74,5 +74,4 @@ class PlaybackManagerImpl(
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
     }
-
 }

@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.components.lists.DeprecatedModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
@@ -137,7 +137,7 @@ fun TrackSearchLayout(
 
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.trackSearchResults) { item ->
-                ModelListItem(
+                DeprecatedModelListItem(
                     state = item,
                     modifier = Modifier
                         .clickable {

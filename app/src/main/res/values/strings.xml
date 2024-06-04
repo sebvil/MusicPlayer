@@ -67,5 +67,6 @@
     <string name="loading">Loading</string>
     <string name="now_playing">Now playing</string>
     <string name="next_up">Next up</string>
+    <string name="drag">Drag</string>
 
 </resources>

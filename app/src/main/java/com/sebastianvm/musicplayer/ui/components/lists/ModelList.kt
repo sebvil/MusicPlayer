@@ -110,7 +110,7 @@ fun ModelList(
                     }
                 }
                 itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
-                    ModelListItem(
+                    DeprecatedModelListItem(
                         state = item,
                         modifier = Modifier
                             .animateItem()

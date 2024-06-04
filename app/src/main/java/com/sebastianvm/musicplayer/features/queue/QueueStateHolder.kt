@@ -58,7 +58,6 @@ class QueueStateHolder(
                 queueRepository.moveQueueItem(action.from, action.to)
             }
 
-
             is QueueUserAction.TrackClicked -> {
                 playbackManager.playQueueItem(action.trackIndex)
             }

@@ -13,9 +13,9 @@ interface MediaQueueDao {
     @Transaction
     @Query(
         "SELECT Track.*, MediaQueueItem.queuePosition FROM Track " +
-                "INNER JOIN MediaQueueItem " +
-                "ON Track.id=MediaQueueItem.trackId " +
-                "ORDER BY MediaQueueItem.queuePosition ASC"
+            "INNER JOIN MediaQueueItem " +
+            "ON Track.id=MediaQueueItem.trackId " +
+            "ORDER BY MediaQueueItem.queuePosition ASC"
     )
     fun getQueuedTracks(): Flow<List<TrackWithQueuePosition>>
 

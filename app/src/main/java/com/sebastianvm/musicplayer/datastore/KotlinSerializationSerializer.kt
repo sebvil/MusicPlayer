@@ -15,7 +15,6 @@ class KotlinSerializationSerializer<T>(
     private val serializer: KSerializer<T>
 ) : Serializer<T> {
 
-
     override suspend fun readFrom(input: InputStream): T {
         try {
             return Json.decodeFromString(

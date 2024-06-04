@@ -25,7 +25,7 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+import com.sebastianvm.musicplayer.ui.components.lists.DeprecatedModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
@@ -123,7 +123,7 @@ fun ArtistLayout(
                 }
 
                 is ArtistScreenItem.AlbumRowItem -> {
-                    ModelListItem(
+                    DeprecatedModelListItem(
                         state = item.state,
                         modifier = Modifier.clickable {
                             handle(ArtistUserAction.AlbumClicked(item.id))

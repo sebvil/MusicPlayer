@@ -11,10 +11,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -91,16 +89,16 @@ data class ModelListItemStateWithPosition(
 fun ModelListItem(
     state: ModelListItemState,
     modifier: Modifier = Modifier,
-    onMoreClicked: (() -> Unit)? = null,
-    backgroundColor: Color = Color.Transparent
+    leadingContent: @Composable (() -> Unit)? = null,
+    trailingContent: @Composable (() -> Unit)? = null,
 ) {
-    val textColor = contentColorFor(backgroundColor = backgroundColor)
     with(state) {
         ListItem(
             headlineContent = {
                 Text(
                     text = headlineContent,
                     maxLines = 1,
+                    style = MaterialTheme.typography.titleMedium,
                     overflow = TextOverflow.Ellipsis
                 )
             },
@@ -109,8 +107,48 @@ fun ModelListItem(
                 {
                     Text(
                         text = it,
-                        modifier = Modifier.alpha(alpha = 0.8f),
                         maxLines = 1,
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            },
+            leadingContent = leadingContent,
+            trailingContent = trailingContent,
+        )
+    }
+}
+
+@Deprecated(
+    message = "",
+    replaceWith = ReplaceWith(
+        "ModelListItem(state, modifier, leadingContent = TODO(), trailingContent = TODO(), backgroundColor)"
+    )
+)
+@Composable
+fun DeprecatedModelListItem(
+    state: ModelListItemState,
+    modifier: Modifier = Modifier,
+    onMoreClicked: (() -> Unit)? = null,
+    backgroundColor: Color = Color.Transparent
+) {
+    with(state) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = headlineContent,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            modifier = modifier,
+            supportingContent = supportingContent?.let {
+                {
+                    Text(
+                        text = it,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodySmall,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
@@ -161,10 +199,6 @@ fun ModelListItem(
             },
             colors = ListItemDefaults.colors(
                 containerColor = backgroundColor,
-                headlineColor = textColor,
-                supportingColor = textColor,
-                trailingIconColor = textColor,
-                leadingIconColor = textColor
             )
         )
     }

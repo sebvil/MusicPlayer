@@ -486,7 +486,6 @@ private fun FullScreenPlayer(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProgressSlider(
@@ -563,7 +562,7 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-        )
+    )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
