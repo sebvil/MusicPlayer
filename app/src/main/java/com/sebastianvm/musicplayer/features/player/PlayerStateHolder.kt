@@ -23,14 +23,29 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.Duration
 
 sealed interface PlayerState : State {
-    data class Playing(
+
+    sealed interface Playing : PlayerState
+
+    data class FloatingState(
         val mediaArtImageState: MediaArtImageState,
         val trackInfoState: TrackInfoState,
         val trackProgressState: TrackProgressState,
         val playbackIcon: PlaybackIcon,
-        val isFullscreen: Boolean,
-        val queueUiComponent: QueueUiComponent?
-    ) : PlayerState
+    ) : Playing
+
+    data class FullScreenState(
+        val mediaArtImageState: MediaArtImageState,
+        val trackInfoState: TrackInfoState,
+        val trackProgressState: TrackProgressState,
+        val playbackIcon: PlaybackIcon,
+    ) : Playing
+
+    data class QueueState(
+        val trackInfoState: TrackInfoState,
+        val trackProgressState: TrackProgressState,
+        val playbackIcon: PlaybackIcon,
+        val queueUiComponent: QueueUiComponent
+    ) : Playing
 
     data object NotPlaying : PlayerState
 }
@@ -70,23 +85,42 @@ class PlayerStateHolder(
         ) { playbackState, props, showQueue ->
             when (playbackState) {
                 is TrackPlayingState -> {
-                    PlayerState.Playing(
-                        mediaArtImageState = MediaArtImageState(
-                            imageUri = playbackState.trackInfo.artworkUri,
-                            backupImage = Icons.Album
-                        ),
-                        trackInfoState = TrackInfoState(
-                            trackName = playbackState.trackInfo.title,
-                            artists = playbackState.trackInfo.artists,
-                        ),
-                        trackProgressState = TrackProgressState(
-                            currentPlaybackTime = playbackState.currentTrackProgress,
-                            trackLength = playbackState.trackInfo.trackLength
-                        ),
-                        playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY,
-                        isFullscreen = props.isFullscreen,
-                        queueUiComponent = if (showQueue) queueUiComponent else null
+                    val mediaArtImageState = MediaArtImageState(
+                        imageUri = playbackState.trackInfo.artworkUri,
+                        backupImage = Icons.Album
                     )
+                    val trackInfoState = TrackInfoState(
+                        trackName = playbackState.trackInfo.title,
+                        artists = playbackState.trackInfo.artists,
+                    )
+                    val trackProgressState = TrackProgressState(
+                        currentPlaybackTime = playbackState.currentTrackProgress,
+                        trackLength = playbackState.trackInfo.trackLength
+                    )
+                    val playbackIcon =
+                        if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
+                    when {
+                        props.isFullscreen && showQueue -> PlayerState.QueueState(
+                            trackInfoState = trackInfoState,
+                            trackProgressState = trackProgressState,
+                            playbackIcon = playbackIcon,
+                            queueUiComponent = queueUiComponent
+                        )
+
+                        props.isFullscreen -> PlayerState.FullScreenState(
+                            mediaArtImageState = mediaArtImageState,
+                            trackInfoState = trackInfoState,
+                            trackProgressState = trackProgressState,
+                            playbackIcon = playbackIcon
+                        )
+
+                        else -> PlayerState.FloatingState(
+                            mediaArtImageState = mediaArtImageState,
+                            trackInfoState = trackInfoState,
+                            trackProgressState = trackProgressState,
+                            playbackIcon = playbackIcon
+                        )
+                    }
                 }
 
                 is NotPlayingState -> PlayerState.NotPlaying

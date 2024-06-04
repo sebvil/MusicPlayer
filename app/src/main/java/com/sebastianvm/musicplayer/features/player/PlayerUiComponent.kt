@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -29,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.filled.Circle
@@ -41,6 +41,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -116,50 +117,63 @@ fun AnimatedPlayerCard(
     handle: Handler<PlayerUserAction>,
     modifier: Modifier = Modifier
 ) {
-    BackHandler(enabled = state.queueUiComponent != null) {
+    BackHandler(enabled = state is PlayerState.QueueState) {
         handle(PlayerUserAction.DismissQueue)
     }
 
     Box(modifier = modifier) {
         SharedTransitionLayout {
             AnimatedContent(
-                targetState = state.isFullscreen,
-                label = "playerTransition"
-            ) { isFullScreen ->
-                if (isFullScreen) {
-                    FullScreenPlayer(
-                        state = state,
-                        handle = handle,
-                        animatedVisibilityScope = this@AnimatedContent,
-                        sharedTransitionScope = this@SharedTransitionLayout
-                    )
-                } else {
-                    FloatingPlayerCard(
-                        state = state,
-                        handle = handle,
-                        animatedVisibilityScope = this@AnimatedContent,
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                    )
+                targetState = state,
+                label = "playerTransition",
+                contentKey = { it::class }
+            ) { playerState ->
+                when (playerState) {
+                    is PlayerState.FullScreenState -> {
+                        FullScreenPlayer(
+                            state = playerState,
+                            handle = handle,
+                            animatedVisibilityScope = this@AnimatedContent,
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            modifier = Modifier.padding(
+                                top = WindowInsets.statusBars
+                                    .asPaddingValues()
+                                    .calculateTopPadding()
+                            )
+                        )
+                    }
+
+                    is PlayerState.FloatingState -> {
+                        FloatingPlayerCard(
+                            state = playerState,
+                            handle = handle,
+                            animatedVisibilityScope = this@AnimatedContent,
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                        )
+                    }
+
+                    is PlayerState.QueueState -> {
+                        PlayerWithQueue(
+                            state = playerState,
+                            handle = handle,
+                            animatedVisibilityScope = this@AnimatedContent,
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            modifier = Modifier.padding(
+                                WindowInsets.systemBars.asPaddingValues()
+                            )
+                        )
+                    }
                 }
             }
         }
 
-        state.queueUiComponent?.Content(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surface)
-                .fillMaxSize()
-                .padding(
-                    top = WindowInsets.statusBars
-                        .asPaddingValues()
-                        .calculateTopPadding()
-                )
-        )
+
     }
 }
 
 @Composable
 private fun FloatingPlayerCard(
-    state: PlayerState.Playing,
+    state: PlayerState.FloatingState,
     handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
@@ -298,7 +312,7 @@ private fun FloatingPlayerCard(
 
 @Composable
 private fun FullScreenPlayer(
-    state: PlayerState.Playing,
+    state: PlayerState.FullScreenState,
     handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
@@ -306,14 +320,10 @@ private fun FullScreenPlayer(
 ) {
     with(sharedTransitionScope) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.playerContainerColor)
+                .then(modifier)
                 .padding(horizontal = 16.dp)
-                .padding(
-                    top = WindowInsets.statusBars
-                        .asPaddingValues()
-                        .calculateTopPadding()
-                )
                 .sharedBounds(
                     rememberSharedContentState(
                         key = SharedContentStateKey.Container
@@ -486,6 +496,112 @@ private fun FullScreenPlayer(
     }
 }
 
+
+@Composable
+private fun PlayerWithQueue(
+    state: PlayerState.QueueState,
+    handle: Handler<PlayerUserAction>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope,
+    modifier: Modifier = Modifier
+) {
+
+    with(sharedTransitionScope) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.surface)
+                .then(modifier)
+        ) {
+            IconButton(
+                onClick = {
+                    handle(PlayerUserAction.DismissQueue)
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                    contentDescription = stringResource(R.string.hide_player),
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+
+            state.queueUiComponent.Content(
+                modifier = Modifier.weight(1f),
+            )
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                LinearProgressIndicator(
+                    progress = { state.trackProgressState.progress.percent },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .sharedBounds(
+                            rememberSharedContentState(
+                                key = SharedContentStateKey.ProgressBar
+                            ),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                    gapSize = 0.dp,
+                    drawStopIndicator = {}
+                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp)
+                ) {
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.PreviousButtonClicked)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.SkipPrevious,
+                            contentDescription = stringResource(R.string.previous),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PreviousButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                ),
+                        )
+                    }
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.PlayToggled)
+                    }) {
+                        Icon(
+                            imageVector = state.playbackIcon.icon,
+                            contentDescription = stringResource(state.playbackIcon.contentDescription),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PlayPauseButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
+                        )
+                    }
+                    IconButton(onClick = {
+                        handle(PlayerUserAction.NextButtonClicked)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.SkipNext,
+                            contentDescription = stringResource(R.string.previous),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.NextButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProgressSlider(
@@ -562,8 +678,9 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-    )
+        )
 }
+
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
 private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
@@ -604,8 +721,9 @@ private enum class SharedContentStateKey {
     PreviousButton,
     NextButton,
     PlayPauseButton,
-    ProgressBar
+    ProgressBar,
+    DismissIcon
 }
 
-private val ColorScheme.playerContainerColor
-    get() = this.surfaceContainerLow
+val ColorScheme.playerContainerColor
+    get() = this.surfaceContainerHigh

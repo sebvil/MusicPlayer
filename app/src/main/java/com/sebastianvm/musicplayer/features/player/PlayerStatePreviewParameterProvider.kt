@@ -10,13 +10,11 @@ class PlayerStatePreviewParameterProvider :
             TrackProgressStatePreviewParameterProvider().values.flatMap { progressState ->
                 PlaybackIcon.entries.flatMap { icon ->
                     TrackInfoStatePreviewParameterProvider().values.map { trackInfoState ->
-                        PlayerState.Playing(
+                        PlayerState.FullScreenState(
                             mediaArtImageState = mediaArtImageState,
                             trackInfoState = trackInfoState,
                             playbackIcon = icon,
                             trackProgressState = progressState,
-                            isFullscreen = true,
-                            queueUiComponent = null
                         )
                     }
                 }

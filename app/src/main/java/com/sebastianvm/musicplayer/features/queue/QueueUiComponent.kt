@@ -17,7 +17,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -105,7 +104,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
         item(key = state.nowPlayingItem.position) {
             ModelListItem(
                 state = state.nowPlayingItem.modelListItemState,
-                modifier = Modifier.animateItem()
+                modifier = Modifier.animateItem(),
             )
         }
 
@@ -124,44 +123,44 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                     label = "elevation"
                 )
 
-                Surface(tonalElevation = elevation, shadowElevation = elevation) {
-                    ModelListItem(
-                        state = item.modelListItemState,
-                        modifier = Modifier
-                            .clickable {
-                                handle(QueueUserAction.TrackClicked(item.position))
-                            },
-                        trailingContent = {
-                            IconButton(
-                                onClick = {},
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        draggedItemInitialIndex = item.position
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                            view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                                        }
-                                    },
-                                    onDragStopped = {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                            view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
-                                        }
-                                        handle(
-                                            QueueUserAction.DragEnded(
-                                                from = draggedItemInitialIndex,
-                                                to = draggedItemFinalIndex + state.nowPlayingItem.position + 1
-                                            )
-                                        )
-                                    },
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.DragIndicator,
-                                    contentDescription = stringResource(R.string.drag)
-                                )
-                            }
+                ModelListItem(
+                    state = item.modelListItemState,
+                    modifier = Modifier
+                        .clickable {
+                            handle(QueueUserAction.TrackClicked(item.position))
                         },
-                    )
-                }
+                    trailingContent = {
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.draggableHandle(
+                                onDragStarted = {
+                                    draggedItemInitialIndex = item.position
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                        view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
+                                    }
+                                },
+                                onDragStopped = {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                        view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
+                                    }
+                                    handle(
+                                        QueueUserAction.DragEnded(
+                                            from = draggedItemInitialIndex,
+                                            to = draggedItemFinalIndex + state.nowPlayingItem.position + 1
+                                        )
+                                    )
+                                },
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DragIndicator,
+                                contentDescription = stringResource(R.string.drag)
+                            )
+                        }
+                    },
+                    tonalElevation = elevation,
+                    shadowElevation = elevation,
+                )
             }
         }
     }

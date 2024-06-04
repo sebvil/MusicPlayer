@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.database.entities.Album
@@ -91,6 +92,8 @@ fun ModelListItem(
     modifier: Modifier = Modifier,
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
+    tonalElevation: Dp = 0.dp,
+    shadowElevation: Dp = 0.dp,
 ) {
     with(state) {
         ListItem(
@@ -115,6 +118,8 @@ fun ModelListItem(
             },
             leadingContent = leadingContent,
             trailingContent = trailingContent,
+            tonalElevation = tonalElevation,
+            shadowElevation = shadowElevation,
         )
     }
 }
