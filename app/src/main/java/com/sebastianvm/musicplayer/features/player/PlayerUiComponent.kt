@@ -4,11 +4,19 @@ package com.sebastianvm.musicplayer.features.player
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
@@ -125,6 +133,61 @@ fun AnimatedPlayerCard(
         SharedTransitionLayout {
             AnimatedContent(
                 targetState = state,
+                transitionSpec = {
+                    when (targetState) {
+                        is PlayerState.FloatingState -> (
+                            fadeIn(
+                                animationSpec = tween(
+                                    220,
+                                    delayMillis = 90
+                                )
+                            ) +
+                                scaleIn(
+                                    initialScale = 0.92f,
+                                    animationSpec = tween(220, delayMillis = 90)
+                                )
+                            )
+                            .togetherWith(fadeOut(animationSpec = tween(90)))
+
+                        is PlayerState.FullScreenState -> {
+                            if (initialState is PlayerState.FloatingState) {
+                                (
+                                    fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                        scaleIn(
+                                            initialScale = 0.92f,
+                                            animationSpec = tween(220, delayMillis = 90)
+                                        )
+                                    )
+                                    .togetherWith(fadeOut(animationSpec = tween(90)))
+                            } else {
+                                (EnterTransition.None)
+                                    .togetherWith(
+                                        slideOutOfContainer(
+                                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                                            animationSpec = tween(durationMillis = 220, 90)
+                                        )
+                                    )
+                            }
+                        }
+
+                        is PlayerState.QueueState -> {
+                            (
+                                fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                    slideIntoContainer(
+                                        towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                                        animationSpec = tween(220, delayMillis = 90)
+                                    )
+                                )
+                                .togetherWith(ExitTransition.None)
+                        }
+                    }.apply {
+                        targetContentZIndex = when (targetState) {
+                            is PlayerState.FloatingState -> 1f
+                            is PlayerState.FullScreenState -> 2f
+                            is PlayerState.QueueState -> 3f
+                        }
+                    }
+                },
                 label = "playerTransition",
                 contentKey = { it::class }
             ) { playerState ->
@@ -166,8 +229,6 @@ fun AnimatedPlayerCard(
                 }
             }
         }
-
-
     }
 }
 
@@ -496,7 +557,6 @@ private fun FullScreenPlayer(
     }
 }
 
-
 @Composable
 private fun PlayerWithQueue(
     state: PlayerState.QueueState,
@@ -505,12 +565,12 @@ private fun PlayerWithQueue(
     sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier = Modifier
 ) {
-
     with(sharedTransitionScope) {
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
                 .then(modifier)
+
         ) {
             IconButton(
                 onClick = {
@@ -678,9 +738,8 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-        )
+    )
 }
-
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
 private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
@@ -722,7 +781,6 @@ private enum class SharedContentStateKey {
     NextButton,
     PlayPauseButton,
     ProgressBar,
-    DismissIcon
 }
 
 val ColorScheme.playerContainerColor

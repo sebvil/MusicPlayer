@@ -20,4 +20,5 @@ import androidx.room.PrimaryKey
 data class MediaQueueItem(
     @ColumnInfo(index = true) val trackId: Long,
     @PrimaryKey val queuePosition: Int,
+    val queueItemId: Long,
 )

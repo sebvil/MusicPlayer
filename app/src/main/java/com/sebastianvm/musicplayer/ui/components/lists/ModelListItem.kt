@@ -24,9 +24,9 @@ import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueuePosition
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
@@ -276,14 +276,11 @@ fun TrackWithPlaylistPositionView.toModelListItemState(): ModelListItemState {
     )
 }
 
-fun TrackWithQueuePosition.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
-    return ModelListItemStateWithPosition(
-        position = this.queuePosition,
-        modelListItemState = ModelListItemState.Basic(
-            id = id,
-            headlineContent = trackName,
-            supportingContent = artists,
-            trailingButtonType = TrailingButtonType.More
-        )
+fun QueuedTrack.toModelListItemState(): ModelListItemState {
+    return ModelListItemState.Basic(
+        id = id,
+        headlineContent = trackName,
+        supportingContent = artists,
+        trailingButtonType = TrailingButtonType.More
     )
 }

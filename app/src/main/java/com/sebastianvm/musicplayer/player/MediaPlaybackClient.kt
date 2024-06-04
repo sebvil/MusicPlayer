@@ -29,11 +29,6 @@ class MediaPlaybackClient(
     private val context: Context,
     private val externalScope: CoroutineScope,
 ) {
-
-    init {
-        Log.i("Playback", "Initializing MediaPlaybackClient $this")
-    }
-
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
@@ -141,17 +136,6 @@ class MediaPlaybackClient(
                     if (!isLoading) {
                         isUpdatingPosition = false
                     }
-                }
-
-                override fun onPositionDiscontinuity(
-                    oldPosition: Player.PositionInfo,
-                    newPosition: Player.PositionInfo,
-                    reason: Int
-                ) {
-                    Log.i(
-                        "PlaybackClient",
-                        "onPositionDiscontinuity(oldPosition = ${oldPosition.contentPositionMs}, newPosition = ${newPosition.contentPositionMs}, reason = $reason)"
-                    )
                 }
             }
         )

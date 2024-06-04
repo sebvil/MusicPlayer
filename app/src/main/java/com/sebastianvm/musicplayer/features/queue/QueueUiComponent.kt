@@ -83,6 +83,9 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
         mutableIntStateOf(-1)
     }
 
+    var draggedItem: Long? by remember {
+        mutableStateOf(null)
+    }
     val nonDraggableItems = 3
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         draggedItemFinalIndex = to.index - nonDraggableItems
@@ -101,7 +104,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 fontSize = 20.sp
             )
         }
-        item(key = state.nowPlayingItem.position) {
+        item(key = state.nowPlayingItem.queueItemId) {
             ModelListItem(
                 state = state.nowPlayingItem.modelListItemState,
                 modifier = Modifier.animateItem(),
@@ -116,8 +119,8 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 fontSize = 20.sp
             )
         }
-        items(queueItems, key = { item -> item.position }) { item ->
-            ReorderableItem(reorderableLazyListState, key = item.position) { isDragging ->
+        items(queueItems, key = { item -> item.queueItemId }) { item ->
+            ReorderableItem(reorderableLazyListState, key = item.queueItemId) { isDragging ->
                 val elevation by animateDpAsState(
                     if (isDragging) 4.dp else 0.dp,
                     label = "elevation"
@@ -140,6 +143,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                     }
                                 },
                                 onDragStopped = {
+                                    draggedItem = null
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                         view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
                                     }

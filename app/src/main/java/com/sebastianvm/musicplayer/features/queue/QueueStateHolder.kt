@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.features.queue
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -15,10 +15,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+data class QueueItem(
+    val modelListItemState: ModelListItemState,
+    val position: Int,
+    val queueItemId: Long,
+)
+
 sealed interface QueueState : State {
     data class Data(
-        val nowPlayingItem: ModelListItemStateWithPosition,
-        val queueItems: List<ModelListItemStateWithPosition>,
+        val nowPlayingItem: QueueItem,
+        val queueItems: List<QueueItem>,
     ) : QueueState
 
     data object Empty : QueueState
@@ -42,9 +48,19 @@ class QueueStateHolder(
             queue ?: return@map QueueState.Empty
             QueueState.Data(
                 queueItems = queue.nextUp.map { track ->
-                    track.toModelListItemStateWithPosition()
+                    QueueItem(
+                        modelListItemState = track.toModelListItemState(),
+                        position = track.queuePosition,
+                        queueItemId = track.queueItemId
+                    )
                 },
-                nowPlayingItem = queue.nowPlayingTrack.toModelListItemStateWithPosition()
+                nowPlayingItem = queue.nowPlayingTrack.let { track ->
+                    QueueItem(
+                        modelListItemState = track.toModelListItemState(),
+                        position = track.queuePosition,
+                        queueItemId = track.queueItemId
+                    )
+                }
             )
         }.stateIn(
             scope = stateHolderScope,

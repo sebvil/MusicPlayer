@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.model
 
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueuePosition
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 
 data class NextUpQueue(
-    val nowPlayingTrack: TrackWithQueuePosition,
-    val nextUp: List<TrackWithQueuePosition>
+    val nowPlayingTrack: QueuedTrack,
+    val nextUp: List<QueuedTrack>
 )

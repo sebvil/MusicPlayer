@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.repository.queue
 
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
@@ -30,7 +31,7 @@ class AppQueueRepository(
                 nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
                 nextUp = queuedTracks.subList(
                     fromIndex = nowPlayingTrackIndex + 1,
-                    toIndex = queuedTracks.lastIndex
+                    toIndex = queuedTracks.size
                 )
             )
         }
@@ -49,12 +50,19 @@ class AppQueueRepository(
         }
     }
 
-    override suspend fun saveQueue(nowPlayingInfo: NowPlayingInfo, queuedTracksIds: List<Long>) {
+    override suspend fun saveQueue(
+        nowPlayingInfo: NowPlayingInfo,
+        queuedTracksIds: List<QueuedTrack>
+    ) {
         nowPlayingInfoDataSource.setNowPlayingInfo(nowPlayingInfo)
         withContext(ioDispatcher) {
             mediaQueueDao.saveQueue(
-                queuedTracksIds.mapIndexed { index, id ->
-                    MediaQueueItem(trackId = id, queuePosition = index)
+                queuedTracksIds.map { item ->
+                    MediaQueueItem(
+                        trackId = item.id,
+                        queuePosition = item.queuePosition,
+                        queueItemId = item.queueItemId
+                    )
                 }
             )
         }

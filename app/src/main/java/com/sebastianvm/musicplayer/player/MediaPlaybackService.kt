@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueuePosition
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
@@ -66,7 +66,7 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<TrackWithQueuePosition>> = MutableStateFlow(listOf())
+    private val queue: MutableStateFlow<List<QueuedTrack>> = MutableStateFlow(listOf())
 
     override fun onCreate() {
         super.onCreate()
@@ -225,7 +225,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 nowPlayingPositionInQueue = player.currentMediaItemIndex,
                 lastRecordedPosition = contentPosition,
             ),
-            queuedTracksIds = queue.value.map { it.id }
+            queuedTracksIds = queue.value
         )
     }
 
@@ -233,7 +233,7 @@ class MediaPlaybackService : MediaLibraryService() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
             val newQueue = (0 until timeline.windowCount).map { windowIndex ->
-                TrackWithQueuePosition.fromMediaItem(
+                QueuedTrack.fromMediaItem(
                     mediaItem = timeline.getWindow(
                         windowIndex,
                         Timeline.Window()
