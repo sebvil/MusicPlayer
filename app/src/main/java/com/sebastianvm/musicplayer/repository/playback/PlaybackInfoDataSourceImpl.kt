@@ -27,9 +27,8 @@ class PlaybackInfoDataSourceImpl(
             mediaQueueDao.saveQueue(
                 newPlaybackInfo.queuedTracks.mapIndexed { index, track ->
                     MediaQueueItem(
-                        track.id,
-                        index,
-                        track.uniqueQueueItemId
+                        trackId = track.id,
+                        queuePosition = index,
                     )
                 }
             )

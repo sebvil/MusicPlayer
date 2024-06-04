@@ -14,8 +14,6 @@ import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.genre.GenreRepositoryImpl
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import com.sebastianvm.musicplayer.repository.music.MusicRepositoryImpl
-import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoDataSource
-import com.sebastianvm.musicplayer.repository.playback.PlaybackInfoDataSourceImpl
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManagerImpl
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -80,17 +78,9 @@ class RepositoryProvider(
             defaultDispatcher = dispatcherProvider.defaultDispatcher
         )
 
-    private val playbackInfoDataSource: PlaybackInfoDataSource
-        get() = PlaybackInfoDataSourceImpl(
-            mediaQueueDao = database.getMediaQueueDao(),
-            playbackInfoDataStore = jetpackDataStoreProvider.playbackInfoDataStore,
-            ioDispatcher = dispatcherProvider.ioDispatcher
-        )
-
     val playbackManager: PlaybackManager by lazy {
         PlaybackManagerImpl(
             mediaPlaybackClient = mediaPlaybackClient,
-            playbackInfoDataSource = playbackInfoDataSource,
             ioDispatcher = dispatcherProvider.ioDispatcher,
             trackRepository = trackRepository
         )
@@ -116,7 +106,9 @@ class RepositoryProvider(
 
     val queueRepository: QueueRepository
         get() = AppQueueRepository(
-            NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
-            database.getMediaQueueDao()
+            nowPlayingInfoDataSource = NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
+            mediaQueueDao = database.getMediaQueueDao(),
+            mediaPlaybackClient = mediaPlaybackClient,
+            ioDispatcher = dispatcherProvider.ioDispatcher,
         )
 }

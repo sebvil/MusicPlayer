@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-@Suppress("MagicNumber")
 object Color {
     val mdThemeLightPrimary = Color(0xFF176d0e)
     val mdThemeLightOnPrimary = Color(0xFFffffff)

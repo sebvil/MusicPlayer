@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemStateWithPosition
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemStateWithPosition
@@ -20,25 +21,25 @@ sealed interface QueueState : State {
         val queueItems: List<ModelListItemStateWithPosition>,
     ) : QueueState
 
+    data object Empty : QueueState
     data object Loading : QueueState
 }
 
 sealed interface QueueUserAction : UserAction {
-    data class ItemSelectedForDrag(val position: Int) : QueueUserAction
-    data class ItemMoved(val from: Int, val to: Int) : QueueUserAction
-    data object DragEnded : QueueUserAction
+    data class DragEnded(val from: Int, val to: Int) : QueueUserAction
     data class TrackClicked(val trackIndex: Int) : QueueUserAction
-    data class TrackOverflowMenuClicked(val trackId: Long) : QueueUserAction
 }
 
 class QueueStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    queueRepository: QueueRepository,
+    private val queueRepository: QueueRepository,
+    private val playbackManager: PlaybackManager
 ) :
     StateHolder<QueueState, QueueUserAction> {
 
     override val state: StateFlow<QueueState> =
         queueRepository.getQueue().map { queue ->
+            queue ?: return@map QueueState.Empty
             QueueState.Data(
                 queueItems = queue.nextUp.map { track ->
                     track.toModelListItemStateWithPosition()
@@ -53,17 +54,21 @@ class QueueStateHolder(
 
     override fun handle(action: QueueUserAction) {
         when (action) {
-            is QueueUserAction.DragEnded -> TODO()
-            is QueueUserAction.ItemMoved -> {
+            is QueueUserAction.DragEnded -> {
+                queueRepository.moveQueueItem(action.from, action.to)
             }
 
-            is QueueUserAction.ItemSelectedForDrag -> TODO()
-            is QueueUserAction.TrackClicked -> TODO()
-            is QueueUserAction.TrackOverflowMenuClicked -> TODO()
+
+            is QueueUserAction.TrackClicked -> {
+                playbackManager.playQueueItem(action.trackIndex)
+            }
         }
     }
 }
 
 fun getQueueStateHolder(dependencies: DependencyContainer): QueueStateHolder {
-    return QueueStateHolder(queueRepository = dependencies.repositoryProvider.queueRepository)
+    return QueueStateHolder(
+        queueRepository = dependencies.repositoryProvider.queueRepository,
+        playbackManager = dependencies.repositoryProvider.playbackManager
+    )
 }

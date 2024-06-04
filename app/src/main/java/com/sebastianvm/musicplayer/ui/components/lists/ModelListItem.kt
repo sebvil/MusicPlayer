@@ -76,10 +76,10 @@ sealed class ModelListItemState(
 }
 
 data class ModelListItemStateWithPosition(
-    val position: Long,
+    val position: Int,
     val modelListItemState: ModelListItemState
 ) : DraggableListItem() {
-    override val id: Long
+    override val id: Int
         get() = position
 
     override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
@@ -239,7 +239,7 @@ fun TrackWithPlaylistPositionView.toModelListItemState(): ModelListItemState {
 
 fun TrackWithQueuePosition.toModelListItemStateWithPosition(): ModelListItemStateWithPosition {
     return ModelListItemStateWithPosition(
-        position = this.uniqueQueueItemId,
+        position = this.queuePosition,
         modelListItemState = ModelListItemState.Basic(
             id = id,
             headlineContent = trackName,

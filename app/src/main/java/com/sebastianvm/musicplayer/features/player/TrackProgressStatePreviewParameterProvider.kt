@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider

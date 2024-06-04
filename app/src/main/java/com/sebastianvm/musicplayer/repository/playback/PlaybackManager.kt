@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 
@@ -21,13 +20,11 @@ interface PlaybackManager {
 
     suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0)
 
+    fun playQueueItem(index: Int)
+
     fun seekToTrackPosition(position: Long)
 
     suspend fun addToQueue(mediaGroup: MediaGroup)
-
-    suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo)
-
-    fun getSavedPlaybackInfo(): Flow<PlaybackInfo>
 }
 
 sealed interface PlaybackState

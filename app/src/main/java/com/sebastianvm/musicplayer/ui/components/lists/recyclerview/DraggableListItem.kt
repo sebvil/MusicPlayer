@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.ui.components.lists.recyclerview
 
 abstract class DraggableListItem {
-    abstract val id: Long
+    abstract val id: Number
 
     fun areItemsTheSame(otherItem: DraggableListItem): Boolean = otherItem.id == id
 

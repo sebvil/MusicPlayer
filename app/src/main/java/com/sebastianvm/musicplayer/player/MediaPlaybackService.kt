@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -65,7 +64,7 @@ class MediaPlaybackService : MediaLibraryService() {
         )
     }
 
-    private lateinit var player: ExoPlayer
+    private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession
     private val queue: MutableStateFlow<List<TrackWithQueuePosition>> = MutableStateFlow(listOf())
 
@@ -186,21 +185,13 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private suspend fun initializeQueue() {
         withContext(defaultDispatcher) {
-            playbackManager.getSavedPlaybackInfo().first().run {
-                if (queuedTracks.isEmpty()) {
-                    return@run
-                }
-                withContext(mainDispatcher) {
-                    val firstIndex =
-                        queuedTracks.indexOfFirst { it.uniqueQueueItemId == nowPlayingId }
-                    if (firstIndex != -1) {
-                        preparePlaylist(
-                            initialWindowIndex = firstIndex,
-                            mediaItems = queuedTracks.map { it.toMediaItem() },
-                            position = lastRecordedPosition
-                        )
-                    }
-                }
+            val queue = queueRepository.getFullQueue().first() ?: return@withContext
+            withContext(mainDispatcher) {
+                preparePlaylist(
+                    initialWindowIndex = queue.nowPlayingInfo.nowPlayingPositionInQueue,
+                    mediaItems = queue.queue.map { it.toMediaItem() },
+                    position = queue.nowPlayingInfo.lastRecordedPosition
+                )
             }
         }
     }
@@ -228,33 +219,26 @@ class MediaPlaybackService : MediaLibraryService() {
     }
 
     suspend fun saveQueue() {
-        val id = player.currentMediaItem?.uniqueId ?: 0L
         val contentPosition = player.contentPosition
         queueRepository.saveQueue(
             nowPlayingInfo = NowPlayingInfo(
-                nowPlayingPositionInQueue = player.currentTimeline.,
+                nowPlayingPositionInQueue = player.currentMediaItemIndex,
                 lastRecordedPosition = contentPosition,
-                queuedTrackIds = queue.value.map { it.uniqueQueueItemId }
-            )
-        )
-        playbackManager.modifySavedPlaybackInfo(
-            PlaybackInfo(
-                queuedTracks = queue.value,
-                nowPlayingId = id,
-                lastRecordedPosition = contentPosition
-            )
+            ),
+            queuedTracksIds = queue.value.map { it.id }
         )
     }
 
     suspend fun updateQueue() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
-            val newQueue = (0 until timeline.windowCount).map {
+            val newQueue = (0 until timeline.windowCount).map { windowIndex ->
                 TrackWithQueuePosition.fromMediaItem(
                     mediaItem = timeline.getWindow(
-                        it,
+                        windowIndex,
                         Timeline.Window()
-                    ).mediaItem
+                    ).mediaItem,
+                    positionInQueue = windowIndex
                 )
             }
             queue.value = newQueue

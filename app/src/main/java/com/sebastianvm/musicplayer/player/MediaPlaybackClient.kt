@@ -100,7 +100,6 @@ class MediaPlaybackClient(
     private fun launchCurrentPlayTimeUpdates() {
         externalScope.launch {
             while (true) {
-                @Suppress("MagicNumber")
                 delay(500)
                 if (!isUpdatingPosition) {
                     playbackState.update {
