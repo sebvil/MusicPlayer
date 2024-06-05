@@ -136,28 +136,28 @@ fun AnimatedPlayerCard(
                 transitionSpec = {
                     when (targetState) {
                         is PlayerState.FloatingState -> (
-                            fadeIn(
-                                animationSpec = tween(
-                                    220,
-                                    delayMillis = 90
+                                fadeIn(
+                                    animationSpec = tween(
+                                        220,
+                                        delayMillis = 90
+                                    )
+                                ) +
+                                        scaleIn(
+                                            initialScale = 0.92f,
+                                            animationSpec = tween(220, delayMillis = 90)
+                                        )
                                 )
-                            ) +
-                                scaleIn(
-                                    initialScale = 0.92f,
-                                    animationSpec = tween(220, delayMillis = 90)
-                                )
-                            )
                             .togetherWith(fadeOut(animationSpec = tween(90)))
 
                         is PlayerState.FullScreenState -> {
                             if (initialState is PlayerState.FloatingState) {
                                 (
-                                    fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                                        scaleIn(
-                                            initialScale = 0.92f,
-                                            animationSpec = tween(220, delayMillis = 90)
+                                        fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                                scaleIn(
+                                                    initialScale = 0.92f,
+                                                    animationSpec = tween(220, delayMillis = 90)
+                                                )
                                         )
-                                    )
                                     .togetherWith(fadeOut(animationSpec = tween(90)))
                             } else {
                                 (EnterTransition.None)
@@ -172,12 +172,12 @@ fun AnimatedPlayerCard(
 
                         is PlayerState.QueueState -> {
                             (
-                                fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                                    slideIntoContainer(
-                                        towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                                        animationSpec = tween(220, delayMillis = 90)
+                                    fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                            slideIntoContainer(
+                                                towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                                                animationSpec = tween(220, delayMillis = 90)
+                                            )
                                     )
-                                )
                                 .togetherWith(ExitTransition.None)
                         }
                     }.apply {
@@ -738,7 +738,7 @@ private fun ProgressSlider(
         },
         interactionSource = interactionSource,
 
-    )
+        )
 }
 
 private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16

@@ -2,7 +2,6 @@ package com.sebastianvm.musicplayer.player
 
 import android.content.ComponentName
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -51,14 +50,8 @@ class MediaPlaybackClient(
 
     private fun getUpdatedPlaybackState(controller: MediaController): PlaybackState {
         return when {
-            controller.mediaMetadata == MediaMetadata.EMPTY -> {
-                NotPlayingState
-            }
-
-            controller.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> {
-                NotPlayingState
-            }
-
+            controller.mediaMetadata == MediaMetadata.EMPTY -> NotPlayingState
+            controller.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> NotPlayingState
             else -> {
                 TrackPlayingState(
                     trackInfo = TrackInfo(
@@ -82,8 +75,6 @@ class MediaPlaybackClient(
             SessionToken(context, ComponentName(context, MediaPlaybackService::class.java))
         mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
         mediaControllerFuture.addListener({ setController() }, MoreExecutors.directExecutor())
-
-        Log.i("Playback", "Initializing Controller, future = $mediaControllerFuture")
     }
 
     fun releaseController() {
@@ -93,7 +84,7 @@ class MediaPlaybackClient(
     }
 
     private fun launchCurrentPlayTimeUpdates() {
-        externalScope.launch {
+        timeUpdatesJob = externalScope.launch {
             while (true) {
                 delay(500)
                 if (!isUpdatingPosition) {
@@ -111,28 +102,15 @@ class MediaPlaybackClient(
             object : Player.Listener {
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    Log.i("PlaybackClient", "isPlayingChanged(isPlaying = $isPlaying)")
                     if (isUpdatingPosition) return
                     updatePlaybackState()
                 }
 
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    Log.i(
-                        "PlaybackClient",
-                        "onPlaybackStateChanged(playbackState = $playbackState)"
-                    )
-                }
-
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    Log.i(
-                        "PlaybackClient",
-                        "onMediaMetadataChanged(mediaMetadata = $mediaMetadata)"
-                    )
                     updatePlaybackState()
                 }
 
                 override fun onIsLoadingChanged(isLoading: Boolean) {
-                    Log.i("PlaybackClient", "onIsLoadingChanged(isLoading = $isLoading)")
                     if (!isLoading) {
                         isUpdatingPosition = false
                     }

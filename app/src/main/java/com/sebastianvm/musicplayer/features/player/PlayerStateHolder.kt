@@ -123,11 +123,13 @@ class PlayerStateHolder(
                     }
                 }
 
-                is NotPlayingState -> PlayerState.NotPlaying
+                is NotPlayingState -> {
+                    PlayerState.NotPlaying
+                }
             }
         }.stateIn(
             scope = stateHolderScope,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = PlayerState.NotPlaying
         )
 
