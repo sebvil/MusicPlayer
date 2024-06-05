@@ -3,7 +3,6 @@ package com.sebastianvm.musicplayer.ui.components.lists
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -74,7 +74,6 @@ data class ModelListState(
     val headerState: HeaderState = HeaderState.None
 )
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModelList(
     state: ModelListState,
@@ -110,15 +109,22 @@ fun ModelList(
                     }
                 }
                 itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
-                    DeprecatedModelListItem(
+                    ModelListItem(
                         state = item,
                         modifier = Modifier
                             .animateItem()
                             .clickable {
                                 onItemClicked(index, item)
                             },
-                        onMoreClicked = {
-                            onItemMoreIconClicked(index, item)
+                        trailingContent = {
+                            IconButton(onClick = {
+                                onItemMoreIconClicked(index, item)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = R.string.more)
+                                )
+                            }
                         }
                     )
                 }

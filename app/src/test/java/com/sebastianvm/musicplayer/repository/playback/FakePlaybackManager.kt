@@ -1,15 +1,10 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.PlaybackInfo
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakePlaybackManager(
-    val getSavedPlaybackInfoValue: MutableSharedFlow<PlaybackInfo> = MutableSharedFlow(),
-    val playMediaValue: MutableSharedFlow<PlaybackResult> = MutableSharedFlow()
-) : PlaybackManager {
+class FakePlaybackManager : PlaybackManager {
 
     val getPlaybackStateValue: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
 
@@ -62,26 +57,6 @@ class FakePlaybackManager(
         return getPlaybackStateValue
     }
 
-    override fun getSavedPlaybackInfo(): Flow<PlaybackInfo> {
-        return getSavedPlaybackInfoValue
-    }
-
-    data object ModifySavedPlaybackInfoInvocations
-
-    private val _modifySavedPlaybackInfoInvocations: MutableList<ModifySavedPlaybackInfoInvocations> =
-        mutableListOf()
-
-    val modifySavedPlaybackInfoInvocations: List<ModifySavedPlaybackInfoInvocations>
-        get() = _modifySavedPlaybackInfoInvocations
-
-    override suspend fun modifySavedPlaybackInfo(newPlaybackInfo: PlaybackInfo) {
-        _modifySavedPlaybackInfoInvocations.add(ModifySavedPlaybackInfoInvocations)
-    }
-
-    fun resetModifySavedPlaybackInfoInvocations() {
-        _modifySavedPlaybackInfoInvocations.clear()
-    }
-
     private val _nextInvocations: MutableList<List<Any>> = mutableListOf()
 
     val nextInvocations: List<List<Any>>
@@ -104,6 +79,10 @@ class FakePlaybackManager(
 
     override suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int) {
         _playMediaInvocations.add(PlayMediaArguments(mediaGroup, initialTrackIndex))
+    }
+
+    override fun playQueueItem(index: Int) {
+        TODO("Not yet implemented")
     }
 
     private val _prevInvocations: MutableList<List<Any>> = mutableListOf()

@@ -49,7 +49,7 @@ class PlayerStateHolderTest : FreeSpec({
                 testStateHolderState(subject) {
                     awaitItem() shouldBe PlayerState.NotPlaying
                     playbackManagerDep.getPlaybackStateValue.value = playbackState
-                    awaitItem() shouldBe PlayerState.Playing(
+                    awaitItem() shouldBe PlayerState.FloatingState(
                         mediaArtImageState = MediaArtImageState(
                             imageUri = playbackState.trackInfo.artworkUri, backupImage = Icons.Album
                         ),
@@ -62,7 +62,6 @@ class PlayerStateHolderTest : FreeSpec({
                             trackLength = playbackState.trackInfo.trackLength
                         ),
                         playbackIcon = if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY,
-                        isFullscreen = false
                     )
 
                     playbackManagerDep.getPlaybackStateValue.value = NotPlayingState
@@ -77,11 +76,11 @@ class PlayerStateHolderTest : FreeSpec({
                 FixtureProvider.playbackStateFixtures().first()
             testStateHolderState(subject) {
                 awaitItem() shouldBe PlayerState.NotPlaying
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe false
+                awaitItemAs<PlayerState.FloatingState>()
                 propsDep.update { it.copy(isFullscreen = true) }
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe true
+                awaitItemAs<PlayerState.FullScreenState>()
                 propsDep.update { it.copy(isFullscreen = false) }
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe false
+                awaitItemAs<PlayerState.FloatingState>()
             }
         }
     }
@@ -118,13 +117,13 @@ class PlayerStateHolderTest : FreeSpec({
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe PlayerState.NotPlaying
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe false
+                awaitItemAs<PlayerState.FloatingState>()
 
                 propsDep.update { it.copy(isFullscreen = true) }
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe true
+                awaitItemAs<PlayerState.FullScreenState>()
 
                 subject.handle(PlayerUserAction.DismissFullScreenPlayer)
-                awaitItemAs<PlayerState.Playing>().isFullscreen shouldBe false
+                awaitItemAs<PlayerState.FloatingState>()
             }
         }
     }

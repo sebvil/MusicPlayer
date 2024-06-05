@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +26,7 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.ui.components.lists.DeprecatedModelListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.compose.ScreenScaffold
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
@@ -123,13 +124,20 @@ fun ArtistLayout(
                 }
 
                 is ArtistScreenItem.AlbumRowItem -> {
-                    DeprecatedModelListItem(
+                    ModelListItem(
                         state = item.state,
                         modifier = Modifier.clickable {
                             handle(ArtistUserAction.AlbumClicked(item.id))
                         },
-                        onMoreClicked = {
-                            handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
+                        trailingContent = {
+                            IconButton(onClick = {
+                                handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = R.string.more)
+                                )
+                            }
                         }
                     )
                 }

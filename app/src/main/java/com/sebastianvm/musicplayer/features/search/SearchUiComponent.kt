@@ -53,7 +53,7 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
 import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
-import com.sebastianvm.musicplayer.ui.components.lists.DeprecatedModelListItem
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.collections.immutable.toImmutableList
@@ -241,7 +241,7 @@ fun SearchLayout(
         )
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
-                DeprecatedModelListItem(
+                ModelListItem(
                     state = item,
                     modifier = Modifier
                         .clickable {
@@ -252,13 +252,20 @@ fun SearchLayout(
                                 )
                             )
                         },
-                    onMoreClicked = {
-                        handle(
-                            SearchUserAction.SearchResultOverflowMenuIconClicked(
-                                id = item.id,
-                                mediaType = state.selectedOption
+                    trailingContent = {
+                        IconButton(onClick = {
+                            handle(
+                                SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                    id = item.id,
+                                    mediaType = state.selectedOption
+                                )
                             )
-                        )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = R.string.more)
+                            )
+                        }
                     }
                 )
             }
