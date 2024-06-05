@@ -30,7 +30,6 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.ui.components.lists.recyclerview.DraggableListItem
 
 enum class TrailingButtonType {
     More, Plus, Check
@@ -72,18 +71,6 @@ sealed class ModelListItemState(
         mediaArtImageState,
         trailingButtonType
     )
-}
-
-data class ModelListItemStateWithPosition(
-    val position: Int,
-    val modelListItemState: ModelListItemState
-) : DraggableListItem() {
-    override val id: Int
-        get() = position
-
-    override fun areContentsTheSame(otherItem: DraggableListItem): Boolean {
-        return otherItem is ModelListItemStateWithPosition && otherItem == this
-    }
 }
 
 @Composable

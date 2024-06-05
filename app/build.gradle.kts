@@ -68,7 +68,6 @@ dependencies {
     // Kotlin
     implementation(libs.core.ktx)
     implementation(libs.vectordrawable)
-    implementation(libs.recyclerview)
 
     // Room
     implementation(libs.room.runtime)
