@@ -1,12 +1,9 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -17,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data class GenreContextMenuArguments(val genreId: Long) : Arguments
 
@@ -31,13 +29,12 @@ sealed interface GenreContextMenuState : State {
 
 sealed interface GenreContextMenuUserAction : UserAction {
     data object PlayGenreClicked : GenreContextMenuUserAction
-    data object ViewGenreClicked : GenreContextMenuUserAction
 }
 
 class GenreContextMenuStateHolder(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
-    private val navController: NavController,
+    private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<GenreContextMenuState, GenreContextMenuUserAction> {
 
@@ -54,16 +51,9 @@ class GenreContextMenuStateHolder(
     override fun handle(action: GenreContextMenuUserAction) {
         when (action) {
             GenreContextMenuUserAction.PlayGenreClicked -> {
-            }
-
-            GenreContextMenuUserAction.ViewGenreClicked -> {
-                navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(MediaGroup.Genre(genreId)),
-                        navController = navController
-                    ),
-                    navOptions = NavOptions(popCurrent = true)
-                )
+                stateHolderScope.launch {
+                    playbackManager.playMedia(mediaGroup = MediaGroup.Genre(genreId))
+                }
             }
         }
     }
@@ -72,11 +62,10 @@ class GenreContextMenuStateHolder(
 fun getGenreContextMenuStateHolder(
     dependencies: DependencyContainer,
     arguments: GenreContextMenuArguments,
-    navController: NavController
 ): GenreContextMenuStateHolder {
     return GenreContextMenuStateHolder(
         arguments = arguments,
         genreRepository = dependencies.repositoryProvider.genreRepository,
-        navController = navController,
+        playbackManager = dependencies.repositoryProvider.playbackManager
     )
 }

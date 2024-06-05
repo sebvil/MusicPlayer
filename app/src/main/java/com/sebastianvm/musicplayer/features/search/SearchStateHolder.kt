@@ -197,7 +197,6 @@ class SearchStateHolder(
         navController.push(
             GenreContextMenu(
                 arguments = GenreContextMenuArguments(genreId = genreId),
-                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )
@@ -207,7 +206,6 @@ class SearchStateHolder(
         navController.push(
             PlaylistContextMenu(
                 arguments = PlaylistContextMenuArguments(playlistId = playlistId),
-                navController = navController
             ),
             navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
         )

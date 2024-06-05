@@ -5,23 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.icons.Genre
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class GenreContextMenu(
     override val arguments: GenreContextMenuArguments,
-    val navController: NavController
 ) : BaseUiComponent<GenreContextMenuArguments, GenreContextMenuState, GenreContextMenuUserAction, GenreContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): GenreContextMenuStateHolder {
-        return getGenreContextMenuStateHolder(dependencies, arguments, navController)
+        return getGenreContextMenuStateHolder(dependencies, arguments)
     }
 
     @Composable
@@ -50,16 +47,6 @@ private fun GenreContextMenu(
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = {
                                 handle(GenreContextMenuUserAction.PlayGenreClicked)
-                            }
-                        )
-                    }
-
-                    item {
-                        MenuItem(
-                            text = stringResource(id = R.string.view_genre),
-                            icon = Icons.Genre.icon(),
-                            onItemClicked = {
-                                handle(GenreContextMenuUserAction.ViewGenreClicked)
                             }
                         )
                     }

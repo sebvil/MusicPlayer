@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
+import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Artist
@@ -41,6 +43,8 @@ private fun AlbumContextMenu(
     handle: Handler<AlbumContextMenuUserAction>,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val addedToQueue = stringResource(R.string.added_to_queue)
     when (state) {
         is AlbumContextMenuState.Data -> {
             ContextMenu(menuTitle = state.albumName, modifier = modifier) {
@@ -61,6 +65,11 @@ private fun AlbumContextMenu(
                             icon = Icons.QueueAdd.icon(),
                             onItemClicked = {
                                 handle(AlbumContextMenuUserAction.AddToQueueClicked)
+                                Toast.makeText(
+                                    /* context = */ context,
+                                    /* text = */ addedToQueue,
+                                    /* duration = */ Toast.LENGTH_LONG
+                                ).show()
                             }
                         )
                     }

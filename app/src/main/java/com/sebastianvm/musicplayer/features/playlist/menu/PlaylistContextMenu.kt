@@ -11,21 +11,18 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Delete
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.designsystem.icons.Playlist
 import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,
-    val navController: NavController
 ) : BaseUiComponent<PlaylistContextMenuArguments, PlaylistContextMenuState, PlaylistContextMenuUserAction, PlaylistContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): PlaylistContextMenuStateHolder {
-        return getPlaylistContextMenuStateHolder(dependencies, arguments, navController)
+        return getPlaylistContextMenuStateHolder(dependencies, arguments)
     }
 
     @Composable
@@ -54,16 +51,6 @@ private fun PlaylistContextMenu(
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = {
                                 handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
-                            }
-                        )
-                    }
-
-                    item {
-                        MenuItem(
-                            text = stringResource(id = R.string.view_playlist),
-                            icon = Icons.Playlist.icon(),
-                            onItemClicked = {
-                                handle(PlaylistContextMenuUserAction.ViewPlaylistClicked)
                             }
                         )
                     }

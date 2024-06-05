@@ -107,6 +107,7 @@ class RepositoryProvider(
     val queueRepository: QueueRepository
         get() = AppQueueRepository(
             nowPlayingInfoDataSource = NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
+            trackRepository = trackRepository,
             mediaQueueDao = database.getMediaQueueDao(),
             mediaPlaybackClient = mediaPlaybackClient,
             ioDispatcher = dispatcherProvider.ioDispatcher,

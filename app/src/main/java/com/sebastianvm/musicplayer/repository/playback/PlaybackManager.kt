@@ -23,8 +23,6 @@ interface PlaybackManager {
     fun playQueueItem(index: Int)
 
     fun seekToTrackPosition(position: Long)
-
-    suspend fun addToQueue(mediaGroup: MediaGroup)
 }
 
 sealed interface PlaybackState

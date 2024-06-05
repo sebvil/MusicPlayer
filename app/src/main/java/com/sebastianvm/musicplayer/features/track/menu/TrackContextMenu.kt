@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import android.widget.Toast
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Album
@@ -19,11 +21,15 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class TrackContextMenu(
     override val arguments: TrackContextMenuArguments,
-    val navController: NavController
+    val navController: NavController,
 ) : BaseUiComponent<TrackContextMenuArguments, TrackContextMenuState, TrackContextMenuUserAction, TrackContextMenuStateHolder>() {
 
     override fun createStateHolder(dependencies: DependencyContainer): TrackContextMenuStateHolder {
-        return getTrackContextMenuStateHolder(dependencies, arguments, navController)
+        return getTrackContextMenuStateHolder(
+            dependencies = dependencies,
+            arguments = arguments,
+            navController = navController
+        )
     }
 
     @Composable
@@ -42,6 +48,8 @@ private fun TrackContextMenu(
     handle: Handler<TrackContextMenuUserAction>,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val addedToQueue = stringResource(R.string.added_to_queue)
     when (state) {
         is TrackContextMenuState.Data -> {
             ContextMenu(menuTitle = state.trackName, modifier = modifier) {
@@ -52,6 +60,11 @@ private fun TrackContextMenu(
                             icon = Icons.QueueAdd.icon(),
                             onItemClicked = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
+                                Toast.makeText(
+                                    /* context = */ context,
+                                    /* text = */ addedToQueue,
+                                    /* duration = */ Toast.LENGTH_LONG
+                                ).show()
                             }
                         )
                     }

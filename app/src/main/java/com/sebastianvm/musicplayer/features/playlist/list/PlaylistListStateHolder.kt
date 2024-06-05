@@ -105,7 +105,6 @@ class PlaylistListStateHolder(
                 navController.push(
                     PlaylistContextMenu(
                         arguments = PlaylistContextMenuArguments(playlistId = action.playlistId),
-                        navController = navController
                     ),
                     navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
                 )

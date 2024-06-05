@@ -11,8 +11,8 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.HasTracks
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -64,9 +64,9 @@ sealed interface TrackContextMenuUserAction : UserAction {
 
 class TrackContextMenuStateHolder(
     private val arguments: TrackContextMenuArguments,
-    private val trackRepository: TrackRepository,
+    trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
-    private val playbackManager: PlaybackManager,
+    private val queueRepository: QueueRepository,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
@@ -101,7 +101,9 @@ class TrackContextMenuStateHolder(
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope.launch {
-                    playbackManager.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
+                    queueRepository.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
+                }.invokeOnCompletion {
+                    navController.pop()
                 }
             }
 
@@ -163,7 +165,7 @@ fun getTrackContextMenuStateHolder(
         arguments = arguments,
         trackRepository = dependencies.repositoryProvider.trackRepository,
         playlistRepository = dependencies.repositoryProvider.playlistRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
+        queueRepository = dependencies.repositoryProvider.queueRepository,
         navController = navController
     )
 }

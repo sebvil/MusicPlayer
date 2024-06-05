@@ -81,7 +81,6 @@ class GenreListStateHolder(
                 navController.push(
                     GenreContextMenu(
                         arguments = GenreContextMenuArguments(action.genreId),
-                        navController = navController
                     ),
                     navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
                 )

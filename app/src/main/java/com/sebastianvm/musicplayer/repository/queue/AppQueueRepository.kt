@@ -3,18 +3,24 @@ package com.sebastianvm.musicplayer.repository.queue
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
 import com.sebastianvm.musicplayer.database.entities.QueuedTrack
+import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
+import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class AppQueueRepository(
     private val nowPlayingInfoDataSource: NowPlayingInfoDataSource,
+    private val trackRepository: TrackRepository,
     private val mediaQueueDao: MediaQueueDao,
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val ioDispatcher: CoroutineDispatcher
@@ -70,5 +76,14 @@ class AppQueueRepository(
 
     override fun moveQueueItem(from: Int, to: Int) {
         mediaPlaybackClient.moveQueueItem(from, to)
+    }
+
+    private fun addToQueue(tracks: List<Track>) {
+        mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
+    }
+
+    override suspend fun addToQueue(mediaGroup: MediaGroup) {
+        val tracks = trackRepository.getTracksForMedia(mediaGroup).first()
+        addToQueue(tracks)
     }
 }

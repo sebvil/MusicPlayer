@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -51,7 +51,7 @@ sealed interface AlbumContextMenuUserAction : UserAction {
 class AlbumContextMenuStateHolder(
     arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
-    private val trackRepository: TrackRepository,
+    private val queueRepository: QueueRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
@@ -76,7 +76,7 @@ class AlbumContextMenuStateHolder(
         when (action) {
             is AlbumContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope.launch {
-                    playbackManager.addToQueue(MediaGroup.Album(albumId))
+                    queueRepository.addToQueue(MediaGroup.Album(albumId))
                 }
             }
 
@@ -120,7 +120,7 @@ fun getAlbumContextMenuStateHolder(
     return AlbumContextMenuStateHolder(
         arguments = arguments,
         albumRepository = dependencies.repositoryProvider.albumRepository,
-        trackRepository = dependencies.repositoryProvider.trackRepository,
+        queueRepository = dependencies.repositoryProvider.queueRepository,
         playbackManager = dependencies.repositoryProvider.playbackManager,
         navController = navController,
     )

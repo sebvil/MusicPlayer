@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import androidx.media3.common.MediaItem
-import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
@@ -60,15 +59,6 @@ class PlaybackManagerImpl(
 
     override fun playQueueItem(index: Int) {
         mediaPlaybackClient.playQueueItem(index)
-    }
-
-    private fun addToQueue(tracks: List<Track>) {
-        mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
-    }
-
-    override suspend fun addToQueue(mediaGroup: MediaGroup) {
-        val tracks = trackRepository.getTracksForMedia(mediaGroup).first()
-        addToQueue(tracks)
     }
 
     override fun seekToTrackPosition(position: Long) {

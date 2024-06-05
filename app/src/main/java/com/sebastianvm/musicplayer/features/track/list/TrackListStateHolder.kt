@@ -101,7 +101,7 @@ class TrackListStateHolder(
                             trackPositionInList = action.trackPositionInList,
                             trackList = args.trackListType,
                         ),
-                        navController
+                        navController = navController,
                     ),
                     navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
                 )

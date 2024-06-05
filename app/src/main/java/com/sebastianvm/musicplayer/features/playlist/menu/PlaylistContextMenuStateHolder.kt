@@ -1,11 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
 import com.sebastianvm.musicplayer.di.DependencyContainer
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -35,7 +32,6 @@ sealed interface PlaylistContextMenuState : State {
 
 sealed interface PlaylistContextMenuUserAction : UserAction {
     data object PlayPlaylistClicked : PlaylistContextMenuUserAction
-    data object ViewPlaylistClicked : PlaylistContextMenuUserAction
     data object DeletePlaylistClicked : PlaylistContextMenuUserAction
     data object ConfirmPlaylistDeletionClicked : PlaylistContextMenuUserAction
     data object PlaylistDeletionCancelled : PlaylistContextMenuUserAction
@@ -44,7 +40,7 @@ sealed interface PlaylistContextMenuUserAction : UserAction {
 class PlaylistContextMenuStateHolder(
     arguments: PlaylistContextMenuArguments,
     private val playlistRepository: PlaylistRepository,
-    private val navController: NavController,
+    private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<PlaylistContextMenuState, PlaylistContextMenuUserAction> {
 
@@ -67,20 +63,9 @@ class PlaylistContextMenuStateHolder(
     override fun handle(action: PlaylistContextMenuUserAction) {
         when (action) {
             is PlaylistContextMenuUserAction.PlayPlaylistClicked -> {
-            }
-
-            is PlaylistContextMenuUserAction.ViewPlaylistClicked -> {
-                navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(
-                            MediaGroup.Playlist(
-                                playlistId
-                            )
-                        ),
-                        navController = navController
-                    ),
-                    navOptions = NavOptions(popCurrent = true)
-                )
+                stateHolderScope.launch {
+                    playbackManager.playMedia(mediaGroup = MediaGroup.Playlist(playlistId))
+                }
             }
 
             is PlaylistContextMenuUserAction.DeletePlaylistClicked -> {
@@ -104,11 +89,10 @@ class PlaylistContextMenuStateHolder(
 fun getPlaylistContextMenuStateHolder(
     dependencies: DependencyContainer,
     arguments: PlaylistContextMenuArguments,
-    navController: NavController
 ): PlaylistContextMenuStateHolder {
     return PlaylistContextMenuStateHolder(
         arguments = arguments,
         playlistRepository = dependencies.repositoryProvider.playlistRepository,
-        navController = navController
+        playbackManager = dependencies.repositoryProvider.playbackManager,
     )
 }

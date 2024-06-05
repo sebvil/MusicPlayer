@@ -68,5 +68,6 @@
     <string name="now_playing">Now playing</string>
     <string name="next_up">Next up</string>
     <string name="drag">Drag</string>
+    <string name="added_to_queue">Added to queue</string>
 
 </resources>
