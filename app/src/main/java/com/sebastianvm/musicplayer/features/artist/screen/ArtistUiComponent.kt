@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -128,8 +129,15 @@ fun ArtistLayout(
                         modifier = Modifier.clickable {
                             handle(ArtistUserAction.AlbumClicked(item.id))
                         },
-                        onMoreClicked = {
-                            handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
+                        trailingContent = {
+                            IconButton(onClick = {
+                                handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = R.string.more)
+                                )
+                            }
                         }
                     )
                 }

@@ -5,7 +5,6 @@ activity-compose = "1.9.0"
 coil = "2.6.0"
 com-google-devtools = "2.0.0-1.0.21"
 compose = "1.7.0-beta02"
-constraintlayout-compose = "1.1.0-alpha13"
 core-ktx = "1.13.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
@@ -17,12 +16,12 @@ kotlinx-coroutines = "1.8.1"
 kotlinx-serialization-json = "1.6.3"
 kover = "0.8.0"
 lifecycle = "2.8.1"
-material-3 = "1.3.0-beta02"
+material3 = "1.3.0-beta02"
 media3-exoplayer = "1.3.1"
-recyclerview = "1.3.2"
 room-runtime = "2.6.1"
 turbine = "1.1.0"
 vectordrawable = "1.2.0"
+reorderable = "2.1.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -36,7 +35,6 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
@@ -47,17 +45,17 @@ lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-com
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material-3" }
-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material-3" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3-exoplayer" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3-exoplayer" }
-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
 detekt-ktlint = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

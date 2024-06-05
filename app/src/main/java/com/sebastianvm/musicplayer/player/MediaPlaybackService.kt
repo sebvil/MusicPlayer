@@ -17,10 +17,11 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.database.entities.TrackWithQueueId
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
+import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
+import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -43,6 +44,10 @@ class MediaPlaybackService : MediaLibraryService() {
         dependencies.repositoryProvider.playbackManager
     }
 
+    private val queueRepository: QueueRepository by lazy {
+        dependencies.repositoryProvider.queueRepository
+    }
+
     private val mainDispatcher: CoroutineDispatcher by lazy {
         dependencies.dispatcherProvider.mainDispatcher
     }
@@ -59,9 +64,9 @@ class MediaPlaybackService : MediaLibraryService() {
         )
     }
 
-    private lateinit var player: ExoPlayer
+    private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<TrackWithQueueId>> = MutableStateFlow(listOf())
+    private val queue: MutableStateFlow<List<QueuedTrack>> = MutableStateFlow(listOf())
 
     override fun onCreate() {
         super.onCreate()
@@ -79,21 +84,21 @@ class MediaPlaybackService : MediaLibraryService() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                 CoroutineScope(mainDispatcher).launch {
                     updateQueue()
-                    savePlaybackInfo()
+                    saveQueue()
                 }
             }
 
@@ -180,21 +185,13 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private suspend fun initializeQueue() {
         withContext(defaultDispatcher) {
-            playbackManager.getSavedPlaybackInfo().first().run {
-                if (queuedTracks.isEmpty()) {
-                    return@run
-                }
-                withContext(mainDispatcher) {
-                    val firstIndex =
-                        queuedTracks.indexOfFirst { it.uniqueQueueItemId == nowPlayingId }
-                    if (firstIndex != -1) {
-                        preparePlaylist(
-                            initialWindowIndex = firstIndex,
-                            mediaItems = queuedTracks.map { it.toMediaItem() },
-                            position = lastRecordedPosition
-                        )
-                    }
-                }
+            val queue = queueRepository.getFullQueue().first() ?: return@withContext
+            withContext(mainDispatcher) {
+                preparePlaylist(
+                    initialWindowIndex = queue.nowPlayingInfo.nowPlayingPositionInQueue,
+                    mediaItems = queue.queue.map { it.toMediaItem() },
+                    position = queue.nowPlayingInfo.lastRecordedPosition
+                )
             }
         }
     }
@@ -221,27 +218,27 @@ class MediaPlaybackService : MediaLibraryService() {
         mediaSession.release()
     }
 
-    suspend fun savePlaybackInfo() {
-        val id = player.currentMediaItem?.uniqueId ?: 0L
+    suspend fun saveQueue() {
         val contentPosition = player.contentPosition
-        playbackManager.modifySavedPlaybackInfo(
-            PlaybackInfo(
-                queuedTracks = queue.value,
-                nowPlayingId = id,
-                lastRecordedPosition = contentPosition
-            )
+        queueRepository.saveQueue(
+            nowPlayingInfo = NowPlayingInfo(
+                nowPlayingPositionInQueue = player.currentMediaItemIndex,
+                lastRecordedPosition = contentPosition,
+            ),
+            queuedTracksIds = queue.value
         )
     }
 
     suspend fun updateQueue() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
-            val newQueue = (0 until timeline.windowCount).map {
-                TrackWithQueueId.fromMediaItem(
+            val newQueue = (0 until timeline.windowCount).map { windowIndex ->
+                QueuedTrack.fromMediaItem(
                     mediaItem = timeline.getWindow(
-                        it,
+                        windowIndex,
                         Timeline.Window()
-                    ).mediaItem
+                    ).mediaItem,
+                    positionInQueue = windowIndex
                 )
             }
             queue.value = newQueue

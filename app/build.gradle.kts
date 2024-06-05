@@ -68,7 +68,6 @@ dependencies {
     // Kotlin
     implementation(libs.core.ktx)
     implementation(libs.vectordrawable)
-    implementation(libs.recyclerview)
 
     // Room
     implementation(libs.room.runtime)
@@ -107,7 +106,7 @@ dependencies {
     // Glide
     implementation(libs.coil.compose)
 
-    implementation(libs.constraintlayout.compose)
+    implementation(libs.reorderable)
 
     // End Jetpack Compose
 

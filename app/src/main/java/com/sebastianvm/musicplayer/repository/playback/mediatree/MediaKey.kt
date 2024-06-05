@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.playback.mediatree
 
-@Suppress("MagicNumber")
 data class MediaKey(
     val parentType: MediaTree.KeyType,
     val parentId: Long,

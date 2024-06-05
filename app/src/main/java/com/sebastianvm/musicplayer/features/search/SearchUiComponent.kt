@@ -252,13 +252,20 @@ fun SearchLayout(
                                 )
                             )
                         },
-                    onMoreClicked = {
-                        handle(
-                            SearchUserAction.SearchResultOverflowMenuIconClicked(
-                                id = item.id,
-                                mediaType = state.selectedOption
+                    trailingContent = {
+                        IconButton(onClick = {
+                            handle(
+                                SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                    id = item.id,
+                                    mediaType = state.selectedOption
+                                )
                             )
-                        )
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = R.string.more)
+                            )
+                        }
                     }
                 )
             }

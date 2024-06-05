@@ -65,5 +65,8 @@
     <string name="no_playlists_try_creating_one">No playlists. Try creating one!</string>
     <string name="hide_player">Hide player</string>
     <string name="loading">Loading</string>
+    <string name="now_playing">Now playing</string>
+    <string name="next_up">Next up</string>
+    <string name="drag">Drag</string>
 
 </resources>
