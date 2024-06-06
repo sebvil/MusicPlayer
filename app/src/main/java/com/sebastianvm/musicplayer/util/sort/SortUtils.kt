@@ -42,6 +42,10 @@ data class SortPreferences(
     val genreTrackListSortPreferences:
         PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> =
         persistentMapOf(),
+    @Serializable(with = GenreSortPrefsSerializer::class)
+    val playlistTrackListSortPreferences:
+        PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> =
+        persistentMapOf(),
     val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> =
         MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM),
     val artistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,

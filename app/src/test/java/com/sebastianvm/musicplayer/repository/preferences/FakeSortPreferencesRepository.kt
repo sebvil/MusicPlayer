@@ -59,14 +59,13 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
     }
 
     override fun getTrackListSortPreferences(
-        trackList: TrackList,
-        trackListId: Long,
+        trackList: TrackList
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> allTracksSortPreferences
             is MediaGroup.Genre ->
                 genreTracksSortPreferences.map {
-                    it[trackListId]
+                    it[trackList.genreId]
                         ?: MediaSortPreferences(
                             SortOptions.TrackListSortOptions.TRACK,
                             MediaSortOrder.ASCENDING,
@@ -74,7 +73,7 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
                 }
             is MediaGroup.Playlist ->
                 playlistTracksSortPreferences.map {
-                    it[trackListId]
+                    it[trackList.playlistId]
                         ?: MediaSortPreferences(
                             SortOptions.TrackListSortOptions.TRACK,
                             MediaSortOrder.ASCENDING,

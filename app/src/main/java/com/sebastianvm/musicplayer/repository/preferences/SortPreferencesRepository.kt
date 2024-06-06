@@ -14,8 +14,7 @@ interface SortPreferencesRepository {
     )
 
     fun getTrackListSortPreferences(
-        trackList: TrackList,
-        trackListId: Long = 0,
+        trackList: TrackList
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>>
 
     suspend fun modifyAlbumListSortPreferences(
