@@ -4,12 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.main.MainViewModel
 
 class MusicPlayerApplication : Application() {
 
-    val dependencies by lazy { DependencyContainer(this) }
+    val dependencies by lazy { AppDependencies(this) }
 
     val viewModelFactory: AbstractSavedStateViewModelFactory =
         object : AbstractSavedStateViewModelFactory() {

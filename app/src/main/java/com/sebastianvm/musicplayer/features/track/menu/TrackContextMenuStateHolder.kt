@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -157,7 +157,7 @@ class TrackContextMenuStateHolder(
 }
 
 fun getTrackContextMenuStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     arguments: TrackContextMenuArguments,
     navController: NavController
 ): TrackContextMenuStateHolder {

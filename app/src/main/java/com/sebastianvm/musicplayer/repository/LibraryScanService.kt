@@ -18,18 +18,18 @@ import com.sebastianvm.musicplayer.features.main.MainActivity
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+// TODO replace with Workmanager
 class LibraryScanService : Service() {
 
     private val dependencies by lazy {
         (application as MusicPlayerApplication).dependencies
     }
 
-    private val mainDispatcher: CoroutineDispatcher by lazy {
-        dependencies.dispatcherProvider.mainDispatcher
-    }
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
     private var isRunning = false
 

@@ -117,7 +117,6 @@ class GenreListStateHolderTest : FreeSpec({
             navControllerDep.backStack.last() shouldBe BackStackEntry(
                 uiComponent = GenreContextMenu(
                     arguments = GenreContextMenuArguments(GENRE_ID),
-                    navController = navControllerDep
                 ),
                 presentationMode = NavOptions.PresentationMode.BottomSheet
             )

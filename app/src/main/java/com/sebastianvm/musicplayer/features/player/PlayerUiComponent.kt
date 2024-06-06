@@ -75,7 +75,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
@@ -91,7 +91,7 @@ class PlayerUiComponent(
 ) : BaseUiComponent<NoArguments, PlayerState, PlayerUserAction, PlayerStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: DependencyContainer): PlayerStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): PlayerStateHolder {
         return getPlayerStateHolder(dependencies = dependencies, delegate = delegate, props = props)
     }
 

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
@@ -20,7 +20,7 @@ data class GenreListUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, UiState<GenreListState>, GenreListUserAction, GenreListStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: DependencyContainer): GenreListStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): GenreListStateHolder {
         return getGenreListStateHolder(dependencies = dependencies, navController = navController)
     }
 

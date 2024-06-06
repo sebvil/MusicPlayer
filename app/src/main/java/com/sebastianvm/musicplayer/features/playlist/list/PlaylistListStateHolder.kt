@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
@@ -114,7 +114,7 @@ class PlaylistListStateHolder(
 }
 
 fun getPlaylistListStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     navController: NavController
 ): PlaylistListStateHolder {
     return PlaylistListStateHolder(

@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.LibraryScanService
@@ -62,7 +62,7 @@ data class SearchUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, SearchState, SearchUserAction, SearchStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: DependencyContainer): SearchStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): SearchStateHolder {
         return getSearchStateHolder(dependencies, navController)
     }
 

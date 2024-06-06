@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.list
 
 import androidx.compose.runtime.Stable
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -108,7 +108,7 @@ class AlbumListStateHolder(
 }
 
 fun getAlbumListStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     navController: NavController
 ): AlbumListStateHolder {
     return AlbumListStateHolder(

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -67,16 +66,4 @@ class ArtistsMenuStateHolder(
             }
         }
     }
-}
-
-fun getArtistsMenuStateHolder(
-    dependencies: DependencyContainer,
-    arguments: ArtistsMenuArguments,
-    navController: NavController
-): ArtistsMenuStateHolder {
-    return ArtistsMenuStateHolder(
-        arguments = arguments,
-        artistRepository = dependencies.repositoryProvider.artistRepository,
-        navController = navController
-    )
 }

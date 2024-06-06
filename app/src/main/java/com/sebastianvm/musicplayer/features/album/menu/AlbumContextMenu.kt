@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Artist
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
 import com.sebastianvm.musicplayer.designsystem.icons.QueueAdd
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
@@ -23,8 +23,14 @@ data class AlbumContextMenu(
     val navController: NavController
 ) : BaseUiComponent<AlbumContextMenuArguments, AlbumContextMenuState, AlbumContextMenuUserAction, AlbumContextMenuStateHolder>() {
 
-    override fun createStateHolder(dependencies: DependencyContainer): AlbumContextMenuStateHolder {
-        return getAlbumContextMenuStateHolder(dependencies, arguments, navController)
+    override fun createStateHolder(dependencies: AppDependencies): AlbumContextMenuStateHolder {
+        return AlbumContextMenuStateHolder(
+            arguments = arguments,
+            albumRepository = dependencies.repositoryProvider.albumRepository,
+            queueRepository = dependencies.repositoryProvider.queueRepository,
+            playbackManager = dependencies.repositoryProvider.playbackManager,
+            navController = navController,
+        )
     }
 
     @Composable

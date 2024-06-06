@@ -51,26 +51,19 @@ class FakeArtistRepository : ArtistRepository {
                 combine(
                     artists,
                     albumsForArtists,
-                    appearsOnForArtists
-                ) { artists, albumsForArtists, appearsOnForArtists ->
+                ) { artists, albumsForArtists ->
                     albumsForArtists.filter { it.albumId == media.albumId }.flatMap { album ->
                         artists.filter { album.artistId == it.id }
-                    }.ifEmpty {
-                        appearsOnForArtists.filter { it.albumId == media.albumId }
-                            .flatMap { album ->
-                                artists.filter { album.artistId == it.id }
-                            }
-                    }
+                    }.distinct()
                 }
             }
 
             is MediaGroup.SingleTrack -> {
                 combine(artists, artistTrackCrossRefs) { artists, artistTrackCrossRefs ->
-
                     artistTrackCrossRefs.filter { it.trackId == media.trackId }
                         .flatMap { artistTrackCrossRef ->
                             artists.filter { it.id == artistTrackCrossRef.artistId }
-                        }
+                        }.distinct()
                 }
             }
         }

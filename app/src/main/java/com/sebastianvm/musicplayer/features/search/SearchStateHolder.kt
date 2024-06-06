@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
@@ -249,7 +249,7 @@ class SearchStateHolder(
 }
 
 fun getSearchStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     navController: NavController
 ): SearchStateHolder {
     return SearchStateHolder(

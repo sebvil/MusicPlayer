@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.queue
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
@@ -81,7 +81,7 @@ class QueueStateHolder(
     }
 }
 
-fun getQueueStateHolder(dependencies: DependencyContainer): QueueStateHolder {
+fun getQueueStateHolder(dependencies: AppDependencies): QueueStateHolder {
     return QueueStateHolder(
         queueRepository = dependencies.repositoryProvider.queueRepository,
         playbackManager = dependencies.repositoryProvider.playbackManager

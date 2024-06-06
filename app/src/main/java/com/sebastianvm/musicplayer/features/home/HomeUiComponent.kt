@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -28,7 +28,7 @@ data class HomeUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, HomeState, HomeUserAction, HomeStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: DependencyContainer): HomeStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): HomeStateHolder {
         return getHomeStateHolder(navController)
     }
 

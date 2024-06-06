@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-class DependencyContainer(private val appContext: Context) {
+class AppDependencies(private val appContext: Context) : Dependencies {
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -22,14 +22,14 @@ class DependencyContainer(private val appContext: Context) {
         ).build()
     }
 
-    val dispatcherProvider: DispatcherProvider = DispatcherProvider
-
     private val jetpackDataStoreProvider: JetpackDataStoreProvider by lazy {
         JetpackDataStoreProvider(appContext)
     }
 
-    val repositoryProvider: RepositoryProvider by lazy {
-        RepositoryProvider(
+    private val dispatcherProvider: DispatcherProvider = DispatcherProvider
+
+    override val repositoryProvider: RepositoryProvider by lazy {
+        AppRepositoryProvider(
             context = appContext,
             dispatcherProvider = dispatcherProvider,
             database = database,
@@ -40,5 +40,5 @@ class DependencyContainer(private val appContext: Context) {
 }
 
 @Composable
-fun dependencies(): DependencyContainer =
+fun dependencies(): AppDependencies =
     (LocalContext.current.applicationContext as MusicPlayerApplication).dependencies

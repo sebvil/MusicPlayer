@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.sort
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
@@ -155,7 +155,7 @@ sealed interface SortMenuUserAction : UserAction {
 }
 
 fun getSortMenuStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     arguments: SortMenuArguments
 ): SortMenuStateHolder {
     return SortMenuStateHolder(

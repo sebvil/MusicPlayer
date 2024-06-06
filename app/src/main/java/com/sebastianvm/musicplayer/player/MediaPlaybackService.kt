@@ -19,13 +19,13 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -40,21 +40,12 @@ class MediaPlaybackService : MediaLibraryService() {
         (application as MusicPlayerApplication).dependencies
     }
 
-    private val playbackManager: PlaybackManager by lazy {
-        dependencies.repositoryProvider.playbackManager
-    }
-
     private val queueRepository: QueueRepository by lazy {
         dependencies.repositoryProvider.queueRepository
     }
 
-    private val mainDispatcher: CoroutineDispatcher by lazy {
-        dependencies.dispatcherProvider.mainDispatcher
-    }
-
-    private val defaultDispatcher: CoroutineDispatcher by lazy {
-        dependencies.dispatcherProvider.defaultDispatcher
-    }
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val mediaTree: MediaTree by lazy {
         MediaTree(

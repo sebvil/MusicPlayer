@@ -31,8 +31,6 @@
     <string name="album_name">Album name</string>
     <string name="view_artists">View artists</string>
     <string name="view_album">View album</string>
-    <string name="view_genre">View genre</string>
-    <string name="view_playlist">View playlist</string>
 
     <string name="year">Year</string>
     <string name="more">More</string>
