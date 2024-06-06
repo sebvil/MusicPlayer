@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.sebastianvm.musicplayer.util
 
 import com.sebastianvm.musicplayer.database.entities.Album

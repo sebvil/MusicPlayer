@@ -51,8 +51,6 @@ import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicator
-import com.sebastianvm.musicplayer.ui.components.PlaybackStatusIndicatorDelegate
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
@@ -216,15 +214,6 @@ fun SearchLayout(
 ) {
     val focusManager = LocalFocusManager.current
 
-    PlaybackStatusIndicator(
-        playbackResult = state.playbackResult,
-        delegate = object : PlaybackStatusIndicatorDelegate {
-            override fun onDismissRequest() {
-                handle(SearchUserAction.DismissPlaybackErrorDialog)
-            }
-        }
-    )
-
     Column(
         modifier = modifier
             .fillMaxHeight()
@@ -234,7 +223,7 @@ fun SearchLayout(
             options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = 16.dp),
-            getDisplayName = { stringResource(id = res) },
+            getDisplayName = { option -> stringResource(id = option.res) },
             onNewOptionSelected = { newOption ->
                 handle(SearchUserAction.SearchModeChanged(newOption))
             }

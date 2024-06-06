@@ -20,8 +20,6 @@
 
     <string name="storage_permission_needed">Storage Permission Needed</string>
     <string name="grant_storage_permissions">In order to read your music library, please grant storage permission.</string>
-    <string name="dismiss">Dismiss</string>
-
     <string name="back">Back</string>
     <string name="sort_by">Sort by</string>
     <string name="track_name">Track name</string>
@@ -43,7 +41,6 @@
     <string name="delete_playlist">Delete playlist</string>
     <string name="remove_from_playlist">Remove from playlist</string>
     <string name="ok">OK</string>
-    <string name="playback_error">Playback error</string>
     <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
     <string name="hide_tracks_in_playlist">Hide tracks in playlist</string>
     <string name="add_to_playlist">Add to playlist</string>
@@ -67,5 +64,6 @@
     <string name="next_up">Next up</string>
     <string name="drag">Drag</string>
     <string name="added_to_queue">Added to queue</string>
+    <string name="dismiss">Dismiss</string>
 
 </resources>
