@@ -20,8 +20,6 @@
 
     <string name="storage_permission_needed">Storage Permission Needed</string>
     <string name="grant_storage_permissions">In order to read your music library, please grant storage permission.</string>
-    <string name="dismiss">Dismiss</string>
-
     <string name="back">Back</string>
     <string name="sort_by">Sort by</string>
     <string name="track_name">Track name</string>

@@ -16,7 +16,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun <T> SingleSelectFilterChipGroup(
     options: ImmutableList<T>,
     selectedOption: T?,
-    getDisplayName: @Composable T.() -> String,
+    getDisplayName: @Composable (T) -> String,
     onNewOptionSelected: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -29,7 +29,7 @@ fun <T> SingleSelectFilterChipGroup(
             FilterChip(
                 selected = selectedOption == option,
                 onClick = { onNewOptionSelected(option) },
-                label = { Text(text = option.getDisplayName()) }
+                label = { Text(text = getDisplayName(option)) }
             )
         }
     }

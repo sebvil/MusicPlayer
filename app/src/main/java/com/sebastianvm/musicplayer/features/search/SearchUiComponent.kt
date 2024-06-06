@@ -234,7 +234,7 @@ fun SearchLayout(
             options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = 16.dp),
-            getDisplayName = { stringResource(id = res) },
+            getDisplayName = { option -> stringResource(id = option.res) },
             onNewOptionSelected = { newOption ->
                 handle(SearchUserAction.SearchModeChanged(newOption))
             }
