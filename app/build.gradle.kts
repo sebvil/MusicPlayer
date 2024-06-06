@@ -120,8 +120,6 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.guava)
 
-    // TESTING
-
     // Testing
     testImplementation(libs.bundles.testing)
 

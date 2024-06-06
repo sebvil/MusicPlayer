@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
 import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
@@ -49,7 +48,6 @@ data class SearchQuery(val term: String, val mode: SearchMode)
 data class SearchState(
     val selectedOption: SearchMode,
     val searchResults: List<ModelListItemState>,
-    val playbackResult: PlaybackResult?,
 ) : State
 
 sealed interface SearchUserAction : UserAction {
@@ -59,7 +57,6 @@ sealed interface SearchUserAction : UserAction {
 
     data class TextChanged(val newText: String) : SearchUserAction
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
-    data object DismissPlaybackErrorDialog : SearchUserAction
 }
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -101,17 +98,13 @@ class SearchStateHolder(
         }
     }
 
-    private val playbackResult = MutableStateFlow<PlaybackResult?>(null)
-
     override val state: StateFlow<SearchState> = combine(
         query.map { it.mode },
         searchResults,
-        playbackResult
-    ) { selectedOption, results, playbackResult ->
+    ) { selectedOption, results ->
         SearchState(
             selectedOption = selectedOption,
             searchResults = results,
-            playbackResult = playbackResult,
         )
     }.stateIn(
         scope = stateHolderScope,
@@ -119,7 +112,6 @@ class SearchStateHolder(
         initialValue = SearchState(
             selectedOption = SearchMode.SONGS,
             searchResults = emptyList(),
-            playbackResult = null,
         )
     )
 
@@ -238,7 +230,6 @@ class SearchStateHolder(
             }
 
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
-            is SearchUserAction.DismissPlaybackErrorDialog -> playbackResult.update { null }
         }
     }
 
