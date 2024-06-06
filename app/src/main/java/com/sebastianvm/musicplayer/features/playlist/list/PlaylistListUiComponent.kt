@@ -85,10 +85,7 @@ fun PlaylistList(
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
             is PlaylistListState.Data -> {
-                PlaylistListLayout(
-                    state = state,
-                    handle = handle,
-                )
+                PlaylistListLayout(state = state, handle = handle)
             }
             is PlaylistListState.Empty -> {
                 EmptyScreen(

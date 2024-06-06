@@ -88,7 +88,7 @@ class SortPreferencesRepositoryImpl(
     }
 
     override fun getTrackListSortPreferences(
-        trackList: TrackList,
+        trackList: TrackList
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> getAllTrackListSortPreferences()

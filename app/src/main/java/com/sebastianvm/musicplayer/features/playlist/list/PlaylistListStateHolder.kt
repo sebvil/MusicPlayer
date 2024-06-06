@@ -41,7 +41,7 @@ sealed interface PlaylistListState : State {
 
     data class Empty(
         override val isCreatePlaylistDialogOpen: Boolean,
-        override val isPlaylistCreationErrorDialogOpen: Boolean
+        override val isPlaylistCreationErrorDialogOpen: Boolean,
     ) : PlaylistListState
 
     data object Loading : PlaylistListState {
@@ -85,7 +85,7 @@ class PlaylistListStateHolder(
                 if (playlists.isEmpty()) {
                     PlaylistListState.Empty(
                         isCreatePlaylistDialogOpen,
-                        isPlaylistCreationErrorDialogOpen
+                        isPlaylistCreationErrorDialogOpen,
                     )
                 } else {
                     PlaylistListState.Data(
@@ -124,7 +124,7 @@ class PlaylistListStateHolder(
                                             trackListType =
                                                 MediaGroup.Playlist(playlistId = playlistId)
                                         ),
-                                    navController = navController
+                                    navController = navController,
                                 )
                             )
                         }
@@ -156,7 +156,7 @@ class PlaylistListStateHolder(
                             TrackListArguments(
                                 trackListType = MediaGroup.Playlist(playlistId = action.playlistId)
                             ),
-                        navController = navController
+                        navController = navController,
                     )
                 )
             }
