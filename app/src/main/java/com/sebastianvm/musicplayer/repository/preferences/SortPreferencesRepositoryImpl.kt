@@ -75,13 +75,25 @@ class SortPreferencesRepositoryImpl(
         }
     }
 
+    private fun getPlaylistTrackListSortPreferences(
+        genreId: Long
+    ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+        return sortPreferencesDataStore.data.map { preferences ->
+            preferences.playlistTrackListSortPreferences[genreId]
+                ?: MediaSortPreferences(
+                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
+        }
+    }
+
     override fun getTrackListSortPreferences(
         trackList: TrackList,
-        trackListId: Long,
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> getAllTrackListSortPreferences()
-            is MediaGroup.Genre -> getGenreTrackListSortPreferences(trackListId)
+            is MediaGroup.Genre -> getGenreTrackListSortPreferences(trackList.genreId)
+            is MediaGroup.Playlist -> getPlaylistTrackListSortPreferences(trackList.playlistId)
             else ->
                 throw IllegalArgumentException(
                     "Invalid trackListType $trackList for getTrackListSortPreferences"

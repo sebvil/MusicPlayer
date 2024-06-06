@@ -60,7 +60,6 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     override fun getTrackListSortPreferences(
         trackList: TrackList,
-        trackListId: Long,
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> allTracksSortPreferences
