@@ -126,5 +126,23 @@ class PlayerStateHolderTest : FreeSpec({
                 awaitItemAs<PlayerState.FloatingState>()
             }
         }
+
+        "QueueTapped and DismissQueue toggle queue shown" {
+            val subject = getSubject()
+            playbackManagerDep.getPlaybackStateValue.value =
+                FixtureProvider.playbackStateFixtures().first()
+            propsDep.update { it.copy(isFullscreen = true) }
+
+            testStateHolderState(subject) {
+                awaitItem() shouldBe PlayerState.NotPlaying
+                awaitItemAs<PlayerState.FullScreenState>()
+
+                subject.handle(PlayerUserAction.QueueTapped)
+                awaitItemAs<PlayerState.QueueState>()
+
+                subject.handle(PlayerUserAction.DismissQueue)
+                awaitItemAs<PlayerState.FullScreenState>()
+            }
+        }
     }
 })

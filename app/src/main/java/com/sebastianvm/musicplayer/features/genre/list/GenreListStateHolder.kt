@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -99,7 +99,7 @@ class GenreListStateHolder(
 }
 
 fun getGenreListStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     navController: NavController
 ): GenreListStateHolder {
     return GenreListStateHolder(

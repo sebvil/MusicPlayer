@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
@@ -39,7 +39,7 @@ data class PlaylistListUiComponent(val navController: NavController) :
         PlaylistList(uiState = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: DependencyContainer): PlaylistListStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): PlaylistListStateHolder {
         return getPlaylistListStateHolder(
             dependencies = dependencies,
             navController = navController

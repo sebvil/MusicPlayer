@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
@@ -29,7 +29,7 @@ data class AlbumListUiComponent(val navController: NavController) :
         AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: DependencyContainer): AlbumListStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): AlbumListStateHolder {
         return getAlbumListStateHolder(dependencies = dependencies, navController = navController)
     }
 }

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -110,18 +109,4 @@ class AlbumContextMenuStateHolder(
             }
         }
     }
-}
-
-fun getAlbumContextMenuStateHolder(
-    dependencies: DependencyContainer,
-    arguments: AlbumContextMenuArguments,
-    navController: NavController
-): AlbumContextMenuStateHolder {
-    return AlbumContextMenuStateHolder(
-        arguments = arguments,
-        albumRepository = dependencies.repositoryProvider.albumRepository,
-        queueRepository = dependencies.repositoryProvider.queueRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
-        navController = navController,
-    )
 }

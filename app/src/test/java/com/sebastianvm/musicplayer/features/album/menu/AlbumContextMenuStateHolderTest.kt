@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
+import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
@@ -22,25 +22,25 @@ import io.kotest.matchers.shouldBe
 
 class AlbumContextMenuStateHolderTest : FreeSpec({
     lateinit var albumRepositoryDep: FakeAlbumRepository
-    lateinit var trackRepositoryDep: FakeTrackRepository
     lateinit var playbackManagerDep: FakePlaybackManager
+    lateinit var queueRepositoryDep: FakeQueueRepository
     lateinit var navControllerDep: FakeNavController
 
     beforeTest {
         albumRepositoryDep = FakeAlbumRepository()
-        trackRepositoryDep = FakeTrackRepository()
         playbackManagerDep = FakePlaybackManager()
+        queueRepositoryDep = FakeQueueRepository()
         navControllerDep = FakeNavController()
     }
 
     fun TestScope.getSubject(albumId: Long): AlbumContextMenuStateHolder {
         return AlbumContextMenuStateHolder(
             arguments = AlbumContextMenuArguments(albumId = albumId),
+            stateHolderScope = this,
             albumRepository = albumRepositoryDep,
-            trackRepository = trackRepositoryDep,
+            queueRepository = queueRepositoryDep,
             playbackManager = playbackManagerDep,
             navController = navControllerDep,
-            stateHolderScope = this,
         )
     }
 
@@ -114,8 +114,8 @@ class AlbumContextMenuStateHolderTest : FreeSpec({
             val subject = getSubject(album.id)
             subject.handle(AlbumContextMenuUserAction.AddToQueueClicked)
             advanceUntilIdle()
-            playbackManagerDep.addToQueueInvocations shouldBe listOf(
-                FakePlaybackManager.AddToQueueArguments(mediaGroup = MediaGroup.Album(albumId = album.id))
+            queueRepositoryDep.addToQueueInvocations shouldBe listOf(
+                FakeQueueRepository.AddToQueueArguments(mediaGroup = MediaGroup.Album(albumId = album.id))
             )
         }
 

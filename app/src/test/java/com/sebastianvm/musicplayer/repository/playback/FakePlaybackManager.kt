@@ -8,21 +8,6 @@ class FakePlaybackManager : PlaybackManager {
 
     val getPlaybackStateValue: MutableStateFlow<PlaybackState> = MutableStateFlow(NotPlayingState)
 
-    private val _addToQueueInvocations: MutableList<AddToQueueArguments> = mutableListOf()
-
-    data class AddToQueueArguments(val mediaGroup: MediaGroup)
-
-    val addToQueueInvocations: List<AddToQueueArguments>
-        get() = _addToQueueInvocations
-
-    override suspend fun addToQueue(mediaGroup: MediaGroup) {
-        _addToQueueInvocations.add(AddToQueueArguments(mediaGroup))
-    }
-
-    fun resetAddToQueueInvocations() {
-        _addToQueueInvocations.clear()
-    }
-
     data object ConnectToServiceInvocations
 
     private val _connectToServiceInvocations: MutableList<ConnectToServiceInvocations> =

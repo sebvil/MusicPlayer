@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
-import com.sebastianvm.musicplayer.di.DependencyContainer
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -57,15 +56,4 @@ class GenreContextMenuStateHolder(
             }
         }
     }
-}
-
-fun getGenreContextMenuStateHolder(
-    dependencies: DependencyContainer,
-    arguments: GenreContextMenuArguments,
-): GenreContextMenuStateHolder {
-    return GenreContextMenuStateHolder(
-        arguments = arguments,
-        genreRepository = dependencies.repositoryProvider.genreRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager
-    )
 }

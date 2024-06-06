@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
@@ -151,7 +151,7 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
 }
 
 fun getTrackListStateHolder(
-    dependencies: DependencyContainer,
+    dependencies: AppDependencies,
     args: TrackListArguments,
     navController: NavController
 ): TrackListStateHolder {

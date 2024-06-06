@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -26,8 +26,12 @@ data class ArtistsMenu(
     val navController: NavController
 ) : BaseUiComponent<ArtistsMenuArguments, UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuStateHolder>() {
 
-    override fun createStateHolder(dependencies: DependencyContainer): ArtistsMenuStateHolder {
-        return getArtistsMenuStateHolder(dependencies, arguments, navController)
+    override fun createStateHolder(dependencies: AppDependencies): ArtistsMenuStateHolder {
+        return ArtistsMenuStateHolder(
+            arguments = arguments,
+            artistRepository = dependencies.repositoryProvider.artistRepository,
+            navController = navController
+        )
     }
 
     @Composable

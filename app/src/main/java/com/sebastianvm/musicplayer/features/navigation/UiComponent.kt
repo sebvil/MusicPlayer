@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.di.dependencies
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -19,7 +19,7 @@ interface UiComponent<Args : Arguments, SH : StateHolder<*, *>> {
     val arguments: Args
     val key: Any
 
-    fun createStateHolder(dependencies: DependencyContainer): SH
+    fun createStateHolder(dependencies: AppDependencies): SH
 
     @Composable
     fun Content(modifier: Modifier)
@@ -31,7 +31,7 @@ abstract class BaseUiComponent<Args : Arguments, S : State, UA : UserAction, SH 
     UiComponent<Args, SH> {
     private var stateHolder: SH? = null
 
-    private fun getOrCreateStateHolder(dependencies: DependencyContainer): SH {
+    private fun getOrCreateStateHolder(dependencies: AppDependencies): SH {
         return stateHolder ?: createStateHolder(dependencies).also { stateHolder = it }
     }
 

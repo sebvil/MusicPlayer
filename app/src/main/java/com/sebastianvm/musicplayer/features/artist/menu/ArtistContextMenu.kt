@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -17,7 +17,7 @@ data class ArtistContextMenu(
     override val arguments: ArtistContextMenuArguments,
 ) : BaseUiComponent<ArtistContextMenuArguments, ArtistContextMenuState, ArtistContextMenuUserAction, ArtistContextMenuStateHolder>() {
 
-    override fun createStateHolder(dependencies: DependencyContainer): ArtistContextMenuStateHolder {
+    override fun createStateHolder(dependencies: AppDependencies): ArtistContextMenuStateHolder {
         return getArtistContextMenuStateHolder(dependencies, arguments)
     }
 

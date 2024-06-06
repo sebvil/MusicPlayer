@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.di.DependencyContainer
+import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -17,8 +17,12 @@ data class GenreContextMenu(
     override val arguments: GenreContextMenuArguments,
 ) : BaseUiComponent<GenreContextMenuArguments, GenreContextMenuState, GenreContextMenuUserAction, GenreContextMenuStateHolder>() {
 
-    override fun createStateHolder(dependencies: DependencyContainer): GenreContextMenuStateHolder {
-        return getGenreContextMenuStateHolder(dependencies, arguments)
+    override fun createStateHolder(dependencies: AppDependencies): GenreContextMenuStateHolder {
+        return GenreContextMenuStateHolder(
+            arguments = arguments,
+            genreRepository = dependencies.repositoryProvider.genreRepository,
+            playbackManager = dependencies.repositoryProvider.playbackManager,
+        )
     }
 
     @Composable
