@@ -59,11 +59,11 @@ fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifie
         is QueueState.Empty -> {
             TODO()
         }
-
         is QueueState.Data -> Queue(state, handle, modifier)
-        is QueueState.Loading -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
+        is QueueState.Loading ->
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
     }
 }
 
@@ -72,27 +72,21 @@ fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifie
 fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Modifier = Modifier) {
     val lazyListState = rememberLazyListState()
 
-    var queueItems by remember(state.queueItems) {
-        mutableStateOf(state.queueItems)
-    }
-    var draggedItemInitialIndex by remember {
-        mutableIntStateOf(-1)
-    }
+    var queueItems by remember(state.queueItems) { mutableStateOf(state.queueItems) }
+    var draggedItemInitialIndex by remember { mutableIntStateOf(-1) }
 
-    var draggedItemFinalIndex by remember {
-        mutableIntStateOf(-1)
-    }
+    var draggedItemFinalIndex by remember { mutableIntStateOf(-1) }
 
-    var draggedItem: Long? by remember {
-        mutableStateOf(null)
-    }
+    var draggedItem: Long? by remember { mutableStateOf(null) }
     val nonDraggableItems = 3
-    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        draggedItemFinalIndex = to.index - nonDraggableItems
-        queueItems = queueItems.toMutableList().apply {
-            add(to.index - nonDraggableItems, removeAt(from.index - nonDraggableItems))
+    val reorderableLazyListState =
+        rememberReorderableLazyListState(lazyListState) { from, to ->
+            draggedItemFinalIndex = to.index - nonDraggableItems
+            queueItems =
+                queueItems.toMutableList().apply {
+                    add(to.index - nonDraggableItems, removeAt(from.index - nonDraggableItems))
+                }
         }
-    }
     val view = LocalView.current
 
     LazyColumn(state = lazyListState, modifier = modifier) {
@@ -101,7 +95,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 text = stringResource(R.string.now_playing),
                 modifier = Modifier.padding(all = 12.dp),
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             )
         }
         item(key = state.nowPlayingItem.queueItemId) {
@@ -116,49 +110,56 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 text = stringResource(R.string.next_up),
                 modifier = Modifier.padding(all = 12.dp),
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             )
         }
         items(queueItems, key = { item -> item.queueItemId }) { item ->
             ReorderableItem(reorderableLazyListState, key = item.queueItemId) { isDragging ->
-                val elevation by animateDpAsState(
-                    if (isDragging) 4.dp else 0.dp,
-                    label = "elevation"
-                )
+                val elevation by
+                    animateDpAsState(if (isDragging) 4.dp else 0.dp, label = "elevation")
 
                 ModelListItem(
                     state = item.modelListItemState,
-                    modifier = Modifier
-                        .clickable {
-                            handle(QueueUserAction.TrackClicked(item.position))
-                        },
+                    modifier =
+                        Modifier.clickable { handle(QueueUserAction.TrackClicked(item.position)) },
                     trailingContent = {
                         IconButton(
                             onClick = {},
-                            modifier = Modifier.draggableHandle(
-                                onDragStarted = {
-                                    draggedItemInitialIndex = item.position
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                                    }
-                                },
-                                onDragStopped = {
-                                    draggedItem = null
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                        view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
-                                    }
-                                    handle(
-                                        QueueUserAction.DragEnded(
-                                            from = draggedItemInitialIndex,
-                                            to = draggedItemFinalIndex + state.nowPlayingItem.position + 1
+                            modifier =
+                                Modifier.draggableHandle(
+                                    onDragStarted = {
+                                        draggedItemInitialIndex = item.position
+                                        if (
+                                            Build.VERSION.SDK_INT >=
+                                                Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                                        ) {
+                                            view.performHapticFeedback(
+                                                HapticFeedbackConstants.DRAG_START
+                                            )
+                                        }
+                                    },
+                                    onDragStopped = {
+                                        draggedItem = null
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                            view.performHapticFeedback(
+                                                HapticFeedbackConstants.GESTURE_END
+                                            )
+                                        }
+                                        handle(
+                                            QueueUserAction.DragEnded(
+                                                from = draggedItemInitialIndex,
+                                                to =
+                                                    draggedItemFinalIndex +
+                                                        state.nowPlayingItem.position +
+                                                        1,
+                                            )
                                         )
-                                    )
-                                },
-                            )
+                                    },
+                                ),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.DragIndicator,
-                                contentDescription = stringResource(R.string.drag)
+                                contentDescription = stringResource(R.string.drag),
                             )
                         }
                     },

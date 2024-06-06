@@ -16,84 +16,89 @@ class SortPreferencesRepositoryImpl(
     private val sortPreferencesDataStore: DataStore<SortPreferences>
 ) : SortPreferencesRepository {
 
-    private suspend fun modifyAllTrackListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>) {
+    private suspend fun modifyAllTrackListSortPreferences(
+        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
+    ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
-            oldPreferences.copy(
-                allTrackListSortPreferences = newPreferences
-            )
+            oldPreferences.copy(allTrackListSortPreferences = newPreferences)
         }
     }
 
     private suspend fun modifyGenreTrackListSortPreferences(
         genreId: Long,
-        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
-                genreTrackListSortPreferences = oldPreferences.genreTrackListSortPreferences.mutate {
-                    it[genreId] = newPreferences
-                }
+                genreTrackListSortPreferences =
+                    oldPreferences.genreTrackListSortPreferences.mutate {
+                        it[genreId] = newPreferences
+                    }
             )
         }
     }
 
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackList: TrackList
+        trackList: TrackList,
     ) {
         when (trackList) {
             is MediaGroup.AllTracks -> {
-                modifyAllTrackListSortPreferences(
-                    newPreferences
-                )
+                modifyAllTrackListSortPreferences(newPreferences)
             }
-
             is MediaGroup.Genre -> {
-                modifyGenreTrackListSortPreferences(
-                    trackList.genreId,
-                    newPreferences
-                )
+                modifyGenreTrackListSortPreferences(trackList.genreId, newPreferences)
             }
-
-            else -> throw IllegalArgumentException("Invalid trackListType for modifyTrackListSortPreferences")
+            else ->
+                throw IllegalArgumentException(
+                    "Invalid trackListType for modifyTrackListSortPreferences"
+                )
         }
     }
 
-    private fun getAllTrackListSortPreferences(): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+    private fun getAllTrackListSortPreferences():
+        Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.allTrackListSortPreferences
         }
     }
 
-    private fun getGenreTrackListSortPreferences(genreId: Long): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+    private fun getGenreTrackListSortPreferences(
+        genreId: Long
+    ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
-            preferences.genreTrackListSortPreferences[genreId] ?: MediaSortPreferences(
-                sortOption = SortOptions.TrackListSortOptions.TRACK,
-                sortOrder = MediaSortOrder.ASCENDING
-            )
+            preferences.genreTrackListSortPreferences[genreId]
+                ?: MediaSortPreferences(
+                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
         }
     }
 
     override fun getTrackListSortPreferences(
         trackList: TrackList,
-        trackListId: Long
+        trackListId: Long,
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> getAllTrackListSortPreferences()
             is MediaGroup.Genre -> getGenreTrackListSortPreferences(trackListId)
-            else -> throw IllegalArgumentException("Invalid trackListType $trackList for getTrackListSortPreferences")
+            else ->
+                throw IllegalArgumentException(
+                    "Invalid trackListType $trackList for getTrackListSortPreferences"
+                )
         }
     }
 
-    override suspend fun modifyAlbumListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>) {
+    override suspend fun modifyAlbumListSortPreferences(
+        newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
+    ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
-            oldPreferences.copy(
-                albumListSortPreferences = newPreferences
-            )
+            oldPreferences.copy(albumListSortPreferences = newPreferences)
         }
     }
 
-    override fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
+    override fun getAlbumListSortPreferences():
+        Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
             preferences.albumListSortPreferences
         }
@@ -101,37 +106,27 @@ class SortPreferencesRepositoryImpl(
 
     override suspend fun toggleArtistListSortOrder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
-            oldPreferences.copy(
-                artistListSortOrder = !oldPreferences.artistListSortOrder
-            )
+            oldPreferences.copy(artistListSortOrder = !oldPreferences.artistListSortOrder)
         }
     }
 
     override fun getArtistListSortOrder(): Flow<MediaSortOrder> {
-        return sortPreferencesDataStore.data.map { preferences ->
-            preferences.artistListSortOrder
-        }
+        return sortPreferencesDataStore.data.map { preferences -> preferences.artistListSortOrder }
     }
 
     override suspend fun toggleGenreListSortOrder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
-            oldPreferences.copy(
-                genreListSortOrder = !oldPreferences.genreListSortOrder
-            )
+            oldPreferences.copy(genreListSortOrder = !oldPreferences.genreListSortOrder)
         }
     }
 
     override fun getGenreListSortOrder(): Flow<MediaSortOrder> {
-        return sortPreferencesDataStore.data.map { preferences ->
-            preferences.genreListSortOrder
-        }
+        return sortPreferencesDataStore.data.map { preferences -> preferences.genreListSortOrder }
     }
 
     override suspend fun togglePlaylistListSortOder() {
         sortPreferencesDataStore.updateData { oldPreferences ->
-            oldPreferences.copy(
-                playlistListSortOrder = !oldPreferences.playlistListSortOrder
-            )
+            oldPreferences.copy(playlistListSortOrder = !oldPreferences.playlistListSortOrder)
         }
     }
 
@@ -143,23 +138,27 @@ class SortPreferencesRepositoryImpl(
 
     override suspend fun modifyPlaylistsSortPreferences(
         playlistId: Long,
-        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>,
     ) {
         sortPreferencesDataStore.updateData { oldPreferences ->
             oldPreferences.copy(
-                playlistSortPreferences = oldPreferences.playlistSortPreferences.mutate {
-                    it[playlistId] = newPreferences
-                }
+                playlistSortPreferences =
+                    oldPreferences.playlistSortPreferences.mutate {
+                        it[playlistId] = newPreferences
+                    }
             )
         }
     }
 
-    override fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
+    override fun getPlaylistSortPreferences(
+        playlistId: Long
+    ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         return sortPreferencesDataStore.data.map { preferences ->
-            preferences.playlistSortPreferences[playlistId] ?: MediaSortPreferences(
-                sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
-                sortOrder = MediaSortOrder.ASCENDING
-            )
+            preferences.playlistSortPreferences[playlistId]
+                ?: MediaSortPreferences(
+                    sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
         }
     }
 }

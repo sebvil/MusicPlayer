@@ -30,23 +30,14 @@ fun BottomSheet(
         sheetState = sheetState,
         dragHandle = {
             Surface(
-                modifier = modifier
-                    .padding(vertical = 12.dp),
+                modifier = modifier.padding(vertical = 12.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = MaterialTheme.shapes.extraLarge
+                shape = MaterialTheme.shapes.extraLarge,
             ) {
-                Box(
-                    Modifier
-                        .size(
-                            width = 32.dp,
-                            height = 4.dp
-                        )
-                )
+                Box(Modifier.size(width = 32.dp, height = 4.dp))
             }
         },
-        contentWindowInsets = {
-            WindowInsets.navigationBars
-        },
+        contentWindowInsets = { WindowInsets.navigationBars },
     ) {
         content()
     }

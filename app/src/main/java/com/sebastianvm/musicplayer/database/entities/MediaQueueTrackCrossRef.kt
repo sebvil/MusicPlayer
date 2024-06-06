@@ -7,7 +7,6 @@ import androidx.room.Entity
 data class MediaQueueTrackCrossRef(
     val mediaGroupType: String,
     val groupMediaId: String,
-    @ColumnInfo(index = true)
-    val trackId: String,
-    val trackIndex: Int
+    @ColumnInfo(index = true) val trackId: String,
+    val trackIndex: Int,
 )

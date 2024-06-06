@@ -38,20 +38,22 @@ class ArtistsMenuStateHolder(
 ) : StateHolder<UiState<ArtistsMenuState>, ArtistsMenuUserAction> {
 
     override val state: StateFlow<UiState<ArtistsMenuState>> =
-        artistRepository.getArtistsForMedia(arguments.media)
+        artistRepository
+            .getArtistsForMedia(arguments.media)
             .map { artists ->
                 Data(
                     ArtistsMenuState(
-                        modelListState = ModelListState(
-                            items = artists.map { artist ->
-                                artist.toModelListItemState(
-                                    trailingButtonType = null
-                                )
-                            }
-                        )
+                        modelListState =
+                            ModelListState(
+                                items =
+                                    artists.map { artist ->
+                                        artist.toModelListItemState(trailingButtonType = null)
+                                    }
+                            )
                     )
                 )
-            }.stateIn(stateHolderScope, Lazily, Loading)
+            }
+            .stateIn(stateHolderScope, Lazily, Loading)
 
     override fun handle(action: ArtistsMenuUserAction) {
         when (action) {
@@ -59,9 +61,9 @@ class ArtistsMenuStateHolder(
                 navController.push(
                     ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(popCurrent = true)
+                    navOptions = NavOptions(popCurrent = true),
                 )
             }
         }

@@ -21,8 +21,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TrackDao {
 
-    @Query("SELECT COUNT(*) FROM Track")
-    fun getTracksCount(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM Track") fun getTracksCount(): Flow<Int>
 
     @Transaction
     @Query(
@@ -36,7 +35,7 @@ interface TrackDao {
     )
     fun getAllTracks(
         sortOption: SortOptions.TrackListSortOptions,
-        sortOrder: MediaSortOrder
+        sortOrder: MediaSortOrder,
     ): Flow<List<Track>>
 
     @Transaction
@@ -73,7 +72,7 @@ interface TrackDao {
     fun getTracksForGenre(
         genreId: Long,
         sortOption: SortOptions.TrackListSortOptions,
-        sortOrder: MediaSortOrder
+        sortOrder: MediaSortOrder,
     ): Flow<List<Track>>
 
     @Query(
@@ -93,7 +92,7 @@ interface TrackDao {
     fun getTracksForPlaylist(
         playlistId: Long,
         sortOption: SortOptions.PlaylistSortOptions,
-        sortOrder: MediaSortOrder
+        sortOrder: MediaSortOrder,
     ): Flow<List<Track>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -105,6 +104,6 @@ interface TrackDao {
         genres: Set<Genre>,
         albums: Set<Album>,
         albumsForArtists: Set<AlbumsForArtist>,
-        appearsOnForArtists: Set<AppearsOnForArtist>
+        appearsOnForArtists: Set<AppearsOnForArtist>,
     )
 }

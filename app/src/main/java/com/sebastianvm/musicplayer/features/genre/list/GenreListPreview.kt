@@ -12,7 +12,8 @@ package com.sebastianvm.musicplayer.features.genre.list
 
 // @ScreenPreview
 // @Composable
-// private fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParamProvider::class) state: GenreListState) {
+// private fun GenreListScreenPreview(@PreviewParameter(GenreListStatePreviewParamProvider::class)
+// state: GenreListState) {
 //    ScreenPreview {
 //        GenreListScreen(
 //            state = state,

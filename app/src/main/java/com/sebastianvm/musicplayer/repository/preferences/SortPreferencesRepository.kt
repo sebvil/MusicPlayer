@@ -10,15 +10,17 @@ interface SortPreferencesRepository {
 
     suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackList: TrackList
+        trackList: TrackList,
     )
 
     fun getTrackListSortPreferences(
         trackList: TrackList,
-        trackListId: Long = 0
+        trackListId: Long = 0,
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>>
 
-    suspend fun modifyAlbumListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>)
+    suspend fun modifyAlbumListSortPreferences(
+        newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
+    )
 
     fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>>
 
@@ -36,8 +38,10 @@ interface SortPreferencesRepository {
 
     suspend fun modifyPlaylistsSortPreferences(
         playlistId: Long,
-        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>,
     )
 
-    fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>>
+    fun getPlaylistSortPreferences(
+        playlistId: Long
+    ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>>
 }

@@ -64,14 +64,16 @@ data class SortButtonState(@StringRes val text: Int, val sortOrder: MediaSortOrd
 
 sealed interface HeaderState {
     data object None : HeaderState
+
     data class Simple(val title: String) : HeaderState
+
     data class WithImage(val title: String, val imageState: MediaArtImageState) : HeaderState
 }
 
 data class ModelListState(
     val items: List<ModelListItemState> = listOf(),
     val sortButtonState: SortButtonState? = null,
-    val headerState: HeaderState = HeaderState.None
+    val headerState: HeaderState = HeaderState.None,
 )
 
 @Composable
@@ -82,27 +84,29 @@ fun ModelList(
     onBackButtonClicked: () -> Unit = {},
     onSortButtonClicked: (() -> Unit)? = null,
     onItemClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
-    onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> }
+    onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
 ) {
     val content: @Composable (Modifier, PaddingValues) -> Unit =
         { contentModifier, contentPadding ->
             LazyColumn(
                 state = listState,
                 modifier = contentModifier,
-                contentPadding = contentPadding
-
+                contentPadding = contentPadding,
             ) {
                 state.sortButtonState?.let {
                     item {
                         TextButton(
                             onClick = { onSortButtonClicked?.invoke() },
-                            modifier = Modifier.padding(start = 16.dp)
+                            modifier = Modifier.padding(start = 16.dp),
                         ) {
                             Text(text = "${stringResource(id = R.string.sort_by)}:")
                             Icon(
-                                imageVector = if (it.sortOrder == MediaSortOrder.ASCENDING) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                                imageVector =
+                                    if (it.sortOrder == MediaSortOrder.ASCENDING)
+                                        Icons.Default.ArrowUpward
+                                    else Icons.Default.ArrowDownward,
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(20.dp),
                             )
                             Text(text = stringResource(id = it.text))
                         }
@@ -111,21 +115,15 @@ fun ModelList(
                 itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
                     ModelListItem(
                         state = item,
-                        modifier = Modifier
-                            .animateItem()
-                            .clickable {
-                                onItemClicked(index, item)
-                            },
+                        modifier = Modifier.animateItem().clickable { onItemClicked(index, item) },
                         trailingContent = {
-                            IconButton(onClick = {
-                                onItemMoreIconClicked(index, item)
-                            }) {
+                            IconButton(onClick = { onItemMoreIconClicked(index, item) }) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more)
+                                    contentDescription = stringResource(id = R.string.more),
                                 )
                             }
-                        }
+                        },
                     )
                 }
             }
@@ -134,20 +132,18 @@ fun ModelList(
         is HeaderState.None -> {
             content(modifier, LocalPaddingValues.current)
         }
-
         is HeaderState.Simple -> {
             Column(modifier) {
                 TopBar(title = headerState.title, onBackButtonClicked = onBackButtonClicked)
                 content(Modifier, LocalPaddingValues.current)
             }
         }
-
         is HeaderState.WithImage -> {
             HeaderWithImageModelList(
                 state = headerState,
                 listState = listState,
                 modifier = modifier,
-                onBackButtonClicked = onBackButtonClicked
+                onBackButtonClicked = onBackButtonClicked,
             ) {
                 content(Modifier, it)
             }
@@ -161,7 +157,7 @@ private fun HeaderWithImageModelList(
     listState: LazyListState,
     onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     val density = LocalDensity.current
     val minSizeDp = 100.dp
@@ -171,32 +167,20 @@ private fun HeaderWithImageModelList(
     val maxSizePx = with(density) { maxSizeDp.toPx() }
     var sizeDp by remember { mutableStateOf(maxSizeDp) }
     val sizePx by remember(sizeDp) { derivedStateOf { with(density) { sizeDp.toPx() } } }
-    var offset by remember {
-        mutableStateOf(0.dp)
-    }
+    var offset by remember { mutableStateOf(0.dp) }
     val offsetPx by remember(offset) { derivedStateOf { with(density) { offset.toPx() } } }
 
-    var fullHeaderHeight by remember {
-        mutableIntStateOf(0)
-    }
+    var fullHeaderHeight by remember { mutableIntStateOf(0) }
 
     val fullHeaderHeaderHeightDp by remember {
-        derivedStateOf {
-            with(density) { fullHeaderHeight.toDp() }
-        }
+        derivedStateOf { with(density) { fullHeaderHeight.toDp() } }
     }
 
-    var topBarHeight by remember {
-        mutableIntStateOf(-1)
-    }
+    var topBarHeight by remember { mutableIntStateOf(-1) }
 
-    var topBarAlpha by remember {
-        mutableFloatStateOf(0f)
-    }
+    var topBarAlpha by remember { mutableFloatStateOf(0f) }
 
-    var imageAlpha by remember {
-        mutableFloatStateOf(1f)
-    }
+    var imageAlpha by remember { mutableFloatStateOf(1f) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -209,7 +193,11 @@ private fun HeaderWithImageModelList(
                     sizeChange = max(minSizePx - sizePx, available.y)
                     offsetChange = max(available.y - sizeChange, -fullHeaderHeight - offsetPx)
                 } else {
-                    if (listState.firstVisibleItemIndex != 0 || listState.firstVisibleItemScrollOffset != 0 || sizeDp == maxSizeDp) {
+                    if (
+                        listState.firstVisibleItemIndex != 0 ||
+                            listState.firstVisibleItemScrollOffset != 0 ||
+                            sizeDp == maxSizeDp
+                    ) {
                         return Offset.Zero
                     }
 
@@ -218,23 +206,21 @@ private fun HeaderWithImageModelList(
                 }
                 sizeDp = with(density) { (sizePx + sizeChange).toDp() }
                 offset = with(density) { (offsetPx + offsetChange).toDp() }
-                topBarAlpha = if (offset == 0.dp) {
-                    0f
-                } else {
-                    ((1f / (fullHeaderHeight - sizePx)) * (topBarHeight - offsetPx) - (sizePx) / (fullHeaderHeight - sizePx)).coerceIn(
-                        minimumValue = 0f,
-                        maximumValue = 1f
-                    )
-                }
+                topBarAlpha =
+                    if (offset == 0.dp) {
+                        0f
+                    } else {
+                        ((1f / (fullHeaderHeight - sizePx)) * (topBarHeight - offsetPx) -
+                                (sizePx) / (fullHeaderHeight - sizePx))
+                            .coerceIn(minimumValue = 0f, maximumValue = 1f)
+                    }
 
                 imageAlpha =
                     if (offset == 0.dp) {
                         1f
                     } else {
-                        (1f - ((topBarHeight - offsetPx) / sizePx)).coerceIn(
-                            minimumValue = 0f,
-                            maximumValue = 1f
-                        )
+                        (1f - ((topBarHeight - offsetPx) / sizePx))
+                            .coerceIn(minimumValue = 0f, maximumValue = 1f)
                             .also { Log.i("Offset", "$it") }
                     }
 
@@ -245,49 +231,37 @@ private fun HeaderWithImageModelList(
 
     val animatedSize by animateDpAsState(targetValue = sizeDp, label = "size")
 
-    Box(
-        modifier = modifier
-            .nestedScroll(nestedScrollConnection)
-    ) {
+    Box(modifier = modifier.nestedScroll(nestedScrollConnection)) {
         TopBar(
             title = state.title,
             alpha = topBarAlpha,
             onSizeChanged = { topBarHeight = it },
-            onBackButtonClicked = onBackButtonClicked
+            onBackButtonClicked = onBackButtonClicked,
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset {
-                    IntOffset(x = 0, y = offset.roundToPx())
-                }
-                .onSizeChanged { size ->
-                    fullHeaderHeight = size.height
-                },
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier.fillMaxWidth()
+                    .offset { IntOffset(x = 0, y = offset.roundToPx()) }
+                    .onSizeChanged { size -> fullHeaderHeight = size.height },
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MediaArtImage(
                 mediaArtImageState = state.imageState,
-                modifier = Modifier
-                    .size(animatedSize)
-                    .alpha(imageAlpha)
+                modifier = Modifier.size(animatedSize).alpha(imageAlpha),
             )
             Text(
                 text = state.title,
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .alpha(1 - topBarAlpha)
+                modifier = Modifier.alpha(1 - topBarAlpha),
             )
         }
 
         content(
             PaddingValues(
-                top = (fullHeaderHeaderHeightDp + offset).coerceAtLeast(
-                    0.dp
-                ),
-                bottom = LocalPaddingValues.current.calculateBottomPadding()
+                top = (fullHeaderHeaderHeightDp + offset).coerceAtLeast(0.dp),
+                bottom = LocalPaddingValues.current.calculateBottomPadding(),
             )
         )
     }
@@ -299,29 +273,27 @@ fun TopBar(
     modifier: Modifier = Modifier,
     alpha: Float = 1f,
     onSizeChanged: (Int) -> Unit = {},
-    onBackButtonClicked: () -> Unit = {}
+    onBackButtonClicked: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .zIndex(1f)
-            .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))
-            .onSizeChanged { onSizeChanged(it.height) },
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .zIndex(1f)
+                .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))
+                .onSizeChanged { onSizeChanged(it.height) },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackButtonClicked) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = stringResource(
-                    id = R.string.back
-                )
+                contentDescription = stringResource(id = R.string.back),
             )
         }
         Text(
             text = title,
-            modifier = Modifier
-                .alpha(alpha),
-            style = MaterialTheme.typography.headlineSmall
+            modifier = Modifier.alpha(alpha),
+            style = MaterialTheme.typography.headlineSmall,
         )
     }
 }

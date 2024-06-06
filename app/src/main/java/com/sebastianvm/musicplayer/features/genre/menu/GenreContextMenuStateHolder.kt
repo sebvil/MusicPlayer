@@ -18,10 +18,7 @@ import kotlinx.coroutines.launch
 data class GenreContextMenuArguments(val genreId: Long) : Arguments
 
 sealed interface GenreContextMenuState : State {
-    data class Data(
-        val genreName: String,
-        val genreId: Long,
-    ) : GenreContextMenuState
+    data class Data(val genreName: String, val genreId: Long) : GenreContextMenuState
 
     data object Loading : GenreContextMenuState
 }
@@ -40,12 +37,12 @@ class GenreContextMenuStateHolder(
     private val genreId = arguments.genreId
 
     override val state: StateFlow<GenreContextMenuState> =
-        genreRepository.getGenreName(genreId).map { genreName ->
-            GenreContextMenuState.Data(
-                genreName = genreName,
-                genreId = genreId,
-            )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, GenreContextMenuState.Loading)
+        genreRepository
+            .getGenreName(genreId)
+            .map { genreName ->
+                GenreContextMenuState.Data(genreName = genreName, genreId = genreId)
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, GenreContextMenuState.Loading)
 
     override fun handle(action: GenreContextMenuUserAction) {
         when (action) {

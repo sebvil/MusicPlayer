@@ -27,17 +27,13 @@ fun MenuItem(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
         modifier = modifier.clickable { onItemClicked() },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         leadingContent = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        }
+            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
+        },
     )
 }

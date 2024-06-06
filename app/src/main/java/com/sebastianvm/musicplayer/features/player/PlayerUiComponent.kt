@@ -87,7 +87,7 @@ import kotlinx.coroutines.flow.Flow
 
 class PlayerUiComponent(
     private val delegate: PlayerDelegate,
-    private val props: Flow<PlayerProps>
+    private val props: Flow<PlayerProps>,
 ) : BaseUiComponent<NoArguments, PlayerState, PlayerUserAction, PlayerStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
@@ -99,7 +99,7 @@ class PlayerUiComponent(
     override fun Content(
         state: PlayerState,
         handle: Handler<PlayerUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         Player(state = state, handle = handle, modifier = modifier)
     }
@@ -110,11 +110,7 @@ fun Player(state: PlayerState, handle: Handler<PlayerUserAction>, modifier: Modi
     when (state) {
         PlayerState.NotPlaying -> Unit
         is PlayerState.Playing -> {
-            AnimatedPlayerCard(
-                state = state,
-                handle = handle,
-                modifier = modifier
-            )
+            AnimatedPlayerCard(state = state, handle = handle, modifier = modifier)
         }
     }
 }
@@ -123,11 +119,9 @@ fun Player(state: PlayerState, handle: Handler<PlayerUserAction>, modifier: Modi
 fun AnimatedPlayerCard(
     state: PlayerState.Playing,
     handle: Handler<PlayerUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    BackHandler(enabled = state is PlayerState.QueueState) {
-        handle(PlayerUserAction.DismissQueue)
-    }
+    BackHandler(enabled = state is PlayerState.QueueState) { handle(PlayerUserAction.DismissQueue) }
 
     Box(modifier = modifier) {
         SharedTransitionLayout {
@@ -135,61 +129,50 @@ fun AnimatedPlayerCard(
                 targetState = state,
                 transitionSpec = {
                     when (targetState) {
-                        is PlayerState.FloatingState -> (
-                            fadeIn(
-                                animationSpec = tween(
-                                    220,
-                                    delayMillis = 90
-                                )
-                            ) +
-                                scaleIn(
-                                    initialScale = 0.92f,
-                                    animationSpec = tween(220, delayMillis = 90)
-                                )
-                            )
-                            .togetherWith(fadeOut(animationSpec = tween(90)))
-
+                        is PlayerState.FloatingState ->
+                            (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                    scaleIn(
+                                        initialScale = 0.92f,
+                                        animationSpec = tween(220, delayMillis = 90),
+                                    ))
+                                .togetherWith(fadeOut(animationSpec = tween(90)))
                         is PlayerState.FullScreenState -> {
                             if (initialState is PlayerState.FloatingState) {
-                                (
-                                    fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
                                         scaleIn(
                                             initialScale = 0.92f,
-                                            animationSpec = tween(220, delayMillis = 90)
-                                        )
-                                    )
+                                            animationSpec = tween(220, delayMillis = 90),
+                                        ))
                                     .togetherWith(fadeOut(animationSpec = tween(90)))
                             } else {
-                                (EnterTransition.None)
-                                    .togetherWith(
-                                        slideOutOfContainer(
-                                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                                            animationSpec = tween(durationMillis = 220, 90)
-                                        )
-                                    )
-                            }
-                        }
-
-                        is PlayerState.QueueState -> {
-                            (
-                                fadeIn(animationSpec = tween(220, delayMillis = 90)) +
-                                    slideIntoContainer(
-                                        towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                                        animationSpec = tween(220, delayMillis = 90)
+                                (EnterTransition.None).togetherWith(
+                                    slideOutOfContainer(
+                                        towards =
+                                            AnimatedContentTransitionScope.SlideDirection.Down,
+                                        animationSpec = tween(durationMillis = 220, 90),
                                     )
                                 )
+                            }
+                        }
+                        is PlayerState.QueueState -> {
+                            (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                                    slideIntoContainer(
+                                        towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                                        animationSpec = tween(220, delayMillis = 90),
+                                    ))
                                 .togetherWith(ExitTransition.None)
                         }
                     }.apply {
-                        targetContentZIndex = when (targetState) {
-                            is PlayerState.FloatingState -> 1f
-                            is PlayerState.FullScreenState -> 2f
-                            is PlayerState.QueueState -> 3f
-                        }
+                        targetContentZIndex =
+                            when (targetState) {
+                                is PlayerState.FloatingState -> 1f
+                                is PlayerState.FullScreenState -> 2f
+                                is PlayerState.QueueState -> 3f
+                            }
                     }
                 },
                 label = "playerTransition",
-                contentKey = { it::class }
+                contentKey = { it::class },
             ) { playerState ->
                 when (playerState) {
                     is PlayerState.FullScreenState -> {
@@ -198,14 +181,15 @@ fun AnimatedPlayerCard(
                             handle = handle,
                             animatedVisibilityScope = this@AnimatedContent,
                             sharedTransitionScope = this@SharedTransitionLayout,
-                            modifier = Modifier.padding(
-                                top = WindowInsets.statusBars
-                                    .asPaddingValues()
-                                    .calculateTopPadding()
-                            )
+                            modifier =
+                                Modifier.padding(
+                                    top =
+                                        WindowInsets.statusBars
+                                            .asPaddingValues()
+                                            .calculateTopPadding()
+                                ),
                         )
                     }
-
                     is PlayerState.FloatingState -> {
                         FloatingPlayerCard(
                             state = playerState,
@@ -214,16 +198,13 @@ fun AnimatedPlayerCard(
                             sharedTransitionScope = this@SharedTransitionLayout,
                         )
                     }
-
                     is PlayerState.QueueState -> {
                         PlayerWithQueue(
                             state = playerState,
                             handle = handle,
                             animatedVisibilityScope = this@AnimatedContent,
                             sharedTransitionScope = this@SharedTransitionLayout,
-                            modifier = Modifier.padding(
-                                WindowInsets.systemBars.asPaddingValues()
-                            )
+                            modifier = Modifier.padding(WindowInsets.systemBars.asPaddingValues()),
                         )
                     }
                 }
@@ -238,113 +219,107 @@ private fun FloatingPlayerCard(
     handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     with(sharedTransitionScope) {
         ElevatedCard(
-            modifier = modifier.sharedBounds(
-                rememberSharedContentState(
-                    key = SharedContentStateKey.Container
+            modifier =
+                modifier.sharedBounds(
+                    rememberSharedContentState(key = SharedContentStateKey.Container),
+                    animatedVisibilityScope = animatedVisibilityScope,
                 ),
-                animatedVisibilityScope = animatedVisibilityScope,
-            ),
-            colors = CardDefaults.elevatedCardColors()
-                .copy(containerColor = MaterialTheme.colorScheme.playerContainerColor)
+            colors =
+                CardDefaults.elevatedCardColors()
+                    .copy(containerColor = MaterialTheme.colorScheme.playerContainerColor),
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ListItem(
                     headlineContent = {
                         Text(
                             text = state.trackInfoState.trackName,
-                            modifier = Modifier
-                                .sharedBounds(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.Title
-                                    ),
+                            modifier =
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(key = SharedContentStateKey.Title),
                                     animatedVisibilityScope = animatedVisibilityScope,
                                 ),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium,
                             fontSize = MaterialTheme.typography.titleSmall.fontSize,
                             overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+                            maxLines = 1,
                         )
                     },
                     supportingContent = {
                         Text(
                             text = state.trackInfoState.artists,
-                            modifier = Modifier.sharedBounds(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.Artist
+                            modifier =
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(key = SharedContentStateKey.Artist),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                             overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+                            maxLines = 1,
                         )
                     },
                     leadingContent = {
                         MediaArtImage(
                             mediaArtImageState = state.mediaArtImageState,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.Image
+                            modifier =
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.Image
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                )
                         )
                     },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.PreviousButtonClicked)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
                             contentDescription = stringResource(R.string.previous),
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PreviousButton
+                            modifier =
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PreviousButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
                         )
                     }
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.PlayToggled)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                         Icon(
                             imageVector = state.playbackIcon.icon,
-                            contentDescription = stringResource(state.playbackIcon.contentDescription),
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PlayPauseButton
+                            contentDescription =
+                                stringResource(state.playbackIcon.contentDescription),
+                            modifier =
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PlayPauseButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
                         )
                     }
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.NextButtonClicked)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
                             contentDescription = stringResource(R.string.previous),
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.NextButton
+                            modifier =
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.NextButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
                         )
                     }
                 }
@@ -355,16 +330,15 @@ private fun FloatingPlayerCard(
                         handle(
                             PlayerUserAction.ProgressBarClicked(
                                 position = position,
-                                trackLength = state.trackProgressState.trackLength
+                                trackLength = state.trackProgressState.trackLength,
                             )
                         )
                     },
-                    modifier = Modifier.sharedElement(
-                        rememberSharedContentState(
-                            key = SharedContentStateKey.ProgressBar
+                    modifier =
+                        Modifier.sharedElement(
+                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                            animatedVisibilityScope = animatedVisibilityScope,
                         ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
                 )
             }
         }
@@ -377,46 +351,36 @@ private fun FullScreenPlayer(
     handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.playerContainerColor)
-                .then(modifier)
-                .padding(horizontal = 16.dp)
-                .sharedBounds(
-                    rememberSharedContentState(
-                        key = SharedContentStateKey.Container
+            modifier =
+                Modifier.background(color = MaterialTheme.colorScheme.playerContainerColor)
+                    .then(modifier)
+                    .padding(horizontal = 16.dp)
+                    .sharedBounds(
+                        rememberSharedContentState(key = SharedContentStateKey.Container),
+                        animatedVisibilityScope = animatedVisibilityScope,
                     ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                IconButton(
-                    onClick = {
-                        handle(PlayerUserAction.DismissFullScreenPlayer)
-                    },
-                ) {
+                IconButton(onClick = { handle(PlayerUserAction.DismissFullScreenPlayer) }) {
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
                         contentDescription = stringResource(R.string.hide_player),
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(48.dp),
                     )
                 }
-                IconButton(
-                    onClick = {
-                        handle(PlayerUserAction.QueueTapped)
-                    },
-                ) {
+                IconButton(onClick = { handle(PlayerUserAction.QueueTapped) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
                         contentDescription = stringResource(R.string.hide_player),
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(48.dp),
                     )
                 }
             }
@@ -425,104 +389,92 @@ private fun FullScreenPlayer(
             val imageMaxSize = 350.dp
             MediaArtImage(
                 mediaArtImageState = state.mediaArtImageState,
-                modifier = Modifier
-                    .sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
-                    .fillMaxWidth()
-                    .sharedElement(
-                        rememberSharedContentState(
-                            key = SharedContentStateKey.Image
+                modifier =
+                    Modifier.sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
+                        .fillMaxWidth()
+                        .sharedElement(
+                            rememberSharedContentState(key = SharedContentStateKey.Image),
+                            animatedVisibilityScope = animatedVisibilityScope,
                         ),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
             )
 
             ListItem(
                 headlineContent = {
                     Text(
                         text = state.trackInfoState.trackName,
-                        modifier = Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                key = SharedContentStateKey.Title
+                        modifier =
+                            Modifier.sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.Title),
+                                animatedVisibilityScope = animatedVisibilityScope,
                             ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
+                        maxLines = 1,
                     )
                 },
                 supportingContent = {
                     Text(
                         text = state.trackInfoState.artists,
-                        modifier = Modifier.sharedBounds(
-                            rememberSharedContentState(
-                                key = SharedContentStateKey.Artist
+                        modifier =
+                            Modifier.sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.Artist),
+                                animatedVisibilityScope = animatedVisibilityScope,
                             ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
+                        maxLines = 1,
                     )
                 },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
             )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                IconButton(onClick = {
-                    handle(PlayerUserAction.PreviousButtonClicked)
-                }) {
+                IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PreviousButton
+                        modifier =
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PreviousButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                     )
                 }
-                IconButton(onClick = {
-                    handle(PlayerUserAction.PlayToggled)
-                }) {
+                IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                     Icon(
                         imageVector = state.playbackIcon.icon,
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PlayPauseButton
+                        modifier =
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PlayPauseButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
                     )
                 }
-                IconButton(onClick = {
-                    handle(PlayerUserAction.NextButtonClicked)
-                }) {
+                IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = stringResource(R.string.previous),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.NextButton
+                        modifier =
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.NextButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                     )
                 }
             }
@@ -533,20 +485,19 @@ private fun FullScreenPlayer(
                     handle(
                         PlayerUserAction.ProgressBarClicked(
                             position = position,
-                            trackLength = state.trackProgressState.trackLength
+                            trackLength = state.trackProgressState.trackLength,
                         )
                     )
                 },
-                modifier = Modifier.sharedElement(
-                    rememberSharedContentState(
-                        key = SharedContentStateKey.ProgressBar
+                modifier =
+                    Modifier.sharedElement(
+                        rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                        animatedVisibilityScope = animatedVisibilityScope,
                     ),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                )
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = state.trackProgressState.currentPlaybackTime.toDisplayableString())
                 Text(text = state.trackProgressState.trackLength.toDisplayableString())
@@ -563,97 +514,79 @@ private fun PlayerWithQueue(
     handle: Handler<PlayerUserAction>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surface)
-                .then(modifier)
-
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).then(modifier)
         ) {
-            IconButton(
-                onClick = {
-                    handle(PlayerUserAction.DismissQueue)
-                },
-            ) {
+            IconButton(onClick = { handle(PlayerUserAction.DismissQueue) }) {
                 Icon(
                     imageVector = Icons.Rounded.KeyboardArrowDown,
                     contentDescription = stringResource(R.string.hide_player),
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(48.dp),
                 )
             }
 
-            state.queueUiComponent.Content(
-                modifier = Modifier.weight(1f),
-            )
+            state.queueUiComponent.Content(modifier = Modifier.weight(1f))
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 LinearProgressIndicator(
                     progress = { state.trackProgressState.progress.percent },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            rememberSharedContentState(
-                                key = SharedContentStateKey.ProgressBar
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                                animatedVisibilityScope = animatedVisibilityScope,
                             ),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
                     gapSize = 0.dp,
-                    drawStopIndicator = {}
+                    drawStopIndicator = {},
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                 ) {
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.PreviousButtonClicked)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
                             contentDescription = stringResource(R.string.previous),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PreviousButton
+                            modifier =
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PreviousButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     }
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.PlayToggled)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                         Icon(
                             imageVector = state.playbackIcon.icon,
-                            contentDescription = stringResource(state.playbackIcon.contentDescription),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PlayPauseButton
+                            contentDescription =
+                                stringResource(state.playbackIcon.contentDescription),
+                            modifier =
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PlayPauseButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                )
                         )
                     }
-                    IconButton(onClick = {
-                        handle(PlayerUserAction.NextButtonClicked)
-                    }) {
+                    IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
                             contentDescription = stringResource(R.string.previous),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.NextButton
+                            modifier =
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.NextButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     }
                 }
@@ -667,7 +600,7 @@ private fun PlayerWithQueue(
 private fun ProgressSlider(
     progress: Float,
     onProgressBarValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val colors = SliderDefaults.colors(activeTrackColor = MaterialTheme.colorScheme.primary)
@@ -684,24 +617,21 @@ private fun ProgressSlider(
             }
         }
     }
-    var manualSliderPosition by remember {
-        mutableFloatStateOf(progress)
-    }
-    val sliderPosition by remember(progress, interactions) {
-        derivedStateOf {
-            if (interactions.isEmpty()) {
-                progress
-            } else {
-                manualSliderPosition
+    var manualSliderPosition by remember { mutableFloatStateOf(progress) }
+    val sliderPosition by
+        remember(progress, interactions) {
+            derivedStateOf {
+                if (interactions.isEmpty()) {
+                    progress
+                } else {
+                    manualSliderPosition
+                }
             }
         }
-    }
 
     Slider(
         value = sliderPosition,
-        onValueChange = {
-            manualSliderPosition = it
-        },
+        onValueChange = { manualSliderPosition = it },
         valueRange = 0f..1f,
         onValueChangeFinished = {
             onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
@@ -709,23 +639,23 @@ private fun ProgressSlider(
         modifier = modifier,
         colors = colors,
         thumb = {
-            val size by animateIntAsState(
-                if (interactions.isNotEmpty()) {
-                    PROGRESS_BAR_THUMB_SIZE_LARGE
-                } else {
-                    PROGRESS_BAR_THUMB_SIZE_SMALL
-                },
-                label = "size"
-            )
+            val size by
+                animateIntAsState(
+                    if (interactions.isNotEmpty()) {
+                        PROGRESS_BAR_THUMB_SIZE_LARGE
+                    } else {
+                        PROGRESS_BAR_THUMB_SIZE_SMALL
+                    },
+                    label = "size",
+                )
             val offset = (-4 * size / 8 + 8).coerceAtLeast(0).dp
 
             Icon(
                 imageVector = Icons.Filled.Circle,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(size.dp)
-                    .offset { IntOffset(x = 0, y = offset.roundToPx()) },
-                tint = colors.thumbColor
+                modifier =
+                    Modifier.size(size.dp).offset { IntOffset(x = 0, y = offset.roundToPx()) },
+                tint = colors.thumbColor,
             )
         },
         track = {
@@ -733,11 +663,10 @@ private fun ProgressSlider(
                 sliderState = it,
                 modifier = Modifier.height(4.dp),
                 drawStopIndicator = null,
-                thumbTrackGapSize = 0.000000000.dp
+                thumbTrackGapSize = 0.000000000.dp,
             )
         },
         interactionSource = interactionSource,
-
     )
 }
 
@@ -759,17 +688,10 @@ private fun ProgressbarPreview() {
 @PreviewComponents
 @Composable
 private fun PlayerCardPreview(
-    @PreviewParameter(
-        PlayerStatePreviewParameterProvider::class,
-        limit = 1
-    ) state: PlayerState.Playing
+    @PreviewParameter(PlayerStatePreviewParameterProvider::class, limit = 1)
+    state: PlayerState.Playing
 ) {
-    ThemedPreview {
-        AnimatedPlayerCard(
-            state = state,
-            handle = {}
-        )
-    }
+    ThemedPreview { AnimatedPlayerCard(state = state, handle = {}) }
 }
 
 private enum class SharedContentStateKey {

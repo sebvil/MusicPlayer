@@ -6,8 +6,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import io.kotest.core.test.TestScope
 import io.kotest.core.test.testCoroutineScheduler
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.time.Duration
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalStdlibApi::class, ExperimentalCoroutinesApi::class)
 fun TestScope.advanceUntilIdle() {

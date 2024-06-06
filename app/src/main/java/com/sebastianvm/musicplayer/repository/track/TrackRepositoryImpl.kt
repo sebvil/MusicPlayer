@@ -38,17 +38,19 @@ class TrackRepositoryImpl(
     private val trackDao: TrackDao,
     private val playlistRepository: PlaylistRepository,
     private val genreRepository: GenreRepository,
-    private val albumRepository: AlbumRepository
+    private val albumRepository: AlbumRepository,
 ) : TrackRepository {
 
     private fun getAllTracks(): Flow<List<Track>> {
-        return sortPreferencesRepository.getTrackListSortPreferences(trackList = MediaGroup.AllTracks)
+        return sortPreferencesRepository
+            .getTrackListSortPreferences(trackList = MediaGroup.AllTracks)
             .flatMapLatest { mediaSortPreferences ->
                 trackDao.getAllTracks(
                     sortOption = mediaSortPreferences.sortOption,
-                    sortOrder = mediaSortPreferences.sortOrder
+                    sortOrder = mediaSortPreferences.sortOrder,
                 )
-            }.distinctUntilChanged()
+            }
+            .distinctUntilChanged()
     }
 
     override fun getTrack(trackId: Long): Flow<TrackWithArtists> {
@@ -64,28 +66,29 @@ class TrackRepositoryImpl(
     }
 
     private fun getTracksForGenre(genreId: Long): Flow<List<Track>> {
-        return sortPreferencesRepository.getTrackListSortPreferences(
-            trackList = MediaGroup.Genre(
-                genreId = genreId
-            )
-        ).flatMapLatest { mediaSortPreferences ->
-            trackDao.getTracksForGenre(
-                genreId = genreId,
-                sortOption = mediaSortPreferences.sortOption,
-                sortOrder = mediaSortPreferences.sortOrder
-            )
-        }.distinctUntilChanged()
+        return sortPreferencesRepository
+            .getTrackListSortPreferences(trackList = MediaGroup.Genre(genreId = genreId))
+            .flatMapLatest { mediaSortPreferences ->
+                trackDao.getTracksForGenre(
+                    genreId = genreId,
+                    sortOption = mediaSortPreferences.sortOption,
+                    sortOrder = mediaSortPreferences.sortOrder,
+                )
+            }
+            .distinctUntilChanged()
     }
 
     private fun getTracksForPlaylist(playlistId: Long): Flow<List<Track>> {
-        return sortPreferencesRepository.getPlaylistSortPreferences(playlistId = playlistId)
+        return sortPreferencesRepository
+            .getPlaylistSortPreferences(playlistId = playlistId)
             .flatMapLatest { sortPreferences ->
                 trackDao.getTracksForPlaylist(
                     playlistId = playlistId,
                     sortOption = sortPreferences.sortOption,
-                    sortOrder = sortPreferences.sortOrder
+                    sortOrder = sortPreferences.sortOrder,
                 )
-            }.distinctUntilChanged()
+            }
+            .distinctUntilChanged()
     }
 
     override fun getTracksForMedia(mediaGroup: MediaGroup): Flow<List<Track>> {
@@ -108,25 +111,23 @@ class TrackRepositoryImpl(
         }
     }
 
-    private fun getTrackListMetadata(
-        trackList: TrackList
-    ): Flow<TrackListMetadata?> {
+    private fun getTrackListMetadata(trackList: TrackList): Flow<TrackListMetadata?> {
         return when (trackList) {
             is MediaGroup.AllTracks -> flowOf(null)
-            is MediaGroup.Genre -> genreRepository.getGenreName(trackList.genreId)
-                .map { TrackListMetadata(trackListName = it) }
-
-            is MediaGroup.Playlist -> playlistRepository.getPlaylistName(trackList.playlistId)
-                .map { TrackListMetadata(trackListName = it) }
-
-            is MediaGroup.Album -> albumRepository.getAlbum(trackList.albumId)
-                .map {
+            is MediaGroup.Genre ->
+                genreRepository.getGenreName(trackList.genreId).map {
+                    TrackListMetadata(trackListName = it)
+                }
+            is MediaGroup.Playlist ->
+                playlistRepository.getPlaylistName(trackList.playlistId).map {
+                    TrackListMetadata(trackListName = it)
+                }
+            is MediaGroup.Album ->
+                albumRepository.getAlbum(trackList.albumId).map {
                     TrackListMetadata(
                         trackListName = it.albumName,
-                        mediaArtImageState = MediaArtImageState(
-                            it.imageUri,
-                            backupImage = Icons.Album
-                        )
+                        mediaArtImageState =
+                            MediaArtImageState(it.imageUri, backupImage = Icons.Album),
                     )
                 }
         }
@@ -140,7 +141,7 @@ class TrackRepositoryImpl(
         genres: Set<Genre>,
         albums: Set<Album>,
         albumsForArtists: Set<AlbumsForArtist>,
-        appearsOnForArtists: Set<AppearsOnForArtist>
+        appearsOnForArtists: Set<AppearsOnForArtist>,
     ) {
         withContext(ioDispatcher) {
             trackDao.insertAllTracks(
@@ -151,7 +152,7 @@ class TrackRepositoryImpl(
                 genres = genres,
                 albums = albums,
                 albumsForArtists = albumsForArtists,
-                appearsOnForArtists = appearsOnForArtists
+                appearsOnForArtists = appearsOnForArtists,
             )
         }
     }

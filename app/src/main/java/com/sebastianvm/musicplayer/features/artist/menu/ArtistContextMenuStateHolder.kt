@@ -19,10 +19,7 @@ import kotlinx.coroutines.launch
 data class ArtistContextMenuArguments(val artistId: Long) : Arguments
 
 sealed interface ArtistContextMenuState : State {
-    data class Data(
-        val artistName: String,
-        val artistId: Long,
-    ) : ArtistContextMenuState
+    data class Data(val artistName: String, val artistId: Long) : ArtistContextMenuState
 
     data object Loading : ArtistContextMenuState
 }
@@ -41,12 +38,15 @@ class ArtistContextMenuStateHolder(
     private val artistId = arguments.artistId
 
     override val state: StateFlow<ArtistContextMenuState> =
-        artistRepository.getArtist(artistId).map { artist ->
-            ArtistContextMenuState.Data(
-                artistName = artist.artist.artistName,
-                artistId = artistId,
-            )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, ArtistContextMenuState.Loading)
+        artistRepository
+            .getArtist(artistId)
+            .map { artist ->
+                ArtistContextMenuState.Data(
+                    artistName = artist.artist.artistName,
+                    artistId = artistId,
+                )
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, ArtistContextMenuState.Loading)
 
     override fun handle(action: ArtistContextMenuUserAction) {
         when (action) {

@@ -21,7 +21,7 @@ fun ScreenScaffold(
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -33,6 +33,6 @@ fun ScreenScaffold(
         containerColor = containerColor,
         contentColor = contentColor,
         contentWindowInsets = WindowInsets.systemBars,
-        content = content
+        content = content,
     )
 }

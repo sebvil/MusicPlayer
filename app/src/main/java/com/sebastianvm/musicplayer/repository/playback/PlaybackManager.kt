@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.repository.playback
 
 import com.sebastianvm.musicplayer.player.MediaGroup
-import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
+import kotlinx.coroutines.flow.Flow
 
 interface PlaybackManager {
 
@@ -30,7 +30,7 @@ sealed interface PlaybackState
 data class TrackPlayingState(
     val trackInfo: TrackInfo,
     val isPlaying: Boolean,
-    val currentTrackProgress: Duration
+    val currentTrackProgress: Duration,
 ) : PlaybackState
 
 data object NotPlayingState : PlaybackState
@@ -39,5 +39,5 @@ data class TrackInfo(
     val title: String,
     val artists: String,
     val artworkUri: String,
-    val trackLength: Duration
+    val trackLength: Duration,
 )

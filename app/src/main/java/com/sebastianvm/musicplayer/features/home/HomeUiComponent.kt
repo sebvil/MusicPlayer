@@ -49,49 +49,41 @@ fun HomeScreen(state: HomeState, modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
     val pages = TopLevelScreen.entries
-    val pagerState = rememberPagerState {
-        pages.size
-    }
+    val pagerState = rememberPagerState { pages.size }
     val currentScreen: TopLevelScreen = pages[pagerState.currentPage]
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = modifier) {
         ScrollableTabRow(selectedTabIndex = pages.indexOf(currentScreen)) {
             pages.forEachIndexed { index, page ->
-                Tab(selected = currentScreen == page, onClick = {
-                    coroutineScope.launch {
-                        pagerState.scrollToPage(index)
-                    }
-                }, text = { Text(text = stringResource(id = page.screenName)) })
+                Tab(
+                    selected = currentScreen == page,
+                    onClick = { coroutineScope.launch { pagerState.scrollToPage(index) } },
+                    text = { Text(text = stringResource(id = page.screenName)) },
+                )
             }
         }
 
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            beyondViewportPageCount = 1
+            beyondViewportPageCount = 1,
         ) { pageIndex ->
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(
-                            WindowInsets.systemBars
-                        )
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
                     )
                 }
-
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.ALBUMS -> {
                     state.albumListUiComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.GENRES -> {
                     state.genreListUiComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.PLAYLISTS -> {
                     state.playlistListUiComponent.Content(modifier = Modifier)
                 }

@@ -7,15 +7,16 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            parentColumns = ["id"],
-            childColumns = ["trackId"],
-            entity = Track::class,
-            onDelete = CASCADE,
-            onUpdate = CASCADE
-        )
-    ]
+    foreignKeys =
+        [
+            ForeignKey(
+                parentColumns = ["id"],
+                childColumns = ["trackId"],
+                entity = Track::class,
+                onDelete = CASCADE,
+                onUpdate = CASCADE,
+            )
+        ]
 )
 data class MediaQueueItem(
     @ColumnInfo(index = true) val trackId: Long,

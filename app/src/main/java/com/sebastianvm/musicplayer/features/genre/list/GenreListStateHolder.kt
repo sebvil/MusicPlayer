@@ -29,13 +29,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class GenreListState(
-    val modelListState: ModelListState,
-) : State
+data class GenreListState(val modelListState: ModelListState) : State
 
 sealed interface GenreListUserAction : UserAction {
     data object SortByButtonClicked : GenreListUserAction
+
     data class GenreClicked(val genreId: Long) : GenreListUserAction
+
     data class GenreMoreIconClicked(val genreId: Long) : GenreListUserAction
 }
 
@@ -46,51 +46,48 @@ class GenreListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
 
-    override val state: StateFlow<UiState<GenreListState>> = combine(
-        genreRepository.getGenres(),
-        sortPreferencesRepository.getGenreListSortOrder(),
-    ) { genres, sortOrder ->
-        if (genres.isEmpty()) {
-            Empty
-        } else {
-            Data(
-                GenreListState(
-                    modelListState = ModelListState(
-                        items = genres.map { genre ->
-                            genre.toModelListItemState()
-                        },
-                        sortButtonState = SortButtonState(
-                            text = R.string.genre_name,
-                            sortOrder = sortOrder
+    override val state: StateFlow<UiState<GenreListState>> =
+        combine(genreRepository.getGenres(), sortPreferencesRepository.getGenreListSortOrder()) {
+                genres,
+                sortOrder ->
+                if (genres.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        GenreListState(
+                            modelListState =
+                                ModelListState(
+                                    items = genres.map { genre -> genre.toModelListItemState() },
+                                    sortButtonState =
+                                        SortButtonState(
+                                            text = R.string.genre_name,
+                                            sortOrder = sortOrder,
+                                        ),
+                                )
                         )
-                    ),
-                )
-            )
-        }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+                    )
+                }
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: GenreListUserAction) {
         when (action) {
             is GenreListUserAction.SortByButtonClicked -> {
-                stateHolderScope.launch {
-                    sortPreferencesRepository.toggleGenreListSortOrder()
-                }
+                stateHolderScope.launch { sortPreferencesRepository.toggleGenreListSortOrder() }
             }
-
             is GenreListUserAction.GenreMoreIconClicked -> {
                 navController.push(
-                    GenreContextMenu(
-                        arguments = GenreContextMenuArguments(action.genreId),
-                    ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    GenreContextMenu(arguments = GenreContextMenuArguments(action.genreId)),
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is GenreListUserAction.GenreClicked -> {
                 navController.push(
                     TrackListUiComponent(
-                        arguments = TrackListArguments(trackListType = MediaGroup.Genre(action.genreId)),
-                        navController = navController
+                        arguments =
+                            TrackListArguments(trackListType = MediaGroup.Genre(action.genreId)),
+                        navController = navController,
                     )
                 )
             }
@@ -100,7 +97,7 @@ class GenreListStateHolder(
 
 fun getGenreListStateHolder(
     dependencies: AppDependencies,
-    navController: NavController
+    navController: NavController,
 ): GenreListStateHolder {
     return GenreListStateHolder(
         genreRepository = dependencies.repositoryProvider.genreRepository,

@@ -22,13 +22,19 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 data class TrackContextMenu(
     override val arguments: TrackContextMenuArguments,
     val navController: NavController,
-) : BaseUiComponent<TrackContextMenuArguments, TrackContextMenuState, TrackContextMenuUserAction, TrackContextMenuStateHolder>() {
+) :
+    BaseUiComponent<
+        TrackContextMenuArguments,
+        TrackContextMenuState,
+        TrackContextMenuUserAction,
+        TrackContextMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): TrackContextMenuStateHolder {
         return getTrackContextMenuStateHolder(
             dependencies = dependencies,
             arguments = arguments,
-            navController = navController
+            navController = navController,
         )
     }
 
@@ -36,7 +42,7 @@ data class TrackContextMenu(
     override fun Content(
         state: TrackContextMenuState,
         handle: Handler<TrackContextMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         TrackContextMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -46,7 +52,7 @@ data class TrackContextMenu(
 private fun TrackContextMenu(
     state: TrackContextMenuState,
     handle: Handler<TrackContextMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val addedToQueue = stringResource(R.string.added_to_queue)
@@ -61,11 +67,12 @@ private fun TrackContextMenu(
                             onItemClicked = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
                                 Toast.makeText(
-                                    /* context = */ context,
-                                    /* text = */ addedToQueue,
-                                    /* duration = */ Toast.LENGTH_LONG
-                                ).show()
-                            }
+                                        /* context = */ context,
+                                        /* text = */ addedToQueue,
+                                        /* duration = */ Toast.LENGTH_LONG,
+                                    )
+                                    .show()
+                            },
                         )
                     }
 
@@ -73,9 +80,7 @@ private fun TrackContextMenu(
                         MenuItem(
                             text = stringResource(id = R.string.add_to_playlist),
                             icon = Icons.QueueAdd.icon(),
-                            onItemClicked = {
-                                TODO()
-                            }
+                            onItemClicked = { TODO() },
                         )
                     }
 
@@ -87,11 +92,10 @@ private fun TrackContextMenu(
                                     icon = Icons.Artist.icon(),
                                     onItemClicked = {
                                         handle(TrackContextMenuUserAction.ViewArtistsClicked)
-                                    }
+                                    },
                                 )
                             }
                         }
-
                         is ViewArtistRow.NoArtists -> Unit
                         is ViewArtistRow.SingleArtist -> {
                             item {
@@ -104,7 +108,7 @@ private fun TrackContextMenu(
                                                 state.viewArtistsState.artistId
                                             )
                                         )
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -117,7 +121,7 @@ private fun TrackContextMenu(
                                 icon = Icons.Album.icon(),
                                 onItemClicked = {
                                     handle(TrackContextMenuUserAction.ViewAlbumClicked(it.albumId))
-                                }
+                                },
                             )
                         }
                     }
@@ -131,17 +135,16 @@ private fun TrackContextMenu(
                                     handle(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                                             it.playlistId,
-                                            it.trackPositionInPlaylist
+                                            it.trackPositionInPlaylist,
                                         )
                                     )
-                                }
+                                },
                             )
                         }
                     }
                 }
             }
         }
-
         is TrackContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
         }

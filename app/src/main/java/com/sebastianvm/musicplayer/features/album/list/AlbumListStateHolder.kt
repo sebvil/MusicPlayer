@@ -32,14 +32,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-@Stable
-data class AlbumListState(
-    val modelListState: ModelListState,
-) : State
+@Stable data class AlbumListState(val modelListState: ModelListState) : State
 
 sealed interface AlbumListUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : AlbumListUserAction
+
     data object SortButtonClicked : AlbumListUserAction
+
     data class AlbumClicked(val albumId: Long) : AlbumListUserAction
 }
 
@@ -50,29 +49,31 @@ class AlbumListStateHolder(
     private val navController: NavController,
 ) : StateHolder<UiState<AlbumListState>, AlbumListUserAction> {
 
-    override val state: StateFlow<UiState<AlbumListState>> = combine(
-        albumRepository.getAlbums(),
-        sortPreferencesRepository.getAlbumListSortPreferences(),
-    ) { albums, sortPrefs ->
-        if (albums.isEmpty()) {
-            Empty
-        } else {
-            Data(
-                AlbumListState(
-                    modelListState = ModelListState(
-                        items = albums.map { album ->
-                            album.toModelListItemState()
-                        },
-                        headerState = HeaderState.None,
-                        sortButtonState = SortButtonState(
-                            text = sortPrefs.sortOption.stringId,
-                            sortOrder = sortPrefs.sortOrder
+    override val state: StateFlow<UiState<AlbumListState>> =
+        combine(
+                albumRepository.getAlbums(),
+                sortPreferencesRepository.getAlbumListSortPreferences(),
+            ) { albums, sortPrefs ->
+                if (albums.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        AlbumListState(
+                            modelListState =
+                                ModelListState(
+                                    items = albums.map { album -> album.toModelListItemState() },
+                                    headerState = HeaderState.None,
+                                    sortButtonState =
+                                        SortButtonState(
+                                            text = sortPrefs.sortOption.stringId,
+                                            sortOrder = sortPrefs.sortOrder,
+                                        ),
+                                )
                         )
-                    ),
-                )
-            )
-        }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+                    )
+                }
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: AlbumListUserAction) {
         when (action) {
@@ -80,26 +81,26 @@ class AlbumListStateHolder(
                 navController.push(
                     AlbumContextMenu(
                         arguments = AlbumContextMenuArguments(action.albumId),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
                         arguments = SortMenuArguments(listType = SortableListType.Albums)
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is AlbumListUserAction.AlbumClicked -> {
                 navController.push(
                     TrackListUiComponent(
                         arguments = TrackListArguments(MediaGroup.Album(action.albumId)),
-                        navController = navController
+                        navController = navController,
                     )
                 )
             }
@@ -109,7 +110,7 @@ class AlbumListStateHolder(
 
 fun getAlbumListStateHolder(
     dependencies: AppDependencies,
-    navController: NavController
+    navController: NavController,
 ): AlbumListStateHolder {
     return AlbumListStateHolder(
         albumRepository = dependencies.repositoryProvider.albumRepository,

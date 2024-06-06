@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 
 class MainViewModel(
     override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
-    private val playbackManager: PlaybackManager
+    private val playbackManager: PlaybackManager,
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
     private val appNavigationHostUiComponent = AppNavigationHostUiComponent()
@@ -29,45 +29,48 @@ class MainViewModel(
     private val playerProps: MutableStateFlow<PlayerProps> =
         MutableStateFlow(PlayerProps(isFullscreen = false))
 
-    private val playerUiComponent = PlayerUiComponent(
-        delegate = object : PlayerDelegate {
-            override fun dismissFullScreenPlayer() {
-                playerProps.update { it.copy(isFullscreen = false) }
-            }
-        },
-        props = playerProps,
-    )
+    private val playerUiComponent =
+        PlayerUiComponent(
+            delegate =
+                object : PlayerDelegate {
+                    override fun dismissFullScreenPlayer() {
+                        playerProps.update { it.copy(isFullscreen = false) }
+                    }
+                },
+            props = playerProps,
+        )
 
-    override val state: StateFlow<MainState> = playerProps.map { props ->
-        MainState(
-            playerUiComponent = playerUiComponent,
-            appNavigationHostUiComponent = appNavigationHostUiComponent,
-            isFullscreen = props.isFullscreen,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = MainState(
-            playerUiComponent = playerUiComponent,
-            appNavigationHostUiComponent = appNavigationHostUiComponent,
-            isFullscreen = false,
-        )
-    )
+    override val state: StateFlow<MainState> =
+        playerProps
+            .map { props ->
+                MainState(
+                    playerUiComponent = playerUiComponent,
+                    appNavigationHostUiComponent = appNavigationHostUiComponent,
+                    isFullscreen = props.isFullscreen,
+                )
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue =
+                    MainState(
+                        playerUiComponent = playerUiComponent,
+                        appNavigationHostUiComponent = appNavigationHostUiComponent,
+                        isFullscreen = false,
+                    ),
+            )
 
     override fun handle(action: MainUserAction) {
         when (action) {
             is MainUserAction.ConnectToMusicService -> {
                 playbackManager.connectToService()
             }
-
             is MainUserAction.DisconnectFromMusicService -> {
                 playbackManager.disconnectFromService()
             }
-
             is MainUserAction.ExpandPlayer -> {
                 playerProps.update { it.copy(isFullscreen = true) }
             }
-
             is MainUserAction.CollapsePlayer -> {
                 playerProps.update { it.copy(isFullscreen = false) }
             }
@@ -83,7 +86,10 @@ data class MainState(
 
 sealed interface MainUserAction : UserAction {
     data object ConnectToMusicService : MainUserAction
+
     data object DisconnectFromMusicService : MainUserAction
+
     data object ExpandPlayer : MainUserAction
+
     data object CollapsePlayer : MainUserAction
 }

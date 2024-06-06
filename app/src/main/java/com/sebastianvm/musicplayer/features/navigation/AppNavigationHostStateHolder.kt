@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 
 data class BackStackEntry(
     val uiComponent: UiComponent<*, *>,
-    val presentationMode: NavOptions.PresentationMode
+    val presentationMode: NavOptions.PresentationMode,
 )
 
 data class AppNavigationState(val backStack: List<BackStackEntry>) : State
@@ -27,28 +27,32 @@ sealed interface AppNavigationAction : UserAction {
     data object PopBackStack : AppNavigationAction
 }
 
-class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope = stateHolderScope()) :
-    StateHolder<AppNavigationState, AppNavigationAction> {
+class AppNavigationHostStateHolder(
+    override val stateHolderScope: CoroutineScope = stateHolderScope()
+) : StateHolder<AppNavigationState, AppNavigationAction> {
 
-    private val navController = object : NavController {
-        override fun push(uiComponent: UiComponent<*, *>, navOptions: NavOptions) {
-            handle(AppNavigationAction.ShowScreen(uiComponent, navOptions))
+    private val navController =
+        object : NavController {
+            override fun push(uiComponent: UiComponent<*, *>, navOptions: NavOptions) {
+                handle(AppNavigationAction.ShowScreen(uiComponent, navOptions))
+            }
+
+            override fun pop() {
+                handle(AppNavigationAction.PopBackStack)
+            }
         }
 
-        override fun pop() {
-            handle(AppNavigationAction.PopBackStack)
-        }
-    }
-
-    private val backStack: MutableStateFlow<List<BackStackEntry>> = MutableStateFlow(
-        listOf(
-            BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
+    private val backStack: MutableStateFlow<List<BackStackEntry>> =
+        MutableStateFlow(
+            listOf(
+                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
+            )
         )
-    )
 
-    override val state: StateFlow<AppNavigationState> = backStack.map {
-        AppNavigationState(it)
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, AppNavigationState(backStack.value))
+    override val state: StateFlow<AppNavigationState> =
+        backStack
+            .map { AppNavigationState(it) }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, AppNavigationState(backStack.value))
 
     override fun handle(action: AppNavigationAction) {
         when (action) {
@@ -63,7 +67,6 @@ class AppNavigationHostStateHolder(override val stateHolderScope: CoroutineScope
                     }
                 }
             }
-
             AppNavigationAction.PopBackStack -> {
                 backStack.update {
                     val last = it.last()

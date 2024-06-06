@@ -26,107 +26,113 @@ import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 
-class ArtistListStateHolderTest : FreeSpec({
+class ArtistListStateHolderTest :
+    FreeSpec({
+        lateinit var artistRepositoryDep: FakeArtistRepository
+        lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+        lateinit var navControllerDep: FakeNavController
 
-    lateinit var artistRepositoryDep: FakeArtistRepository
-    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
-    lateinit var navControllerDep: FakeNavController
+        beforeTest {
+            artistRepositoryDep = FakeArtistRepository()
+            sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+            navControllerDep = FakeNavController()
+        }
 
-    beforeTest {
-        artistRepositoryDep = FakeArtistRepository()
-        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
-        navControllerDep = FakeNavController()
-    }
+        fun TestScope.getSubject(): ArtistListStateHolder {
+            return ArtistListStateHolder(
+                stateHolderScope = this,
+                artistRepository = artistRepositoryDep,
+                sortPreferencesRepository = sortPreferencesRepositoryDep,
+                navController = navControllerDep,
+            )
+        }
 
-    fun TestScope.getSubject(): ArtistListStateHolder {
-        return ArtistListStateHolder(
-            stateHolderScope = this,
-            artistRepository = artistRepositoryDep,
-            sortPreferencesRepository = sortPreferencesRepositoryDep,
-            navController = navControllerDep
-        )
-    }
+        "init subscribes to changes in artist list" {
+            val subject = getSubject()
+            artistRepositoryDep.artists.value = emptyList()
+            testStateHolderState(subject) {
+                awaitItem() shouldBe Loading
+                awaitItem() shouldBe Empty
 
-    "init subscribes to changes in artist list" {
-        val subject = getSubject()
-        artistRepositoryDep.artists.value = emptyList()
-        testStateHolderState(subject) {
-            awaitItem() shouldBe Loading
-            awaitItem() shouldBe Empty
-
-            val artists = FixtureProvider.artistFixtures().toList()
-            artistRepositoryDep.artists.value = artists
-            with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
-                state.modelListState.items shouldBe artists.map {
-                    it.toModelListItemState(
-                        trailingButtonType = TrailingButtonType.More
-                    )
+                val artists = FixtureProvider.artistFixtures().toList()
+                artistRepositoryDep.artists.value = artists
+                with(awaitItem()) {
+                    shouldBeInstanceOf<Data<ArtistListState>>()
+                    state.modelListState.items shouldBe
+                        artists.map {
+                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
+                        }
+                    state.modelListState.headerState shouldBe HeaderState.None
                 }
-                state.modelListState.headerState shouldBe HeaderState.None
             }
         }
-    }
 
-    "init subscribes to changes in sort order" {
-        val subject = getSubject()
-        artistRepositoryDep.artists.value = FixtureProvider.artistFixtures().toList()
-        sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.ASCENDING
-        testStateHolderState(subject) {
-            awaitItem() shouldBe Loading
+        "init subscribes to changes in sort order" {
+            val subject = getSubject()
+            artistRepositoryDep.artists.value = FixtureProvider.artistFixtures().toList()
+            sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.ASCENDING
+            testStateHolderState(subject) {
+                awaitItem() shouldBe Loading
 
-            with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
-                state.modelListState.sortButtonState shouldBe SortButtonState(
-                    text = R.string.artist_name,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )
+                with(awaitItem()) {
+                    shouldBeInstanceOf<Data<ArtistListState>>()
+                    state.modelListState.sortButtonState shouldBe
+                        SortButtonState(
+                            text = R.string.artist_name,
+                            sortOrder = MediaSortOrder.ASCENDING,
+                        )
+                }
+
+                sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.DESCENDING
+                with(awaitItem()) {
+                    shouldBeInstanceOf<Data<ArtistListState>>()
+                    state.modelListState.sortButtonState shouldBe
+                        SortButtonState(
+                            text = R.string.artist_name,
+                            sortOrder = MediaSortOrder.DESCENDING,
+                        )
+                }
             }
+        }
 
-            sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.DESCENDING
-            with(awaitItem()) {
-                shouldBeInstanceOf<Data<ArtistListState>>()
-                state.modelListState.sortButtonState shouldBe SortButtonState(
-                    text = R.string.artist_name,
-                    sortOrder = MediaSortOrder.DESCENDING,
-                )
+        "handle" -
+            {
+                "SortByButtonClicked toggles sort order" {
+                    val subject = getSubject()
+                    subject.handle(ArtistListUserAction.SortByButtonClicked)
+                    advanceUntilIdle()
+                    sortPreferencesRepositoryDep.artistListSortOrder.value shouldBe
+                        MediaSortOrder.DESCENDING
+                }
+
+                "ArtistClicked navigates to ArtistScreen" {
+                    val subject = getSubject()
+                    subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                ArtistUiComponent(
+                                    arguments = ArtistArguments(ARTIST_ID),
+                                    navController = navControllerDep,
+                                ),
+                            presentationMode = NavOptions.PresentationMode.Screen,
+                        )
+                }
+
+                "ArtistMoreIconClicked navigates to ArtistContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                ArtistContextMenu(
+                                    arguments = ArtistContextMenuArguments(ARTIST_ID)
+                                ),
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        )
+                }
             }
-        }
-    }
-
-    "handle" - {
-
-        "SortByButtonClicked toggles sort order" {
-            val subject = getSubject()
-            subject.handle(ArtistListUserAction.SortByButtonClicked)
-            advanceUntilIdle()
-            sortPreferencesRepositoryDep.artistListSortOrder.value shouldBe MediaSortOrder.DESCENDING
-        }
-
-        "ArtistClicked navigates to ArtistScreen" {
-            val subject = getSubject()
-            subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = ArtistUiComponent(
-                    arguments = ArtistArguments(ARTIST_ID),
-                    navController = navControllerDep
-                ),
-                presentationMode = NavOptions.PresentationMode.Screen
-            )
-        }
-
-        "ArtistMoreIconClicked navigates to ArtistContextMenu" {
-            val subject = getSubject()
-            subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = ArtistContextMenu(
-                    arguments = ArtistContextMenuArguments(ARTIST_ID)
-                ),
-                presentationMode = NavOptions.PresentationMode.BottomSheet
-            )
-        }
-    }
-}) {
+    }) {
 
     companion object {
         private const val ARTIST_ID = 1L

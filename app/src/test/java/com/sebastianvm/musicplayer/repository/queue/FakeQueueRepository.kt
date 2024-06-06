@@ -18,7 +18,7 @@ class FakeQueueRepository : QueueRepository {
 
     override suspend fun saveQueue(
         nowPlayingInfo: NowPlayingInfo,
-        queuedTracksIds: List<QueuedTrack>
+        queuedTracksIds: List<QueuedTrack>,
     ) {
         TODO("Not yet implemented")
     }

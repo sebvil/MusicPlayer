@@ -36,9 +36,7 @@ import kotlinx.coroutines.withContext
 
 class MediaPlaybackService : MediaLibraryService() {
 
-    private val dependencies by lazy {
-        (application as MusicPlayerApplication).dependencies
-    }
+    private val dependencies by lazy { (application as MusicPlayerApplication).dependencies }
 
     private val queueRepository: QueueRepository by lazy {
         dependencies.repositoryProvider.queueRepository
@@ -51,7 +49,7 @@ class MediaPlaybackService : MediaLibraryService() {
         MediaTree(
             artistRepository = dependencies.repositoryProvider.artistRepository,
             trackRepository = dependencies.repositoryProvider.trackRepository,
-            albumRepository = dependencies.repositoryProvider.albumRepository
+            albumRepository = dependencies.repositoryProvider.albumRepository,
         )
     }
 
@@ -61,113 +59,130 @@ class MediaPlaybackService : MediaLibraryService() {
 
     override fun onCreate() {
         super.onCreate()
-        val audioAttributes = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
-            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-            .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL).build()
-        player = ExoPlayer.Builder(this)
-            .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true).build()
+        val audioAttributes =
+            AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL)
+                .build()
+        player =
+            ExoPlayer.Builder(this)
+                .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true)
+                .build()
 
-        CoroutineScope(mainDispatcher).launch {
-            initializeQueue()
-        }
+        CoroutineScope(mainDispatcher).launch { initializeQueue() }
 
-        player.addListener(object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                CoroutineScope(mainDispatcher).launch {
-                    updateQueue()
-                    saveQueue()
+        player.addListener(
+            object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    CoroutineScope(mainDispatcher).launch {
+                        updateQueue()
+                        saveQueue()
+                    }
+                }
+
+                override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                    CoroutineScope(mainDispatcher).launch {
+                        updateQueue()
+                        saveQueue()
+                    }
+                }
+
+                override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                    CoroutineScope(mainDispatcher).launch {
+                        updateQueue()
+                        saveQueue()
+                    }
+                }
+
+                override fun onPlayerError(error: PlaybackException) {
+                    player.seekToNext()
+                    player.prepare()
+                    player.play()
                 }
             }
-
-            override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                CoroutineScope(mainDispatcher).launch {
-                    updateQueue()
-                    saveQueue()
-                }
-            }
-
-            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                CoroutineScope(mainDispatcher).launch {
-                    updateQueue()
-                    saveQueue()
-                }
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                player.seekToNext()
-                player.prepare()
-                player.play()
-            }
-        })
+        )
         mediaSession =
             MediaLibrarySession.Builder(
-                this, player,
-                object : MediaLibrarySession.Callback {
-                    override fun onGetLibraryRoot(
-                        session: MediaLibrarySession,
-                        browser: MediaSession.ControllerInfo,
-                        params: LibraryParams?
-                    ): ListenableFuture<LibraryResult<MediaItem>> {
-                        Log.i("000Player", "get root")
-                        return Futures.immediateFuture(
-                            LibraryResult.ofItem(
-                                mediaTree.getRoot(), params
+                    this,
+                    player,
+                    object : MediaLibrarySession.Callback {
+                        override fun onGetLibraryRoot(
+                            session: MediaLibrarySession,
+                            browser: MediaSession.ControllerInfo,
+                            params: LibraryParams?,
+                        ): ListenableFuture<LibraryResult<MediaItem>> {
+                            Log.i("000Player", "get root")
+                            return Futures.immediateFuture(
+                                LibraryResult.ofItem(mediaTree.getRoot(), params)
                             )
-                        )
-                    }
+                        }
 
-                    override fun onGetChildren(
-                        session: MediaLibrarySession,
-                        browser: MediaSession.ControllerInfo,
-                        parentId: String,
-                        page: Int,
-                        pageSize: Int,
-                        params: LibraryParams?
-                    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-                        Log.i("000Player", "get parent: $parentId")
-                        return mediaTree.getCachedChildren(parentId)?.let {
-                            Log.i(
-                                "000Player",
-                                "cached children: ${it.map { child -> child.mediaId }}"
-                            )
-                            Futures.immediateFuture(LibraryResult.ofItemList(it, params))
-                        } ?: CoroutineScope(mainDispatcher).async {
-                            mediaTree.getChildren(parentId)?.let {
-                                Log.i("000Player", "children: ${it.map { child -> child.mediaId }}")
-                                LibraryResult.ofItemList(it, params)
-                            } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
-                        }.asListenableFuture()
-                    }
-
-                    override fun onGetItem(
-                        session: MediaLibrarySession,
-                        browser: MediaSession.ControllerInfo,
-                        mediaId: String
-                    ): ListenableFuture<LibraryResult<MediaItem>> {
-                        Log.i("000Player", "get item: $mediaId")
-                        return mediaTree.getCachedMediaItem(mediaId)
-                            ?.let { Futures.immediateFuture(LibraryResult.ofItem(it, null)) }
-                            ?: CoroutineScope(mainDispatcher).future {
-                                mediaTree.getItem(mediaId)?.let {
-                                    LibraryResult.ofItem(it, null)
-                                } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                        override fun onGetChildren(
+                            session: MediaLibrarySession,
+                            browser: MediaSession.ControllerInfo,
+                            parentId: String,
+                            page: Int,
+                            pageSize: Int,
+                            params: LibraryParams?,
+                        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+                            Log.i("000Player", "get parent: $parentId")
+                            return mediaTree.getCachedChildren(parentId)?.let {
+                                Log.i(
+                                    "000Player",
+                                    "cached children: ${it.map { child -> child.mediaId }}",
+                                )
+                                Futures.immediateFuture(LibraryResult.ofItemList(it, params))
                             }
-                    }
+                                ?: CoroutineScope(mainDispatcher)
+                                    .async {
+                                        mediaTree.getChildren(parentId)?.let {
+                                            Log.i(
+                                                "000Player",
+                                                "children: ${it.map { child -> child.mediaId }}",
+                                            )
+                                            LibraryResult.ofItemList(it, params)
+                                        } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                                    }
+                                    .asListenableFuture()
+                        }
 
-                    override fun onAddMediaItems(
-                        mediaSession: MediaSession,
-                        controller: MediaSession.ControllerInfo,
-                        mediaItems: MutableList<MediaItem>
-                    ): ListenableFuture<MutableList<MediaItem>> {
-                        val newMediaItems = mediaItems.map {
-                            it.buildUpon().apply {
-                                uri = UriUtils.getTrackUri(it.mediaId.toLong())
-                            }.build()
-                        }.toMutableList()
-                        return Futures.immediateFuture(newMediaItems)
-                    }
-                }
-            ).build()
+                        override fun onGetItem(
+                            session: MediaLibrarySession,
+                            browser: MediaSession.ControllerInfo,
+                            mediaId: String,
+                        ): ListenableFuture<LibraryResult<MediaItem>> {
+                            Log.i("000Player", "get item: $mediaId")
+                            return mediaTree.getCachedMediaItem(mediaId)?.let {
+                                Futures.immediateFuture(LibraryResult.ofItem(it, null))
+                            }
+                                ?: CoroutineScope(mainDispatcher).future {
+                                    mediaTree.getItem(mediaId)?.let {
+                                        LibraryResult.ofItem(it, null)
+                                    } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                                }
+                        }
+
+                        override fun onAddMediaItems(
+                            mediaSession: MediaSession,
+                            controller: MediaSession.ControllerInfo,
+                            mediaItems: MutableList<MediaItem>,
+                        ): ListenableFuture<MutableList<MediaItem>> {
+                            val newMediaItems =
+                                mediaItems
+                                    .map {
+                                        it.buildUpon()
+                                            .apply {
+                                                uri = UriUtils.getTrackUri(it.mediaId.toLong())
+                                            }
+                                            .build()
+                                    }
+                                    .toMutableList()
+                            return Futures.immediateFuture(newMediaItems)
+                        }
+                    },
+                )
+                .build()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
@@ -181,7 +196,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 preparePlaylist(
                     initialWindowIndex = queue.nowPlayingInfo.nowPlayingPositionInQueue,
                     mediaItems = queue.queue.map { it.toMediaItem() },
-                    position = queue.nowPlayingInfo.lastRecordedPosition
+                    position = queue.nowPlayingInfo.lastRecordedPosition,
                 )
             }
         }
@@ -190,7 +205,7 @@ class MediaPlaybackService : MediaLibraryService() {
     private fun preparePlaylist(
         initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
-        position: Long
+        position: Long,
     ) {
         player.apply {
             player.playWhenReady = false
@@ -212,26 +227,25 @@ class MediaPlaybackService : MediaLibraryService() {
     suspend fun saveQueue() {
         val contentPosition = player.contentPosition
         queueRepository.saveQueue(
-            nowPlayingInfo = NowPlayingInfo(
-                nowPlayingPositionInQueue = player.currentMediaItemIndex,
-                lastRecordedPosition = contentPosition,
-            ),
-            queuedTracksIds = queue.value
+            nowPlayingInfo =
+                NowPlayingInfo(
+                    nowPlayingPositionInQueue = player.currentMediaItemIndex,
+                    lastRecordedPosition = contentPosition,
+                ),
+            queuedTracksIds = queue.value,
         )
     }
 
     suspend fun updateQueue() {
         val timeline = player.currentTimeline
         withContext(defaultDispatcher) {
-            val newQueue = (0 until timeline.windowCount).map { windowIndex ->
-                QueuedTrack.fromMediaItem(
-                    mediaItem = timeline.getWindow(
-                        windowIndex,
-                        Timeline.Window()
-                    ).mediaItem,
-                    positionInQueue = windowIndex
-                )
-            }
+            val newQueue =
+                (0 until timeline.windowCount).map { windowIndex ->
+                    QueuedTrack.fromMediaItem(
+                        mediaItem = timeline.getWindow(windowIndex, Timeline.Window()).mediaItem,
+                        positionInQueue = windowIndex,
+                    )
+                }
             queue.value = newQueue
         }
     }

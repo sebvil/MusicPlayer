@@ -21,7 +21,9 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
 enum class TrailingButtonType {
-    More, Plus, Check
+    More,
+    Plus,
+    Check
 }
 
 data class ModelListItemState(
@@ -29,7 +31,7 @@ data class ModelListItemState(
     val headlineContent: String,
     val supportingContent: String? = null,
     val mediaArtImageState: MediaArtImageState? = null,
-    val trailingButtonType: TrailingButtonType?
+    val trailingButtonType: TrailingButtonType?,
 )
 
 @Composable
@@ -47,25 +49,25 @@ fun ModelListItem(
                     text = headlineContent,
                     maxLines = 1,
                     style = MaterialTheme.typography.titleMedium,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             },
             modifier = modifier,
-            supportingContent = supportingContent?.let {
-                {
-                    Text(
-                        text = it,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodyMedium,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            },
-            leadingContent = state.mediaArtImageState?.let {
-                {
-                    MediaArtImage(mediaArtImageState = it, modifier = Modifier.size(56.dp))
-                }
-            },
+            supportingContent =
+                supportingContent?.let {
+                    {
+                        Text(
+                            text = it,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.bodyMedium,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                },
+            leadingContent =
+                state.mediaArtImageState?.let {
+                    { MediaArtImage(mediaArtImageState = it, modifier = Modifier.size(56.dp)) }
+                },
             trailingContent = trailingContent,
             tonalElevation = tonalElevation,
             shadowElevation = shadowElevation,
@@ -79,11 +81,12 @@ fun Album.toModelListItemState(): ModelListItemState {
         id = id,
         headlineContent = albumName,
         supportingContent = supportingContent,
-        mediaArtImageState = MediaArtImageState(
-            imageUri = imageUri,
-            backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album
-        ),
-        trailingButtonType = TrailingButtonType.More
+        mediaArtImageState =
+            MediaArtImageState(
+                imageUri = imageUri,
+                backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album,
+            ),
+        trailingButtonType = TrailingButtonType.More,
     )
 }
 
@@ -91,8 +94,7 @@ fun Artist.toModelListItemState(trailingButtonType: TrailingButtonType?): ModelL
     return ModelListItemState(
         id = id,
         headlineContent = artistName,
-        trailingButtonType = trailingButtonType
-
+        trailingButtonType = trailingButtonType,
     )
 }
 
@@ -100,7 +102,7 @@ fun Genre.toModelListItemState(): ModelListItemState {
     return ModelListItemState(
         id = id,
         headlineContent = genreName,
-        trailingButtonType = TrailingButtonType.More
+        trailingButtonType = TrailingButtonType.More,
     )
 }
 
@@ -108,7 +110,7 @@ fun Playlist.toModelListItemState(): ModelListItemState {
     return ModelListItemState(
         id = id,
         headlineContent = playlistName,
-        trailingButtonType = TrailingButtonType.More
+        trailingButtonType = TrailingButtonType.More,
     )
 }
 
@@ -117,7 +119,7 @@ fun Track.toModelListItemState(): ModelListItemState {
         id = id,
         headlineContent = trackName,
         supportingContent = artists,
-        trailingButtonType = TrailingButtonType.More
+        trailingButtonType = TrailingButtonType.More,
     )
 }
 
@@ -126,7 +128,7 @@ fun BasicTrack.toModelListItemState(trailingButtonType: TrailingButtonType): Mod
         id = id,
         headlineContent = trackName,
         supportingContent = artists,
-        trailingButtonType = trailingButtonType
+        trailingButtonType = trailingButtonType,
     )
 }
 
@@ -135,6 +137,6 @@ fun QueuedTrack.toModelListItemState(): ModelListItemState {
         id = id,
         headlineContent = trackName,
         supportingContent = artists,
-        trailingButtonType = TrailingButtonType.More
+        trailingButtonType = TrailingButtonType.More,
     )
 }

@@ -24,7 +24,7 @@ data class HomeState(
     val albumListUiComponent: AlbumListUiComponent,
     val genreListUiComponent: GenreListUiComponent,
     val playlistListUiComponent: PlaylistListUiComponent,
-    val searchUiComponent: SearchUiComponent
+    val searchUiComponent: SearchUiComponent,
 ) : State
 
 sealed interface HomeUserAction : UserAction
@@ -36,32 +36,32 @@ class HomeStateHolder(
     genreListUiComponent: GenreListUiComponent,
     playlistListUiComponent: PlaylistListUiComponent,
     searchUiComponent: SearchUiComponent,
-    override val stateHolderScope: CoroutineScope = stateHolderScope()
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<HomeState, HomeUserAction> {
 
-    private val _state = MutableStateFlow(
-        HomeState(
-            trackListUiComponent,
-            artistListUiComponent,
-            albumListUiComponent,
-            genreListUiComponent,
-            playlistListUiComponent,
-            searchUiComponent
+    private val _state =
+        MutableStateFlow(
+            HomeState(
+                trackListUiComponent,
+                artistListUiComponent,
+                albumListUiComponent,
+                genreListUiComponent,
+                playlistListUiComponent,
+                searchUiComponent,
+            )
         )
-    )
     override val state: StateFlow<HomeState>
         get() = _state.asStateFlow()
 
     override fun handle(action: HomeUserAction) = Unit
 }
 
-fun getHomeStateHolder(
-    navController: NavController
-): HomeStateHolder {
-    val trackListUiComponent = TrackListUiComponent(
-        arguments = TrackListArguments(trackListType = MediaGroup.AllTracks),
-        navController = navController
-    )
+fun getHomeStateHolder(navController: NavController): HomeStateHolder {
+    val trackListUiComponent =
+        TrackListUiComponent(
+            arguments = TrackListArguments(trackListType = MediaGroup.AllTracks),
+            navController = navController,
+        )
     val artistListUiComponent = ArtistListUiComponent(navController)
     val albumListUiComponent = AlbumListUiComponent(navController)
     val genreListUiComponent = GenreListUiComponent(navController)
@@ -73,6 +73,6 @@ fun getHomeStateHolder(
         albumListUiComponent = albumListUiComponent,
         genreListUiComponent = genreListUiComponent,
         playlistListUiComponent = playlistListUiComponent,
-        searchUiComponent = searchUiComponent
+        searchUiComponent = searchUiComponent,
     )
 }

@@ -8,8 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GenreDao {
-    @Query("SELECT COUNT(*) FROM Genre")
-    fun getGenresCount(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM Genre") fun getGenresCount(): Flow<Int>
 
     @Query(
         "SELECT * FROM Genre ORDER BY " +

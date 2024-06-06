@@ -35,11 +35,7 @@ import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 @Composable
-fun MainApp(
-    state: MainState,
-    handle: Handler<MainUserAction>,
-    modifier: Modifier = Modifier,
-) {
+fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifier = Modifier) {
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -50,15 +46,11 @@ fun MainApp(
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     val navBarPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
-    var height by remember {
-        mutableFloatStateOf(0f)
-    }
+    var height by remember { mutableFloatStateOf(0f) }
     val density = LocalDensity.current
     val playerBottomPadding = 4.dp
 
@@ -71,49 +63,43 @@ fun MainApp(
     }
     val transition = updateTransition(targetState = isFullScreen, label = "player animation")
 
-    val paddingHorizontal by transition.animateDp(
-        transitionSpec = transitionSpec(),
-        label = "padding horizontal"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) 0.dp else 8.dp
-    }
+    val paddingHorizontal by
+        transition.animateDp(transitionSpec = transitionSpec(), label = "padding horizontal") {
+            targetIsFullScreen ->
+            if (targetIsFullScreen) 0.dp else 8.dp
+        }
 
-    val paddingBottom by transition.animateDp(
-        transitionSpec = transitionSpec(),
-        label = "padding bottom"
-    ) { targetIsFullScreen ->
-        if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
-    }
+    val paddingBottom by
+        transition.animateDp(transitionSpec = transitionSpec(), label = "padding bottom") {
+            targetIsFullScreen ->
+            if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
+        }
     val paddingValues by remember {
         derivedStateOf {
-            with(density) {
-                PaddingValues(bottom = paddingBottom + height.toDp() + 8.dp)
-            }
+            with(density) { PaddingValues(bottom = paddingBottom + height.toDp() + 8.dp) }
         }
     }
     CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
         Box(modifier = modifier) {
             state.appNavigationHostUiComponent.Content(modifier = Modifier)
             state.playerUiComponent.Content(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(bottom = paddingBottom)
-                    .padding(horizontal = paddingHorizontal)
-                    .onPlaced { coordinates ->
-                        height = coordinates.boundsInParent().height
-                    }
-                    .clickable(
-                        interactionSource = null,
-                        indication = null,
-                        enabled = !isFullScreen,
-                    ) {
-                        handle(MainUserAction.ExpandPlayer)
-                    },
+                modifier =
+                    Modifier.align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(bottom = paddingBottom)
+                        .padding(horizontal = paddingHorizontal)
+                        .onPlaced { coordinates -> height = coordinates.boundsInParent().height }
+                        .clickable(
+                            interactionSource = null,
+                            indication = null,
+                            enabled = !isFullScreen,
+                        ) {
+                            handle(MainUserAction.ExpandPlayer)
+                        }
             )
         }
     }
 }
 
-private fun <T> transitionSpec(): @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> =
-    { spring() }
+private fun <T> transitionSpec():
+    @Composable Transition.Segment<Boolean>.() -> FiniteAnimationSpec<T> = { spring() }

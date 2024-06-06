@@ -23,22 +23,23 @@ class AppQueueRepository(
     private val trackRepository: TrackRepository,
     private val mediaQueueDao: MediaQueueDao,
     private val mediaPlaybackClient: MediaPlaybackClient,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
 ) : QueueRepository {
     override fun getQueue(): Flow<NextUpQueue?> {
         return combine(
             nowPlayingInfoDataSource.getNowPlayingInfo(),
-            mediaQueueDao.getQueuedTracks()
+            mediaQueueDao.getQueuedTracks(),
         ) { nowPlayingInfo, queuedTracks ->
             val nowPlayingTrackIndex =
                 nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
                     ?: return@combine null
             NextUpQueue(
                 nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
-                nextUp = queuedTracks.subList(
-                    fromIndex = nowPlayingTrackIndex + 1,
-                    toIndex = queuedTracks.size
-                )
+                nextUp =
+                    queuedTracks.subList(
+                        fromIndex = nowPlayingTrackIndex + 1,
+                        toIndex = queuedTracks.size,
+                    ),
             )
         }
     }
@@ -46,19 +47,16 @@ class AppQueueRepository(
     override fun getFullQueue(): Flow<FullQueue?> {
         return combine(
             nowPlayingInfoDataSource.getNowPlayingInfo(),
-            mediaQueueDao.getQueuedTracks()
+            mediaQueueDao.getQueuedTracks(),
         ) { nowPlayingInfo, queuedTracks ->
             nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 } ?: return@combine null
-            FullQueue(
-                nowPlayingInfo = nowPlayingInfo,
-                queue = queuedTracks
-            )
+            FullQueue(nowPlayingInfo = nowPlayingInfo, queue = queuedTracks)
         }
     }
 
     override suspend fun saveQueue(
         nowPlayingInfo: NowPlayingInfo,
-        queuedTracksIds: List<QueuedTrack>
+        queuedTracksIds: List<QueuedTrack>,
     ) {
         nowPlayingInfoDataSource.setNowPlayingInfo(nowPlayingInfo)
         withContext(ioDispatcher) {
@@ -67,7 +65,7 @@ class AppQueueRepository(
                     MediaQueueItem(
                         trackId = item.id,
                         queuePosition = item.queuePosition,
-                        queueItemId = item.queueItemId
+                        queueItemId = item.queueItemId,
                     )
                 }
             )

@@ -16,6 +16,7 @@ sealed interface MediaGroup {
 }
 
 sealed interface HasTracks : MediaGroup
+
 sealed interface HasArtists : MediaGroup
 
 sealed interface TrackList : HasTracks

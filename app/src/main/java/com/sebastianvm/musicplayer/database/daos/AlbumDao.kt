@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlbumDao {
-    @Query("SELECT COUNT(*) FROM Album")
-    fun getAlbumsCount(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM Album") fun getAlbumsCount(): Flow<Int>
 
     @Transaction
     @Query("SELECT * from Album WHERE Album.id IN (:albumIds)")
@@ -46,6 +45,6 @@ interface AlbumDao {
     )
     fun getAllAlbums(
         sortOption: SortOptions.AlbumListSortOptions,
-        sortOrder: MediaSortOrder
+        sortOrder: MediaSortOrder,
     ): Flow<List<Album>>
 }

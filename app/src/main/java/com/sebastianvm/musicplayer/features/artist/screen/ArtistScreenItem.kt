@@ -6,14 +6,11 @@ import com.sebastianvm.musicplayer.util.AlbumType
 sealed class ArtistScreenItem {
     abstract val id: Any
 
-    data class AlbumRowItem(
-        val state: ModelListItemState
-    ) : ArtistScreenItem() {
+    data class AlbumRowItem(val state: ModelListItemState) : ArtistScreenItem() {
         override val id = state.id
     }
 
-    data class SectionHeaderItem(val sectionType: AlbumType) :
-        ArtistScreenItem() {
+    data class SectionHeaderItem(val sectionType: AlbumType) : ArtistScreenItem() {
         override val id = sectionType.name
     }
 }

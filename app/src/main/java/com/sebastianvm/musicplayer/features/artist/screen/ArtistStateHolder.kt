@@ -27,16 +27,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-data class ArtistState(
-    val artistName: String,
-    val listItems: List<ArtistScreenItem>,
-) : State
+data class ArtistState(val artistName: String, val listItems: List<ArtistScreenItem>) : State
 
 data class ArtistArguments(val artistId: Long) : Arguments
 
 sealed interface ArtistUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
+
     data class AlbumClicked(val albumId: Long) : ArtistUserAction
+
     data object BackClicked : ArtistUserAction
 }
 
@@ -50,28 +49,31 @@ class ArtistStateHolder(
     private val artistId = arguments.artistId
 
     override val state: StateFlow<UiState<ArtistState>> =
-        artistRepository.getArtist(artistId).map { artistWithAlbums ->
-            val listItems = buildList {
-                if (artistWithAlbums.artistAlbums.isNotEmpty()) {
-                    add(ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM))
+        artistRepository
+            .getArtist(artistId)
+            .map { artistWithAlbums ->
+                val listItems = buildList {
+                    if (artistWithAlbums.artistAlbums.isNotEmpty()) {
+                        add(ArtistScreenItem.SectionHeaderItem(AlbumType.ALBUM))
+                    }
+                    addAll(artistWithAlbums.artistAlbums.map { album -> album.toAlbumRowItem() })
+                    if (artistWithAlbums.artistAppearsOn.isNotEmpty()) {
+                        add(ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON))
+                    }
+                    addAll(artistWithAlbums.artistAppearsOn.map { album -> album.toAlbumRowItem() })
                 }
-                addAll(artistWithAlbums.artistAlbums.map { album -> album.toAlbumRowItem() })
-                if (artistWithAlbums.artistAppearsOn.isNotEmpty()) {
-                    add(ArtistScreenItem.SectionHeaderItem(AlbumType.APPEARS_ON))
-                }
-                addAll(artistWithAlbums.artistAppearsOn.map { album -> album.toAlbumRowItem() })
-            }
-            if (listItems.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    ArtistState(
-                        artistName = artistWithAlbums.artist.artistName,
-                        listItems = listItems,
+                if (listItems.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        ArtistState(
+                            artistName = artistWithAlbums.artist.artistName,
+                            listItems = listItems,
+                        )
                     )
-                )
+                }
             }
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: ArtistUserAction) {
         when (action) {
@@ -81,19 +83,18 @@ class ArtistStateHolder(
                         arguments = AlbumContextMenuArguments(action.albumId),
                         navController = navController,
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is ArtistUserAction.BackClicked -> {
                 navController.pop()
             }
-
             is ArtistUserAction.AlbumClicked -> {
                 navController.push(
                     TrackListUiComponent(
                         arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
-                        navController = navController
+                        navController = navController,
                     )
                 )
             }
@@ -108,7 +109,7 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
 fun getArtistStateHolder(
     dependencies: AppDependencies,
     arguments: ArtistArguments,
-    navController: NavController
+    navController: NavController,
 ): ArtistStateHolder {
     return ArtistStateHolder(
         arguments = arguments,

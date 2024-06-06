@@ -61,5 +61,4 @@ inline var MediaMetadata.Builder.extras: Bundle
 const val KEY_TRACK_DURATION_MS =
     "com.sebastianvm.musicplayer.util.extensions.KEY_TRACK_DURATION_MS"
 
-const val KEY_UNIQUE_ID =
-    "com.sebastianvm.musicplayer.util.extensions.KEY_UNIQUE_ID"
+const val KEY_UNIQUE_ID = "com.sebastianvm.musicplayer.util.extensions.KEY_UNIQUE_ID"

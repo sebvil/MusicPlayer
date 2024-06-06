@@ -25,25 +25,27 @@ import kotlinx.coroutines.launch
 data class AlbumContextMenuArguments(val albumId: Long) : Arguments
 
 sealed interface AlbumContextMenuState : State {
-    data class Data(
-        val albumName: String,
-        val albumId: Long,
-        val viewArtistsState: ViewArtistRow
-    ) : AlbumContextMenuState
+    data class Data(val albumName: String, val albumId: Long, val viewArtistsState: ViewArtistRow) :
+        AlbumContextMenuState
 
     data object Loading : AlbumContextMenuState
 }
 
 sealed interface ViewArtistRow {
     data class SingleArtist(val artistId: Long) : ViewArtistRow
+
     data object MultipleArtists : ViewArtistRow
+
     data object NoArtists : ViewArtistRow
 }
 
 sealed interface AlbumContextMenuUserAction : UserAction {
     data object AddToQueueClicked : AlbumContextMenuUserAction
+
     data object PlayAlbumClicked : AlbumContextMenuUserAction
+
     data object ViewArtistsClicked : AlbumContextMenuUserAction
+
     data class ViewArtistClicked(val artistId: Long) : AlbumContextMenuUserAction
 }
 
@@ -59,52 +61,52 @@ class AlbumContextMenuStateHolder(
     private val albumId = arguments.albumId
 
     override val state: StateFlow<AlbumContextMenuState> =
-        albumRepository.getFullAlbumInfo(albumId).map { album ->
-            AlbumContextMenuState.Data(
-                albumName = album.album.albumName,
-                albumId = albumId,
-                viewArtistsState = when (album.artists.size) {
-                    0 -> ViewArtistRow.NoArtists
-                    1 -> ViewArtistRow.SingleArtist(album.artists[0])
-                    else -> ViewArtistRow.MultipleArtists
-                }
-            )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, AlbumContextMenuState.Loading)
+        albumRepository
+            .getFullAlbumInfo(albumId)
+            .map { album ->
+                AlbumContextMenuState.Data(
+                    albumName = album.album.albumName,
+                    albumId = albumId,
+                    viewArtistsState =
+                        when (album.artists.size) {
+                            0 -> ViewArtistRow.NoArtists
+                            1 -> ViewArtistRow.SingleArtist(album.artists[0])
+                            else -> ViewArtistRow.MultipleArtists
+                        },
+                )
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, AlbumContextMenuState.Loading)
 
     override fun handle(action: AlbumContextMenuUserAction) {
         when (action) {
             is AlbumContextMenuUserAction.AddToQueueClicked -> {
-                stateHolderScope.launch {
-                    queueRepository.addToQueue(MediaGroup.Album(albumId))
-                }
+                stateHolderScope.launch { queueRepository.addToQueue(MediaGroup.Album(albumId)) }
             }
-
             AlbumContextMenuUserAction.PlayAlbumClicked -> {
                 stateHolderScope.launch {
                     playbackManager.playMedia(mediaGroup = MediaGroup.Album(albumId))
                 }
             }
-
             is AlbumContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(popCurrent = true)
+                    navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             AlbumContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     ArtistsMenu(
                         arguments = ArtistsMenuArguments(MediaGroup.Album(albumId)),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(
-                        popCurrent = true,
-                        presentationMode = NavOptions.PresentationMode.BottomSheet
-                    )
+                    navOptions =
+                        NavOptions(
+                            popCurrent = true,
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        ),
                 )
             }
         }

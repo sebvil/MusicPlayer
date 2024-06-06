@@ -15,11 +15,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val database: MusicDatabase by lazy {
-        Room.databaseBuilder(
-            appContext,
-            MusicDatabase::class.java,
-            "music_database"
-        ).build()
+        Room.databaseBuilder(appContext, MusicDatabase::class.java, "music_database").build()
     }
 
     private val jetpackDataStoreProvider: JetpackDataStoreProvider by lazy {
@@ -34,7 +30,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
             dispatcherProvider = dispatcherProvider,
             database = database,
             jetpackDataStoreProvider = jetpackDataStoreProvider,
-            applicationScope = applicationScope
+            applicationScope = applicationScope,
         )
     }
 }

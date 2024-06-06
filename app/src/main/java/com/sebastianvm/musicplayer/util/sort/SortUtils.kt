@@ -36,27 +36,27 @@ sealed interface SortOptions {
 
 @Serializable
 data class SortPreferences(
-    val allTrackListSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> = MediaSortPreferences(
-        sortOption = SortOptions.TrackListSortOptions.TRACK
-    ),
+    val allTrackListSortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> =
+        MediaSortPreferences(sortOption = SortOptions.TrackListSortOptions.TRACK),
     @Serializable(with = GenreSortPrefsSerializer::class)
-    val genreTrackListSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> =
+    val genreTrackListSortPreferences:
+        PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> =
         persistentMapOf(),
-    val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> = MediaSortPreferences(
-        sortOption = SortOptions.AlbumListSortOptions.ALBUM
-    ),
+    val albumListSortPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions> =
+        MediaSortPreferences(sortOption = SortOptions.AlbumListSortOptions.ALBUM),
     val artistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     val genreListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     val playlistListSortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
     @Serializable(with = PlaylistSortPrefsSerializer::class)
-    val playlistSortPreferences: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> =
-        persistentMapOf()
+    val playlistSortPreferences:
+        PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> =
+        persistentMapOf(),
 )
 
 @Serializable
 data class MediaSortPreferences<T : SortOptions>(
     val sortOption: T,
-    val sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING
+    val sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
 )
 
 enum class MediaSortOrder {

@@ -26,8 +26,7 @@ abstract class PlaylistDao {
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-    @Query("SELECT COUNT(*) FROM Playlist")
-    abstract fun getPlaylistsCount(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM Playlist") abstract fun getPlaylistsCount(): Flow<Int>
 
     @Transaction
     @Query("SELECT * FROM Playlist")
@@ -51,16 +50,15 @@ abstract class PlaylistDao {
     @Query("SELECT * FROM Playlist WHERE Playlist.id=:playlistId")
     abstract fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks?>
 
-    @Insert
-    abstract suspend fun createPlaylist(playlist: Playlist): Long
+    @Insert abstract suspend fun createPlaylist(playlist: Playlist): Long
 
-    @Delete
-    abstract suspend fun deletePlaylist(playlist: Playlist)
+    @Delete abstract suspend fun deletePlaylist(playlist: Playlist)
 
-    @Insert
-    abstract suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef)
+    @Insert abstract suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef)
 
-    @Query("SELECT COUNT(*) FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId")
+    @Query(
+        "SELECT COUNT(*) FROM PlaylistTrackCrossRef WHERE PlaylistTrackCrossRef.playlistId=:playlistId"
+    )
     abstract fun getPlaylistSize(playlistId: Long): Flow<Long>
 
     @Query(
@@ -82,11 +80,10 @@ abstract class PlaylistDao {
     abstract fun getTracksInPlaylist(
         playlistId: Long,
         sortOption: SortOptions.PlaylistSortOptions,
-        sortOrder: MediaSortOrder
+        sortOrder: MediaSortOrder,
     ): Flow<List<TrackWithPlaylistPositionView>>
 
-    @Update
-    abstract suspend fun updatePlaylistItems(newItems: List<PlaylistTrackCrossRef>)
+    @Update abstract suspend fun updatePlaylistItems(newItems: List<PlaylistTrackCrossRef>)
 
     @Delete(entity = PlaylistTrackCrossRef::class)
     abstract suspend fun removePlaylistItem(playlistItemKeys: PlaylistTrackCrossRefKeys)
@@ -94,43 +91,41 @@ abstract class PlaylistDao {
     @Transaction
     open suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
         withContext(ioDispatcher) {
-            val tracks = getTracksInPlaylist(
-                playlistId,
-                sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
-                sortOrder = MediaSortOrder.ASCENDING
-            ).first()
-            val lastItem = tracks.last()
-                .let {
-                    PlaylistTrackCrossRefKeys(
-                        playlistId = it.playlistId,
-                        position = it.position
+            val tracks =
+                getTracksInPlaylist(
+                        playlistId,
+                        sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
+                        sortOrder = MediaSortOrder.ASCENDING,
                     )
+                    .first()
+            val lastItem =
+                tracks.last().let {
+                    PlaylistTrackCrossRefKeys(playlistId = it.playlistId, position = it.position)
                 }
-            val newTracks = withContext(defaultDispatcher) {
-                tracks.mapNotNull {
-                    when {
-                        it.position < position -> {
-                            PlaylistTrackCrossRef(
-                                playlistId = it.playlistId,
-                                trackId = it.id,
-                                position = it.position
-                            )
-                        }
-
-                        it.position > position -> {
-                            PlaylistTrackCrossRef(
-                                playlistId = it.playlistId,
-                                trackId = it.id,
-                                position = it.position - 1
-                            )
-                        }
-
-                        else -> {
-                            null
+            val newTracks =
+                withContext(defaultDispatcher) {
+                    tracks.mapNotNull {
+                        when {
+                            it.position < position -> {
+                                PlaylistTrackCrossRef(
+                                    playlistId = it.playlistId,
+                                    trackId = it.id,
+                                    position = it.position,
+                                )
+                            }
+                            it.position > position -> {
+                                PlaylistTrackCrossRef(
+                                    playlistId = it.playlistId,
+                                    trackId = it.id,
+                                    position = it.position - 1,
+                                )
+                            }
+                            else -> {
+                                null
+                            }
                         }
                     }
                 }
-            }
 
             updatePlaylistItems(newTracks)
             removePlaylistItem(lastItem)

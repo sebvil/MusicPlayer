@@ -40,7 +40,9 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 // // Note: You can launch the preview on device to see the dialogs
 // @ScreenPreview
 // @Composable
-// private fun PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state: PlaylistListState) {
+// private fun
+// PlaylistListScreenPreview(@PreviewParameter(PlaylistListStatePreviewParamProvider::class) state:
+// PlaylistListState) {
 //    ScreenPreview {
 //        PlaylistListScreen(
 //            state = state,
@@ -57,15 +59,11 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 @PreviewComponents
 @Composable
 private fun PlaylistCreationErrorDialogPreview() {
-    ThemedPreview {
-        PlaylistCreationErrorDialog {}
-    }
+    ThemedPreview { PlaylistCreationErrorDialog {} }
 }
 
 @PreviewComponents
 @Composable
 private fun CreatePlaylistDialogPreview() {
-    ThemedPreview {
-        CreatePlaylistDialog(onDismiss = {}, onConfirm = {})
-    }
+    ThemedPreview { CreatePlaylistDialog(onDismiss = {}, onConfirm = {}) }
 }

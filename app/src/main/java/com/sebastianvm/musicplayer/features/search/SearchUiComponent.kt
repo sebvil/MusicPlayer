@@ -68,7 +68,7 @@ data class SearchUiComponent(val navController: NavController) :
     override fun Content(
         state: SearchState,
         handle: Handler<SearchUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         SearchScreen(state = state, handle = handle, modifier = modifier)
     }
@@ -81,18 +81,14 @@ fun SearchScreen(
     handle: Handler<SearchUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    var isSearchActive by remember {
-        mutableStateOf(false)
-    }
+    var isSearchActive by remember { mutableStateOf(false) }
 
     var query by remember {
         handle(SearchUserAction.TextChanged(""))
         mutableStateOf("")
     }
 
-    var isDropdownManuExpanded by remember {
-        mutableStateOf(false)
-    }
+    var isDropdownManuExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -114,19 +110,19 @@ fun SearchScreen(
                 onSearch = {},
                 expanded = isSearchActive,
                 onExpandedChange = onActiveChange,
-                placeholder = {
-                    Text(text = stringResource(R.string.search_media))
-                },
+                placeholder = { Text(text = stringResource(R.string.search_media)) },
                 leadingIcon = {
                     if (isSearchActive) {
-                        IconButton(onClick = {
-                            isSearchActive = false
-                            query = ""
-                            handle(SearchUserAction.TextChanged(""))
-                        }) {
+                        IconButton(
+                            onClick = {
+                                isSearchActive = false
+                                query = ""
+                                handle(SearchUserAction.TextChanged(""))
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back)
+                                contentDescription = stringResource(id = R.string.back),
                             )
                         }
                     } else {
@@ -135,23 +131,18 @@ fun SearchScreen(
                 },
                 trailingIcon = {
                     if (!isSearchActive) {
-                        Box(
-                            modifier = Modifier
-                                .wrapContentSize(Alignment.TopStart)
-                        ) {
+                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                             IconButton(
-                                onClick = {
-                                    isDropdownManuExpanded = !isDropdownManuExpanded
-                                }
+                                onClick = { isDropdownManuExpanded = !isDropdownManuExpanded }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more)
+                                    contentDescription = stringResource(id = R.string.more),
                                 )
                             }
                             DropdownMenu(
                                 expanded = isDropdownManuExpanded,
-                                onDismissRequest = { isDropdownManuExpanded = false }
+                                onDismissRequest = { isDropdownManuExpanded = false },
                             ) {
                                 PermissionHandler(
                                     permission = Permission.ReadAudio,
@@ -160,22 +151,19 @@ fun SearchScreen(
                                     onPermissionGranted = {
                                         startForegroundService(
                                             context,
-                                            Intent(context, LibraryScanService::class.java)
+                                            Intent(context, LibraryScanService::class.java),
                                         )
                                         isDropdownManuExpanded = false
-                                    }
+                                    },
                                 ) { onClick ->
                                     DropdownMenuItem(
-                                        text = { Text(stringResource(id = R.string.refresh_library)) },
-                                        onClick = {
-                                            onClick()
+                                        text = {
+                                            Text(stringResource(id = R.string.refresh_library))
                                         },
+                                        onClick = { onClick() },
                                         leadingIcon = {
-                                            Icon(
-                                                Icons.Outlined.Refresh,
-                                                contentDescription = null
-                                            )
-                                        }
+                                            Icon(Icons.Outlined.Refresh, contentDescription = null)
+                                        },
                                     )
                                 }
                             }
@@ -189,7 +177,7 @@ fun SearchScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = R.string.back)
+                                contentDescription = stringResource(id = R.string.back),
                             )
                         }
                     }
@@ -210,15 +198,11 @@ fun SearchScreen(
 fun SearchLayout(
     state: SearchState,
     handle: Handler<SearchUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clearFocusOnTouch(focusManager)
-    ) {
+    Column(modifier = modifier.fillMaxHeight().clearFocusOnTouch(focusManager)) {
         SingleSelectFilterChipGroup(
             options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
@@ -226,36 +210,38 @@ fun SearchLayout(
             getDisplayName = { option -> stringResource(id = option.res) },
             onNewOptionSelected = { newOption ->
                 handle(SearchUserAction.SearchModeChanged(newOption))
-            }
+            },
         )
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
                 ModelListItem(
                     state = item,
-                    modifier = Modifier
-                        .clickable {
+                    modifier =
+                        Modifier.clickable {
                             handle(
                                 SearchUserAction.SearchResultClicked(
                                     id = item.id,
-                                    mediaType = state.selectedOption
+                                    mediaType = state.selectedOption,
                                 )
                             )
                         },
                     trailingContent = {
-                        IconButton(onClick = {
-                            handle(
-                                SearchUserAction.SearchResultOverflowMenuIconClicked(
-                                    id = item.id,
-                                    mediaType = state.selectedOption
+                        IconButton(
+                            onClick = {
+                                handle(
+                                    SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                        id = item.id,
+                                        mediaType = state.selectedOption,
+                                    )
                                 )
-                            )
-                        }) {
+                            }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = R.string.more)
+                                contentDescription = stringResource(id = R.string.more),
                             )
                         }
-                    }
+                    },
                 )
             }
         }

@@ -11,8 +11,6 @@ class NowPlayingInfoDataSource(private val nowPlayingDataStore: DataStore<NowPla
     }
 
     suspend fun setNowPlayingInfo(nowPlayingInfo: NowPlayingInfo) {
-        nowPlayingDataStore.updateData {
-            nowPlayingInfo
-        }
+        nowPlayingDataStore.updateData { nowPlayingInfo }
     }
 }

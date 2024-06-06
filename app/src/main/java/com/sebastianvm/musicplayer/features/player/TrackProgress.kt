@@ -9,16 +9,15 @@ value class Percentage(val percent: Float) {
     }
 }
 
-data class TrackProgressState(
-    val currentPlaybackTime: Duration,
-    val trackLength: Duration
-) {
+data class TrackProgressState(val currentPlaybackTime: Duration, val trackLength: Duration) {
     val progress: Percentage
-        get() = if (trackLength == Duration.ZERO) {
-            Percentage(0f)
-        } else {
-            Percentage(
-                currentPlaybackTime.inWholeMilliseconds.toFloat() / trackLength.inWholeMilliseconds.toFloat()
-            )
-        }
+        get() =
+            if (trackLength == Duration.ZERO) {
+                Percentage(0f)
+            } else {
+                Percentage(
+                    currentPlaybackTime.inWholeMilliseconds.toFloat() /
+                        trackLength.inWholeMilliseconds.toFloat()
+                )
+            }
 }

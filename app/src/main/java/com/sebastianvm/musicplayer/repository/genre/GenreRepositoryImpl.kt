@@ -10,12 +10,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 
 class GenreRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val genreDao: GenreDao
+    private val genreDao: GenreDao,
 ) : GenreRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getGenres(): Flow<List<Genre>> {
-        return sortPreferencesRepository.getGenreListSortOrder()
+        return sortPreferencesRepository
+            .getGenreListSortOrder()
             .flatMapLatest { sortOrder -> genreDao.getGenres(sortOrder = sortOrder) }
             .distinctUntilChanged()
     }

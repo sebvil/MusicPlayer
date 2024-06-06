@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 data class TrackContextMenuArguments(
     val trackId: Long,
     val trackPositionInList: Int,
-    val trackList: HasTracks
+    val trackList: HasTracks,
 ) : Arguments
 
 sealed interface TrackContextMenuState : State {
@@ -46,18 +46,25 @@ sealed interface TrackContextMenuState : State {
 
 sealed interface ViewArtistRow {
     data class SingleArtist(val artistId: Long) : ViewArtistRow
+
     data object MultipleArtists : ViewArtistRow
+
     data object NoArtists : ViewArtistRow
 }
 
 data class ViewAlbumRow(val albumId: Long)
+
 data class RemoveFromPlaylistRow(val playlistId: Long, val trackPositionInPlaylist: Long)
 
 sealed interface TrackContextMenuUserAction : UserAction {
     data object AddToQueueClicked : TrackContextMenuUserAction
+
     data object ViewArtistsClicked : TrackContextMenuUserAction
+
     data class ViewArtistClicked(val artistId: Long) : TrackContextMenuUserAction
+
     data class ViewAlbumClicked(val albumId: Long) : TrackContextMenuUserAction
+
     data class RemoveFromPlaylistClicked(val playlistId: Long, val trackPositionInPlaylist: Long) :
         TrackContextMenuUserAction
 }
@@ -74,81 +81,77 @@ class TrackContextMenuStateHolder(
     private val trackId = arguments.trackId
 
     override val state: StateFlow<TrackContextMenuState> =
-        trackRepository.getTrack(trackId).map { track ->
-            TrackContextMenuState.Data(
-                trackName = track.track.trackName,
-                trackId = trackId,
-                viewArtistsState = when (track.artists.size) {
-                    0 -> ViewArtistRow.NoArtists
-                    1 -> ViewArtistRow.SingleArtist(track.artists[0])
-                    else -> ViewArtistRow.MultipleArtists
-                },
-                viewAlbumState = if (arguments.trackList is MediaGroup.Album) {
-                    null
-                } else {
-                    ViewAlbumRow(track.track.albumId)
-                },
-                removeFromPlaylistRow = (arguments.trackList as? MediaGroup.Playlist)?.let {
-                    RemoveFromPlaylistRow(
-                        playlistId = it.playlistId,
-                        trackPositionInPlaylist = arguments.trackPositionInList.toLong()
-                    )
-                },
-            )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, TrackContextMenuState.Loading)
+        trackRepository
+            .getTrack(trackId)
+            .map { track ->
+                TrackContextMenuState.Data(
+                    trackName = track.track.trackName,
+                    trackId = trackId,
+                    viewArtistsState =
+                        when (track.artists.size) {
+                            0 -> ViewArtistRow.NoArtists
+                            1 -> ViewArtistRow.SingleArtist(track.artists[0])
+                            else -> ViewArtistRow.MultipleArtists
+                        },
+                    viewAlbumState =
+                        if (arguments.trackList is MediaGroup.Album) {
+                            null
+                        } else {
+                            ViewAlbumRow(track.track.albumId)
+                        },
+                    removeFromPlaylistRow =
+                        (arguments.trackList as? MediaGroup.Playlist)?.let {
+                            RemoveFromPlaylistRow(
+                                playlistId = it.playlistId,
+                                trackPositionInPlaylist = arguments.trackPositionInList.toLong(),
+                            )
+                        },
+                )
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, TrackContextMenuState.Loading)
 
     override fun handle(action: TrackContextMenuUserAction) {
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
-                stateHolderScope.launch {
-                    queueRepository.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
-                }.invokeOnCompletion {
-                    navController.pop()
-                }
+                stateHolderScope
+                    .launch {
+                        queueRepository.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
+                    }
+                    .invokeOnCompletion { navController.pop() }
             }
-
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
                 navController.push(
                     TrackListUiComponent(
-                        arguments = TrackListArguments(
-                            MediaGroup.Album(
-                                albumId = action.albumId
-                            )
-                        ),
-                        navController = navController
+                        arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(popCurrent = true)
+                    navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             is TrackContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
                     ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(popCurrent = true)
+                    navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             TrackContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     ArtistsMenu(
                         arguments = ArtistsMenuArguments(MediaGroup.SingleTrack(trackId)),
-                        navController = navController
+                        navController = navController,
                     ),
-                    navOptions = NavOptions(
-                        popCurrent = true,
-                        NavOptions.PresentationMode.BottomSheet
-                    )
+                    navOptions =
+                        NavOptions(popCurrent = true, NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackContextMenuUserAction.RemoveFromPlaylistClicked -> {
                 stateHolderScope.launch {
                     playlistRepository.removeItemFromPlaylist(
                         playlistId = action.playlistId,
-                        position = action.trackPositionInPlaylist
+                        position = action.trackPositionInPlaylist,
                     )
                 }
             }
@@ -159,13 +162,13 @@ class TrackContextMenuStateHolder(
 fun getTrackContextMenuStateHolder(
     dependencies: AppDependencies,
     arguments: TrackContextMenuArguments,
-    navController: NavController
+    navController: NavController,
 ): TrackContextMenuStateHolder {
     return TrackContextMenuStateHolder(
         arguments = arguments,
         trackRepository = dependencies.repositoryProvider.trackRepository,
         playlistRepository = dependencies.repositoryProvider.playlistRepository,
         queueRepository = dependencies.repositoryProvider.queueRepository,
-        navController = navController
+        navController = navController,
     )
 }

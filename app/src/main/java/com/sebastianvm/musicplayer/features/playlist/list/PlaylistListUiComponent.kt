@@ -26,14 +26,19 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class PlaylistListUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, UiState<PlaylistListState>, PlaylistListUserAction, PlaylistListStateHolder>() {
+    BaseUiComponent<
+        NoArguments,
+        UiState<PlaylistListState>,
+        PlaylistListUserAction,
+        PlaylistListStateHolder,
+    >() {
     override val arguments: NoArguments = NoArguments
 
     @Composable
     override fun Content(
         state: UiState<PlaylistListState>,
         handle: Handler<PlaylistListUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         PlaylistList(uiState = state, handle = handle, modifier = modifier)
     }
@@ -41,7 +46,7 @@ data class PlaylistListUiComponent(val navController: NavController) :
     override fun createStateHolder(dependencies: AppDependencies): PlaylistListStateHolder {
         return getPlaylistListStateHolder(
             dependencies = dependencies,
-            navController = navController
+            navController = navController,
         )
     }
 }
@@ -50,17 +55,9 @@ data class PlaylistListUiComponent(val navController: NavController) :
 fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text(text = "Ok")
-            }
-        },
-        title = {
-            Text(text = "Error creating playlist")
-        },
-        text = {
-            Text(text = "A playlist with that name already exists.")
-        }
+        confirmButton = { TextButton(onClick = { onDismiss() }) { Text(text = "Ok") } },
+        title = { Text(text = "Error creating playlist") },
+        text = { Text(text = "A playlist with that name already exists.") },
     )
 }
 
@@ -68,32 +65,30 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
 fun PlaylistList(
     uiState: UiState<PlaylistListState>,
     handle: Handler<PlaylistListUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
-        EmptyScreen(
-            message = {
-                Text(
-                    text = stringResource(R.string.no_playlists_try_creating_one),
-                    textAlign = TextAlign.Center
-                )
-            },
-            button = {
-                Button(onClick = {}) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                    Text(text = stringResource(id = R.string.create_playlist))
-                }
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        )
-    }) { state ->
-        PlaylistListLayout(
-            state = state,
-            handle = handle,
-            isCreatePlaylistDialogOpen = false,
-        )
+    UiStateScreen(
+        uiState = uiState,
+        modifier = modifier.fillMaxSize(),
+        emptyScreen = {
+            EmptyScreen(
+                message = {
+                    Text(
+                        text = stringResource(R.string.no_playlists_try_creating_one),
+                        textAlign = TextAlign.Center,
+                    )
+                },
+                button = {
+                    Button(onClick = {}) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                        Text(text = stringResource(id = R.string.create_playlist))
+                    }
+                },
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            )
+        },
+    ) { state ->
+        PlaylistListLayout(state = state, handle = handle, isCreatePlaylistDialogOpen = false)
     }
 }
 
@@ -102,24 +97,18 @@ fun PlaylistListLayout(
     state: PlaylistListState,
     handle: Handler<PlaylistListUserAction>,
     isCreatePlaylistDialogOpen: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (isCreatePlaylistDialogOpen) {
         CreatePlaylistDialog(
-            onDismiss = {
-                handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog)
-            },
-            onConfirm = {
-                handle(PlaylistListUserAction.CreatePlaylistButtonClicked(it))
-            }
+            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) },
+            onConfirm = { handle(PlaylistListUserAction.CreatePlaylistButtonClicked(it)) },
         )
     }
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = {
-                handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog)
-            }
+            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) }
         )
     }
     ModelList(
@@ -129,16 +118,16 @@ fun PlaylistListLayout(
         onSortButtonClicked = null,
         onItemClicked = { _, item ->
             TODO("navigation")
-//            navigateToPlaylist(
-//                TrackListArgumentsForNav(
-//                    trackListType = MediaGroup.Genre(
-//                        item.id
-//                    )
-//                )
-//            )
+            //            navigateToPlaylist(
+            //                TrackListArgumentsForNav(
+            //                    trackListType = MediaGroup.Genre(
+            //                        item.id
+            //                    )
+            //                )
+            //            )
         },
         onItemMoreIconClicked = { _, item ->
             handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-        }
+        },
     )
 }

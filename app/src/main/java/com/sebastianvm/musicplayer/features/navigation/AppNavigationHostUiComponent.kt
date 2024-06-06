@@ -34,7 +34,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 class AppNavigationHostUiComponent :
-    BaseUiComponent<NoArguments, AppNavigationState, AppNavigationAction, AppNavigationHostStateHolder>() {
+    BaseUiComponent<
+        NoArguments,
+        AppNavigationState,
+        AppNavigationAction,
+        AppNavigationHostStateHolder,
+    >() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: AppDependencies): AppNavigationHostStateHolder {
@@ -45,7 +50,7 @@ class AppNavigationHostUiComponent :
     override fun Content(
         state: AppNavigationState,
         handle: Handler<AppNavigationAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         rememberSaveableStateHolder().SaveableStateProvider(key = "main") {
             AppNavigationHost(state = state, handle = handle, modifier = modifier)
@@ -58,7 +63,7 @@ class AppNavigationHostUiComponent :
 fun AppNavigationHost(
     state: AppNavigationState,
     handle: Handler<AppNavigationAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val backStack = state.backStack
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -99,9 +104,7 @@ fun AppNavigationHost(
     }
 
     if (inPredictiveBack) {
-        LaunchedEffect(progress) {
-            transitionState.seekTo(progress, screens.dropLast(1))
-        }
+        LaunchedEffect(progress) { transitionState.seekTo(progress, screens.dropLast(1)) }
     } else {
         LaunchedEffect(screens) {
             // This ensures we don't animate after the back gesture is cancelled and we
@@ -120,46 +123,28 @@ fun AppNavigationHost(
             val fadeThreshold = ANIMATION_DURATION_MS * 35 / 100
 
             val exitAnimationSpec = tween<Float>(durationMillis = fadeThreshold, easing = easing)
-            val enterAnimationSpec = tween<Float>(
-                durationMillis = ANIMATION_DURATION_MS - fadeThreshold,
-                easing = easing,
-                delayMillis = fadeThreshold
-            )
+            val enterAnimationSpec =
+                tween<Float>(
+                    durationMillis = ANIMATION_DURATION_MS - fadeThreshold,
+                    easing = easing,
+                    delayMillis = fadeThreshold,
+                )
             if (this.targetState.size > this.initialState.size) {
-                (
-                    scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 0.9f
-                    ) + fadeIn(
-                        animationSpec = enterAnimationSpec
-                    )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 1.1f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
-            } else {
-                (
-                    fadeIn(
-                        animationSpec = enterAnimationSpec
-                    ) + scaleIn(
-                        animationSpec = enterAnimationSpec,
-                        initialScale = 1.1f
-                    )
-                    ).togetherWith(
-                    scaleOut(
-                        animationSpec = exitAnimationSpec,
-                        targetScale = 0.9f
-                    ) + fadeOut(
-                        animationSpec = exitAnimationSpec
-                    )
-                )
-            }.apply {
-                targetContentZIndex = targetState.size.toFloat()
-            }
+                    (scaleIn(animationSpec = enterAnimationSpec, initialScale = 0.9f) +
+                            fadeIn(animationSpec = enterAnimationSpec))
+                        .togetherWith(
+                            scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
+                                fadeOut(animationSpec = exitAnimationSpec)
+                        )
+                } else {
+                    (fadeIn(animationSpec = enterAnimationSpec) +
+                            scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
+                        .togetherWith(
+                            scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
+                                fadeOut(animationSpec = exitAnimationSpec)
+                        )
+                }
+                .apply { targetContentZIndex = targetState.size.toFloat() }
         }
     ) {
         it.lastOrNull()?.let { screen ->
@@ -171,24 +156,21 @@ fun AppNavigationHost(
 
     val bottomSheets = backStack.getScreensByMode(NavOptions.PresentationMode.BottomSheet)
     val sheetState = rememberModalBottomSheetState()
-    val target by remember(bottomSheets) {
-        mutableStateOf(bottomSheets.lastOrNull())
-    }
+    val target by remember(bottomSheets) { mutableStateOf(bottomSheets.lastOrNull()) }
 
-    var current by remember {
-        mutableStateOf(bottomSheets.lastOrNull())
-    }
+    var current by remember { mutableStateOf(bottomSheets.lastOrNull()) }
 
     LaunchedEffect(target) {
         launch {
-            if (sheetState.isVisible) {
-                sheetState.hide()
+                if (sheetState.isVisible) {
+                    sheetState.hide()
+                }
             }
-        }.invokeOnCompletion {
-            if (!sheetState.isVisible) {
-                current = target
+            .invokeOnCompletion {
+                if (!sheetState.isVisible) {
+                    current = target
+                }
             }
-        }
     }
 
     LaunchedEffect(key1 = current) {
@@ -202,10 +184,8 @@ fun AppNavigationHost(
     if (showBottomSheet) {
         CompositionLocalProvider(LocalPaddingValues provides PaddingValues()) {
             BottomSheet(
-                onDismissRequest = {
-                    handle(AppNavigationAction.PopBackStack)
-                },
-                sheetState = sheetState
+                onDismissRequest = { handle(AppNavigationAction.PopBackStack) },
+                sheetState = sheetState,
             ) {
                 current?.let { screen ->
                     saveableStateHolder.SaveableStateProvider(screen.key) {
@@ -217,7 +197,9 @@ fun AppNavigationHost(
     }
 }
 
-fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<UiComponent<*, *>> {
+fun List<BackStackEntry>.getScreensByMode(
+    mode: NavOptions.PresentationMode
+): List<UiComponent<*, *>> {
     return this.filter { it.presentationMode == mode }.map { it.uiComponent }
 }
 

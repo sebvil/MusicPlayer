@@ -13,18 +13,20 @@ import kotlinx.coroutines.flow.flatMapLatest
 
 class AlbumRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val albumDao: AlbumDao
+    private val albumDao: AlbumDao,
 ) : AlbumRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAlbums(): Flow<List<Album>> {
-        return sortPreferencesRepository.getAlbumListSortPreferences()
-            .flatMapLatest { sortPreferences ->
-                albumDao.getAllAlbums(
+        return sortPreferencesRepository.getAlbumListSortPreferences().flatMapLatest {
+            sortPreferences ->
+            albumDao
+                .getAllAlbums(
                     sortOption = sortPreferences.sortOption,
-                    sortOrder = sortPreferences.sortOrder
-                ).distinctUntilChanged()
-            }
+                    sortOrder = sortPreferences.sortOrder,
+                )
+                .distinctUntilChanged()
+        }
     }
 
     override fun getFullAlbumInfo(albumId: Long): Flow<FullAlbumInfo> {

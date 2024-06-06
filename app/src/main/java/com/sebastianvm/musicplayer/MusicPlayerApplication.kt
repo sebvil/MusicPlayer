@@ -17,15 +17,15 @@ class MusicPlayerApplication : Application() {
             override fun <T : ViewModel> create(
                 key: String,
                 modelClass: Class<T>,
-                handle: SavedStateHandle
+                handle: SavedStateHandle,
             ): T {
                 when (modelClass) {
                     MainViewModel::class.java -> {
                         return MainViewModel(
-                            playbackManager = dependencies.repositoryProvider.playbackManager,
-                        ) as T
+                            playbackManager = dependencies.repositoryProvider.playbackManager
+                        )
+                            as T
                     }
-
                     else -> throw IllegalArgumentException("Unknown ViewModel class")
                 }
             }

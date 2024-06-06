@@ -38,7 +38,7 @@ data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     override fun Content(
         state: SortMenuState,
         handle: Handler<SortMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         SortMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -48,75 +48,70 @@ data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
 fun SortMenu(
     state: SortMenuState,
     handle: Handler<SortMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
+    Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
             headlineContent = {
                 Text(
                     text = stringResource(id = R.string.sort_by),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         LazyColumn {
             items(state.sortOptions, key = { it }) { row ->
-                val clickableModifier = state.selectedSort?.let {
-                    Modifier.clickable {
-                        handle(
-                            SortMenuUserAction.MediaSortOptionClicked(
-                                newSortOption = row,
-                                selectedSort = state.selectedSort,
-                                currentSortOrder = state.sortOrder
+                val clickableModifier =
+                    state.selectedSort?.let {
+                        Modifier.clickable {
+                            handle(
+                                SortMenuUserAction.MediaSortOptionClicked(
+                                    newSortOption = row,
+                                    selectedSort = state.selectedSort,
+                                    currentSortOrder = state.sortOrder,
+                                )
                             )
-                        )
-                    }
-                } ?: Modifier
+                        }
+                    } ?: Modifier
 
-                val backgroundModifier = if (state.selectedSort == row) {
-                    Modifier.background(
-                        color = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                } else {
-                    Modifier
-                }
+                val backgroundModifier =
+                    if (state.selectedSort == row) {
+                        Modifier.background(color = MaterialTheme.colorScheme.surfaceVariant)
+                    } else {
+                        Modifier
+                    }
                 ListItem(
-                    modifier = Modifier
-                        .then(clickableModifier)
-                        .then(backgroundModifier),
+                    modifier = Modifier.then(clickableModifier).then(backgroundModifier),
                     headlineContent = {
                         Text(
                             text = stringResource(id = row.stringId),
                             modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     leadingContent = {
                         if (state.selectedSort == row) {
                             Icon(
-                                imageVector = when (state.sortOrder) {
-                                    MediaSortOrder.ASCENDING -> Icons.Default.ArrowUpward
-                                    MediaSortOrder.DESCENDING -> Icons.Default.ArrowDownward
-                                },
-                                contentDescription = if (state.sortOrder == MediaSortOrder.ASCENDING) {
-                                    stringResource(
-                                        R.string.up_arrow
-                                    )
-                                } else {
-                                    stringResource(R.string.down_arrow)
-                                },
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                imageVector =
+                                    when (state.sortOrder) {
+                                        MediaSortOrder.ASCENDING -> Icons.Default.ArrowUpward
+                                        MediaSortOrder.DESCENDING -> Icons.Default.ArrowDownward
+                                    },
+                                contentDescription =
+                                    if (state.sortOrder == MediaSortOrder.ASCENDING) {
+                                        stringResource(R.string.up_arrow)
+                                    } else {
+                                        stringResource(R.string.down_arrow)
+                                    },
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         } else {
                             Spacer(modifier = Modifier.size(24.dp))
                         }
                     },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )
             }
         }

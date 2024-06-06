@@ -17,7 +17,12 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class GenreListUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, UiState<GenreListState>, GenreListUserAction, GenreListStateHolder>() {
+    BaseUiComponent<
+        NoArguments,
+        UiState<GenreListState>,
+        GenreListUserAction,
+        GenreListStateHolder,
+    >() {
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: AppDependencies): GenreListStateHolder {
@@ -28,13 +33,9 @@ data class GenreListUiComponent(val navController: NavController) :
     override fun Content(
         state: UiState<GenreListState>,
         handle: Handler<GenreListUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
-        GenreList(
-            uiState = state,
-            handle = handle,
-            modifier = modifier
-        )
+        GenreList(uiState = state, handle = handle, modifier = modifier)
     }
 }
 
@@ -42,21 +43,19 @@ data class GenreListUiComponent(val navController: NavController) :
 fun GenreList(
     uiState: UiState<GenreListState>,
     handle: Handler<GenreListUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
-        StoragePermissionNeededEmptyScreen(
-            message = R.string.no_genres_found,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        )
-    }) { state ->
-        GenreList(
-            state = state,
-            handle = handle,
-            modifier = Modifier
-        )
+    UiStateScreen(
+        uiState = uiState,
+        modifier = modifier.fillMaxSize(),
+        emptyScreen = {
+            StoragePermissionNeededEmptyScreen(
+                message = R.string.no_genres_found,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            )
+        },
+    ) { state ->
+        GenreList(state = state, handle = handle, modifier = Modifier)
     }
 }
 
@@ -64,20 +63,16 @@ fun GenreList(
 fun GenreList(
     state: GenreListState,
     handle: Handler<GenreListUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ModelList(
         state = state.modelListState,
         modifier = modifier,
         onBackButtonClicked = {},
-        onSortButtonClicked = {
-            handle(GenreListUserAction.SortByButtonClicked)
-        },
-        onItemClicked = { _, item ->
-            handle(GenreListUserAction.GenreClicked(item.id))
-        },
+        onSortButtonClicked = { handle(GenreListUserAction.SortByButtonClicked) },
+        onItemClicked = { _, item -> handle(GenreListUserAction.GenreClicked(item.id)) },
         onItemMoreIconClicked = { _, item ->
             handle(GenreListUserAction.GenreMoreIconClicked(item.id))
-        }
+        },
     )
 }

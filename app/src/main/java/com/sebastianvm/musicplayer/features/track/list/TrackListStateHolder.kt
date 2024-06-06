@@ -37,17 +37,16 @@ import kotlinx.coroutines.launch
 
 data class TrackListArguments(val trackListType: TrackList) : Arguments
 
-data class TrackListState(
-    val modelListState: ModelListState,
-    val trackListType: TrackList,
-) : State
+data class TrackListState(val modelListState: ModelListState, val trackListType: TrackList) : State
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackMoreIconClicked(val trackId: Long, val trackPositionInList: Int) :
         TrackListUserAction
 
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction
+
     data object SortButtonClicked : TrackListUserAction
+
     data object BackClicked : TrackListUserAction
 }
 
@@ -60,75 +59,81 @@ class TrackListStateHolder(
     private val playbackManager: PlaybackManager,
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
-    private val sortPreferences = if (args.trackListType is MediaGroup.Album) {
-        flowOf(null)
-    } else {
-        sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
-    }
-
-    override val state: StateFlow<UiState<TrackListState>> = combine(
-        trackRepository.getTrackListWithMetaData(args.trackListType),
-        sortPreferences,
-    ) { trackListWithMetadata, sortPrefs ->
-        if (trackListWithMetadata.trackList.isEmpty()) {
-            Empty
+    private val sortPreferences =
+        if (args.trackListType is MediaGroup.Album) {
+            flowOf(null)
         } else {
-            Data(
-                TrackListState(
-                    modelListState = ModelListState(
-                        items = trackListWithMetadata.trackList.map { track -> track.toModelListItemState() },
-                        headerState = trackListWithMetadata.metaData.toHeaderState(),
-                        sortButtonState = sortPrefs?.let {
-                            SortButtonState(
-                                text = sortPrefs.sortOption.stringId,
-                                sortOrder = sortPrefs.sortOrder
-                            )
-                        }
-                    ),
-                    trackListType = args.trackListType,
-                )
-            )
+            sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
         }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+
+    override val state: StateFlow<UiState<TrackListState>> =
+        combine(trackRepository.getTrackListWithMetaData(args.trackListType), sortPreferences) {
+                trackListWithMetadata,
+                sortPrefs ->
+                if (trackListWithMetadata.trackList.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        TrackListState(
+                            modelListState =
+                                ModelListState(
+                                    items =
+                                        trackListWithMetadata.trackList.map { track ->
+                                            track.toModelListItemState()
+                                        },
+                                    headerState = trackListWithMetadata.metaData.toHeaderState(),
+                                    sortButtonState =
+                                        sortPrefs?.let {
+                                            SortButtonState(
+                                                text = sortPrefs.sortOption.stringId,
+                                                sortOrder = sortPrefs.sortOrder,
+                                            )
+                                        },
+                                ),
+                            trackListType = args.trackListType,
+                        )
+                    )
+                }
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: TrackListUserAction) {
         when (action) {
             is TrackListUserAction.TrackMoreIconClicked -> {
                 navController.push(
                     TrackContextMenu(
-                        arguments = TrackContextMenuArguments(
-                            trackId = action.trackId,
-                            trackPositionInList = action.trackPositionInList,
-                            trackList = args.trackListType,
-                        ),
+                        arguments =
+                            TrackContextMenuArguments(
+                                trackId = action.trackId,
+                                trackPositionInList = action.trackPositionInList,
+                                trackList = args.trackListType,
+                            ),
                         navController = navController,
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(
-                            listType = SortableListType.Tracks(
-                                trackList = args.trackListType
+                        arguments =
+                            SortMenuArguments(
+                                listType = SortableListType.Tracks(trackList = args.trackListType)
                             )
-                        ),
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackListUserAction.BackClicked -> {
                 navController.pop()
             }
-
             is TrackListUserAction.TrackClicked -> {
                 stateHolderScope.launch {
                     playbackManager.playMedia(
                         mediaGroup = args.trackListType,
-                        initialTrackIndex = action.trackIndex
+                        initialTrackIndex = action.trackIndex,
                     )
                 }
             }
@@ -140,12 +145,8 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
     return when {
         this == null -> HeaderState.None
         mediaArtImageState != null -> {
-            HeaderState.WithImage(
-                title = trackListName,
-                imageState = mediaArtImageState
-            )
+            HeaderState.WithImage(title = trackListName, imageState = mediaArtImageState)
         }
-
         else -> HeaderState.Simple(title = trackListName)
     }
 }
@@ -153,13 +154,13 @@ fun TrackListMetadata?.toHeaderState(): HeaderState {
 fun getTrackListStateHolder(
     dependencies: AppDependencies,
     args: TrackListArguments,
-    navController: NavController
+    navController: NavController,
 ): TrackListStateHolder {
     return TrackListStateHolder(
         args = args,
         navController = navController,
         trackRepository = dependencies.repositoryProvider.trackRepository,
         sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager
+        playbackManager = dependencies.repositoryProvider.playbackManager,
     )
 }

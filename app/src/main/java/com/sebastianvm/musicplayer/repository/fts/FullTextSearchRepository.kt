@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface FullTextSearchRepository {
     fun searchTracks(text: String): Flow<List<BasicTrack>>
+
     fun searchArtists(text: String): Flow<List<Artist>>
+
     fun searchAlbums(text: String): Flow<List<Album>>
+
     fun searchGenres(text: String): Flow<List<Genre>>
+
     fun searchPlaylists(text: String): Flow<List<Playlist>>
 }
