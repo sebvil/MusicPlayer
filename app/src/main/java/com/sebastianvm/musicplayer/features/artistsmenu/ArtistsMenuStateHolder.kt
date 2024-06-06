@@ -45,10 +45,7 @@ class ArtistsMenuStateHolder(
                     ArtistsMenuState(
                         modelListState =
                             ModelListState(
-                                items =
-                                    artists.map { artist ->
-                                        artist.toModelListItemState(trailingButtonType = null)
-                                    }
+                                items = artists.map { artist -> artist.toModelListItemState() }
                             )
                     )
                 )

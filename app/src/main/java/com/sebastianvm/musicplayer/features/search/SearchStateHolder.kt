@@ -22,8 +22,7 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -47,7 +46,7 @@ data class SearchQuery(val term: String, val mode: SearchMode)
 
 data class SearchState(
     val selectedOption: SearchMode,
-    val searchResults: List<ModelListItemState>,
+    val searchResults: List<ModelListItem.State>,
 ) : State
 
 sealed interface SearchUserAction : UserAction {
@@ -76,15 +75,11 @@ class SearchStateHolder(
             when (newQuery.mode) {
                 SearchMode.SONGS ->
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
-                        tracks.map {
-                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        }
+                        tracks.map { it.toModelListItemState() }
                     }
                 SearchMode.ARTISTS ->
                     ftsRepository.searchArtists(newQuery.term).map { artists ->
-                        artists.map {
-                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        }
+                        artists.map { it.toModelListItemState() }
                     }
                 SearchMode.ALBUMS ->
                     ftsRepository.searchAlbums(newQuery.term).map { albums ->

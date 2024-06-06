@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 
 // class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
-//    private val playlistsList: List<ModelListItemState>
+//    private val playlistsList: List<ModelListItem.State>
 //        get() = (1..10).map {
 //            Playlist(
 //                id = it.toLong(),

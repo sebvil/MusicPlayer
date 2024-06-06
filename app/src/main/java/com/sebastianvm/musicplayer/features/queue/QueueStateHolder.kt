@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.queue
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
+import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class QueueItem(
-    val modelListItemState: ModelListItemState,
+    val modelListItemState: ModelListItem.State,
     val position: Int,
     val queueItemId: Long,
 )

@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -58,10 +57,7 @@ class ArtistListStateHolderTest :
                 artistRepositoryDep.artists.value = artists
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
-                    state.modelListState.items shouldBe
-                        artists.map {
-                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        }
+                    state.modelListState.items shouldBe artists.map { it.toModelListItemState() }
                     state.modelListState.headerState shouldBe HeaderState.None
                 }
             }

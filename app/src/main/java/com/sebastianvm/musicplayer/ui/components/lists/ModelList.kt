@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
@@ -71,7 +71,7 @@ sealed interface HeaderState {
 }
 
 data class ModelListState(
-    val items: List<ModelListItemState> = listOf(),
+    val items: List<ModelListItem.State> = listOf(),
     val sortButtonState: SortButtonState? = null,
     val headerState: HeaderState = HeaderState.None,
 )
@@ -83,8 +83,8 @@ fun ModelList(
     listState: LazyListState = rememberLazyListState(),
     onBackButtonClicked: () -> Unit = {},
     onSortButtonClicked: (() -> Unit)? = null,
-    onItemClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
-    onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
+    onItemClicked: (Int, ModelListItem.State) -> Unit = { _, _ -> },
+    onItemMoreIconClicked: (Int, ModelListItem.State) -> Unit = { _, _ -> },
 ) {
     val content: @Composable (Modifier, PaddingValues) -> Unit =
         { contentModifier, contentPadding ->

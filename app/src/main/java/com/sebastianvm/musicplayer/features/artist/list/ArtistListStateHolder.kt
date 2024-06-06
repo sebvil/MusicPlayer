@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesReposit
 import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
 import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
 import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
 import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -58,12 +57,7 @@ class ArtistListStateHolder(
                         ArtistListState(
                             modelListState =
                                 ModelListState(
-                                    items =
-                                        artists.map { artist ->
-                                            artist.toModelListItemState(
-                                                trailingButtonType = TrailingButtonType.More
-                                            )
-                                        },
+                                    items = artists.map { artist -> artist.toModelListItemState() },
                                     sortButtonState =
                                         SortButtonState(
                                             text = R.string.artist_name,

@@ -65,11 +65,7 @@ class ArtistsMenuStateHolderTest :
                                 modelListState =
                                     ModelListState(
                                         items =
-                                            artists.map { artist ->
-                                                artist.toModelListItemState(
-                                                    trailingButtonType = null
-                                                )
-                                            }
+                                            artists.map { artist -> artist.toModelListItemState() }
                                     )
                             )
                     }
@@ -95,11 +91,7 @@ class ArtistsMenuStateHolderTest :
                                 modelListState =
                                     ModelListState(
                                         items =
-                                            artists.map { artist ->
-                                                artist.toModelListItemState(
-                                                    trailingButtonType = null
-                                                )
-                                            }
+                                            artists.map { artist -> artist.toModelListItemState() }
                                     )
                             )
                     }
