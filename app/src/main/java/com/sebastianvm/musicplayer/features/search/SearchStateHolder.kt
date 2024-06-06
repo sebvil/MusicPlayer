@@ -52,10 +52,12 @@ data class SearchState(
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
+
     data class SearchResultOverflowMenuIconClicked(val id: Long, val mediaType: SearchMode) :
         SearchUserAction
 
     data class TextChanged(val newText: String) : SearchUserAction
+
     data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
 }
 
@@ -69,56 +71,49 @@ class SearchStateHolder(
 
     private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
 
-    private val searchResults = query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
-        when (newQuery.mode) {
-            SearchMode.SONGS -> ftsRepository.searchTracks(newQuery.term).map { tracks ->
-                tracks.map {
-                    it.toModelListItemState(
-                        trailingButtonType = TrailingButtonType.More
-                    )
-                }
+    private val searchResults =
+        query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
+            when (newQuery.mode) {
+                SearchMode.SONGS ->
+                    ftsRepository.searchTracks(newQuery.term).map { tracks ->
+                        tracks.map {
+                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
+                        }
+                    }
+                SearchMode.ARTISTS ->
+                    ftsRepository.searchArtists(newQuery.term).map { artists ->
+                        artists.map {
+                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
+                        }
+                    }
+                SearchMode.ALBUMS ->
+                    ftsRepository.searchAlbums(newQuery.term).map { albums ->
+                        albums.map { it.toModelListItemState() }
+                    }
+                SearchMode.GENRES ->
+                    ftsRepository.searchGenres(newQuery.term).map { genres ->
+                        genres.map { it.toModelListItemState() }
+                    }
+                SearchMode.PLAYLISTS ->
+                    ftsRepository.searchPlaylists(newQuery.term).map { playlists ->
+                        playlists.map { it.toModelListItemState() }
+                    }
             }
-
-            SearchMode.ARTISTS -> ftsRepository.searchArtists(newQuery.term).map { artists ->
-                artists.map {
-                    it.toModelListItemState(
-                        trailingButtonType = TrailingButtonType.More
-                    )
-                }
-            }
-
-            SearchMode.ALBUMS -> ftsRepository.searchAlbums(newQuery.term)
-                .map { albums -> albums.map { it.toModelListItemState() } }
-
-            SearchMode.GENRES -> ftsRepository.searchGenres(newQuery.term)
-                .map { genres -> genres.map { it.toModelListItemState() } }
-
-            SearchMode.PLAYLISTS -> ftsRepository.searchPlaylists(newQuery.term)
-                .map { playlists -> playlists.map { it.toModelListItemState() } }
         }
-    }
 
-    override val state: StateFlow<SearchState> = combine(
-        query.map { it.mode },
-        searchResults,
-    ) { selectedOption, results ->
-        SearchState(
-            selectedOption = selectedOption,
-            searchResults = results,
-        )
-    }.stateIn(
-        scope = stateHolderScope,
-        started = SharingStarted.Lazily,
-        initialValue = SearchState(
-            selectedOption = SearchMode.SONGS,
-            searchResults = emptyList(),
-        )
-    )
+    override val state: StateFlow<SearchState> =
+        combine(query.map { it.mode }, searchResults) { selectedOption, results ->
+                SearchState(selectedOption = selectedOption, searchResults = results)
+            }
+            .stateIn(
+                scope = stateHolderScope,
+                started = SharingStarted.Lazily,
+                initialValue =
+                    SearchState(selectedOption = SearchMode.SONGS, searchResults = emptyList()),
+            )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
-        stateHolderScope.launch {
-            playbackManager.playMedia(MediaGroup.SingleTrack(trackId))
-        }
+        stateHolderScope.launch { playbackManager.playMedia(MediaGroup.SingleTrack(trackId)) }
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
@@ -127,51 +122,41 @@ class SearchStateHolder(
 
     private fun onAlbumSearchResultClicked(albumId: Long) {
         navController.push(
-            TrackListUiComponent(
-                TrackListArguments(MediaGroup.Album(albumId)),
-                navController
-            )
+            TrackListUiComponent(TrackListArguments(MediaGroup.Album(albumId)), navController)
         )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long) {
         navController.push(
-            TrackListUiComponent(
-                TrackListArguments(MediaGroup.Genre(genreId)),
-                navController
-            )
+            TrackListUiComponent(TrackListArguments(MediaGroup.Genre(genreId)), navController)
         )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long) {
         navController.push(
-            TrackListUiComponent(
-                TrackListArguments(MediaGroup.Playlist(playlistId)),
-                navController
-            )
+            TrackListUiComponent(TrackListArguments(MediaGroup.Playlist(playlistId)), navController)
         )
     }
 
     private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
         navController.push(
             TrackContextMenu(
-                arguments = TrackContextMenuArguments(
-                    trackId = trackId,
-                    trackPositionInList = 0,
-                    trackList = MediaGroup.SingleTrack(trackId)
-                ),
-                navController = navController
+                arguments =
+                    TrackContextMenuArguments(
+                        trackId = trackId,
+                        trackPositionInList = 0,
+                        trackList = MediaGroup.SingleTrack(trackId),
+                    ),
+                navController = navController,
             ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
         )
     }
 
     private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
         navController.push(
-            ArtistContextMenu(
-                arguments = ArtistContextMenuArguments(artistId = artistId)
-            ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+            ArtistContextMenu(arguments = ArtistContextMenuArguments(artistId = artistId)),
+            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
         )
     }
 
@@ -179,27 +164,23 @@ class SearchStateHolder(
         navController.push(
             AlbumContextMenu(
                 arguments = AlbumContextMenuArguments(albumId = albumId),
-                navController = navController
+                navController = navController,
             ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
         )
     }
 
     private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
         navController.push(
-            GenreContextMenu(
-                arguments = GenreContextMenuArguments(genreId = genreId),
-            ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+            GenreContextMenu(arguments = GenreContextMenuArguments(genreId = genreId)),
+            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
         )
     }
 
     private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
         navController.push(
-            PlaylistContextMenu(
-                arguments = PlaylistContextMenuArguments(playlistId = playlistId),
-            ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+            PlaylistContextMenu(arguments = PlaylistContextMenuArguments(playlistId = playlistId)),
+            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
         )
     }
 
@@ -214,7 +195,6 @@ class SearchStateHolder(
                     SearchMode.PLAYLISTS -> onPlaylistSearchResultClicked(action.id)
                 }
             }
-
             is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
                 when (action.mediaType) {
                     SearchMode.SONGS -> onTrackSearchResultOverflowMenuIconClicked(action.id)
@@ -224,24 +204,21 @@ class SearchStateHolder(
                     SearchMode.PLAYLISTS -> onPlaylistSearchResultOverflowMenuIconClicked(action.id)
                 }
             }
-
             is SearchUserAction.SearchModeChanged -> {
                 query.update { it.copy(mode = action.newMode) }
             }
-
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
         }
     }
 
     companion object {
-        @VisibleForTesting
-        const val DEBOUNCE_TIME = 500L
+        @VisibleForTesting const val DEBOUNCE_TIME = 500L
     }
 }
 
 fun getSearchStateHolder(
     dependencies: AppDependencies,
-    navController: NavController
+    navController: NavController,
 ): SearchStateHolder {
     return SearchStateHolder(
         ftsRepository = dependencies.repositoryProvider.searchRepository,

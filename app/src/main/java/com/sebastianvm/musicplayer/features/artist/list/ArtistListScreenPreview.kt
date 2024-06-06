@@ -14,7 +14,9 @@ package com.sebastianvm.musicplayer.features.artist.list
 
 // @ScreenPreview
 // @Composable
-// private fun ArtistListScreenPreview(@PreviewParameter(ArtistListStatePreviewParamsProvider::class) state: ArtistListState) {
+// private fun
+// ArtistListScreenPreview(@PreviewParameter(ArtistListStatePreviewParamsProvider::class) state:
+// ArtistListState) {
 //    ScreenPreview {
 //        ArtistListScreen(
 //            state = state,

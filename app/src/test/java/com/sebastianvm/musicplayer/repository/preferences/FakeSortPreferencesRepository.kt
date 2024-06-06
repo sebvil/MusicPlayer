@@ -15,11 +15,12 @@ typealias SortPreferencesMap = Map<Long, MediaSortPreferences<SortOptions.TrackL
 
 class FakeSortPreferencesRepository : SortPreferencesRepository {
 
-    val albumListSortPreferences: MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> =
+    val albumListSortPreferences:
+        MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> =
         MutableStateFlow(
             MediaSortPreferences(
                 sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                sortOrder = MediaSortOrder.ASCENDING
+                sortOrder = MediaSortOrder.ASCENDING,
             )
         )
 
@@ -29,12 +30,10 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
     val genreListSortOrder: MutableStateFlow<MediaSortOrder> =
         MutableStateFlow(MediaSortOrder.ASCENDING)
 
-    val allTracksSortPreferences: MutableStateFlow<MediaSortPreferences<SortOptions.TrackListSortOptions>> =
+    val allTracksSortPreferences:
+        MutableStateFlow<MediaSortPreferences<SortOptions.TrackListSortOptions>> =
         MutableStateFlow(
-            MediaSortPreferences(
-                SortOptions.TrackListSortOptions.TRACK,
-                MediaSortOrder.ASCENDING
-            )
+            MediaSortPreferences(SortOptions.TrackListSortOptions.TRACK, MediaSortOrder.ASCENDING)
         )
 
     val genreTracksSortPreferences: MutableStateFlow<SortPreferencesMap> =
@@ -45,51 +44,54 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
-        trackList: TrackList
+        trackList: TrackList,
     ) {
         when (trackList) {
             is MediaGroup.AllTracks -> allTracksSortPreferences.value = newPreferences
-            is MediaGroup.Genre -> genreTracksSortPreferences.update {
-                it + (trackList.genreId to newPreferences)
-            }
-
-            is MediaGroup.Playlist -> playlistTracksSortPreferences.update {
-                it + (trackList.playlistId to newPreferences)
-            }
-
+            is MediaGroup.Genre ->
+                genreTracksSortPreferences.update { it + (trackList.genreId to newPreferences) }
+            is MediaGroup.Playlist ->
+                playlistTracksSortPreferences.update {
+                    it + (trackList.playlistId to newPreferences)
+                }
             else -> error("Cannot sort $trackList")
         }
     }
 
     override fun getTrackListSortPreferences(
         trackList: TrackList,
-        trackListId: Long
+        trackListId: Long,
     ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return when (trackList) {
             is MediaGroup.AllTracks -> allTracksSortPreferences
-            is MediaGroup.Genre -> genreTracksSortPreferences.map {
-                it[trackListId] ?: MediaSortPreferences(
-                    SortOptions.TrackListSortOptions.TRACK,
-                    MediaSortOrder.ASCENDING
-                )
-            }
-
-            is MediaGroup.Playlist -> playlistTracksSortPreferences.map {
-                it[trackListId] ?: MediaSortPreferences(
-                    SortOptions.TrackListSortOptions.TRACK,
-                    MediaSortOrder.ASCENDING
-                )
-            }
-
+            is MediaGroup.Genre ->
+                genreTracksSortPreferences.map {
+                    it[trackListId]
+                        ?: MediaSortPreferences(
+                            SortOptions.TrackListSortOptions.TRACK,
+                            MediaSortOrder.ASCENDING,
+                        )
+                }
+            is MediaGroup.Playlist ->
+                playlistTracksSortPreferences.map {
+                    it[trackListId]
+                        ?: MediaSortPreferences(
+                            SortOptions.TrackListSortOptions.TRACK,
+                            MediaSortOrder.ASCENDING,
+                        )
+                }
             else -> error("Cannot sort $trackList")
         }
     }
 
-    override suspend fun modifyAlbumListSortPreferences(newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>) {
+    override suspend fun modifyAlbumListSortPreferences(
+        newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
+    ) {
         albumListSortPreferences.value = newPreferences
     }
 
-    override fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
+    override fun getAlbumListSortPreferences():
+        Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
         return albumListSortPreferences
     }
 
@@ -119,12 +121,14 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     override suspend fun modifyPlaylistsSortPreferences(
         playlistId: Long,
-        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>,
     ) {
         TODO("Not yet implemented")
     }
 
-    override fun getPlaylistSortPreferences(playlistId: Long): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
+    override fun getPlaylistSortPreferences(
+        playlistId: Long
+    ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         TODO("Not yet implemented")
     }
 }

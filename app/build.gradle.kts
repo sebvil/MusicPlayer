@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
+    alias(libs.plugins.ktfmt)
 }
 
 android {
@@ -123,7 +124,6 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
 
-    detektPlugins(libs.detekt.ktlint)
     detektPlugins(libs.detekt.compose)
 }
 
@@ -136,6 +136,12 @@ detekt {
     enableCompilerPlugin.set(true)
     config.setFrom(file("../config/detekt/detekt.yml"))
     autoCorrect = true
+}
+
+ktfmt {
+    kotlinLangStyle()
+
+    manageTrailingCommas.set(true)
 }
 
 

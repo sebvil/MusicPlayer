@@ -7,52 +7,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 
 object PreviewUtil {
-    private val strings = listOf(
-        "Lorem ipsum dolor sit amet",
-        "consectetur adipiscing elit",
-        "sed do eiusmod tempor incididunt ut labore",
-        "et dolore magna aliqua",
-        "Ut enim ad minim veniam",
-        "quis nostrud exercitation ullamco laboris nisi ut",
-        "aliquip ex ea commodo consequat",
-        "Duis aute irure dolor in reprehenderit in voluptate velit esse",
-        "cillum dolore eu fugiat nulla pariatur",
-        "Excepteur sint occaecat cupidatat non proident",
-        "culpa qui officia deserunt mollit anim id est laborum",
-        "sunt in",
-        "Lorem ipsum dolor sit amet",
-        "con elit",
-        "sed do et labore",
-        "et dolore magna aliqua",
-        "Ut eniiam",
-        "quis nos ",
-        "aliquip ex ea quat",
-        "Duis aute irure e",
-        "cillumr",
-        "Exct",
-        "culpa m"
-    )
+    private val strings =
+        listOf(
+            "Lorem ipsum dolor sit amet",
+            "consectetur adipiscing elit",
+            "sed do eiusmod tempor incididunt ut labore",
+            "et dolore magna aliqua",
+            "Ut enim ad minim veniam",
+            "quis nostrud exercitation ullamco laboris nisi ut",
+            "aliquip ex ea commodo consequat",
+            "Duis aute irure dolor in reprehenderit in voluptate velit esse",
+            "cillum dolore eu fugiat nulla pariatur",
+            "Excepteur sint occaecat cupidatat non proident",
+            "culpa qui officia deserunt mollit anim id est laborum",
+            "sunt in",
+            "Lorem ipsum dolor sit amet",
+            "con elit",
+            "sed do et labore",
+            "et dolore magna aliqua",
+            "Ut eniiam",
+            "quis nos ",
+            "aliquip ex ea quat",
+            "Duis aute irure e",
+            "cillumr",
+            "Exct",
+            "culpa m",
+        )
 
     fun randomString(minLength: Int = 0, maxLength: Int = strings.maxOf { it.length }) =
         strings.filter { it.length in minLength..maxLength }.random()
 }
 
 @Composable
-internal fun ThemedPreview(
-    content: @Composable () -> Unit
-) {
-    M3AppTheme {
-        Surface {
-            content()
-        }
-    }
+internal fun ThemedPreview(content: @Composable () -> Unit) {
+    M3AppTheme { Surface { content() } }
 }
 
 @Composable
 internal fun ScreenPreview(screen: @Composable () -> Unit) {
-    M3AppTheme {
-        screen()
-    }
+    M3AppTheme { screen() }
 }
 
 // @OptIn(ExperimentalMaterialApi::class)
@@ -80,6 +73,4 @@ internal fun ScreenPreview(screen: @Composable () -> Unit) {
 // @Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
 annotation class PreviewScreens
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-annotation class PreviewComponents
+@Preview @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES) annotation class PreviewComponents

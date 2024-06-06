@@ -9,18 +9,22 @@ import com.sebastianvm.musicplayer.util.sort.SortPreferences
 
 class JetpackDataStoreProvider(private val context: Context) {
 
-    private val Context.sortPreferencesDataStore: DataStore<SortPreferences> by dataStore(
-        fileName = SORT_PREFERENCES_DATA_STORE_FILE_NAME,
-        serializer = KotlinSerializationSerializer(SortPreferences(), SortPreferences.serializer())
-    )
+    private val Context.sortPreferencesDataStore: DataStore<SortPreferences> by
+        dataStore(
+            fileName = SORT_PREFERENCES_DATA_STORE_FILE_NAME,
+            serializer =
+                KotlinSerializationSerializer(SortPreferences(), SortPreferences.serializer()),
+        )
 
     val sortPreferencesDataStore: DataStore<SortPreferences>
         get() = context.sortPreferencesDataStore
 
-    private val Context.nowPlayingInfoDataStore: DataStore<NowPlayingInfo> by dataStore(
-        fileName = NOW_PLAYING_INFO_DATA_STORE_FILE_NAME,
-        serializer = KotlinSerializationSerializer(NowPlayingInfo(), NowPlayingInfo.serializer())
-    )
+    private val Context.nowPlayingInfoDataStore: DataStore<NowPlayingInfo> by
+        dataStore(
+            fileName = NOW_PLAYING_INFO_DATA_STORE_FILE_NAME,
+            serializer =
+                KotlinSerializationSerializer(NowPlayingInfo(), NowPlayingInfo.serializer()),
+        )
 
     val nowPlayingInfoDataStore: DataStore<NowPlayingInfo>
         get() = context.nowPlayingInfoDataStore

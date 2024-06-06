@@ -26,21 +26,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        StrictMode.setThreadPolicy(
-            ThreadPolicy.Builder().detectAll().penaltyLog().build()
-        )
+        StrictMode.setThreadPolicy(ThreadPolicy.Builder().detectAll().penaltyLog().build())
 
         setContent {
             M3AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     val state by viewModel.currentState
-                    MainApp(
-                        state = state,
-                        handle = viewModel::handle
-                    )
+                    MainApp(state = state, handle = viewModel::handle)
                 }
             }
         }

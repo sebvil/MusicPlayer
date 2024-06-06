@@ -35,40 +35,55 @@ import com.sebastianvm.musicplayer.database.entities.TrackFts
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 
 @Database(
-    entities = [
-        Track::class,
-        Artist::class,
-        Album::class,
-        Genre::class,
-        Playlist::class,
-        MediaQueueItem::class,
-        ArtistTrackCrossRef::class,
-        GenreTrackCrossRef::class,
-        AlbumsForArtist::class,
-        AppearsOnForArtist::class,
-        MediaQueueTrackCrossRef::class,
-        PlaylistTrackCrossRef::class,
-        TrackFts::class,
-        ArtistFts::class,
-        AlbumFts::class,
-        GenreFts::class,
-        PlaylistFts::class
-    ],
-    views = [TrackWithPlaylistPositionView::class, AlbumsForArtistByYear::class, AppearsOnForArtistByYear::class],
+    entities =
+        [
+            Track::class,
+            Artist::class,
+            Album::class,
+            Genre::class,
+            Playlist::class,
+            MediaQueueItem::class,
+            ArtistTrackCrossRef::class,
+            GenreTrackCrossRef::class,
+            AlbumsForArtist::class,
+            AppearsOnForArtist::class,
+            MediaQueueTrackCrossRef::class,
+            PlaylistTrackCrossRef::class,
+            TrackFts::class,
+            ArtistFts::class,
+            AlbumFts::class,
+            GenreFts::class,
+            PlaylistFts::class,
+        ],
+    views =
+        [
+            TrackWithPlaylistPositionView::class,
+            AlbumsForArtistByYear::class,
+            AppearsOnForArtistByYear::class,
+        ],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class MusicDatabase : RoomDatabase() {
     abstract fun getTrackDao(): TrackDao
+
     abstract fun getArtistDao(): ArtistDao
+
     abstract fun getAlbumDao(): AlbumDao
+
     abstract fun getGenreDao(): GenreDao
+
     abstract fun getPlaylistDao(): PlaylistDao
+
     abstract fun getMediaQueueDao(): MediaQueueDao
 
     abstract fun getTrackFtsDao(): TrackFtsDao
+
     abstract fun getArtistFtsDao(): ArtistFtsDao
+
     abstract fun getAlbumFtsDao(): AlbumFtsDao
+
     abstract fun getGenreFtsDao(): GenreFtsDao
+
     abstract fun getPlaylistFtsDao(): PlaylistFtsDao
 }

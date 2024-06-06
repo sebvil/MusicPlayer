@@ -17,9 +17,13 @@ import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
-data class PlaylistContextMenu(
-    override val arguments: PlaylistContextMenuArguments,
-) : BaseUiComponent<PlaylistContextMenuArguments, PlaylistContextMenuState, PlaylistContextMenuUserAction, PlaylistContextMenuStateHolder>() {
+data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArguments) :
+    BaseUiComponent<
+        PlaylistContextMenuArguments,
+        PlaylistContextMenuState,
+        PlaylistContextMenuUserAction,
+        PlaylistContextMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): PlaylistContextMenuStateHolder {
         return getPlaylistContextMenuStateHolder(dependencies, arguments)
@@ -29,7 +33,7 @@ data class PlaylistContextMenu(
     override fun Content(
         state: PlaylistContextMenuState,
         handle: Handler<PlaylistContextMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         PlaylistContextMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -39,7 +43,7 @@ data class PlaylistContextMenu(
 private fun PlaylistContextMenu(
     state: PlaylistContextMenuState,
     handle: Handler<PlaylistContextMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when (state) {
         is PlaylistContextMenuState.Data -> {
@@ -51,7 +55,7 @@ private fun PlaylistContextMenu(
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = {
                                 handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
-                            }
+                            },
                         )
                     }
 
@@ -61,20 +65,16 @@ private fun PlaylistContextMenu(
                             icon = Icons.Delete.icon(),
                             onItemClicked = {
                                 handle(PlaylistContextMenuUserAction.DeletePlaylistClicked)
-                            }
+                            },
                         )
                     }
                 }
             }
 
             if (state.showDeleteConfirmationDialog) {
-                DeletePlaylistConfirmationDialog(
-                    playlistName = state.playlistName,
-                    handle = handle
-                )
+                DeletePlaylistConfirmationDialog(playlistName = state.playlistName, handle = handle)
             }
         }
-
         is PlaylistContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
         }
@@ -84,25 +84,25 @@ private fun PlaylistContextMenu(
 @Composable
 fun DeletePlaylistConfirmationDialog(
     playlistName: String,
-    handle: Handler<PlaylistContextMenuUserAction>
+    handle: Handler<PlaylistContextMenuUserAction>,
 ) {
     AlertDialog(
         onDismissRequest = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) },
         confirmButton = {
-            TextButton(onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }) {
+            TextButton(
+                onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
+            ) {
                 Text(text = stringResource(R.string.delete))
             }
         },
         dismissButton = {
-            TextButton(onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }) {
+            TextButton(
+                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
+            ) {
                 Text(text = stringResource(R.string.cancel))
             }
         },
-        title = {
-            Text(text = stringResource(id = R.string.delete_this_playlist, playlistName))
-        },
-        text = {
-            Text(text = stringResource(id = R.string.sure_you_want_to_delete, playlistName))
-        }
+        title = { Text(text = stringResource(id = R.string.delete_this_playlist, playlistName)) },
+        text = { Text(text = stringResource(id = R.string.sure_you_want_to_delete, playlistName)) },
     )
 }

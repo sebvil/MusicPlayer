@@ -41,7 +41,7 @@ class FakeTrackRepository : TrackRepository {
         genres: Set<Genre>,
         albums: Set<Album>,
         albumsForArtists: Set<AlbumsForArtist>,
-        appearsOnForArtists: Set<AppearsOnForArtist>
+        appearsOnForArtists: Set<AppearsOnForArtist>,
     ) {
         TODO("Not yet implemented")
     }

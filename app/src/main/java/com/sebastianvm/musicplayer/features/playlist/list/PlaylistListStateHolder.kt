@@ -34,13 +34,16 @@ data class PlaylistListState(
     val modelListState: ModelListState,
     val isCreatePlaylistDialogOpen: Boolean,
     val isPlaylistCreationErrorDialogOpen: Boolean,
-    val playlistContextMenuStateHolder: PlaylistContextMenuStateHolder? = null
+    val playlistContextMenuStateHolder: PlaylistContextMenuStateHolder? = null,
 ) : State
 
 sealed interface PlaylistListUserAction : UserAction {
     data object SortByClicked : PlaylistListUserAction
+
     data class PlaylistMoreIconClicked(val playlistId: Long) : PlaylistListUserAction
+
     data class CreatePlaylistButtonClicked(val playlistName: String) : PlaylistListUserAction
+
     data object DismissPlaylistCreationErrorDialog : PlaylistListUserAction
 }
 
@@ -56,37 +59,40 @@ class PlaylistListStateHolder(
 
     override val state: StateFlow<UiState<PlaylistListState>> =
         combine(
-            playlistRepository.getPlaylists(),
-            isPlayListCreationErrorDialogOpen,
-            isCreatePlaylistDialogOpen,
-        ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen ->
-            if (playlists.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    PlaylistListState(
-                        modelListState = ModelListState(
-                            items = playlists.map { playlist -> playlist.toModelListItemState() },
-                            sortButtonState = null,
-                            headerState = HeaderState.None
-                        ),
-                        isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
-                        isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
+                playlistRepository.getPlaylists(),
+                isPlayListCreationErrorDialogOpen,
+                isCreatePlaylistDialogOpen,
+            ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen ->
+                if (playlists.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        PlaylistListState(
+                            modelListState =
+                                ModelListState(
+                                    items =
+                                        playlists.map { playlist ->
+                                            playlist.toModelListItemState()
+                                        },
+                                    sortButtonState = null,
+                                    headerState = HeaderState.None,
+                                ),
+                            isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
+                            isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
+                        )
                     )
-                )
+                }
             }
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: PlaylistListUserAction) {
         when (action) {
             is PlaylistListUserAction.SortByClicked -> {
-                stateHolderScope.launch {
-                    sortPreferencesRepository.togglePlaylistListSortOder()
-                }
+                stateHolderScope.launch { sortPreferencesRepository.togglePlaylistListSortOder() }
             }
-
             is PlaylistListUserAction.CreatePlaylistButtonClicked -> {
-                playlistRepository.createPlaylist(action.playlistName)
+                playlistRepository
+                    .createPlaylist(action.playlistName)
                     .onEach { playlistId ->
                         if (playlistId == null) {
                             isPlayListCreationErrorDialogOpen.update { true }
@@ -94,19 +100,19 @@ class PlaylistListStateHolder(
                         } else {
                             isCreatePlaylistDialogOpen.update { false }
                         }
-                    }.launchIn(stateHolderScope)
+                    }
+                    .launchIn(stateHolderScope)
             }
-
             is PlaylistListUserAction.DismissPlaylistCreationErrorDialog -> {
                 isPlayListCreationErrorDialogOpen.update { false }
             }
-
             is PlaylistListUserAction.PlaylistMoreIconClicked -> {
                 navController.push(
                     PlaylistContextMenu(
-                        arguments = PlaylistContextMenuArguments(playlistId = action.playlistId),
+                        arguments = PlaylistContextMenuArguments(playlistId = action.playlistId)
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
         }
@@ -115,11 +121,11 @@ class PlaylistListStateHolder(
 
 fun getPlaylistListStateHolder(
     dependencies: AppDependencies,
-    navController: NavController
+    navController: NavController,
 ): PlaylistListStateHolder {
     return PlaylistListStateHolder(
         playlistRepository = dependencies.repositoryProvider.playlistRepository,
         sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        navController = navController
+        navController = navController,
     )
 }

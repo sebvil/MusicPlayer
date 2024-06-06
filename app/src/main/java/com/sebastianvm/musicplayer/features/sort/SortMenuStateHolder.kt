@@ -25,39 +25,42 @@ class SortMenuStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SortMenuState, SortMenuUserAction> {
 
-    private val sortPreferences = when (val listType = arguments.listType) {
-        is SortableListType.Tracks -> {
-            sortPreferencesRepository.getTrackListSortPreferences(
-                trackList = listType.trackList
-            )
+    private val sortPreferences =
+        when (val listType = arguments.listType) {
+            is SortableListType.Tracks -> {
+                sortPreferencesRepository.getTrackListSortPreferences(
+                    trackList = listType.trackList
+                )
+            }
+            is SortableListType.Albums -> {
+                sortPreferencesRepository.getAlbumListSortPreferences()
+            }
+            is SortableListType.Playlist -> {
+                sortPreferencesRepository.getPlaylistSortPreferences(
+                    playlistId = listType.playlistId
+                )
+            }
         }
-
-        is SortableListType.Albums -> {
-            sortPreferencesRepository.getAlbumListSortPreferences()
-        }
-
-        is SortableListType.Playlist -> {
-            sortPreferencesRepository.getPlaylistSortPreferences(playlistId = listType.playlistId)
-        }
-    }
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
 
     override val state: StateFlow<SortMenuState> =
-        sortPreferences.map { sortPreferences ->
-            SortMenuState(
-                sortOptions = sortOptions,
-                selectedSort = sortPreferences.sortOption,
-                sortOrder = sortPreferences.sortOrder,
+        sortPreferences
+            .map { sortPreferences ->
+                SortMenuState(
+                    sortOptions = sortOptions,
+                    selectedSort = sortPreferences.sortOption,
+                    sortOrder = sortPreferences.sortOrder,
+                )
+            }
+            .stateIn(
+                stateHolderScope,
+                SharingStarted.Lazily,
+                SortMenuState(
+                    sortOptions = sortOptions,
+                    selectedSort = null,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                ),
             )
-        }.stateIn(
-            stateHolderScope,
-            SharingStarted.Lazily,
-            SortMenuState(
-                sortOptions = sortOptions,
-                selectedSort = null,
-                sortOrder = MediaSortOrder.ASCENDING,
-            )
-        )
 
     override fun handle(action: SortMenuUserAction) {
         when (action) {
@@ -65,11 +68,12 @@ class SortMenuStateHolder(
                 val newSortOption = action.newSortOption
                 val selectedSort = action.selectedSort
                 val sortOrder = action.currentSortOrder
-                val newSortOrder = if (newSortOption == selectedSort) {
-                    !sortOrder
-                } else {
-                    sortOrder
-                }
+                val newSortOrder =
+                    if (newSortOption == selectedSort) {
+                        !sortOrder
+                    } else {
+                        sortOrder
+                    }
                 stateHolderScope.launch {
                     when (val listType = arguments.listType) {
                         is SortableListType.Tracks -> {
@@ -77,36 +81,37 @@ class SortMenuStateHolder(
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
-                                newPreferences = MediaSortPreferences(
-                                    sortOption = newSortOption,
-                                    sortOrder = newSortOrder
-                                ),
-                                trackList = listType.trackList
+                                newPreferences =
+                                    MediaSortPreferences(
+                                        sortOption = newSortOption,
+                                        sortOrder = newSortOrder,
+                                    ),
+                                trackList = listType.trackList,
                             )
                         }
-
                         is SortableListType.Albums -> {
                             require(newSortOption is SortOptions.AlbumListSortOptions) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyAlbumListSortPreferences(
-                                newPreferences = MediaSortPreferences(
-                                    sortOption = newSortOption,
-                                    sortOrder = newSortOrder
-                                )
+                                newPreferences =
+                                    MediaSortPreferences(
+                                        sortOption = newSortOption,
+                                        sortOrder = newSortOrder,
+                                    )
                             )
                         }
-
                         is SortableListType.Playlist -> {
                             require(newSortOption is SortOptions.PlaylistSortOptions) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyPlaylistsSortPreferences(
-                                newPreferences = MediaSortPreferences(
-                                    sortOption = newSortOption,
-                                    sortOrder = newSortOrder
-                                ),
-                                playlistId = listType.playlistId
+                                newPreferences =
+                                    MediaSortPreferences(
+                                        sortOption = newSortOption,
+                                        sortOrder = newSortOrder,
+                                    ),
+                                playlistId = listType.playlistId,
                             )
                         }
                     }
@@ -129,11 +134,9 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
         is SortableListType.Tracks -> {
             SortOptions.TrackListSortOptions.entries
         }
-
         is SortableListType.Albums -> {
             SortOptions.AlbumListSortOptions.entries
         }
-
         is SortableListType.Playlist -> {
             SortOptions.PlaylistSortOptions.entries
         }
@@ -142,7 +145,9 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
 
 sealed interface SortableListType {
     data class Tracks(val trackList: TrackList) : SortableListType
+
     data object Albums : SortableListType
+
     data class Playlist(val playlistId: Long) : SortableListType
 }
 
@@ -156,7 +161,7 @@ sealed interface SortMenuUserAction : UserAction {
 
 fun getSortMenuStateHolder(
     dependencies: AppDependencies,
-    arguments: SortMenuArguments
+    arguments: SortMenuArguments,
 ): SortMenuStateHolder {
     return SortMenuStateHolder(
         arguments = arguments,

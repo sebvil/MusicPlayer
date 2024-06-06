@@ -13,9 +13,13 @@ import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
-data class GenreContextMenu(
-    override val arguments: GenreContextMenuArguments,
-) : BaseUiComponent<GenreContextMenuArguments, GenreContextMenuState, GenreContextMenuUserAction, GenreContextMenuStateHolder>() {
+data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
+    BaseUiComponent<
+        GenreContextMenuArguments,
+        GenreContextMenuState,
+        GenreContextMenuUserAction,
+        GenreContextMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): GenreContextMenuStateHolder {
         return GenreContextMenuStateHolder(
@@ -29,7 +33,7 @@ data class GenreContextMenu(
     override fun Content(
         state: GenreContextMenuState,
         handle: Handler<GenreContextMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         GenreContextMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -39,7 +43,7 @@ data class GenreContextMenu(
 private fun GenreContextMenu(
     state: GenreContextMenuState,
     handle: Handler<GenreContextMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when (state) {
         is GenreContextMenuState.Data -> {
@@ -49,15 +53,12 @@ private fun GenreContextMenu(
                         MenuItem(
                             text = stringResource(id = R.string.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = {
-                                handle(GenreContextMenuUserAction.PlayGenreClicked)
-                            }
+                            onItemClicked = { handle(GenreContextMenuUserAction.PlayGenreClicked) },
                         )
                     }
                 }
             }
         }
-
         is GenreContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
         }

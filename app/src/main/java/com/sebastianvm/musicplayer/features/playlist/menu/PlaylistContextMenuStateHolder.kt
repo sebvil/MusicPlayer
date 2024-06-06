@@ -32,8 +32,11 @@ sealed interface PlaylistContextMenuState : State {
 
 sealed interface PlaylistContextMenuUserAction : UserAction {
     data object PlayPlaylistClicked : PlaylistContextMenuUserAction
+
     data object DeletePlaylistClicked : PlaylistContextMenuUserAction
+
     data object ConfirmPlaylistDeletionClicked : PlaylistContextMenuUserAction
+
     data object PlaylistDeletionCancelled : PlaylistContextMenuUserAction
 }
 
@@ -48,17 +51,16 @@ class PlaylistContextMenuStateHolder(
     private val showDeleteConfirmationDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val state: StateFlow<PlaylistContextMenuState> =
-
-        combine(
-            playlistRepository.getPlaylistName(playlistId),
-            showDeleteConfirmationDialog
-        ) { playlistName, showDeleteConfirmationDialog ->
-            PlaylistContextMenuState.Data(
-                playlistName = playlistName,
-                playlistId = playlistId,
-                showDeleteConfirmationDialog = showDeleteConfirmationDialog,
-            )
-        }.stateIn(stateHolderScope, SharingStarted.Lazily, PlaylistContextMenuState.Loading)
+        combine(playlistRepository.getPlaylistName(playlistId), showDeleteConfirmationDialog) {
+                playlistName,
+                showDeleteConfirmationDialog ->
+                PlaylistContextMenuState.Data(
+                    playlistName = playlistName,
+                    playlistId = playlistId,
+                    showDeleteConfirmationDialog = showDeleteConfirmationDialog,
+                )
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, PlaylistContextMenuState.Loading)
 
     override fun handle(action: PlaylistContextMenuUserAction) {
         when (action) {
@@ -67,18 +69,15 @@ class PlaylistContextMenuStateHolder(
                     playbackManager.playMedia(mediaGroup = MediaGroup.Playlist(playlistId))
                 }
             }
-
             is PlaylistContextMenuUserAction.DeletePlaylistClicked -> {
                 showDeleteConfirmationDialog.update { true }
             }
-
             is PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked -> {
                 stateHolderScope.launch {
                     playlistRepository.deletePlaylist(playlistId)
                     showDeleteConfirmationDialog.update { false }
                 }
             }
-
             is PlaylistContextMenuUserAction.PlaylistDeletionCancelled -> {
                 showDeleteConfirmationDialog.update { false }
             }

@@ -44,13 +44,9 @@ data class ArtistUiComponent(
     override fun Content(
         state: UiState<ArtistState>,
         handle: Handler<ArtistUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
-        ArtistScreen(
-            uiState = state,
-            handle = handle,
-            modifier = modifier
-        )
+        ArtistScreen(uiState = state, handle = handle, modifier = modifier)
     }
 }
 
@@ -61,10 +57,7 @@ fun ArtistScreen(
     modifier: Modifier = Modifier,
 ) {
     UiStateScreen(uiState = uiState, emptyScreen = {}, modifier) { state ->
-        ArtistScreen(
-            state = state,
-            handle = handle,
-        )
+        ArtistScreen(state = state, handle = handle)
     }
 }
 
@@ -73,7 +66,7 @@ fun ArtistScreen(
 fun ArtistScreen(
     state: ArtistState,
     handle: Handler<ArtistUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val topBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topBarState)
@@ -84,24 +77,18 @@ fun ArtistScreen(
             LargeTopAppBar(
                 title = { Text(text = state.artistName) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        handle(ArtistUserAction.BackClicked)
-                    }) {
+                    IconButton(onClick = { handle(ArtistUserAction.BackClicked) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
+                            contentDescription = stringResource(id = R.string.back),
                         )
                     }
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
             )
-        }
+        },
     ) { paddingValues ->
-        ArtistLayout(
-            state = state,
-            handle = handle,
-            modifier = Modifier.padding(paddingValues)
-        )
+        ArtistLayout(state = state, handle = handle, modifier = Modifier.padding(paddingValues))
     }
 }
 
@@ -109,36 +96,36 @@ fun ArtistScreen(
 fun ArtistLayout(
     state: ArtistState,
     handle: Handler<ArtistUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         items(items = state.listItems) { item ->
             when (item) {
                 is ArtistScreenItem.SectionHeaderItem -> {
-                    ListItem(headlineContent = {
-                        Text(
-                            text = stringResource(id = item.sectionType.sectionName),
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                    })
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                text = stringResource(id = item.sectionType.sectionName),
+                                style = MaterialTheme.typography.headlineMedium,
+                            )
+                        }
+                    )
                 }
-
                 is ArtistScreenItem.AlbumRowItem -> {
                     ModelListItem(
                         state = item.state,
-                        modifier = Modifier.clickable {
-                            handle(ArtistUserAction.AlbumClicked(item.id))
-                        },
+                        modifier =
+                            Modifier.clickable { handle(ArtistUserAction.AlbumClicked(item.id)) },
                         trailingContent = {
-                            IconButton(onClick = {
-                                handle(ArtistUserAction.AlbumMoreIconClicked(item.id))
-                            }) {
+                            IconButton(
+                                onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(item.id)) }
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more)
+                                    contentDescription = stringResource(id = R.string.more),
                                 )
                             }
-                        }
+                        },
                     )
                 }
             }

@@ -16,18 +16,15 @@ import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.orZero
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
-class MediaPlaybackClient(
-    private val context: Context,
-    private val externalScope: CoroutineScope,
-) {
+class MediaPlaybackClient(private val context: Context, private val externalScope: CoroutineScope) {
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
@@ -42,29 +39,31 @@ class MediaPlaybackClient(
 
     private fun updatePlaybackState() {
         _playbackState.update {
-            controller?.let { nonNullController ->
-                getUpdatedPlaybackState(nonNullController)
-            } ?: NotPlayingState
+            controller?.let { nonNullController -> getUpdatedPlaybackState(nonNullController) }
+                ?: NotPlayingState
         }
     }
 
     private fun getUpdatedPlaybackState(controller: MediaController): PlaybackState {
         return when {
             controller.mediaMetadata == MediaMetadata.EMPTY -> NotPlayingState
-            controller.playbackState != Player.STATE_READY && playbackState.value is NotPlayingState -> NotPlayingState
+            controller.playbackState != Player.STATE_READY &&
+                playbackState.value is NotPlayingState -> NotPlayingState
             else -> {
                 TrackPlayingState(
-                    trackInfo = TrackInfo(
-                        title = controller.mediaMetadata.title?.toString().orEmpty(),
-                        artists = controller.mediaMetadata.artist?.toString()
-                            .orEmpty(),
-                        artworkUri = controller.mediaMetadata.artworkUri?.toString()
-                            .orEmpty(),
-                        trackLength = controller.mediaMetadata.duration.milliseconds
-                    ),
+                    trackInfo =
+                        TrackInfo(
+                            title = controller.mediaMetadata.title?.toString().orEmpty(),
+                            artists = controller.mediaMetadata.artist?.toString().orEmpty(),
+                            artworkUri = controller.mediaMetadata.artworkUri?.toString().orEmpty(),
+                            trackLength = controller.mediaMetadata.duration.milliseconds,
+                        ),
                     isPlaying = controller.isPlaying,
-                    currentTrackProgress = controller.contentPosition.takeUnless { it == C.TIME_UNSET }
-                        .orZero().milliseconds
+                    currentTrackProgress =
+                        controller.contentPosition
+                            .takeUnless { it == C.TIME_UNSET }
+                            .orZero()
+                            .milliseconds,
                 )
             }
         }
@@ -84,16 +83,17 @@ class MediaPlaybackClient(
     }
 
     private fun launchCurrentPlayTimeUpdates() {
-        timeUpdatesJob = externalScope.launch {
-            while (true) {
-                delay(500)
-                if (!isUpdatingPosition) {
-                    playbackState.update {
-                        controller?.let { getUpdatedPlaybackState(it) } ?: NotPlayingState
+        timeUpdatesJob =
+            externalScope.launch {
+                while (true) {
+                    delay(500)
+                    if (!isUpdatingPosition) {
+                        playbackState.update {
+                            controller?.let { getUpdatedPlaybackState(it) } ?: NotPlayingState
+                        }
                     }
                 }
             }
-        }
     }
 
     private fun setController() {
@@ -149,19 +149,17 @@ class MediaPlaybackClient(
         initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
         playWhenReady: Boolean = true,
-        position: Long = 0
+        position: Long = 0,
     ) {
         preparePlaylist(initialWindowIndex, mediaItems, playWhenReady, position)
     }
 
-    /**
-     * Load the supplied list of songs and the song to play into the current player.
-     */
+    /** Load the supplied list of songs and the song to play into the current player. */
     private fun preparePlaylist(
         initialWindowIndex: Int,
         mediaItems: List<MediaItem>,
         playWhenReady: Boolean,
-        position: Long
+        position: Long,
     ) {
         controller?.let { mediaController ->
             mediaController.playWhenReady = playWhenReady
@@ -192,8 +190,6 @@ class MediaPlaybackClient(
             (it as? TrackPlayingState)?.copy(currentTrackProgress = position.milliseconds)
                 ?: NotPlayingState
         }
-        controller?.also { controllerNotNull ->
-            controllerNotNull.seekTo(position)
-        }
+        controller?.also { controllerNotNull -> controllerNotNull.seekTo(position) }
     }
 }

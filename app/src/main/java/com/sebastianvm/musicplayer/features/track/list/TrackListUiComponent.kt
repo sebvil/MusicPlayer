@@ -25,9 +25,14 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class TrackListUiComponent(
     override val arguments: TrackListArguments,
-    val navController: NavController
+    val navController: NavController,
 ) :
-    BaseUiComponent<TrackListArguments, UiState<TrackListState>, TrackListUserAction, TrackListStateHolder>() {
+    BaseUiComponent<
+        TrackListArguments,
+        UiState<TrackListState>,
+        TrackListUserAction,
+        TrackListStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): TrackListStateHolder {
         return getTrackListStateHolder(dependencies, arguments, navController)
@@ -37,7 +42,7 @@ data class TrackListUiComponent(
     override fun Content(
         state: UiState<TrackListState>,
         handle: Handler<TrackListUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         TrackList(uiState = state, handle = handle, modifier = modifier)
     }
@@ -49,18 +54,17 @@ fun TrackList(
     handle: Handler<TrackListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
-        StoragePermissionNeededEmptyScreen(
-            message = R.string.no_tracks_found,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        )
-    }) { state ->
-        TrackList(
-            state = state,
-            handle = handle,
-        )
+    UiStateScreen(
+        uiState = uiState,
+        modifier = modifier.fillMaxSize(),
+        emptyScreen = {
+            StoragePermissionNeededEmptyScreen(
+                message = R.string.no_tracks_found,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            )
+        },
+    ) { state ->
+        TrackList(state = state, handle = handle)
     }
 }
 
@@ -76,25 +80,18 @@ fun TrackList(
             if (state.trackListType is MediaGroup.Playlist) {
                 ExtendedFloatingActionButton(
                     text = { Text(text = stringResource(id = R.string.add_tracks)) },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null
-                        )
-                    },
+                    icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                     onClick = {
-//                        val trackListType = state.trackListType
-//                        navigateToTrackSearchScreen(TrackSearchArguments(playlistId = trackListType.playlistId))
-                    }
+                        //                        val trackListType = state.trackListType
+                        //
+                        // navigateToTrackSearchScreen(TrackSearchArguments(playlistId =
+                        // trackListType.playlistId))
+                    },
                 )
             }
         },
     ) { paddingValues ->
-        TrackListLayout(
-            state = state,
-            handle = handle,
-            modifier = Modifier.padding(paddingValues)
-        )
+        TrackListLayout(state = state, handle = handle, modifier = Modifier.padding(paddingValues))
     }
 }
 
@@ -107,9 +104,7 @@ fun TrackListLayout(
     ModelList(
         state = state.modelListState,
         modifier = modifier,
-        onBackButtonClicked = {
-            handle(TrackListUserAction.BackClicked)
-        },
+        onBackButtonClicked = { handle(TrackListUserAction.BackClicked) },
         onSortButtonClicked = { handle(TrackListUserAction.SortButtonClicked) },
         onItemClicked = { index, _ ->
             handle(TrackListUserAction.TrackClicked(trackIndex = index))
@@ -118,9 +113,9 @@ fun TrackListLayout(
             handle(
                 TrackListUserAction.TrackMoreIconClicked(
                     trackId = item.id,
-                    trackPositionInList = index
+                    trackPositionInList = index,
                 )
             )
-        }
+        },
     )
 }

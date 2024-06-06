@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface QueueRepository {
     fun getQueue(): Flow<NextUpQueue?>
+
     fun getFullQueue(): Flow<FullQueue?>
+
     suspend fun saveQueue(nowPlayingInfo: NowPlayingInfo, queuedTracksIds: List<QueuedTrack>)
+
     fun moveQueueItem(from: Int, to: Int)
+
     suspend fun addToQueue(mediaGroup: MediaGroup)
 }

@@ -4,5 +4,5 @@ import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
 data class TrackListMetadata(
     val trackListName: String,
-    val mediaArtImageState: MediaArtImageState? = null
+    val mediaArtImageState: MediaArtImageState? = null,
 )

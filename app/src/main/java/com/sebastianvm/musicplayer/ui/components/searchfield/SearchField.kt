@@ -28,12 +28,10 @@ fun SearchField(
     onTextChanged: (newText: String) -> Unit,
     onUpButtonClicked: () -> Unit,
     focusRequester: FocusRequester,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val input = rememberSaveable {
-        mutableStateOf("")
-    }
+    val input = rememberSaveable { mutableStateOf("") }
 
     TextField(
         value = input.value,
@@ -45,43 +43,37 @@ fun SearchField(
             Text(
                 text = stringResource(R.string.search),
                 style = LocalTextStyle.current,
-                color = LocalContentColor.current
+                color = LocalContentColor.current,
             )
         },
-        leadingIcon =
-        {
-            IconButton(onClick = {
-                onUpButtonClicked()
-            }) {
+        leadingIcon = {
+            IconButton(onClick = { onUpButtonClicked() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = stringResource(
-                        id = R.string.search
-                    )
+                    contentDescription = stringResource(id = R.string.search),
                 )
             }
         },
-        trailingIcon = input.value.takeUnless { it.isEmpty() }?.let {
-            {
-                IconButton(onClick = {
-                    input.value = ""
-                    onTextChanged("")
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = stringResource(
-                            id = R.string.search
-                        )
-                    )
-                }
-            }
-        },
+        trailingIcon =
+            input.value
+                .takeUnless { it.isEmpty() }
+                ?.let {
+                    {
+                        IconButton(
+                            onClick = {
+                                input.value = ""
+                                onTextChanged("")
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = R.string.search),
+                            )
+                        }
+                    }
+                },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(
-            onAny = { keyboardController?.hide() }
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester)
+        keyboardActions = KeyboardActions(onAny = { keyboardController?.hide() }),
+        modifier = modifier.fillMaxWidth().focusRequester(focusRequester),
     )
 }

@@ -13,9 +13,13 @@ import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
-data class ArtistContextMenu(
-    override val arguments: ArtistContextMenuArguments,
-) : BaseUiComponent<ArtistContextMenuArguments, ArtistContextMenuState, ArtistContextMenuUserAction, ArtistContextMenuStateHolder>() {
+data class ArtistContextMenu(override val arguments: ArtistContextMenuArguments) :
+    BaseUiComponent<
+        ArtistContextMenuArguments,
+        ArtistContextMenuState,
+        ArtistContextMenuUserAction,
+        ArtistContextMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): ArtistContextMenuStateHolder {
         return getArtistContextMenuStateHolder(dependencies, arguments)
@@ -25,7 +29,7 @@ data class ArtistContextMenu(
     override fun Content(
         state: ArtistContextMenuState,
         handle: Handler<ArtistContextMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         ArtistContextMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -35,7 +39,7 @@ data class ArtistContextMenu(
 private fun ArtistContextMenu(
     state: ArtistContextMenuState,
     handle: Handler<ArtistContextMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when (state) {
         is ArtistContextMenuState.Data -> {
@@ -47,13 +51,12 @@ private fun ArtistContextMenu(
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = {
                                 handle(ArtistContextMenuUserAction.PlayArtistClicked)
-                            }
+                            },
                         )
                     }
                 }
             }
         }
-
         is ArtistContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
         }

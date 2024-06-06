@@ -36,7 +36,7 @@ data class QueuedTrack(
                 artists = "",
                 path = "",
                 queuePosition = positionInQueue,
-                queueItemId = mediaItem.uniqueId
+                queueItemId = mediaItem.uniqueId,
             )
     }
 }

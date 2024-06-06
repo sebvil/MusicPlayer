@@ -37,7 +37,7 @@ class ArtworkProvider : ContentProvider() {
         p1: Array<out String>?,
         p2: String?,
         p3: Array<out String>?,
-        p4: String?
+        p4: String?,
     ): Cursor? = null
 
     override fun getType(p0: Uri): String? = null
@@ -49,25 +49,25 @@ class ArtworkProvider : ContentProvider() {
     override fun update(p0: Uri, p1: ContentValues?, p2: String?, p3: Array<out String>?): Int = 0
 
     private fun getPFDFromBitmap(bitmap: Bitmap?): ParcelFileDescriptor {
-        return super.openPipeHelper(
-            Uri.EMPTY,
-            "image/*",
-            null,
-            bitmap
-        ) { pfd: ParcelFileDescriptor, _: Uri, _: String, _: Bundle?, b: Bitmap? ->
+        return super.openPipeHelper(Uri.EMPTY, "image/*", null, bitmap) {
+            pfd: ParcelFileDescriptor,
+            _: Uri,
+            _: String,
+            _: Bundle?,
+            b: Bitmap? ->
             /* Compression is performed on an AsyncTask thread within openPipeHelper() */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 b?.compress(
                     Bitmap.CompressFormat.WEBP_LOSSLESS,
                     IMAGE_QUALITY,
-                    FileOutputStream(pfd.fileDescriptor)
+                    FileOutputStream(pfd.fileDescriptor),
                 )
             } else {
                 @Suppress("DEPRECATION")
                 b?.compress(
                     Bitmap.CompressFormat.WEBP,
                     IMAGE_QUALITY,
-                    FileOutputStream(pfd.fileDescriptor)
+                    FileOutputStream(pfd.fileDescriptor),
                 )
             }
         }
@@ -75,27 +75,29 @@ class ArtworkProvider : ContentProvider() {
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
         val nonNullContext = context ?: return null
-        val backUpResource = when (uri.pathSegments[0]) {
-            TRACK_PATH -> R.drawable.ic_genre
-            ALBUM_PATH -> R.drawable.ic_album
-            else -> 0
-        }
-        val path = getUri(uri)
-        val bitmap = try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                nonNullContext.contentResolver.loadThumbnail(
-                    path,
-                    Size(IMAGE_SIZE, IMAGE_SIZE),
-                    null
-                )
-            } else {
-                null
+        val backUpResource =
+            when (uri.pathSegments[0]) {
+                TRACK_PATH -> R.drawable.ic_genre
+                ALBUM_PATH -> R.drawable.ic_album
+                else -> 0
             }
-        } catch (e: IOException) {
-            // TODO exception logger
-            Log.i("Exception", e.message.orEmpty())
-            null
-        } ?: nonNullContext.getBitmapFromDrawable(backUpResource)
+        val path = getUri(uri)
+        val bitmap =
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    nonNullContext.contentResolver.loadThumbnail(
+                        path,
+                        Size(IMAGE_SIZE, IMAGE_SIZE),
+                        null,
+                    )
+                } else {
+                    null
+                }
+            } catch (e: IOException) {
+                // TODO exception logger
+                Log.i("Exception", e.message.orEmpty())
+                null
+            } ?: nonNullContext.getBitmapFromDrawable(backUpResource)
         return getPFDFromBitmap(bitmap)
     }
 
@@ -107,34 +109,36 @@ class ArtworkProvider : ContentProvider() {
     private fun Context.getBitmapFromDrawable(
         @DrawableRes drawableId: Int,
         width: Int = -1,
-        height: Int = -1
+        height: Int = -1,
     ): Bitmap? {
-        val drawable: Drawable? = try {
-            ContextCompat.getDrawable(this, drawableId) ?: return null
-        } catch (e: Resources.NotFoundException) {
-            // TODO exception logger
-            Log.i("Exception", e.message.orEmpty())
-            VectorDrawableCompat.create(this.resources, drawableId, this.theme)
-        }
+        val drawable: Drawable? =
+            try {
+                ContextCompat.getDrawable(this, drawableId) ?: return null
+            } catch (e: Resources.NotFoundException) {
+                // TODO exception logger
+                Log.i("Exception", e.message.orEmpty())
+                VectorDrawableCompat.create(this.resources, drawableId, this.theme)
+            }
 
         return when (drawable) {
             is BitmapDrawable -> drawable.bitmap
-            is VectorDrawableCompat, is VectorDrawable -> {
-                val bitmap = if (width > 0 && height > 0) {
-                    Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                } else {
-                    Bitmap.createBitmap(
-                        drawable.intrinsicWidth,
-                        drawable.intrinsicHeight,
-                        Bitmap.Config.ARGB_8888
-                    )
-                }
+            is VectorDrawableCompat,
+            is VectorDrawable -> {
+                val bitmap =
+                    if (width > 0 && height > 0) {
+                        Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                    } else {
+                        Bitmap.createBitmap(
+                            drawable.intrinsicWidth,
+                            drawable.intrinsicHeight,
+                            Bitmap.Config.ARGB_8888,
+                        )
+                    }
                 val canvas = Canvas(bitmap)
                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                 drawable.draw(canvas)
                 bitmap
             }
-
             else -> BitmapFactory.decodeResource(this.resources, drawableId)
         }
     }
@@ -148,21 +152,23 @@ class ArtworkProvider : ContentProvider() {
 
         fun getUriForTrack(albumId: Long): Uri {
             return ContentUris.withAppendedId(
-                Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(AUTHORITY)
-                    .appendPath(
-                        TRACK_PATH
-                    ).build(),
-                albumId
+                Uri.Builder()
+                    .scheme(ContentResolver.SCHEME_CONTENT)
+                    .authority(AUTHORITY)
+                    .appendPath(TRACK_PATH)
+                    .build(),
+                albumId,
             )
         }
 
         fun getUriForAlbum(albumId: Long): Uri {
             return ContentUris.withAppendedId(
-                Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(AUTHORITY)
-                    .appendPath(
-                        ALBUM_PATH
-                    ).build(),
-                albumId
+                Uri.Builder()
+                    .scheme(ContentResolver.SCHEME_CONTENT)
+                    .authority(AUTHORITY)
+                    .appendPath(ALBUM_PATH)
+                    .build(),
+                albumId,
             )
         }
     }

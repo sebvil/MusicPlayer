@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer
 
 import io.kotest.core.listeners.AfterInvocationListener
 import io.kotest.core.test.TestCase
-import kotlinx.coroutines.cancelChildren
 import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.cancelChildren
 
 object CancelChildrenOnFinishExtension : AfterInvocationListener {
 

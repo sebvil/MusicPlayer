@@ -23,14 +23,20 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class ArtistsMenu(
     override val arguments: ArtistsMenuArguments,
-    val navController: NavController
-) : BaseUiComponent<ArtistsMenuArguments, UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuStateHolder>() {
+    val navController: NavController,
+) :
+    BaseUiComponent<
+        ArtistsMenuArguments,
+        UiState<ArtistsMenuState>,
+        ArtistsMenuUserAction,
+        ArtistsMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): ArtistsMenuStateHolder {
         return ArtistsMenuStateHolder(
             arguments = arguments,
             artistRepository = dependencies.repositoryProvider.artistRepository,
-            navController = navController
+            navController = navController,
         )
     }
 
@@ -38,13 +44,9 @@ data class ArtistsMenu(
     override fun Content(
         state: UiState<ArtistsMenuState>,
         handle: Handler<ArtistsMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
-        ArtistsMenu(
-            uiState = state,
-            handle = handle,
-            modifier = modifier
-        )
+        ArtistsMenu(uiState = state, handle = handle, modifier = modifier)
     }
 }
 
@@ -52,18 +54,10 @@ data class ArtistsMenu(
 fun ArtistsMenu(
     uiState: UiState<ArtistsMenuState>,
     handle: Handler<ArtistsMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(
-        uiState = uiState,
-        modifier = modifier,
-        emptyScreen = {}
-    ) { state ->
-        ArtistsMenu(
-            state = state,
-            handle = handle,
-            modifier = Modifier
-        )
+    UiStateScreen(uiState = uiState, modifier = modifier, emptyScreen = {}) { state ->
+        ArtistsMenu(state = state, handle = handle, modifier = Modifier)
     }
 }
 
@@ -71,30 +65,24 @@ fun ArtistsMenu(
 fun ArtistsMenu(
     state: ArtistsMenuState,
     handle: Handler<ArtistsMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-    ) {
+    Column(modifier = modifier.fillMaxWidth().navigationBarsPadding()) {
         ListItem(
             headlineContent = {
                 Text(
                     text = stringResource(id = R.string.artists),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         ModelList(
             state = state.modelListState,
             onBackButtonClicked = {},
-            onItemClicked = { _, item ->
-                handle(ArtistsMenuUserAction.ArtistClicked(item.id))
-            }
+            onItemClicked = { _, item -> handle(ArtistsMenuUserAction.ArtistClicked(item.id)) },
         )
     }
 }

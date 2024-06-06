@@ -30,119 +30,132 @@ import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 
-class AlbumListStateHolderTest : FreeSpec({
+class AlbumListStateHolderTest :
+    FreeSpec({
+        lateinit var albumRepositoryDep: FakeAlbumRepository
+        lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+        lateinit var navControllerDep: FakeNavController
 
-    lateinit var albumRepositoryDep: FakeAlbumRepository
-    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
-    lateinit var navControllerDep: FakeNavController
-
-    beforeTest {
-        albumRepositoryDep = FakeAlbumRepository()
-        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
-        navControllerDep = FakeNavController()
-    }
-
-    fun TestScope.getSubject(): AlbumListStateHolder {
-        return AlbumListStateHolder(
-            stateHolderScope = this,
-            albumRepository = albumRepositoryDep,
-            sortPreferencesRepository = sortPreferencesRepositoryDep,
-            navController = navControllerDep
-        )
-    }
-
-    "init subscribes to changes in track list" {
-        val subject = getSubject()
-        albumRepositoryDep.albums.value = emptyList()
-        sortPreferencesRepositoryDep.albumListSortPreferences.value =
-            MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                sortOrder = MediaSortOrder.ASCENDING
-            )
-        testStateHolderState(subject) {
-            awaitItem() shouldBe Loading
-            awaitItem() shouldBe Empty
-            val albums = FixtureProvider.albumFixtures().toList()
-            albumRepositoryDep.albums.value = albums
-            val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
-            item.state.modelListState.items shouldBe albums.map { it.toModelListItemState() }
-            item.state.modelListState.headerState shouldBe HeaderState.None
+        beforeTest {
+            albumRepositoryDep = FakeAlbumRepository()
+            sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+            navControllerDep = FakeNavController()
         }
-    }
 
-    "init subscribes to changes in sort order" - {
-        withData(FixtureProvider.albumSortPreferences().toList()) { sortPreferences ->
-            val subject = getSubject()
-            val initialPrefs = MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOptions.ALBUM,
-                sortOrder = MediaSortOrder.ASCENDING
+        fun TestScope.getSubject(): AlbumListStateHolder {
+            return AlbumListStateHolder(
+                stateHolderScope = this,
+                albumRepository = albumRepositoryDep,
+                sortPreferencesRepository = sortPreferencesRepositoryDep,
+                navController = navControllerDep,
             )
-            albumRepositoryDep.albums.value = FixtureProvider.albumFixtures().toList()
-            sortPreferencesRepositoryDep.albumListSortPreferences.value = initialPrefs
+        }
 
+        "init subscribes to changes in track list" {
+            val subject = getSubject()
+            albumRepositoryDep.albums.value = emptyList()
+            sortPreferencesRepositoryDep.albumListSortPreferences.value =
+                MediaSortPreferences(
+                    sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
+                awaitItem() shouldBe Empty
+                val albums = FixtureProvider.albumFixtures().toList()
+                albumRepositoryDep.albums.value = albums
+                val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
+                item.state.modelListState.items shouldBe albums.map { it.toModelListItemState() }
+                item.state.modelListState.headerState shouldBe HeaderState.None
+            }
+        }
 
-                with(awaitItem()) {
-                    shouldBeInstanceOf<Data<AlbumListState>>()
-                    state.modelListState.sortButtonState shouldBe SortButtonState(
-                        text = initialPrefs.sortOption.stringId,
-                        sortOrder = initialPrefs.sortOrder
-                    )
-                }
-
-                if (sortPreferences != initialPrefs) {
-                    sortPreferencesRepositoryDep.albumListSortPreferences.value = sortPreferences
-                    with(awaitItem()) {
-                        shouldBeInstanceOf<Data<AlbumListState>>()
-                        state.modelListState.sortButtonState shouldBe SortButtonState(
-                            text = sortPreferences.sortOption.stringId,
-                            sortOrder = sortPreferences.sortOrder
+        "init subscribes to changes in sort order" -
+            {
+                withData(FixtureProvider.albumSortPreferences().toList()) { sortPreferences ->
+                    val subject = getSubject()
+                    val initialPrefs =
+                        MediaSortPreferences(
+                            sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                            sortOrder = MediaSortOrder.ASCENDING,
                         )
+                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures().toList()
+                    sortPreferencesRepositoryDep.albumListSortPreferences.value = initialPrefs
+
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+
+                        with(awaitItem()) {
+                            shouldBeInstanceOf<Data<AlbumListState>>()
+                            state.modelListState.sortButtonState shouldBe
+                                SortButtonState(
+                                    text = initialPrefs.sortOption.stringId,
+                                    sortOrder = initialPrefs.sortOrder,
+                                )
+                        }
+
+                        if (sortPreferences != initialPrefs) {
+                            sortPreferencesRepositoryDep.albumListSortPreferences.value =
+                                sortPreferences
+                            with(awaitItem()) {
+                                shouldBeInstanceOf<Data<AlbumListState>>()
+                                state.modelListState.sortButtonState shouldBe
+                                    SortButtonState(
+                                        text = sortPreferences.sortOption.stringId,
+                                        sortOrder = sortPreferences.sortOrder,
+                                    )
+                            }
+                        }
                     }
                 }
             }
-        }
-    }
 
-    "handle" - {
-        "AlbumMoreIconClicked navigates to AlbumContextMenu" {
-            val subject = getSubject()
-            subject.handle(AlbumListUserAction.AlbumMoreIconClicked(ALBUM_ID))
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = AlbumContextMenu(
-                    arguments = AlbumContextMenuArguments(ALBUM_ID),
-                    navController = navControllerDep
-                ),
-                presentationMode = NavOptions.PresentationMode.BottomSheet
-            )
-        }
+        "handle" -
+            {
+                "AlbumMoreIconClicked navigates to AlbumContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(AlbumListUserAction.AlbumMoreIconClicked(ALBUM_ID))
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                AlbumContextMenu(
+                                    arguments = AlbumContextMenuArguments(ALBUM_ID),
+                                    navController = navControllerDep,
+                                ),
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        )
+                }
 
-        "SortButtonClicked navigates to SortMenu" {
-            val subject = getSubject()
-            subject.handle(AlbumListUserAction.SortButtonClicked)
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = SortMenuUiComponent(
-                    arguments = SortMenuArguments(listType = SortableListType.Albums)
-                ),
-                presentationMode = NavOptions.PresentationMode.BottomSheet
-            )
-        }
+                "SortButtonClicked navigates to SortMenu" {
+                    val subject = getSubject()
+                    subject.handle(AlbumListUserAction.SortButtonClicked)
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                SortMenuUiComponent(
+                                    arguments =
+                                        SortMenuArguments(listType = SortableListType.Albums)
+                                ),
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        )
+                }
 
-        "AlbumClicked navigates to TrackList" {
-            val subject = getSubject()
-            subject.handle(AlbumListUserAction.AlbumClicked(ALBUM_ID))
+                "AlbumClicked navigates to TrackList" {
+                    val subject = getSubject()
+                    subject.handle(AlbumListUserAction.AlbumClicked(ALBUM_ID))
 
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = TrackListUiComponent(
-                    arguments = TrackListArguments(MediaGroup.Album(ALBUM_ID)),
-                    navController = navControllerDep
-                ),
-                presentationMode = NavOptions.PresentationMode.Screen
-            )
-        }
-    }
-}) {
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                TrackListUiComponent(
+                                    arguments = TrackListArguments(MediaGroup.Album(ALBUM_ID)),
+                                    navController = navControllerDep,
+                                ),
+                            presentationMode = NavOptions.PresentationMode.Screen,
+                        )
+                }
+            }
+    }) {
     companion object {
         private const val ALBUM_ID = 1L
     }

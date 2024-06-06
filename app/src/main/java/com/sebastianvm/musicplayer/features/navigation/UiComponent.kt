@@ -21,22 +21,24 @@ interface UiComponent<Args : Arguments, SH : StateHolder<*, *>> {
 
     fun createStateHolder(dependencies: AppDependencies): SH
 
-    @Composable
-    fun Content(modifier: Modifier)
+    @Composable fun Content(modifier: Modifier)
 
     fun onCleared() = Unit
 }
 
-abstract class BaseUiComponent<Args : Arguments, S : State, UA : UserAction, SH : StateHolder<S, UA>> :
-    UiComponent<Args, SH> {
+abstract class BaseUiComponent<
+    Args : Arguments,
+    S : State,
+    UA : UserAction,
+    SH : StateHolder<S, UA>,
+> : UiComponent<Args, SH> {
     private var stateHolder: SH? = null
 
     private fun getOrCreateStateHolder(dependencies: AppDependencies): SH {
         return stateHolder ?: createStateHolder(dependencies).also { stateHolder = it }
     }
 
-    @Composable
-    abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
+    @Composable abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
 
     override val key = this.toString()
 
@@ -44,15 +46,9 @@ abstract class BaseUiComponent<Args : Arguments, S : State, UA : UserAction, SH 
     final override fun Content(modifier: Modifier) {
         val dependencies = dependencies()
 
-        val stateHolder = remember {
-            getOrCreateStateHolder(dependencies)
-        }
+        val stateHolder = remember { getOrCreateStateHolder(dependencies) }
         val state by stateHolder.currentState
-        Content(
-            state = state,
-            handle = stateHolder::handle,
-            modifier = modifier
-        )
+        Content(state = state, handle = stateHolder::handle, modifier = modifier)
     }
 
     override fun onCleared() {

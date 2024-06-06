@@ -34,15 +34,11 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 fun AddTrackConfirmationDialog(
     state: AddTrackConfirmationDialogState,
     handle: Handler<TrackSearchUserAction>,
-    updateTrackName: (String) -> Unit
+    updateTrackName: (String) -> Unit,
 ) {
     AlertDialog(
-        onDismissRequest = {
-            handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
-        },
-        title = {
-            Text(text = stringResource(R.string.add_to_playlist_question))
-        },
+        onDismissRequest = { handle(TrackSearchUserAction.CancelAddTrackToPlaylist) },
+        title = { Text(text = stringResource(R.string.add_to_playlist_question)) },
         text = {
             Text(text = stringResource(id = R.string.song_already_in_playlist, state.trackName))
         },
@@ -52,7 +48,7 @@ fun AddTrackConfirmationDialog(
                     handle(
                         TrackSearchUserAction.ConfirmAddTrackToPlaylist(
                             state.trackId,
-                            state.trackName
+                            state.trackName,
                         )
                     )
                     updateTrackName(state.trackName)
@@ -62,14 +58,10 @@ fun AddTrackConfirmationDialog(
             }
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    handle(TrackSearchUserAction.CancelAddTrackToPlaylist)
-                }
-            ) {
+            TextButton(onClick = { handle(TrackSearchUserAction.CancelAddTrackToPlaylist) }) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }
 
@@ -77,78 +69,71 @@ fun AddTrackConfirmationDialog(
 fun TrackSearchLayout(
     state: TrackSearchState,
     handle: Handler<TrackSearchUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
-    var trackName by remember {
-        mutableStateOf("")
-    }
+    var trackName by remember { mutableStateOf("") }
     state.addTrackConfirmationDialogState?.also {
         AddTrackConfirmationDialog(
             state = it,
             handle = handle,
-            updateTrackName = { newName -> trackName = newName }
+            updateTrackName = { newName -> trackName = newName },
         )
     }
     val context = LocalContext.current
     LaunchedEffect(key1 = state.showToast) {
         if (state.showToast) {
             Toast.makeText(
-                context,
-                context.getString(
-                    R.string.track_added_to_playlist,
-                    trackName
-                ),
-                Toast.LENGTH_SHORT
-            ).show()
+                    context,
+                    context.getString(R.string.track_added_to_playlist, trackName),
+                    Toast.LENGTH_SHORT,
+                )
+                .show()
             handle(TrackSearchUserAction.ToastShown)
         }
     }
 
     Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .focusRequester(focusRequester)
-            .focusable(enabled = true, interactionSource)
-            .clickable { focusRequester.requestFocus() }
+        modifier =
+            modifier
+                .fillMaxHeight()
+                .focusRequester(focusRequester)
+                .focusable(enabled = true, interactionSource)
+                .clickable { focusRequester.requestFocus() }
     ) {
         SearchField(
             onTextChanged = { handle(TrackSearchUserAction.TextChanged(it)) },
             onUpButtonClicked = {
-//                navigator.navigateUp()
+                //                navigator.navigateUp()
             },
-            focusRequester = focusRequester
+            focusRequester = focusRequester,
         )
 
         ListItem(
             leadingContent = {
                 Switch(
                     checked = state.hideTracksInPlaylist,
-                    onCheckedChange = { handle(TrackSearchUserAction.HideTracksCheckToggled) }
+                    onCheckedChange = { handle(TrackSearchUserAction.HideTracksCheckToggled) },
                 )
             },
-            headlineContent = {
-                Text(
-                    text = stringResource(R.string.hide_tracks_in_playlist)
-                )
-            }
+            headlineContent = { Text(text = stringResource(R.string.hide_tracks_in_playlist)) },
         )
 
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.trackSearchResults) { item ->
                 ModelListItem(
                     state = item,
-                    modifier = Modifier
-                        .clickable {
+                    modifier =
+                        Modifier.clickable {
                             handle(
                                 TrackSearchUserAction.TrackClicked(
                                     trackId = item.id,
-                                    trackName = item.headlineContent
+                                    trackName = item.headlineContent,
                                 )
                             )
                             trackName = item.headlineContent
-                        }
+                        },
                 )
             }
         }

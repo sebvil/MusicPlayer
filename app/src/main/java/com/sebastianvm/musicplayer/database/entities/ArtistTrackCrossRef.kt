@@ -7,7 +7,6 @@ import androidx.room.Entity
 data class ArtistTrackCrossRef(
     val artistId: Long,
     val artistName: String,
-    @ColumnInfo(index = true)
-    val trackId: Long,
-    val trackName: String
+    @ColumnInfo(index = true) val trackId: Long,
+    val trackName: String,
 )

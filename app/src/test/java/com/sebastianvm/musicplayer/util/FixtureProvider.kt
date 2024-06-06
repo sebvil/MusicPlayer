@@ -21,29 +21,27 @@ object FixtureProvider {
     fun playbackStateFixtures(): List<TrackPlayingState> {
         return listOf(
             TrackPlayingState(
-                trackInfo = TrackInfo(
-                    title = "",
-                    artists = "",
-                    artworkUri = "",
-                    trackLength = 0.seconds
-                ),
+                trackInfo =
+                    TrackInfo(title = "", artists = "", artworkUri = "", trackLength = 0.seconds),
                 isPlaying = false,
-                currentTrackProgress = 0.seconds
+                currentTrackProgress = 0.seconds,
             ),
             TrackPlayingState(
-                trackInfo = TrackInfo(
-                    title = "La Promesa",
-                    artists = "Melendi",
-                    artworkUri = "path/to/image",
-                    trackLength = 250.seconds
-                ),
+                trackInfo =
+                    TrackInfo(
+                        title = "La Promesa",
+                        artists = "Melendi",
+                        artworkUri = "path/to/image",
+                        trackLength = 250.seconds,
+                    ),
                 isPlaying = true,
-                currentTrackProgress = 125.seconds
+                currentTrackProgress = 125.seconds,
             ),
         )
     }
 
     private fun longList(): List<Long> = listOf(0, 1, 2, 3)
+
     private fun stringList() = listOf("", "Hello, World!")
 
     fun trackFixtures(): List<Track> {
@@ -57,25 +55,26 @@ object FixtureProvider {
                     albumName = string,
                     albumId = long,
                     artists = string,
-                    path = string
+                    path = string,
                 )
             }
         }
     }
 
     fun trackListWithMetadataFixtures(): List<TrackListWithMetadata> {
-        val metadataList = listOf(
-            TrackListMetadata(trackListName = "Track list", mediaArtImageState = null),
-            TrackListMetadata(
-                trackListName = "Track list",
-                mediaArtImageState = MediaArtImageState("", Icons.Album)
-            ),
-            null
-        )
+        val metadataList =
+            listOf(
+                TrackListMetadata(trackListName = "Track list", mediaArtImageState = null),
+                TrackListMetadata(
+                    trackListName = "Track list",
+                    mediaArtImageState = MediaArtImageState("", Icons.Album),
+                ),
+                null,
+            )
         return metadataList.flatMap {
             listOf(
                 TrackListWithMetadata(metaData = it, trackList = trackFixtures().toList()),
-                TrackListWithMetadata(metaData = it, trackList = listOf())
+                TrackListWithMetadata(metaData = it, trackList = listOf()),
             )
         }
     }
@@ -109,7 +108,7 @@ object FixtureProvider {
                     albumName = string,
                     artists = string,
                     year = long,
-                    imageUri = string
+                    imageUri = string,
                 )
             }
         }
@@ -117,23 +116,13 @@ object FixtureProvider {
 
     fun artistFixtures(): List<Artist> {
         return longList().flatMap { long ->
-            stringList().map { string ->
-                Artist(
-                    id = long,
-                    artistName = string
-                )
-            }
+            stringList().map { string -> Artist(id = long, artistName = string) }
         }
     }
 
     fun genreFixtures(): List<Genre> {
         return longList().flatMap { long ->
-            stringList().map { string ->
-                Genre(
-                    id = long,
-                    genreName = string
-                )
-            }
+            stringList().map { string -> Genre(id = long, genreName = string) }
         }
     }
 }

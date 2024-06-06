@@ -29,7 +29,7 @@ data class PermissionHandlerState(
     val permissionState: PermissionState,
     val showPermissionDeniedDialog: Boolean,
     val permissionExplanationDialogState: PermissionDialogState,
-    val permissionDeniedDialogState: PermissionDialogState
+    val permissionDeniedDialogState: PermissionDialogState,
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -39,67 +39,71 @@ fun PermissionHandler(
     @StringRes dialogTitle: Int,
     @StringRes message: Int,
     onPermissionGranted: () -> Unit,
-    content: @Composable (onClick: () -> Unit) -> Unit
+    content: @Composable (onClick: () -> Unit) -> Unit,
 ) {
-    var showPermissionDeniedDialog by remember {
-        mutableStateOf(false)
-    }
-    val permissionState = if (LocalInspectionMode.current) {
-        // Show this text in a preview window:
-        object : PermissionState {
-            override val permission: String
-                get() = ""
-            override val status: PermissionStatus
-                get() = PermissionStatus.Granted
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    val permissionState =
+        if (LocalInspectionMode.current) {
+            // Show this text in a preview window:
+            object : PermissionState {
+                override val permission: String
+                    get() = ""
 
-            override fun launchPermissionRequest() = Unit
-        }
-    } else {
-        rememberPermissionState(
-            permission = permission.permissionName,
-            onPermissionResult = { isGranted ->
-                showPermissionDeniedDialog = if (isGranted) {
-                    onPermissionGranted()
-                    false
-                } else {
-                    true
-                }
+                override val status: PermissionStatus
+                    get() = PermissionStatus.Granted
+
+                override fun launchPermissionRequest() = Unit
             }
-        )
-    }
+        } else {
+            rememberPermissionState(
+                permission = permission.permissionName,
+                onPermissionResult = { isGranted ->
+                    showPermissionDeniedDialog =
+                        if (isGranted) {
+                            onPermissionGranted()
+                            false
+                        } else {
+                            true
+                        }
+                },
+            )
+        }
 
     val permissionHandlerState = remember {
         derivedStateOf {
             PermissionHandlerState(
                 permissionState = permissionState,
                 showPermissionDeniedDialog = showPermissionDeniedDialog,
-                permissionDeniedDialogState = PermissionDialogState(
-                    title = dialogTitle,
-                    text = message,
-                    confirmButtonText = R.string.ok
-                ),
-                permissionExplanationDialogState = PermissionDialogState(
-                    title = dialogTitle,
-                    text = message,
-                    confirmButtonText = R.string.continue_string
-                )
+                permissionDeniedDialogState =
+                    PermissionDialogState(
+                        title = dialogTitle,
+                        text = message,
+                        confirmButtonText = R.string.ok,
+                    ),
+                permissionExplanationDialogState =
+                    PermissionDialogState(
+                        title = dialogTitle,
+                        text = message,
+                        confirmButtonText = R.string.continue_string,
+                    ),
             )
         }
     }
 
-    if (permissionHandlerState.value.showPermissionDeniedDialog && permissionHandlerState.value.permissionState.status.shouldShowRationale) {
+    if (
+        permissionHandlerState.value.showPermissionDeniedDialog &&
+            permissionHandlerState.value.permissionState.status.shouldShowRationale
+    ) {
         PermissionDialog(
             state = permissionHandlerState.value.permissionExplanationDialogState,
             onDismiss = { showPermissionDeniedDialog = false },
-            onConfirm = {
-                permissionHandlerState.value.permissionState.launchPermissionRequest()
-            }
+            onConfirm = { permissionHandlerState.value.permissionState.launchPermissionRequest() },
         )
     } else if (permissionHandlerState.value.showPermissionDeniedDialog) {
         PermissionDialog(
             state = permissionHandlerState.value.permissionDeniedDialogState,
             onDismiss = { showPermissionDeniedDialog = false },
-            onConfirm = { showPermissionDeniedDialog = false }
+            onConfirm = { showPermissionDeniedDialog = false },
         )
     }
 
@@ -108,7 +112,6 @@ fun PermissionHandler(
             is PermissionStatus.Granted -> {
                 onPermissionGranted()
             }
-
             is PermissionStatus.Denied -> {
                 if (status.shouldShowRationale) {
                     showPermissionDeniedDialog = true
@@ -123,41 +126,25 @@ fun PermissionHandler(
 data class PermissionDialogState(
     @StringRes val title: Int,
     @StringRes val text: Int,
-    @StringRes val confirmButtonText: Int
+    @StringRes val confirmButtonText: Int,
 )
 
 @Composable
-fun PermissionDialog(
-    state: PermissionDialogState,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
+fun PermissionDialog(state: PermissionDialogState, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(text = stringResource(id = state.title))
-        },
-        text = {
-            Text(text = stringResource(id = state.text))
-        },
+        title = { Text(text = stringResource(id = state.title)) },
+        text = { Text(text = stringResource(id = state.text)) },
         confirmButton = {
-            Button(
-                modifier = Modifier
-                    .padding(horizontal = 2.dp),
-                onClick = onConfirm
-            ) {
+            Button(modifier = Modifier.padding(horizontal = 2.dp), onClick = onConfirm) {
                 Text(text = stringResource(state.confirmButtonText))
             }
         },
         dismissButton = {
-            Button(
-                modifier = Modifier
-                    .padding(horizontal = 2.dp),
-                onClick = onDismiss
-            ) {
+            Button(modifier = Modifier.padding(horizontal = 2.dp), onClick = onDismiss) {
                 Text(text = stringResource(id = R.string.dismiss))
             }
-        }
+        },
     )
 }
 
@@ -166,10 +153,11 @@ sealed interface Permission {
 
     data object ReadAudio : Permission {
         override val permissionName: String
-            get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.READ_MEDIA_AUDIO
-            } else {
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            }
+            get() =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Manifest.permission.READ_MEDIA_AUDIO
+                } else {
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                }
     }
 }

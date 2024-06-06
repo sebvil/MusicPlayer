@@ -20,8 +20,14 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class AlbumContextMenu(
     override val arguments: AlbumContextMenuArguments,
-    val navController: NavController
-) : BaseUiComponent<AlbumContextMenuArguments, AlbumContextMenuState, AlbumContextMenuUserAction, AlbumContextMenuStateHolder>() {
+    val navController: NavController,
+) :
+    BaseUiComponent<
+        AlbumContextMenuArguments,
+        AlbumContextMenuState,
+        AlbumContextMenuUserAction,
+        AlbumContextMenuStateHolder,
+    >() {
 
     override fun createStateHolder(dependencies: AppDependencies): AlbumContextMenuStateHolder {
         return AlbumContextMenuStateHolder(
@@ -37,7 +43,7 @@ data class AlbumContextMenu(
     override fun Content(
         state: AlbumContextMenuState,
         handle: Handler<AlbumContextMenuUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         AlbumContextMenu(state = state, handle = handle, modifier = modifier)
     }
@@ -47,7 +53,7 @@ data class AlbumContextMenu(
 private fun AlbumContextMenu(
     state: AlbumContextMenuState,
     handle: Handler<AlbumContextMenuUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val addedToQueue = stringResource(R.string.added_to_queue)
@@ -59,9 +65,7 @@ private fun AlbumContextMenu(
                         MenuItem(
                             text = stringResource(id = R.string.play_from_beginning),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = {
-                                handle(AlbumContextMenuUserAction.PlayAlbumClicked)
-                            }
+                            onItemClicked = { handle(AlbumContextMenuUserAction.PlayAlbumClicked) },
                         )
                     }
 
@@ -72,11 +76,12 @@ private fun AlbumContextMenu(
                             onItemClicked = {
                                 handle(AlbumContextMenuUserAction.AddToQueueClicked)
                                 Toast.makeText(
-                                    /* context = */ context,
-                                    /* text = */ addedToQueue,
-                                    /* duration = */ Toast.LENGTH_LONG
-                                ).show()
-                            }
+                                        /* context = */ context,
+                                        /* text = */ addedToQueue,
+                                        /* duration = */ Toast.LENGTH_LONG,
+                                    )
+                                    .show()
+                            },
                         )
                     }
 
@@ -88,11 +93,10 @@ private fun AlbumContextMenu(
                                     icon = Icons.Artist.icon(),
                                     onItemClicked = {
                                         handle(AlbumContextMenuUserAction.ViewArtistsClicked)
-                                    }
+                                    },
                                 )
                             }
                         }
-
                         is ViewArtistRow.NoArtists -> Unit
                         is ViewArtistRow.SingleArtist -> {
                             item {
@@ -105,7 +109,7 @@ private fun AlbumContextMenu(
                                                 state.viewArtistsState.artistId
                                             )
                                         )
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -113,7 +117,6 @@ private fun AlbumContextMenu(
                 }
             }
         }
-
         is AlbumContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
         }

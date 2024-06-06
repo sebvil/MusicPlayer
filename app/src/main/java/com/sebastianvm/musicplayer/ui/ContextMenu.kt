@@ -16,10 +16,7 @@ fun ContextMenu(menuTitle: String, modifier: Modifier = Modifier, content: @Comp
     Column(modifier = modifier) {
         ListItem(
             headlineContent = {
-                Text(
-                    text = menuTitle,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Text(text = menuTitle, style = MaterialTheme.typography.titleMedium)
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )

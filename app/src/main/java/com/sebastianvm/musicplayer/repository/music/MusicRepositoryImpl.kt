@@ -24,7 +24,7 @@ class MusicRepositoryImpl(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
     private val musicDatabase: MusicDatabase,
-    private val trackRepository: TrackRepository
+    private val trackRepository: TrackRepository,
 ) : MusicRepository {
 
     private val trackSet = mutableSetOf<Track>()
@@ -47,59 +47,54 @@ class MusicRepositoryImpl(
         year: Long,
         trackNumber: Long,
         duration: Long,
-        albumId: Long
+        albumId: Long,
     ) {
-        val track = Track(
-            id = id,
-            trackName = title,
-            trackNumber = trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
-            trackDurationMs = duration,
-            albumId = albumId,
-            albumName = albumName,
-            artists = artists,
-            path = path
-        )
+        val track =
+            Track(
+                id = id,
+                trackName = title,
+                trackNumber = trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
+                trackDurationMs = duration,
+                albumId = albumId,
+                albumName = albumName,
+                artists = artists,
+                path = path,
+            )
         val trackArtists = parseTag(artists)
-        val artistTrackCrossRefs = trackArtists.map { artistName ->
-            ArtistTrackCrossRef(
-                artistId = artistName.hashCode().toLong(),
-                artistName = artistName,
-                trackId = id,
-                trackName = title
-            )
-        }
-        val trackArtistList = artistTrackCrossRefs.map { artistTrackCrossRef ->
-            Artist(
-                id = artistTrackCrossRef.artistId,
-                artistName = artistTrackCrossRef.artistName
-            )
-        }
-        val trackGenres = parseTag(genres).map { genreName ->
-            Genre(
-                id = genreName.hashCode().toLong(),
-                genreName = genreName
-            )
-        }
-        val genreTrackCrossRef = trackGenres.map { genre ->
-            GenreTrackCrossRef(
-                genreId = genre.id,
-                trackId = id
-            )
-        }
-        val albumArtistList =
-            parseTag(albumArtists).map { artistName ->
-                Artist(
-                    id = artistName.hashCode().toLong(),
-                    artistName = artistName
+        val artistTrackCrossRefs =
+            trackArtists.map { artistName ->
+                ArtistTrackCrossRef(
+                    artistId = artistName.hashCode().toLong(),
+                    artistName = artistName,
+                    trackId = id,
+                    trackName = title,
                 )
             }
-        val album = Album(
-            id = albumId,
-            albumName = albumName,
-            year = year,
-            artists = albumArtistList.joinToString(", ") { it.artistName },
-            imageUri = UriUtils.getAlbumUriString(albumId)
-        )
+        val trackArtistList =
+            artistTrackCrossRefs.map { artistTrackCrossRef ->
+                Artist(
+                    id = artistTrackCrossRef.artistId,
+                    artistName = artistTrackCrossRef.artistName,
+                )
+            }
+        val trackGenres =
+            parseTag(genres).map { genreName ->
+                Genre(id = genreName.hashCode().toLong(), genreName = genreName)
+            }
+        val genreTrackCrossRef =
+            trackGenres.map { genre -> GenreTrackCrossRef(genreId = genre.id, trackId = id) }
+        val albumArtistList =
+            parseTag(albumArtists).map { artistName ->
+                Artist(id = artistName.hashCode().toLong(), artistName = artistName)
+            }
+        val album =
+            Album(
+                id = albumId,
+                albumName = albumName,
+                year = year,
+                artists = albumArtistList.joinToString(", ") { it.artistName },
+                imageUri = UriUtils.getAlbumUriString(albumId),
+            )
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtistList.forEach { artist ->
@@ -110,16 +105,12 @@ class MusicRepositoryImpl(
                         artistId = artist.id,
                         artistName = artist.artistName,
                         albumName = albumName,
-                        year = year
+                        year = year,
                     )
                 )
             } else {
                 appearsOnForArtists.add(
-                    AppearsOnForArtist(
-                        albumId = albumId,
-                        artistId = artist.id,
-                        year = year
-                    )
+                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year)
                 )
             }
         }
@@ -135,9 +126,7 @@ class MusicRepositoryImpl(
     }
 
     private fun parseTag(tag: String): List<String> {
-        return tag.split("&", ",", "/").map {
-            it.trim()
-        }
+        return tag.split("&", ",", "/").map { it.trim() }
     }
 
     // TODO makes this work for API 29
@@ -150,9 +139,7 @@ class MusicRepositoryImpl(
                 val musicResolver = context.contentResolver
                 val musicUri =
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        MediaStore.Audio.Media.getContentUri(
-                            MediaStore.VOLUME_EXTERNAL
-                        )
+                        MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
                     } else {
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                     }
@@ -200,7 +187,7 @@ class MusicRepositoryImpl(
                         messageCallback.updateProgress(
                             musicCursor.count,
                             count,
-                            relativePath + fileName
+                            relativePath + fileName,
                         )
 
                         insertTrack(
@@ -214,7 +201,7 @@ class MusicRepositoryImpl(
                             thisYear,
                             thisTrackNumber,
                             thisDuration,
-                            albumId
+                            albumId,
                         )
                     } while (musicCursor.moveToNext())
                 }
@@ -227,7 +214,7 @@ class MusicRepositoryImpl(
                     genres = genresSet,
                     albums = albumSet,
                     albumsForArtists = albumForArtistsSet,
-                    appearsOnForArtists = appearsOnForArtistSet
+                    appearsOnForArtists = appearsOnForArtistSet,
                 )
             }
             messageCallback.onFinished()

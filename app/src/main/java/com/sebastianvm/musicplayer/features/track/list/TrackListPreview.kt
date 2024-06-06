@@ -1,4 +1,5 @@
-package com.sebastianvm.musicplayer.features.track.list // package com.sebastianvm.musicplayer.ui.library.tracklist
+package com.sebastianvm.musicplayer.features.track.list // package
+                                                        // com.sebastianvm.musicplayer.ui.library.tracklist
 //
 // import androidx.compose.runtime.Composable
 // import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -77,7 +78,8 @@ package com.sebastianvm.musicplayer.features.track.list // package com.sebastian
 //
 // @ScreenPreview
 // @Composable
-// private fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParamProvider::class) state: TrackListState) {
+// private fun TrackListScreenPreview(@PreviewParameter(TrackListStatePreviewParamProvider::class)
+// state: TrackListState) {
 //    ScreenPreview {
 //        TrackListScreen(
 //            state = state,

@@ -30,13 +30,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class ArtistListState(
-    val modelListState: ModelListState,
-) : State
+data class ArtistListState(val modelListState: ModelListState) : State
 
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction
+
     data class ArtistMoreIconClicked(val artistId: Long) : ArtistListUserAction
+
     data class ArtistClicked(val artistId: Long) : ArtistListUserAction
 }
 
@@ -46,52 +46,56 @@ class ArtistListStateHolder(
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
-    override val state: StateFlow<UiState<ArtistListState>> = combine(
-        artistRepository.getArtists(),
-        sortPreferencesRepository.getArtistListSortOrder(),
-    ) { artists, sortOrder ->
-        if (artists.isEmpty()) {
-            Empty
-        } else {
-            Data(
-                ArtistListState(
-                    modelListState = ModelListState(
-                        items = artists.map { artist ->
-                            artist.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        },
-                        sortButtonState = SortButtonState(
-                            text = R.string.artist_name,
-                            sortOrder = sortOrder
-                        ),
-                        headerState = HeaderState.None
-                    ),
-                )
-            )
-        }
-    }.stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+    override val state: StateFlow<UiState<ArtistListState>> =
+        combine(
+                artistRepository.getArtists(),
+                sortPreferencesRepository.getArtistListSortOrder(),
+            ) { artists, sortOrder ->
+                if (artists.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        ArtistListState(
+                            modelListState =
+                                ModelListState(
+                                    items =
+                                        artists.map { artist ->
+                                            artist.toModelListItemState(
+                                                trailingButtonType = TrailingButtonType.More
+                                            )
+                                        },
+                                    sortButtonState =
+                                        SortButtonState(
+                                            text = R.string.artist_name,
+                                            sortOrder = sortOrder,
+                                        ),
+                                    headerState = HeaderState.None,
+                                )
+                        )
+                    )
+                }
+            }
+            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {
             is ArtistListUserAction.SortByButtonClicked -> {
-                stateHolderScope.launch {
-                    sortPreferencesRepository.toggleArtistListSortOrder()
-                }
+                stateHolderScope.launch { sortPreferencesRepository.toggleArtistListSortOrder() }
             }
-
             is ArtistListUserAction.ArtistMoreIconClicked -> {
                 navController.push(
                     ArtistContextMenu(
                         arguments = ArtistContextMenuArguments(artistId = action.artistId)
                     ),
-                    navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet)
+                    navOptions =
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is ArtistListUserAction.ArtistClicked -> {
                 navController.push(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
-                        navController = navController
+                        navController = navController,
                     )
                 )
             }
@@ -101,7 +105,7 @@ class ArtistListStateHolder(
 
 fun getArtistListStateHolder(
     dependencies: AppDependencies,
-    navController: NavController
+    navController: NavController,
 ): ArtistListStateHolder {
     return ArtistListStateHolder(
         artistRepository = dependencies.repositoryProvider.artistRepository,

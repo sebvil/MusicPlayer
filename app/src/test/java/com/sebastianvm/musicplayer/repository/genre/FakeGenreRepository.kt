@@ -15,8 +15,6 @@ class FakeGenreRepository : GenreRepository {
     }
 
     override fun getGenreName(genreId: Long): Flow<String> {
-        return genres.map { genres ->
-            genres.find { it.id == genreId }?.genreName
-        }.filterNotNull()
+        return genres.map { genres -> genres.find { it.id == genreId }?.genreName }.filterNotNull()
     }
 }

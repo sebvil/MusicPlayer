@@ -33,13 +33,9 @@ class FakeAlbumRepository : AlbumRepository {
 
     override fun getAlbum(albumId: Long): Flow<BasicAlbum> {
         return albums.mapNotNull { albumList ->
-            albumList.find { album -> album.id == albumId }?.let {
-                BasicAlbum(
-                    id = it.id,
-                    albumName = it.albumName,
-                    imageUri = it.imageUri,
-                )
-            }
+            albumList
+                .find { album -> album.id == albumId }
+                ?.let { BasicAlbum(id = it.id, albumName = it.albumName, imageUri = it.imageUri) }
         }
     }
 
@@ -47,10 +43,10 @@ class FakeAlbumRepository : AlbumRepository {
         return albums.mapNotNull { albumList ->
             val album = albumList.find { album -> album.id == albumId } ?: return@mapNotNull null
 
-            val tracksInAlbum = tracks.value.filter { it.albumId == albumId }
-                .map {
-                    BasicTrack(it.id, it.trackName, it.artists, it.trackNumber)
-                }
+            val tracksInAlbum =
+                tracks.value
+                    .filter { it.albumId == albumId }
+                    .map { BasicTrack(it.id, it.trackName, it.artists, it.trackNumber) }
             AlbumWithTracks(album = album, tracks = tracksInAlbum)
         }
     }

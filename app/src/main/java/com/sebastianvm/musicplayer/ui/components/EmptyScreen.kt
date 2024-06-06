@@ -24,15 +24,13 @@ import com.sebastianvm.musicplayer.repository.LibraryScanService
 fun EmptyScreen(
     message: @Composable () -> Unit,
     button: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(
-            space = 16.dp,
-            alignment = Alignment.CenterVertically
-        )
+        verticalArrangement =
+            Arrangement.spacedBy(space = 16.dp, alignment = Alignment.CenterVertically),
     ) {
         message()
         button()
@@ -40,15 +38,10 @@ fun EmptyScreen(
 }
 
 @Composable
-fun StoragePermissionNeededEmptyScreen(
-    @StringRes message: Int,
-    modifier: Modifier = Modifier
-) {
+fun StoragePermissionNeededEmptyScreen(@StringRes message: Int, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     EmptyScreen(
-        message = {
-            Text(text = stringResource(id = message), textAlign = TextAlign.Center)
-        },
+        message = { Text(text = stringResource(id = message), textAlign = TextAlign.Center) },
         button = {
             PermissionHandler(
                 permission = Permission.ReadAudio,
@@ -57,9 +50,9 @@ fun StoragePermissionNeededEmptyScreen(
                 onPermissionGranted = {
                     ContextCompat.startForegroundService(
                         context,
-                        Intent(context, LibraryScanService::class.java)
+                        Intent(context, LibraryScanService::class.java),
                     )
-                }
+                },
             ) { onClick ->
                 Button(onClick = onClick) {
                     Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
@@ -67,6 +60,6 @@ fun StoragePermissionNeededEmptyScreen(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }

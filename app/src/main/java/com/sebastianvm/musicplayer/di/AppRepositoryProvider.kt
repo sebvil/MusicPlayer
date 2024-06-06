@@ -35,81 +35,91 @@ class AppRepositoryProvider(
 ) : RepositoryProvider {
 
     override val musicRepository: MusicRepository
-        get() = MusicRepositoryImpl(
-            context = context,
-            ioDispatcher = dispatcherProvider.ioDispatcher,
-            musicDatabase = database,
-            trackRepository = trackRepository
-        )
+        get() =
+            MusicRepositoryImpl(
+                context = context,
+                ioDispatcher = dispatcherProvider.ioDispatcher,
+                musicDatabase = database,
+                trackRepository = trackRepository,
+            )
 
     override val albumRepository: AlbumRepository
-        get() = AlbumRepositoryImpl(
-            sortPreferencesRepository = sortPreferencesRepository,
-            albumDao = database.getAlbumDao()
-        )
+        get() =
+            AlbumRepositoryImpl(
+                sortPreferencesRepository = sortPreferencesRepository,
+                albumDao = database.getAlbumDao(),
+            )
 
     override val artistRepository: ArtistRepository
-        get() = ArtistRepositoryImpl(
-            sortPreferencesRepository = sortPreferencesRepository,
-            artistDao = database.getArtistDao()
-        )
+        get() =
+            ArtistRepositoryImpl(
+                sortPreferencesRepository = sortPreferencesRepository,
+                artistDao = database.getArtistDao(),
+            )
 
     override val genreRepository: GenreRepository
-        get() = GenreRepositoryImpl(
-            sortPreferencesRepository = sortPreferencesRepository,
-            genreDao = database.getGenreDao()
-        )
+        get() =
+            GenreRepositoryImpl(
+                sortPreferencesRepository = sortPreferencesRepository,
+                genreDao = database.getGenreDao(),
+            )
 
     override val trackRepository: TrackRepository
-        get() = TrackRepositoryImpl(
-            ioDispatcher = dispatcherProvider.ioDispatcher,
-            sortPreferencesRepository = sortPreferencesRepository,
-            trackDao = database.getTrackDao(),
-            playlistRepository = playlistRepository,
-            genreRepository = genreRepository,
-            albumRepository = albumRepository
-        )
+        get() =
+            TrackRepositoryImpl(
+                ioDispatcher = dispatcherProvider.ioDispatcher,
+                sortPreferencesRepository = sortPreferencesRepository,
+                trackDao = database.getTrackDao(),
+                playlistRepository = playlistRepository,
+                genreRepository = genreRepository,
+                albumRepository = albumRepository,
+            )
 
     override val playlistRepository: PlaylistRepository
-        get() = PlaylistRepositoryImpl(
-            sortPreferencesRepository = sortPreferencesRepository,
-            playlistDao = database.getPlaylistDao(),
-            ioDispatcher = dispatcherProvider.ioDispatcher,
-            defaultDispatcher = dispatcherProvider.defaultDispatcher
-        )
+        get() =
+            PlaylistRepositoryImpl(
+                sortPreferencesRepository = sortPreferencesRepository,
+                playlistDao = database.getPlaylistDao(),
+                ioDispatcher = dispatcherProvider.ioDispatcher,
+                defaultDispatcher = dispatcherProvider.defaultDispatcher,
+            )
 
     override val playbackManager: PlaybackManager by lazy {
         PlaybackManagerImpl(
             mediaPlaybackClient = mediaPlaybackClient,
             ioDispatcher = dispatcherProvider.ioDispatcher,
-            trackRepository = trackRepository
+            trackRepository = trackRepository,
         )
     }
 
     override val searchRepository: FullTextSearchRepository
-        get() = FullTextSearchRepositoryImpl(
-            trackFtsDao = database.getTrackFtsDao(),
-            artistFtsDao = database.getArtistFtsDao(),
-            albumFtsDao = database.getAlbumFtsDao(),
-            genreFtsDao = database.getGenreFtsDao(),
-            playlistFtsDao = database.getPlaylistFtsDao()
-        )
+        get() =
+            FullTextSearchRepositoryImpl(
+                trackFtsDao = database.getTrackFtsDao(),
+                artistFtsDao = database.getArtistFtsDao(),
+                albumFtsDao = database.getAlbumFtsDao(),
+                genreFtsDao = database.getGenreFtsDao(),
+                playlistFtsDao = database.getPlaylistFtsDao(),
+            )
 
     override val sortPreferencesRepository: SortPreferencesRepository
-        get() = SortPreferencesRepositoryImpl(
-            sortPreferencesDataStore = jetpackDataStoreProvider.sortPreferencesDataStore
-        )
+        get() =
+            SortPreferencesRepositoryImpl(
+                sortPreferencesDataStore = jetpackDataStoreProvider.sortPreferencesDataStore
+            )
 
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = context, externalScope = applicationScope)
     }
 
     override val queueRepository: QueueRepository
-        get() = AppQueueRepository(
-            nowPlayingInfoDataSource = NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
-            trackRepository = trackRepository,
-            mediaQueueDao = database.getMediaQueueDao(),
-            mediaPlaybackClient = mediaPlaybackClient,
-            ioDispatcher = dispatcherProvider.ioDispatcher,
-        )
+        get() =
+            AppQueueRepository(
+                nowPlayingInfoDataSource =
+                    NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
+                trackRepository = trackRepository,
+                mediaQueueDao = database.getMediaQueueDao(),
+                mediaPlaybackClient = mediaPlaybackClient,
+                ioDispatcher = dispatcherProvider.ioDispatcher,
+            )
 }

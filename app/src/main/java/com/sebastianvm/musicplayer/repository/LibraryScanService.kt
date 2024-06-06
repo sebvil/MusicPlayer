@@ -25,9 +25,7 @@ import kotlinx.coroutines.launch
 // TODO replace with Workmanager
 class LibraryScanService : Service() {
 
-    private val dependencies by lazy {
-        (application as MusicPlayerApplication).dependencies
-    }
+    private val dependencies by lazy { (application as MusicPlayerApplication).dependencies }
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
@@ -72,45 +70,48 @@ class LibraryScanService : Service() {
                 PendingIntent.getActivity(this, 0, notificationIntent, FLAG_IMMUTABLE)
             }
 
-        val stopServiceIntent = Intent(this, LibraryBroadcastReceiver::class.java).apply {
-            action = STOP_SCAN_SERVICE
-            putExtra(EXTRA_NOTIFICATION_ID, NOTIFICATION_ID)
-        }
+        val stopServiceIntent =
+            Intent(this, LibraryBroadcastReceiver::class.java).apply {
+                action = STOP_SCAN_SERVICE
+                putExtra(EXTRA_NOTIFICATION_ID, NOTIFICATION_ID)
+            }
         val stopServicePendingIntent: PendingIntent =
             PendingIntent.getBroadcast(this, 0, stopServiceIntent, FLAG_IMMUTABLE)
 
-        notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Scanning library")
-            .setSmallIcon(R.drawable.ic_album)
-            .setContentIntent(pendingIntent)
-            .setTicker("Library scan progress")
-            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .addAction(
-                R.drawable.ic_close,
-                getString(R.string.stop_scanning),
-                stopServicePendingIntent
-            )
-            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+        notificationBuilder =
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Scanning library")
+                .setSmallIcon(R.drawable.ic_album)
+                .setContentIntent(pendingIntent)
+                .setTicker("Library scan progress")
+                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .addAction(
+                    R.drawable.ic_close,
+                    getString(R.string.stop_scanning),
+                    stopServicePendingIntent,
+                )
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
-        notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Library scan progress"
             val descriptionText = "Shows progress when scanning the library"
             val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
+            val channel =
+                NotificationChannel(CHANNEL_ID, name, importance).apply {
+                    description = descriptionText
+                }
             // Register the channel with the system
             notificationManager.createNotificationChannel(channel)
         }
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
-        job = CoroutineScope(mainDispatcher).launch {
-            musicRepository.getMusic(MessageCallback(startId = startId))
-        }
+        job =
+            CoroutineScope(mainDispatcher).launch {
+                musicRepository.getMusic(MessageCallback(startId = startId))
+            }
         return START_STICKY
     }
 

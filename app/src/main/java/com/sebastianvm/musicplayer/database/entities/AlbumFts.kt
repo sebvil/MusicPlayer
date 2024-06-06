@@ -7,7 +7,7 @@ import androidx.room.FtsOptions
 @Fts4(
     contentEntity = AlbumsForArtist::class,
     notIndexed = ["albumId"],
-    tokenizer = FtsOptions.TOKENIZER_UNICODE61
+    tokenizer = FtsOptions.TOKENIZER_UNICODE61,
 )
 @Entity
 data class AlbumFts(val albumId: String, val albumName: String, val artistName: String)

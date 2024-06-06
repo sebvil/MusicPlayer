@@ -13,14 +13,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 
 class ArtistRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val artistDao: ArtistDao
+    private val artistDao: ArtistDao,
 ) : ArtistRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getArtists(): Flow<List<Artist>> {
-        return sortPreferencesRepository.getArtistListSortOrder().flatMapLatest { sortOrder ->
-            artistDao.getArtists(sortOrder = sortOrder)
-        }.distinctUntilChanged()
+        return sortPreferencesRepository
+            .getArtistListSortOrder()
+            .flatMapLatest { sortOrder -> artistDao.getArtists(sortOrder = sortOrder) }
+            .distinctUntilChanged()
     }
 
     override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> {
@@ -32,7 +33,6 @@ class ArtistRepositoryImpl(
             is MediaGroup.SingleTrack -> {
                 artistDao.getArtistsForTrack(media.trackId)
             }
-
             is MediaGroup.Album -> {
                 artistDao.getArtistsForAlbum(media.albumId)
             }

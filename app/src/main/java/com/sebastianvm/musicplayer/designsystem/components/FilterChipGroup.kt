@@ -18,18 +18,18 @@ fun <T> SingleSelectFilterChipGroup(
     selectedOption: T?,
     getDisplayName: @Composable (T) -> String,
     onNewOptionSelected: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.selectableGroup()
+        modifier = modifier.selectableGroup(),
     ) {
         items(options) { option ->
             FilterChip(
                 selected = selectedOption == option,
                 onClick = { onNewOptionSelected(option) },
-                label = { Text(text = getDisplayName(option)) }
+                label = { Text(text = getDisplayName(option)) },
             )
         }
     }

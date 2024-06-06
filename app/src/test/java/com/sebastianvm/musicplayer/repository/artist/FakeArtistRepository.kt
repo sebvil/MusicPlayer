@@ -28,42 +28,43 @@ class FakeArtistRepository : ArtistRepository {
     }
 
     override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> {
-        return combine(
-            artists,
-            albumsForArtists,
-            appearsOnForArtists,
-            albums,
-        ) { artists, albumsForArtists, appearsOnForArtists, albums ->
-            val artist = artists.find { it.id == artistId } ?: return@combine null
-            val albumsForArtist = albumsForArtists.filter { it.artistId == artistId }.mapNotNull {
-                albums.find { album -> album.id == it.albumId }
+        return combine(artists, albumsForArtists, appearsOnForArtists, albums) {
+                artists,
+                albumsForArtists,
+                appearsOnForArtists,
+                albums ->
+                val artist = artists.find { it.id == artistId } ?: return@combine null
+                val albumsForArtist =
+                    albumsForArtists
+                        .filter { it.artistId == artistId }
+                        .mapNotNull { albums.find { album -> album.id == it.albumId } }
+                val appearsOn =
+                    appearsOnForArtists
+                        .filter { it.artistId == artistId }
+                        .mapNotNull { albums.find { album -> album.id == it.albumId } }
+                ArtistWithAlbums(artist, albumsForArtist, appearsOn)
             }
-            val appearsOn = appearsOnForArtists.filter { it.artistId == artistId }.mapNotNull {
-                albums.find { album -> album.id == it.albumId }
-            }
-            ArtistWithAlbums(artist, albumsForArtist, appearsOn)
-        }.filterNotNull()
+            .filterNotNull()
     }
 
     override fun getArtistsForMedia(media: HasArtists): Flow<List<Artist>> {
         return when (media) {
             is MediaGroup.Album -> {
-                combine(
-                    artists,
-                    albumsForArtists,
-                ) { artists, albumsForArtists ->
-                    albumsForArtists.filter { it.albumId == media.albumId }.flatMap { album ->
-                        artists.filter { album.artistId == it.id }
-                    }.distinct()
+                combine(artists, albumsForArtists) { artists, albumsForArtists ->
+                    albumsForArtists
+                        .filter { it.albumId == media.albumId }
+                        .flatMap { album -> artists.filter { album.artistId == it.id } }
+                        .distinct()
                 }
             }
-
             is MediaGroup.SingleTrack -> {
                 combine(artists, artistTrackCrossRefs) { artists, artistTrackCrossRefs ->
-                    artistTrackCrossRefs.filter { it.trackId == media.trackId }
+                    artistTrackCrossRefs
+                        .filter { it.trackId == media.trackId }
                         .flatMap { artistTrackCrossRef ->
                             artists.filter { it.id == artistTrackCrossRef.artistId }
-                        }.distinct()
+                        }
+                        .distinct()
                 }
             }
         }

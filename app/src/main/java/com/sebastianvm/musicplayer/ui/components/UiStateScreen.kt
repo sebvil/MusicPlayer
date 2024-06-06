@@ -15,23 +15,18 @@ fun <S> UiStateScreen(
     uiState: UiState<S>,
     emptyScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (S) -> Unit
+    content: @Composable (S) -> Unit,
 ) {
     Box(modifier = modifier) {
         when (uiState) {
             is Data -> {
                 content(uiState.state)
             }
-
             is Empty -> {
                 emptyScreen()
             }
-
             is Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }

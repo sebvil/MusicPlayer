@@ -17,7 +17,7 @@ class FullTextSearchRepositoryImpl(
     private val artistFtsDao: ArtistFtsDao,
     private val albumFtsDao: AlbumFtsDao,
     private val genreFtsDao: GenreFtsDao,
-    private val playlistFtsDao: PlaylistFtsDao
+    private val playlistFtsDao: PlaylistFtsDao,
 ) : FullTextSearchRepository {
 
     private fun searchString(text: String) = "\"$text*\""

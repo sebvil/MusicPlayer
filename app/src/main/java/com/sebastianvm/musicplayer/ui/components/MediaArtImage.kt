@@ -25,32 +25,22 @@ import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
 import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.compose.painter
 
-private val drawableResources =
-    sequenceOf(Icons.Album)
+private val drawableResources = sequenceOf(Icons.Album)
 
 class MediaArtImageStatePreviewParamsProvider : PreviewParameterProvider<MediaArtImageState> {
     override val values: Sequence<MediaArtImageState>
-        get() = drawableResources.map {
-            MediaArtImageState(
-                imageUri = "",
-                backupImage = it,
-            )
-        }
+        get() = drawableResources.map { MediaArtImageState(imageUri = "", backupImage = it) }
 }
 
-data class MediaArtImageState(
-    val imageUri: String,
-    val backupImage: IconState,
-)
+data class MediaArtImageState(val imageUri: String, val backupImage: IconState)
 
 @PreviewComponents
 @Composable
 private fun MediaArtImagePreview(
-    @PreviewParameter(MediaArtImageStatePreviewParamsProvider::class) mediaArtImageState: MediaArtImageState
+    @PreviewParameter(MediaArtImageStatePreviewParamsProvider::class)
+    mediaArtImageState: MediaArtImageState
 ) {
-    ThemedPreview {
-        MediaArtImage(mediaArtImageState = mediaArtImageState)
-    }
+    ThemedPreview { MediaArtImage(mediaArtImageState = mediaArtImageState) }
 }
 
 @Composable
@@ -59,7 +49,7 @@ fun MediaArtImage(
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha
+    alpha: Float = DefaultAlpha,
 ) {
     MediaArtImage(
         uri = mediaArtImageState.imageUri,
@@ -67,13 +57,11 @@ fun MediaArtImage(
         modifier = modifier,
         alignment = alignment,
         contentScale = contentScale,
-        alpha = alpha
+        alpha = alpha,
     )
 }
 
-/**
- * Wrapper around the Image composable that takes in a DisplayableImage as the image input.
- */
+/** Wrapper around the Image composable that takes in a DisplayableImage as the image input. */
 @Composable
 fun MediaArtImage(
     uri: String,
@@ -82,30 +70,23 @@ fun MediaArtImage(
     backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    alpha: Float = DefaultAlpha
+    alpha: Float = DefaultAlpha,
 ) {
-    var actualBackgroundColor by remember {
-        mutableStateOf(backgroundColor)
-    }
+    var actualBackgroundColor by remember { mutableStateOf(backgroundColor) }
 
-    var useColorFilter by remember {
-        mutableStateOf(true)
-    }
+    var useColorFilter by remember { mutableStateOf(true) }
     val colorScheme = MaterialTheme.colorScheme
 
-    val colorFilter by remember(useColorFilter, colorScheme, actualBackgroundColor) {
-        derivedStateOf {
-            if (useColorFilter) {
-                ColorFilter.tint(
-                    colorScheme.contentColorFor(
-                        actualBackgroundColor
-                    )
-                )
-            } else {
-                null
+    val colorFilter by
+        remember(useColorFilter, colorScheme, actualBackgroundColor) {
+            derivedStateOf {
+                if (useColorFilter) {
+                    ColorFilter.tint(colorScheme.contentColorFor(actualBackgroundColor))
+                } else {
+                    null
+                }
             }
         }
-    }
 
     AsyncImage(
         model = uri,

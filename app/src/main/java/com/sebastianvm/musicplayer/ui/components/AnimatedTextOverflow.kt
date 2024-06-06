@@ -44,7 +44,7 @@ fun AnimatedTextOverflow(
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
     lineHeight: TextUnit = TextUnit.Unspecified,
-    style: TextStyle = LocalTextStyle.current
+    style: TextStyle = LocalTextStyle.current,
 ) {
     var shouldScroll by remember { mutableStateOf(false) }
     var width by remember { mutableIntStateOf(0) }
@@ -55,13 +55,15 @@ fun AnimatedTextOverflow(
         if (scrollState.maxValue != Int.MAX_VALUE) {
             scrollState.animateScrollTo(
                 width,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(
-                        durationMillis = width * 10,
-                        easing = LinearEasing,
-                        delayMillis = 2000
-                    )
-                )
+                animationSpec =
+                    infiniteRepeatable(
+                        animation =
+                            tween(
+                                durationMillis = width * 10,
+                                easing = LinearEasing,
+                                delayMillis = 2000,
+                            )
+                    ),
             )
         }
     }
@@ -81,7 +83,7 @@ fun AnimatedTextOverflow(
             textDecoration = textDecoration,
             textAlign = textAlign,
             lineHeight = lineHeight,
-            style = style
+            style = style,
         )
     } else {
         Text(
@@ -104,7 +106,7 @@ fun AnimatedTextOverflow(
             textDecoration = textDecoration,
             textAlign = textAlign,
             lineHeight = lineHeight,
-            style = style
+            style = style,
         )
     }
 }
@@ -116,12 +118,8 @@ private fun AnimatedTextOverflowPreviews() {
         Column {
             Column(modifier = Modifier.padding(all = 16.dp)) {
                 AnimatedTextOverflow(text = "Short text")
-                AnimatedTextOverflow(
-                    text = "Long text that I'm trying to animate, please work!"
-                )
-                AnimatedTextOverflow(
-                    text = "Long text that                          "
-                )
+                AnimatedTextOverflow(text = "Long text that I'm trying to animate, please work!")
+                AnimatedTextOverflow(text = "Long text that                          ")
                 AnimatedTextOverflow(text = "12345678901234567890")
             }
         }

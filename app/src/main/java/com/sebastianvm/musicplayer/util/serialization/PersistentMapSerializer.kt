@@ -14,20 +14,25 @@ import kotlinx.serialization.serializer
 class PlaylistSortPrefsSerializer :
     KSerializer<PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>> {
 
-    private val serializer: KSerializer<Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>> =
+    private val serializer:
+        KSerializer<Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>> =
         serializer()
 
     override val descriptor: SerialDescriptor =
         object :
-            SerialDescriptor by serialDescriptor<Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>>() {}
+            SerialDescriptor by serialDescriptor<
+                Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>
+            >() {}
 
-    override fun deserialize(decoder: Decoder): PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
+    override fun deserialize(
+        decoder: Decoder
+    ): PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>> {
         return serializer.deserialize(decoder).toPersistentMap()
     }
 
     override fun serialize(
         encoder: Encoder,
-        value: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>
+        value: PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOptions>>,
     ) {
         serializer.serialize(encoder, value.toMap())
     }
@@ -36,20 +41,25 @@ class PlaylistSortPrefsSerializer :
 class GenreSortPrefsSerializer :
     KSerializer<PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>> {
 
-    private val serializer: KSerializer<Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>> =
+    private val serializer:
+        KSerializer<Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>> =
         serializer()
 
     override val descriptor: SerialDescriptor =
         object :
-            SerialDescriptor by serialDescriptor<Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>>() {}
+            SerialDescriptor by serialDescriptor<
+                Map<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>
+            >() {}
 
-    override fun deserialize(decoder: Decoder): PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> {
+    override fun deserialize(
+        decoder: Decoder
+    ): PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>> {
         return serializer.deserialize(decoder).toPersistentMap()
     }
 
     override fun serialize(
         encoder: Encoder,
-        value: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>
+        value: PersistentMap<Long, MediaSortPreferences<SortOptions.TrackListSortOptions>>,
     ) {
         serializer.serialize(encoder, value.toMap())
     }

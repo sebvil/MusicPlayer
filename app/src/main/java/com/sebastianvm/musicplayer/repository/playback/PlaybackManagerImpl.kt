@@ -14,10 +14,9 @@ import kotlinx.coroutines.withContext
 class PlaybackManagerImpl(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val trackRepository: TrackRepository,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
 ) : PlaybackManager {
-    override fun getPlaybackState(): Flow<PlaybackState> =
-        mediaPlaybackClient.playbackState
+    override fun getPlaybackState(): Flow<PlaybackState> = mediaPlaybackClient.playbackState
 
     override fun connectToService() {
         mediaPlaybackClient.initializeController()
@@ -41,19 +40,18 @@ class PlaybackManagerImpl(
 
     private suspend fun playTracks(
         initialTrackIndex: Int = 0,
-        tracksGetter: suspend () -> List<MediaItem>
+        tracksGetter: suspend () -> List<MediaItem>,
     ) {
-        val mediaItems = withContext(ioDispatcher) {
-            tracksGetter()
-        }
+        val mediaItems = withContext(ioDispatcher) { tracksGetter() }
         mediaPlaybackClient.playMediaItems(initialTrackIndex, mediaItems)
     }
 
     override suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int) {
         playTracks(initialTrackIndex) {
-            trackRepository.getTracksForMedia(mediaGroup).map { tracks ->
-                tracks.map { it.toMediaItem() }
-            }.first()
+            trackRepository
+                .getTracksForMedia(mediaGroup)
+                .map { tracks -> tracks.map { it.toMediaItem() } }
+                .first()
         }
     }
 

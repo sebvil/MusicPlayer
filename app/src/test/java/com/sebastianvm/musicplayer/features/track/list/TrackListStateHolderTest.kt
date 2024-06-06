@@ -33,220 +33,237 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.coroutines.flow.update
 
-class TrackListStateHolderTest : FreeSpec({
+class TrackListStateHolderTest :
+    FreeSpec({
+        lateinit var trackRepositoryDep: FakeTrackRepository
+        lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+        lateinit var playbackManagerDep: FakePlaybackManager
+        lateinit var navControllerDep: FakeNavController
 
-    lateinit var trackRepositoryDep: FakeTrackRepository
-    lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
-    lateinit var playbackManagerDep: FakePlaybackManager
-    lateinit var navControllerDep: FakeNavController
-
-    beforeTest {
-        trackRepositoryDep = FakeTrackRepository()
-        sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
-        playbackManagerDep = FakePlaybackManager()
-        navControllerDep = FakeNavController()
-    }
-
-    fun TestScope.getSubject(trackList: TrackList = MediaGroup.AllTracks): TrackListStateHolder {
-        return TrackListStateHolder(
-            stateHolderScope = this,
-            trackRepository = trackRepositoryDep,
-            sortPreferencesRepository = sortPreferencesRepositoryDep,
-            args = TrackListArguments(trackList),
-            navController = navControllerDep,
-            playbackManager = playbackManagerDep
-        )
-    }
-
-    fun updateSortPreferences(
-        trackList: TrackList,
-        sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
-    ) {
-        when (trackList) {
-            is MediaGroup.Album -> Unit
-            MediaGroup.AllTracks -> {
-                sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
-            }
-
-            is MediaGroup.Genre -> {
-                sortPreferencesRepositoryDep.genreTracksSortPreferences.value = mapOf(
-                    trackList.genreId to sortPreferences
-                )
-            }
-
-            is MediaGroup.Playlist -> {
-                sortPreferencesRepositoryDep.playlistTracksSortPreferences.value = mapOf(
-                    trackList.playlistId to sortPreferences
-                )
-            }
+        beforeTest {
+            trackRepositoryDep = FakeTrackRepository()
+            sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+            playbackManagerDep = FakePlaybackManager()
+            navControllerDep = FakeNavController()
         }
-    }
 
-    "init subscribes to changes in track list" - {
-        withData(
-            FixtureProvider.trackListWithMetadataFixtures()
-        ) { trackListWithMetadata ->
-            val subject = getSubject()
-            trackRepositoryDep.trackListsWithMetadata.update {
-                it + (
-                    MediaGroup.AllTracks to TrackListWithMetadata(
-                        metaData = null,
-                        trackList = listOf()
-                    )
-                    )
-            }
-            sortPreferencesRepositoryDep.allTracksSortPreferences.value = MediaSortPreferences(
-                sortOption = SortOptions.TrackListSortOptions.TRACK,
-                sortOrder = MediaSortOrder.ASCENDING
+        fun TestScope.getSubject(
+            trackList: TrackList = MediaGroup.AllTracks
+        ): TrackListStateHolder {
+            return TrackListStateHolder(
+                stateHolderScope = this,
+                trackRepository = trackRepositoryDep,
+                sortPreferencesRepository = sortPreferencesRepositoryDep,
+                args = TrackListArguments(trackList),
+                navController = navControllerDep,
+                playbackManager = playbackManagerDep,
             )
-            testStateHolderState(subject) {
-                awaitItem() shouldBe Loading
+        }
 
-                awaitItem() shouldBe Empty
-                trackRepositoryDep.trackListsWithMetadata.update { it + (MediaGroup.AllTracks to trackListWithMetadata) }
-
-                if (trackListWithMetadata.trackList.isEmpty()) {
-                    expectNoEvents()
-                } else {
-                    with(awaitItem()) {
-                        shouldBeInstanceOf<Data<TrackListState>>()
-                        state.modelListState.items shouldBe trackListWithMetadata.trackList.map { it.toModelListItemState() }
-                        state.modelListState.headerState shouldBe trackListWithMetadata.metaData.toHeaderState()
-                    }
+        fun updateSortPreferences(
+            trackList: TrackList,
+            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
+        ) {
+            when (trackList) {
+                is MediaGroup.Album -> Unit
+                MediaGroup.AllTracks -> {
+                    sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
+                }
+                is MediaGroup.Genre -> {
+                    sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
+                        mapOf(trackList.genreId to sortPreferences)
+                }
+                is MediaGroup.Playlist -> {
+                    sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
+                        mapOf(trackList.playlistId to sortPreferences)
                 }
             }
         }
-    }
 
-    "init subscribes to changes in sort order" - {
-        withData(
-            FixtureProvider.trackListSortPreferences()
-        ) { sortPreferences ->
-            withData(
-                listOf(
-                    MediaGroup.AllTracks,
-                    MediaGroup.Genre(genreId = 0),
-                    MediaGroup.Playlist(playlistId = 0)
-                )
-            ) { trackListType ->
-                val subject = getSubject(trackList = trackListType)
-                val initialSortPreferences = MediaSortPreferences(
-                    sortOption = SortOptions.TrackListSortOptions.TRACK,
-                    sortOrder = MediaSortOrder.ASCENDING
-                )
-                trackRepositoryDep.trackListsWithMetadata.update {
-                    it + (
-                        trackListType to FixtureProvider.trackListWithMetadataFixtures()
-                            .first()
-                        )
-                }
-
-                updateSortPreferences(trackListType, initialSortPreferences)
-
-                testStateHolderState(subject) {
-                    awaitItem() shouldBe Loading
-
-                    with(awaitItem()) {
-                        shouldBeInstanceOf<Data<TrackListState>>()
-                        state.modelListState.sortButtonState shouldBe SortButtonState(
-                            text = initialSortPreferences.sortOption.stringId,
-                            sortOrder = initialSortPreferences.sortOrder
-                        )
+        "init subscribes to changes in track list" -
+            {
+                withData(FixtureProvider.trackListWithMetadataFixtures()) { trackListWithMetadata ->
+                    val subject = getSubject()
+                    trackRepositoryDep.trackListsWithMetadata.update {
+                        it +
+                            (MediaGroup.AllTracks to
+                                TrackListWithMetadata(metaData = null, trackList = listOf()))
                     }
-                    updateSortPreferences(trackListType, sortPreferences)
-                    if (sortPreferences == initialSortPreferences) {
-                        expectNoEvents()
-                    } else {
-                        with(awaitItem()) {
-                            shouldBeInstanceOf<Data<TrackListState>>()
-                            state.modelListState.sortButtonState shouldBe SortButtonState(
-                                text = sortPreferences.sortOption.stringId,
-                                sortOrder = sortPreferences.sortOrder
-                            )
+                    sortPreferencesRepositoryDep.allTracksSortPreferences.value =
+                        MediaSortPreferences(
+                            sortOption = SortOptions.TrackListSortOptions.TRACK,
+                            sortOrder = MediaSortOrder.ASCENDING,
+                        )
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+
+                        awaitItem() shouldBe Empty
+                        trackRepositoryDep.trackListsWithMetadata.update {
+                            it + (MediaGroup.AllTracks to trackListWithMetadata)
+                        }
+
+                        if (trackListWithMetadata.trackList.isEmpty()) {
+                            expectNoEvents()
+                        } else {
+                            with(awaitItem()) {
+                                shouldBeInstanceOf<Data<TrackListState>>()
+                                state.modelListState.items shouldBe
+                                    trackListWithMetadata.trackList.map {
+                                        it.toModelListItemState()
+                                    }
+                                state.modelListState.headerState shouldBe
+                                    trackListWithMetadata.metaData.toHeaderState()
+                            }
                         }
                     }
                 }
             }
-        }
-    }
 
-    "init does not subscribe to changes in sort order for album" - {
-        withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
-            val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
-            trackRepositoryDep.trackListsWithMetadata.update {
-                it + (
-                    MediaGroup.Album(albumId = 0) to FixtureProvider.trackListWithMetadataFixtures()
-                        .first()
-                    )
+        "init subscribes to changes in sort order" -
+            {
+                withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
+                    withData(
+                        listOf(
+                            MediaGroup.AllTracks,
+                            MediaGroup.Genre(genreId = 0),
+                            MediaGroup.Playlist(playlistId = 0),
+                        )
+                    ) { trackListType ->
+                        val subject = getSubject(trackList = trackListType)
+                        val initialSortPreferences =
+                            MediaSortPreferences(
+                                sortOption = SortOptions.TrackListSortOptions.TRACK,
+                                sortOrder = MediaSortOrder.ASCENDING,
+                            )
+                        trackRepositoryDep.trackListsWithMetadata.update {
+                            it +
+                                (trackListType to
+                                    FixtureProvider.trackListWithMetadataFixtures().first())
+                        }
+
+                        updateSortPreferences(trackListType, initialSortPreferences)
+
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe Loading
+
+                            with(awaitItem()) {
+                                shouldBeInstanceOf<Data<TrackListState>>()
+                                state.modelListState.sortButtonState shouldBe
+                                    SortButtonState(
+                                        text = initialSortPreferences.sortOption.stringId,
+                                        sortOrder = initialSortPreferences.sortOrder,
+                                    )
+                            }
+                            updateSortPreferences(trackListType, sortPreferences)
+                            if (sortPreferences == initialSortPreferences) {
+                                expectNoEvents()
+                            } else {
+                                with(awaitItem()) {
+                                    shouldBeInstanceOf<Data<TrackListState>>()
+                                    state.modelListState.sortButtonState shouldBe
+                                        SortButtonState(
+                                            text = sortPreferences.sortOption.stringId,
+                                            sortOrder = sortPreferences.sortOrder,
+                                        )
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            testStateHolderState(subject) {
-                awaitItem() shouldBe Loading
+        "init does not subscribe to changes in sort order for album" -
+            {
+                withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
+                    val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
+                    trackRepositoryDep.trackListsWithMetadata.update {
+                        it +
+                            (MediaGroup.Album(albumId = 0) to
+                                FixtureProvider.trackListWithMetadataFixtures().first())
+                    }
 
-                with(awaitItem()) {
-                    shouldBeInstanceOf<Data<TrackListState>>()
-                    state.modelListState.sortButtonState shouldBe null
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+
+                        with(awaitItem()) {
+                            shouldBeInstanceOf<Data<TrackListState>>()
+                            state.modelListState.sortButtonState shouldBe null
+                        }
+
+                        sortPreferencesRepositoryDep.allTracksSortPreferences.value =
+                            sortPreferences
+                        expectNoEvents()
+                    }
+                }
+            }
+
+        "handle" -
+            {
+                "SortButtonClicked navigates to SortMenu" {
+                    val subject = getSubject()
+                    subject.handle(TrackListUserAction.SortButtonClicked)
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                SortMenuUiComponent(
+                                    arguments =
+                                        SortMenuArguments(
+                                            listType =
+                                                SortableListType.Tracks(
+                                                    trackList = MediaGroup.AllTracks
+                                                )
+                                        )
+                                ),
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        )
                 }
 
-                sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
-                expectNoEvents()
+                "TrackClicked plays media" {
+                    val subject = getSubject()
+                    subject.handle(TrackListUserAction.TrackClicked(TRACK_INDEX))
+                    advanceUntilIdle()
+                    playbackManagerDep.playMediaInvocations shouldBe
+                        listOf(
+                            FakePlaybackManager.PlayMediaArguments(
+                                mediaGroup = MediaGroup.AllTracks,
+                                initialTrackIndex = TRACK_INDEX,
+                            )
+                        )
+                }
+
+                "TrackMoreIconClicked navigates to TrackContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(TrackListUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
+                    navControllerDep.backStack.last() shouldBe
+                        BackStackEntry(
+                            uiComponent =
+                                TrackContextMenu(
+                                    arguments =
+                                        TrackContextMenuArguments(
+                                            trackId = TRACK_ID,
+                                            trackPositionInList = TRACK_INDEX,
+                                            trackList = MediaGroup.AllTracks,
+                                        ),
+                                    navController = navControllerDep,
+                                ),
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        )
+                }
+
+                "BackClicked navigates back" {
+                    navControllerDep.push(
+                        uiComponent =
+                            TrackListUiComponent(
+                                arguments = TrackListArguments(MediaGroup.AllTracks),
+                                navController = navControllerDep,
+                            )
+                    )
+                    val subject = getSubject()
+                    subject.handle(TrackListUserAction.BackClicked)
+                    navControllerDep.backStack.shouldBeEmpty()
+                }
             }
-        }
-    }
-
-    "handle" - {
-        "SortButtonClicked navigates to SortMenu" {
-            val subject = getSubject()
-            subject.handle(TrackListUserAction.SortButtonClicked)
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = SortMenuUiComponent(
-                    arguments = SortMenuArguments(listType = SortableListType.Tracks(trackList = MediaGroup.AllTracks))
-                ),
-                presentationMode = NavOptions.PresentationMode.BottomSheet,
-            )
-        }
-
-        "TrackClicked plays media" {
-            val subject = getSubject()
-            subject.handle(TrackListUserAction.TrackClicked(TRACK_INDEX))
-            advanceUntilIdle()
-            playbackManagerDep.playMediaInvocations shouldBe listOf(
-                FakePlaybackManager.PlayMediaArguments(
-                    mediaGroup = MediaGroup.AllTracks,
-                    initialTrackIndex = TRACK_INDEX
-                )
-            )
-        }
-
-        "TrackMoreIconClicked navigates to TrackContextMenu" {
-            val subject = getSubject()
-            subject.handle(TrackListUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
-            navControllerDep.backStack.last() shouldBe BackStackEntry(
-                uiComponent = TrackContextMenu(
-                    arguments = TrackContextMenuArguments(
-                        trackId = TRACK_ID,
-                        trackPositionInList = TRACK_INDEX,
-                        trackList = MediaGroup.AllTracks
-                    ),
-                    navController = navControllerDep
-                ),
-                presentationMode = NavOptions.PresentationMode.BottomSheet
-            )
-        }
-
-        "BackClicked navigates back" {
-            navControllerDep.push(
-                uiComponent = TrackListUiComponent(
-                    arguments = TrackListArguments(MediaGroup.AllTracks),
-                    navController = navControllerDep
-                )
-            )
-            val subject = getSubject()
-            subject.handle(TrackListUserAction.BackClicked)
-            navControllerDep.backStack.shouldBeEmpty()
-        }
-    }
-}) {
+    }) {
     companion object {
         private const val TRACK_ID = 1L
         private const val TRACK_INDEX = 0

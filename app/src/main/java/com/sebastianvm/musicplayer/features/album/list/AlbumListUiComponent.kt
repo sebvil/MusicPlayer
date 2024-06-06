@@ -17,14 +17,19 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class AlbumListUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, UiState<AlbumListState>, AlbumListUserAction, AlbumListStateHolder>() {
+    BaseUiComponent<
+        NoArguments,
+        UiState<AlbumListState>,
+        AlbumListUserAction,
+        AlbumListStateHolder,
+    >() {
     override val arguments: NoArguments = NoArguments
 
     @Composable
     override fun Content(
         state: UiState<AlbumListState>,
         handle: Handler<AlbumListUserAction>,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
@@ -38,20 +43,19 @@ data class AlbumListUiComponent(val navController: NavController) :
 fun AlbumList(
     uiState: UiState<AlbumListState>,
     handle: Handler<AlbumListUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier.fillMaxSize(), emptyScreen = {
-        StoragePermissionNeededEmptyScreen(
-            message = R.string.no_albums_found,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        )
-    }) { state ->
-        AlbumList(
-            state = state,
-            handle = handle,
-        )
+    UiStateScreen(
+        uiState = uiState,
+        modifier = modifier.fillMaxSize(),
+        emptyScreen = {
+            StoragePermissionNeededEmptyScreen(
+                message = R.string.no_albums_found,
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            )
+        },
+    ) { state ->
+        AlbumList(state = state, handle = handle)
     }
 }
 
@@ -59,20 +63,16 @@ fun AlbumList(
 fun AlbumList(
     state: AlbumListState,
     handle: Handler<AlbumListUserAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ModelList(
         state = state.modelListState,
         modifier = modifier,
         onBackButtonClicked = {},
-        onSortButtonClicked = {
-            handle(AlbumListUserAction.SortButtonClicked)
-        },
-        onItemClicked = { _, item ->
-            handle(AlbumListUserAction.AlbumClicked(item.id))
-        },
+        onSortButtonClicked = { handle(AlbumListUserAction.SortButtonClicked) },
+        onItemClicked = { _, item -> handle(AlbumListUserAction.AlbumClicked(item.id)) },
         onItemMoreIconClicked = { _, item ->
             handle(AlbumListUserAction.AlbumMoreIconClicked(item.id))
-        }
+        },
     )
 }

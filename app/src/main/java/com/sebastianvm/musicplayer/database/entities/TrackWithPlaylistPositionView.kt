@@ -12,5 +12,5 @@ data class TrackWithPlaylistPositionView(
     val artists: String,
     val albumName: String,
     val position: Long,
-    val playlistId: Long
+    val playlistId: Long,
 )

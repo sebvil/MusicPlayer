@@ -19,11 +19,9 @@ interface MediaQueueDao {
     )
     fun getQueuedTracks(): Flow<List<QueuedTrack>>
 
-    @Insert
-    fun insertQueue(mediaQueueItems: List<MediaQueueItem>)
+    @Insert fun insertQueue(mediaQueueItems: List<MediaQueueItem>)
 
-    @Query("DELETE FROM MediaQueueItem")
-    fun clearQueue()
+    @Query("DELETE FROM MediaQueueItem") fun clearQueue()
 
     @Transaction
     fun saveQueue(mediaQueueItems: List<MediaQueueItem>) {
