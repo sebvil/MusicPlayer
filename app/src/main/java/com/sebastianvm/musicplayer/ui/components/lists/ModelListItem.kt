@@ -10,7 +10,6 @@ import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
-import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
@@ -27,6 +26,31 @@ data object ModelListItem {
     )
 }
 
+@Deprecated(
+    message = "",
+    replaceWith =
+        ReplaceWith(
+            "ListItem(\n" +
+                "            headlineContent = { Text(text = state.headlineContent) },\n" +
+                "            modifier = modifier,\n" +
+                "            supportingContent =\n" +
+                "                state.supportingContent?.let {\n" +
+                "                    {\n" +
+                "                        Text(\n" +
+                "                            text = it,\n" +
+                "                        )\n" +
+                "                    }\n" +
+                "                },\n" +
+                "            leadingContent =\n" +
+                "                state.mediaArtImageState?.let {\n" +
+                "                    { MediaArtImage(mediaArtImageState = it, modifier = Modifier.size(56.dp)) }\n" +
+                "                },\n" +
+                "            trailingContent = trailingContent,\n" +
+                "            tonalElevation = tonalElevation,\n" +
+                "            shadowElevation = shadowElevation,\n" +
+                "        )"
+        )
+)
 @Composable
 fun ModelListItem(
     state: ModelListItem.State,
@@ -37,11 +61,7 @@ fun ModelListItem(
 ) {
     with(state) {
         ListItem(
-            headlineContent = {
-                Text(
-                    text = headlineContent,
-                )
-            },
+            headlineContent = { Text(text = headlineContent) },
             modifier = modifier,
             supportingContent =
                 supportingContent?.let {
@@ -106,14 +126,6 @@ fun Track.toModelListItemState(): ModelListItem.State {
 }
 
 fun BasicTrack.toModelListItemState(): ModelListItem.State {
-    return ModelListItem.State(
-        id = id,
-        headlineContent = trackName,
-        supportingContent = artists,
-    )
-}
-
-fun QueuedTrack.toModelListItemState(): ModelListItem.State {
     return ModelListItem.State(
         id = id,
         headlineContent = trackName,

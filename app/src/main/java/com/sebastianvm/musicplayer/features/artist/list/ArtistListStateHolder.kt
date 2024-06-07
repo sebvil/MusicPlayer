@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
@@ -10,10 +12,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -29,7 +27,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class ArtistListState(val modelListState: ModelListState) : State
+data class ArtistListState(
+    val artists: List<ArtistRow.State>,
+    val sortButtonState: SortButton.State
+) : State
 
 sealed interface ArtistListUserAction : UserAction {
     data object SortByButtonClicked : ArtistListUserAction
@@ -55,16 +56,12 @@ class ArtistListStateHolder(
                 } else {
                     Data(
                         ArtistListState(
-                            modelListState =
-                                ModelListState(
-                                    items = artists.map { artist -> artist.toModelListItemState() },
-                                    sortButtonState =
-                                        SortButtonState(
-                                            text = R.string.artist_name,
-                                            sortOrder = sortOrder,
-                                        ),
-                                    headerState = HeaderState.None,
-                                )
+                            artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
+                            sortButtonState =
+                                SortButton.State(
+                                    text = R.string.artist_name,
+                                    sortOrder = sortOrder,
+                                ),
                         )
                     )
                 }

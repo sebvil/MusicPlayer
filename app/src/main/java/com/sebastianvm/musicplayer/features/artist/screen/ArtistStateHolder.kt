@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
 import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -10,7 +11,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -103,7 +103,9 @@ class ArtistStateHolder(
 }
 
 private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
-    return ArtistScreenItem.AlbumRowItem(this.toModelListItemState())
+    return ArtistScreenItem.AlbumRowItem(
+        state = AlbumRow.State.fromAlbum(this),
+    )
 }
 
 fun getArtistStateHolder(

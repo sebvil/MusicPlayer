@@ -1,13 +1,12 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -24,7 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 
 data class ArtistsMenuArguments(val media: HasArtists) : Arguments
 
-data class ArtistsMenuState(val modelListState: ModelListState) : State
+data class ArtistsMenuState(val artists: List<ArtistRow.State>) : State
 
 sealed interface ArtistsMenuUserAction : UserAction {
     data class ArtistClicked(val artistId: Long) : ArtistsMenuUserAction
@@ -43,10 +42,7 @@ class ArtistsMenuStateHolder(
             .map { artists ->
                 Data(
                     ArtistsMenuState(
-                        modelListState =
-                            ModelListState(
-                                items = artists.map { artist -> artist.toModelListItemState() }
-                            )
+                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                     )
                 )
             }

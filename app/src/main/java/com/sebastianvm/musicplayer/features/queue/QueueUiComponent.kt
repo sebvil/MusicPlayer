@@ -30,11 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sebastianvm.musicplayer.R
-import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import sh.calvin.reorderable.ReorderableItem
@@ -100,10 +99,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
             )
         }
         item(key = state.nowPlayingItem.queueItemId) {
-            ModelListItem(
-                state = state.nowPlayingItem.modelListItemState,
-                modifier = Modifier.animateItem(),
-            )
+            TrackRow(state = state.nowPlayingItem.trackRow)
         }
 
         item {
@@ -119,12 +115,8 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 val elevation by
                     animateDpAsState(if (isDragging) 4.dp else 0.dp, label = "elevation")
 
-                ListItem(
-                    headlineContent = { Text(text = item.modelListItemState.headlineContent) },
-                    supportingContent =
-                        item.modelListItemState.supportingContent?.let {
-                            { Text(text = item.modelListItemState.supportingContent) }
-                        },
+                TrackRow(
+                    state = item.trackRow,
                     modifier =
                         Modifier.clickable { handle(QueueUserAction.TrackClicked(item.position)) },
                     trailingContent = {
