@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.coroutines.launch
 
-data class HomeUiComponent(val navController: NavController) :
+class HomeUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, HomeState, HomeUserAction, HomeStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
