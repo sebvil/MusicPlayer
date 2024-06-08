@@ -16,13 +16,13 @@ import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.orZero
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 class MediaPlaybackClient(private val context: Context, private val externalScope: CoroutineScope) {
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
