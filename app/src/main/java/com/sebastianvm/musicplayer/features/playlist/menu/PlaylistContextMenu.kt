@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.icons.Delete
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
@@ -25,7 +25,7 @@ data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArgume
         PlaylistContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): PlaylistContextMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): PlaylistContextMenuStateHolder {
         return getPlaylistContextMenuStateHolder(dependencies, arguments)
     }
 

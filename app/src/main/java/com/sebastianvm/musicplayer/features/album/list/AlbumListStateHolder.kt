@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -105,7 +105,7 @@ class AlbumListStateHolder(
 }
 
 fun getAlbumListStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     navController: NavController,
 ): AlbumListStateHolder {
     return AlbumListStateHolder(

@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    name: Build project and run JVM unit tests.
+  setup:
+    name: Check out project and setup Java.
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,47 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Run checks
-        run: ./gradlew check
+
+  ktfmtCheck:
+    name: Run ktfmt check
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew ktfmtCheck
+
+  build:
+    name: Build app
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew assemble
+
+  lint:
+    name: Run lint
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew lint
+
+  detektMain:
+    name: Run detekt on main sources
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew detektMain
+
+  detektTest:
+    name: Run detekt on test sources
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew detektTest
+
+  tests:
+    name: Run tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./gradlew test

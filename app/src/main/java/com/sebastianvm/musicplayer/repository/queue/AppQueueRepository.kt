@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
@@ -80,8 +79,12 @@ class AppQueueRepository(
         mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
     }
 
-    override suspend fun addToQueue(mediaGroup: MediaGroup) {
-        val tracks = trackRepository.getTracksForMedia(mediaGroup).first()
-        addToQueue(tracks)
+    override suspend fun addToQueue(trackId: Long) {
+        val track = trackRepository.getTrack(trackId).first().track
+        addToQueue(listOf(track))
+    }
+
+    override fun playQueueItem(index: Int) {
+        mediaPlaybackClient.playQueueItem(index)
     }
 }

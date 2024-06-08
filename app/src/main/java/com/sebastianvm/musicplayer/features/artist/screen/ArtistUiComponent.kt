@@ -21,7 +21,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -35,7 +35,7 @@ data class ArtistUiComponent(
     val navController: NavController,
 ) : BaseUiComponent<ArtistArguments, UiState<ArtistState>, ArtistUserAction, ArtistStateHolder>() {
 
-    override fun createStateHolder(dependencies: AppDependencies): ArtistStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): ArtistStateHolder {
         return getArtistStateHolder(dependencies, arguments, navController)
     }
 

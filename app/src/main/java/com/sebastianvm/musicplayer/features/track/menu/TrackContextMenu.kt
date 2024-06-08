@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Artist
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlaylistRemove
 import com.sebastianvm.musicplayer.designsystem.icons.QueueAdd
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
@@ -30,7 +30,7 @@ data class TrackContextMenu(
         TrackContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): TrackContextMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): TrackContextMenuStateHolder {
         return getTrackContextMenuStateHolder(
             dependencies = dependencies,
             arguments = arguments,

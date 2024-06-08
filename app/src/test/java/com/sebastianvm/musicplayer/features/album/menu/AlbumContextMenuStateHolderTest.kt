@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
@@ -24,13 +23,11 @@ class AlbumContextMenuStateHolderTest :
     FreeSpec({
         lateinit var albumRepositoryDep: FakeAlbumRepository
         lateinit var playbackManagerDep: FakePlaybackManager
-        lateinit var queueRepositoryDep: FakeQueueRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
             albumRepositoryDep = FakeAlbumRepository()
             playbackManagerDep = FakePlaybackManager()
-            queueRepositoryDep = FakeQueueRepository()
             navControllerDep = FakeNavController()
         }
 
@@ -39,7 +36,6 @@ class AlbumContextMenuStateHolderTest :
                 arguments = AlbumContextMenuArguments(albumId = albumId),
                 stateHolderScope = this,
                 albumRepository = albumRepositoryDep,
-                queueRepository = queueRepositoryDep,
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
             )
@@ -116,19 +112,6 @@ class AlbumContextMenuStateHolderTest :
 
         "handle" -
             {
-                "AddToQueueClicked adds tracks to queue" {
-                    val album = FixtureProvider.albumFixtures().first()
-                    val subject = getSubject(album.id)
-                    subject.handle(AlbumContextMenuUserAction.AddToQueueClicked)
-                    advanceUntilIdle()
-                    queueRepositoryDep.addToQueueInvocations shouldBe
-                        listOf(
-                            FakeQueueRepository.AddToQueueArguments(
-                                mediaGroup = MediaGroup.Album(albumId = album.id)
-                            )
-                        )
-                }
-
                 "PlayAlbumClicked plays album" {
                     val album = FixtureProvider.albumFixtures().first()
                     val subject = getSubject(album.id)

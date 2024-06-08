@@ -36,5 +36,5 @@ class AppDependencies(private val appContext: Context) : Dependencies {
 }
 
 @Composable
-fun dependencies(): AppDependencies =
+fun dependencies(): Dependencies =
     (LocalContext.current.applicationContext as MusicPlayerApplication).dependencies

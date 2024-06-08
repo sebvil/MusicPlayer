@@ -55,10 +55,6 @@ class PlaybackManagerImpl(
         }
     }
 
-    override fun playQueueItem(index: Int) {
-        mediaPlaybackClient.playQueueItem(index)
-    }
-
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
     }

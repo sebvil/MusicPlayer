@@ -17,7 +17,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
@@ -35,7 +35,7 @@ data class ArtistsMenu(
         ArtistsMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): ArtistsMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): ArtistsMenuStateHolder {
         return ArtistsMenuStateHolder(
             arguments = arguments,
             artistRepository = dependencies.repositoryProvider.artistRepository,

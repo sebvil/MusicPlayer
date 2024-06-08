@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -31,7 +31,7 @@ data class ArtistListUiComponent(val navController: NavController) :
     >() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): ArtistListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): ArtistListStateHolder {
         return getArtistListStateHolder(dependencies = dependencies, navController = navController)
     }
 

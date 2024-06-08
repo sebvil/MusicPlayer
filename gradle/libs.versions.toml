@@ -72,6 +72,6 @@ testing = [
     "kotest-assertions-core",
     "kotest-framework-datatest",
     "kotest-runner-junit5",
-    "turbine"
+    "turbine",
 ]
 

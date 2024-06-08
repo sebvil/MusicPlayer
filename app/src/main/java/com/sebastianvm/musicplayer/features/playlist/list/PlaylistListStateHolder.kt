@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.playlist.list
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
@@ -166,7 +166,7 @@ class PlaylistListStateHolder(
 }
 
 fun getPlaylistListStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     navController: NavController,
 ): PlaylistListStateHolder {
     return PlaylistListStateHolder(

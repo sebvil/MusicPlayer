@@ -49,7 +49,7 @@ import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.LibraryScanService
@@ -65,7 +65,7 @@ data class SearchUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, SearchState, SearchUserAction, SearchStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): SearchStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): SearchStateHolder {
         return getSearchStateHolder(dependencies, navController)
     }
 

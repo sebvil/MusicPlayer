@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.artist.list
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -92,7 +92,7 @@ class ArtistListStateHolder(
 }
 
 fun getArtistListStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     navController: NavController,
 ): ArtistListStateHolder {
     return ArtistListStateHolder(

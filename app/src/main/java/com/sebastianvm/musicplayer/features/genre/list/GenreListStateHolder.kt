@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.genre.list
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -90,7 +90,7 @@ class GenreListStateHolder(
 }
 
 fun getGenreListStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     navController: NavController,
 ): GenreListStateHolder {
     return GenreListStateHolder(

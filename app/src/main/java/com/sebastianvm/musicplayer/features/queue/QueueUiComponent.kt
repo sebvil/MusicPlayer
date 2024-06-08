@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
@@ -43,8 +43,8 @@ object QueueUiComponent :
     BaseUiComponent<NoArguments, QueueState, QueueUserAction, QueueStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): QueueStateHolder {
-        return getQueueStateHolder(dependencies)
+    override fun createStateHolder(dependencies: Dependencies): QueueStateHolder {
+        return QueueStateHolder(services = QueueStateHolderServices(dependencies))
     }
 
     @Composable

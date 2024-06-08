@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.artist.screen
 
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -107,7 +107,7 @@ private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
 }
 
 fun getArtistStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     arguments: ArtistArguments,
     navController: NavController,
 ): ArtistStateHolder {

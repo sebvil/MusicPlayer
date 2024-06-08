@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -30,7 +30,7 @@ data class GenreListUiComponent(val navController: NavController) :
     >() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): GenreListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): GenreListStateHolder {
         return getGenreListStateHolder(dependencies = dependencies, navController = navController)
     }
 

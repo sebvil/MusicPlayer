@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -60,7 +60,7 @@ class ArtistContextMenuStateHolder(
 }
 
 fun getArtistContextMenuStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     arguments: ArtistContextMenuArguments,
 ): ArtistContextMenuStateHolder {
     return ArtistContextMenuStateHolder(

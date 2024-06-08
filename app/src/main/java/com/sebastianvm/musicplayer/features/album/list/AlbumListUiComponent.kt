@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -39,7 +39,7 @@ data class AlbumListUiComponent(val navController: NavController) :
         AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: AppDependencies): AlbumListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): AlbumListStateHolder {
         return getAlbumListStateHolder(dependencies = dependencies, navController = navController)
     }
 }

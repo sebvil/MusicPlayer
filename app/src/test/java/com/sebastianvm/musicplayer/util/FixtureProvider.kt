@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.util
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
 import com.sebastianvm.musicplayer.database.entities.Track
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -123,6 +124,12 @@ object FixtureProvider {
     fun genreFixtures(): List<Genre> {
         return longList().flatMap { long ->
             stringList().map { string -> Genre(id = long, genreName = string) }
+        }
+    }
+
+    fun queueItemsFixtures(): List<MediaQueueItem> {
+        return trackFixtures().mapIndexed { index, track ->
+            MediaQueueItem(trackId = track.id, queuePosition = index, queueItemId = track.id)
         }
     }
 }

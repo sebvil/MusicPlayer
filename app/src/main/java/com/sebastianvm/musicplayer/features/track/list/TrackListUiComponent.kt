@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -48,7 +48,7 @@ data class TrackListUiComponent(
         TrackListStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): TrackListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): TrackListStateHolder {
         return TrackListStateHolder(
             args = arguments,
             navController = navController,

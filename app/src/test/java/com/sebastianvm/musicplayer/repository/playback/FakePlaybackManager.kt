@@ -66,10 +66,6 @@ class FakePlaybackManager : PlaybackManager {
         _playMediaInvocations.add(PlayMediaArguments(mediaGroup, initialTrackIndex))
     }
 
-    override fun playQueueItem(index: Int) {
-        TODO("Not yet implemented")
-    }
-
     private val _prevInvocations: MutableList<List<Any>> = mutableListOf()
 
     val prevInvocations: List<List<Any>>
