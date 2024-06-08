@@ -21,45 +21,13 @@ jobs:
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-  ktfmtCheck:
-    name: Run ktfmt check
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew ktfmtCheck
-
-  build:
-    name: Build app
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew assemble
-
-  lint:
-    name: Run lint
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew lint
-
-  detektMain:
-    name: Run detekt on main sources
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew detektMain
-
-  detektTest:
-    name: Run detekt on test sources
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew detektTest
-
-  tests:
-    name: Run tests
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: ./gradlew test
+      - name: Run ktfmt check
+        run: ./gradlew ktfmtCheck
+      - name: Run lint
+        run: ./gradlew lint
+      - name: Run detekt on main sources
+        run: ./gradlew detektMain
+      - name: Run detekt on test sources
+        run: ./gradlew detektTest
+      - name: Run tests
+        run: ./gradlew test
