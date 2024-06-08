@@ -5,27 +5,17 @@ import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.database.entities.Genre
 
 object GenreRow {
-    data class State(
-        val id: Long,
-        val genreName: String,
-    ) {
+    data class State(val id: Long, val genreName: String) {
         companion object {
             fun fromGenre(genre: Genre): State {
-                return State(
-                    id = genre.id,
-                    genreName = genre.genreName,
-                )
+                return State(id = genre.id, genreName = genre.genreName)
             }
         }
     }
 }
 
 @Composable
-fun GenreRow(
-    state: GenreRow.State,
-    onMoreIconClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun GenreRow(state: GenreRow.State, onMoreIconClicked: () -> Unit, modifier: Modifier = Modifier) {
     ListItem(
         headlineContent = { Text(text = state.genreName) },
         modifier = modifier,

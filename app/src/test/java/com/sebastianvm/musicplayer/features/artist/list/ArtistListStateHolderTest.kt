@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -10,9 +12,6 @@ import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -57,8 +56,7 @@ class ArtistListStateHolderTest :
                 artistRepositoryDep.artists.value = artists
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
-                    state.modelListState.items shouldBe artists.map { it.toModelListItemState() }
-                    state.modelListState.headerState shouldBe HeaderState.None
+                    state.artists shouldBe artists.map { ArtistRow.State.fromArtist(it) }
                 }
             }
         }
@@ -72,8 +70,8 @@ class ArtistListStateHolderTest :
 
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
-                    state.modelListState.sortButtonState shouldBe
-                        SortButtonState(
+                    state.sortButtonState shouldBe
+                        SortButton.State(
                             text = R.string.artist_name,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
@@ -82,8 +80,8 @@ class ArtistListStateHolderTest :
                 sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.DESCENDING
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
-                    state.modelListState.sortButtonState shouldBe
-                        SortButtonState(
+                    state.sortButtonState shouldBe
+                        SortButton.State(
                             text = R.string.artist_name,
                             sortOrder = MediaSortOrder.DESCENDING,
                         )

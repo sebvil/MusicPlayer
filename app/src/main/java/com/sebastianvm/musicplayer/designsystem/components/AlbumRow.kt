@@ -15,7 +15,7 @@ object AlbumRow {
         val id: Long,
         val albumName: String,
         val artists: String? = null,
-        val mediaArtImageState: MediaArtImageState
+        val mediaArtImageState: MediaArtImageState,
     ) {
         companion object {
             fun fromAlbum(album: Album): State {
@@ -24,10 +24,7 @@ object AlbumRow {
                     albumName = album.albumName,
                     artists = album.artists,
                     mediaArtImageState =
-                        MediaArtImageState(
-                            imageUri = album.imageUri,
-                            backupImage = Icons.Album,
-                        )
+                        MediaArtImageState(imageUri = album.imageUri, backupImage = Icons.Album),
                 )
             }
         }
@@ -35,11 +32,7 @@ object AlbumRow {
 }
 
 @Composable
-fun AlbumRow(
-    state: AlbumRow.State,
-    onMoreIconClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun AlbumRow(state: AlbumRow.State, onMoreIconClicked: () -> Unit, modifier: Modifier = Modifier) {
     ListItem(
         headlineContent = { Text(text = state.albumName) },
         supportingContent = state.artists?.let { artists -> { Text(text = artists) } },
@@ -47,7 +40,7 @@ fun AlbumRow(
         leadingContent = {
             MediaArtImage(
                 mediaArtImageState = state.mediaArtImageState,
-                modifier = Modifier.size(56.dp)
+                modifier = Modifier.size(56.dp),
             )
         },
         trailingContent = { OverflowIconButton(onClick = onMoreIconClicked) },

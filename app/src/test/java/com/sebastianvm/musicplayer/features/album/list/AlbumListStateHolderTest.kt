@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -13,9 +15,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -51,7 +50,7 @@ class AlbumListStateHolderTest :
             )
         }
 
-        "init subscribes to changes in track list" {
+        "init subscribes to changes in album list" {
             val subject = getSubject()
             albumRepositoryDep.albums.value = emptyList()
             sortPreferencesRepositoryDep.albumListSortPreferences.value =
@@ -65,8 +64,7 @@ class AlbumListStateHolderTest :
                 val albums = FixtureProvider.albumFixtures().toList()
                 albumRepositoryDep.albums.value = albums
                 val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
-                item.state.modelListState.items shouldBe albums.map { it.toModelListItemState() }
-                item.state.modelListState.headerState shouldBe HeaderState.None
+                item.state.albums shouldBe albums.map { AlbumRow.State.fromAlbum(it) }
             }
         }
 
@@ -87,8 +85,8 @@ class AlbumListStateHolderTest :
 
                         with(awaitItem()) {
                             shouldBeInstanceOf<Data<AlbumListState>>()
-                            state.modelListState.sortButtonState shouldBe
-                                SortButtonState(
+                            state.sortButtonState shouldBe
+                                SortButton.State(
                                     text = initialPrefs.sortOption.stringId,
                                     sortOrder = initialPrefs.sortOrder,
                                 )
@@ -99,8 +97,8 @@ class AlbumListStateHolderTest :
                                 sortPreferences
                             with(awaitItem()) {
                                 shouldBeInstanceOf<Data<AlbumListState>>()
-                                state.modelListState.sortButtonState shouldBe
-                                    SortButtonState(
+                                state.sortButtonState shouldBe
+                                    SortButton.State(
                                         text = sortPreferences.sortOption.stringId,
                                         sortOrder = sortPreferences.sortOrder,
                                     )

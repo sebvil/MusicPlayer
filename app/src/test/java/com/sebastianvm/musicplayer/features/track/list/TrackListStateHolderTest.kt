@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -14,8 +16,6 @@ import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -107,11 +107,11 @@ class TrackListStateHolderTest :
                         } else {
                             with(awaitItem()) {
                                 shouldBeInstanceOf<Data<TrackListState>>()
-                                state.modelListState.items shouldBe
+                                state.tracks shouldBe
                                     trackListWithMetadata.trackList.map {
-                                        it.toModelListItemState()
+                                        TrackRow.State.fromTrack(it)
                                     }
-                                state.modelListState.headerState shouldBe
+                                state.headerState shouldBe
                                     trackListWithMetadata.metaData.toHeaderState()
                             }
                         }
@@ -148,8 +148,8 @@ class TrackListStateHolderTest :
 
                             with(awaitItem()) {
                                 shouldBeInstanceOf<Data<TrackListState>>()
-                                state.modelListState.sortButtonState shouldBe
-                                    SortButtonState(
+                                state.sortButtonState shouldBe
+                                    SortButton.State(
                                         text = initialSortPreferences.sortOption.stringId,
                                         sortOrder = initialSortPreferences.sortOrder,
                                     )
@@ -160,8 +160,8 @@ class TrackListStateHolderTest :
                             } else {
                                 with(awaitItem()) {
                                     shouldBeInstanceOf<Data<TrackListState>>()
-                                    state.modelListState.sortButtonState shouldBe
-                                        SortButtonState(
+                                    state.sortButtonState shouldBe
+                                        SortButton.State(
                                             text = sortPreferences.sortOption.stringId,
                                             sortOrder = sortPreferences.sortOrder,
                                         )
@@ -187,7 +187,7 @@ class TrackListStateHolderTest :
 
                         with(awaitItem()) {
                             shouldBeInstanceOf<Data<TrackListState>>()
-                            state.modelListState.sortButtonState shouldBe null
+                            state.sortButtonState shouldBe null
                         }
 
                         sortPreferencesRepositoryDep.allTracksSortPreferences.value =

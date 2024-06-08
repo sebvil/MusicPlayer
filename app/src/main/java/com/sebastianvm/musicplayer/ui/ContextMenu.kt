@@ -11,9 +11,7 @@ import com.sebastianvm.musicplayer.designsystem.components.Text
 @Composable
 fun ContextMenu(menuTitle: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Column(modifier = modifier) {
-        ListItem(
-            headlineContent = { Text(text = menuTitle) },
-        )
+        ListItem(headlineContent = { Text(text = menuTitle) })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
 

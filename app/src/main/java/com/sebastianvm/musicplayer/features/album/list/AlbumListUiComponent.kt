@@ -70,10 +70,7 @@ fun AlbumList(
     handle: Handler<AlbumListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = LocalPaddingValues.current,
-    ) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         item {
             SortButton(
                 state = state.sortButtonState,

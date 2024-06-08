@@ -18,11 +18,7 @@ fun MenuItem(
     modifier: Modifier = Modifier,
 ) {
     ListItem(
-        headlineContent = {
-            Text(
-                text = text,
-            )
-        },
+        headlineContent = { Text(text = text) },
         modifier = modifier.clickable { onItemClicked() },
         leadingContent = {
             Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))

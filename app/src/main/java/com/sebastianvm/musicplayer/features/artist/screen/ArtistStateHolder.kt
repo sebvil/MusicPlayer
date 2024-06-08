@@ -103,9 +103,7 @@ class ArtistStateHolder(
 }
 
 private fun Album.toAlbumRowItem(): ArtistScreenItem.AlbumRowItem {
-    return ArtistScreenItem.AlbumRowItem(
-        state = AlbumRow.State.fromAlbum(this),
-    )
+    return ArtistScreenItem.AlbumRowItem(state = AlbumRow.State.fromAlbum(this))
 }
 
 fun getArtistStateHolder(

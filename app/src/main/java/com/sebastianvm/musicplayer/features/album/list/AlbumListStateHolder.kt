@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 
 data class AlbumListState(
     val albums: List<AlbumRow.State> = listOf(),
-    val sortButtonState: SortButton.State
+    val sortButtonState: SortButton.State,
 ) : State
 
 sealed interface AlbumListUserAction : UserAction {

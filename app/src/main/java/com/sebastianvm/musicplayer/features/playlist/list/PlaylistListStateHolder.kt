@@ -83,7 +83,7 @@ class PlaylistListStateHolder(
                 playlistRepository.getPlaylists(),
                 isPlayListCreationErrorDialogOpen,
                 isCreatePlaylistDialogOpen,
-                sortOrder
+                sortOrder,
             ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, sortOrder
                 ->
                 if (playlists.isEmpty()) {
@@ -96,10 +96,7 @@ class PlaylistListStateHolder(
                         playlists =
                             playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
                         sortButtonState =
-                            SortButton.State(
-                                text = R.string.playlist_name,
-                                sortOrder = sortOrder,
-                            ),
+                            SortButton.State(text = R.string.playlist_name, sortOrder = sortOrder),
                         isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
                         isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
                     )

@@ -126,10 +126,7 @@ fun PlaylistListLayout(
     handle: Handler<PlaylistListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = LocalPaddingValues.current,
-    ) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         item {
             SortButton(
                 state = state.sortButtonState,

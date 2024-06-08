@@ -30,7 +30,7 @@ fun ListItem(
         headlineContent = {
             CompositionLocalProvider(
                 LocalTextStyle provides MaterialTheme.typography.titleMedium,
-                content = headlineContent
+                content = headlineContent,
             )
         },
         modifier = modifier,
@@ -40,7 +40,7 @@ fun ListItem(
                 {
                     CompositionLocalProvider(
                         LocalTextStyle provides MaterialTheme.typography.bodyMedium,
-                        content = it
+                        content = it,
                     )
                 }
             },

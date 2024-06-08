@@ -25,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
@@ -122,17 +122,17 @@ fun TrackSearchLayout(
 
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.trackSearchResults) { item ->
-                ModelListItem(
+                TrackRow(
                     state = item,
                     modifier =
                         Modifier.clickable {
                             handle(
                                 TrackSearchUserAction.TrackClicked(
                                     trackId = item.id,
-                                    trackName = item.headlineContent,
+                                    trackName = item.trackName,
                                 )
                             )
-                            trackName = item.headlineContent
+                            trackName = item.trackName
                         },
                 )
             }

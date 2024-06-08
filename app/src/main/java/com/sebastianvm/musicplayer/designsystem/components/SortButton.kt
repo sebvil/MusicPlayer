@@ -20,10 +20,7 @@ object SortButton {
 
 @Composable
 fun SortButton(state: SortButton.State, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier,
-    ) {
+    TextButton(onClick = onClick, modifier = modifier) {
         Text(text = "${stringResource(id = R.string.sort_by)}:")
         Icon(
             imageVector =

@@ -71,10 +71,7 @@ fun ArtistList(
     handle: Handler<ArtistListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = LocalPaddingValues.current,
-    ) {
+    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
         item {
             SortButton(
                 state = state.sortButtonState,
@@ -91,7 +88,7 @@ fun ArtistList(
                     OverflowIconButton(
                         onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }
                     )
-                }
+                },
             )
         }
     }

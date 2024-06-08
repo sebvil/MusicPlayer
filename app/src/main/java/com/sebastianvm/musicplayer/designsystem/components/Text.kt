@@ -33,7 +33,7 @@ fun Text(
     maxLines: Int = 1,
     minLines: Int = 1,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
-    style: TextStyle = LocalTextStyle.current
+    style: TextStyle = LocalTextStyle.current,
 ) {
     androidx.compose.material3.Text(
         text = text,
@@ -52,6 +52,6 @@ fun Text(
         maxLines = maxLines,
         minLines = minLines,
         onTextLayout = onTextLayout,
-        style = style
+        style = style,
     )
 }

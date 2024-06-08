@@ -15,11 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-data class QueueItem(
-    val trackRow: TrackRow.State,
-    val position: Int,
-    val queueItemId: Long,
-)
+data class QueueItem(val trackRow: TrackRow.State, val position: Int, val queueItemId: Long)
 
 sealed interface QueueState : State {
     data class Data(val nowPlayingItem: QueueItem, val queueItems: List<QueueItem>) : QueueState
@@ -48,7 +44,7 @@ class QueueStateHolder(
                 queue ?: return@map QueueState.Empty
                 QueueState.Data(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
-                    nowPlayingItem = queue.nowPlayingTrack.toQueueItem()
+                    nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
                 )
             }
             .stateIn(
@@ -79,11 +75,7 @@ fun getQueueStateHolder(dependencies: AppDependencies): QueueStateHolder {
 private fun QueuedTrack.toQueueItem(): QueueItem {
     return QueueItem(
         trackRow =
-            TrackRow.State(
-                id = id,
-                trackName = trackName,
-                artists = artists.ifEmpty { null },
-            ),
+            TrackRow.State(id = id, trackName = trackName, artists = artists.ifEmpty { null }),
         position = queuePosition,
         queueItemId = queueItemId,
     )

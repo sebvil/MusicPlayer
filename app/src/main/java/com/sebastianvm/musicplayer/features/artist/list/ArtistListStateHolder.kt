@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 data class ArtistListState(
     val artists: List<ArtistRow.State>,
-    val sortButtonState: SortButton.State
+    val sortButtonState: SortButton.State,
 ) : State
 
 sealed interface ArtistListUserAction : UserAction {
@@ -58,10 +58,7 @@ class ArtistListStateHolder(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                             sortButtonState =
-                                SortButton.State(
-                                    text = R.string.artist_name,
-                                    sortOrder = sortOrder,
-                                ),
+                                SortButton.State(text = R.string.artist_name, sortOrder = sortOrder),
                         )
                     )
                 }

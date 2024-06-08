@@ -52,11 +52,7 @@ fun SortMenu(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
-            headlineContent = {
-                Text(
-                    text = stringResource(id = R.string.sort_by),
-                )
-            },
+            headlineContent = { Text(text = stringResource(id = R.string.sort_by)) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())

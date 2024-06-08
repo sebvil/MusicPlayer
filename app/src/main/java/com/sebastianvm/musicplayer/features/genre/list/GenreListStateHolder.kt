@@ -57,10 +57,7 @@ class GenreListStateHolder(
                         GenreListState(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
                             sortButtonState =
-                                SortButton.State(
-                                    text = R.string.genre_name,
-                                    sortOrder = sortOrder,
-                                ),
+                                SortButton.State(text = R.string.genre_name, sortOrder = sortOrder),
                         )
                     )
                 }

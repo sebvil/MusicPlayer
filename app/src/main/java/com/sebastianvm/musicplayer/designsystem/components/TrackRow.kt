@@ -4,9 +4,21 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.sebastianvm.musicplayer.database.entities.BasicTrack
+import com.sebastianvm.musicplayer.database.entities.Track
 
 object TrackRow {
-    data class State(val id: Long, val trackName: String, val artists: String?)
+    data class State(val id: Long, val trackName: String, val artists: String?) {
+        companion object {
+            fun fromTrack(track: Track): State {
+                return State(id = track.id, trackName = track.trackName, artists = track.artists)
+            }
+
+            fun fromTrack(track: BasicTrack): State {
+                return State(id = track.id, trackName = track.trackName, artists = track.artists)
+            }
+        }
+    }
 }
 
 @Composable
