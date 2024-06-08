@@ -1,11 +1,9 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -63,13 +61,7 @@ class TrackSearchStateHolder(
                 val results =
                     tracks
                         .filter { !hideTracksInPlaylist || (it.id !in playlistTrackIds) }
-                        .map {
-                            it.toModelListItemState(
-                                trailingButtonType =
-                                    if (it.id in playlistTrackIds) TrailingButtonType.Check
-                                    else TrailingButtonType.Plus
-                            )
-                        }
+                        .map { TrackRow.State.fromTrack(it) }
                 if (results.isEmpty()) {
                     Empty
                 } else {
@@ -143,7 +135,7 @@ class TrackSearchStateHolder(
 data class TrackSearchArguments(val playlistId: Long) : Arguments
 
 data class TrackSearchState(
-    val trackSearchResults: List<ModelListItemState>,
+    val trackSearchResults: List<TrackRow.State>,
     val addTrackConfirmationDialogState: AddTrackConfirmationDialogState? = null,
     val hideTracksInPlaylist: Boolean = true,
     val showToast: Boolean = false,

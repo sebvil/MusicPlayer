@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -10,9 +13,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -34,7 +34,8 @@ sealed interface PlaylistListState : State {
     val isPlaylistCreationErrorDialogOpen: Boolean
 
     data class Data(
-        val modelListState: ModelListState,
+        val playlists: List<PlaylistRow.State>,
+        val sortButtonState: SortButton.State,
         override val isCreatePlaylistDialogOpen: Boolean,
         override val isPlaylistCreationErrorDialogOpen: Boolean,
     ) : PlaylistListState
@@ -75,13 +76,16 @@ class PlaylistListStateHolder(
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
     private val isCreatePlaylistDialogOpen = MutableStateFlow(false)
+    private val sortOrder = sortPreferencesRepository.getPlaylistsListSortOrder()
 
     override val state: StateFlow<PlaylistListState> =
         combine(
                 playlistRepository.getPlaylists(),
                 isPlayListCreationErrorDialogOpen,
                 isCreatePlaylistDialogOpen,
-            ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen ->
+                sortOrder,
+            ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, sortOrder
+                ->
                 if (playlists.isEmpty()) {
                     PlaylistListState.Empty(
                         isCreatePlaylistDialogOpen,
@@ -89,13 +93,10 @@ class PlaylistListStateHolder(
                     )
                 } else {
                     PlaylistListState.Data(
-                        modelListState =
-                            ModelListState(
-                                items =
-                                    playlists.map { playlist -> playlist.toModelListItemState() },
-                                sortButtonState = null,
-                                headerState = HeaderState.None,
-                            ),
+                        playlists =
+                            playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
+                        sortButtonState =
+                            SortButton.State(text = R.string.playlist_name, sortOrder = sortOrder),
                         isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
                         isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
                     )

@@ -13,16 +13,16 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.ListItem
+import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -52,12 +52,7 @@ fun SortMenu(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
-            headlineContent = {
-                Text(
-                    text = stringResource(id = R.string.sort_by),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            },
+            headlineContent = { Text(text = stringResource(id = R.string.sort_by)) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())

@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.list
 
-import androidx.compose.runtime.Stable
+import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -14,10 +15,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -32,7 +29,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-@Stable data class AlbumListState(val modelListState: ModelListState) : State
+data class AlbumListState(
+    val albums: List<AlbumRow.State> = listOf(),
+    val sortButtonState: SortButton.State,
+) : State
 
 sealed interface AlbumListUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : AlbumListUserAction
@@ -59,16 +59,12 @@ class AlbumListStateHolder(
                 } else {
                     Data(
                         AlbumListState(
-                            modelListState =
-                                ModelListState(
-                                    items = albums.map { album -> album.toModelListItemState() },
-                                    headerState = HeaderState.None,
-                                    sortButtonState =
-                                        SortButtonState(
-                                            text = sortPrefs.sortOption.stringId,
-                                            sortOrder = sortPrefs.sortOrder,
-                                        ),
-                                )
+                            albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
+                            sortButtonState =
+                                SortButton.State(
+                                    text = sortPrefs.sortOption.stringId,
+                                    sortOrder = sortPrefs.sortOrder,
+                                ),
                         )
                     )
                 }

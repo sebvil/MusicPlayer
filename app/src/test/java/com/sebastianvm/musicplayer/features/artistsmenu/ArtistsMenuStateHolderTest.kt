@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.features.artistsmenu
 
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -10,8 +11,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.FixtureProvider
@@ -62,15 +61,8 @@ class ArtistsMenuStateHolderTest :
                         awaitItem() shouldBe Loading
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
-                                modelListState =
-                                    ModelListState(
-                                        items =
-                                            artists.map { artist ->
-                                                artist.toModelListItemState(
-                                                    trailingButtonType = null
-                                                )
-                                            }
-                                    )
+                                artists =
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
                             )
                     }
                 }
@@ -92,15 +84,8 @@ class ArtistsMenuStateHolderTest :
                         awaitItem() shouldBe Loading
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
-                                modelListState =
-                                    ModelListState(
-                                        items =
-                                            artists.map { artist ->
-                                                artist.toModelListItemState(
-                                                    trailingButtonType = null
-                                                )
-                                            }
-                                    )
+                                artists =
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
                             )
                     }
                 }

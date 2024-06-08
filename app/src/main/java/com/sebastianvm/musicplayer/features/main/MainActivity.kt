@@ -10,9 +10,11 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.designsystem.components.LocalListItemContainerColor
 import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
 import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
 
@@ -30,12 +32,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             M3AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
+                CompositionLocalProvider(
+                    LocalListItemContainerColor provides MaterialTheme.colorScheme.background
                 ) {
-                    val state by viewModel.currentState
-                    MainApp(state = state, handle = viewModel::handle)
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        val state by viewModel.currentState
+                        MainApp(state = state, handle = viewModel::handle)
+                    }
                 }
             }
         }

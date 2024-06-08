@@ -1,32 +1,21 @@
-package com.sebastianvm.musicplayer.ui.components.lists
+package com.sebastianvm.musicplayer.features.track.list
 
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -53,107 +42,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlin.math.max
 import kotlin.math.min
 
-data class SortButtonState(@StringRes val text: Int, val sortOrder: MediaSortOrder)
+object Header {
+    sealed interface State {
+        data object None : State
 
-sealed interface HeaderState {
-    data object None : HeaderState
+        data class Simple(val title: String) : State
 
-    data class Simple(val title: String) : HeaderState
-
-    data class WithImage(val title: String, val imageState: MediaArtImageState) : HeaderState
-}
-
-data class ModelListState(
-    val items: List<ModelListItemState> = listOf(),
-    val sortButtonState: SortButtonState? = null,
-    val headerState: HeaderState = HeaderState.None,
-)
-
-@Composable
-fun ModelList(
-    state: ModelListState,
-    modifier: Modifier = Modifier,
-    listState: LazyListState = rememberLazyListState(),
-    onBackButtonClicked: () -> Unit = {},
-    onSortButtonClicked: (() -> Unit)? = null,
-    onItemClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
-    onItemMoreIconClicked: (Int, ModelListItemState) -> Unit = { _, _ -> },
-) {
-    val content: @Composable (Modifier, PaddingValues) -> Unit =
-        { contentModifier, contentPadding ->
-            LazyColumn(
-                state = listState,
-                modifier = contentModifier,
-                contentPadding = contentPadding,
-            ) {
-                state.sortButtonState?.let {
-                    item {
-                        TextButton(
-                            onClick = { onSortButtonClicked?.invoke() },
-                            modifier = Modifier.padding(start = 16.dp),
-                        ) {
-                            Text(text = "${stringResource(id = R.string.sort_by)}:")
-                            Icon(
-                                imageVector =
-                                    if (it.sortOrder == MediaSortOrder.ASCENDING)
-                                        Icons.Default.ArrowUpward
-                                    else Icons.Default.ArrowDownward,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                            )
-                            Text(text = stringResource(id = it.text))
-                        }
-                    }
-                }
-                itemsIndexed(state.items, key = { _, item -> item.id }) { index, item ->
-                    ModelListItem(
-                        state = item,
-                        modifier = Modifier.animateItem().clickable { onItemClicked(index, item) },
-                        trailingContent = {
-                            IconButton(onClick = { onItemMoreIconClicked(index, item) }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more),
-                                )
-                            }
-                        },
-                    )
-                }
-            }
-        }
-    when (val headerState = state.headerState) {
-        is HeaderState.None -> {
-            content(modifier, LocalPaddingValues.current)
-        }
-        is HeaderState.Simple -> {
-            Column(modifier) {
-                TopBar(title = headerState.title, onBackButtonClicked = onBackButtonClicked)
-                content(Modifier, LocalPaddingValues.current)
-            }
-        }
-        is HeaderState.WithImage -> {
-            HeaderWithImageModelList(
-                state = headerState,
-                listState = listState,
-                modifier = modifier,
-                onBackButtonClicked = onBackButtonClicked,
-            ) {
-                content(Modifier, it)
-            }
-        }
+        data class WithImage(val title: String, val imageState: MediaArtImageState) : State
     }
 }
 
+// TODO refactor to use AnimatedContent APIs
 @Composable
-private fun HeaderWithImageModelList(
-    state: HeaderState.WithImage,
+fun HeaderWithImageModelList(
+    state: Header.State.WithImage,
     listState: LazyListState,
     onBackButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,

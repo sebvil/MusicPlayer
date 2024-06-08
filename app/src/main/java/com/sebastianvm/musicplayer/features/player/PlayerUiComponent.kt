@@ -50,12 +50,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -75,6 +73,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.ListItem
+import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
@@ -409,10 +409,7 @@ private fun FullScreenPlayer(
                                 animatedVisibilityScope = animatedVisibilityScope,
                             ),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Medium,
                         fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
                     )
                 },
                 supportingContent = {
@@ -423,10 +420,7 @@ private fun FullScreenPlayer(
                                 rememberSharedContentState(key = SharedContentStateKey.Artist),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             ),
-                        style = MaterialTheme.typography.bodyMedium,
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
                     )
                 },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),

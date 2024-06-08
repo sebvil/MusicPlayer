@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.GenreRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -11,9 +13,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -58,8 +57,7 @@ class GenreListStateHolderTest :
                 genreRepositoryDep.genres.value = genres
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
-                    state.modelListState.items shouldBe genres.map { it.toModelListItemState() }
-                    state.modelListState.headerState shouldBe HeaderState.None
+                    state.genres shouldBe genres.map { GenreRow.State.fromGenre(it) }
                 }
             }
         }
@@ -72,8 +70,8 @@ class GenreListStateHolderTest :
                 awaitItem() shouldBe Loading
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
-                    state.modelListState.sortButtonState shouldBe
-                        SortButtonState(
+                    state.sortButtonState shouldBe
+                        SortButton.State(
                             text = R.string.genre_name,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
@@ -82,8 +80,8 @@ class GenreListStateHolderTest :
                 sortPreferencesRepositoryDep.genreListSortOrder.value = MediaSortOrder.DESCENDING
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
-                    state.modelListState.sortButtonState shouldBe
-                        SortButtonState(
+                    state.sortButtonState shouldBe
+                        SortButton.State(
                             text = R.string.genre_name,
                             sortOrder = MediaSortOrder.DESCENDING,
                         )

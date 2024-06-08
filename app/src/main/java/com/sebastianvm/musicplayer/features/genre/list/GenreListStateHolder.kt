@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.GenreRow
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
@@ -11,9 +13,6 @@ import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -29,7 +28,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class GenreListState(val modelListState: ModelListState) : State
+data class GenreListState(val genres: List<GenreRow.State>, val sortButtonState: SortButton.State) :
+    State
 
 sealed interface GenreListUserAction : UserAction {
     data object SortByButtonClicked : GenreListUserAction
@@ -55,15 +55,9 @@ class GenreListStateHolder(
                 } else {
                     Data(
                         GenreListState(
-                            modelListState =
-                                ModelListState(
-                                    items = genres.map { genre -> genre.toModelListItemState() },
-                                    sortButtonState =
-                                        SortButtonState(
-                                            text = R.string.genre_name,
-                                            sortOrder = sortOrder,
-                                        ),
-                                )
+                            genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
+                            sortButtonState =
+                                SortButton.State(text = R.string.genre_name, sortOrder = sortOrder),
                         )
                     )
                 }

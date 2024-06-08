@@ -789,7 +789,9 @@ style:
 Compose:
   CompositionLocalAllowlist:
     active: true
-    allowedCompositionLocals: "LocalPaddingValues"
+    allowedCompositionLocals:
+      - "LocalPaddingValues"
+      - "LocalListItemContainerColor"
   ContentEmitterReturningValues:
     active: true
   DefaultsVisibility:

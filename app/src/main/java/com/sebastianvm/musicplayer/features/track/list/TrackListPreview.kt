@@ -9,14 +9,13 @@ package com.sebastianvm.musicplayer.features.track.list // package
 // import com.sebastianvm.musicplayer.player.MediaGroup
 // import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 // import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
-// import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-// import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
-// import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
+// import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
+// // import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
 // import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
 // import kotlin.random.Random
 //
 // class TrackListStatePreviewParamProvider : PreviewParameterProvider<TrackListState> {
-//    private val trackList: List<ModelListItemState>
+//    private val trackList: List<ModelListItem.State>
 //        get() = (1..10).map {
 //            Track(
 //                id = it.toLong(),

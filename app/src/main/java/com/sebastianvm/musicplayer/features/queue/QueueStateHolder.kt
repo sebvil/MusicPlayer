@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.features.queue
 
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -15,11 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-data class QueueItem(
-    val modelListItemState: ModelListItemState,
-    val position: Int,
-    val queueItemId: Long,
-)
+data class QueueItem(val trackRow: TrackRow.State, val position: Int, val queueItemId: Long)
 
 sealed interface QueueState : State {
     data class Data(val nowPlayingItem: QueueItem, val queueItems: List<QueueItem>) : QueueState
@@ -47,22 +43,8 @@ class QueueStateHolder(
             .map { queue ->
                 queue ?: return@map QueueState.Empty
                 QueueState.Data(
-                    queueItems =
-                        queue.nextUp.map { track ->
-                            QueueItem(
-                                modelListItemState = track.toModelListItemState(),
-                                position = track.queuePosition,
-                                queueItemId = track.queueItemId,
-                            )
-                        },
-                    nowPlayingItem =
-                        queue.nowPlayingTrack.let { track ->
-                            QueueItem(
-                                modelListItemState = track.toModelListItemState(),
-                                position = track.queuePosition,
-                                queueItemId = track.queueItemId,
-                            )
-                        },
+                    queueItems = queue.nextUp.map { track -> track.toQueueItem() },
+                    nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
                 )
             }
             .stateIn(
@@ -87,5 +69,14 @@ fun getQueueStateHolder(dependencies: AppDependencies): QueueStateHolder {
     return QueueStateHolder(
         queueRepository = dependencies.repositoryProvider.queueRepository,
         playbackManager = dependencies.repositoryProvider.playbackManager,
+    )
+}
+
+private fun QueuedTrack.toQueueItem(): QueueItem {
+    return QueueItem(
+        trackRow =
+            TrackRow.State(id = id, trackName = trackName, artists = artists.ifEmpty { null }),
+        position = queuePosition,
+        queueItemId = queueItemId,
     )
 }

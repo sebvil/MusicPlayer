@@ -65,5 +65,6 @@
     <string name="drag">Drag</string>
     <string name="added_to_queue">Added to queue</string>
     <string name="dismiss">Dismiss</string>
+    <string name="playlist_name">Playlist name</string>
 
 </resources>

@@ -1,6 +1,11 @@
 package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
+import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
+import com.sebastianvm.musicplayer.designsystem.components.GenreRow
+import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -22,9 +27,6 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItemState
-import com.sebastianvm.musicplayer.ui.components.lists.TrailingButtonType
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -45,10 +47,33 @@ import kotlinx.coroutines.launch
 
 data class SearchQuery(val term: String, val mode: SearchMode)
 
-data class SearchState(
-    val selectedOption: SearchMode,
-    val searchResults: List<ModelListItemState>,
-) : State
+sealed interface SearchResult<T> {
+    val state: T
+    val id: Long
+
+    data class Track(override val state: TrackRow.State) : SearchResult<TrackRow.State> {
+        override val id: Long = state.id
+    }
+
+    data class Artist(override val state: ArtistRow.State) : SearchResult<ArtistRow.State> {
+        override val id: Long = state.id
+    }
+
+    data class Album(override val state: AlbumRow.State) : SearchResult<AlbumRow.State> {
+        override val id: Long = state.id
+    }
+
+    data class Genre(override val state: GenreRow.State) : SearchResult<GenreRow.State> {
+        override val id: Long = state.id
+    }
+
+    data class Playlist(override val state: PlaylistRow.State) : SearchResult<PlaylistRow.State> {
+        override val id: Long = state.id
+    }
+}
+
+data class SearchState(val selectedOption: SearchMode, val searchResults: List<SearchResult<*>>) :
+    State
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
@@ -76,27 +101,23 @@ class SearchStateHolder(
             when (newQuery.mode) {
                 SearchMode.SONGS ->
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
-                        tracks.map {
-                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        }
+                        tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
                 SearchMode.ARTISTS ->
                     ftsRepository.searchArtists(newQuery.term).map { artists ->
-                        artists.map {
-                            it.toModelListItemState(trailingButtonType = TrailingButtonType.More)
-                        }
+                        artists.map { SearchResult.Artist(ArtistRow.State.fromArtist(it)) }
                     }
                 SearchMode.ALBUMS ->
                     ftsRepository.searchAlbums(newQuery.term).map { albums ->
-                        albums.map { it.toModelListItemState() }
+                        albums.map { SearchResult.Album(AlbumRow.State.fromAlbum(it)) }
                     }
                 SearchMode.GENRES ->
                     ftsRepository.searchGenres(newQuery.term).map { genres ->
-                        genres.map { it.toModelListItemState() }
+                        genres.map { SearchResult.Genre(GenreRow.State.fromGenre(it)) }
                     }
                 SearchMode.PLAYLISTS ->
                     ftsRepository.searchPlaylists(newQuery.term).map { playlists ->
-                        playlists.map { it.toModelListItemState() }
+                        playlists.map { SearchResult.Playlist(PlaylistRow.State.fromPlaylist(it)) }
                     }
             }
         }

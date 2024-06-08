@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +23,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.ListItem
+import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
@@ -122,17 +122,17 @@ fun TrackSearchLayout(
 
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.trackSearchResults) { item ->
-                ModelListItem(
+                TrackRow(
                     state = item,
                     modifier =
                         Modifier.clickable {
                             handle(
                                 TrackSearchUserAction.TrackClicked(
                                     trackId = item.id,
-                                    trackName = item.headlineContent,
+                                    trackName = item.trackName,
                                 )
                             )
-                            trackName = item.headlineContent
+                            trackName = item.trackName
                         },
                 )
             }

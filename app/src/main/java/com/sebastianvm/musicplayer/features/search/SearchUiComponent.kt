@@ -26,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +41,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
 import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
+import com.sebastianvm.musicplayer.designsystem.components.GenreRow
+import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
+import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
+import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -51,7 +57,6 @@ import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.collections.immutable.toImmutableList
@@ -214,35 +219,95 @@ fun SearchLayout(
         )
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
-                ModelListItem(
-                    state = item,
-                    modifier =
-                        Modifier.clickable {
-                            handle(
-                                SearchUserAction.SearchResultClicked(
-                                    id = item.id,
-                                    mediaType = state.selectedOption,
-                                )
+                val itemModifier =
+                    Modifier.clickable {
+                        handle(
+                            SearchUserAction.SearchResultClicked(
+                                id = item.id,
+                                mediaType = state.selectedOption,
                             )
-                        },
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
+                        )
+                    }
+                when (item) {
+                    is SearchResult.Album -> {
+                        AlbumRow(
+                            state = item.state,
+                            modifier = itemModifier,
+                            onMoreIconClicked = {
                                 handle(
                                     SearchUserAction.SearchResultOverflowMenuIconClicked(
                                         id = item.id,
                                         mediaType = state.selectedOption,
                                     )
                                 )
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = R.string.more),
-                            )
-                        }
-                    },
-                )
+                            },
+                        )
+                    }
+                    is SearchResult.Artist -> {
+                        ArtistRow(
+                            state = item.state,
+                            modifier = itemModifier,
+                            trailingContent = {
+                                OverflowIconButton(
+                                    onClick = {
+                                        handle(
+                                            SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                                id = item.id,
+                                                mediaType = state.selectedOption,
+                                            )
+                                        )
+                                    }
+                                )
+                            },
+                        )
+                    }
+                    is SearchResult.Genre -> {
+                        GenreRow(
+                            state = item.state,
+                            modifier = itemModifier,
+                            onMoreIconClicked = {
+                                handle(
+                                    SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                        id = item.id,
+                                        mediaType = state.selectedOption,
+                                    )
+                                )
+                            },
+                        )
+                    }
+                    is SearchResult.Playlist -> {
+                        PlaylistRow(
+                            state = item.state,
+                            modifier = itemModifier,
+                            onMoreIconClicked = {
+                                handle(
+                                    SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                        id = item.id,
+                                        mediaType = state.selectedOption,
+                                    )
+                                )
+                            },
+                        )
+                    }
+                    is SearchResult.Track -> {
+                        TrackRow(
+                            state = item.state,
+                            modifier = itemModifier,
+                            trailingContent = {
+                                OverflowIconButton(
+                                    onClick = {
+                                        handle(
+                                            SearchUserAction.SearchResultOverflowMenuIconClicked(
+                                                id = item.id,
+                                                mediaType = state.selectedOption,
+                                            )
+                                        )
+                                    }
+                                )
+                            },
+                        )
+                    }
+                }
             }
         }
     }

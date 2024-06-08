@@ -1,7 +1,8 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
@@ -14,10 +15,6 @@ import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
-import com.sebastianvm.musicplayer.ui.components.lists.HeaderState
-import com.sebastianvm.musicplayer.ui.components.lists.ModelListState
-import com.sebastianvm.musicplayer.ui.components.lists.SortButtonState
-import com.sebastianvm.musicplayer.ui.components.lists.toModelListItemState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
@@ -37,7 +34,12 @@ import kotlinx.coroutines.launch
 
 data class TrackListArguments(val trackListType: TrackList) : Arguments
 
-data class TrackListState(val modelListState: ModelListState, val trackListType: TrackList) : State
+data class TrackListState(
+    val tracks: List<TrackRow.State>,
+    val sortButtonState: SortButton.State?,
+    val headerState: Header.State,
+    val trackListType: TrackList,
+) : State
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackMoreIconClicked(val trackId: Long, val trackPositionInList: Int) :
@@ -75,21 +77,18 @@ class TrackListStateHolder(
                 } else {
                     Data(
                         TrackListState(
-                            modelListState =
-                                ModelListState(
-                                    items =
-                                        trackListWithMetadata.trackList.map { track ->
-                                            track.toModelListItemState()
-                                        },
-                                    headerState = trackListWithMetadata.metaData.toHeaderState(),
-                                    sortButtonState =
-                                        sortPrefs?.let {
-                                            SortButtonState(
-                                                text = sortPrefs.sortOption.stringId,
-                                                sortOrder = sortPrefs.sortOrder,
-                                            )
-                                        },
-                                ),
+                            tracks =
+                                trackListWithMetadata.trackList.map { track ->
+                                    TrackRow.State.fromTrack(track)
+                                },
+                            headerState = trackListWithMetadata.metaData.toHeaderState(),
+                            sortButtonState =
+                                sortPrefs?.let {
+                                    SortButton.State(
+                                        text = sortPrefs.sortOption.stringId,
+                                        sortOrder = sortPrefs.sortOrder,
+                                    )
+                                },
                             trackListType = args.trackListType,
                         )
                     )
@@ -141,26 +140,12 @@ class TrackListStateHolder(
     }
 }
 
-fun TrackListMetadata?.toHeaderState(): HeaderState {
+fun TrackListMetadata?.toHeaderState(): Header.State {
     return when {
-        this == null -> HeaderState.None
+        this == null -> Header.State.None
         mediaArtImageState != null -> {
-            HeaderState.WithImage(title = trackListName, imageState = mediaArtImageState)
+            Header.State.WithImage(title = trackListName, imageState = mediaArtImageState)
         }
-        else -> HeaderState.Simple(title = trackListName)
+        else -> Header.State.Simple(title = trackListName)
     }
-}
-
-fun getTrackListStateHolder(
-    dependencies: AppDependencies,
-    args: TrackListArguments,
-    navController: NavController,
-): TrackListStateHolder {
-    return TrackListStateHolder(
-        args = args,
-        navController = navController,
-        trackRepository = dependencies.repositoryProvider.trackRepository,
-        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
-    )
 }
