@@ -53,8 +53,8 @@ class AppNavigationHostStateHolderTest :
                                                 navOptions =
                                                     NavOptions(
                                                         popCurrent = false,
-                                                        presentationMode = presentationMode
-                                                    )
+                                                        presentationMode = presentationMode,
+                                                    ),
                                             )
                                         )
                                         val state = awaitItem()
@@ -81,8 +81,8 @@ class AppNavigationHostStateHolderTest :
                                                 navOptions =
                                                     NavOptions(
                                                         popCurrent = true,
-                                                        presentationMode = presentationMode
-                                                    )
+                                                        presentationMode = presentationMode,
+                                                    ),
                                             )
                                         )
                                         val state = awaitItem()
