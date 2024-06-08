@@ -1,3 +1,5 @@
+@file:Suppress("InjectDispatcher")
+
 package com.sebastianvm.musicplayer.player
 
 import android.util.Log
@@ -67,7 +69,7 @@ class MediaPlaybackService : MediaLibraryService() {
                 .build()
         player =
             ExoPlayer.Builder(this)
-                .setAudioAttributes(audioAttributes, /* handleAudioFocus = */ true)
+                .setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true)
                 .build()
 
         CoroutineScope(mainDispatcher).launch { initializeQueue() }
