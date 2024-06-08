@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.org.jetbrains.kotlin.parcelize)
     alias(libs.plugins.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
@@ -25,7 +24,6 @@ android {
     }
 
     buildTypes {
-
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -45,24 +43,17 @@ android {
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
-    buildFeatures {
-        compose = true
-        viewBinding = true
-    }
+    buildFeatures { compose = true }
 
     @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all {
-                it.useJUnitPlatform()
-            }
+            all { it.useJUnitPlatform() }
         }
     }
 
-    ksp {
-        arg("room.generateKotlin", "true")
-    }
+    ksp { arg("room.generateKotlin", "true") }
 }
 
 dependencies {
@@ -82,7 +73,6 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
 
     // DataStore
-    implementation(libs.datastore.preferences)
     implementation(libs.datastore)
 
     // Coil
@@ -143,7 +133,6 @@ ktfmt {
 
     manageTrailingCommas.set(true)
 }
-
 
 kover {
     reports {
