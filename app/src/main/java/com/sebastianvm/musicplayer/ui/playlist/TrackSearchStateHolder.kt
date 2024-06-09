@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.playlist
 
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -115,14 +114,11 @@ class TrackSearchStateHolder(
     private fun addTrackToPlaylist(trackId: Long) {
         // TODO use mutex to prevent race condition
         stateHolderScope.launch {
-            val playlistSize = playlistRepository.getPlaylistSize(arguments.playlistId).first()
             playlistRepository.addTrackToPlaylist(
-                PlaylistTrackCrossRef(
-                    playlistId = arguments.playlistId,
-                    trackId = trackId,
-                    position = playlistSize,
-                )
+                playlistId = arguments.playlistId,
+                trackId = trackId,
             )
+
             showToast.update { true }
         }
     }

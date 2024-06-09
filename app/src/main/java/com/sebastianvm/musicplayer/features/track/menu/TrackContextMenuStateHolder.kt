@@ -85,19 +85,19 @@ class TrackContextMenuStateHolder(
             .getTrack(trackId)
             .map { track ->
                 TrackContextMenuState.Data(
-                    trackName = track.track.trackName,
+                    trackName = track.name,
                     trackId = trackId,
                     viewArtistsState =
                         when (track.artists.size) {
                             0 -> ViewArtistRow.NoArtists
-                            1 -> ViewArtistRow.SingleArtist(track.artists[0])
+                            1 -> ViewArtistRow.SingleArtist(track.artists[0].id)
                             else -> ViewArtistRow.MultipleArtists
                         },
                     viewAlbumState =
                         if (arguments.trackList is MediaGroup.Album) {
                             null
                         } else {
-                            ViewAlbumRow(track.track.albumId)
+                            ViewAlbumRow(track.albumId)
                         },
                     removeFromPlaylistRow =
                         (arguments.trackList as? MediaGroup.Playlist)?.let {

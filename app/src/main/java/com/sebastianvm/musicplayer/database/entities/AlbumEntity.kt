@@ -4,12 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Album(
+data class AlbumEntity(
     @PrimaryKey val id: Long,
-    val albumName: String,
+    val title: String,
     val year: Long,
     val artists: String,
     val imageUri: String,
 )
-
-data class BasicAlbum(val id: Long, val albumName: String, val imageUri: String)

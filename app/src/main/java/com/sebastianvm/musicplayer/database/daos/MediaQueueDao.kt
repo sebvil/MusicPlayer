@@ -4,27 +4,25 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
-import com.sebastianvm.musicplayer.database.entities.QueuedTrack
+import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
+import com.sebastianvm.musicplayer.database.entities.QueueItemWithTrack
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MediaQueueDao {
     @Transaction
     @Query(
-        "SELECT Track.*, MediaQueueItem.queuePosition, MediaQueueItem.queueItemId FROM Track " +
-            "INNER JOIN MediaQueueItem " +
-            "ON Track.id=MediaQueueItem.trackId " +
-            "ORDER BY MediaQueueItem.queuePosition ASC"
+        "SELECT QueueItemEntity.*, QueueItemEntity.queueItemId FROM QueueItemEntity " +
+            "ORDER BY QueueItemEntity.queuePosition ASC"
     )
-    fun getQueuedTracks(): Flow<List<QueuedTrack>>
+    fun getQueuedTracks(): Flow<List<QueueItemWithTrack>>
 
-    @Insert fun insertQueue(mediaQueueItems: List<MediaQueueItem>)
+    @Insert fun insertQueue(mediaQueueItems: List<QueueItemEntity>)
 
-    @Query("DELETE FROM MediaQueueItem") fun clearQueue()
+    @Query("DELETE FROM QueueItemEntity") fun clearQueue()
 
     @Transaction
-    fun saveQueue(mediaQueueItems: List<MediaQueueItem>) {
+    fun saveQueue(mediaQueueItems: List<QueueItemEntity>) {
         clearQueue()
         insertQueue(mediaQueueItems)
     }

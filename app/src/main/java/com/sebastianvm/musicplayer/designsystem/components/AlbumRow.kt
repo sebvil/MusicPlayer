@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
+import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
@@ -21,8 +21,8 @@ object AlbumRow {
             fun fromAlbum(album: Album): State {
                 return State(
                     id = album.id,
-                    albumName = album.albumName,
-                    artists = album.artists,
+                    albumName = album.title,
+                    artists = album.artists.joinToString { it.name },
                     mediaArtImageState =
                         MediaArtImageState(imageUri = album.imageUri, backupImage = Icons.Album),
                 )

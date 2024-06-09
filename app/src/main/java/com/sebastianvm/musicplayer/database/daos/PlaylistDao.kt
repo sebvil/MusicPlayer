@@ -8,10 +8,9 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRefKeys
-import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -28,33 +27,19 @@ abstract class PlaylistDao {
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-    @Query("SELECT COUNT(*) FROM Playlist") abstract fun getPlaylistsCount(): Flow<Int>
-
-    @Transaction
-    @Query("SELECT * FROM Playlist")
-    abstract fun getPlaylistsWithTracks(): Flow<List<PlaylistWithTracks>>
-
-    @Transaction
-    @Query("SELECT * FROM Playlist WHERE Playlist.playlistName=:playlistName")
-    abstract fun getPlaylistWithTracks(playlistName: String): Flow<PlaylistWithTracks>
-
     @Query(
-        "SELECT * FROM Playlist ORDER BY " +
+        "SELECT * FROM PlaylistEntity ORDER BY " +
             "CASE WHEN :sortOrder='ASCENDING' THEN playlistName END COLLATE LOCALIZED ASC, " +
             "CASE WHEN :sortOrder='DESCENDING' THEN playlistName END COLLATE LOCALIZED DESC"
     )
-    abstract fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<Playlist>>
+    abstract fun getPlaylists(sortOrder: MediaSortOrder): Flow<List<PlaylistEntity>>
 
-    @Query("SELECT playlistName FROM Playlist WHERE Playlist.id=:playlistId")
+    @Query("SELECT playlistName FROM PlaylistEntity WHERE PlaylistEntity.id=:playlistId")
     abstract fun getPlaylistName(playlistId: Long): Flow<String>
 
-    @Transaction
-    @Query("SELECT * FROM Playlist WHERE Playlist.id=:playlistId")
-    abstract fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks?>
+    @Insert abstract suspend fun createPlaylist(playlist: PlaylistEntity): Long
 
-    @Insert abstract suspend fun createPlaylist(playlist: Playlist): Long
-
-    @Delete abstract suspend fun deletePlaylist(playlist: Playlist)
+    @Delete abstract suspend fun deletePlaylist(playlist: PlaylistEntity)
 
     @Insert abstract suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef)
 

@@ -61,7 +61,7 @@ class AlbumListStateHolderTest :
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
                 awaitItem() shouldBe Empty
-                val albums = FixtureProvider.albumFixtures().toList()
+                val albums = FixtureProvider.albums()
                 albumRepositoryDep.albums.value = albums
                 val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
                 item.state.albums shouldBe albums.map { AlbumRow.State.fromAlbum(it) }
@@ -77,7 +77,7 @@ class AlbumListStateHolderTest :
                             sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
-                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures().toList()
+                    albumRepositoryDep.albums.value = FixtureProvider.albums().toList()
                     sortPreferencesRepositoryDep.albumListSortPreferences.value = initialPrefs
 
                     testStateHolderState(subject) {

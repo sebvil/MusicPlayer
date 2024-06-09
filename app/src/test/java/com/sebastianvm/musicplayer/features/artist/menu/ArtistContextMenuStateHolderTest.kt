@@ -31,21 +31,19 @@ class ArtistContextMenuStateHolderTest :
         }
 
         "init sets state" {
-            artistRepositoryDep.artists.value = FixtureProvider.artistFixtures()
-            val artist = FixtureProvider.artistFixtures().first()
+            val artists = FixtureProvider.artists()
+            artistRepositoryDep.artists.value = artists
+            val artist = artists.first()
             val subject = getSubject(artist.id)
             testStateHolderState(subject) {
                 awaitItem() shouldBe ArtistContextMenuState.Loading
                 awaitItemAs<ArtistContextMenuState.Data>() shouldBe
-                    ArtistContextMenuState.Data(
-                        artistName = artist.artistName,
-                        artistId = artist.id,
-                    )
+                    ArtistContextMenuState.Data(artistName = artist.name, artistId = artist.id)
             }
         }
 
         "handle PlayArtistClicked plays artist" {
-            val artist = FixtureProvider.artistFixtures().first()
+            val artist = FixtureProvider.artists().first()
             val subject = getSubject(artist.id)
             subject.handle(ArtistContextMenuUserAction.PlayArtistClicked)
             advanceUntilIdle()

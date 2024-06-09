@@ -7,9 +7,9 @@ import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
 import com.sebastianvm.musicplayer.ArtworkProvider
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Artist
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.BasicArtist
+import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -65,7 +65,7 @@ class MediaTree(
 
     private fun Track.buildMediaItem(parent: MediaKey, index: Long): MediaItem {
         return buildMediaItem(
-            title = trackName,
+            title = name,
             mediaId =
                 MediaKey.fromParent(
                     parent = parent,
@@ -75,9 +75,9 @@ class MediaTree(
             isPlayable = true,
             mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
             isBrowsable = false,
-            album = albumName,
-            subtitle = artists,
-            artist = artists,
+            album = "",
+            subtitle = artists.joinToString { it.name },
+            artist = artists.joinToString { it.name },
             genre = "",
             sourceUri = UriUtils.getTrackUri(trackId = id),
             artworkUri = ArtworkProvider.getUriForTrack(albumId),
@@ -86,24 +86,24 @@ class MediaTree(
 
     private fun Album.buildMediaItem(parent: MediaKey): MediaItem {
         return buildMediaItem(
-            title = albumName,
+            title = title,
             mediaId =
                 MediaKey.fromParent(parent = parent, keyType = KeyType.ALBUM, itemIndexOrId = id),
             isPlayable = false,
             mediaType = MediaMetadata.MEDIA_TYPE_ALBUM,
             isBrowsable = true,
-            subtitle = artists,
-            album = albumName,
-            artist = artists,
+            subtitle = artists.joinToString { it.name },
+            album = title,
+            artist = artists.joinToString { it.name },
             genre = null,
             sourceUri = UriUtils.getAlbumUri(albumId = id),
             artworkUri = ArtworkProvider.getUriForAlbum(id),
         )
     }
 
-    private fun Artist.buildMediaItem(parent: MediaKey): MediaItem {
+    private fun BasicArtist.buildMediaItem(parent: MediaKey): MediaItem {
         return buildMediaItem(
-            title = artistName,
+            title = name,
             mediaId =
                 MediaKey.fromParent(parent = parent, keyType = KeyType.ARTIST, itemIndexOrId = id),
             isPlayable = false,
@@ -111,7 +111,7 @@ class MediaTree(
             isBrowsable = true,
             subtitle = null,
             album = null,
-            artist = artistName,
+            artist = name,
             genre = null,
             sourceUri = null,
         )
@@ -200,7 +200,7 @@ class MediaTree(
                 KeyType.ARTIST -> {
                     artistRepository
                         .getArtist(parentKey.itemIndexOrId)
-                        .map { it.artistAlbums }
+                        .map { it.albums }
                         .first()
                         .map { it.buildMediaItem(parentKey) }
                 }
@@ -219,7 +219,6 @@ class MediaTree(
                     trackRepository
                         .getTrack(mediaKey.itemIndexOrId)
                         .first()
-                        .track
                         .buildMediaItem(parent = rootKey, index = 0)
                 }
                 else -> null

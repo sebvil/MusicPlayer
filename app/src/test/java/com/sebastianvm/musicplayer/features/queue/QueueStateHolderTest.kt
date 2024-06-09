@@ -29,14 +29,14 @@ class QueueStateHolderTest :
             val subject = getSubject()
 
             // Simulate queue not playing
-            queueRepositoryDep.mediaQueueItems.value = emptyList()
+            queueRepositoryDep.queuedTracks.value = emptyList()
             queueRepositoryDep.nowPlayingInfo.value = NowPlayingInfo()
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe QueueState.Loading
                 awaitItem() shouldBe QueueState.Empty
 
-                queueRepositoryDep.mediaQueueItems.value = FixtureProvider.queueItemsFixtures()
+                queueRepositoryDep.queuedTracks.value = FixtureProvider.queueItemsFixtures()
                 queueRepositoryDep.nowPlayingInfo.value =
                     NowPlayingInfo(nowPlayingPositionInQueue = 0, lastRecordedPosition = 0)
 
@@ -67,7 +67,7 @@ class QueueStateHolderTest :
             {
                 "DragEnded moves item" {
                     val subject = getSubject()
-                    val tracks = FixtureProvider.trackFixtures()
+                    val tracks = queueRepositoryDep.queuedTracks.value
 
                     testStateHolderState(subject) {
                         awaitItem() shouldBe QueueState.Loading

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.database.entities
+package com.sebastianvm.musicplayer.model
 
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 

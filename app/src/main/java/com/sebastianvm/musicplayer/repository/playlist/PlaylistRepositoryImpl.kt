@@ -3,20 +3,21 @@ package com.sebastianvm.musicplayer.repository.playlist
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
-import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracks
-import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
+import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.model.BasicPlaylist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,10 +28,11 @@ class PlaylistRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher,
 ) : PlaylistRepository {
 
-    override fun getPlaylists(): Flow<List<Playlist>> {
+    override fun getPlaylists(): Flow<List<BasicPlaylist>> {
         return sortPreferencesRepository
             .getPlaylistsListSortOrder()
             .flatMapLatest { sortOrder -> playlistDao.getPlaylists(sortOrder = sortOrder) }
+            .mapValues { it.asExternalModel() }
             .distinctUntilChanged()
     }
 
@@ -44,7 +46,7 @@ class PlaylistRepositoryImpl(
                 try {
                     withContext(ioDispatcher) {
                         playlistDao.createPlaylist(
-                            Playlist(
+                            PlaylistEntity(
                                 id = playlistName.hashCode().toLong(),
                                 playlistName = playlistName,
                             )
@@ -60,23 +62,21 @@ class PlaylistRepositoryImpl(
 
     override suspend fun deletePlaylist(playlistId: Long) {
         withContext(ioDispatcher) {
-            playlistDao.deletePlaylist(Playlist(id = playlistId, playlistName = ""))
+            playlistDao.deletePlaylist(PlaylistEntity(id = playlistId, playlistName = ""))
         }
     }
 
-    override fun getPlaylistWithTracks(playlistId: Long): Flow<PlaylistWithTracks> {
-        return playlistDao
-            .getPlaylistWithTracks(playlistId = playlistId)
-            .distinctUntilChanged()
-            .mapNotNull { it }
-    }
-
-    override suspend fun addTrackToPlaylist(playlistTrackCrossRef: PlaylistTrackCrossRef) {
-        withContext(ioDispatcher) { playlistDao.addTrackToPlaylist(playlistTrackCrossRef) }
-    }
-
-    override fun getPlaylistSize(playlistId: Long): Flow<Long> {
-        return playlistDao.getPlaylistSize(playlistId = playlistId).distinctUntilChanged()
+    override suspend fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
+        val playlistSize = playlistDao.getPlaylistSize(playlistId = playlistId).first()
+        withContext(ioDispatcher) {
+            playlistDao.addTrackToPlaylist(
+                PlaylistTrackCrossRef(
+                    playlistId = playlistId,
+                    trackId = trackId,
+                    position = playlistSize,
+                )
+            )
+        }
     }
 
     override fun getTrackIdsInPlaylist(playlistId: Long): Flow<Set<Long>> {
@@ -84,19 +84,6 @@ class PlaylistRepositoryImpl(
             .getTrackIdsInPlaylist(playlistId = playlistId)
             .map { it.toSet() }
             .flowOn(defaultDispatcher)
-            .distinctUntilChanged()
-    }
-
-    override fun getTracksInPlaylist(playlistId: Long): Flow<List<TrackWithPlaylistPositionView>> {
-        return sortPreferencesRepository
-            .getPlaylistSortPreferences(playlistId = playlistId)
-            .flatMapLatest { sortPreferences ->
-                playlistDao.getTracksInPlaylist(
-                    playlistId = playlistId,
-                    sortOption = sortPreferences.sortOption,
-                    sortOrder = sortPreferences.sortOrder,
-                )
-            }
             .distinctUntilChanged()
     }
 

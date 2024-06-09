@@ -1,13 +1,14 @@
 package com.sebastianvm.musicplayer.repository.queue
 
 import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
-import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
-import com.sebastianvm.musicplayer.database.entities.QueuedTrack
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
+import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.model.QueuedTrack
+import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
@@ -15,6 +16,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class AppQueueRepository(
@@ -24,11 +26,11 @@ class AppQueueRepository(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val ioDispatcher: CoroutineDispatcher,
 ) : QueueRepository {
+
     override fun getQueue(): Flow<NextUpQueue?> {
-        return combine(
-            nowPlayingInfoDataSource.getNowPlayingInfo(),
-            mediaQueueDao.getQueuedTracks(),
-        ) { nowPlayingInfo, queuedTracks ->
+        return combine(nowPlayingInfoDataSource.getNowPlayingInfo(), getQueuedTracks()) {
+            nowPlayingInfo,
+            queuedTracks ->
             val nowPlayingTrackIndex =
                 nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
                     ?: return@combine null
@@ -44,10 +46,9 @@ class AppQueueRepository(
     }
 
     override fun getFullQueue(): Flow<FullQueue?> {
-        return combine(
-            nowPlayingInfoDataSource.getNowPlayingInfo(),
-            mediaQueueDao.getQueuedTracks(),
-        ) { nowPlayingInfo, queuedTracks ->
+        return combine(nowPlayingInfoDataSource.getNowPlayingInfo(), getQueuedTracks()) {
+            nowPlayingInfo,
+            queuedTracks ->
             nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 } ?: return@combine null
             FullQueue(nowPlayingInfo = nowPlayingInfo, queue = queuedTracks)
         }
@@ -61,7 +62,7 @@ class AppQueueRepository(
         withContext(ioDispatcher) {
             mediaQueueDao.saveQueue(
                 queuedTracksIds.map { item ->
-                    MediaQueueItem(
+                    QueueItemEntity(
                         trackId = item.id,
                         queuePosition = item.queuePosition,
                         queueItemId = item.queueItemId,
@@ -80,11 +81,15 @@ class AppQueueRepository(
     }
 
     override suspend fun addToQueue(trackId: Long) {
-        val track = trackRepository.getTrack(trackId).first().track
+        val track = trackRepository.getTrack(trackId).first()
         addToQueue(listOf(track))
     }
 
     override fun playQueueItem(index: Int) {
         mediaPlaybackClient.playQueueItem(index)
+    }
+
+    private fun getQueuedTracks(): Flow<List<QueuedTrack>> {
+        return mediaQueueDao.getQueuedTracks().map { tracks -> tracks.map { it.asExternalModel() } }
     }
 }

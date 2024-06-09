@@ -6,6 +6,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
+import com.sebastianvm.musicplayer.model.Artist
 
 @Entity(primaryKeys = ["albumId", "artistId"])
 data class AlbumsForArtist(
@@ -38,9 +39,9 @@ data class AppearsOnForArtistByYear(
 )
 
 data class ArtistWithAlbums(
-    @Embedded val artist: Artist,
+    @Embedded val artist: ArtistEntity,
     @Relation(
-        entity = Album::class,
+        entity = AlbumEntity::class,
         parentColumn = "id",
         entityColumn = "id",
         associateBy =
@@ -50,11 +51,11 @@ data class ArtistWithAlbums(
                 entityColumn = "albumId",
             ),
     )
-    val artistAlbums: List<Album>,
+    val artistAlbums: List<AlbumWithArtists>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        entity = Album::class,
+        entity = AlbumEntity::class,
         associateBy =
             Junction(
                 AppearsOnForArtistByYear::class,
@@ -62,5 +63,14 @@ data class ArtistWithAlbums(
                 entityColumn = "albumId",
             ),
     )
-    val artistAppearsOn: List<Album>,
+    val artistAppearsOn: List<AlbumWithArtists>,
 )
+
+fun ArtistWithAlbums.asExternalModel(): Artist {
+    return Artist(
+        id = artist.id,
+        name = artist.name,
+        albums = artistAlbums.map { it.asExternalModel() },
+        appearsOn = artistAppearsOn.map { it.asExternalModel() },
+    )
+}

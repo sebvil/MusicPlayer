@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.queue
 
-import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder

@@ -58,15 +58,15 @@ class AlbumContextMenuStateHolder(
 
     override val state: StateFlow<AlbumContextMenuState> =
         albumRepository
-            .getFullAlbumInfo(albumId)
+            .getAlbum(albumId)
             .map { album ->
                 AlbumContextMenuState.Data(
-                    albumName = album.album.albumName,
+                    albumName = album.title,
                     albumId = albumId,
                     viewArtistsState =
                         when (album.artists.size) {
                             0 -> ViewArtistRow.NoArtists
-                            1 -> ViewArtistRow.SingleArtist(album.artists[0])
+                            1 -> ViewArtistRow.SingleArtist(album.artists[0].id)
                             else -> ViewArtistRow.MultipleArtists
                         },
                 )

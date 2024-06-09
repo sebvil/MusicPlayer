@@ -1,15 +1,15 @@
 package com.sebastianvm.musicplayer.repository.album
 
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.AlbumWithTracks
-import com.sebastianvm.musicplayer.database.entities.BasicAlbum
-import com.sebastianvm.musicplayer.database.entities.FullAlbumInfo
+import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.BasicAlbum
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 class AlbumRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
@@ -25,19 +25,19 @@ class AlbumRepositoryImpl(
                     sortOption = sortPreferences.sortOption,
                     sortOrder = sortPreferences.sortOrder,
                 )
+                .map { albums -> albums.map { it.asExternalModel() } }
                 .distinctUntilChanged()
         }
     }
 
-    override fun getFullAlbumInfo(albumId: Long): Flow<FullAlbumInfo> {
-        return albumDao.getFullAlbumInfo(albumId = albumId).distinctUntilChanged()
+    override fun getAlbum(albumId: Long): Flow<Album> {
+        return albumDao
+            .getFullAlbumInfo(albumId = albumId)
+            .map { it.asExternalModel() }
+            .distinctUntilChanged()
     }
 
-    override fun getAlbum(albumId: Long): Flow<BasicAlbum> {
-        return albumDao.getAlbum(albumId = albumId)
-    }
-
-    override fun getAlbumWithTracks(albumId: Long): Flow<AlbumWithTracks> {
-        return albumDao.getAlbumWithTracks(albumId).distinctUntilChanged()
+    override fun getBasicAlbum(albumId: Long): Flow<BasicAlbum> {
+        return albumDao.getAlbum(albumId = albumId).map { it.asExternalModel() }
     }
 }

@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackState
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.util.extensions.duration
 import com.sebastianvm.musicplayer.util.extensions.orZero
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +55,7 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                             title = controller.mediaMetadata.title?.toString().orEmpty(),
                             artists = controller.mediaMetadata.artist?.toString().orEmpty(),
                             artworkUri = controller.mediaMetadata.artworkUri?.toString().orEmpty(),
-                            trackLength = controller.mediaMetadata.duration.milliseconds,
+                            trackLength = controller.contentDuration.milliseconds,
                         ),
                     isPlaying = controller.isPlaying,
                     currentTrackProgress =

@@ -53,7 +53,7 @@ class GenreListStateHolderTest :
                 awaitItem() shouldBe Loading
                 awaitItem() shouldBe Empty
 
-                val genres = FixtureProvider.genreFixtures().toList()
+                val genres = FixtureProvider.genres()
                 genreRepositoryDep.genres.value = genres
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
@@ -64,7 +64,7 @@ class GenreListStateHolderTest :
 
         "init subscribes to changes in sort order" {
             val subject = getSubject()
-            genreRepositoryDep.genres.value = FixtureProvider.genreFixtures().toList()
+            genreRepositoryDep.genres.value = FixtureProvider.genres()
             sortPreferencesRepositoryDep.genreListSortOrder.value = MediaSortOrder.ASCENDING
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading

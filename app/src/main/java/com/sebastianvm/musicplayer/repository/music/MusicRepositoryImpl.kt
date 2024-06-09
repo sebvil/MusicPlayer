@@ -6,14 +6,14 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import com.sebastianvm.musicplayer.database.MusicDatabase
-import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.AlbumEntity
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.ArtistEntity
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
@@ -27,12 +27,12 @@ class MusicRepositoryImpl(
     private val trackRepository: TrackRepository,
 ) : MusicRepository {
 
-    private val trackSet = mutableSetOf<Track>()
+    private val trackSet = mutableSetOf<TrackEntity>()
     private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
     private val genreTrackCrossRefsSet = mutableSetOf<GenreTrackCrossRef>()
-    private val artistsSet = mutableSetOf<Artist>()
-    private val albumSet = mutableSetOf<Album>()
-    private val genresSet = mutableSetOf<Genre>()
+    private val artistsSet = mutableSetOf<ArtistEntity>()
+    private val albumSet = mutableSetOf<AlbumEntity>()
+    private val genresSet = mutableSetOf<GenreEntity>()
     private val albumForArtistsSet = mutableSetOf<AlbumsForArtist>()
     private val appearsOnForArtistSet = mutableSetOf<AppearsOnForArtist>()
 
@@ -50,7 +50,7 @@ class MusicRepositoryImpl(
         albumId: Long,
     ) {
         val track =
-            Track(
+            TrackEntity(
                 id = id,
                 trackName = title,
                 trackNumber = trackNumber.toString().substring(1).toLongOrNull() ?: 0L,
@@ -72,38 +72,38 @@ class MusicRepositoryImpl(
             }
         val trackArtistList =
             artistTrackCrossRefs.map { artistTrackCrossRef ->
-                Artist(
+                ArtistEntity(
                     id = artistTrackCrossRef.artistId,
-                    artistName = artistTrackCrossRef.artistName,
+                    name = artistTrackCrossRef.artistName,
                 )
             }
         val trackGenres =
             parseTag(genres).map { genreName ->
-                Genre(id = genreName.hashCode().toLong(), genreName = genreName)
+                GenreEntity(id = genreName.hashCode().toLong(), name = genreName)
             }
         val genreTrackCrossRef =
             trackGenres.map { genre -> GenreTrackCrossRef(genreId = genre.id, trackId = id) }
         val albumArtistList =
             parseTag(albumArtists).map { artistName ->
-                Artist(id = artistName.hashCode().toLong(), artistName = artistName)
+                ArtistEntity(id = artistName.hashCode().toLong(), name = artistName)
             }
         val album =
-            Album(
+            AlbumEntity(
                 id = albumId,
-                albumName = albumName,
+                title = albumName,
                 year = year,
-                artists = albumArtistList.joinToString(", ") { it.artistName },
+                artists = albumArtistList.joinToString(", ") { it.name },
                 imageUri = UriUtils.getAlbumUriString(albumId),
             )
         val albumForArtists = mutableListOf<AlbumsForArtist>()
         val appearsOnForArtists = mutableListOf<AppearsOnForArtist>()
         trackArtistList.forEach { artist ->
-            if (artist.artistName in albumArtistList.map { it.artistName }) {
+            if (artist.name in albumArtistList.map { it.name }) {
                 albumForArtists.add(
                     AlbumsForArtist(
                         albumId = albumId,
                         artistId = artist.id,
-                        artistName = artist.artistName,
+                        artistName = artist.name,
                         albumName = albumName,
                         year = year,
                     )

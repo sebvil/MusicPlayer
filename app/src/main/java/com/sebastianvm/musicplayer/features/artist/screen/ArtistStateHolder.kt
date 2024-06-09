@@ -58,9 +58,9 @@ class ArtistStateHolder(
             .getArtist(artistId)
             .map { artistWithAlbums ->
                 ArtistState.Data(
-                    artistName = artistWithAlbums.artist.artistName,
+                    artistName = artistWithAlbums.name,
                     artistAlbumsSection =
-                        artistWithAlbums.artistAlbums
+                        artistWithAlbums.albums
                             .takeIf { it.isNotEmpty() }
                             ?.let { albums ->
                                 ArtistScreenSection(
@@ -69,7 +69,7 @@ class ArtistStateHolder(
                                 )
                             },
                     artistAppearsOnSection =
-                        artistWithAlbums.artistAppearsOn
+                        artistWithAlbums.appearsOn
                             .takeIf { it.isNotEmpty() }
                             ?.let { albums ->
                                 ArtistScreenSection(

@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.util.extensions
 import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import java.util.UUID
 
@@ -20,12 +20,12 @@ fun Track.toMediaItem(): MediaItem {
 fun Track.getMediaMetadata(): MediaMetadata {
     return MediaMetadata.Builder()
         .apply {
-            title = trackName
-            artist = artists
+            title = name
+            artist = artists.joinToString { it.name }
             uri = UriUtils.getTrackUri(trackId = id)
             extras =
                 Bundle().apply {
-                    duration = trackDurationMs
+                    //                    duration = trackDurationMs
                     uniqueId = UUID.randomUUID().mostSignificantBits
                 }
             isPlayable = true

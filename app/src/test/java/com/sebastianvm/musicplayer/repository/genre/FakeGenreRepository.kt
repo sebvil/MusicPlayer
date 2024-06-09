@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.genre
 
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.model.Genre
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -15,6 +15,6 @@ class FakeGenreRepository : GenreRepository {
     }
 
     override fun getGenreName(genreId: Long): Flow<String> {
-        return genres.map { genres -> genres.find { it.id == genreId }?.genreName }.filterNotNull()
+        return genres.map { genres -> genres.find { it.id == genreId }?.name }.filterNotNull()
     }
 }
