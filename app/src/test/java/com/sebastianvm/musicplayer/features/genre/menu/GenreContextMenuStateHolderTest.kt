@@ -31,13 +31,14 @@ class GenreContextMenuStateHolderTest :
         }
 
         "init sets state" {
-            genreRepositoryDep.genres.value = FixtureProvider.genreFixtures()
-            val genre = FixtureProvider.genreFixtures().first()
+            val genres = FixtureProvider.genres()
+            genreRepositoryDep.genres.value = genres
+            val genre = genres.first()
             val subject = getSubject(genre.id)
             testStateHolderState(subject) {
                 awaitItem() shouldBe GenreContextMenuState.Loading
                 awaitItemAs<GenreContextMenuState.Data>() shouldBe
-                    GenreContextMenuState.Data(genreName = genre.genreName, genreId = genre.id)
+                    GenreContextMenuState.Data(genreName = genre.name, genreId = genre.id)
             }
         }
 

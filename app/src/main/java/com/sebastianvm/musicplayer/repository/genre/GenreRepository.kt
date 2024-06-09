@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.genre
 
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.model.Genre
 import kotlinx.coroutines.flow.Flow
 
 interface GenreRepository {

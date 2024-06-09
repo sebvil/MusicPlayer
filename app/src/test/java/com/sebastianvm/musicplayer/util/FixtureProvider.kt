@@ -6,7 +6,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMe
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -14,6 +14,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.model.Artist
+import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
@@ -51,6 +52,10 @@ object FixtureProvider {
     }
 
     fun artists(size: Int = DEFAULT_LIST_SIZE): List<Artist> {
+        return fixtureMonkey.giveMe(size)
+    }
+
+    fun genres(size: Int = DEFAULT_LIST_SIZE): List<Genre> {
         return fixtureMonkey.giveMe(size)
     }
 
@@ -131,9 +136,9 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun genreFixtures(): List<Genre> {
+    fun genreFixtures(): List<GenreEntity> {
         return longList().flatMap { long ->
-            stringList().map { string -> Genre(id = long, genreName = string) }
+            stringList().map { string -> GenreEntity(id = long, name = string) }
         }
     }
 

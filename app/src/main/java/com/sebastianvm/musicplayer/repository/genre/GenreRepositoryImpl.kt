@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.repository.genre
 
 import com.sebastianvm.musicplayer.database.daos.GenreDao
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -18,6 +20,7 @@ class GenreRepositoryImpl(
         return sortPreferencesRepository
             .getGenreListSortOrder()
             .flatMapLatest { sortOrder -> genreDao.getGenres(sortOrder = sortOrder) }
+            .mapValues { it.asExternalModel() }
             .distinctUntilChanged()
     }
 

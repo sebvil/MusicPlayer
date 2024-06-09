@@ -22,11 +22,11 @@ import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtistByYear
 import com.sebastianvm.musicplayer.database.entities.ArtistEntity
 import com.sebastianvm.musicplayer.database.entities.ArtistFts
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.GenreFts
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
@@ -40,8 +40,8 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
             TrackEntity::class,
             ArtistEntity::class,
             AlbumEntity::class,
-            Genre::class,
-            Playlist::class,
+            GenreEntity::class,
+            PlaylistEntity::class,
             QueueItemEntity::class,
             ArtistTrackCrossRef::class,
             GenreTrackCrossRef::class,

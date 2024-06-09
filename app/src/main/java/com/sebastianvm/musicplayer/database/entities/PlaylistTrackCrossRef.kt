@@ -14,7 +14,7 @@ data class PlaylistTrackCrossRef(
 )
 
 data class PlaylistWithTracks(
-    @Embedded val playlist: Playlist,
+    @Embedded val playlist: PlaylistEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",

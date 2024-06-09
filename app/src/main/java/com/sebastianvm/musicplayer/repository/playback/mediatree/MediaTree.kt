@@ -80,7 +80,7 @@ class MediaTree(
             artist = artists.joinToString { it.name },
             genre = "",
             sourceUri = UriUtils.getTrackUri(trackId = id),
-            //            artworkUri = ArtworkProvider.getUriForTrack(albumId),
+            artworkUri = ArtworkProvider.getUriForTrack(albumId),
         )
     }
 

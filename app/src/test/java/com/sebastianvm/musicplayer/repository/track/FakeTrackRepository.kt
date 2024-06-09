@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.ArtistEntity
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Genre
+import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
@@ -38,7 +38,7 @@ class FakeTrackRepository : TrackRepository {
         artistTrackCrossRefs: Set<ArtistTrackCrossRef>,
         genreTrackCrossRefs: Set<GenreTrackCrossRef>,
         artists: Set<ArtistEntity>,
-        genres: Set<Genre>,
+        genres: Set<GenreEntity>,
         albums: Set<AlbumEntity>,
         albumsForArtists: Set<AlbumsForArtist>,
         appearsOnForArtists: Set<AppearsOnForArtist>,
