@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.player
 
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -168,7 +168,7 @@ class PlayerStateHolder(
 }
 
 fun getPlayerStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     delegate: PlayerDelegate,
     props: Flow<PlayerProps>,
 ): PlayerStateHolder {

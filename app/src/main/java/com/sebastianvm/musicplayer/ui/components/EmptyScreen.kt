@@ -16,9 +16,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.repository.LibraryScanService
+import com.sebastianvm.musicplayer.util.resources.RString
 
 @Composable
 fun EmptyScreen(
@@ -45,8 +45,8 @@ fun StoragePermissionNeededEmptyScreen(@StringRes message: Int, modifier: Modifi
         button = {
             PermissionHandler(
                 permission = Permission.ReadAudio,
-                dialogTitle = R.string.storage_permission_needed,
-                message = R.string.grant_storage_permissions,
+                dialogTitle = RString.storage_permission_needed,
+                message = RString.grant_storage_permissions,
                 onPermissionGranted = {
                     ContextCompat.startForegroundService(
                         context,
@@ -56,7 +56,7 @@ fun StoragePermissionNeededEmptyScreen(@StringRes message: Int, modifier: Modifi
             ) { onClick ->
                 Button(onClick = onClick) {
                     Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
-                    Text(text = stringResource(id = R.string.refresh_library))
+                    Text(text = stringResource(id = RString.refresh_library))
                 }
             }
         },

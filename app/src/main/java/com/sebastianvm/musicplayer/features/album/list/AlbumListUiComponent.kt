@@ -8,10 +8,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class AlbumListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -39,7 +39,7 @@ data class AlbumListUiComponent(val navController: NavController) :
         AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: AppDependencies): AlbumListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): AlbumListStateHolder {
         return getAlbumListStateHolder(dependencies = dependencies, navController = navController)
     }
 }
@@ -55,7 +55,7 @@ fun AlbumList(
         modifier = modifier.fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
-                message = R.string.no_albums_found,
+                message = RString.no_albums_found,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },

@@ -4,7 +4,6 @@ import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 
 interface QueueRepository {
@@ -16,5 +15,7 @@ interface QueueRepository {
 
     fun moveQueueItem(from: Int, to: Int)
 
-    suspend fun addToQueue(mediaGroup: MediaGroup)
+    suspend fun addToQueue(trackId: Long)
+
+    fun playQueueItem(index: Int)
 }

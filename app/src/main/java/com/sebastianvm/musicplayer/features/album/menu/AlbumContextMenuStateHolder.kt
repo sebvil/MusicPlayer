@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -40,8 +39,6 @@ sealed interface ViewArtistRow {
 }
 
 sealed interface AlbumContextMenuUserAction : UserAction {
-    data object AddToQueueClicked : AlbumContextMenuUserAction
-
     data object PlayAlbumClicked : AlbumContextMenuUserAction
 
     data object ViewArtistsClicked : AlbumContextMenuUserAction
@@ -52,7 +49,6 @@ sealed interface AlbumContextMenuUserAction : UserAction {
 class AlbumContextMenuStateHolder(
     arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
-    private val queueRepository: QueueRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
@@ -79,9 +75,6 @@ class AlbumContextMenuStateHolder(
 
     override fun handle(action: AlbumContextMenuUserAction) {
         when (action) {
-            is AlbumContextMenuUserAction.AddToQueueClicked -> {
-                stateHolderScope.launch { queueRepository.addToQueue(MediaGroup.Album(albumId)) }
-            }
             AlbumContextMenuUserAction.PlayAlbumClicked -> {
                 stateHolderScope.launch {
                     playbackManager.playMedia(mediaGroup = MediaGroup.Album(albumId))

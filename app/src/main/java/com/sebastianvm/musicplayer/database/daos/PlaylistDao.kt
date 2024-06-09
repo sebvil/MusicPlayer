@@ -1,3 +1,5 @@
+@file:Suppress("InjectDispatcher")
+
 package com.sebastianvm.musicplayer.database.daos
 
 import androidx.room.Dao

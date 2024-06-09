@@ -26,7 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
@@ -42,7 +42,7 @@ class AppNavigationHostUiComponent :
     >() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): AppNavigationHostStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): AppNavigationHostStateHolder {
         return AppNavigationHostStateHolder()
     }
 

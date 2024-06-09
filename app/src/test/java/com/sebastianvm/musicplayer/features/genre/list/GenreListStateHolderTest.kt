@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
@@ -18,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
+import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
@@ -72,7 +72,7 @@ class GenreListStateHolderTest :
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
                         SortButton.State(
-                            text = R.string.genre_name,
+                            text = RString.genre_name,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                 }
@@ -82,7 +82,7 @@ class GenreListStateHolderTest :
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
                         SortButton.State(
-                            text = R.string.genre_name,
+                            text = RString.genre_name,
                             sortOrder = MediaSortOrder.DESCENDING,
                         )
                 }

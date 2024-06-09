@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -114,9 +114,7 @@ class TrackContextMenuStateHolder(
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope
-                    .launch {
-                        queueRepository.addToQueue(MediaGroup.SingleTrack(arguments.trackId))
-                    }
+                    .launch { queueRepository.addToQueue(arguments.trackId) }
                     .invokeOnCompletion { navController.pop() }
             }
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
@@ -160,7 +158,7 @@ class TrackContextMenuStateHolder(
 }
 
 fun getTrackContextMenuStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     arguments: TrackContextMenuArguments,
     navController: NavController,
 ): TrackContextMenuStateHolder {

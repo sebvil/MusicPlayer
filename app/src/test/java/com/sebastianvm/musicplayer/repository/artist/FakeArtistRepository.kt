@@ -8,6 +8,7 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.util.FixtureProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.filterNotNull
 
 class FakeArtistRepository : ArtistRepository {
 
-    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(emptyList())
+    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(FixtureProvider.artistFixtures())
     val albumsForArtists: MutableStateFlow<List<AlbumsForArtist>> = MutableStateFlow(emptyList())
     val appearsOnForArtists: MutableStateFlow<List<AppearsOnForArtist>> =
         MutableStateFlow(emptyList())

@@ -20,17 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
-    override fun createStateHolder(dependencies: AppDependencies): SortMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): SortMenuStateHolder {
         return getSortMenuStateHolder(dependencies, arguments)
     }
 
@@ -52,7 +52,7 @@ fun SortMenu(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ListItem(
-            headlineContent = { Text(text = stringResource(id = R.string.sort_by)) },
+            headlineContent = { Text(text = stringResource(id = RString.sort_by)) },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -96,9 +96,9 @@ fun SortMenu(
                                     },
                                 contentDescription =
                                     if (state.sortOrder == MediaSortOrder.ASCENDING) {
-                                        stringResource(R.string.up_arrow)
+                                        stringResource(RString.up_arrow)
                                     } else {
-                                        stringResource(R.string.down_arrow)
+                                        stringResource(RString.down_arrow)
                                     },
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )

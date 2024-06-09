@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.util.sort
 
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.serialization.GenreSortPrefsSerializer
 import com.sebastianvm.musicplayer.util.serialization.PlaylistSortPrefsSerializer
 import kotlinx.collections.immutable.PersistentMap
@@ -13,24 +13,24 @@ sealed interface SortOptions {
 
     @Serializable
     enum class TrackListSortOptions(@StringRes override val stringId: Int) : SortOptions {
-        TRACK(R.string.track_name),
-        ARTIST(R.string.artist_name),
-        ALBUM(R.string.album_name)
+        TRACK(RString.track_name),
+        ARTIST(RString.artist_name),
+        ALBUM(RString.album_name)
     }
 
     @Serializable
     enum class AlbumListSortOptions(@StringRes override val stringId: Int) : SortOptions {
-        ALBUM(R.string.album_name),
-        ARTIST(R.string.artist_name),
-        YEAR(R.string.year)
+        ALBUM(RString.album_name),
+        ARTIST(RString.artist_name),
+        YEAR(RString.year)
     }
 
     @Serializable
     enum class PlaylistSortOptions(@StringRes override val stringId: Int) : SortOptions {
-        CUSTOM(R.string.custom),
-        TRACK(R.string.track_name),
-        ARTIST(R.string.artist_name),
-        ALBUM(R.string.album_name)
+        CUSTOM(RString.custom),
+        TRACK(RString.track_name),
+        ARTIST(RString.artist_name),
+        ALBUM(RString.album_name)
     }
 }
 

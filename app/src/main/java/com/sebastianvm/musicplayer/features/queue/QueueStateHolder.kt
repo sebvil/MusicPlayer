@@ -2,8 +2,7 @@ package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.AppDependencies
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -31,11 +30,16 @@ sealed interface QueueUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : QueueUserAction
 }
 
+class QueueStateHolderServices(val queueRepository: QueueRepository) {
+    constructor(dependencies: Dependencies) : this(dependencies.repositoryProvider.queueRepository)
+}
+
 class QueueStateHolder(
+    services: QueueStateHolderServices,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val queueRepository: QueueRepository,
-    private val playbackManager: PlaybackManager,
 ) : StateHolder<QueueState, QueueUserAction> {
+
+    private val queueRepository = services.queueRepository
 
     override val state: StateFlow<QueueState> =
         queueRepository
@@ -59,20 +63,13 @@ class QueueStateHolder(
                 queueRepository.moveQueueItem(action.from, action.to)
             }
             is QueueUserAction.TrackClicked -> {
-                playbackManager.playQueueItem(action.trackIndex)
+                queueRepository.playQueueItem(action.trackIndex)
             }
         }
     }
 }
 
-fun getQueueStateHolder(dependencies: AppDependencies): QueueStateHolder {
-    return QueueStateHolder(
-        queueRepository = dependencies.repositoryProvider.queueRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
-    )
-}
-
-private fun QueuedTrack.toQueueItem(): QueueItem {
+fun QueuedTrack.toQueueItem(): QueueItem {
     return QueueItem(
         trackRow =
             TrackRow.State(id = id, trackName = trackName, artists = artists.ifEmpty { null }),

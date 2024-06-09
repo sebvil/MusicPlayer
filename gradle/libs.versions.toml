@@ -9,6 +9,7 @@ core-ktx = "1.13.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
 detekt-compose = "0.4.1"
+fixture-monkey = "1.0.17"
 kotest = "5.9.0"
 kotlin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
@@ -19,7 +20,7 @@ ktfmt = "0.18.0"
 lifecycle = "2.8.1"
 material3 = "1.3.0-beta02"
 media3-exoplayer = "1.3.1"
-room-runtime = "2.6.1"
+room-runtime = "2.7.0-alpha03"
 turbine = "1.1.0"
 vectordrawable = "1.2.0"
 reorderable = "2.1.1"
@@ -35,7 +36,7 @@ coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+fixture-monkey = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin", version.ref = "fixture-monkey" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
@@ -67,13 +68,13 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.re
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "com-google-devtools" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-org-jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 
 [bundles]
 testing = [
+    "fixture-monkey",
     "kotest-assertions-core",
     "kotest-framework-datatest",
     "kotest-runner-junit5",
-    "turbine"
+    "turbine",
 ]
 

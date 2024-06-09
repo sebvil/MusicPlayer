@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startForegroundService
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -49,7 +48,7 @@ import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.repository.LibraryScanService
@@ -59,13 +58,14 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.collections.immutable.toImmutableList
 
 data class SearchUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, SearchState, SearchUserAction, SearchStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): SearchStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): SearchStateHolder {
         return getSearchStateHolder(dependencies, navController)
     }
 
@@ -115,7 +115,7 @@ fun SearchScreen(
                 onSearch = {},
                 expanded = isSearchActive,
                 onExpandedChange = onActiveChange,
-                placeholder = { Text(text = stringResource(R.string.search_media)) },
+                placeholder = { Text(text = stringResource(RString.search_media)) },
                 leadingIcon = {
                     if (isSearchActive) {
                         IconButton(
@@ -127,7 +127,7 @@ fun SearchScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back),
+                                contentDescription = stringResource(id = RString.back),
                             )
                         }
                     } else {
@@ -142,7 +142,7 @@ fun SearchScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more),
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
                             DropdownMenu(
@@ -151,8 +151,8 @@ fun SearchScreen(
                             ) {
                                 PermissionHandler(
                                     permission = Permission.ReadAudio,
-                                    dialogTitle = R.string.storage_permission_needed,
-                                    message = R.string.grant_storage_permissions,
+                                    dialogTitle = RString.storage_permission_needed,
+                                    message = RString.grant_storage_permissions,
                                     onPermissionGranted = {
                                         startForegroundService(
                                             context,
@@ -163,7 +163,7 @@ fun SearchScreen(
                                 ) { onClick ->
                                     DropdownMenuItem(
                                         text = {
-                                            Text(stringResource(id = R.string.refresh_library))
+                                            Text(stringResource(id = RString.refresh_library))
                                         },
                                         onClick = { onClick() },
                                         leadingIcon = {
@@ -182,7 +182,7 @@ fun SearchScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = R.string.back),
+                                contentDescription = stringResource(id = RString.back),
                             )
                         }
                     }

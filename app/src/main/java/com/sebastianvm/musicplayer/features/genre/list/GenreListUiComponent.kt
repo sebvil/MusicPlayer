@@ -8,10 +8,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class GenreListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -30,7 +30,7 @@ data class GenreListUiComponent(val navController: NavController) :
     >() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): GenreListStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): GenreListStateHolder {
         return getGenreListStateHolder(dependencies = dependencies, navController = navController)
     }
 
@@ -55,7 +55,7 @@ fun GenreList(
         modifier = modifier.fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
-                message = R.string.no_genres_found,
+                message = RString.no_genres_found,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },

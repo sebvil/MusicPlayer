@@ -89,7 +89,9 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                     delay(500)
                     if (!isUpdatingPosition) {
                         playbackState.update {
-                            controller?.let { getUpdatedPlaybackState(it) } ?: NotPlayingState
+                            controller?.let { nonNullController ->
+                                getUpdatedPlaybackState(nonNullController)
+                            } ?: NotPlayingState
                         }
                     }
                 }

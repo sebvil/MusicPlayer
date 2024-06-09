@@ -21,8 +21,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.util.resources.RString
 
 @OptIn(ExperimentalPermissionsApi::class)
 data class PermissionHandlerState(
@@ -78,13 +78,13 @@ fun PermissionHandler(
                     PermissionDialogState(
                         title = dialogTitle,
                         text = message,
-                        confirmButtonText = R.string.ok,
+                        confirmButtonText = RString.ok,
                     ),
                 permissionExplanationDialogState =
                     PermissionDialogState(
                         title = dialogTitle,
                         text = message,
-                        confirmButtonText = R.string.continue_string,
+                        confirmButtonText = RString.continue_string,
                     ),
             )
         }
@@ -142,7 +142,7 @@ fun PermissionDialog(state: PermissionDialogState, onDismiss: () -> Unit, onConf
         },
         dismissButton = {
             Button(modifier = Modifier.padding(horizontal = 2.dp), onClick = onDismiss) {
-                Text(text = stringResource(id = R.string.dismiss))
+                Text(text = stringResource(id = RString.dismiss))
             }
         },
     )

@@ -1,9 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -58,7 +58,7 @@ class ArtistListStateHolder(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                             sortButtonState =
-                                SortButton.State(text = R.string.artist_name, sortOrder = sortOrder),
+                                SortButton.State(text = RString.artist_name, sortOrder = sortOrder),
                         )
                     )
                 }
@@ -92,7 +92,7 @@ class ArtistListStateHolder(
 }
 
 fun getArtistListStateHolder(
-    dependencies: AppDependencies,
+    dependencies: Dependencies,
     navController: NavController,
 ): ArtistListStateHolder {
     return ArtistListStateHolder(

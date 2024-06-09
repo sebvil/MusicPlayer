@@ -4,14 +4,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
     BaseUiComponent<
@@ -21,7 +21,7 @@ data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
         GenreContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): GenreContextMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): GenreContextMenuStateHolder {
         return GenreContextMenuStateHolder(
             arguments = arguments,
             genreRepository = dependencies.repositoryProvider.genreRepository,
@@ -51,7 +51,7 @@ private fun GenreContextMenu(
                 LazyColumn {
                     item {
                         MenuItem(
-                            text = stringResource(id = R.string.play_all_songs),
+                            text = stringResource(id = RString.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = { handle(GenreContextMenuUserAction.PlayGenreClicked) },
                         )
@@ -60,7 +60,7 @@ private fun GenreContextMenu(
             }
         }
         is GenreContextMenuState.Loading -> {
-            ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
+            ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }
     }
 }

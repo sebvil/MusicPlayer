@@ -16,6 +16,7 @@ import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.features.main.MainActivity
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +89,7 @@ class LibraryScanService : Service() {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .addAction(
                     R.drawable.ic_close,
-                    getString(R.string.stop_scanning),
+                    getString(RString.stop_scanning),
                     stopServicePendingIntent,
                 )
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

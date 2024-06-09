@@ -29,7 +29,7 @@ class PlayerStateHolderTest :
             playerDelegateDep =
                 object : PlayerDelegate {
                     override fun dismissFullScreenPlayer() {
-                        propsDep.update { it.copy(isFullscreen = false) }
+                        propsDep.update { props -> props.copy(isFullscreen = false) }
                     }
                 }
         }

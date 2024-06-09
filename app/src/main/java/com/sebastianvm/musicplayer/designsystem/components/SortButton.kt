@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 object SortButton {
@@ -21,7 +21,7 @@ object SortButton {
 @Composable
 fun SortButton(state: SortButton.State, onClick: () -> Unit, modifier: Modifier = Modifier) {
     TextButton(onClick = onClick, modifier = modifier) {
-        Text(text = "${stringResource(id = R.string.sort_by)}:")
+        Text(text = "${stringResource(id = RString.sort_by)}:")
         Icon(
             imageVector =
                 if (state.sortOrder == MediaSortOrder.ASCENDING) Icons.Default.ArrowUpward

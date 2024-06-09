@@ -41,11 +41,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.zIndex
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlin.math.max
 import kotlin.math.min
 
@@ -196,7 +196,7 @@ fun TopBar(
         IconButton(onClick = onBackButtonClicked) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                contentDescription = stringResource(id = R.string.back),
+                contentDescription = stringResource(id = RString.back),
             )
         }
         Text(

@@ -1,3 +1,5 @@
+@file:Suppress("InjectDispatcher")
+
 package com.sebastianvm.musicplayer.di
 
 import kotlinx.coroutines.CoroutineDispatcher

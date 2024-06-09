@@ -20,8 +20,6 @@ interface PlaybackManager {
 
     suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0)
 
-    fun playQueueItem(index: Int)
-
     fun seekToTrackPosition(position: Long)
 }
 

@@ -72,10 +72,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
@@ -83,6 +82,7 @@ import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.flow.Flow
 
 class PlayerUiComponent(
@@ -91,7 +91,7 @@ class PlayerUiComponent(
 ) : BaseUiComponent<NoArguments, PlayerState, PlayerUserAction, PlayerStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: AppDependencies): PlayerStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): PlayerStateHolder {
         return getPlayerStateHolder(dependencies = dependencies, delegate = delegate, props = props)
     }
 
@@ -285,7 +285,7 @@ private fun FloatingPlayerCard(
                     IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = stringResource(R.string.previous),
+                            contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.sharedElement(
                                     rememberSharedContentState(
@@ -312,7 +312,7 @@ private fun FloatingPlayerCard(
                     IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
-                            contentDescription = stringResource(R.string.previous),
+                            contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.sharedElement(
                                     rememberSharedContentState(
@@ -372,14 +372,14 @@ private fun FullScreenPlayer(
                 IconButton(onClick = { handle(PlayerUserAction.DismissFullScreenPlayer) }) {
                     Icon(
                         imageVector = Icons.Rounded.KeyboardArrowDown,
-                        contentDescription = stringResource(R.string.hide_player),
+                        contentDescription = stringResource(RString.hide_player),
                         modifier = Modifier.size(48.dp),
                     )
                 }
                 IconButton(onClick = { handle(PlayerUserAction.QueueTapped) }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
-                        contentDescription = stringResource(R.string.hide_player),
+                        contentDescription = stringResource(RString.hide_player),
                         modifier = Modifier.size(48.dp),
                     )
                 }
@@ -432,7 +432,7 @@ private fun FullScreenPlayer(
                 IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
-                        contentDescription = stringResource(R.string.previous),
+                        contentDescription = stringResource(RString.previous),
                         modifier =
                             Modifier.size(48.dp)
                                 .sharedElement(
@@ -460,7 +460,7 @@ private fun FullScreenPlayer(
                 IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                     Icon(
                         imageVector = Icons.Default.SkipNext,
-                        contentDescription = stringResource(R.string.previous),
+                        contentDescription = stringResource(RString.previous),
                         modifier =
                             Modifier.size(48.dp)
                                 .sharedElement(
@@ -517,7 +517,7 @@ private fun PlayerWithQueue(
             IconButton(onClick = { handle(PlayerUserAction.DismissQueue) }) {
                 Icon(
                     imageVector = Icons.Rounded.KeyboardArrowDown,
-                    contentDescription = stringResource(R.string.hide_player),
+                    contentDescription = stringResource(RString.hide_player),
                     modifier = Modifier.size(48.dp),
                 )
             }
@@ -543,7 +543,7 @@ private fun PlayerWithQueue(
                     IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = stringResource(R.string.previous),
+                            contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.size(48.dp)
                                     .sharedElement(
@@ -572,7 +572,7 @@ private fun PlayerWithQueue(
                     IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                         Icon(
                             imageVector = Icons.Default.SkipNext,
-                            contentDescription = stringResource(R.string.previous),
+                            contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.size(48.dp)
                                     .sharedElement(

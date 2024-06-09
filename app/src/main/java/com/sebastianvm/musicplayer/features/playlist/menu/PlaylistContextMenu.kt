@@ -6,16 +6,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.icons.Delete
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
-import com.sebastianvm.musicplayer.di.AppDependencies
+import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArguments) :
     BaseUiComponent<
@@ -25,7 +25,7 @@ data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArgume
         PlaylistContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: AppDependencies): PlaylistContextMenuStateHolder {
+    override fun createStateHolder(dependencies: Dependencies): PlaylistContextMenuStateHolder {
         return getPlaylistContextMenuStateHolder(dependencies, arguments)
     }
 
@@ -51,7 +51,7 @@ private fun PlaylistContextMenu(
                 LazyColumn {
                     item {
                         MenuItem(
-                            text = stringResource(id = R.string.play_all_songs),
+                            text = stringResource(id = RString.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
                             onItemClicked = {
                                 handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
@@ -61,7 +61,7 @@ private fun PlaylistContextMenu(
 
                     item {
                         MenuItem(
-                            text = stringResource(id = R.string.delete_playlist),
+                            text = stringResource(id = RString.delete_playlist),
                             icon = Icons.Delete.icon(),
                             onItemClicked = {
                                 handle(PlaylistContextMenuUserAction.DeletePlaylistClicked)
@@ -76,7 +76,7 @@ private fun PlaylistContextMenu(
             }
         }
         is PlaylistContextMenuState.Loading -> {
-            ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
+            ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }
     }
 }
@@ -92,17 +92,17 @@ fun DeletePlaylistConfirmationDialog(
             TextButton(
                 onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
             ) {
-                Text(text = stringResource(R.string.delete))
+                Text(text = stringResource(RString.delete))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
             ) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(RString.cancel))
             }
         },
-        title = { Text(text = stringResource(id = R.string.delete_this_playlist, playlistName)) },
-        text = { Text(text = stringResource(id = R.string.sure_you_want_to_delete, playlistName)) },
+        title = { Text(text = stringResource(id = RString.delete_this_playlist, playlistName)) },
+        text = { Text(text = stringResource(id = RString.sure_you_want_to_delete, playlistName)) },
     )
 }

@@ -30,7 +30,7 @@ class FakeTrackRepository : TrackRepository {
     }
 
     override fun getTrackListWithMetaData(trackList: TrackList): Flow<TrackListWithMetadata> {
-        return trackListsWithMetadata.map { it[trackList]!! }
+        return trackListsWithMetadata.map { it[trackList] ?: error("Track list not found") }
     }
 
     override suspend fun insertAllTracks(

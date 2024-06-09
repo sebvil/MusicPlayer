@@ -22,13 +22,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.searchfield.SearchField
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.util.resources.RString
 
 @Composable
 fun AddTrackConfirmationDialog(
@@ -38,9 +38,9 @@ fun AddTrackConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = { handle(TrackSearchUserAction.CancelAddTrackToPlaylist) },
-        title = { Text(text = stringResource(R.string.add_to_playlist_question)) },
+        title = { Text(text = stringResource(RString.add_to_playlist_question)) },
         text = {
-            Text(text = stringResource(id = R.string.song_already_in_playlist, state.trackName))
+            Text(text = stringResource(id = RString.song_already_in_playlist, state.trackName))
         },
         confirmButton = {
             TextButton(
@@ -54,7 +54,7 @@ fun AddTrackConfirmationDialog(
                     updateTrackName(state.trackName)
                 }
             ) {
-                Text(stringResource(R.string.add_to_playlist))
+                Text(stringResource(RString.add_to_playlist))
             }
         },
         dismissButton = {
@@ -86,7 +86,7 @@ fun TrackSearchLayout(
         if (state.showToast) {
             Toast.makeText(
                     context,
-                    context.getString(R.string.track_added_to_playlist, trackName),
+                    context.getString(RString.track_added_to_playlist, trackName),
                     Toast.LENGTH_SHORT,
                 )
                 .show()
@@ -117,7 +117,7 @@ fun TrackSearchLayout(
                     onCheckedChange = { handle(TrackSearchUserAction.HideTracksCheckToggled) },
                 )
             },
-            headlineContent = { Text(text = stringResource(R.string.hide_tracks_in_playlist)) },
+            headlineContent = { Text(text = stringResource(RString.hide_tracks_in_playlist)) },
         )
 
         LazyColumn(contentPadding = LocalPaddingValues.current) {
