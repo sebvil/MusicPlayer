@@ -1,54 +1,34 @@
 package com.sebastianvm.musicplayer.repository.artist
 
-import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
-import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
+import com.sebastianvm.musicplayer.model.Artist
+import com.sebastianvm.musicplayer.model.BasicArtist
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class FakeArtistRepository : ArtistRepository {
 
-    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(FixtureProvider.artistFixtures())
+    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(FixtureProvider.artists())
     val albumsForArtists: MutableStateFlow<List<AlbumsForArtist>> = MutableStateFlow(emptyList())
-    val appearsOnForArtists: MutableStateFlow<List<AppearsOnForArtist>> =
-        MutableStateFlow(emptyList())
-    val albums: MutableStateFlow<List<Album>> = MutableStateFlow(emptyList())
     val artistTrackCrossRefs: MutableStateFlow<List<ArtistTrackCrossRef>> =
         MutableStateFlow(emptyList())
 
-    override fun getArtists(): Flow<List<Artist>> {
-        return artists
+    override fun getArtists(): Flow<List<BasicArtist>> {
+        return artists.map { artists -> artists.map { BasicArtist(id = it.id, name = it.name) } }
     }
 
-    override fun getArtist(artistId: Long): Flow<ArtistWithAlbums> {
-        return combine(artists, albumsForArtists, appearsOnForArtists, albums) {
-                artists,
-                albumsForArtists,
-                appearsOnForArtists,
-                albums ->
-                val artist = artists.find { it.id == artistId } ?: return@combine null
-                val albumsForArtist =
-                    albumsForArtists
-                        .filter { it.artistId == artistId }
-                        .mapNotNull { albums.find { album -> album.id == it.albumId } }
-                val appearsOn =
-                    appearsOnForArtists
-                        .filter { it.artistId == artistId }
-                        .mapNotNull { albums.find { album -> album.id == it.albumId } }
-                ArtistWithAlbums(artist, albumsForArtist, appearsOn)
-            }
-            .filterNotNull()
+    override fun getArtist(artistId: Long): Flow<Artist> {
+        return artists.mapNotNull { artists -> artists.find { it.id == artistId } }
     }
 
-    override fun getArtistsForMedia(media: HasArtists): Flow<List<Artist>> {
+    override fun getArtistsForMedia(media: HasArtists): Flow<List<BasicArtist>> {
         return when (media) {
             is MediaGroup.Album -> {
                 combine(artists, albumsForArtists) { artists, albumsForArtists ->
@@ -68,6 +48,6 @@ class FakeArtistRepository : ArtistRepository {
                         .distinct()
                 }
             }
-        }
+        }.map { artists -> artists.map { BasicArtist(id = it.id, name = it.name) } }
     }
 }

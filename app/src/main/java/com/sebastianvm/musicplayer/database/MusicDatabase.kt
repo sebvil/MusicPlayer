@@ -13,36 +13,36 @@ import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
-import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.AlbumEntity
 import com.sebastianvm.musicplayer.database.entities.AlbumFts
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtistByYear
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtistByYear
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.ArtistEntity
 import com.sebastianvm.musicplayer.database.entities.ArtistFts
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.GenreFts
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
 import com.sebastianvm.musicplayer.database.entities.MediaQueueTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.Playlist
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
+import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.database.entities.TrackFts
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 
 @Database(
     entities =
         [
-            Track::class,
-            Artist::class,
-            Album::class,
+            TrackEntity::class,
+            ArtistEntity::class,
+            AlbumEntity::class,
             Genre::class,
             Playlist::class,
-            MediaQueueItem::class,
+            QueueItemEntity::class,
             ArtistTrackCrossRef::class,
             GenreTrackCrossRef::class,
             AlbumsForArtist::class,

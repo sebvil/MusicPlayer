@@ -2,14 +2,19 @@ package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.model.Artist
+import com.sebastianvm.musicplayer.model.BasicArtist
 
 object ArtistRow {
     data class State(val id: Long, val artistName: String) {
 
         companion object {
             fun fromArtist(artist: Artist): State {
-                return State(id = artist.id, artistName = artist.artistName)
+                return State(id = artist.id, artistName = artist.name)
+            }
+
+            fun fromArtist(artist: BasicArtist): State {
+                return State(id = artist.id, artistName = artist.name)
             }
         }
     }

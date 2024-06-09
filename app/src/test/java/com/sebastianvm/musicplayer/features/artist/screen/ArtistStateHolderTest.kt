@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -42,17 +40,15 @@ class ArtistStateHolderTest :
         "init sets state" -
             {
                 "when artist has no albums" {
-                    val artist = FixtureProvider.artist(id = ARTIST_ID)
+                    val artist =
+                        FixtureProvider.artist(id = ARTIST_ID, albumCount = 0, appearsOnCount = 0)
                     artistRepositoryDep.artists.value = listOf(artist)
-                    val albumListSize = 10
-                    val albums = FixtureProvider.albums(size = albumListSize)
-                    artistRepositoryDep.albums.value = albums
                     val subject = getSubject()
                     testStateHolderState(subject) {
                         awaitItem() shouldBe ArtistState.Loading
                         awaitItem() shouldBe
                             ArtistState.Data(
-                                artistName = artist.artistName,
+                                artistName = artist.name,
                                 artistAlbumsSection = null,
                                 artistAppearsOnSection = null,
                             )
@@ -60,52 +56,26 @@ class ArtistStateHolderTest :
                 }
 
                 "when artist has albums" {
-                    val artist = FixtureProvider.artist(id = ARTIST_ID)
+                    val artist =
+                        FixtureProvider.artist(id = ARTIST_ID, albumCount = 10, appearsOnCount = 10)
                     artistRepositoryDep.artists.value = listOf(artist)
-                    val albumListSize = 10
-                    val albums = FixtureProvider.albums(size = albumListSize)
-                    artistRepositoryDep.albums.value = albums
                     val subject = getSubject()
 
-                    artistRepositoryDep.albumsForArtists.value =
-                        albums.subList(0, albumListSize / 2).map {
-                            AlbumsForArtist(
-                                albumId = it.id,
-                                artistId = ARTIST_ID,
-                                artistName = artist.artistName,
-                                albumName = it.albumName,
-                                year = it.year,
-                            )
-                        }
-
-                    artistRepositoryDep.appearsOnForArtists.value =
-                        albums.subList(albumListSize / 2, albumListSize).map {
-                            AppearsOnForArtist(
-                                albumId = it.id,
-                                artistId = ARTIST_ID,
-                                year = it.year,
-                            )
-                        }
                     testStateHolderState(subject) {
                         awaitItem() shouldBe ArtistState.Loading
                         awaitItem() shouldBe
                             ArtistState.Data(
-                                artistName = artist.artistName,
+                                artistName = artist.name,
                                 artistAlbumsSection =
                                     ArtistScreenSection(
                                         title = RString.albums,
-                                        albums =
-                                            albums.subList(0, albumListSize / 2).map {
-                                                AlbumRow.State.fromAlbum(it)
-                                            },
+                                        albums = artist.albums.map { AlbumRow.State.fromAlbum(it) },
                                     ),
                                 artistAppearsOnSection =
                                     ArtistScreenSection(
                                         title = RString.appears_on,
                                         albums =
-                                            albums.subList(albumListSize / 2, albumListSize).map {
-                                                AlbumRow.State.fromAlbum(it)
-                                            },
+                                            artist.appearsOn.map { AlbumRow.State.fromAlbum(it) },
                                     ),
                             )
                     }

@@ -5,15 +5,16 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMe
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.set
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.navercorp.fixturemonkey.kotlin.size
 import com.sebastianvm.musicplayer.database.entities.Genre
-import com.sebastianvm.musicplayer.database.entities.MediaQueueItem
-import com.sebastianvm.musicplayer.database.entities.Track
+import com.sebastianvm.musicplayer.database.entities.QueuedTrack
 import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
 import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
+import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.Artist
+import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
@@ -26,12 +27,31 @@ object FixtureProvider {
 
     private val fixtureMonkey = FixtureMonkey.builder().plugin(KotlinPlugin()).build()
 
+    fun album(id: Long = DEFAULT_ID, artistCount: Int = 1): Album {
+        return fixtureMonkey
+            .giveMeBuilder<Album>()
+            .set(Album::id, id)
+            .size(Album::artists, artistCount)
+            .build()
+            .sample()
+    }
+
     fun albums(size: Int = DEFAULT_LIST_SIZE): List<Album> {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun artist(id: Long = DEFAULT_ID): Artist {
-        return fixtureMonkey.giveMeBuilder<Artist>().set(Artist::id, id).build().sample()
+    fun artist(id: Long = DEFAULT_ID, albumCount: Int = 1, appearsOnCount: Int = 1): Artist {
+        return fixtureMonkey
+            .giveMeBuilder<Artist>()
+            .set(Artist::id, id)
+            .size(Artist::albums, albumCount)
+            .size(Artist::appearsOn, appearsOnCount)
+            .build()
+            .sample()
+    }
+
+    fun artists(size: Int = DEFAULT_LIST_SIZE): List<Artist> {
+        return fixtureMonkey.giveMe(size)
     }
 
     fun playbackStateFixtures(): List<TrackPlayingState> {
@@ -63,16 +83,7 @@ object FixtureProvider {
     fun trackFixtures(): List<Track> {
         return longList().flatMap { long ->
             stringList().map { string ->
-                Track(
-                    id = long,
-                    trackName = string,
-                    trackNumber = long,
-                    trackDurationMs = long,
-                    albumName = string,
-                    albumId = long,
-                    artists = string,
-                    path = string,
-                )
+                Track(id = long, name = string, albumId = long, artists = emptyList())
             }
         }
     }
@@ -116,24 +127,8 @@ object FixtureProvider {
         }
     }
 
-    fun albumFixtures(): List<Album> {
-        return longList().flatMap { long ->
-            stringList().map { string ->
-                Album(
-                    id = long,
-                    albumName = string,
-                    artists = string,
-                    year = long,
-                    imageUri = string,
-                )
-            }
-        }
-    }
-
-    fun artistFixtures(): List<Artist> {
-        return longList().flatMap { long ->
-            stringList().map { string -> Artist(id = long, artistName = string) }
-        }
+    fun albumFixtures(size: Int = DEFAULT_LIST_SIZE): List<Album> {
+        return fixtureMonkey.giveMe(size)
     }
 
     fun genreFixtures(): List<Genre> {
@@ -142,9 +137,15 @@ object FixtureProvider {
         }
     }
 
-    fun queueItemsFixtures(): List<MediaQueueItem> {
+    fun queueItemsFixtures(): List<QueuedTrack> {
         return trackFixtures().mapIndexed { index, track ->
-            MediaQueueItem(trackId = track.id, queuePosition = index, queueItemId = track.id)
+            QueuedTrack(
+                id = track.id,
+                trackName = track.name,
+                artists = track.artists.joinToString(),
+                queuePosition = index,
+                queueItemId = track.id,
+            )
         }
     }
 

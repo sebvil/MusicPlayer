@@ -44,13 +44,13 @@ class ArtistsMenuStateHolderTest :
         "init sets state" -
             {
                 "for Album" {
-                    val artists = FixtureProvider.artistFixtures()
+                    val artists = FixtureProvider.artists()
                     artistRepositoryDep.albumsForArtists.value =
                         artists.map {
                             AlbumsForArtist(
                                 albumId = ALBUM_ID,
                                 artistId = it.id,
-                                artistName = it.artistName,
+                                artistName = it.name,
                                 albumName = "",
                                 year = 0,
                             )
@@ -68,13 +68,13 @@ class ArtistsMenuStateHolderTest :
                 }
 
                 "for Track" {
-                    val artists = FixtureProvider.artistFixtures()
+                    val artists = FixtureProvider.artists()
                     artistRepositoryDep.artistTrackCrossRefs.value =
                         artists.map {
                             ArtistTrackCrossRef(
                                 trackId = TRACK_ID,
                                 artistId = it.id,
-                                artistName = it.artistName,
+                                artistName = it.name,
                                 trackName = "",
                             )
                         }

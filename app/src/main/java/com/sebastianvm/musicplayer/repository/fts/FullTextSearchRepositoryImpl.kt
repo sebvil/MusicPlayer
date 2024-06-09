@@ -5,12 +5,14 @@ import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
-import com.sebastianvm.musicplayer.database.entities.Album
-import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.Genre
 import com.sebastianvm.musicplayer.database.entities.Playlist
+import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.BasicArtist
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class FullTextSearchRepositoryImpl(
     private val trackFtsDao: TrackFtsDao,
@@ -26,12 +28,16 @@ class FullTextSearchRepositoryImpl(
         return trackFtsDao.tracksWithText(searchString(text))
     }
 
-    override fun searchArtists(text: String): Flow<List<Artist>> {
-        return artistFtsDao.artistsWithText(searchString(text))
+    override fun searchArtists(text: String): Flow<List<BasicArtist>> {
+        return artistFtsDao.artistsWithText(searchString(text)).map { artists ->
+            artists.map { it.asExternalModel() }
+        }
     }
 
     override fun searchAlbums(text: String): Flow<List<Album>> {
-        return albumFtsDao.albumsWithText(searchString(text))
+        return albumFtsDao.albumsWithText(searchString(text)).map { albums ->
+            albums.map { it.asExternalModel() }
+        }
     }
 
     override fun searchGenres(text: String): Flow<List<Genre>> {

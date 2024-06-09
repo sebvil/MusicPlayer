@@ -41,10 +41,7 @@ class ArtistContextMenuStateHolder(
         artistRepository
             .getArtist(artistId)
             .map { artist ->
-                ArtistContextMenuState.Data(
-                    artistName = artist.artist.artistName,
-                    artistId = artistId,
-                )
+                ArtistContextMenuState.Data(artistName = artist.name, artistId = artistId)
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, ArtistContextMenuState.Loading)
 

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -44,14 +43,14 @@ class AlbumContextMenuStateHolderTest :
         "init sets state" -
             {
                 "when album has no artists" {
-                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
-                    val album = FixtureProvider.albumFixtures().first()
+                    val album = FixtureProvider.album(artistCount = 0)
+                    albumRepositoryDep.albums.value = listOf(album)
                     val subject = getSubject(album.id)
                     testStateHolderState(subject) {
                         awaitItem() shouldBe AlbumContextMenuState.Loading
                         awaitItemAs<AlbumContextMenuState.Data>() shouldBe
                             AlbumContextMenuState.Data(
-                                albumName = album.albumName,
+                                albumName = album.title,
                                 albumId = album.id,
                                 viewArtistsState = ViewArtistRow.NoArtists,
                             )
@@ -59,25 +58,16 @@ class AlbumContextMenuStateHolderTest :
                 }
 
                 "when album has one artist" {
-                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
-                    val album = FixtureProvider.albumFixtures().first()
-                    val artist = FixtureProvider.artistFixtures().first()
-                    albumRepositoryDep.albumsForArtist.value =
-                        listOf(
-                            AlbumsForArtist(
-                                albumId = album.id,
-                                artistId = artist.id,
-                                artistName = artist.artistName,
-                                albumName = album.albumName,
-                                year = album.year,
-                            )
-                        )
+                    val album = FixtureProvider.album(artistCount = 1)
+                    albumRepositoryDep.albums.value = listOf(album)
+                    val artist = album.artists.first()
+
                     val subject = getSubject(album.id)
                     testStateHolderState(subject) {
                         awaitItem() shouldBe AlbumContextMenuState.Loading
                         awaitItemAs<AlbumContextMenuState.Data>() shouldBe
                             AlbumContextMenuState.Data(
-                                albumName = album.albumName,
+                                albumName = album.title,
                                 albumId = album.id,
                                 viewArtistsState = ViewArtistRow.SingleArtist(artist.id),
                             )
@@ -85,24 +75,14 @@ class AlbumContextMenuStateHolderTest :
                 }
 
                 "when album has multiple artists" {
-                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures()
-                    val album = FixtureProvider.albumFixtures().first()
-                    albumRepositoryDep.albumsForArtist.value =
-                        FixtureProvider.artistFixtures().map { artist ->
-                            AlbumsForArtist(
-                                albumId = album.id,
-                                artistId = artist.id,
-                                artistName = artist.artistName,
-                                albumName = album.albumName,
-                                year = album.year,
-                            )
-                        }
+                    val album = FixtureProvider.album(artistCount = 2)
+                    albumRepositoryDep.albums.value = listOf(album)
                     val subject = getSubject(album.id)
                     testStateHolderState(subject) {
                         awaitItem() shouldBe AlbumContextMenuState.Loading
                         awaitItemAs<AlbumContextMenuState.Data>() shouldBe
                             AlbumContextMenuState.Data(
-                                albumName = album.albumName,
+                                albumName = album.title,
                                 albumId = album.id,
                                 viewArtistsState = ViewArtistRow.MultipleArtists,
                             )

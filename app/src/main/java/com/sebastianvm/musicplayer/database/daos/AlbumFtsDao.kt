@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import com.sebastianvm.musicplayer.database.entities.Album
+import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -12,9 +12,9 @@ interface AlbumFtsDao {
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query(
-        "SELECT DISTINCT Album.* FROM Album " +
-            "JOIN AlbumFts ON Album.id == AlbumFts.albumId " +
-            "WHERE AlbumFts MATCH :text ORDER BY Album.albumName"
+        "SELECT DISTINCT AlbumEntity.* FROM AlbumEntity " +
+            "JOIN AlbumFts ON AlbumEntity.id == AlbumFts.albumId " +
+            "WHERE AlbumFts MATCH :text ORDER BY AlbumEntity.title"
     )
-    fun albumsWithText(text: String): Flow<List<Album>>
+    fun albumsWithText(text: String): Flow<List<AlbumWithArtists>>
 }

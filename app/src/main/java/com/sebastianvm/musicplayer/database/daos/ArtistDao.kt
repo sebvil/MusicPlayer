@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.database.daos
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.sebastianvm.musicplayer.database.entities.Artist
+import com.sebastianvm.musicplayer.database.entities.ArtistEntity
 import com.sebastianvm.musicplayer.database.entities.ArtistWithAlbums
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import kotlinx.coroutines.flow.Flow
@@ -12,39 +12,39 @@ import kotlinx.coroutines.flow.Flow
 interface ArtistDao {
 
     @Query(
-        "SELECT * from Artist ORDER BY " +
-            "CASE WHEN :sortOrder='ASCENDING' THEN artistName END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN :sortOrder='DESCENDING' THEN artistName END COLLATE LOCALIZED DESC"
+        "SELECT * from ArtistEntity ORDER BY " +
+            "CASE WHEN :sortOrder='ASCENDING' THEN name END COLLATE LOCALIZED ASC, " +
+            "CASE WHEN :sortOrder='DESCENDING' THEN name END COLLATE LOCALIZED DESC"
     )
-    fun getArtists(sortOrder: MediaSortOrder): Flow<List<Artist>>
+    fun getArtists(sortOrder: MediaSortOrder): Flow<List<ArtistEntity>>
 
     @Transaction
-    @Query("SELECT * from Artist WHERE Artist.id=:artistId")
+    @Query("SELECT * from ArtistEntity WHERE ArtistEntity.id=:artistId")
     fun getArtist(artistId: Long): Flow<ArtistWithAlbums>
 
-    @Query("SELECT COUNT(*) FROM Artist") fun getArtistsCount(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM ArtistEntity") fun getArtistsCount(): Flow<Int>
 
-    @Query("SELECT * FROM ARTIST WHERE Artist.id IN (:artistsIds)")
-    fun getArtists(artistsIds: List<Long>): Flow<List<Artist>>
+    @Query("SELECT * FROM ArtistEntity WHERE ArtistEntity.id IN (:artistsIds)")
+    fun getArtists(artistsIds: List<Long>): Flow<List<ArtistEntity>>
 
     @Transaction
     @Query(
-        "SELECT Artist.* FROM Artist " +
+        "SELECT ArtistEntity.* FROM ArtistEntity " +
             "INNER JOIN ArtistTrackCrossRef " +
-            "ON Artist.id = ArtistTrackCrossRef.artistId " +
+            "ON ArtistEntity.id = ArtistTrackCrossRef.artistId " +
             "WHERE ArtistTrackCrossRef.trackId=:trackId " +
-            "ORDER BY artistName COLLATE LOCALIZED ASC"
+            "ORDER BY name COLLATE LOCALIZED ASC"
     )
-    fun getArtistsForTrack(trackId: Long): Flow<List<Artist>>
+    fun getArtistsForTrack(trackId: Long): Flow<List<ArtistEntity>>
 
     @Transaction
     @Query(
-        "SELECT Artist.* FROM Artist " +
+        "SELECT ArtistEntity.* FROM ArtistEntity " +
             "INNER JOIN " +
             "(SELECT albumId, artistId FROM AlbumsForArtist UNION SELECT albumId, artistId FROM AppearsOnForArtist)" +
-            "ON Artist.id = artistId " +
+            "ON ArtistEntity.id = artistId " +
             "WHERE albumId=:albumId " +
-            "ORDER BY artistName COLLATE LOCALIZED ASC"
+            "ORDER BY name COLLATE LOCALIZED ASC"
     )
-    fun getArtistsForAlbum(albumId: Long): Flow<List<Artist>>
+    fun getArtistsForAlbum(albumId: Long): Flow<List<ArtistEntity>>
 }

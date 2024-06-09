@@ -25,7 +25,7 @@ data class PlaylistWithTracks(
                 entityColumn = "trackId",
             ),
     )
-    val tracks: List<Track>,
+    val tracks: List<TrackEntity>,
 )
 
 data class PlaylistTrackCrossRefKeys(val playlistId: Long, val position: Long)

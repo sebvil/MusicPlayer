@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.database.entities
 import androidx.room.DatabaseView
 
 @DatabaseView(
-    "SELECT Track.id, Track.trackName, Track.artists, Track.albumName, PlaylistTrackCrossRef.position, PlaylistTrackCrossRef.playlistId " +
-        "FROM Track JOIN PlaylistTrackCrossRef ON Track.id=PlaylistTrackCrossRef.trackId"
+    "SELECT TrackEntity.id, TrackEntity.trackName, TrackEntity.artists, TrackEntity.albumName, PlaylistTrackCrossRef.position, PlaylistTrackCrossRef.playlistId " +
+        "FROM TrackEntity JOIN PlaylistTrackCrossRef ON TrackEntity.id=PlaylistTrackCrossRef.trackId"
 )
 data class TrackWithPlaylistPositionView(
     val id: Long,

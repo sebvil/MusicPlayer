@@ -52,7 +52,7 @@ class ArtistListStateHolderTest :
                 awaitItem() shouldBe Loading
                 awaitItem() shouldBe Empty
 
-                val artists = FixtureProvider.artistFixtures().toList()
+                val artists = FixtureProvider.artists()
                 artistRepositoryDep.artists.value = artists
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
@@ -63,7 +63,7 @@ class ArtistListStateHolderTest :
 
         "init subscribes to changes in sort order" {
             val subject = getSubject()
-            artistRepositoryDep.artists.value = FixtureProvider.artistFixtures().toList()
+            artistRepositoryDep.artists.value = FixtureProvider.artists()
             sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.ASCENDING
             testStateHolderState(subject) {
                 awaitItem() shouldBe Loading
