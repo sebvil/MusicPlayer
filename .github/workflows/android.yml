@@ -21,9 +21,13 @@ jobs:
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Run ktfmt check
+        run: ./gradlew ktfmtCheck
+      - name: Run lint
+        run: ./gradlew lint
       - name: Run detekt on main sources
         run: ./gradlew detektMain
       - name: Run detekt on test sources
         run: ./gradlew detektTest
-      - name: Run remaining lint and tests
-        run: ./gradlew check
+      - name: Run tests
+        run: ./gradlew test
