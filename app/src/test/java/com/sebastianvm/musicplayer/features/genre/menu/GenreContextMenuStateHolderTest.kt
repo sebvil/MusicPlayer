@@ -45,17 +45,20 @@ class GenreContextMenuStateHolderTest :
         "handle" -
             {
                 "PlayGenreClicked plays genre" {
-                    val genre = FixtureProvider.genreFixtures().first()
-                    val subject = getSubject(genre.id)
+                    val subject = getSubject(GENRE_ID)
                     subject.handle(GenreContextMenuUserAction.PlayGenreClicked)
                     advanceUntilIdle()
                     playbackManagerDep.playMediaInvocations shouldBe
                         listOf(
                             FakePlaybackManager.PlayMediaArguments(
-                                mediaGroup = MediaGroup.Genre(genreId = genre.id),
+                                mediaGroup = MediaGroup.Genre(genreId = GENRE_ID),
                                 initialTrackIndex = 0,
                             )
                         )
                 }
             }
-    })
+    }) {
+    companion object {
+        private const val GENRE_ID = 0L
+    }
+}

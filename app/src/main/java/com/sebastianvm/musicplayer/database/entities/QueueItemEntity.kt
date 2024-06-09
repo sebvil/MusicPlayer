@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.sebastianvm.musicplayer.model.QueuedTrack
 
 @Entity(
     foreignKeys =

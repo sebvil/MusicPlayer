@@ -77,7 +77,7 @@ class AlbumListStateHolderTest :
                             sortOption = SortOptions.AlbumListSortOptions.ALBUM,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
-                    albumRepositoryDep.albums.value = FixtureProvider.albumFixtures().toList()
+                    albumRepositoryDep.albums.value = FixtureProvider.albums().toList()
                     sortPreferencesRepositoryDep.albumListSortPreferences.value = initialPrefs
 
                     testStateHolderState(subject) {

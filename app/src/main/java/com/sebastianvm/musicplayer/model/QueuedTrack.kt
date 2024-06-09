@@ -1,7 +1,6 @@
-package com.sebastianvm.musicplayer.database.entities
+package com.sebastianvm.musicplayer.model
 
 import androidx.media3.common.MediaItem
-import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import com.sebastianvm.musicplayer.util.extensions.uniqueId
 

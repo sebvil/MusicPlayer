@@ -93,7 +93,7 @@ class AlbumContextMenuStateHolderTest :
         "handle" -
             {
                 "PlayAlbumClicked plays album" {
-                    val album = FixtureProvider.albumFixtures().first()
+                    val album = FixtureProvider.albums().first()
                     val subject = getSubject(album.id)
                     subject.handle(AlbumContextMenuUserAction.PlayAlbumClicked)
                     advanceUntilIdle()
@@ -115,7 +115,7 @@ class AlbumContextMenuStateHolderTest :
                         navOptions =
                             NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                     )
-                    val album = FixtureProvider.albumFixtures().first()
+                    val album = FixtureProvider.albums().first()
                     val subject = getSubject(album.id)
                     subject.handle(AlbumContextMenuUserAction.ViewArtistClicked(ARTIST_ID))
                     navControllerDep.backStack.last() shouldBe
@@ -137,7 +137,7 @@ class AlbumContextMenuStateHolderTest :
                         navOptions =
                             NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                     )
-                    val album = FixtureProvider.albumFixtures().first()
+                    val album = FixtureProvider.albums().first()
                     val subject = getSubject(album.id)
                     subject.handle(AlbumContextMenuUserAction.ViewArtistsClicked)
                     navControllerDep.backStack.last() shouldBe

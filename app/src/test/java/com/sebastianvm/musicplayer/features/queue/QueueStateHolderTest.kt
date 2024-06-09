@@ -67,7 +67,7 @@ class QueueStateHolderTest :
             {
                 "DragEnded moves item" {
                     val subject = getSubject()
-                    val tracks = FixtureProvider.trackFixtures()
+                    val tracks = queueRepositoryDep.queuedTracks.value
 
                     testStateHolderState(subject) {
                         awaitItem() shouldBe QueueState.Loading

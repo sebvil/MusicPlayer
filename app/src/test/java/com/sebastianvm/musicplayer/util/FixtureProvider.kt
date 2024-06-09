@@ -6,16 +6,15 @@ import com.navercorp.fixturemonkey.kotlin.giveMe
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.musicplayer.database.entities.GenreEntity
-import com.sebastianvm.musicplayer.database.entities.QueuedTrack
-import com.sebastianvm.musicplayer.database.entities.TrackListMetadata
-import com.sebastianvm.musicplayer.database.entities.TrackListWithMetadata
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.model.Artist
 import com.sebastianvm.musicplayer.model.Genre
+import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.model.TrackListMetadata
+import com.sebastianvm.musicplayer.model.TrackListWithMetadata
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
@@ -59,6 +58,10 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
+    private fun tracks(): List<Track> {
+        return fixtureMonkey.giveMe(DEFAULT_LIST_SIZE)
+    }
+
     fun playbackStateFixtures(): List<TrackPlayingState> {
         return listOf(
             TrackPlayingState(
@@ -81,18 +84,6 @@ object FixtureProvider {
         )
     }
 
-    private fun longList(): List<Long> = listOf(0, 1, 2, 3)
-
-    private fun stringList() = listOf("", "Hello, World!")
-
-    fun trackFixtures(): List<Track> {
-        return longList().flatMap { long ->
-            stringList().map { string ->
-                Track(id = long, name = string, albumId = long, artists = emptyList())
-            }
-        }
-    }
-
     fun trackListWithMetadataFixtures(): List<TrackListWithMetadata> {
         val metadataList =
             listOf(
@@ -105,20 +96,15 @@ object FixtureProvider {
             )
         return metadataList.flatMap {
             listOf(
-                TrackListWithMetadata(metaData = it, trackList = trackFixtures().toList()),
+                TrackListWithMetadata(metaData = it, trackList = tracks().toList()),
                 TrackListWithMetadata(metaData = it, trackList = listOf()),
             )
         }
     }
 
-    private fun trackListSortOptions(): List<SortOptions.TrackListSortOptions> =
-        SortOptions.TrackListSortOptions.entries
-
-    fun sortOrders() = MediaSortOrder.entries
-
     fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
-        return trackListSortOptions().flatMap { option ->
-            sortOrders().map { order ->
+        return SortOptions.TrackListSortOptions.entries.flatMap { option ->
+            MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }
         }
@@ -126,24 +112,14 @@ object FixtureProvider {
 
     fun albumSortPreferences(): List<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
         return SortOptions.AlbumListSortOptions.entries.flatMap { option ->
-            sortOrders().map { order ->
+            MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }
         }
     }
 
-    fun albumFixtures(size: Int = DEFAULT_LIST_SIZE): List<Album> {
-        return fixtureMonkey.giveMe(size)
-    }
-
-    fun genreFixtures(): List<GenreEntity> {
-        return longList().flatMap { long ->
-            stringList().map { string -> GenreEntity(id = long, name = string) }
-        }
-    }
-
     fun queueItemsFixtures(): List<QueuedTrack> {
-        return trackFixtures().mapIndexed { index, track ->
+        return tracks().mapIndexed { index, track ->
             QueuedTrack(
                 id = track.id,
                 trackName = track.name,
