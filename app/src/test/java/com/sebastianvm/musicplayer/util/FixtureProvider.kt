@@ -1,5 +1,10 @@
 package com.sebastianvm.musicplayer.util
 
+import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMe
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.set
 import com.sebastianvm.musicplayer.database.entities.Album
 import com.sebastianvm.musicplayer.database.entities.Artist
 import com.sebastianvm.musicplayer.database.entities.Genre
@@ -18,6 +23,16 @@ import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlin.time.Duration.Companion.seconds
 
 object FixtureProvider {
+
+    private val fixtureMonkey = FixtureMonkey.builder().plugin(KotlinPlugin()).build()
+
+    fun albums(size: Int = DEFAULT_LIST_SIZE): List<Album> {
+        return fixtureMonkey.giveMe(size)
+    }
+
+    fun artist(id: Long = DEFAULT_ID): Artist {
+        return fixtureMonkey.giveMeBuilder<Artist>().set(Artist::id, id).build().sample()
+    }
 
     fun playbackStateFixtures(): List<TrackPlayingState> {
         return listOf(
@@ -132,4 +147,7 @@ object FixtureProvider {
             MediaQueueItem(trackId = track.id, queuePosition = index, queueItemId = track.id)
         }
     }
+
+    private const val DEFAULT_LIST_SIZE = 10
+    private const val DEFAULT_ID = 0L
 }

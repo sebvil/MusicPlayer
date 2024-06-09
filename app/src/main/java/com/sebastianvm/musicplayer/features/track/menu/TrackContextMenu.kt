@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Artist
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
@@ -18,6 +17,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class TrackContextMenu(
     override val arguments: TrackContextMenuArguments,
@@ -55,14 +55,14 @@ private fun TrackContextMenu(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val addedToQueue = stringResource(R.string.added_to_queue)
+    val addedToQueue = stringResource(RString.added_to_queue)
     when (state) {
         is TrackContextMenuState.Data -> {
             ContextMenu(menuTitle = state.trackName, modifier = modifier) {
                 LazyColumn {
                     item {
                         MenuItem(
-                            text = stringResource(id = R.string.add_to_queue),
+                            text = stringResource(id = RString.add_to_queue),
                             icon = Icons.QueueAdd.icon(),
                             onItemClicked = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
@@ -78,7 +78,7 @@ private fun TrackContextMenu(
 
                     item {
                         MenuItem(
-                            text = stringResource(id = R.string.add_to_playlist),
+                            text = stringResource(id = RString.add_to_playlist),
                             icon = Icons.QueueAdd.icon(),
                             onItemClicked = { TODO() },
                         )
@@ -88,7 +88,7 @@ private fun TrackContextMenu(
                         is ViewArtistRow.MultipleArtists -> {
                             item {
                                 MenuItem(
-                                    text = stringResource(id = R.string.view_artists),
+                                    text = stringResource(id = RString.view_artists),
                                     icon = Icons.Artist.icon(),
                                     onItemClicked = {
                                         handle(TrackContextMenuUserAction.ViewArtistsClicked)
@@ -100,7 +100,7 @@ private fun TrackContextMenu(
                         is ViewArtistRow.SingleArtist -> {
                             item {
                                 MenuItem(
-                                    text = stringResource(id = R.string.view_artist),
+                                    text = stringResource(id = RString.view_artist),
                                     icon = Icons.Artist.icon(),
                                     onItemClicked = {
                                         handle(
@@ -117,7 +117,7 @@ private fun TrackContextMenu(
                     state.viewAlbumState?.let {
                         item {
                             MenuItem(
-                                text = stringResource(id = R.string.view_album),
+                                text = stringResource(id = RString.view_album),
                                 icon = Icons.Album.icon(),
                                 onItemClicked = {
                                     handle(TrackContextMenuUserAction.ViewAlbumClicked(it.albumId))
@@ -129,7 +129,7 @@ private fun TrackContextMenu(
                     state.removeFromPlaylistRow?.let {
                         item {
                             MenuItem(
-                                text = stringResource(id = R.string.remove_from_playlist),
+                                text = stringResource(id = RString.remove_from_playlist),
                                 icon = Icons.PlaylistRemove.icon(),
                                 onItemClicked = {
                                     handle(
@@ -146,7 +146,7 @@ private fun TrackContextMenu(
             }
         }
         is TrackContextMenuState.Loading -> {
-            ContextMenu(menuTitle = stringResource(id = R.string.loading), modifier = modifier) {}
+            ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }
     }
 }

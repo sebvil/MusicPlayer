@@ -20,8 +20,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
+import com.sebastianvm.musicplayer.util.resources.RString
 
 @Composable
 fun SearchField(
@@ -41,7 +41,7 @@ fun SearchField(
         },
         placeholder = {
             Text(
-                text = stringResource(R.string.search),
+                text = stringResource(RString.search),
                 style = LocalTextStyle.current,
                 color = LocalContentColor.current,
             )
@@ -50,7 +50,7 @@ fun SearchField(
             IconButton(onClick = { onUpButtonClicked() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.search),
+                    contentDescription = stringResource(id = RString.search),
                 )
             }
         },
@@ -67,7 +67,7 @@ fun SearchField(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = R.string.search),
+                                contentDescription = stringResource(id = RString.search),
                             )
                         }
                     }

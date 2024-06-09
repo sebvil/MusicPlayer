@@ -9,6 +9,7 @@ core-ktx = "1.13.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
 detekt-compose = "0.4.1"
+fixture-monkey = "1.0.17"
 kotest = "5.9.0"
 kotlin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
@@ -35,6 +36,7 @@ coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+fixture-monkey = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin", version.ref = "fixture-monkey" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
@@ -69,6 +71,7 @@ org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kot
 
 [bundles]
 testing = [
+    "fixture-monkey",
     "kotest-assertions-core",
     "kotest-framework-datatest",
     "kotest-runner-junit5",

@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.Text
@@ -30,6 +29,7 @@ import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
+import com.sebastianvm.musicplayer.util.resources.RString
 
 data class PlaylistListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -96,7 +96,7 @@ fun PlaylistList(
                 EmptyScreen(
                     message = {
                         Text(
-                            text = stringResource(R.string.no_playlists_try_creating_one),
+                            text = stringResource(RString.no_playlists_try_creating_one),
                             textAlign = TextAlign.Center,
                         )
                     },
@@ -107,7 +107,7 @@ fun PlaylistList(
                             }
                         ) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            Text(text = stringResource(id = R.string.create_playlist))
+                            Text(text = stringResource(id = RString.create_playlist))
                         }
                     },
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),

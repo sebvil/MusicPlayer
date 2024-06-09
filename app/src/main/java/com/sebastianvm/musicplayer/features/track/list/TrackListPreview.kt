@@ -69,7 +69,7 @@ package com.sebastianvm.musicplayer.features.track.list // package
 //                trackList = trackList,
 //                trackListName = PreviewUtil.randomString(),
 //                trackListType = MediaGroup.Album(albumId = 0),
-//                playbackResult = PlaybackResult.Error(R.string.playback_error),
+//                playbackResult = PlaybackResult.Error(RString.playback_error),
 //                headerImage = MediaArtImageStatePreviewParamsProvider().values.toList().random()
 //            )
 //        )

@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.repository.fts
 
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.util.resources.RString
 
 enum class SearchMode(@StringRes val res: Int) {
-    SONGS(R.string.songs),
-    ARTISTS(R.string.artists),
-    ALBUMS(R.string.albums),
-    GENRES(R.string.genres),
-    PLAYLISTS(R.string.playlists)
+    SONGS(RString.songs),
+    ARTISTS(RString.artists),
+    ALBUMS(RString.albums),
+    GENRES(RString.genres),
+    PLAYLISTS(RString.playlists)
 }

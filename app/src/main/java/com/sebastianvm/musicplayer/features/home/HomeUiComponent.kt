@@ -15,13 +15,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.launch
 
 class HomeUiComponent(val navController: NavController) :
@@ -93,9 +93,9 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
 }
 
 private enum class TopLevelScreen(@StringRes val screenName: Int) {
-    ALL_SONGS(R.string.all_songs),
-    ARTISTS(R.string.artists),
-    ALBUMS(R.string.albums),
-    GENRES(R.string.genres),
-    PLAYLISTS(R.string.playlists)
+    ALL_SONGS(RString.all_songs),
+    ARTISTS(RString.artists),
+    ALBUMS(RString.albums),
+    GENRES(RString.genres),
+    PLAYLISTS(RString.playlists)
 }

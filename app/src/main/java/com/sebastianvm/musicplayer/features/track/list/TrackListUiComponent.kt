@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -35,6 +34,7 @@ import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScr
 import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
+import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 data class TrackListUiComponent(
@@ -79,7 +79,7 @@ fun TrackList(
         modifier = modifier.fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
-                message = R.string.no_tracks_found,
+                message = RString.no_tracks_found,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
@@ -99,7 +99,7 @@ fun TrackList(
         floatingActionButton = {
             if (state.trackListType is MediaGroup.Playlist) {
                 ExtendedFloatingActionButton(
-                    text = { Text(text = stringResource(id = R.string.add_tracks)) },
+                    text = { Text(text = stringResource(id = RString.add_tracks)) },
                     icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                     onClick = {
                         //                        val trackListType = state.trackListType
@@ -135,7 +135,7 @@ fun TrackListLayout(
                             onClick = { handle(TrackListUserAction.SortButtonClicked) },
                             modifier = Modifier.padding(start = 16.dp),
                         ) {
-                            Text(text = "${stringResource(id = R.string.sort_by)}:")
+                            Text(text = "${stringResource(id = RString.sort_by)}:")
                             Icon(
                                 imageVector =
                                     if (it.sortOrder == MediaSortOrder.ASCENDING)
@@ -169,7 +169,7 @@ fun TrackListLayout(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = R.string.more),
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
                         },

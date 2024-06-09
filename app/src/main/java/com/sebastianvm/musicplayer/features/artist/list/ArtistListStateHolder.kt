@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -58,7 +58,7 @@ class ArtistListStateHolder(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                             sortButtonState =
-                                SortButton.State(text = R.string.artist_name, sortOrder = sortOrder),
+                                SortButton.State(text = RString.artist_name, sortOrder = sortOrder),
                         )
                     )
                 }

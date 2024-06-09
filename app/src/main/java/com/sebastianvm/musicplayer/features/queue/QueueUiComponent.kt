@@ -29,13 +29,13 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
+import com.sebastianvm.musicplayer.util.resources.RString
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -92,7 +92,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
     LazyColumn(state = lazyListState, modifier = modifier) {
         item {
             Text(
-                text = stringResource(R.string.now_playing),
+                text = stringResource(RString.now_playing),
                 modifier = Modifier.padding(all = 12.dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 20.sp,
@@ -104,7 +104,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
 
         item {
             Text(
-                text = stringResource(R.string.next_up),
+                text = stringResource(RString.next_up),
                 modifier = Modifier.padding(all = 12.dp),
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 20.sp,
@@ -156,7 +156,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                         ) {
                             Icon(
                                 imageVector = Icons.Default.DragIndicator,
-                                contentDescription = stringResource(R.string.drag),
+                                contentDescription = stringResource(RString.drag),
                             )
                         }
                     },

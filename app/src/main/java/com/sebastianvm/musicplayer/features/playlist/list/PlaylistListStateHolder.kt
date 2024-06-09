@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
-import com.sebastianvm.musicplayer.R
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -17,6 +16,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -96,7 +96,7 @@ class PlaylistListStateHolder(
                         playlists =
                             playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
                         sortButtonState =
-                            SortButton.State(text = R.string.playlist_name, sortOrder = sortOrder),
+                            SortButton.State(text = RString.playlist_name, sortOrder = sortOrder),
                         isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
                         isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
                     )
