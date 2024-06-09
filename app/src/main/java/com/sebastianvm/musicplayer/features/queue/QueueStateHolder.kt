@@ -72,7 +72,11 @@ class QueueStateHolder(
 fun QueuedTrack.toQueueItem(): QueueItem {
     return QueueItem(
         trackRow =
-            TrackRow.State(id = id, trackName = trackName, artists = artists.ifEmpty { null }),
+            TrackRow.State(
+                id = track.id,
+                trackName = track.name,
+                artists = track.artists.joinToString { it.name }.ifEmpty { null },
+            ),
         position = queuePosition,
         queueItemId = queueItemId,
     )

@@ -26,6 +26,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
+import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
@@ -142,11 +143,13 @@ fun LazyListScope.artistScreenSection(
     items(items = state.albums, key = { it.id }) { album ->
         AlbumRow(
             state = album,
-            onMoreIconClicked = {
-                handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id))
-            },
             modifier =
                 Modifier.clickable { handle(ArtistUserAction.AlbumClicked(albumId = album.id)) },
+            trailingContent = {
+                OverflowIconButton(
+                    onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) }
+                )
+            },
         )
     }
 }

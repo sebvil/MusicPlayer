@@ -1,9 +1,11 @@
 package com.sebastianvm.musicplayer.repository.queue
 
+import com.sebastianvm.musicplayer.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.model.QueuedTrack
+import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider.queueItemsFixtures
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,10 +43,19 @@ class FakeQueueRepository : QueueRepository {
 
     override suspend fun saveQueue(
         nowPlayingInfo: NowPlayingInfo,
-        queuedTracksIds: List<QueuedTrack>,
+        queuedTracks: List<BasicQueuedTrack>,
     ) {
         this.nowPlayingInfo.update { nowPlayingInfo }
-        queuedTracks.update { queuedTracksIds }
+        this.queuedTracks.update {
+            queuedTracks.map {
+                val track = FixtureProvider.track(id = it.trackId)
+                QueuedTrack(
+                    track = track,
+                    queuePosition = it.queuePosition,
+                    queueItemId = it.queueItemId,
+                )
+            }
+        }
     }
 
     override fun moveQueueItem(from: Int, to: Int) {
@@ -56,15 +67,9 @@ class FakeQueueRepository : QueueRepository {
     }
 
     override suspend fun addToQueue(trackId: Long) {
+        val track = FixtureProvider.track(trackId)
         queuedTracks.update {
-            it +
-                QueuedTrack(
-                    id = trackId,
-                    artists = "",
-                    trackName = "",
-                    queuePosition = it.size,
-                    queueItemId = trackId,
-                )
+            it + QueuedTrack(track = track, queuePosition = it.size, queueItemId = trackId)
         }
     }
 

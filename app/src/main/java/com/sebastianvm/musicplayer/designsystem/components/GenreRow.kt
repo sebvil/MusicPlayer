@@ -15,10 +15,14 @@ object GenreRow {
 }
 
 @Composable
-fun GenreRow(state: GenreRow.State, onMoreIconClicked: () -> Unit, modifier: Modifier = Modifier) {
+fun GenreRow(
+    state: GenreRow.State,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null,
+) {
     ListItem(
         headlineContent = { Text(text = state.genreName) },
         modifier = modifier,
-        trailingContent = { OverflowIconButton(onClick = onMoreIconClicked) },
+        trailingContent = trailingContent,
     )
 }

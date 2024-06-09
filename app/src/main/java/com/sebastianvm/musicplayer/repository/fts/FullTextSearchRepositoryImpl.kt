@@ -9,8 +9,8 @@ import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.BasicPlaylist
 import com.sebastianvm.musicplayer.model.Genre
+import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.flow.Flow
 
@@ -40,7 +40,7 @@ class FullTextSearchRepositoryImpl(
         return genreFtsDao.genresWithText(searchString(text)).mapValues { it.asExternalModel() }
     }
 
-    override fun searchPlaylists(text: String): Flow<List<BasicPlaylist>> {
+    override fun searchPlaylists(text: String): Flow<List<Playlist>> {
         return playlistFtsDao.playlistsWithText(searchString(text)).mapValues {
             it.asExternalModel()
         }

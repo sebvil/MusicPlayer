@@ -7,22 +7,11 @@ import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
-import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
-import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
@@ -77,9 +66,6 @@ data class SearchState(val selectedOption: SearchMode, val searchResults: List<S
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
-
-    data class SearchResultOverflowMenuIconClicked(val id: Long, val mediaType: SearchMode) :
-        SearchUserAction
 
     data class TextChanged(val newText: String) : SearchUserAction
 
@@ -159,52 +145,6 @@ class SearchStateHolder(
         )
     }
 
-    private fun onTrackSearchResultOverflowMenuIconClicked(trackId: Long) {
-        navController.push(
-            TrackContextMenu(
-                arguments =
-                    TrackContextMenuArguments(
-                        trackId = trackId,
-                        trackPositionInList = 0,
-                        trackList = MediaGroup.SingleTrack(trackId),
-                    ),
-                navController = navController,
-            ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
-        )
-    }
-
-    private fun onArtistSearchResultOverflowMenuIconClicked(artistId: Long) {
-        navController.push(
-            ArtistContextMenu(arguments = ArtistContextMenuArguments(artistId = artistId)),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
-        )
-    }
-
-    private fun onAlbumSearchResultOverflowMenuIconClicked(albumId: Long) {
-        navController.push(
-            AlbumContextMenu(
-                arguments = AlbumContextMenuArguments(albumId = albumId),
-                navController = navController,
-            ),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
-        )
-    }
-
-    private fun onGenreSearchResultOverflowMenuIconClicked(genreId: Long) {
-        navController.push(
-            GenreContextMenu(arguments = GenreContextMenuArguments(genreId = genreId)),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
-        )
-    }
-
-    private fun onPlaylistSearchResultOverflowMenuIconClicked(playlistId: Long) {
-        navController.push(
-            PlaylistContextMenu(arguments = PlaylistContextMenuArguments(playlistId = playlistId)),
-            navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
-        )
-    }
-
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {
@@ -214,15 +154,6 @@ class SearchStateHolder(
                     SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
                     SearchMode.GENRES -> onGenreSearchResultClicked(action.id)
                     SearchMode.PLAYLISTS -> onPlaylistSearchResultClicked(action.id)
-                }
-            }
-            is SearchUserAction.SearchResultOverflowMenuIconClicked -> {
-                when (action.mediaType) {
-                    SearchMode.SONGS -> onTrackSearchResultOverflowMenuIconClicked(action.id)
-                    SearchMode.ARTISTS -> onArtistSearchResultOverflowMenuIconClicked(action.id)
-                    SearchMode.ALBUMS -> onAlbumSearchResultOverflowMenuIconClicked(action.id)
-                    SearchMode.GENRES -> onGenreSearchResultOverflowMenuIconClicked(action.id)
-                    SearchMode.PLAYLISTS -> onPlaylistSearchResultOverflowMenuIconClicked(action.id)
                 }
             }
             is SearchUserAction.SearchModeChanged -> {

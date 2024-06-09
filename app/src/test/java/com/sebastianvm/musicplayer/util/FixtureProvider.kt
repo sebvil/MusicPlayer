@@ -11,6 +11,7 @@ import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.model.Artist
 import com.sebastianvm.musicplayer.model.Genre
+import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.model.TrackListMetadata
@@ -58,8 +59,24 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
+    fun track(id: Long = DEFAULT_ID): Track {
+        return fixtureMonkey.giveMeBuilder<Track>().set(Track::id, id).build().sample()
+    }
+
     private fun tracks(): List<Track> {
         return fixtureMonkey.giveMe(DEFAULT_LIST_SIZE)
+    }
+
+    fun playlists(size: Int = DEFAULT_LIST_SIZE): List<Playlist> {
+        return fixtureMonkey.giveMe(size)
+    }
+
+    fun playlist(name: String): Playlist {
+        return fixtureMonkey.giveMeBuilder<Playlist>().set(Playlist::name, name).build().sample()
+    }
+
+    fun playlist(id: Long = DEFAULT_ID): Playlist {
+        return fixtureMonkey.giveMeBuilder<Playlist>().set(Playlist::id, id).build().sample()
     }
 
     fun playbackStateFixtures(): List<TrackPlayingState> {
@@ -120,13 +137,7 @@ object FixtureProvider {
 
     fun queueItemsFixtures(): List<QueuedTrack> {
         return tracks().mapIndexed { index, track ->
-            QueuedTrack(
-                id = track.id,
-                trackName = track.name,
-                artists = track.artists.joinToString(),
-                queuePosition = index,
-                queueItemId = track.id,
-            )
+            QueuedTrack(track = track, queuePosition = index, queueItemId = track.id)
         }
     }
 

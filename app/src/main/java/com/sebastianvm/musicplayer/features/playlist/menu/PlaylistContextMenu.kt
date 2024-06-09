@@ -17,7 +17,10 @@ import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.util.resources.RString
 
-data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArguments) :
+data class PlaylistContextMenu(
+    override val arguments: PlaylistContextMenuArguments,
+    val delegate: PlaylistContextMenuDelegate,
+) :
     BaseUiComponent<
         PlaylistContextMenuArguments,
         PlaylistContextMenuState,
@@ -26,7 +29,12 @@ data class PlaylistContextMenu(override val arguments: PlaylistContextMenuArgume
     >() {
 
     override fun createStateHolder(dependencies: Dependencies): PlaylistContextMenuStateHolder {
-        return getPlaylistContextMenuStateHolder(dependencies, arguments)
+        return PlaylistContextMenuStateHolder(
+            arguments = arguments,
+            playlistRepository = dependencies.repositoryProvider.playlistRepository,
+            playbackManager = dependencies.repositoryProvider.playbackManager,
+            delegate = delegate,
+        )
     }
 
     @Composable
