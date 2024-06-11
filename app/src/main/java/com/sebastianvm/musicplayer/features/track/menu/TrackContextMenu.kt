@@ -31,9 +31,11 @@ data class TrackContextMenu(
     >() {
 
     override fun createStateHolder(dependencies: Dependencies): TrackContextMenuStateHolder {
-        return getTrackContextMenuStateHolder(
-            dependencies = dependencies,
+        return TrackContextMenuStateHolder(
             arguments = arguments,
+            trackRepository = dependencies.repositoryProvider.trackRepository,
+            playlistRepository = dependencies.repositoryProvider.playlistRepository,
+            queueRepository = dependencies.repositoryProvider.queueRepository,
             navController = navController,
         )
     }

@@ -1,7 +1,11 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
+import com.sebastianvm.musicplayer.designsystem.icons.Album
+import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -10,17 +14,18 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.model.TrackListWithMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
+import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
+import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -31,7 +36,6 @@ import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
-import kotlinx.coroutines.flow.update
 
 class TrackListStateHolderTest :
     FreeSpec({
@@ -82,39 +86,93 @@ class TrackListStateHolderTest :
 
         "init subscribes to changes in track list" -
             {
-                withData(FixtureProvider.trackListWithMetadataFixtures()) { trackListWithMetadata ->
+                "for all tracks" {
                     val subject = getSubject()
-                    trackRepositoryDep.trackListsWithMetadata.update {
-                        it +
-                            (MediaGroup.AllTracks to
-                                TrackListWithMetadata(metaData = null, trackList = listOf()))
+                    trackRepositoryDep.tracks.value = emptyList()
+
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+                        awaitItem() shouldBe Empty
+
+                        val tracks = FixtureProvider.tracks()
+                        trackRepositoryDep.tracks.value = tracks
+
+                        val state = awaitItemAs<Data<TrackListState>>().state
+                        state.tracks shouldBe tracks.map { TrackRow.State.fromTrack(it) }
+                        state.headerState shouldBe Header.State.None
                     }
-                    sortPreferencesRepositoryDep.allTracksSortPreferences.value =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOptions.TRACK,
-                            sortOrder = MediaSortOrder.ASCENDING,
-                        )
+                }
+
+                "for album" {
+                    val album = FixtureProvider.album(id = ALBUM_ID)
+                    val tracksInAlbum = List(10) { FixtureProvider.track(albumId = ALBUM_ID) }
+                    val tracksNotInAlbum =
+                        List(10) { FixtureProvider.track(albumId = ALBUM_ID + 1) }
+                    trackRepositoryDep.tracks.value = tracksInAlbum + tracksNotInAlbum
+                    trackRepositoryDep.albums.value = listOf(album)
+
+                    val subject = getSubject(trackList = MediaGroup.Album(albumId = ALBUM_ID))
                     testStateHolderState(subject) {
                         awaitItem() shouldBe Loading
 
-                        awaitItem() shouldBe Empty
-                        trackRepositoryDep.trackListsWithMetadata.update {
-                            it + (MediaGroup.AllTracks to trackListWithMetadata)
+                        val state = awaitItemAs<Data<TrackListState>>().state
+                        state.tracks shouldBe tracksInAlbum.map { TrackRow.State.fromTrack(it) }
+                        state.headerState shouldBe
+                            Header.State.WithImage(
+                                title = album.title,
+                                imageState =
+                                    MediaArtImageState(
+                                        imageUri = album.imageUri,
+                                        backupImage = Icons.Album
+                                    )
+                            )
+                    }
+                }
+
+                "for genre" {
+                    val genre = FixtureProvider.genre(id = GENRE_ID)
+                    val size = 10
+                    val tracks = FixtureProvider.tracks(size = size)
+                    val tracksInGenre = tracks.take(size / 2)
+                    trackRepositoryDep.tracks.value = tracks
+                    trackRepositoryDep.genres.value = listOf(genre)
+                    trackRepositoryDep.genreTrackCrossRefs.value =
+                        tracksInGenre.map {
+                            GenreTrackCrossRef(genreId = genre.id, trackId = it.id)
                         }
 
-                        if (trackListWithMetadata.trackList.isEmpty()) {
-                            expectNoEvents()
-                        } else {
-                            with(awaitItem()) {
-                                shouldBeInstanceOf<Data<TrackListState>>()
-                                state.tracks shouldBe
-                                    trackListWithMetadata.trackList.map {
-                                        TrackRow.State.fromTrack(it)
-                                    }
-                                state.headerState shouldBe
-                                    trackListWithMetadata.metaData.toHeaderState()
-                            }
+                    val subject = getSubject(trackList = MediaGroup.Genre(genreId = GENRE_ID))
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+
+                        val state = awaitItemAs<Data<TrackListState>>().state
+                        state.tracks shouldBe tracksInGenre.map { TrackRow.State.fromTrack(it) }
+                        state.headerState shouldBe Header.State.Simple(title = genre.name)
+                    }
+                }
+
+                "for playlist" {
+                    val playlist = FixtureProvider.playlist(id = PLAYLIST_ID)
+                    val size = 10
+                    val tracks = FixtureProvider.tracks(size = size)
+                    val tracksInPlaylist = tracks.take(size / 2)
+                    trackRepositoryDep.tracks.value = tracks
+                    trackRepositoryDep.playlists.value = listOf(playlist)
+                    trackRepositoryDep.playlistTrackCrossRefs.value =
+                        tracksInPlaylist.mapIndexed { index, track ->
+                            PlaylistTrackCrossRef(
+                                playlistId = playlist.id,
+                                trackId = track.id,
+                                position = index.toLong()
+                            )
                         }
+                    val subject =
+                        getSubject(trackList = MediaGroup.Playlist(playlistId = PLAYLIST_ID))
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+                        val state = awaitItemAs<Data<TrackListState>>().state
+                        state.tracks shouldBe tracksInPlaylist.map { TrackRow.State.fromTrack(it) }
+                        state.headerState shouldBe Header.State.Simple(title = playlist.name)
                     }
                 }
             }
@@ -129,19 +187,43 @@ class TrackListStateHolderTest :
                             MediaGroup.Playlist(playlistId = 0),
                         )
                     ) { trackListType ->
-                        val subject = getSubject(trackList = trackListType)
                         val initialSortPreferences =
                             MediaSortPreferences(
                                 sortOption = SortOptions.TrackListSortOptions.TRACK,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
-                        trackRepositoryDep.trackListsWithMetadata.update {
-                            it +
-                                (trackListType to
-                                    FixtureProvider.trackListWithMetadataFixtures().first())
+                        val tracks = FixtureProvider.tracks()
+                        trackRepositoryDep.tracks.value = tracks
+                        when (trackListType) {
+                            is MediaGroup.Genre -> {
+                                trackRepositoryDep.genres.value =
+                                    listOf(FixtureProvider.genre(id = trackListType.genreId))
+                                trackRepositoryDep.genreTrackCrossRefs.value =
+                                    tracks.map {
+                                        GenreTrackCrossRef(
+                                            genreId = trackListType.genreId,
+                                            trackId = it.id
+                                        )
+                                    }
+                            }
+                            is MediaGroup.Playlist -> {
+                                trackRepositoryDep.playlists.value =
+                                    listOf(FixtureProvider.playlist(id = trackListType.playlistId))
+                                trackRepositoryDep.playlistTrackCrossRefs.value =
+                                    tracks.map {
+                                        PlaylistTrackCrossRef(
+                                            playlistId = trackListType.playlistId,
+                                            trackId = it.id,
+                                            position = 0
+                                        )
+                                    }
+                            }
+                            else -> Unit
                         }
 
                         updateSortPreferences(trackListType, initialSortPreferences)
+
+                        val subject = getSubject(trackList = trackListType)
 
                         testStateHolderState(subject) {
                             awaitItem() shouldBe Loading
@@ -175,12 +257,9 @@ class TrackListStateHolderTest :
         "init does not subscribe to changes in sort order for album" -
             {
                 withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
-                    val subject = getSubject(trackList = MediaGroup.Album(albumId = 0))
-                    trackRepositoryDep.trackListsWithMetadata.update {
-                        it +
-                            (MediaGroup.Album(albumId = 0) to
-                                FixtureProvider.trackListWithMetadataFixtures().first())
-                    }
+                    val subject = getSubject(trackList = MediaGroup.Album(albumId = ALBUM_ID))
+                    trackRepositoryDep.tracks.value = FixtureProvider.tracks(albumId = ALBUM_ID)
+                    trackRepositoryDep.albums.value = listOf(FixtureProvider.album(id = ALBUM_ID))
 
                     testStateHolderState(subject) {
                         awaitItem() shouldBe Loading
@@ -267,5 +346,8 @@ class TrackListStateHolderTest :
     companion object {
         private const val TRACK_ID = 1L
         private const val TRACK_INDEX = 0
+        private const val ALBUM_ID = 1L
+        private const val GENRE_ID = 1L
+        private const val PLAYLIST_ID = 1L
     }
 }

@@ -55,16 +55,33 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
+    fun genre(id: Long = DEFAULT_ID): Genre {
+        return fixtureMonkey.giveMeBuilder<Genre>().set(Genre::id, id).build().sample()
+    }
+
     fun genres(size: Int = DEFAULT_LIST_SIZE): List<Genre> {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun track(id: Long = DEFAULT_ID): Track {
-        return fixtureMonkey.giveMeBuilder<Track>().set(Track::id, id).build().sample()
+    fun track(id: Long = DEFAULT_ID, artistCount: Int = 1, albumId: Long = DEFAULT_ID): Track {
+        return fixtureMonkey
+            .giveMeBuilder<Track>()
+            .set(Track::id, id)
+            .size(Track::artists, artistCount)
+            .set(Track::albumId, albumId)
+            .build()
+            .sample()
     }
 
-    private fun tracks(): List<Track> {
-        return fixtureMonkey.giveMe(DEFAULT_LIST_SIZE)
+    fun tracks(size: Int = DEFAULT_LIST_SIZE, albumId: Long = DEFAULT_ID): List<Track> {
+        return fixtureMonkey
+            .giveMeBuilder<Track>()
+            .set(Track::albumId, albumId)
+            .build()
+            .list()
+            .ofSize(size)
+            .uniqueElements { it.id }
+            .sample()
     }
 
     fun playlists(size: Int = DEFAULT_LIST_SIZE): List<Playlist> {

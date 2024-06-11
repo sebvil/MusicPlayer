@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playlist
 
+import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,8 @@ import kotlinx.coroutines.flow.update
 class FakePlaylistRepository : PlaylistRepository {
 
     val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(FixtureProvider.playlists())
+    val playlistTrackCrossRef: MutableStateFlow<List<PlaylistTrackCrossRef>> =
+        MutableStateFlow(emptyList())
 
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlists
@@ -41,6 +44,10 @@ class FakePlaylistRepository : PlaylistRepository {
     }
 
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
-        TODO("Not yet implemented")
+        playlistTrackCrossRef.update { playlistTrackCrossRefs ->
+            playlistTrackCrossRefs.toMutableList().apply {
+                removeIf { it.playlistId == playlistId && it.position == position }
+            }
+        }
     }
 }

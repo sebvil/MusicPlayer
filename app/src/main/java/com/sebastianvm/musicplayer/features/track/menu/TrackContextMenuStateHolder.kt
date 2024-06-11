@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -146,27 +145,15 @@ class TrackContextMenuStateHolder(
                 )
             }
             is TrackContextMenuUserAction.RemoveFromPlaylistClicked -> {
-                stateHolderScope.launch {
-                    playlistRepository.removeItemFromPlaylist(
-                        playlistId = action.playlistId,
-                        position = action.trackPositionInPlaylist,
-                    )
-                }
+                stateHolderScope
+                    .launch {
+                        playlistRepository.removeItemFromPlaylist(
+                            playlistId = action.playlistId,
+                            position = action.trackPositionInPlaylist,
+                        )
+                    }
+                    .invokeOnCompletion { navController.pop() }
             }
         }
     }
-}
-
-fun getTrackContextMenuStateHolder(
-    dependencies: Dependencies,
-    arguments: TrackContextMenuArguments,
-    navController: NavController,
-): TrackContextMenuStateHolder {
-    return TrackContextMenuStateHolder(
-        arguments = arguments,
-        trackRepository = dependencies.repositoryProvider.trackRepository,
-        playlistRepository = dependencies.repositoryProvider.playlistRepository,
-        queueRepository = dependencies.repositoryProvider.queueRepository,
-        navController = navController,
-    )
 }
