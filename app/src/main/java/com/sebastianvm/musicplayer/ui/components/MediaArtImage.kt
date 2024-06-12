@@ -67,7 +67,7 @@ fun MediaArtImage(
     uri: String,
     backupImage: IconState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.inverseSurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,

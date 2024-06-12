@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
+import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
@@ -81,8 +82,12 @@ fun GenreList(
         items(state.genres, key = { item -> item.id }) { item ->
             GenreRow(
                 state = item,
-                onMoreIconClicked = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) },
                 modifier = Modifier.clickable { handle(GenreListUserAction.GenreClicked(item.id)) },
+                trailingContent = {
+                    OverflowIconButton(
+                        onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) }
+                    )
+                },
             )
         }
     }

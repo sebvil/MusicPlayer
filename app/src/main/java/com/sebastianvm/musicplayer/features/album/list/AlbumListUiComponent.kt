@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
@@ -81,8 +82,12 @@ fun AlbumList(
         items(state.albums, key = { item -> item.id }) { item ->
             AlbumRow(
                 state = item,
-                onMoreIconClicked = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) },
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item.id)) },
+                trailingContent = {
+                    OverflowIconButton(
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
+                    )
+                },
             )
         }
     }

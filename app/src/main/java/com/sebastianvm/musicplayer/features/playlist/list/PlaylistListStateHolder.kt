@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
 import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -138,7 +139,16 @@ class PlaylistListStateHolder(
             is PlaylistListUserAction.PlaylistMoreIconClicked -> {
                 navController.push(
                     PlaylistContextMenu(
-                        arguments = PlaylistContextMenuArguments(playlistId = action.playlistId)
+                        arguments = PlaylistContextMenuArguments(playlistId = action.playlistId),
+                        delegate =
+                            object : PlaylistContextMenuDelegate {
+                                override fun deletePlaylist() {
+                                    navController.pop()
+                                    stateHolderScope.launch {
+                                        playlistRepository.deletePlaylist(action.playlistId)
+                                    }
+                                }
+                            },
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.Text
@@ -137,11 +138,15 @@ fun PlaylistListLayout(
         items(state.playlists, key = { item -> item.id }) { item ->
             PlaylistRow(
                 state = item,
-                onMoreIconClicked = {
-                    handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-                },
                 modifier =
                     Modifier.clickable { handle(PlaylistListUserAction.PlaylistClicked(item.id)) },
+                trailingContent = {
+                    OverflowIconButton(
+                        onClick = {
+                            handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
+                        }
+                    )
+                },
             )
         }
     }

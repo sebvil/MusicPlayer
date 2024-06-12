@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -40,11 +39,16 @@ sealed interface PlaylistContextMenuUserAction : UserAction {
     data object PlaylistDeletionCancelled : PlaylistContextMenuUserAction
 }
 
+interface PlaylistContextMenuDelegate {
+    fun deletePlaylist()
+}
+
 class PlaylistContextMenuStateHolder(
     arguments: PlaylistContextMenuArguments,
-    private val playlistRepository: PlaylistRepository,
+    playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    private val delegate: PlaylistContextMenuDelegate,
 ) : StateHolder<PlaylistContextMenuState, PlaylistContextMenuUserAction> {
 
     private val playlistId = arguments.playlistId
@@ -73,25 +77,11 @@ class PlaylistContextMenuStateHolder(
                 showDeleteConfirmationDialog.update { true }
             }
             is PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked -> {
-                stateHolderScope.launch {
-                    playlistRepository.deletePlaylist(playlistId)
-                    showDeleteConfirmationDialog.update { false }
-                }
+                delegate.deletePlaylist()
             }
             is PlaylistContextMenuUserAction.PlaylistDeletionCancelled -> {
                 showDeleteConfirmationDialog.update { false }
             }
         }
     }
-}
-
-fun getPlaylistContextMenuStateHolder(
-    dependencies: Dependencies,
-    arguments: PlaylistContextMenuArguments,
-): PlaylistContextMenuStateHolder {
-    return PlaylistContextMenuStateHolder(
-        arguments = arguments,
-        playlistRepository = dependencies.repositoryProvider.playlistRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
-    )
 }

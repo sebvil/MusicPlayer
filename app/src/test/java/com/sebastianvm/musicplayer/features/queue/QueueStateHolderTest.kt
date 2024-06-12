@@ -73,14 +73,14 @@ class QueueStateHolderTest :
                         awaitItem() shouldBe QueueState.Loading
 
                         val queueItems = awaitItemAs<QueueState.Data>().queueItems
-                        queueItems[0].trackRow.id shouldBe tracks[1].id
-                        queueItems[1].trackRow.id shouldBe tracks[2].id
+                        queueItems[0].trackRow.id shouldBe tracks[1].track.id
+                        queueItems[1].trackRow.id shouldBe tracks[2].track.id
 
                         subject.handle(QueueUserAction.DragEnded(from = 2, to = 1))
 
                         val newQueueItems = awaitItemAs<QueueState.Data>().queueItems
-                        newQueueItems[0].trackRow.id shouldBe tracks[2].id
-                        newQueueItems[1].trackRow.id shouldBe tracks[1].id
+                        newQueueItems[0].trackRow.id shouldBe tracks[2].track.id
+                        newQueueItems[1].trackRow.id shouldBe tracks[1].track.id
                     }
                 }
 

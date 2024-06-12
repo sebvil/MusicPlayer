@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.database.entities
 
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import com.sebastianvm.musicplayer.model.QueuedTrack
 
 @Entity(
@@ -27,16 +27,17 @@ data class QueueItemEntity(
     val queueItemId: Long,
 )
 
+@DatabaseView(
+    "SELECT QueueItemEntity.* , TrackEntity.* FROM QueueItemEntity JOIN TrackEntity ON QueueItemEntity.trackId = TrackEntity.id"
+)
 data class QueueItemWithTrack(
     @Embedded val queueItem: QueueItemEntity,
-    @Relation(parentColumn = "trackId", entityColumn = "id") val track: TrackEntity,
+    @Embedded val track: DetailedTrack,
 )
 
 fun QueueItemWithTrack.asExternalModel(): QueuedTrack {
     return QueuedTrack(
-        id = track.id,
-        trackName = track.trackName,
-        artists = track.artists,
+        track = track.asExternalModel(),
         queuePosition = queueItem.queuePosition,
         queueItemId = queueItem.queueItemId,
     )

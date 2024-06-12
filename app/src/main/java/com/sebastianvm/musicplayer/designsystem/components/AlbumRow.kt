@@ -32,7 +32,11 @@ object AlbumRow {
 }
 
 @Composable
-fun AlbumRow(state: AlbumRow.State, onMoreIconClicked: () -> Unit, modifier: Modifier = Modifier) {
+fun AlbumRow(
+    state: AlbumRow.State,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null,
+) {
     ListItem(
         headlineContent = { Text(text = state.albumName) },
         supportingContent = state.artists?.let { artists -> { Text(text = artists) } },
@@ -43,6 +47,6 @@ fun AlbumRow(state: AlbumRow.State, onMoreIconClicked: () -> Unit, modifier: Mod
                 modifier = Modifier.size(56.dp),
             )
         },
-        trailingContent = { OverflowIconButton(onClick = onMoreIconClicked) },
+        trailingContent = trailingContent,
     )
 }

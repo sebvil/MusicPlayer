@@ -30,6 +30,7 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistFts
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
+import com.sebastianvm.musicplayer.database.entities.QueueItemWithTrack
 import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.database.entities.TrackFts
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
@@ -60,6 +61,7 @@ import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionVi
             TrackWithPlaylistPositionView::class,
             AlbumsForArtistByYear::class,
             AppearsOnForArtistByYear::class,
+            QueueItemWithTrack::class,
         ],
     version = 1,
     exportSchema = false,

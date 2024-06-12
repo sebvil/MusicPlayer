@@ -4,6 +4,7 @@ import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
+import com.sebastianvm.musicplayer.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.model.FullQueue
 import com.sebastianvm.musicplayer.model.NextUpQueue
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
@@ -56,14 +57,14 @@ class AppQueueRepository(
 
     override suspend fun saveQueue(
         nowPlayingInfo: NowPlayingInfo,
-        queuedTracksIds: List<QueuedTrack>,
+        queuedTracks: List<BasicQueuedTrack>,
     ) {
         nowPlayingInfoDataSource.setNowPlayingInfo(nowPlayingInfo)
         withContext(ioDispatcher) {
             mediaQueueDao.saveQueue(
-                queuedTracksIds.map { item ->
+                queuedTracks.map { item ->
                     QueueItemEntity(
-                        trackId = item.id,
+                        trackId = item.trackId,
                         queuePosition = item.queuePosition,
                         queueItemId = item.queueItemId,
                     )

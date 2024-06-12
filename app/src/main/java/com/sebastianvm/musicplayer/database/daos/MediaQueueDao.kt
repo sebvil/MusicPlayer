@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.Flow
 interface MediaQueueDao {
     @Transaction
     @Query(
-        "SELECT QueueItemEntity.*, QueueItemEntity.queueItemId FROM QueueItemEntity " +
-            "ORDER BY QueueItemEntity.queuePosition ASC"
+        "SELECT QueueItemWithTrack.* FROM QueueItemWithTrack " +
+            "ORDER BY QueueItemWithTrack.queuePosition ASC"
     )
     fun getQueuedTracks(): Flow<List<QueueItemWithTrack>>
 

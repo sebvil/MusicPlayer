@@ -19,8 +19,8 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.util.extensions.uri
@@ -29,7 +29,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
@@ -57,7 +56,6 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession
-    private val queue: MutableStateFlow<List<QueuedTrack>> = MutableStateFlow(listOf())
 
     override fun onCreate() {
         super.onCreate()
@@ -77,24 +75,15 @@ class MediaPlaybackService : MediaLibraryService() {
         player.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    CoroutineScope(mainDispatcher).launch {
-                        updateQueue()
-                        saveQueue()
-                    }
+                    CoroutineScope(mainDispatcher).launch { saveQueue() }
                 }
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    CoroutineScope(mainDispatcher).launch {
-                        updateQueue()
-                        saveQueue()
-                    }
+                    CoroutineScope(mainDispatcher).launch { saveQueue() }
                 }
 
                 override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                    CoroutineScope(mainDispatcher).launch {
-                        updateQueue()
-                        saveQueue()
-                    }
+                    CoroutineScope(mainDispatcher).launch { saveQueue() }
                 }
 
                 override fun onPlayerError(error: PlaybackException) {
@@ -227,28 +216,28 @@ class MediaPlaybackService : MediaLibraryService() {
     }
 
     suspend fun saveQueue() {
-        val contentPosition = player.contentPosition
-        queueRepository.saveQueue(
-            nowPlayingInfo =
-                NowPlayingInfo(
-                    nowPlayingPositionInQueue = player.currentMediaItemIndex,
-                    lastRecordedPosition = contentPosition,
-                ),
-            queuedTracksIds = queue.value,
-        )
-    }
-
-    suspend fun updateQueue() {
-        val timeline = player.currentTimeline
-        withContext(defaultDispatcher) {
-            val newQueue =
-                (0 until timeline.windowCount).map { windowIndex ->
-                    QueuedTrack.fromMediaItem(
-                        mediaItem = timeline.getWindow(windowIndex, Timeline.Window()).mediaItem,
-                        positionInQueue = windowIndex,
-                    )
-                }
-            queue.value = newQueue
+        withContext(mainDispatcher) {
+            val contentPosition = player.contentPosition
+            val timeline = player.currentTimeline
+            val nowPlayingPositionInQueue = player.currentMediaItemIndex
+            withContext(defaultDispatcher) {
+                val newQueue =
+                    (0 until timeline.windowCount).map { windowIndex ->
+                        BasicQueuedTrack.fromMediaItem(
+                            mediaItem =
+                                timeline.getWindow(windowIndex, Timeline.Window()).mediaItem,
+                            positionInQueue = windowIndex,
+                        )
+                    }
+                queueRepository.saveQueue(
+                    nowPlayingInfo =
+                        NowPlayingInfo(
+                            nowPlayingPositionInQueue = nowPlayingPositionInQueue,
+                            lastRecordedPosition = contentPosition,
+                        ),
+                    queuedTracks = newQueue,
+                )
+            }
         }
     }
 }

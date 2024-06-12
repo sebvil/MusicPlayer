@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.BasicPlaylist
+import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +28,7 @@ class PlaylistRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher,
 ) : PlaylistRepository {
 
-    override fun getPlaylists(): Flow<List<BasicPlaylist>> {
+    override fun getPlaylists(): Flow<List<Playlist>> {
         return sortPreferencesRepository
             .getPlaylistsListSortOrder()
             .flatMapLatest { sortOrder -> playlistDao.getPlaylists(sortOrder = sortOrder) }
