@@ -13,19 +13,16 @@ import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class AppQueueRepository(
     private val nowPlayingInfoDataSource: NowPlayingInfoDataSource,
     private val trackRepository: TrackRepository,
     private val mediaQueueDao: MediaQueueDao,
     private val mediaPlaybackClient: MediaPlaybackClient,
-    private val ioDispatcher: CoroutineDispatcher,
 ) : QueueRepository {
 
     override fun getQueue(): Flow<NextUpQueue?> {
@@ -60,17 +57,15 @@ class AppQueueRepository(
         queuedTracks: List<BasicQueuedTrack>,
     ) {
         nowPlayingInfoDataSource.setNowPlayingInfo(nowPlayingInfo)
-        withContext(ioDispatcher) {
-            mediaQueueDao.saveQueue(
-                queuedTracks.map { item ->
-                    QueueItemEntity(
-                        trackId = item.trackId,
-                        queuePosition = item.queuePosition,
-                        queueItemId = item.queueItemId,
-                    )
-                }
-            )
-        }
+        mediaQueueDao.saveQueue(
+            queuedTracks.map { item ->
+                QueueItemEntity(
+                    trackId = item.trackId,
+                    queuePosition = item.queuePosition,
+                    queueItemId = item.queueItemId,
+                )
+            }
+        )
     }
 
     override fun moveQueueItem(from: Int, to: Int) {

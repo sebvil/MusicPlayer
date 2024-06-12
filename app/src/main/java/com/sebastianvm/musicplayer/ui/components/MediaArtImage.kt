@@ -61,13 +61,12 @@ fun MediaArtImage(
     )
 }
 
-/** Wrapper around the Image composable that takes in a DisplayableImage as the image input. */
 @Composable
 fun MediaArtImage(
     uri: String,
     backupImage: IconState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     alpha: Float = DefaultAlpha,

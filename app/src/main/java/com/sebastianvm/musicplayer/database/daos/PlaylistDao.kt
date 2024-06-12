@@ -23,8 +23,6 @@ import kotlinx.coroutines.withContext
 @Dao
 abstract class PlaylistDao {
 
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     @Query(
@@ -77,45 +75,43 @@ abstract class PlaylistDao {
 
     @Transaction
     open suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
-        withContext(ioDispatcher) {
-            val tracks =
-                getTracksInPlaylist(
-                        playlistId,
-                        sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
-                        sortOrder = MediaSortOrder.ASCENDING,
-                    )
-                    .first()
-            val lastItem =
-                tracks.last().let {
-                    PlaylistTrackCrossRefKeys(playlistId = it.playlistId, position = it.position)
-                }
-            val newTracks =
-                withContext(defaultDispatcher) {
-                    tracks.mapNotNull {
-                        when {
-                            it.position < position -> {
-                                PlaylistTrackCrossRef(
-                                    playlistId = it.playlistId,
-                                    trackId = it.id,
-                                    position = it.position,
-                                )
-                            }
-                            it.position > position -> {
-                                PlaylistTrackCrossRef(
-                                    playlistId = it.playlistId,
-                                    trackId = it.id,
-                                    position = it.position - 1,
-                                )
-                            }
-                            else -> {
-                                null
-                            }
+        val tracks =
+            getTracksInPlaylist(
+                    playlistId,
+                    sortOption = SortOptions.PlaylistSortOptions.CUSTOM,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
+                .first()
+        val lastItem =
+            tracks.last().let {
+                PlaylistTrackCrossRefKeys(playlistId = it.playlistId, position = it.position)
+            }
+        val newTracks =
+            withContext(defaultDispatcher) {
+                tracks.mapNotNull {
+                    when {
+                        it.position < position -> {
+                            PlaylistTrackCrossRef(
+                                playlistId = it.playlistId,
+                                trackId = it.id,
+                                position = it.position,
+                            )
+                        }
+                        it.position > position -> {
+                            PlaylistTrackCrossRef(
+                                playlistId = it.playlistId,
+                                trackId = it.id,
+                                position = it.position - 1,
+                            )
+                        }
+                        else -> {
+                            null
                         }
                     }
                 }
+            }
 
-            updatePlaylistItems(newTracks)
-            removePlaylistItem(lastItem)
-        }
+        updatePlaylistItems(newTracks)
+        removePlaylistItem(lastItem)
     }
 }

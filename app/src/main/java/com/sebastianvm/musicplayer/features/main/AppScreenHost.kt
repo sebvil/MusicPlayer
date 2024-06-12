@@ -7,26 +7,19 @@ import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -50,8 +43,6 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
     }
 
     val navBarPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
-    var height by remember { mutableFloatStateOf(0f) }
-    val density = LocalDensity.current
     val playerBottomPadding = 4.dp
 
     val isFullScreen = state.isFullscreen
@@ -74,21 +65,15 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
             targetIsFullScreen ->
             if (targetIsFullScreen) 0.dp else (playerBottomPadding + navBarPadding)
         }
-    val paddingValues by remember {
-        derivedStateOf {
-            with(density) { PaddingValues(bottom = paddingBottom + height.toDp() + 8.dp) }
-        }
-    }
-    CompositionLocalProvider(LocalPaddingValues provides paddingValues) {
-        Box(modifier = modifier) {
-            state.appNavigationHostUiComponent.Content(modifier = Modifier)
+
+    Scaffold(
+        modifier = modifier,
+        bottomBar = {
             state.playerUiComponent.Content(
                 modifier =
-                    Modifier.align(Alignment.BottomCenter)
-                        .fillMaxWidth()
+                    Modifier.fillMaxWidth()
                         .padding(bottom = paddingBottom)
                         .padding(horizontal = paddingHorizontal)
-                        .onPlaced { coordinates -> height = coordinates.boundsInParent().height }
                         .clickable(
                             interactionSource = null,
                             indication = null,
@@ -96,6 +81,17 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
                         ) {
                             handle(MainUserAction.ExpandPlayer)
                         }
+            )
+        }
+    ) { paddingValues ->
+        CompositionLocalProvider(
+            LocalPaddingValues provides
+                PaddingValues(bottom = paddingValues.calculateBottomPadding())
+        ) {
+            state.appNavigationHostUiComponent.Content(
+                modifier =
+                    Modifier.padding(top = paddingValues.calculateTopPadding())
+                        .consumeWindowInsets(WindowInsets.systemBars)
             )
         }
     }

@@ -5,6 +5,8 @@ import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
@@ -57,7 +59,8 @@ sealed interface PlaylistListUserAction : UserAction {
 
     data class PlaylistMoreIconClicked(val playlistId: Long) : PlaylistListUserAction
 
-    data class PlaylistClicked(val playlistId: Long) : PlaylistListUserAction
+    data class PlaylistClicked(val playlistId: Long, val playlistName: String) :
+        PlaylistListUserAction
 
     data object CreateNewPlaylistButtonClicked : PlaylistListUserAction
 
@@ -162,10 +165,11 @@ class PlaylistListStateHolder(
             }
             is PlaylistListUserAction.PlaylistClicked -> {
                 navController.push(
-                    TrackListUiComponent(
+                    PlaylistDetailsUiComponent(
                         arguments =
-                            TrackListArguments(
-                                trackListType = MediaGroup.Playlist(playlistId = action.playlistId)
+                            PlaylistDetailsArguments(
+                                playlistId = action.playlistId,
+                                playlistName = action.playlistName,
                             ),
                         navController = navController,
                     )

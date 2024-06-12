@@ -67,5 +67,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="playlist_name">Playlist name</string>
     <string name="remove">Remove</string>
+    <string name="create">Create</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="playlist_is_empty">Playlist is empty.</string>
 
 </resources>
