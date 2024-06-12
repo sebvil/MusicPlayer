@@ -4,6 +4,8 @@ import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchArguments
+import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
@@ -127,7 +129,17 @@ class PlaylistDetailsStateHolder(
                     )
                 }
             }
-            is PlaylistDetailsUserAction.AddTracksButtonClicked -> {}
+            is PlaylistDetailsUserAction.AddTracksButtonClicked -> {
+                navController.push(
+                    TrackSearchUiComponent(
+                        arguments =
+                            TrackSearchArguments(
+                                playlistId = args.playlistId,
+                            ),
+                        navController = navController,
+                    ),
+                )
+            }
         }
     }
 }

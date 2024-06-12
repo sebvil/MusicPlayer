@@ -32,6 +32,7 @@ import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.track.list.TopBar
+import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.util.resources.RString
@@ -110,6 +111,7 @@ fun PlaylistDetails(
                 text = { Text(text = stringResource(id = RString.add_tracks)) },
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                 onClick = { handle(PlaylistDetailsUserAction.AddTracksButtonClicked) },
+                modifier = Modifier.padding(LocalPaddingValues.current)
             )
         },
         topBar = {
@@ -155,6 +157,7 @@ fun PlaylistDetailsLayout(
         LazyColumn(
             modifier = modifier,
             state = listState,
+            contentPadding = LocalPaddingValues.current
         ) {
             item {
                 TextButton(
