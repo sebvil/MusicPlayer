@@ -53,7 +53,7 @@ private fun GenreContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = { handle(GenreContextMenuUserAction.PlayGenreClicked) },
+                            onClick = { handle(GenreContextMenuUserAction.PlayGenreClicked) },
                         )
                     }
                 }

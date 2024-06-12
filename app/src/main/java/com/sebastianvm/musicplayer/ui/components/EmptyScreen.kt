@@ -47,7 +47,7 @@ fun StoragePermissionNeededEmptyScreen(@StringRes message: Int, modifier: Modifi
                 permission = Permission.ReadAudio,
                 dialogTitle = RString.storage_permission_needed,
                 message = RString.grant_storage_permissions,
-                onPermissionGranted = {
+                onGrantPermission = {
                     ContextCompat.startForegroundService(
                         context,
                         Intent(context, LibraryScanService::class.java),

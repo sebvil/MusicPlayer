@@ -66,7 +66,7 @@ private fun TrackContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.add_to_queue),
                             icon = Icons.QueueAdd.icon(),
-                            onItemClicked = {
+                            onClick = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
                                 Toast.makeText(
                                         /* context = */ context,
@@ -82,7 +82,7 @@ private fun TrackContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.add_to_playlist),
                             icon = Icons.QueueAdd.icon(),
-                            onItemClicked = { TODO() },
+                            onClick = { TODO() },
                         )
                     }
 
@@ -92,7 +92,7 @@ private fun TrackContextMenu(
                                 MenuItem(
                                     text = stringResource(id = RString.view_artists),
                                     icon = Icons.Artist.icon(),
-                                    onItemClicked = {
+                                    onClick = {
                                         handle(TrackContextMenuUserAction.ViewArtistsClicked)
                                     },
                                 )
@@ -104,7 +104,7 @@ private fun TrackContextMenu(
                                 MenuItem(
                                     text = stringResource(id = RString.view_artist),
                                     icon = Icons.Artist.icon(),
-                                    onItemClicked = {
+                                    onClick = {
                                         handle(
                                             TrackContextMenuUserAction.ViewArtistClicked(
                                                 state.viewArtistsState.artistId
@@ -121,7 +121,7 @@ private fun TrackContextMenu(
                             MenuItem(
                                 text = stringResource(id = RString.view_album),
                                 icon = Icons.Album.icon(),
-                                onItemClicked = {
+                                onClick = {
                                     handle(TrackContextMenuUserAction.ViewAlbumClicked(it.albumId))
                                 },
                             )
@@ -133,7 +133,7 @@ private fun TrackContextMenu(
                             MenuItem(
                                 text = stringResource(id = RString.remove_from_playlist),
                                 icon = Icons.PlaylistRemove.icon(),
-                                onItemClicked = {
+                                onClick = {
                                     handle(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                                             it.playlistId,

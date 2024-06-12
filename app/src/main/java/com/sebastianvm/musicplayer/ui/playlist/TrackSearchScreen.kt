@@ -103,8 +103,8 @@ fun TrackSearchLayout(
                 .clickable { focusRequester.requestFocus() }
     ) {
         SearchField(
-            onTextChanged = { handle(TrackSearchUserAction.TextChanged(it)) },
-            onUpButtonClicked = {
+            onTextChange = { handle(TrackSearchUserAction.TextChanged(it)) },
+            onClickUpButton = {
                 //                navigator.navigateUp()
             },
             focusRequester = focusRequester,

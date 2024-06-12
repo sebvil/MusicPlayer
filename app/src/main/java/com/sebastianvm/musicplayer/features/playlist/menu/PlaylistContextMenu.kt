@@ -61,9 +61,7 @@ private fun PlaylistContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = {
-                                handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
-                            },
+                            onClick = { handle(PlaylistContextMenuUserAction.PlayPlaylistClicked) },
                         )
                     }
 
@@ -71,7 +69,7 @@ private fun PlaylistContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.delete_playlist),
                             icon = Icons.Delete.icon(),
-                            onItemClicked = {
+                            onClick = {
                                 handle(PlaylistContextMenuUserAction.DeletePlaylistClicked)
                             },
                         )

@@ -185,7 +185,7 @@ fun TrackListLayout(
             Column(modifier) {
                 TopBar(
                     title = headerState.title,
-                    onBackButtonClicked = { handle(TrackListUserAction.BackClicked) },
+                    onBackButtonClick = { handle(TrackListUserAction.BackClicked) },
                 )
                 content(Modifier, LocalPaddingValues.current)
             }

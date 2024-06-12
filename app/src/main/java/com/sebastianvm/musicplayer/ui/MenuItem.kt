@@ -11,15 +11,10 @@ import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
 
 @Composable
-fun MenuItem(
-    text: String,
-    icon: ImageVector,
-    onItemClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun MenuItem(text: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
     ListItem(
         headlineContent = { Text(text = text) },
-        modifier = modifier.clickable { onItemClicked() },
+        modifier = modifier.clickable { onClick() },
         leadingContent = {
             Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
         },

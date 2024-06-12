@@ -25,8 +25,8 @@ import com.sebastianvm.musicplayer.util.resources.RString
 
 @Composable
 fun SearchField(
-    onTextChanged: (newText: String) -> Unit,
-    onUpButtonClicked: () -> Unit,
+    onTextChange: (newText: String) -> Unit,
+    onClickUpButton: () -> Unit,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
@@ -37,7 +37,7 @@ fun SearchField(
         value = input.value,
         onValueChange = {
             input.value = it
-            onTextChanged(it)
+            onTextChange(it)
         },
         placeholder = {
             Text(
@@ -47,7 +47,7 @@ fun SearchField(
             )
         },
         leadingIcon = {
-            IconButton(onClick = { onUpButtonClicked() }) {
+            IconButton(onClick = { onClickUpButton() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(id = RString.search),
@@ -62,7 +62,7 @@ fun SearchField(
                         IconButton(
                             onClick = {
                                 input.value = ""
-                                onTextChanged("")
+                                onTextChange("")
                             }
                         ) {
                             Icon(

@@ -38,7 +38,7 @@ fun PermissionHandler(
     permission: Permission,
     @StringRes dialogTitle: Int,
     @StringRes message: Int,
-    onPermissionGranted: () -> Unit,
+    onGrantPermission: () -> Unit,
     content: @Composable (onClick: () -> Unit) -> Unit,
 ) {
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
@@ -60,7 +60,7 @@ fun PermissionHandler(
                 onPermissionResult = { isGranted ->
                     showPermissionDeniedDialog =
                         if (isGranted) {
-                            onPermissionGranted()
+                            onGrantPermission()
                             false
                         } else {
                             true
@@ -110,7 +110,7 @@ fun PermissionHandler(
     content {
         when (val status = permissionState.status) {
             is PermissionStatus.Granted -> {
-                onPermissionGranted()
+                onGrantPermission()
             }
             is PermissionStatus.Denied -> {
                 if (status.shouldShowRationale) {
