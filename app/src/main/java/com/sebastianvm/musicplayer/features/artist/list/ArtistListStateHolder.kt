@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
-import androidx.compose.runtime.collectAsState
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
@@ -52,10 +51,8 @@ class ArtistListStateHolder(
         stateHolderScope.launchMolecule(recompositionMode) {
             val artists = artistRepository.getArtists().collectValue(initial = null)
             val sortOrder =
-                sortPreferencesRepository
-                    .getArtistListSortOrder()
-                    .collectAsState(initial = null)
-                    .value
+                sortPreferencesRepository.getArtistListSortOrder().collectValue(initial = null)
+
             when {
                 artists == null || sortOrder == null -> Loading
                 artists.isEmpty() -> Empty

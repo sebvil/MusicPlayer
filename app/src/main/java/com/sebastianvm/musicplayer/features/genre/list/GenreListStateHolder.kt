@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
-import androidx.compose.runtime.collectAsState
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -52,10 +51,7 @@ class GenreListStateHolder(
         stateHolderScope.launchMolecule(recompositionMode) {
             val genres = genreRepository.getGenres().collectValue(initial = null)
             val sortOrder =
-                sortPreferencesRepository
-                    .getGenreListSortOrder()
-                    .collectAsState(initial = null)
-                    .value
+                sortPreferencesRepository.getGenreListSortOrder().collectValue(initial = null)
             when {
                 genres == null || sortOrder == null -> Loading
                 genres.isEmpty() -> Empty

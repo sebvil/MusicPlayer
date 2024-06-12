@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
-import androidx.compose.runtime.collectAsState
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
@@ -18,6 +17,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -40,10 +40,7 @@ class ArtistsMenuStateHolder(
     override val state: StateFlow<UiState<ArtistsMenuState>> =
         stateHolderScope.launchMolecule(recompositionMode) {
             val artists =
-                artistRepository
-                    .getArtistsForMedia(arguments.media)
-                    .collectAsState(initial = null)
-                    .value
+                artistRepository.getArtistsForMedia(arguments.media).collectValue(initial = null)
             if (artists == null) {
                 Loading
             } else {

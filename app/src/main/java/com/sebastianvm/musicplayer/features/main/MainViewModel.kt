@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.main
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
@@ -14,6 +13,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -42,11 +42,11 @@ class MainViewModel(
 
     override val state: StateFlow<MainState> =
         stateHolderScope.launchMolecule(recompositionMode) {
-            val props = playerProps.collectAsState()
+            val props = playerProps.collectValue()
             MainState(
                 playerUiComponent = playerUiComponent,
                 appNavigationHostUiComponent = appNavigationHostUiComponent,
-                isFullscreen = props.value.isFullscreen,
+                isFullscreen = props.isFullscreen,
             )
         }
 
