@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.queue
 
-import com.sebastianvm.musicplayer.di.FakeDependencies
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
@@ -13,16 +12,12 @@ import kotlinx.coroutines.flow.first
 
 class QueueStateHolderTest :
     FreeSpec({
-        lateinit var services: QueueStateHolderServices
         lateinit var queueRepositoryDep: FakeQueueRepository
 
-        beforeTest {
-            services = QueueStateHolderServices(dependencies = FakeDependencies())
-            queueRepositoryDep = services.queueRepository as FakeQueueRepository
-        }
+        beforeTest { queueRepositoryDep = FakeQueueRepository() }
 
         fun TestScope.getSubject(): QueueStateHolder {
-            return QueueStateHolder(services = services, stateHolderScope = this)
+            return QueueStateHolder(queueRepository = queueRepositoryDep, stateHolderScope = this)
         }
 
         "init subscribes to changes in queue" {
@@ -105,6 +100,23 @@ class QueueStateHolderTest :
                                 queueItems =
                                     queuedTracks.subList(2, queuedTracks.size).map {
                                         it.toQueueItem()
+                                    },
+                            )
+                    }
+                }
+
+                "RemoveItemsFromQueue removes items from queue" {
+                    val subject = getSubject()
+                    testStateHolderState(subject) {
+                        skipItems(2)
+                        val queuedTracks = queueRepositoryDep.queuedTracks.first()
+                        subject.handle(QueueUserAction.RemoveItemsFromQueue(listOf(1, 2)))
+                        awaitItem() shouldBe
+                            QueueState.Data(
+                                nowPlayingItem = queuedTracks[0].toQueueItem(),
+                                queueItems =
+                                    queuedTracks.subList(3, queuedTracks.size).map {
+                                        it.toQueueItem().copy(position = it.queuePosition - 2)
                                     },
                             )
                     }

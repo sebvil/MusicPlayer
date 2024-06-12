@@ -90,6 +90,10 @@ class AppQueueRepository(
         mediaPlaybackClient.playQueueItem(index)
     }
 
+    override fun removeItemsFromQueue(queuePositions: List<Int>) {
+        mediaPlaybackClient.removeItemsFromQueue(queuePositions)
+    }
+
     private fun getQueuedTracks(): Flow<List<QueuedTrack>> {
         return mediaQueueDao.getQueuedTracks().map { tracks -> tracks.map { it.asExternalModel() } }
     }

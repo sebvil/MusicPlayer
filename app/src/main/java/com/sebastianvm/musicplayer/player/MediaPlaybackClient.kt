@@ -146,6 +146,12 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
         controller?.play()
     }
 
+    fun removeItemsFromQueue(positionsInQueue: List<Int>) {
+        positionsInQueue.sortedDescending().forEach { position ->
+            controller?.removeMediaItem(position)
+        }
+    }
+
     fun playMediaItems(
         initialWindowIndex: Int,
         mediaItems: List<MediaItem>,

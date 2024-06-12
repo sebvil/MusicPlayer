@@ -18,4 +18,6 @@ interface QueueRepository {
     suspend fun addToQueue(trackId: Long)
 
     fun playQueueItem(index: Int)
+
+    fun removeItemsFromQueue(queuePositions: List<Int>)
 }

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -28,18 +27,14 @@ sealed interface QueueUserAction : UserAction {
     data class DragEnded(val from: Int, val to: Int) : QueueUserAction
 
     data class TrackClicked(val trackIndex: Int) : QueueUserAction
-}
 
-class QueueStateHolderServices(val queueRepository: QueueRepository) {
-    constructor(dependencies: Dependencies) : this(dependencies.repositoryProvider.queueRepository)
+    data class RemoveItemsFromQueue(val queuePositions: List<Int>) : QueueUserAction
 }
 
 class QueueStateHolder(
-    services: QueueStateHolderServices,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    private val queueRepository: QueueRepository,
 ) : StateHolder<QueueState, QueueUserAction> {
-
-    private val queueRepository = services.queueRepository
 
     override val state: StateFlow<QueueState> =
         queueRepository
@@ -64,6 +59,9 @@ class QueueStateHolder(
             }
             is QueueUserAction.TrackClicked -> {
                 queueRepository.playQueueItem(action.trackIndex)
+            }
+            is QueueUserAction.RemoveItemsFromQueue -> {
+                queueRepository.removeItemsFromQueue(action.queuePositions)
             }
         }
     }
