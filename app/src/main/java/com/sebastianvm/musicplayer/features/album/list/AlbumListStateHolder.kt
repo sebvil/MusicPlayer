@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import androidx.compose.runtime.collectAsState
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -24,10 +27,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 
 data class AlbumListState(
     val albums: List<AlbumRow.State> = listOf(),
@@ -43,6 +43,7 @@ sealed interface AlbumListUserAction : UserAction {
 }
 
 class AlbumListStateHolder(
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
@@ -50,26 +51,30 @@ class AlbumListStateHolder(
 ) : StateHolder<UiState<AlbumListState>, AlbumListUserAction> {
 
     override val state: StateFlow<UiState<AlbumListState>> =
-        combine(
-                albumRepository.getAlbums(),
-                sortPreferencesRepository.getAlbumListSortPreferences(),
-            ) { albums, sortPrefs ->
-                if (albums.isEmpty()) {
-                    Empty
-                } else {
-                    Data(
-                        AlbumListState(
-                            albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
-                            sortButtonState =
-                                SortButton.State(
-                                    text = sortPrefs.sortOption.stringId,
-                                    sortOrder = sortPrefs.sortOrder,
-                                ),
-                        )
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val albums = albumRepository.getAlbums().collectAsState(initial = null).value
+            val sortPrefs =
+                sortPreferencesRepository
+                    .getAlbumListSortPreferences()
+                    .collectAsState(initial = null)
+                    .value
+            if (albums == null || sortPrefs == null) {
+                Loading
+            } else if (albums.isEmpty()) {
+                Empty
+            } else {
+                Data(
+                    AlbumListState(
+                        albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
+                        sortButtonState =
+                            SortButton.State(
+                                text = sortPrefs.sortOption.stringId,
+                                sortOrder = sortPrefs.sortOrder,
+                            ),
                     )
-                }
+                )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }
 
     override fun handle(action: AlbumListUserAction) {
         when (action) {

@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.ui.util
 
-import kotlin.coroutines.CoroutineContext
+import androidx.compose.ui.platform.AndroidUiDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlin.coroutines.CoroutineContext
 
 class CloseableCoroutineScope(context: CoroutineContext) : java.io.Closeable, CoroutineScope {
     override val coroutineContext: CoroutineContext = context
@@ -15,4 +15,4 @@ class CloseableCoroutineScope(context: CoroutineContext) : java.io.Closeable, Co
 }
 
 fun stateHolderScope(): CloseableCoroutineScope =
-    CloseableCoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    CloseableCoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main)

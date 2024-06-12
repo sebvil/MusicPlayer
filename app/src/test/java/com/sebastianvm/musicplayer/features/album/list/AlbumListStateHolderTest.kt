@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
@@ -43,6 +44,7 @@ class AlbumListStateHolderTest :
 
         fun TestScope.getSubject(): AlbumListStateHolder {
             return AlbumListStateHolder(
+                recompositionMode = RecompositionMode.Immediate,
                 stateHolderScope = this,
                 albumRepository = albumRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,

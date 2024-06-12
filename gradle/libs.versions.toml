@@ -8,18 +8,19 @@ compose = "1.7.0-beta02"
 core-ktx = "1.13.1"
 datastore = "1.1.1"
 detekt = "1.23.6"
-detekt-compose = "0.4.1"
-fixture-monkey = "1.0.17"
-kotest = "5.9.0"
+detekt-compose = "0.4.4"
+fixture-monkey = "1.0.18"
+kotest = "5.9.1"
 kotlin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
 kotlinx-coroutines = "1.8.1"
-kotlinx-serialization-json = "1.6.3"
+kotlinx-serialization-json = "1.7.0"
 kover = "0.8.0"
 ktfmt = "0.18.0"
 lifecycle = "2.8.1"
 material3 = "1.3.0-beta02"
 media3-exoplayer = "1.3.1"
+molecule-runtime = "2.0.0"
 room-runtime = "2.7.0-alpha03"
 turbine = "1.1.0"
 vectordrawable = "1.2.0"
@@ -51,6 +52,7 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3-exoplayer" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3-exoplayer" }
+molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule-runtime" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

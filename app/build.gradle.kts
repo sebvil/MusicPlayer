@@ -49,6 +49,7 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            isReturnDefaultValues = true
             all { it.useJUnitPlatform() }
         }
     }
@@ -98,6 +99,7 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.reorderable)
+    implementation(libs.molecule.runtime)
 
     // End Jetpack Compose
 
