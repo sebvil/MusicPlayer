@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -18,11 +20,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class TrackContextMenuArguments(
@@ -75,14 +75,17 @@ class TrackContextMenuStateHolder(
     private val queueRepository: QueueRepository,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
 
     private val trackId = arguments.trackId
 
     override val state: StateFlow<TrackContextMenuState> =
-        trackRepository
-            .getTrack(trackId)
-            .map { track ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val track = trackRepository.getTrack(trackId).collectValue(initial = null)
+            if (track == null) {
+                TrackContextMenuState.Loading
+            } else {
                 TrackContextMenuState.Data(
                     trackName = track.name,
                     trackId = trackId,
@@ -107,7 +110,7 @@ class TrackContextMenuStateHolder(
                         },
                 )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, TrackContextMenuState.Loading)
+        }
 
     override fun handle(action: TrackContextMenuUserAction) {
         when (action) {

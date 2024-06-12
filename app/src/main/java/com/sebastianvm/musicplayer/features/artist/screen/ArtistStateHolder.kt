@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
 import androidx.annotation.StringRes
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -15,12 +17,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 data class ArtistScreenSection(@StringRes val title: Int, val albums: List<AlbumRow.State>)
 
@@ -49,18 +49,21 @@ class ArtistStateHolder(
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<ArtistState, ArtistUserAction> {
 
     private val artistId = arguments.artistId
 
     override val state: StateFlow<ArtistState> =
-        artistRepository
-            .getArtist(artistId)
-            .map { artistWithAlbums ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val artist = artistRepository.getArtist(artistId).collectValue(initial = null)
+            if (artist == null) {
+                ArtistState.Loading
+            } else {
                 ArtistState.Data(
-                    artistName = artistWithAlbums.name,
+                    artistName = artist.name,
                     artistAlbumsSection =
-                        artistWithAlbums.albums
+                        artist.albums
                             .takeIf { it.isNotEmpty() }
                             ?.let { albums ->
                                 ArtistScreenSection(
@@ -69,7 +72,7 @@ class ArtistStateHolder(
                                 )
                             },
                     artistAppearsOnSection =
-                        artistWithAlbums.appearsOn
+                        artist.appearsOn
                             .takeIf { it.isNotEmpty() }
                             ?.let { albums ->
                                 ArtistScreenSection(
@@ -79,7 +82,7 @@ class ArtistStateHolder(
                             },
                 )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, ArtistState.Loading)
+        }
 
     override fun handle(action: ArtistUserAction) {
         when (action) {

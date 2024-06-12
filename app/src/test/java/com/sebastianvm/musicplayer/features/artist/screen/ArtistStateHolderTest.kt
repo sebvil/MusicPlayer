@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
@@ -34,6 +35,7 @@ class ArtistStateHolderTest :
                 arguments = ArtistArguments(ARTIST_ID),
                 artistRepository = artistRepositoryDep,
                 navController = navControllerDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

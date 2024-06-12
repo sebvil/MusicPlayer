@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
@@ -8,11 +10,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class GenreContextMenuArguments(val genreId: Long) : Arguments
@@ -32,17 +32,20 @@ class GenreContextMenuStateHolder(
     genreRepository: GenreRepository,
     private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<GenreContextMenuState, GenreContextMenuUserAction> {
 
     private val genreId = arguments.genreId
 
     override val state: StateFlow<GenreContextMenuState> =
-        genreRepository
-            .getGenreName(genreId)
-            .map { genreName ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val genreName = genreRepository.getGenreName(genreId).collectValue(initial = null)
+            if (genreName == null) {
+                GenreContextMenuState.Loading
+            } else {
                 GenreContextMenuState.Data(genreName = genreName, genreId = genreId)
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, GenreContextMenuState.Loading)
+        }
 
     override fun handle(action: GenreContextMenuUserAction) {
         when (action) {

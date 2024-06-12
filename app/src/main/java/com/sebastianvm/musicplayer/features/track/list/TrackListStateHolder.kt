@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -24,12 +26,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class TrackListArguments(val trackListType: TrackList) : Arguments
@@ -59,6 +59,7 @@ class TrackListStateHolder(
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
     private val sortPreferences =
@@ -76,12 +77,16 @@ class TrackListStateHolder(
         }
 
     override val state: StateFlow<UiState<TrackListState>> =
-        combine(trackRepository.getTrackListWithMetaData(args.trackListType), sortPreferences) {
-                trackListWithMetadata,
-                sortPrefs ->
-                if (trackListWithMetadata.trackList.isEmpty()) {
-                    Empty
-                } else {
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val trackListWithMetadata =
+                trackRepository
+                    .getTrackListWithMetaData(args.trackListType)
+                    .collectValue(initial = null)
+            val sortPrefs = sortPreferences.collectValue(initial = null)
+            when {
+                trackListWithMetadata == null || sortPrefs == null -> Loading
+                trackListWithMetadata.trackList.isEmpty() -> Empty
+                else -> {
                     Data(
                         TrackListState(
                             tracks =
@@ -90,7 +95,7 @@ class TrackListStateHolder(
                                 },
                             headerState = trackListWithMetadata.metaData.toHeaderState(),
                             sortButtonState =
-                                sortPrefs?.let {
+                                sortPrefs.let {
                                     SortButton.State(
                                         text = sortPrefs.sortOption.stringId,
                                         sortOrder = sortPrefs.sortOrder,
@@ -101,7 +106,7 @@ class TrackListStateHolder(
                     )
                 }
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }
 
     override fun handle(action: TrackListUserAction) {
         when (action) {

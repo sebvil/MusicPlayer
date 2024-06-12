@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
@@ -38,6 +39,7 @@ class ArtistsMenuStateHolderTest :
                 artistRepository = artistRepositoryDep,
                 navController = navControllerDep,
                 stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

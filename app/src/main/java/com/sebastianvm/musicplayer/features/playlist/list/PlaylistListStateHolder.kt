@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -17,15 +19,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -73,6 +73,7 @@ class PlaylistListStateHolder(
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
@@ -80,19 +81,19 @@ class PlaylistListStateHolder(
     private val sortOrder = sortPreferencesRepository.getPlaylistsListSortOrder()
 
     override val state: StateFlow<PlaylistListState> =
-        combine(
-                playlistRepository.getPlaylists(),
-                isPlayListCreationErrorDialogOpen,
-                isCreatePlaylistDialogOpen,
-                sortOrder,
-            ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, sortOrder
-                ->
-                if (playlists.isEmpty()) {
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val playlists = playlistRepository.getPlaylists().collectValue(initial = null)
+            val isPlaylistCreationErrorDialogOpen = isPlayListCreationErrorDialogOpen.collectValue()
+            val isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen.collectValue()
+            val sortOrder = sortOrder.collectValue(initial = null)
+            when {
+                playlists == null || sortOrder == null -> PlaylistListState.Loading
+                playlists.isEmpty() ->
                     PlaylistListState.Empty(
-                        isCreatePlaylistDialogOpen,
-                        isPlaylistCreationErrorDialogOpen,
+                        isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
+                        isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
                     )
-                } else {
+                else -> {
                     PlaylistListState.Data(
                         playlists =
                             playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
@@ -103,7 +104,7 @@ class PlaylistListStateHolder(
                     )
                 }
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, PlaylistListState.Loading)
+        }
 
     override fun handle(action: PlaylistListUserAction) {
         when (action) {

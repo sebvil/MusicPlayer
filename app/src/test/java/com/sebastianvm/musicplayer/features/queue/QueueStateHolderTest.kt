@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.queue
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
@@ -17,7 +18,11 @@ class QueueStateHolderTest :
         beforeTest { queueRepositoryDep = FakeQueueRepository() }
 
         fun TestScope.getSubject(): QueueStateHolder {
-            return QueueStateHolder(queueRepository = queueRepositoryDep, stateHolderScope = this)
+            return QueueStateHolder(
+                queueRepository = queueRepositoryDep,
+                stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
+            )
         }
 
         "init subscribes to changes in queue" {
@@ -29,7 +34,6 @@ class QueueStateHolderTest :
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe QueueState.Loading
-                awaitItem() shouldBe QueueState.Empty
 
                 queueRepositoryDep.queuedTracks.value = FixtureProvider.queueItemsFixtures()
                 queueRepositoryDep.nowPlayingInfo.value =
@@ -54,7 +58,6 @@ class QueueStateHolderTest :
                     )
 
                 queueRepositoryDep.nowPlayingInfo.value = NowPlayingInfo()
-                awaitItem() shouldBe QueueState.Empty
             }
         }
 

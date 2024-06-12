@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
+import androidx.compose.runtime.collectAsState
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -20,12 +23,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class GenreListState(val genres: List<GenreRow.State>, val sortButtonState: SortButton.State) :
@@ -44,15 +45,21 @@ class GenreListStateHolder(
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
 
     override val state: StateFlow<UiState<GenreListState>> =
-        combine(genreRepository.getGenres(), sortPreferencesRepository.getGenreListSortOrder()) {
-                genres,
-                sortOrder ->
-                if (genres.isEmpty()) {
-                    Empty
-                } else {
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val genres = genreRepository.getGenres().collectValue(initial = null)
+            val sortOrder =
+                sortPreferencesRepository
+                    .getGenreListSortOrder()
+                    .collectAsState(initial = null)
+                    .value
+            when {
+                genres == null || sortOrder == null -> Loading
+                genres.isEmpty() -> Empty
+                else -> {
                     Data(
                         GenreListState(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
@@ -62,7 +69,7 @@ class GenreListStateHolder(
                     )
                 }
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }
 
     override fun handle(action: GenreListUserAction) {
         when (action) {

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.player
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
@@ -40,6 +41,7 @@ class PlayerStateHolderTest :
                 playbackManager = playbackManagerDep,
                 props = propsDep,
                 delegate = playerDelegateDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

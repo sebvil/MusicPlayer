@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.search
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
@@ -20,17 +22,15 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -78,6 +78,7 @@ class SearchStateHolder(
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<SearchState, SearchUserAction> {
 
     private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
@@ -109,15 +110,11 @@ class SearchStateHolder(
         }
 
     override val state: StateFlow<SearchState> =
-        combine(query.map { it.mode }, searchResults) { selectedOption, results ->
-                SearchState(selectedOption = selectedOption, searchResults = results)
-            }
-            .stateIn(
-                scope = stateHolderScope,
-                started = SharingStarted.Lazily,
-                initialValue =
-                    SearchState(selectedOption = SearchMode.SONGS, searchResults = emptyList()),
-            )
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val selectedOption = query.map { it.mode }.collectValue(initial = SearchMode.SONGS)
+            val searchResults = searchResults.collectValue(initial = emptyList())
+            SearchState(selectedOption = selectedOption, searchResults = searchResults)
+        }
 
     private fun onTrackSearchResultClicked(trackId: Long) {
         stateHolderScope.launch { playbackManager.playMedia(MediaGroup.SingleTrack(trackId)) }

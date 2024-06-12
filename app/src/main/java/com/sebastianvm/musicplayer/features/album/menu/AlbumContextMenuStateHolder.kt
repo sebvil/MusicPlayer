@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -14,11 +16,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class AlbumContextMenuArguments(val albumId: Long) : Arguments
@@ -52,14 +52,17 @@ class AlbumContextMenuStateHolder(
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<AlbumContextMenuState, AlbumContextMenuUserAction> {
 
     private val albumId = arguments.albumId
 
     override val state: StateFlow<AlbumContextMenuState> =
-        albumRepository
-            .getAlbum(albumId)
-            .map { album ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val album = albumRepository.getAlbum(albumId).collectValue(initial = null)
+            if (album == null) {
+                AlbumContextMenuState.Loading
+            } else {
                 AlbumContextMenuState.Data(
                     albumName = album.title,
                     albumId = albumId,
@@ -71,7 +74,7 @@ class AlbumContextMenuStateHolder(
                         },
                 )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, AlbumContextMenuState.Loading)
+        }
 
     override fun handle(action: AlbumContextMenuUserAction) {
         when (action) {

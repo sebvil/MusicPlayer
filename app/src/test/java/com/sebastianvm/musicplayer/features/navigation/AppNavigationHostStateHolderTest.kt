@@ -2,6 +2,7 @@ package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
@@ -20,7 +21,10 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 class AppNavigationHostStateHolderTest :
     FreeSpec({
         fun TestScope.getSubject(): AppNavigationHostStateHolder {
-            return AppNavigationHostStateHolder(stateHolderScope = this)
+            return AppNavigationHostStateHolder(
+                stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
+            )
         }
 
         "init sets initial screen to HomeUiComponent" {

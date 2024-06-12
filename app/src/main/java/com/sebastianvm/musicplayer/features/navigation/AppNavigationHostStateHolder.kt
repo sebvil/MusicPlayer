@@ -1,16 +1,16 @@
 package com.sebastianvm.musicplayer.features.navigation
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 data class BackStackEntry(
@@ -28,7 +28,8 @@ sealed interface AppNavigationAction : UserAction {
 }
 
 class AppNavigationHostStateHolder(
-    override val stateHolderScope: CoroutineScope = stateHolderScope()
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController =
@@ -50,9 +51,9 @@ class AppNavigationHostStateHolder(
         )
 
     override val state: StateFlow<AppNavigationState> =
-        backStack
-            .map { AppNavigationState(it) }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, AppNavigationState(backStack.value))
+        stateHolderScope.launchMolecule(recompositionMode) {
+            AppNavigationState(backStack = backStack.collectValue())
+        }
 
     override fun handle(action: AppNavigationAction) {
         when (action) {

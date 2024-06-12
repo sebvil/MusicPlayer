@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -8,21 +10,20 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.sort.not
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<SortMenuState, SortMenuUserAction> {
 
     private val sortPreferences =
@@ -49,23 +50,22 @@ class SortMenuStateHolder(
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
 
     override val state: StateFlow<SortMenuState> =
-        sortPreferences
-            .map { sortPreferences ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val sortPreferences = sortPreferences.collectValue(initial = null)
+            if (sortPreferences == null) {
+                SortMenuState(
+                    sortOptions = sortOptions,
+                    selectedSort = null,
+                    sortOrder = MediaSortOrder.ASCENDING,
+                )
+            } else {
                 SortMenuState(
                     sortOptions = sortOptions,
                     selectedSort = sortPreferences.sortOption,
                     sortOrder = sortPreferences.sortOrder,
                 )
             }
-            .stateIn(
-                stateHolderScope,
-                SharingStarted.Lazily,
-                SortMenuState(
-                    sortOptions = sortOptions,
-                    selectedSort = null,
-                    sortOrder = MediaSortOrder.ASCENDING,
-                ),
-            )
+        }
 
     override fun handle(action: SortMenuUserAction) {
         when (action) {

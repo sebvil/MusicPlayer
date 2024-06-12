@@ -1,7 +1,9 @@
 package com.sebastianvm.musicplayer.features.main
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostUiComponent
 import com.sebastianvm.musicplayer.features.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.player.PlayerProps
@@ -13,15 +15,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class MainViewModel(
     override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
     private val appNavigationHostUiComponent = AppNavigationHostUiComponent()
@@ -41,24 +41,14 @@ class MainViewModel(
         )
 
     override val state: StateFlow<MainState> =
-        playerProps
-            .map { props ->
-                MainState(
-                    playerUiComponent = playerUiComponent,
-                    appNavigationHostUiComponent = appNavigationHostUiComponent,
-                    isFullscreen = props.isFullscreen,
-                )
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Lazily,
-                initialValue =
-                    MainState(
-                        playerUiComponent = playerUiComponent,
-                        appNavigationHostUiComponent = appNavigationHostUiComponent,
-                        isFullscreen = false,
-                    ),
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val props = playerProps.collectAsState()
+            MainState(
+                playerUiComponent = playerUiComponent,
+                appNavigationHostUiComponent = appNavigationHostUiComponent,
+                isFullscreen = props.value.isFullscreen,
             )
+        }
 
     override fun handle(action: MainUserAction) {
         when (action) {

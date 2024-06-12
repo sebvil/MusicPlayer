@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
@@ -43,6 +44,7 @@ class GenreListStateHolderTest :
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 navController = navControllerDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

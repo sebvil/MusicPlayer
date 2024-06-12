@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
@@ -27,6 +28,7 @@ class ArtistContextMenuStateHolderTest :
                 artistRepository = artistRepositoryDep,
                 playbackManager = playbackManagerDep,
                 stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

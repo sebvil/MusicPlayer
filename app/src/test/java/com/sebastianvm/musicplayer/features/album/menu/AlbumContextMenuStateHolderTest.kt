@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -37,6 +38,7 @@ class AlbumContextMenuStateHolderTest :
                 albumRepository = albumRepositoryDep,
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

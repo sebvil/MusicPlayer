@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.queue
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
@@ -7,18 +9,14 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 data class QueueItem(val trackRow: TrackRow.State, val position: Int, val queueItemId: Long)
 
 sealed interface QueueState : State {
     data class Data(val nowPlayingItem: QueueItem, val queueItems: List<QueueItem>) : QueueState
-
-    data object Empty : QueueState
 
     data object Loading : QueueState
 }
@@ -34,23 +32,21 @@ sealed interface QueueUserAction : UserAction {
 class QueueStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val queueRepository: QueueRepository,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<QueueState, QueueUserAction> {
 
     override val state: StateFlow<QueueState> =
-        queueRepository
-            .getQueue()
-            .map { queue ->
-                queue ?: return@map QueueState.Empty
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val queue = queueRepository.getQueue().collectValue(initial = null)
+            if (queue == null) {
+                QueueState.Loading
+            } else {
                 QueueState.Data(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
                     nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
                 )
             }
-            .stateIn(
-                scope = stateHolderScope,
-                started = SharingStarted.Lazily,
-                initialValue = QueueState.Loading,
-            )
+        }
 
     override fun handle(action: QueueUserAction) {
         when (action) {

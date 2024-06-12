@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -22,6 +23,7 @@ class SortMenuStateHolderTest :
                 arguments = SortMenuArguments(listType),
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

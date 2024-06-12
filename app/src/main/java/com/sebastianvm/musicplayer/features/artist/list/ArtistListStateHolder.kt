@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
+import androidx.compose.runtime.collectAsState
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -19,12 +22,10 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import com.sebastianvm.musicplayer.util.resources.RString
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class ArtistListState(
@@ -45,15 +46,20 @@ class ArtistListStateHolder(
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
     override val state: StateFlow<UiState<ArtistListState>> =
-        combine(
-                artistRepository.getArtists(),
-                sortPreferencesRepository.getArtistListSortOrder(),
-            ) { artists, sortOrder ->
-                if (artists.isEmpty()) {
-                    Empty
-                } else {
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val artists = artistRepository.getArtists().collectValue(initial = null)
+            val sortOrder =
+                sortPreferencesRepository
+                    .getArtistListSortOrder()
+                    .collectAsState(initial = null)
+                    .value
+            when {
+                artists == null || sortOrder == null -> Loading
+                artists.isEmpty() -> Empty
+                else -> {
                     Data(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
@@ -63,7 +69,7 @@ class ArtistListStateHolder(
                     )
                 }
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+        }
 
     override fun handle(action: ArtistListUserAction) {
         when (action) {

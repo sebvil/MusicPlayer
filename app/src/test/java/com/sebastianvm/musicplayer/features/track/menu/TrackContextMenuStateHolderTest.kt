@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
@@ -51,6 +52,7 @@ class TrackContextMenuStateHolderTest :
                 queueRepository = queueRepositoryDep,
                 navController = navControllerDep,
                 stateHolderScope = this,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

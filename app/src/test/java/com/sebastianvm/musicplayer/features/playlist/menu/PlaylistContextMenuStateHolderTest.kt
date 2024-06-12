@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
@@ -35,6 +36,7 @@ class PlaylistContextMenuStateHolderTest :
                             delegateDeletePlaylistInvocationCount++
                         }
                     },
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

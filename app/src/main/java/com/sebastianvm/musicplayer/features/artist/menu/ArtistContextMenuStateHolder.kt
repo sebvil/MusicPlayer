@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -9,11 +11,9 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class ArtistContextMenuArguments(val artistId: Long) : Arguments
@@ -33,17 +33,20 @@ class ArtistContextMenuStateHolder(
     artistRepository: ArtistRepository,
     private val playbackManager: PlaybackManager,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<ArtistContextMenuState, ArtistContextMenuUserAction> {
 
     private val artistId = arguments.artistId
 
     override val state: StateFlow<ArtistContextMenuState> =
-        artistRepository
-            .getArtist(artistId)
-            .map { artist ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val artist = artistRepository.getArtist(artistId).collectValue(initial = null)
+            if (artist == null) {
+                ArtistContextMenuState.Loading
+            } else {
                 ArtistContextMenuState.Data(artistName = artist.name, artistId = artistId)
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, ArtistContextMenuState.Loading)
+        }
 
     override fun handle(action: ArtistContextMenuUserAction) {
         when (action) {

@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.player
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -12,15 +14,13 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import kotlin.time.Duration
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration
 
 sealed interface PlayerState : State {
 
@@ -77,6 +77,7 @@ class PlayerStateHolder(
     private val playbackManager: PlaybackManager,
     private val delegate: PlayerDelegate,
     props: Flow<PlayerProps>,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
 ) : StateHolder<PlayerState, PlayerUserAction> {
 
     private val queueUiComponent = QueueUiComponent
@@ -84,10 +85,14 @@ class PlayerStateHolder(
     private val showQueue: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val state: StateFlow<PlayerState> =
-        combine(playbackManager.getPlaybackState(), props, showQueue) {
-                playbackState,
-                props,
-                showQueue ->
+        stateHolderScope.launchMolecule(recompositionMode) {
+            val playbackState = playbackManager.getPlaybackState().collectValue(initial = null)
+            val playerProps = props.collectValue(initial = null)
+            val showQueue = showQueue.collectValue()
+
+            if (playbackState == null || playerProps == null) {
+                PlayerState.NotPlaying
+            } else {
                 when (playbackState) {
                     is TrackPlayingState -> {
                         val mediaArtImageState =
@@ -108,14 +113,14 @@ class PlayerStateHolder(
                         val playbackIcon =
                             if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
                         when {
-                            props.isFullscreen && showQueue ->
+                            playerProps.isFullscreen && showQueue ->
                                 PlayerState.QueueState(
                                     trackInfoState = trackInfoState,
                                     trackProgressState = trackProgressState,
                                     playbackIcon = playbackIcon,
                                     queueUiComponent = queueUiComponent,
                                 )
-                            props.isFullscreen ->
+                            playerProps.isFullscreen ->
                                 PlayerState.FullScreenState(
                                     mediaArtImageState = mediaArtImageState,
                                     trackInfoState = trackInfoState,
@@ -136,11 +141,7 @@ class PlayerStateHolder(
                     }
                 }
             }
-            .stateIn(
-                scope = stateHolderScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = PlayerState.NotPlaying,
-            )
+        }
 
     override fun handle(action: PlayerUserAction) {
         when (action) {

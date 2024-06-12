@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -61,6 +62,7 @@ class TrackListStateHolderTest :
                 args = TrackListArguments(trackList),
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

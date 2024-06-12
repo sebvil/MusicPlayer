@@ -195,7 +195,7 @@ fun TrackListLayout(
                 state = headerState,
                 modifier = modifier,
                 listState = listState,
-                onBackButtonClicked = { handle(TrackListUserAction.BackClicked) },
+                onBackButtonClick = { handle(TrackListUserAction.BackClicked) },
             ) {
                 content(Modifier, it)
             }

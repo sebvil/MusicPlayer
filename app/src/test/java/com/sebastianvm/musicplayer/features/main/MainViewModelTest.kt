@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.main
 
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.util.testStateHolderState
@@ -18,6 +19,7 @@ class MainViewModelTest :
             return MainViewModel(
                 stateHolderScope = CloseableCoroutineScope(coroutineContext),
                 playbackManager = playbackManagerDep,
+                recompositionMode = RecompositionMode.Immediate,
             )
         }
 

@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.album.list
 
-import androidx.compose.runtime.collectAsState
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
@@ -26,6 +25,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.extensions.collectValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -52,27 +52,24 @@ class AlbumListStateHolder(
 
     override val state: StateFlow<UiState<AlbumListState>> =
         stateHolderScope.launchMolecule(recompositionMode) {
-            val albums = albumRepository.getAlbums().collectAsState(initial = null).value
+            val albums = albumRepository.getAlbums().collectValue(initial = null)
             val sortPrefs =
-                sortPreferencesRepository
-                    .getAlbumListSortPreferences()
-                    .collectAsState(initial = null)
-                    .value
-            if (albums == null || sortPrefs == null) {
-                Loading
-            } else if (albums.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    AlbumListState(
-                        albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
-                        sortButtonState =
-                            SortButton.State(
-                                text = sortPrefs.sortOption.stringId,
-                                sortOrder = sortPrefs.sortOrder,
-                            ),
+                sortPreferencesRepository.getAlbumListSortPreferences().collectValue(initial = null)
+            when {
+                albums == null || sortPrefs == null -> Loading
+                albums.isEmpty() -> Empty
+                else -> {
+                    Data(
+                        AlbumListState(
+                            albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
+                            sortButtonState =
+                                SortButton.State(
+                                    text = sortPrefs.sortOption.stringId,
+                                    sortOrder = sortPrefs.sortOrder,
+                                ),
+                        )
                     )
-                )
+                }
             }
         }
 

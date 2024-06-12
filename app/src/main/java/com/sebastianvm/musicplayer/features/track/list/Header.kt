@@ -64,7 +64,7 @@ object Header {
 fun HeaderWithImageModelList(
     state: Header.State.WithImage,
     listState: LazyListState,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -144,8 +144,8 @@ fun HeaderWithImageModelList(
         TopBar(
             title = state.title,
             alpha = topBarAlpha,
-            onSizeChanged = { topBarHeight = it },
-            onBackButtonClicked = onBackButtonClicked,
+            onSizeChange = { topBarHeight = it },
+            onBackButtonClick = onBackButtonClick,
         )
 
         Column(
@@ -181,8 +181,8 @@ fun TopBar(
     title: String,
     modifier: Modifier = Modifier,
     alpha: Float = 1f,
-    onSizeChanged: (Int) -> Unit = {},
-    onBackButtonClicked: () -> Unit = {},
+    onSizeChange: (Int) -> Unit = {},
+    onBackButtonClick: () -> Unit = {},
 ) {
     Row(
         modifier =
@@ -190,10 +190,10 @@ fun TopBar(
                 .fillMaxWidth()
                 .zIndex(1f)
                 .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))
-                .onSizeChanged { onSizeChanged(it.height) },
+                .onSizeChanged { onSizeChange(it.height) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onBackButtonClicked) {
+        IconButton(onClick = onBackButtonClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = stringResource(id = RString.back),
