@@ -33,7 +33,7 @@ sealed interface QueueUserAction : UserAction {
 
 class QueueStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val queueRepository: QueueRepository
+    private val queueRepository: QueueRepository,
 ) : StateHolder<QueueState, QueueUserAction> {
 
     override val state: StateFlow<QueueState> =

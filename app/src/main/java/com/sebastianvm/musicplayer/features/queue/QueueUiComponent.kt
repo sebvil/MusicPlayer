@@ -150,7 +150,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                         } else {
                                             selectedItems + item.position
                                         }
-                                }
+                                },
                             )
                         },
                         trailingContent = {
@@ -205,20 +205,20 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
             visible = selectedItems.isNotEmpty(),
             modifier = Modifier.align(Alignment.BottomCenter),
             enter = expandVertically(),
-            exit = shrinkVertically()
+            exit = shrinkVertically(),
         ) {
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(
                     onClick = {
                         handle(QueueUserAction.RemoveItemsFromQueue(selectedItems.toList()))
                         selectedItems = emptySet()
-                    },
+                    }
                 ) {
                     Text(text = stringResource(RString.remove))
                 }
