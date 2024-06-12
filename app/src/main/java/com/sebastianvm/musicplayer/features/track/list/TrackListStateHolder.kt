@@ -62,10 +62,17 @@ class TrackListStateHolder(
 ) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
 
     private val sortPreferences =
-        if (args.trackListType is MediaGroup.Album) {
-            flowOf(null)
-        } else {
-            sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+        when (args.trackListType) {
+            is MediaGroup.Album -> {
+                flowOf(null)
+            }
+            is MediaGroup.Playlist -> {
+                sortPreferencesRepository.getPlaylistSortPreferences(args.trackListType.playlistId)
+            }
+            is MediaGroup.Genre,
+            is MediaGroup.AllTracks -> {
+                sortPreferencesRepository.getTrackListSortPreferences(args.trackListType)
+            }
         }
 
     override val state: StateFlow<UiState<TrackListState>> =
@@ -118,7 +125,16 @@ class TrackListStateHolder(
                     SortMenuUiComponent(
                         arguments =
                             SortMenuArguments(
-                                listType = SortableListType.Tracks(trackList = args.trackListType)
+                                listType =
+                                    when (args.trackListType) {
+                                        is MediaGroup.AllTracks -> SortableListType.AllTracks
+                                        is MediaGroup.Genre ->
+                                            SortableListType.Genre(args.trackListType.genreId)
+                                        is MediaGroup.Playlist ->
+                                            SortableListType.Playlist(args.trackListType.playlistId)
+                                        is MediaGroup.Album ->
+                                            error("Cannot sort ${args.trackListType}")
+                                    }
                             )
                     ),
                     navOptions =

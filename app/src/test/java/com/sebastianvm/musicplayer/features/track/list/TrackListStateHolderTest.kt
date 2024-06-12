@@ -69,17 +69,14 @@ class TrackListStateHolderTest :
             sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
         ) {
             when (trackList) {
-                is MediaGroup.Album -> Unit
+                is MediaGroup.Album,
+                is MediaGroup.Playlist -> Unit
                 MediaGroup.AllTracks -> {
                     sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
                 }
                 is MediaGroup.Genre -> {
                     sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
                         mapOf(trackList.genreId to sortPreferences)
-                }
-                is MediaGroup.Playlist -> {
-                    sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
-                        mapOf(trackList.playlistId to sortPreferences)
                 }
             }
         }
@@ -179,12 +176,12 @@ class TrackListStateHolderTest :
 
         "init subscribes to changes in sort order" -
             {
-                withData(FixtureProvider.trackListSortPreferences()) { sortPreferences ->
+                withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
+                    sortPreferences ->
                     withData(
                         listOf(
                             MediaGroup.AllTracks,
                             MediaGroup.Genre(genreId = 0),
-                            MediaGroup.Playlist(playlistId = 0),
                         )
                     ) { trackListType ->
                         val initialSortPreferences =
@@ -203,18 +200,6 @@ class TrackListStateHolderTest :
                                         GenreTrackCrossRef(
                                             genreId = trackListType.genreId,
                                             trackId = it.id
-                                        )
-                                    }
-                            }
-                            is MediaGroup.Playlist -> {
-                                trackRepositoryDep.playlists.value =
-                                    listOf(FixtureProvider.playlist(id = trackListType.playlistId))
-                                trackRepositoryDep.playlistTrackCrossRefs.value =
-                                    tracks.map {
-                                        PlaylistTrackCrossRef(
-                                            playlistId = trackListType.playlistId,
-                                            trackId = it.id,
-                                            position = 0
                                         )
                                     }
                             }
@@ -252,6 +237,54 @@ class TrackListStateHolderTest :
                         }
                     }
                 }
+
+                "for playlist" {
+                    val tracks = FixtureProvider.tracks()
+                    trackRepositoryDep.tracks.value = tracks
+                    trackRepositoryDep.playlists.value =
+                        listOf(FixtureProvider.playlist(id = PLAYLIST_ID))
+                    trackRepositoryDep.playlistTrackCrossRefs.value =
+                        tracks.map {
+                            PlaylistTrackCrossRef(
+                                playlistId = PLAYLIST_ID,
+                                trackId = it.id,
+                                position = 0
+                            )
+                        }
+
+                    val initialSortPreferences =
+                        MediaSortPreferences(
+                            sortOption = SortOptions.PlaylistSortOptions.TRACK,
+                            sortOrder = MediaSortOrder.ASCENDING,
+                        )
+                    sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
+                        mapOf(PLAYLIST_ID to initialSortPreferences)
+
+                    val subject =
+                        getSubject(trackList = MediaGroup.Playlist(playlistId = PLAYLIST_ID))
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe Loading
+                        val state = awaitItemAs<Data<TrackListState>>().state
+                        state.sortButtonState shouldBe
+                            SortButton.State(
+                                text = initialSortPreferences.sortOption.stringId,
+                                sortOrder = initialSortPreferences.sortOrder,
+                            )
+
+                        sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
+                            mapOf(
+                                PLAYLIST_ID to
+                                    initialSortPreferences.copy(
+                                        sortOrder = MediaSortOrder.DESCENDING
+                                    )
+                            )
+                        awaitItemAs<Data<TrackListState>>().state.sortButtonState shouldBe
+                            SortButton.State(
+                                text = initialSortPreferences.sortOption.stringId,
+                                sortOrder = MediaSortOrder.DESCENDING,
+                            )
+                    }
+                }
             }
 
         "init does not subscribe to changes in sort order for album" -
@@ -286,12 +319,7 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(
-                                            listType =
-                                                SortableListType.Tracks(
-                                                    trackList = MediaGroup.AllTracks
-                                                )
-                                        )
+                                        SortMenuArguments(listType = SortableListType.AllTracks)
                                 ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )

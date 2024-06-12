@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.sort
 
 import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.player.TrackList
+import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -27,9 +27,14 @@ class SortMenuStateHolder(
 
     private val sortPreferences =
         when (val listType = arguments.listType) {
-            is SortableListType.Tracks -> {
+            is SortableListType.AllTracks -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = listType.trackList
+                    trackList = MediaGroup.AllTracks
+                )
+            }
+            is SortableListType.Genre -> {
+                sortPreferencesRepository.getTrackListSortPreferences(
+                    trackList = MediaGroup.Genre(listType.genreId)
                 )
             }
             is SortableListType.Albums -> {
@@ -76,7 +81,7 @@ class SortMenuStateHolder(
                     }
                 stateHolderScope.launch {
                     when (val listType = arguments.listType) {
-                        is SortableListType.Tracks -> {
+                        is SortableListType.AllTracks -> {
                             require(newSortOption is SortOptions.TrackListSortOptions) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
@@ -86,7 +91,20 @@ class SortMenuStateHolder(
                                         sortOption = newSortOption,
                                         sortOrder = newSortOrder,
                                     ),
-                                trackList = listType.trackList,
+                                trackList = MediaGroup.AllTracks,
+                            )
+                        }
+                        is SortableListType.Genre -> {
+                            require(newSortOption is SortOptions.TrackListSortOptions) {
+                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                            }
+                            sortPreferencesRepository.modifyTrackListSortPreferences(
+                                newPreferences =
+                                    MediaSortPreferences(
+                                        sortOption = newSortOption,
+                                        sortOrder = newSortOrder,
+                                    ),
+                                trackList = MediaGroup.Genre(listType.genreId),
                             )
                         }
                         is SortableListType.Albums -> {
@@ -131,7 +149,8 @@ data class SortMenuState(
 
 private fun getSortOptionsForScreen(listType: SortableListType): List<SortOptions> {
     return when (listType) {
-        is SortableListType.Tracks -> {
+        is SortableListType.AllTracks,
+        is SortableListType.Genre -> {
             SortOptions.TrackListSortOptions.entries
         }
         is SortableListType.Albums -> {
@@ -144,7 +163,9 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
 }
 
 sealed interface SortableListType {
-    data class Tracks(val trackList: TrackList) : SortableListType
+    data object AllTracks : SortableListType
+
+    data class Genre(val genreId: Long) : SortableListType
 
     data object Albums : SortableListType
 
