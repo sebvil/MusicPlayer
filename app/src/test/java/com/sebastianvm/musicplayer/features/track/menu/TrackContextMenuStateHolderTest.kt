@@ -41,7 +41,7 @@ class TrackContextMenuStateHolderTest :
                 TrackContextMenuArguments(
                     trackId = TRACK_ID,
                     trackPositionInList = TRACK_POSITION_IN_LIST,
-                    trackList = MediaGroup.AllTracks
+                    trackList = MediaGroup.AllTracks,
                 )
         ): TrackContextMenuStateHolder {
             return TrackContextMenuStateHolder(
@@ -189,7 +189,7 @@ class TrackContextMenuStateHolderTest :
                                             ),
                                         navController = navControllerDep,
                                     ),
-                                presentationMode = NavOptions.PresentationMode.Screen
+                                presentationMode = NavOptions.PresentationMode.Screen,
                             )
                         )
                 }
@@ -208,7 +208,7 @@ class TrackContextMenuStateHolderTest :
                                         arguments = ArtistArguments(artistId = 0),
                                         navController = navControllerDep,
                                     ),
-                                presentationMode = NavOptions.PresentationMode.Screen
+                                presentationMode = NavOptions.PresentationMode.Screen,
                             )
                         )
                 }
@@ -228,7 +228,7 @@ class TrackContextMenuStateHolderTest :
                                             ArtistsMenuArguments(MediaGroup.SingleTrack(TRACK_ID)),
                                         navController = navControllerDep,
                                     ),
-                                presentationMode = NavOptions.PresentationMode.BottomSheet
+                                presentationMode = NavOptions.PresentationMode.BottomSheet,
                             )
                         )
                 }

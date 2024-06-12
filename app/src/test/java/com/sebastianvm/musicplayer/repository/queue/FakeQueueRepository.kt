@@ -47,12 +47,12 @@ class FakeQueueRepository : QueueRepository {
     ) {
         this.nowPlayingInfo.update { nowPlayingInfo }
         this.queuedTracks.update {
-            queuedTracks.map {
-                val track = FixtureProvider.track(id = it.trackId)
+            queuedTracks.map { queuedTrack ->
+                val track = FixtureProvider.track(id = queuedTrack.trackId)
                 QueuedTrack(
                     track = track,
-                    queuePosition = it.queuePosition,
-                    queueItemId = it.queueItemId,
+                    queuePosition = queuedTrack.queuePosition,
+                    queueItemId = queuedTrack.queueItemId,
                 )
             }
         }

@@ -120,8 +120,8 @@ class TrackListStateHolderTest :
                                 imageState =
                                     MediaArtImageState(
                                         imageUri = album.imageUri,
-                                        backupImage = Icons.Album
-                                    )
+                                        backupImage = Icons.Album,
+                                    ),
                             )
                     }
                 }
@@ -160,7 +160,7 @@ class TrackListStateHolderTest :
                             PlaylistTrackCrossRef(
                                 playlistId = playlist.id,
                                 trackId = track.id,
-                                position = index.toLong()
+                                position = index.toLong(),
                             )
                         }
                     val subject =
@@ -178,12 +178,8 @@ class TrackListStateHolderTest :
             {
                 withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
                     sortPreferences ->
-                    withData(
-                        listOf(
-                            MediaGroup.AllTracks,
-                            MediaGroup.Genre(genreId = 0),
-                        )
-                    ) { trackListType ->
+                    withData(listOf(MediaGroup.AllTracks, MediaGroup.Genre(genreId = 0))) {
+                        trackListType ->
                         val initialSortPreferences =
                             MediaSortPreferences(
                                 sortOption = SortOptions.TrackListSortOptions.TRACK,
@@ -199,7 +195,7 @@ class TrackListStateHolderTest :
                                     tracks.map {
                                         GenreTrackCrossRef(
                                             genreId = trackListType.genreId,
-                                            trackId = it.id
+                                            trackId = it.id,
                                         )
                                     }
                             }
@@ -248,7 +244,7 @@ class TrackListStateHolderTest :
                             PlaylistTrackCrossRef(
                                 playlistId = PLAYLIST_ID,
                                 trackId = it.id,
-                                position = 0
+                                position = 0,
                             )
                         }
 

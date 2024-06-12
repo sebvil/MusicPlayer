@@ -118,8 +118,8 @@ class FakeTrackRepository : TrackRepository {
                             mediaArtImageState =
                                 MediaArtImageState(
                                     imageUri = it.imageUri,
-                                    backupImage = Icons.Album
-                                )
+                                    backupImage = Icons.Album,
+                                ),
                         )
                     }
         }
