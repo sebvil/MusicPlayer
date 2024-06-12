@@ -72,6 +72,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -522,9 +523,9 @@ private fun PlayerWithQueue(
                 )
             }
 
-            state.queueUiComponent.Content(modifier = Modifier.weight(1f))
+            state.queueUiComponent.Content(modifier = Modifier.weight(1f).zIndex(0f))
 
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().zIndex(1f)) {
                 LinearProgressIndicator(
                     progress = { state.trackProgressState.progress.percent },
                     modifier =

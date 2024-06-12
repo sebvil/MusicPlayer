@@ -29,6 +29,7 @@ object TrackRow {
 fun TrackRow(
     state: TrackRow.State,
     modifier: Modifier = Modifier,
+    leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
     tonalElevation: Dp = ListItemDefaults.Elevation,
     shadowElevation: Dp = ListItemDefaults.Elevation,
@@ -37,6 +38,7 @@ fun TrackRow(
         headlineContent = { Text(text = state.trackName) },
         supportingContent = state.artists?.let { artists -> { Text(text = artists) } },
         modifier = modifier,
+        leadingContent = leadingContent,
         trailingContent = trailingContent,
         tonalElevation = tonalElevation,
         shadowElevation = shadowElevation,

@@ -77,4 +77,11 @@ class FakeQueueRepository : QueueRepository {
         nowPlayingInfo.value =
             NowPlayingInfo(nowPlayingPositionInQueue = index, lastRecordedPosition = 0)
     }
+
+    override fun removeItemsFromQueue(queuePositions: List<Int>) {
+        queuedTracks.update {
+            it.filterIndexed { index, _ -> index !in queuePositions }
+                .mapIndexed { index, queuedTrack -> queuedTrack.copy(queuePosition = index) }
+        }
+    }
 }
