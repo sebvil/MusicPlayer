@@ -40,8 +40,6 @@ sealed interface TrackListUserAction : UserAction {
     data class TrackClicked(val trackIndex: Int) : TrackListUserAction
 
     data object SortButtonClicked : TrackListUserAction
-
-    data object BackClicked : TrackListUserAction
 }
 
 class TrackListStateHolder(
@@ -95,9 +93,6 @@ class TrackListStateHolder(
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
-            }
-            is TrackListUserAction.BackClicked -> {
-                navController.pop()
             }
             is TrackListUserAction.TrackClicked -> {
                 stateHolderScope.launch {

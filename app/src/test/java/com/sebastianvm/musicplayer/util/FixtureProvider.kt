@@ -7,19 +7,14 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.Artist
 import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.model.Track
-import com.sebastianvm.musicplayer.model.TrackListMetadata
-import com.sebastianvm.musicplayer.model.TrackListWithMetadata
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -136,24 +131,6 @@ object FixtureProvider {
                 currentTrackProgress = 125.seconds,
             ),
         )
-    }
-
-    fun trackListWithMetadataFixtures(): List<TrackListWithMetadata> {
-        val metadataList =
-            listOf(
-                TrackListMetadata(trackListName = "Track list", mediaArtImageState = null),
-                TrackListMetadata(
-                    trackListName = "Track list",
-                    mediaArtImageState = MediaArtImageState("", Icons.Album),
-                ),
-                null,
-            )
-        return metadataList.flatMap {
-            listOf(
-                TrackListWithMetadata(metaData = it, trackList = tracks().toList()),
-                TrackListWithMetadata(metaData = it, trackList = listOf()),
-            )
-        }
     }
 
     fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
