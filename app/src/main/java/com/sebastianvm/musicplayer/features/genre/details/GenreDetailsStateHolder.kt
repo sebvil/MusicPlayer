@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.features.track.list
+package com.sebastianvm.musicplayer.features.genre.details
 
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
@@ -10,9 +10,10 @@ import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -24,62 +25,73 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-sealed interface TrackListState : State {
-    data object Loading : TrackListState
+data class GenreDetailsArguments(val genreId: Long, val genreName: String) : Arguments
+
+sealed interface GenreDetailsState : State {
+    val genreName: String
+
+    data class Loading(override val genreName: String) : GenreDetailsState
 
     data class Data(
         val tracks: List<TrackRow.State>,
         val sortButtonState: SortButton.State,
-    ) : TrackListState
+        override val genreName: String
+    ) : GenreDetailsState
 }
 
-sealed interface TrackListUserAction : UserAction {
+sealed interface GenreDetailsUserAction : UserAction {
     data class TrackMoreIconClicked(val trackId: Long, val trackPositionInList: Int) :
-        TrackListUserAction
+        GenreDetailsUserAction
 
-    data class TrackClicked(val trackIndex: Int) : TrackListUserAction
+    data class TrackClicked(val trackIndex: Int) : GenreDetailsUserAction
 
-    data object SortButtonClicked : TrackListUserAction
+    data object SortButtonClicked : GenreDetailsUserAction
 
-    data object BackClicked : TrackListUserAction
+    data object BackClicked : GenreDetailsUserAction
 }
 
-class TrackListStateHolder(
+class GenreDetailsStateHolder(
+    private val args: GenreDetailsArguments,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    trackRepository: TrackRepository,
+    genreRepository: GenreRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
-) : StateHolder<TrackListState, TrackListUserAction> {
+) : StateHolder<GenreDetailsState, GenreDetailsUserAction> {
 
     private val sortPreferences =
-        sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.AllTracks)
+        sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.Genre(args.genreId))
 
-    override val state: StateFlow<TrackListState> =
-        combine(trackRepository.getTracksForMedia(MediaGroup.AllTracks), sortPreferences) {
-                tracks,
+    override val state: StateFlow<GenreDetailsState> =
+        combine(genreRepository.getGenre(genreId = args.genreId), sortPreferences) {
+                genre,
                 sortPrefs ->
-                TrackListState.Data(
-                    tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
+                GenreDetailsState.Data(
+                    tracks = genre.tracks.map { track -> TrackRow.State.fromTrack(track) },
                     sortButtonState =
                         SortButton.State(
                             text = sortPrefs.sortOption.stringId,
                             sortOrder = sortPrefs.sortOrder,
-                        )
+                        ),
+                    genreName = genre.name
                 )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, TrackListState.Loading)
+            .stateIn(
+                scope = stateHolderScope,
+                started = SharingStarted.Lazily,
+                initialValue = GenreDetailsState.Loading(args.genreName)
+            )
 
-    override fun handle(action: TrackListUserAction) {
+    override fun handle(action: GenreDetailsUserAction) {
         when (action) {
-            is TrackListUserAction.TrackMoreIconClicked -> {
+            is GenreDetailsUserAction.TrackMoreIconClicked -> {
                 navController.push(
                     TrackContextMenu(
                         arguments =
                             TrackContextMenuArguments(
                                 trackId = action.trackId,
                                 trackPositionInList = action.trackPositionInList,
-                                trackList = MediaGroup.AllTracks,
+                                trackList = MediaGroup.Genre(args.genreId),
                             ),
                         navController = navController,
                     ),
@@ -87,22 +99,23 @@ class TrackListStateHolder(
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-            is TrackListUserAction.SortButtonClicked -> {
+            is GenreDetailsUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)
+                        arguments =
+                            SortMenuArguments(listType = SortableListType.Genre(args.genreId))
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-            is TrackListUserAction.BackClicked -> {
+            is GenreDetailsUserAction.BackClicked -> {
                 navController.pop()
             }
-            is TrackListUserAction.TrackClicked -> {
+            is GenreDetailsUserAction.TrackClicked -> {
                 stateHolderScope.launch {
                     playbackManager.playMedia(
-                        mediaGroup = MediaGroup.AllTracks,
+                        mediaGroup = MediaGroup.Genre(args.genreId),
                         initialTrackIndex = action.trackIndex,
                     )
                 }

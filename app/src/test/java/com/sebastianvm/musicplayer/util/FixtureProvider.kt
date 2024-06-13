@@ -9,7 +9,7 @@ import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.Artist
 import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.model.Playlist
@@ -29,16 +29,16 @@ object FixtureProvider {
 
     private val fixtureMonkey = FixtureMonkey.builder().plugin(KotlinPlugin()).build()
 
-    fun album(id: Long = fixtureMonkey.giveMeOne<Long>(), artistCount: Int = 1): Album {
+    fun album(id: Long = fixtureMonkey.giveMeOne<Long>(), artistCount: Int = 1): AlbumWithArtists {
         return fixtureMonkey
-            .giveMeBuilder<Album>()
-            .set(Album::id, id)
-            .size(Album::artists, artistCount)
+            .giveMeBuilder<AlbumWithArtists>()
+            .set(AlbumWithArtists::id, id)
+            .size(AlbumWithArtists::artists, artistCount)
             .build()
             .sample()
     }
 
-    fun albums(size: Int = DEFAULT_LIST_SIZE): List<Album> {
+    fun albums(size: Int = DEFAULT_LIST_SIZE): List<AlbumWithArtists> {
         return fixtureMonkey.giveMe(size)
     }
 

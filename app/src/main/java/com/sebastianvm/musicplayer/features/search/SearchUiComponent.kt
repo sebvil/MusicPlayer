@@ -219,14 +219,7 @@ fun SearchLayout(
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
                 val itemModifier =
-                    Modifier.clickable {
-                        handle(
-                            SearchUserAction.SearchResultClicked(
-                                id = item.id,
-                                mediaType = state.selectedOption,
-                            )
-                        )
-                    }
+                    Modifier.clickable { handle(SearchUserAction.SearchResultClicked(item)) }
                 when (item) {
                     is SearchResult.Album -> {
                         AlbumRow(state = item.state, modifier = itemModifier)

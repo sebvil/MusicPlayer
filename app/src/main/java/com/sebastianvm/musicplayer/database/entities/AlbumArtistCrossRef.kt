@@ -51,7 +51,7 @@ data class ArtistWithAlbums(
                 entityColumn = "albumId",
             ),
     )
-    val artistAlbums: List<AlbumWithArtists>,
+    val artistAlbums: List<AlbumWithArtistsEntity>,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
@@ -63,7 +63,7 @@ data class ArtistWithAlbums(
                 entityColumn = "albumId",
             ),
     )
-    val artistAppearsOn: List<AlbumWithArtists>,
+    val artistAppearsOn: List<AlbumWithArtistsEntity>,
 )
 
 fun ArtistWithAlbums.asExternalModel(): Artist {

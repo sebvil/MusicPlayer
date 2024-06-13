@@ -7,7 +7,7 @@ import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
 import com.sebastianvm.musicplayer.ArtworkProvider
-import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.BasicArtist
 import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
@@ -84,7 +84,7 @@ class MediaTree(
         )
     }
 
-    private fun Album.buildMediaItem(parent: MediaKey): MediaItem {
+    private fun AlbumWithArtists.buildMediaItem(parent: MediaKey): MediaItem {
         return buildMediaItem(
             title = title,
             mediaId =

@@ -41,7 +41,11 @@ data class AlbumListUiComponent(val navController: NavController) :
     }
 
     override fun createStateHolder(dependencies: Dependencies): AlbumListStateHolder {
-        return getAlbumListStateHolder(dependencies = dependencies, navController = navController)
+        return AlbumListStateHolder(
+            albumRepository = dependencies.repositoryProvider.albumRepository,
+            navController = navController,
+            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+        )
     }
 }
 
@@ -82,7 +86,16 @@ fun AlbumList(
         items(state.albums, key = { item -> item.id }) { item ->
             AlbumRow(
                 state = item,
-                modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item.id)) },
+                modifier =
+                    Modifier.clickable {
+                        handle(
+                            AlbumListUserAction.AlbumClicked(
+                                item.id,
+                                item.albumName,
+                                item.mediaArtImageState.imageUri
+                            )
+                        )
+                    },
                 trailingContent = {
                     OverflowIconButton(
                         onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }

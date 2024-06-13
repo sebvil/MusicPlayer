@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.features.track.list
+package com.sebastianvm.musicplayer.features.genre.details
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,29 +27,29 @@ import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.features.track.list.TopBar
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-data class TrackListUiComponent(
+data class GenreDetailsUiComponent(
+    override val arguments: GenreDetailsArguments,
     val navController: NavController,
 ) :
     BaseUiComponent<
-        NoArguments,
-        TrackListState,
-        TrackListUserAction,
-        TrackListStateHolder,
+        GenreDetailsArguments,
+        GenreDetailsState,
+        GenreDetailsUserAction,
+        GenreDetailsStateHolder,
     >() {
 
-    override val arguments: NoArguments = NoArguments
-
-    override fun createStateHolder(dependencies: Dependencies): TrackListStateHolder {
-        return TrackListStateHolder(
+    override fun createStateHolder(dependencies: Dependencies): GenreDetailsStateHolder {
+        return GenreDetailsStateHolder(
+            args = arguments,
             navController = navController,
-            trackRepository = dependencies.repositoryProvider.trackRepository,
+            genreRepository = dependencies.repositoryProvider.genreRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             playbackManager = dependencies.repositoryProvider.playbackManager,
         )
@@ -55,52 +57,68 @@ data class TrackListUiComponent(
 
     @Composable
     override fun Content(
-        state: TrackListState,
-        handle: Handler<TrackListUserAction>,
+        state: GenreDetailsState,
+        handle: Handler<GenreDetailsUserAction>,
         modifier: Modifier,
     ) {
-        TrackList(state = state, handle = handle, modifier = modifier)
+        GenreDetails(state = state, handle = handle, modifier = modifier)
     }
 }
 
 @Composable
-fun TrackList(
-    state: TrackListState,
-    handle: Handler<TrackListUserAction>,
+fun GenreDetails(
+    state: GenreDetailsState,
+    handle: Handler<GenreDetailsUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    when (state) {
-        TrackListState.Loading -> {
-            Box(modifier = modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopBar(
+                title = state.genreName,
+                onBackButtonClicked = { handle(GenreDetailsUserAction.BackClicked) },
+            )
+        }
+    ) { paddingValues ->
+        when (state) {
+            is GenreDetailsState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            is GenreDetailsState.Data -> {
+                GenreDetails(
+                    state = state,
+                    handle = handle,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
-        is TrackListState.Data -> {
-            TrackList(state = state, handle = handle, modifier = modifier)
-        }
     }
 }
 
 @Composable
-fun TrackList(
-    state: TrackListState.Data,
-    handle: Handler<TrackListUserAction>,
+fun GenreDetails(
+    state: GenreDetailsState.Data,
+    handle: Handler<GenreDetailsUserAction>,
     modifier: Modifier = Modifier,
 ) {
+    val listState = rememberLazyListState()
 
     if (state.tracks.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = RString.no_tracks_found,
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
         LazyColumn(
             modifier = modifier,
             contentPadding = LocalPaddingValues.current,
+            state = listState,
         ) {
             item {
                 TextButton(
-                    onClick = { handle(TrackListUserAction.SortButtonClicked) },
+                    onClick = { handle(GenreDetailsUserAction.SortButtonClicked) },
                     modifier = Modifier.padding(start = 16.dp),
                 ) {
                     Text(text = "${stringResource(id = RString.sort_by)}:")
@@ -121,13 +139,13 @@ fun TrackList(
                     state = item,
                     modifier =
                         Modifier.animateItem().clickable {
-                            handle(TrackListUserAction.TrackClicked(trackIndex = index))
+                            handle(GenreDetailsUserAction.TrackClicked(trackIndex = index))
                         },
                     trailingContent = {
                         IconButton(
                             onClick = {
                                 handle(
-                                    TrackListUserAction.TrackMoreIconClicked(
+                                    GenreDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
                                     )

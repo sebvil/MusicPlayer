@@ -144,7 +144,15 @@ fun LazyListScope.artistScreenSection(
         AlbumRow(
             state = album,
             modifier =
-                Modifier.clickable { handle(ArtistUserAction.AlbumClicked(albumId = album.id)) },
+                Modifier.clickable {
+                    handle(
+                        ArtistUserAction.AlbumClicked(
+                            albumId = album.id,
+                            albumName = album.albumName,
+                            imageUri = album.mediaArtImageState.imageUri
+                        )
+                    )
+                },
             trailingContent = {
                 OverflowIconButton(
                     onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) }

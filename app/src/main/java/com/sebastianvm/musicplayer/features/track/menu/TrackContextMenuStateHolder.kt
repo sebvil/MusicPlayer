@@ -1,13 +1,13 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.HasTracks
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
@@ -117,9 +117,15 @@ class TrackContextMenuStateHolder(
                     .invokeOnCompletion { navController.pop() }
             }
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
+                // TODO maybe read album
                 navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
+                    AlbumDetailsUiComponent(
+                        arguments =
+                            AlbumDetailsArguments(
+                                albumId = action.albumId,
+                                albumName = "",
+                                imageUri = ""
+                            ),
                         navController = navController,
                     ),
                     navOptions = NavOptions(popCurrent = true),

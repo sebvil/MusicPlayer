@@ -2,12 +2,17 @@ package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.sebastianvm.musicplayer.model.BasicGenre
 import com.sebastianvm.musicplayer.model.Genre
 
 object GenreRow {
     data class State(val id: Long, val genreName: String) {
         companion object {
             fun fromGenre(genre: Genre): State {
+                return State(id = genre.id, genreName = genre.name)
+            }
+
+            fun fromGenre(genre: BasicGenre): State {
                 return State(id = genre.id, genreName = genre.name)
             }
         }

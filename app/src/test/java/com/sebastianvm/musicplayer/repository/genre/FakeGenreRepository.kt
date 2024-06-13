@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.repository.genre
 
+import com.sebastianvm.musicplayer.model.BasicGenre
 import com.sebastianvm.musicplayer.model.Genre
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,7 @@ class FakeGenreRepository : GenreRepository {
 
     val genres: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
 
-    override fun getGenres(): Flow<List<Genre>> {
+    override fun getGenres(): Flow<List<BasicGenre>> {
         return genres
     }
 
