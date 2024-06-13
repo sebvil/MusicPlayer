@@ -53,8 +53,9 @@ data class PlaylistListUiComponent(val navController: NavController) :
     }
 
     override fun createStateHolder(dependencies: Dependencies): PlaylistListStateHolder {
-        return getPlaylistListStateHolder(
-            dependencies = dependencies,
+        return PlaylistListStateHolder(
+            playlistRepository = dependencies.repositoryProvider.playlistRepository,
+            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             navController = navController,
         )
     }
@@ -132,18 +133,20 @@ fun PlaylistListLayout(
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                modifier = Modifier.padding(LocalPaddingValues.current),
-                onClick = { handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked) }
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                Text(text = stringResource(id = RString.new_playlist))
+            if (state.playlists.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(LocalPaddingValues.current),
+                    onClick = { handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked) },
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    Text(text = stringResource(id = RString.new_playlist))
+                }
             }
-        }
+        },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.padding(paddingValues),
-            contentPadding = LocalPaddingValues.current
+            contentPadding = LocalPaddingValues.current,
         ) {
             item {
                 SortButton(
@@ -160,7 +163,7 @@ fun PlaylistListLayout(
                             handle(
                                 PlaylistListUserAction.PlaylistClicked(
                                     playlistId = item.id,
-                                    playlistName = item.playlistName
+                                    playlistName = item.playlistName,
                                 )
                             )
                         },

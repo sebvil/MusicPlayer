@@ -41,7 +41,7 @@ import com.sebastianvm.musicplayer.util.resources.RString
 
 data class TrackSearchUiComponent(
     override val arguments: TrackSearchArguments,
-    val navController: NavController
+    val navController: NavController,
 ) :
     BaseUiComponent<
         TrackSearchArguments,
@@ -130,7 +130,7 @@ fun TrackSearch(
                     if (!it) {
                         handle(TrackSearchUserAction.BackClicked)
                     }
-                }
+                },
             )
         },
         colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
@@ -140,7 +140,7 @@ fun TrackSearch(
                 handle(TrackSearchUserAction.BackClicked)
             }
         },
-        modifier = modifier.focusRequester(focusRequester)
+        modifier = modifier.focusRequester(focusRequester),
     ) {
         LazyColumn(
             contentPadding =
@@ -167,7 +167,7 @@ fun TrackSearch(
                         if (item.inPlaylist) {
                             Icon(imageVector = Icons.Default.Check, contentDescription = null)
                         }
-                    }
+                    },
                 )
             }
         }

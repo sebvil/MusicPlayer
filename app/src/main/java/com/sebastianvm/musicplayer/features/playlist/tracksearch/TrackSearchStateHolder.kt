@@ -46,7 +46,7 @@ class TrackSearchStateHolder(
     private val playlistRepository: PlaylistRepository,
     private val ftsRepository: FullTextSearchRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val navController: NavController
+    private val navController: NavController,
 ) : StateHolder<TrackSearchState, TrackSearchUserAction> {
 
     private val query = MutableStateFlow("")
@@ -68,7 +68,7 @@ class TrackSearchStateHolder(
                         .map {
                             TrackSearchResult(
                                 TrackRow.State.fromTrack(it),
-                                inPlaylist = it.id in playlistTrackIds
+                                inPlaylist = it.id in playlistTrackIds,
                             )
                         }
                         .sortedBy { it.inPlaylist }
@@ -80,7 +80,7 @@ class TrackSearchStateHolder(
             .stateIn(
                 stateHolderScope,
                 SharingStarted.Lazily,
-                TrackSearchState(trackSearchResults = emptyList())
+                TrackSearchState(trackSearchResults = emptyList()),
             )
 
     override fun handle(action: TrackSearchUserAction) {
@@ -90,7 +90,6 @@ class TrackSearchStateHolder(
             }
             is TrackSearchUserAction.TrackClicked -> {
                 stateHolderScope.launch {
-                    // TODO add mutex to prevent adding the same track twice
                     playlistRepository.addTrackToPlaylist(
                         playlistId = arguments.playlistId,
                         trackId = action.trackId,

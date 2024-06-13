@@ -83,9 +83,9 @@ fun PlaylistDetails(
                 topBar = {
                     TopBar(
                         title = state.playlistName,
-                        onBackButtonClicked = { handle(PlaylistDetailsUserAction.BackClicked) }
+                        onBackButtonClicked = { handle(PlaylistDetailsUserAction.BackClicked) },
                     )
-                }
+                },
             ) {
                 Box(modifier = Modifier.fillMaxSize().padding(it)) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -111,7 +111,7 @@ fun PlaylistDetails(
                 text = { Text(text = stringResource(id = RString.add_tracks)) },
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                 onClick = { handle(PlaylistDetailsUserAction.AddTracksButtonClicked) },
-                modifier = Modifier.padding(LocalPaddingValues.current)
+                modifier = Modifier.padding(LocalPaddingValues.current),
             )
         },
         topBar = {
@@ -119,12 +119,12 @@ fun PlaylistDetails(
                 title = state.playlistName,
                 onBackButtonClicked = { handle(PlaylistDetailsUserAction.BackClicked) },
             )
-        }
+        },
     ) { paddingValues ->
         PlaylistDetailsLayout(
             state = state,
             handle = handle,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -142,7 +142,7 @@ fun PlaylistDetailsLayout(
             message = {
                 Text(
                     text = stringResource(id = RString.playlist_is_empty),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             },
             button = {
@@ -157,7 +157,7 @@ fun PlaylistDetailsLayout(
         LazyColumn(
             modifier = modifier,
             state = listState,
-            contentPadding = LocalPaddingValues.current
+            contentPadding = LocalPaddingValues.current,
         ) {
             item {
                 TextButton(

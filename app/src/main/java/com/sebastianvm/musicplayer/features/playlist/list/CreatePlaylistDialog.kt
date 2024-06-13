@@ -37,7 +37,7 @@ fun CreatePlaylistDialog(onDismiss: () -> Unit, onConfirm: (playlistName: String
             TextField(
                 value = playListName,
                 onValueChange = { newValue -> playListName = newValue },
-                modifier = Modifier.focusRequester(focusRequester)
+                modifier = Modifier.focusRequester(focusRequester),
             )
         },
     )

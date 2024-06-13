@@ -67,7 +67,7 @@ class TrackListStateHolder(
                 flowOf(null)
             }
             is MediaGroup.Playlist -> {
-                sortPreferencesRepository.getPlaylistSortPreferences(args.trackListType.playlistId)
+                error("Not supported")
             }
             is MediaGroup.Genre,
             is MediaGroup.AllTracks -> {
@@ -124,8 +124,7 @@ class TrackListStateHolder(
                                         is MediaGroup.AllTracks -> SortableListType.AllTracks
                                         is MediaGroup.Genre ->
                                             SortableListType.Genre(args.trackListType.genreId)
-                                        is MediaGroup.Playlist ->
-                                            SortableListType.Playlist(args.trackListType.playlistId)
+                                        is MediaGroup.Playlist,
                                         is MediaGroup.Album ->
                                             error("Cannot sort ${args.trackListType}")
                                     }

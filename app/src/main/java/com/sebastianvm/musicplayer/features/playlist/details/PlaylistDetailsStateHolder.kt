@@ -71,7 +71,7 @@ class PlaylistDetailsStateHolder(
                     mediaGroup = MediaGroup.Playlist(args.playlistId)
                 ),
                 playlistRepository.getPlaylistName(args.playlistId),
-                sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId)
+                sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
             ) { tracks, playlistName, sortPrefs ->
                 PlaylistDetailsState.Data(
                     tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
@@ -88,7 +88,7 @@ class PlaylistDetailsStateHolder(
             .stateIn(
                 stateHolderScope,
                 SharingStarted.Lazily,
-                PlaylistDetailsState.Loading(args.playlistName)
+                PlaylistDetailsState.Loading(args.playlistName),
             )
 
     override fun handle(action: PlaylistDetailsUserAction) {
@@ -100,7 +100,7 @@ class PlaylistDetailsStateHolder(
                             TrackContextMenuArguments(
                                 trackId = action.trackId,
                                 trackPositionInList = action.trackPositionInList,
-                                trackList = MediaGroup.Playlist(playlistId = args.playlistId)
+                                trackList = MediaGroup.Playlist(playlistId = args.playlistId),
                             ),
                         navController = navController,
                     ),
@@ -132,12 +132,9 @@ class PlaylistDetailsStateHolder(
             is PlaylistDetailsUserAction.AddTracksButtonClicked -> {
                 navController.push(
                     TrackSearchUiComponent(
-                        arguments =
-                            TrackSearchArguments(
-                                playlistId = args.playlistId,
-                            ),
+                        arguments = TrackSearchArguments(playlistId = args.playlistId),
                         navController = navController,
-                    ),
+                    )
                 )
             }
         }

@@ -4,6 +4,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMe
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
 import com.sebastianvm.musicplayer.designsystem.icons.Album
@@ -28,7 +29,7 @@ object FixtureProvider {
 
     private val fixtureMonkey = FixtureMonkey.builder().plugin(KotlinPlugin()).build()
 
-    fun album(id: Long = DEFAULT_ID, artistCount: Int = 1): Album {
+    fun album(id: Long = fixtureMonkey.giveMeOne<Long>(), artistCount: Int = 1): Album {
         return fixtureMonkey
             .giveMeBuilder<Album>()
             .set(Album::id, id)
@@ -41,7 +42,11 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun artist(id: Long = DEFAULT_ID, albumCount: Int = 1, appearsOnCount: Int = 1): Artist {
+    fun artist(
+        id: Long = fixtureMonkey.giveMeOne<Long>(),
+        albumCount: Int = 1,
+        appearsOnCount: Int = 1,
+    ): Artist {
         return fixtureMonkey
             .giveMeBuilder<Artist>()
             .set(Artist::id, id)
@@ -55,7 +60,7 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun genre(id: Long = DEFAULT_ID): Genre {
+    fun genre(id: Long = fixtureMonkey.giveMeOne<Long>()): Genre {
         return fixtureMonkey.giveMeBuilder<Genre>().set(Genre::id, id).build().sample()
     }
 
@@ -63,7 +68,11 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun track(id: Long = DEFAULT_ID, artistCount: Int = 1, albumId: Long = DEFAULT_ID): Track {
+    fun track(
+        id: Long = fixtureMonkey.giveMeOne<Long>(),
+        artistCount: Int = 1,
+        albumId: Long = fixtureMonkey.giveMeOne<Long>(),
+    ): Track {
         return fixtureMonkey
             .giveMeBuilder<Track>()
             .set(Track::id, id)
@@ -73,7 +82,10 @@ object FixtureProvider {
             .sample()
     }
 
-    fun tracks(size: Int = DEFAULT_LIST_SIZE, albumId: Long = DEFAULT_ID): List<Track> {
+    fun tracks(
+        size: Int = DEFAULT_LIST_SIZE,
+        albumId: Long = fixtureMonkey.giveMeOne<Long>(),
+    ): List<Track> {
         return fixtureMonkey
             .giveMeBuilder<Track>()
             .set(Track::albumId, albumId)
@@ -92,8 +104,16 @@ object FixtureProvider {
         return fixtureMonkey.giveMeBuilder<Playlist>().set(Playlist::name, name).build().sample()
     }
 
-    fun playlist(id: Long = DEFAULT_ID): Playlist {
-        return fixtureMonkey.giveMeBuilder<Playlist>().set(Playlist::id, id).build().sample()
+    fun playlist(
+        id: Long = fixtureMonkey.giveMeOne<Long>(),
+        name: String = fixtureMonkey.giveMeOne<String>(),
+    ): Playlist {
+        return fixtureMonkey
+            .giveMeBuilder<Playlist>()
+            .set(Playlist::id, id)
+            .set(Playlist::name, name)
+            .build()
+            .sample()
     }
 
     fun playbackStateFixtures(): List<TrackPlayingState> {
@@ -159,5 +179,4 @@ object FixtureProvider {
     }
 
     private const val DEFAULT_LIST_SIZE = 10
-    private const val DEFAULT_ID = 0L
 }

@@ -45,6 +45,9 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
     val playlistTracksSortPreferences: MutableStateFlow<PlaylistPreferencesMap> =
         MutableStateFlow(emptyMap())
 
+    val playlistListSortOrder: MutableStateFlow<MediaSortOrder> =
+        MutableStateFlow(MediaSortOrder.ASCENDING)
+
     override suspend fun modifyTrackListSortPreferences(
         newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
         trackList: TrackList,
@@ -102,11 +105,11 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
     }
 
     override suspend fun togglePlaylistListSortOder() {
-        TODO("Not yet implemented")
+        playlistListSortOrder.update { !it }
     }
 
     override fun getPlaylistsListSortOrder(): Flow<MediaSortOrder> {
-        TODO("Not yet implemented")
+        return playlistListSortOrder
     }
 
     override suspend fun modifyPlaylistsSortPreferences(

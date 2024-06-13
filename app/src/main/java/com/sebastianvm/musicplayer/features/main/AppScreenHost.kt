@@ -82,7 +82,7 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
                             handle(MainUserAction.ExpandPlayer)
                         }
             )
-        }
+        },
     ) { paddingValues ->
         CompositionLocalProvider(
             LocalPaddingValues provides

@@ -90,9 +90,7 @@ fun TrackList(
     handle: Handler<TrackListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        modifier = modifier,
-    ) { paddingValues ->
+    Scaffold(modifier = modifier) { paddingValues ->
         TrackListLayout(state = state, handle = handle, modifier = Modifier.padding(paddingValues))
     }
 }
