@@ -1,7 +1,13 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.SeekableTransitionState
@@ -18,6 +24,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -117,39 +125,50 @@ fun AppNavigationHost(
 
     val transition = rememberTransition(transitionState, label = "backstack")
 
-    transition.AnimatedContent(
-        transitionSpec = {
-            val easing = CubicBezierEasing(a = 0.1f, b = 0.1f, c = 0f, d = 1f)
-            val fadeThreshold = ANIMATION_DURATION_MS * 35 / 100
+    SharedTransitionLayout {
+        transition.AnimatedContent(
+            transitionSpec = {
+                val easing = CubicBezierEasing(a = 0.1f, b = 0.1f, c = 0f, d = 1f)
+                val fadeThreshold = ANIMATION_DURATION_MS * 35 / 100
 
-            val exitAnimationSpec = tween<Float>(durationMillis = fadeThreshold, easing = easing)
-            val enterAnimationSpec =
-                tween<Float>(
-                    durationMillis = ANIMATION_DURATION_MS - fadeThreshold,
-                    easing = easing,
-                    delayMillis = fadeThreshold,
-                )
-            if (this.targetState.size > this.initialState.size) {
-                    (scaleIn(animationSpec = enterAnimationSpec, initialScale = 0.9f) +
-                            fadeIn(animationSpec = enterAnimationSpec))
-                        .togetherWith(
-                            scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
+                val exitAnimationSpec =
+                    tween<Float>(durationMillis = fadeThreshold, easing = easing)
+                val enterAnimationSpec =
+                    tween<Float>(
+                        durationMillis = ANIMATION_DURATION_MS - fadeThreshold,
+                        easing = easing,
+                        delayMillis = fadeThreshold,
+                    )
+                if (this.targetState.size > this.initialState.size) {
+                        (scaleIn(animationSpec = enterAnimationSpec, initialScale = 0.9f) +
+                                fadeIn(animationSpec = enterAnimationSpec))
+                            .togetherWith(
+                                scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
+                                    fadeOut(animationSpec = exitAnimationSpec)
+                            )
+                    } else {
+                        (fadeIn(animationSpec = enterAnimationSpec) +
+                                scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
+                            .togetherWith(
+                                scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
+                                    fadeOut(animationSpec = exitAnimationSpec)
+                            )
+                    }
+                    .apply { targetContentZIndex = targetState.size.toFloat() }
+            }
+        ) {
+            it.lastOrNull()?.let { screen ->
+                CompositionLocalProvider(
+                    LocalSharedTransitionScopes provides
+                        SharedTransitionScopes(
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedVisibilityScope = this
                         )
-                } else {
-                    (fadeIn(animationSpec = enterAnimationSpec) +
-                            scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
-                        .togetherWith(
-                            scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
-                        )
+                ) {
+                    saveableStateHolder.SaveableStateProvider(screen.key) {
+                        screen.Content(modifier = modifier)
+                    }
                 }
-                .apply { targetContentZIndex = targetState.size.toFloat() }
-        }
-    ) {
-        it.lastOrNull()?.let { screen ->
-            saveableStateHolder.SaveableStateProvider(screen.key) {
-                screen.Content(modifier = modifier)
             }
         }
     }
@@ -204,3 +223,19 @@ fun List<BackStackEntry>.getScreensByMode(
 }
 
 private const val ANIMATION_DURATION_MS = AnimationConstants.DefaultDurationMillis
+
+data class SharedTransitionScopes(
+    val sharedTransitionScope: SharedTransitionScope,
+    val animatedVisibilityScope: AnimatedVisibilityScope,
+)
+
+val LocalSharedTransitionScopes: ProvidableCompositionLocal<SharedTransitionScopes> =
+    compositionLocalOf {
+        error("CompositionLocal LocalSharedTransitionScopes not provided")
+    }
+
+sealed interface SharedContentKey {
+    data class AlbumName(val albumId: Long) : SharedContentKey
+
+    data class AlbumImage(val albumId: Long) : SharedContentKey
+}

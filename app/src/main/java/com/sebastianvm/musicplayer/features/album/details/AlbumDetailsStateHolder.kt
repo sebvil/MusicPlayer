@@ -31,11 +31,13 @@ sealed interface AlbumDetailsState : State {
     val albumName: String
     val imageUri: String
     val artists: String?
+    val albumId: Long
 
     data class Loading(
         override val albumName: String,
         override val imageUri: String,
         override val artists: String?,
+        override val albumId: Long
     ) : AlbumDetailsState
 
     data class Data(
@@ -43,6 +45,7 @@ sealed interface AlbumDetailsState : State {
         override val albumName: String,
         override val imageUri: String,
         override val artists: String?,
+        override val albumId: Long,
     ) : AlbumDetailsState
 }
 
@@ -72,6 +75,7 @@ class AlbumDetailsStateHolder(
                     albumName = album.title,
                     imageUri = album.imageUri,
                     artists = album.artists.takeIf { it.isNotEmpty() }?.joinToString { it.name },
+                    albumId = album.id,
                 )
             }
             .stateIn(
@@ -81,7 +85,7 @@ class AlbumDetailsStateHolder(
                     albumName = args.albumName,
                     imageUri = args.imageUri,
                     artists = args.artists,
-                ),
+                    albumId = args.albumId),
             )
 
     override fun handle(action: AlbumDetailsUserAction) {
