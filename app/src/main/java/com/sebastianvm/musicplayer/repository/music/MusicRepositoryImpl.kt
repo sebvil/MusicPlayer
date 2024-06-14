@@ -5,7 +5,6 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import com.sebastianvm.musicplayer.database.MusicDatabase
 import com.sebastianvm.musicplayer.database.entities.AlbumEntity
 import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
@@ -23,7 +22,6 @@ import kotlinx.coroutines.withContext
 class MusicRepositoryImpl(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
-    private val musicDatabase: MusicDatabase,
     private val trackRepository: TrackRepository,
 ) : MusicRepository {
 
@@ -134,7 +132,6 @@ class MusicRepositoryImpl(
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
         withContext(ioDispatcher) {
-            musicDatabase.clearAllTables()
             context.let {
                 val musicResolver = context.contentResolver
                 val musicUri =

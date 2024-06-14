@@ -55,7 +55,10 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                             title = controller.mediaMetadata.title?.toString().orEmpty(),
                             artists = controller.mediaMetadata.artist?.toString().orEmpty(),
                             artworkUri = controller.mediaMetadata.artworkUri?.toString().orEmpty(),
-                            trackLength = controller.contentDuration.milliseconds,
+                            trackLength =
+                                controller.contentDuration.milliseconds.coerceAtLeast(
+                                    1.milliseconds
+                                ),
                         ),
                     isPlaying = controller.isPlaying,
                     currentTrackProgress =
