@@ -42,10 +42,7 @@
     <string name="remove_from_playlist">Remove from playlist</string>
     <string name="ok">OK</string>
     <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
-    <string name="hide_tracks_in_playlist">Hide tracks in playlist</string>
     <string name="add_to_playlist">Add to playlist</string>
-    <string name="add_to_playlist_question">Add to playlist?</string>
-    <string name="song_already_in_playlist"><b>%1$s</b> is already in the playlist. Are you sure you want to add it again?"</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="delete_this_playlist">Delete playlist %1$s</string>
@@ -67,5 +64,9 @@
     <string name="dismiss">Dismiss</string>
     <string name="playlist_name">Playlist name</string>
     <string name="remove">Remove</string>
+    <string name="create">Create</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="playlist_is_empty">Playlist is empty.</string>
+    <string name="search_tracks">Search tracks</string>
 
 </resources>

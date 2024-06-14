@@ -15,6 +15,8 @@ class FakePlaylistRepository : PlaylistRepository {
     val playlistTrackCrossRef: MutableStateFlow<List<PlaylistTrackCrossRef>> =
         MutableStateFlow(emptyList())
 
+    var shouldPlaylistCreationFail: Boolean = false
+
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlists
     }
@@ -24,9 +26,13 @@ class FakePlaylistRepository : PlaylistRepository {
     }
 
     override fun createPlaylist(playlistName: String): Flow<Long?> {
-        val newPlaylist = FixtureProvider.playlist(name = playlistName)
-        playlists.update { playlists -> playlists + newPlaylist }
-        return flowOf(newPlaylist.id)
+        return if (shouldPlaylistCreationFail) {
+            flowOf(null)
+        } else {
+            val newPlaylist = FixtureProvider.playlist(name = playlistName)
+            playlists.update { playlists -> playlists + newPlaylist }
+            flowOf(newPlaylist.id)
+        }
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {

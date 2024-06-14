@@ -277,69 +277,36 @@ private fun FloatingPlayerCard(
                                     ),
                         )
                     },
+                    trailingContent = {
+                        IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
+                            Icon(
+                                imageVector = state.playbackIcon.icon,
+                                contentDescription =
+                                    stringResource(state.playbackIcon.contentDescription),
+                                modifier =
+                                    Modifier.sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PlayPauseButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                    ),
+                            )
+                        }
+                    },
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
-                        Icon(
-                            imageVector = Icons.Default.SkipPrevious,
-                            contentDescription = stringResource(RString.previous),
-                            modifier =
-                                Modifier.sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PreviousButton
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
-                        )
-                    }
-                    IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
-                        Icon(
-                            imageVector = state.playbackIcon.icon,
-                            contentDescription =
-                                stringResource(state.playbackIcon.contentDescription),
-                            modifier =
-                                Modifier.sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PlayPauseButton
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
-                        )
-                    }
-                    IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
-                        Icon(
-                            imageVector = Icons.Default.SkipNext,
-                            contentDescription = stringResource(RString.previous),
-                            modifier =
-                                Modifier.sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.NextButton
-                                    ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
-                        )
-                    }
-                }
 
-                ProgressSlider(
-                    progress = state.trackProgressState.progress.percent,
-                    onProgressBarValueChange = { position ->
-                        handle(
-                            PlayerUserAction.ProgressBarClicked(
-                                position = position,
-                                trackLength = state.trackProgressState.trackLength,
-                            )
-                        )
-                    },
+                LinearProgressIndicator(
+                    progress = { state.trackProgressState.progress.percent },
                     modifier =
-                        Modifier.sharedElement(
-                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                        Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
+                    gapSize = 0.dp,
+                    drawStopIndicator = {},
                 )
             }
         }

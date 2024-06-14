@@ -2,15 +2,13 @@ package com.sebastianvm.musicplayer.features.playlist.list
 
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -57,7 +55,8 @@ sealed interface PlaylistListUserAction : UserAction {
 
     data class PlaylistMoreIconClicked(val playlistId: Long) : PlaylistListUserAction
 
-    data class PlaylistClicked(val playlistId: Long) : PlaylistListUserAction
+    data class PlaylistClicked(val playlistId: Long, val playlistName: String) :
+        PlaylistListUserAction
 
     data object CreateNewPlaylistButtonClicked : PlaylistListUserAction
 
@@ -120,11 +119,11 @@ class PlaylistListStateHolder(
                         } else {
                             isCreatePlaylistDialogOpen.update { false }
                             navController.push(
-                                TrackListUiComponent(
+                                PlaylistDetailsUiComponent(
                                     arguments =
-                                        TrackListArguments(
-                                            trackListType =
-                                                MediaGroup.Playlist(playlistId = playlistId)
+                                        PlaylistDetailsArguments(
+                                            playlistId = playlistId,
+                                            playlistName = action.playlistName,
                                         ),
                                     navController = navController,
                                 )
@@ -162,10 +161,11 @@ class PlaylistListStateHolder(
             }
             is PlaylistListUserAction.PlaylistClicked -> {
                 navController.push(
-                    TrackListUiComponent(
+                    PlaylistDetailsUiComponent(
                         arguments =
-                            TrackListArguments(
-                                trackListType = MediaGroup.Playlist(playlistId = action.playlistId)
+                            PlaylistDetailsArguments(
+                                playlistId = action.playlistId,
+                                playlistName = action.playlistName,
                             ),
                         navController = navController,
                     )
@@ -173,15 +173,4 @@ class PlaylistListStateHolder(
             }
         }
     }
-}
-
-fun getPlaylistListStateHolder(
-    dependencies: Dependencies,
-    navController: NavController,
-): PlaylistListStateHolder {
-    return PlaylistListStateHolder(
-        playlistRepository = dependencies.repositoryProvider.playlistRepository,
-        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-        navController = navController,
-    )
 }

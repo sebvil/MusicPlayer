@@ -189,7 +189,7 @@ fun AppNavigationHost(
             ) {
                 current?.let { screen ->
                     saveableStateHolder.SaveableStateProvider(screen.key) {
-                        screen.Content(modifier = modifier)
+                        screen.Content(modifier = Modifier)
                     }
                 }
             }

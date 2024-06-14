@@ -11,7 +11,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,8 +53,9 @@ data class PlaylistListUiComponent(val navController: NavController) :
     }
 
     override fun createStateHolder(dependencies: Dependencies): PlaylistListStateHolder {
-        return getPlaylistListStateHolder(
-            dependencies = dependencies,
+        return PlaylistListStateHolder(
+            playlistRepository = dependencies.repositoryProvider.playlistRepository,
+            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             navController = navController,
         )
     }
@@ -127,27 +130,52 @@ fun PlaylistListLayout(
     handle: Handler<PlaylistListUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
-        item {
-            SortButton(
-                state = state.sortButtonState,
-                onClick = { handle(PlaylistListUserAction.SortByClicked) },
-                modifier = Modifier.padding(start = 16.dp),
-            )
-        }
-        items(state.playlists, key = { item -> item.id }) { item ->
-            PlaylistRow(
-                state = item,
-                modifier =
-                    Modifier.clickable { handle(PlaylistListUserAction.PlaylistClicked(item.id)) },
-                trailingContent = {
-                    OverflowIconButton(
-                        onClick = {
-                            handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-                        }
-                    )
-                },
-            )
+    Scaffold(
+        modifier = modifier,
+        floatingActionButton = {
+            if (state.playlists.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.padding(LocalPaddingValues.current),
+                    onClick = { handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked) },
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    Text(text = stringResource(id = RString.new_playlist))
+                }
+            }
+        },
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.padding(paddingValues),
+            contentPadding = LocalPaddingValues.current,
+        ) {
+            item {
+                SortButton(
+                    state = state.sortButtonState,
+                    onClick = { handle(PlaylistListUserAction.SortByClicked) },
+                    modifier = Modifier.padding(start = 16.dp),
+                )
+            }
+            items(state.playlists, key = { item -> item.id }) { item ->
+                PlaylistRow(
+                    state = item,
+                    modifier =
+                        Modifier.clickable {
+                            handle(
+                                PlaylistListUserAction.PlaylistClicked(
+                                    playlistId = item.id,
+                                    playlistName = item.playlistName,
+                                )
+                            )
+                        },
+                    trailingContent = {
+                        OverflowIconButton(
+                            onClick = {
+                                handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
+                            }
+                        )
+                    },
+                )
+            }
         }
     }
 }

@@ -6,17 +6,16 @@ import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.di.DispatcherProvider.ioDispatcher
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.extensions.mapValues
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -24,8 +23,6 @@ import kotlinx.coroutines.withContext
 class PlaylistRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val playlistDao: PlaylistDao,
-    private val ioDispatcher: CoroutineDispatcher,
-    private val defaultDispatcher: CoroutineDispatcher,
 ) : PlaylistRepository {
 
     override fun getPlaylists(): Flow<List<Playlist>> {
@@ -44,14 +41,12 @@ class PlaylistRepositoryImpl(
         return flow {
             val id =
                 try {
-                    withContext(ioDispatcher) {
-                        playlistDao.createPlaylist(
-                            PlaylistEntity(
-                                id = playlistName.hashCode().toLong(),
-                                playlistName = playlistName,
-                            )
+                    playlistDao.createPlaylist(
+                        PlaylistEntity(
+                            id = playlistName.hashCode().toLong(),
+                            playlistName = playlistName,
                         )
-                    }
+                    )
                 } catch (e: SQLiteConstraintException) {
                     Log.i("Exception", e.message.orEmpty())
                     null
@@ -61,9 +56,7 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {
-        withContext(ioDispatcher) {
-            playlistDao.deletePlaylist(PlaylistEntity(id = playlistId, playlistName = ""))
-        }
+        playlistDao.deletePlaylist(PlaylistEntity(id = playlistId, playlistName = ""))
     }
 
     override suspend fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
@@ -83,13 +76,10 @@ class PlaylistRepositoryImpl(
         return playlistDao
             .getTrackIdsInPlaylist(playlistId = playlistId)
             .map { it.toSet() }
-            .flowOn(defaultDispatcher)
             .distinctUntilChanged()
     }
 
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
-        withContext(ioDispatcher) {
-            playlistDao.removeItemFromPlaylist(playlistId = playlistId, position = position)
-        }
+        playlistDao.removeItemFromPlaylist(playlistId = playlistId, position = position)
     }
 }

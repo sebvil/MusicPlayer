@@ -16,12 +16,8 @@ import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
-import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
@@ -34,12 +30,16 @@ import kotlinx.coroutines.launch
 
 data class TrackListArguments(val trackListType: TrackList) : Arguments
 
-data class TrackListState(
-    val tracks: List<TrackRow.State>,
-    val sortButtonState: SortButton.State?,
-    val headerState: Header.State,
-    val trackListType: TrackList,
-) : State
+sealed interface TrackListState : State {
+    data object Loading : TrackListState
+
+    data class Data(
+        val tracks: List<TrackRow.State>,
+        val sortButtonState: SortButton.State?,
+        val headerState: Header.State,
+        val trackListType: TrackList,
+    ) : TrackListState
+}
 
 sealed interface TrackListUserAction : UserAction {
     data class TrackMoreIconClicked(val trackId: Long, val trackPositionInList: Int) :
@@ -59,7 +59,7 @@ class TrackListStateHolder(
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
-) : StateHolder<UiState<TrackListState>, TrackListUserAction> {
+) : StateHolder<TrackListState, TrackListUserAction> {
 
     private val sortPreferences =
         when (args.trackListType) {
@@ -67,7 +67,7 @@ class TrackListStateHolder(
                 flowOf(null)
             }
             is MediaGroup.Playlist -> {
-                sortPreferencesRepository.getPlaylistSortPreferences(args.trackListType.playlistId)
+                error("Not supported")
             }
             is MediaGroup.Genre,
             is MediaGroup.AllTracks -> {
@@ -75,33 +75,27 @@ class TrackListStateHolder(
             }
         }
 
-    override val state: StateFlow<UiState<TrackListState>> =
+    override val state: StateFlow<TrackListState> =
         combine(trackRepository.getTrackListWithMetaData(args.trackListType), sortPreferences) {
                 trackListWithMetadata,
                 sortPrefs ->
-                if (trackListWithMetadata.trackList.isEmpty()) {
-                    Empty
-                } else {
-                    Data(
-                        TrackListState(
-                            tracks =
-                                trackListWithMetadata.trackList.map { track ->
-                                    TrackRow.State.fromTrack(track)
-                                },
-                            headerState = trackListWithMetadata.metaData.toHeaderState(),
-                            sortButtonState =
-                                sortPrefs?.let {
-                                    SortButton.State(
-                                        text = sortPrefs.sortOption.stringId,
-                                        sortOrder = sortPrefs.sortOrder,
-                                    )
-                                },
-                            trackListType = args.trackListType,
-                        )
-                    )
-                }
+                TrackListState.Data(
+                    tracks =
+                        trackListWithMetadata.trackList.map { track ->
+                            TrackRow.State.fromTrack(track)
+                        },
+                    headerState = trackListWithMetadata.metaData.toHeaderState(),
+                    sortButtonState =
+                        sortPrefs?.let {
+                            SortButton.State(
+                                text = sortPrefs.sortOption.stringId,
+                                sortOrder = sortPrefs.sortOrder,
+                            )
+                        },
+                    trackListType = args.trackListType,
+                )
             }
-            .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
+            .stateIn(stateHolderScope, SharingStarted.Lazily, TrackListState.Loading)
 
     override fun handle(action: TrackListUserAction) {
         when (action) {
@@ -130,8 +124,7 @@ class TrackListStateHolder(
                                         is MediaGroup.AllTracks -> SortableListType.AllTracks
                                         is MediaGroup.Genre ->
                                             SortableListType.Genre(args.trackListType.genreId)
-                                        is MediaGroup.Playlist ->
-                                            SortableListType.Playlist(args.trackListType.playlistId)
+                                        is MediaGroup.Playlist,
                                         is MediaGroup.Album ->
                                             error("Cannot sort ${args.trackListType}")
                                     }

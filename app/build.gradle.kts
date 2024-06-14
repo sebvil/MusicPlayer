@@ -17,6 +17,7 @@ android {
         applicationId = "com.sebastianvm.musicplayer"
         minSdk = 25
         targetSdk = 34
+        targetSdkPreview = "VanillaIceCream"
         versionCode = 1
         versionName = "1.0"
 

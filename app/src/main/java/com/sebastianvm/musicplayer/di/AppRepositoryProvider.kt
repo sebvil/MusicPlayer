@@ -67,7 +67,6 @@ class AppRepositoryProvider(
     override val trackRepository: TrackRepository
         get() =
             TrackRepositoryImpl(
-                ioDispatcher = dispatcherProvider.ioDispatcher,
                 sortPreferencesRepository = sortPreferencesRepository,
                 trackDao = database.getTrackDao(),
                 playlistRepository = playlistRepository,
@@ -80,14 +79,11 @@ class AppRepositoryProvider(
             PlaylistRepositoryImpl(
                 sortPreferencesRepository = sortPreferencesRepository,
                 playlistDao = database.getPlaylistDao(),
-                ioDispatcher = dispatcherProvider.ioDispatcher,
-                defaultDispatcher = dispatcherProvider.defaultDispatcher,
             )
 
     override val playbackManager: PlaybackManager by lazy {
         PlaybackManagerImpl(
             mediaPlaybackClient = mediaPlaybackClient,
-            ioDispatcher = dispatcherProvider.ioDispatcher,
             trackRepository = trackRepository,
         )
     }
@@ -120,6 +116,5 @@ class AppRepositoryProvider(
                 trackRepository = trackRepository,
                 mediaQueueDao = database.getMediaQueueDao(),
                 mediaPlaybackClient = mediaPlaybackClient,
-                ioDispatcher = dispatcherProvider.ioDispatcher,
             )
 }
