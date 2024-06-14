@@ -39,7 +39,6 @@ class AppRepositoryProvider(
             MusicRepositoryImpl(
                 context = context,
                 ioDispatcher = dispatcherProvider.ioDispatcher,
-                musicDatabase = database,
                 trackRepository = trackRepository,
             )
 

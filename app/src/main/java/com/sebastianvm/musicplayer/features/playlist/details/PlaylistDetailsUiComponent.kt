@@ -106,6 +106,7 @@ fun PlaylistDetails(
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
+            if (state.tracks.isEmpty()) return@Scaffold
             ExtendedFloatingActionButton(
                 text = { Text(text = stringResource(id = RString.add_tracks)) },
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
