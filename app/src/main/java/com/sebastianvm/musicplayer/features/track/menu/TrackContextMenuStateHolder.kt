@@ -124,7 +124,7 @@ class TrackContextMenuStateHolder(
                             AlbumDetailsArguments(
                                 albumId = action.albumId,
                                 albumName = "",
-                                imageUri = ""
+                                imageUri = "",
                             ),
                         navController = navController,
                     ),

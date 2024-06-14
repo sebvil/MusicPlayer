@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -8,8 +9,6 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
@@ -20,6 +19,7 @@ import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
 class TrackContextMenuStateHolderTest :
@@ -182,10 +182,12 @@ class TrackContextMenuStateHolderTest :
                         listOf(
                             BackStackEntry(
                                 uiComponent =
-                                    TrackListUiComponent(
+                                    AlbumDetailsUiComponent(
                                         arguments =
-                                            TrackListArguments(
-                                                MediaGroup.Album(albumId = ALBUM_ID)
+                                            AlbumDetailsArguments(
+                                                albumId = ALBUM_ID,
+                                                albumName = "",
+                                                imageUri = "",
                                             ),
                                         navController = navControllerDep,
                                     ),
@@ -237,14 +239,8 @@ class TrackContextMenuStateHolderTest :
                     navControllerDep.push(
                         TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
                     )
-                    playlistRepositoryDep.playlistTrackCrossRef.value =
-                        listOf(
-                            PlaylistTrackCrossRef(
-                                playlistId = PLAYLIST_ID,
-                                trackId = TRACK_ID,
-                                position = TRACK_POSITION_IN_LIST.toLong(),
-                            )
-                        )
+                    playlistRepositoryDep.playlists.value =
+                        listOf(FixtureProvider.playlist(id = PLAYLIST_ID, trackCount = TRACK_COUNT))
                     val subject = getSubject()
                     subject.handle(
                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
@@ -253,7 +249,9 @@ class TrackContextMenuStateHolderTest :
                         )
                     )
                     advanceUntilIdle()
-                    playlistRepositoryDep.playlistTrackCrossRef.value.shouldBeEmpty()
+                    playlistRepositoryDep.playlists.value
+                        .first { it.id == PLAYLIST_ID }
+                        .tracks shouldHaveSize TRACK_COUNT - 1
                     navControllerDep.backStack.shouldBeEmpty()
                 }
             }
@@ -263,6 +261,7 @@ class TrackContextMenuStateHolderTest :
         private const val ALBUM_ID = 0L
         private const val PLAYLIST_ID = 0L
         private const val TRACK_POSITION_IN_LIST = 0
+        private const val TRACK_COUNT = 10
         private val DEFAULT_ARGS =
             TrackContextMenuArguments(
                 trackId = TRACK_ID,

@@ -15,11 +15,7 @@ data class FullAlbumEntity(
             Junction(AlbumsForArtist::class, parentColumn = "albumId", entityColumn = "artistId"),
     )
     val artists: List<ArtistEntity>,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "albumId",
-        entity = TrackEntity::class,
-    )
+    @Relation(parentColumn = "id", entityColumn = "albumId", entity = TrackEntity::class)
     val tracks: List<DetailedTrack>,
 )
 

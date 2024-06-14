@@ -98,7 +98,7 @@ class AlbumListStateHolder(
                             AlbumDetailsArguments(
                                 albumId = action.albumId,
                                 albumName = action.albumName,
-                                imageUri = action.imageUri
+                                imageUri = action.imageUri,
                             ),
                         navController = navController,
                     )

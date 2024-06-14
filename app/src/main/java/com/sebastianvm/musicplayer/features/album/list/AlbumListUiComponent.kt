@@ -92,7 +92,7 @@ fun AlbumList(
                             AlbumListUserAction.AlbumClicked(
                                 item.id,
                                 item.albumName,
-                                item.mediaArtImageState.imageUri
+                                item.mediaArtImageState.imageUri,
                             )
                         )
                     },

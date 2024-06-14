@@ -27,10 +27,8 @@ import kotlinx.coroutines.launch
 sealed interface TrackListState : State {
     data object Loading : TrackListState
 
-    data class Data(
-        val tracks: List<TrackRow.State>,
-        val sortButtonState: SortButton.State,
-    ) : TrackListState
+    data class Data(val tracks: List<TrackRow.State>, val sortButtonState: SortButton.State) :
+        TrackListState
 }
 
 sealed interface TrackListUserAction : UserAction {
@@ -63,7 +61,7 @@ class TrackListStateHolder(
                         SortButton.State(
                             text = sortPrefs.sortOption.stringId,
                             sortOrder = sortPrefs.sortOrder,
-                        )
+                        ),
                 )
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, TrackListState.Loading)

@@ -15,7 +15,6 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -59,7 +58,6 @@ class PlaylistDetailsStateHolder(
     private val args: PlaylistDetailsArguments,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     playlistRepository: PlaylistRepository,
@@ -67,15 +65,12 @@ class PlaylistDetailsStateHolder(
 
     override val state: StateFlow<PlaylistDetailsState> =
         combine(
-                trackRepository.getTracksForMedia(
-                    mediaGroup = MediaGroup.Playlist(args.playlistId)
-                ),
-                playlistRepository.getPlaylistName(args.playlistId),
+                playlistRepository.getPlaylist(args.playlistId),
                 sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
-            ) { tracks, playlistName, sortPrefs ->
+            ) { playlist, sortPrefs ->
                 PlaylistDetailsState.Data(
-                    tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
-                    playlistName = playlistName,
+                    tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
+                    playlistName = playlist.name,
                     sortButtonState =
                         sortPrefs.let {
                             SortButton.State(

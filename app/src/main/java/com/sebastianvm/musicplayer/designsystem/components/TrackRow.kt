@@ -4,7 +4,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.sebastianvm.musicplayer.database.entities.BasicTrack
+import com.sebastianvm.musicplayer.model.BasicTrack
 import com.sebastianvm.musicplayer.model.Track
 
 object TrackRow {
@@ -19,7 +19,7 @@ object TrackRow {
             }
 
             fun fromTrack(track: BasicTrack): State {
-                return State(id = track.id, trackName = track.trackName, artists = track.artists)
+                return State(id = track.id, trackName = track.name, artists = track.artists)
             }
         }
     }

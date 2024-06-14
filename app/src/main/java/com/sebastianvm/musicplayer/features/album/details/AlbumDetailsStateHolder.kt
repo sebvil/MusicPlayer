@@ -60,14 +60,14 @@ class AlbumDetailsStateHolder(
             .map { album ->
                 AlbumDetailsState.Data(
                     tracks = album.tracks.map { track -> TrackRow.State.fromTrack(track) },
-                    albumName = args.albumName,
-                    imageUri = args.imageUri,
+                    albumName = album.title,
+                    imageUri = album.imageUri,
                 )
             }
             .stateIn(
                 stateHolderScope,
                 SharingStarted.Lazily,
-                AlbumDetailsState.Loading(albumName = args.albumName, imageUri = args.imageUri)
+                AlbumDetailsState.Loading(albumName = args.albumName, imageUri = args.imageUri),
             )
 
     override fun handle(action: AlbumDetailsUserAction) {

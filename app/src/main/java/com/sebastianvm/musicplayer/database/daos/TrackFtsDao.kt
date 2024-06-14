@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import com.sebastianvm.musicplayer.database.entities.BasicTrack
+import com.sebastianvm.musicplayer.database.entities.BasicTrackEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,5 +17,5 @@ interface TrackFtsDao {
             "JOIN TrackFts ON TrackEntity.id == TrackFts.trackId " +
             "WHERE TrackFts MATCH :text ORDER BY TrackEntity.trackName"
     )
-    fun tracksWithText(text: String): Flow<List<BasicTrack>>
+    fun tracksWithText(text: String): Flow<List<BasicTrackEntity>>
 }

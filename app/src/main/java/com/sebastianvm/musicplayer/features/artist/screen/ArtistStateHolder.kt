@@ -103,7 +103,7 @@ class ArtistStateHolder(
                             AlbumDetailsArguments(
                                 albumId = action.albumId,
                                 action.albumName,
-                                action.imageUri
+                                action.imageUri,
                             ),
                         navController = navController,
                     )

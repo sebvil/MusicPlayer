@@ -1,186 +1,144 @@
-// package com.sebastianvm.musicplayer.features.playlist.tracksearch
-//
-// import app.cash.turbine.test
-// import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-// import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-// import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
-// import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
-// import io.kotest.core.spec.style.FreeSpec
-// import io.kotest.core.test.TestScope
-// import io.kotest.matchers.shouldBe
-// import javax.security.auth.Subject
-// import kotlinx.coroutines.Dispatchers
-// import kotlinx.coroutines.ExperimentalCoroutinesApi
-// import kotlinx.coroutines.test.StandardTestDispatcher
-// import kotlinx.coroutines.test.resetMain
-// import kotlinx.coroutines.test.runTest
-// import kotlinx.coroutines.test.setMain
-//
-// @OptIn(ExperimentalCoroutinesApi::class)
-// class TrackSearchStateHolderTest :
-//    FreeSpec({
-//        lateinit var playlistRepository: FakePlaylistRepository
-//        lateinit var ftsRepository: FakeFullTextSearchRepository
-//        lateinit var navController: FakeNavController
-//
-//        beforeTest {
-//            playlistRepository = FakePlaylistRepository()
-//            ftsRepository = FakeFullTextSearchRepository()
-//            navController = FakeNavController()
-//        }
-//
-//        afterTest { Dispatchers.resetMain() }
-//
-//        fun TestScope.getSubject(): TrackSearchStateHolder {
-//            return TrackSearchStateHolder(
-//                arguments = TrackSearchArguments(playlistId = PLAYLIST_ID),
-//                playlistRepository = playlistRepository,
-//                ftsRepository = ftsRepository,
-//                navController = navController
-//            )
-//        }
-//
-//        "init" -
-//            {
-//                "subscribes to changes in search results" {
-//                    val subject = getSubject()
-//                    val initialSearchResults = emptyList<Track>()
-//                    ftsRepository.stubSearchResults("", initialSearchResults)
-//
-//                    runTest {
-//                        subject.state.test {
-//                            assertThat(awaitItem())
-//                                .isEqualTo(TrackSearchState(trackSearchResults = emptyList()))
-//
-//                            val newSearchResults =
-//                                listOf(
-//                                    Track(
-//                                        id = 1,
-//                                        title = "Track 1",
-//                                        artist = "Artist 1",
-//                                        album = "Album 1"
-//                                    ),
-//                                    Track(
-//                                        id = 2,
-//                                        title = "Track 2",
-//                                        artist = "Artist 2",
-//                                        album = "Album 2"
-//                                    )
-//                                )
-//                            ftsRepository.stubSearchResults("query", newSearchResults)
-//                            subject.handle(TrackSearchUserAction.TextChanged("query"))
-//
-//                            assertThat(awaitItem())
-//                                .isEqualTo(
-//                                    TrackSearchState(
-//                                        trackSearchResults =
-//                                            newSearchResults.map {
-//                                                TrackSearchResult(
-//                                                    state = TrackRow.State.fromTrack(it),
-//                                                    inPlaylist = false
-//                                                )
-//                                            }
-//                                    )
-//                                )
-//
-//                            cancelAndIgnoreRemainingEvents()
-//                        }
-//                    }
-//                }
-//
-//                "subscribes to changes in playlist tracks" {
-//                    val subject = getSubject()
-//                    val initialSearchResults =
-//                        listOf(
-//                            Track(id = 1, title = "Track 1", artist = "Artist 1", album = "Album
-// 1"),
-//                            Track(id = 2, title = "Track 2", artist = "Artist 2", album = "Album
-// 2")
-//                        )
-//                    ftsRepository.stubSearchResults("query", initialSearchResults)
-//                    subject.handle(TrackSearchUserAction.TextChanged("query"))
-//
-//                    runTest {
-//                        subject.state.test {
-//                            // Skip initial emission
-//                            awaitItem()
-//
-//                            playlistRepository.addTrackToPlaylist(playlistId, 1)
-//
-//                            assertThat(awaitItem())
-//                                .isEqualTo(
-//                                    TrackSearchState(
-//                                        trackSearchResults =
-//                                            listOf(
-//                                                TrackSearchResult(
-//                                                    state =
-//                                                        TrackRow.State.fromTrack(
-//                                                            initialSearchResults[0]
-//                                                        ),
-//                                                    inPlaylist = true
-//                                                ),
-//                                                TrackSearchResult(
-//                                                    state =
-//                                                        TrackRow.State.fromTrack(
-//                                                            initialSearchResults[1]
-//                                                        ),
-//                                                    inPlaylist = false
-//                                                )
-//                                            )
-//                                    )
-//                                )
-//
-//                            cancelAndIgnoreRemainingEvents()
-//                        }
-//                    }
-//                }
-//            }
-//
-//        "handle" -
-//            {
-//                "TrackClicked adds track to playlist and shows toast" {
-//                    val subject = getSubject()
-//                    val trackId = 1L
-//                    val trackName = "Track 1"
-//
-//                    subject.handle(TrackSearchUserAction.TrackClicked(trackId, trackName))
-//
-//
-// assertThat(playlistRepository.trackIdsInPlaylist(playlistId)).contains(trackId)
-//
-//                    runTest {
-//                        subject.state.test {
-//                            awaitItem().trackAddedToPlaylist shouldBe trackName
-//                            cancelAndIgnoreRemainingEvents()
-//                        }
-//                    }
-//                }
-//
-//                "ToastShown hides toast" {
-//                    val subject = getSubject()
-//
-//                    subject.handle(TrackSearchUserAction.TrackClicked(1, "Track 1"))
-//                    subject.handle(TrackSearchUserAction.ToastShown)
-//
-//                    runTest {
-//                        subject.state.test {
-//                            // Skip initial emission
-//                            awaitItem()
-//                            awaitItem().trackAddedToPlaylist shouldBe null
-//                            cancelAndIgnoreRemainingEvents()
-//                        }
-//                    }
-//                }
-//
-//                "BackClicked pops back stack" {
-//                    val subject = getSubject()
-//
-//                    subject.handle(TrackSearchUserAction.BackClicked)
-//
-//                    navController.backStack.isEmpty() shouldBe true
-//                }
-//            }
-//    }) {
-//        companion object {
-//            private const val PLAYLIST_ID = 1L
-//    }
+package com.sebastianvm.musicplayer.features.playlist.tracksearch
+
+import com.sebastianvm.musicplayer.designsystem.components.TrackRow
+import com.sebastianvm.musicplayer.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.model.Playlist
+import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
+import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
+import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.testStateHolderState
+import io.kotest.core.spec.style.FreeSpec
+import io.kotest.core.test.TestScope
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.shouldBe
+
+class TrackSearchStateHolderTest :
+    FreeSpec({
+        lateinit var playlistRepositoryDep: FakePlaylistRepository
+        lateinit var ftsRepositoryDep: FakeFullTextSearchRepository
+        lateinit var navControllerDep: FakeNavController
+
+        beforeTest {
+            playlistRepositoryDep = FakePlaylistRepository()
+            ftsRepositoryDep = FakeFullTextSearchRepository()
+            navControllerDep = FakeNavController()
+        }
+
+        fun TestScope.getSubject(
+            playlist: Playlist = FixtureProvider.playlist(),
+            resultsMap: Map<String, List<Track>> = emptyMap(),
+        ): TrackSearchStateHolder {
+            ftsRepositoryDep.trackQueryToResultsMap.value = resultsMap
+            playlistRepositoryDep.playlists.value = listOf(playlist)
+            navControllerDep.push(
+                TrackSearchUiComponent(
+                    arguments = TrackSearchArguments(playlistId = playlist.id),
+                    navController = navControllerDep,
+                )
+            )
+            return TrackSearchStateHolder(
+                arguments = TrackSearchArguments(playlistId = playlist.id),
+                playlistRepository = playlistRepositoryDep,
+                ftsRepository = ftsRepositoryDep,
+                navController = navControllerDep,
+                stateHolderScope = this,
+            )
+        }
+
+        "init subscribes to changes in playlist tracks" {
+            val queryResults = FixtureProvider.tracks(size = 10)
+            val results = mapOf("" to queryResults)
+            val playlist = FixtureProvider.playlist().copy(tracks = queryResults.subList(0, 5))
+            val subject = getSubject(playlist, results)
+            println(queryResults)
+            testStateHolderState(subject) {
+                awaitItem().trackSearchResults.shouldBeEmpty()
+
+                awaitItem() shouldBe
+                    TrackSearchState(
+                        trackSearchResults =
+                            (queryResults.subList(5, queryResults.size) +
+                                    queryResults.subList(0, 5))
+                                .map { track ->
+                                    TrackSearchResult(
+                                        state = TrackRow.State.fromTrack(track),
+                                        inPlaylist = track.id in playlist.tracks.map { it.id },
+                                    )
+                                },
+                        trackAddedToPlaylist = null,
+                    )
+            }
+        }
+
+        "handle" -
+            {
+                "TextChanged updates search results" {
+                    val queryResults = FixtureProvider.tracks()
+                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                    val playlist = FixtureProvider.playlist()
+                    val subject = getSubject(playlist = playlist, resultsMap = results)
+
+                    testStateHolderState(subject) {
+                        awaitItem() shouldBe TrackSearchState(trackSearchResults = emptyList())
+                        subject.handle(TrackSearchUserAction.TextChanged(QUERY))
+
+                        awaitItem() shouldBe
+                            TrackSearchState(
+                                trackSearchResults =
+                                    queryResults.map {
+                                        TrackSearchResult(
+                                            state = TrackRow.State.fromTrack(it),
+                                            inPlaylist = false,
+                                        )
+                                    }
+                            )
+                    }
+                }
+
+                "TrackClicked adds track to playlist and shows toast, and ToastShown dismisses toast" {
+                    val queryResults = FixtureProvider.tracks()
+                    val results = mapOf("" to queryResults)
+                    val track = queryResults.first()
+                    val subject =
+                        getSubject(
+                            playlist = FixtureProvider.playlist(trackCount = 0),
+                            resultsMap = results,
+                        )
+
+                    testStateHolderState(subject) {
+                        skipItems(2)
+                        subject.handle(TrackSearchUserAction.TrackClicked(track.id, track.name))
+                        awaitItem() shouldBe
+                            TrackSearchState(
+                                trackSearchResults =
+                                    queryResults
+                                        .map {
+                                            TrackSearchResult(
+                                                state = TrackRow.State.fromTrack(it),
+                                                inPlaylist = it.id == track.id,
+                                            )
+                                        }
+                                        .toMutableList()
+                                        .apply { add(removeAt(0)) },
+                                trackAddedToPlaylist = track.name,
+                            )
+
+                        subject.handle(TrackSearchUserAction.ToastShown)
+                        awaitItem().trackAddedToPlaylist shouldBe null
+                    }
+                }
+
+                "BackClicked pops back stack" {
+                    val subject = getSubject()
+
+                    subject.handle(TrackSearchUserAction.BackClicked)
+
+                    navControllerDep.backStack.isEmpty() shouldBe true
+                }
+            }
+    }) {
+    companion object {
+        private const val QUERY = "a"
+    }
+}

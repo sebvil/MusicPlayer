@@ -1,24 +1,27 @@
 package com.sebastianvm.musicplayer.repository.fts
 
-import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
+import com.sebastianvm.musicplayer.model.BasicGenre
+import com.sebastianvm.musicplayer.model.BasicPlaylist
+import com.sebastianvm.musicplayer.model.BasicTrack
+import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.util.extensions.mapValues
+import com.sebastianvm.musicplayer.util.toBasicTrack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 class FakeFullTextSearchRepository : FullTextSearchRepository {
 
-    val trackQueryToResultsMap = MutableStateFlow(emptyMap<String, List<BasicTrack>>())
+    val trackQueryToResultsMap = MutableStateFlow(emptyMap<String, List<Track>>())
     val artistQueryToResultsMap = MutableStateFlow(emptyMap<String, List<BasicArtist>>())
     val albumQueryToResultsMap = MutableStateFlow(emptyMap<String, List<AlbumWithArtists>>())
-    val genreQueryToResultsMap = MutableStateFlow(emptyMap<String, List<Genre>>())
-    val playlistQueryToResultsMap = MutableStateFlow(emptyMap<String, List<Playlist>>())
+    val genreQueryToResultsMap = MutableStateFlow(emptyMap<String, List<BasicGenre>>())
+    val playlistQueryToResultsMap = MutableStateFlow(emptyMap<String, List<BasicPlaylist>>())
 
     override fun searchTracks(text: String): Flow<List<BasicTrack>> {
-        return trackQueryToResultsMap.map { it[text].orEmpty() }
+        return trackQueryToResultsMap.map { it[text].orEmpty() }.mapValues { it.toBasicTrack() }
     }
 
     override fun searchArtists(text: String): Flow<List<BasicArtist>> {
@@ -29,11 +32,11 @@ class FakeFullTextSearchRepository : FullTextSearchRepository {
         return albumQueryToResultsMap.map { it[text].orEmpty() }
     }
 
-    override fun searchGenres(text: String): Flow<List<Any>> {
+    override fun searchGenres(text: String): Flow<List<BasicGenre>> {
         return genreQueryToResultsMap.map { it[text].orEmpty() }
     }
 
-    override fun searchPlaylists(text: String): Flow<List<Playlist>> {
+    override fun searchPlaylists(text: String): Flow<List<BasicPlaylist>> {
         return playlistQueryToResultsMap.map { it[text].orEmpty() }
     }
 }

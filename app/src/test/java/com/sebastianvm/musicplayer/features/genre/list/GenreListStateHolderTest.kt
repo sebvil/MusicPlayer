@@ -2,14 +2,13 @@ package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
@@ -101,14 +100,15 @@ class GenreListStateHolderTest :
 
                 "GenreClicked navigates to TrackList" {
                     val subject = getSubject()
-                    subject.handle(GenreListUserAction.GenreClicked(GENRE_ID))
+                    subject.handle(GenreListUserAction.GenreClicked(GENRE_ID, GENRE_NAME))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =
-                                TrackListUiComponent(
+                                GenreDetailsUiComponent(
                                     arguments =
-                                        TrackListArguments(
-                                            trackListType = MediaGroup.Genre(GENRE_ID)
+                                        GenreDetailsArguments(
+                                            genreId = GENRE_ID,
+                                            genreName = GENRE_NAME,
                                         ),
                                     navController = navControllerDep,
                                 ),
@@ -131,5 +131,6 @@ class GenreListStateHolderTest :
 
     companion object {
         private const val GENRE_ID = 1L
+        private const val GENRE_NAME = "Genre 1"
     }
 }

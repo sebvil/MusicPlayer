@@ -103,15 +103,15 @@ fun AlbumDetails(
         imageState =
             MediaArtImageState(
                 imageUri = state.imageUri,
-                backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album
+                backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album,
             ),
         modifier = modifier,
         listState = listState,
-        onBackButtonClicked = { handle(AlbumDetailsUserAction.BackClicked) },
+        onBackButtonClick = { handle(AlbumDetailsUserAction.BackClicked) },
     ) { padding ->
         when (state) {
             is AlbumDetailsState.Loading -> {
-                Box(modifier = modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
@@ -119,9 +119,8 @@ fun AlbumDetails(
                 AlbumDetails(
                     state = state,
                     handle = handle,
-                    modifier = modifier,
                     contentPadding = padding,
-                    listState = listState
+                    listState = listState,
                 )
             }
         }
@@ -142,11 +141,7 @@ fun AlbumDetails(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
-        LazyColumn(
-            modifier = modifier,
-            contentPadding = contentPadding,
-            state = listState,
-        ) {
+        LazyColumn(modifier = modifier, contentPadding = contentPadding, state = listState) {
             itemsIndexed(state.tracks, key = { index, item -> index to item.id }) { index, item ->
                 TrackRow(
                     state = item,
@@ -183,7 +178,7 @@ fun HeaderWithImageModelList(
     title: String,
     imageState: MediaArtImageState,
     listState: LazyListState,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -263,8 +258,8 @@ fun HeaderWithImageModelList(
         TopBar(
             title = title,
             alpha = topBarAlpha,
-            onSizeChanged = { topBarHeight = it },
-            onBackButtonClicked = onBackButtonClicked,
+            onSizeChange = { topBarHeight = it },
+            onBackButtonClick = onBackButtonClick,
         )
 
         Column(

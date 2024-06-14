@@ -16,7 +16,7 @@ fun <T> SingleSelectFilterChipGroup(
     options: ImmutableList<T>,
     selectedOption: T?,
     getDisplayName: @Composable (T) -> String,
-    onNewOptionSelected: (T) -> Unit,
+    onSelectNewOption: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -27,7 +27,7 @@ fun <T> SingleSelectFilterChipGroup(
         items(options) { option ->
             FilterChip(
                 selected = selectedOption == option,
-                onClick = { onNewOptionSelected(option) },
+                onClick = { onSelectNewOption(option) },
                 label = { Text(text = getDisplayName(option)) },
             )
         }

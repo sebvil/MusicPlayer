@@ -52,7 +52,7 @@ class TrackListStateHolderTest :
         }
 
         fun updateSortPreferences(
-            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
+            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
         ) {
             sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
         }

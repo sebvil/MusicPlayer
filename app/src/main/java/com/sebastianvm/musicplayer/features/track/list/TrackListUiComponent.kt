@@ -32,15 +32,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
-data class TrackListUiComponent(
-    val navController: NavController,
-) :
-    BaseUiComponent<
-        NoArguments,
-        TrackListState,
-        TrackListUserAction,
-        TrackListStateHolder,
-    >() {
+data class TrackListUiComponent(val navController: NavController) :
+    BaseUiComponent<NoArguments, TrackListState, TrackListUserAction, TrackListStateHolder>() {
 
     override val arguments: NoArguments = NoArguments
 
@@ -94,10 +87,7 @@ fun TrackList(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
-        LazyColumn(
-            modifier = modifier,
-            contentPadding = LocalPaddingValues.current,
-        ) {
+        LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
             item {
                 TextButton(
                     onClick = { handle(TrackListUserAction.SortButtonClicked) },

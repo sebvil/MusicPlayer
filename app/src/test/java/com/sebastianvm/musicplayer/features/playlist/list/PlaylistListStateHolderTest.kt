@@ -17,6 +17,7 @@ import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.resources.RString
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.util.toBasicPlaylist
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize
@@ -69,7 +70,7 @@ class PlaylistListStateHolderTest :
                         playlistRepositoryDep.playlists.value = playlists
 
                         awaitItemAs<PlaylistListState.Data>().playlists shouldBe
-                            playlists.map { PlaylistRow.State.fromPlaylist(it) }
+                            playlists.map { PlaylistRow.State.fromPlaylist(it.toBasicPlaylist()) }
                     }
                 }
 

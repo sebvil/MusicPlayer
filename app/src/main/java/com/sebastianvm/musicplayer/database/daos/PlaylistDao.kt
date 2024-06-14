@@ -11,6 +11,7 @@ import androidx.room.Update
 import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRefKeys
+import com.sebastianvm.musicplayer.database.entities.PlaylistWithTracksEntity
 import com.sebastianvm.musicplayer.database.entities.TrackWithPlaylistPositionView
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
@@ -34,6 +35,10 @@ abstract class PlaylistDao {
 
     @Query("SELECT playlistName FROM PlaylistEntity WHERE PlaylistEntity.id=:playlistId")
     abstract fun getPlaylistName(playlistId: Long): Flow<String>
+
+    @Transaction
+    @Query("SELECT * FROM PlaylistEntity WHERE PlaylistEntity.id=:playlistId")
+    abstract fun getPlaylist(playlistId: Long): Flow<PlaylistWithTracksEntity>
 
     @Insert abstract suspend fun createPlaylist(playlist: PlaylistEntity): Long
 

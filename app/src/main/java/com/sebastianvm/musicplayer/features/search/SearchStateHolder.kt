@@ -84,12 +84,12 @@ class SearchStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SearchState, SearchUserAction> {
 
-    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
+    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.TRACKS))
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
-                SearchMode.SONGS ->
+                SearchMode.TRACKS ->
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
                         tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
@@ -120,7 +120,7 @@ class SearchStateHolder(
                 scope = stateHolderScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                    SearchState(selectedOption = SearchMode.SONGS, searchResults = emptyList()),
+                    SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
             )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
@@ -137,9 +137,9 @@ class SearchStateHolder(
                 AlbumDetailsArguments(
                     albumId = albumId,
                     albumName = albumName,
-                    imageUri = imageUri
+                    imageUri = imageUri,
                 ),
-                navController
+                navController,
             )
         )
     }
@@ -154,7 +154,7 @@ class SearchStateHolder(
         navController.push(
             PlaylistDetailsUiComponent(
                 PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
-                navController
+                navController,
             )
         )
     }
@@ -169,7 +169,7 @@ class SearchStateHolder(
                         onAlbumSearchResultClicked(
                             albumId = result.id,
                             albumName = result.state.albumName,
-                            imageUri = result.state.mediaArtImageState.imageUri
+                            imageUri = result.state.mediaArtImageState.imageUri,
                         )
                     is SearchResult.Genre ->
                         onGenreSearchResultClicked(result.id, result.state.genreName)

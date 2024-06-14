@@ -18,9 +18,5 @@ data class GenreWithTracksEntity(
 )
 
 fun GenreWithTracksEntity.asExternalModel(): Genre {
-    return Genre(
-        id = genre.id,
-        name = genre.name,
-        tracks = tracks.map { it.asExternalModel() },
-    )
+    return Genre(id = genre.id, name = genre.name, tracks = tracks.map { it.asExternalModel() })
 }

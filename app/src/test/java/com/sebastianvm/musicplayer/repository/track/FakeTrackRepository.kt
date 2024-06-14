@@ -10,8 +10,8 @@ import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.model.BasicPlaylist
 import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +25,7 @@ class FakeTrackRepository : TrackRepository {
     val tracks: MutableStateFlow<List<Track>> = MutableStateFlow(emptyList())
     val albums: MutableStateFlow<List<AlbumWithArtists>> = MutableStateFlow(emptyList())
     val genres: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
-    val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(emptyList())
+    val playlists: MutableStateFlow<List<BasicPlaylist>> = MutableStateFlow(emptyList())
 
     val genreTrackCrossRefs: MutableStateFlow<List<GenreTrackCrossRef>> =
         MutableStateFlow(emptyList())

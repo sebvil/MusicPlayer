@@ -76,9 +76,9 @@ fun GenreDetails(
         topBar = {
             TopBar(
                 title = state.genreName,
-                onBackButtonClicked = { handle(GenreDetailsUserAction.BackClicked) },
+                onBackButtonClick = { handle(GenreDetailsUserAction.BackClicked) },
             )
-        }
+        },
     ) { paddingValues ->
         when (state) {
             is GenreDetailsState.Loading -> {
@@ -90,7 +90,7 @@ fun GenreDetails(
                 GenreDetails(
                     state = state,
                     handle = handle,
-                    modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues),
                 )
             }
         }

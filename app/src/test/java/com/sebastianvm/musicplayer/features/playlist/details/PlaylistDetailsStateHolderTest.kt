@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.playlist.details
 
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -13,12 +12,11 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
@@ -34,14 +32,12 @@ import io.kotest.matchers.shouldBe
 
 class PlaylistDetailsStateHolderTest :
     FreeSpec({
-        lateinit var trackRepositoryDep: FakeTrackRepository
         lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
         lateinit var playbackManagerDep: FakePlaybackManager
         lateinit var playlistRepositoryDep: FakePlaylistRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
-            trackRepositoryDep = FakeTrackRepository()
             sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
             playbackManagerDep = FakePlaybackManager()
             navControllerDep = FakeNavController()
@@ -49,37 +45,25 @@ class PlaylistDetailsStateHolderTest :
         }
 
         fun TestScope.getSubject(
-            playlistId: Long = PLAYLIST_ID,
-            tracks: List<Track> = FixtureProvider.tracks(),
+            playlist: Playlist = FixtureProvider.playlist(id = PLAYLIST_ID),
             sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions> =
                 MediaSortPreferences(
                     SortOptions.PlaylistSortOptions.TRACK,
                     MediaSortOrder.ASCENDING,
                 ),
         ): PlaylistDetailsStateHolder {
-            val playlist = FixtureProvider.playlist(id = PLAYLIST_ID, name = PLAYLIST_NAME)
             playlistRepositoryDep.playlists.value = listOf(playlist)
-            trackRepositoryDep.tracks.value = tracks
-            trackRepositoryDep.playlists.value = listOf(playlist)
-            trackRepositoryDep.playlistTrackCrossRefs.value =
-                tracks.mapIndexed { index, track ->
-                    PlaylistTrackCrossRef(
-                        playlistId = playlist.id,
-                        trackId = track.id,
-                        position = index.toLong(),
-                    )
-                }
 
             sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
-                mapOf(playlistId to sortPreferences)
+                mapOf(playlist.id to sortPreferences)
 
             navControllerDep.push(
                 uiComponent =
                     PlaylistDetailsUiComponent(
                         arguments =
                             PlaylistDetailsArguments(
-                                playlistId = PLAYLIST_ID,
-                                playlistName = PLAYLIST_NAME,
+                                playlistId = playlist.id,
+                                playlistName = playlist.name,
                             ),
                         navController = navControllerDep,
                     )
@@ -87,10 +71,12 @@ class PlaylistDetailsStateHolderTest :
 
             return PlaylistDetailsStateHolder(
                 stateHolderScope = this,
-                trackRepository = trackRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 args =
-                    PlaylistDetailsArguments(playlistId = playlistId, playlistName = PLAYLIST_NAME),
+                    PlaylistDetailsArguments(
+                        playlistId = playlist.id,
+                        playlistName = playlist.name,
+                    ),
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 playlistRepository = playlistRepositoryDep,
@@ -98,13 +84,21 @@ class PlaylistDetailsStateHolderTest :
         }
 
         "init subscribes to changes in playlist track list" {
-            val tracks = FixtureProvider.tracks()
-            val subject = getSubject(playlistId = PLAYLIST_ID, tracks = tracks)
+            val playlist = FixtureProvider.playlist()
+            val subject = getSubject(playlist = playlist)
             testStateHolderState(subject) {
-                awaitItem() shouldBe PlaylistDetailsState.Loading(playlistName = PLAYLIST_NAME)
-                val state = awaitItemAs<PlaylistDetailsState.Data>()
-                state.tracks shouldBe tracks.map { TrackRow.State.fromTrack(it) }
-                state.playlistName shouldBe PLAYLIST_NAME
+                awaitItem() shouldBe PlaylistDetailsState.Loading(playlistName = playlist.name)
+                with(awaitItemAs<PlaylistDetailsState.Data>()) {
+                    tracks shouldBe playlist.tracks.map { TrackRow.State.fromTrack(it) }
+                    playlistName shouldBe playlist.name
+                }
+
+                val updatedPlaylist = FixtureProvider.playlist(id = playlist.id)
+                playlistRepositoryDep.playlists.value = listOf(updatedPlaylist)
+                with(awaitItemAs<PlaylistDetailsState.Data>()) {
+                    tracks shouldBe updatedPlaylist.tracks.map { TrackRow.State.fromTrack(it) }
+                    playlistName shouldBe updatedPlaylist.name
+                }
             }
         }
 
@@ -217,6 +211,5 @@ class PlaylistDetailsStateHolderTest :
         private const val TRACK_ID = 1L
         private const val TRACK_INDEX = 0
         private const val PLAYLIST_ID = 1L
-        private const val PLAYLIST_NAME = "Playlist"
     }
 }

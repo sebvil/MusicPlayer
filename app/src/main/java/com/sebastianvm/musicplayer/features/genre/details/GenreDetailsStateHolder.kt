@@ -35,7 +35,7 @@ sealed interface GenreDetailsState : State {
     data class Data(
         val tracks: List<TrackRow.State>,
         val sortButtonState: SortButton.State,
-        override val genreName: String
+        override val genreName: String,
     ) : GenreDetailsState
 }
 
@@ -73,13 +73,13 @@ class GenreDetailsStateHolder(
                             text = sortPrefs.sortOption.stringId,
                             sortOrder = sortPrefs.sortOrder,
                         ),
-                    genreName = genre.name
+                    genreName = genre.name,
                 )
             }
             .stateIn(
                 scope = stateHolderScope,
                 started = SharingStarted.Lazily,
-                initialValue = GenreDetailsState.Loading(args.genreName)
+                initialValue = GenreDetailsState.Loading(args.genreName),
             )
 
     override fun handle(action: GenreDetailsUserAction) {

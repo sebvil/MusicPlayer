@@ -81,7 +81,7 @@ class GenreListStateHolder(
                         arguments =
                             GenreDetailsArguments(
                                 genreId = action.genreId,
-                                genreName = action.genreName
+                                genreName = action.genreName,
                             ),
                         navController = navController,
                     )
