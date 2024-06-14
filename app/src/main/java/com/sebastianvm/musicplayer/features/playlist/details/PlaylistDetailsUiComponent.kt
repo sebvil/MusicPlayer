@@ -53,7 +53,6 @@ data class PlaylistDetailsUiComponent(
         return PlaylistDetailsStateHolder(
             args = arguments,
             navController = navController,
-            trackRepository = dependencies.repositoryProvider.trackRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
             playbackManager = dependencies.repositoryProvider.playbackManager,
             playlistRepository = dependencies.repositoryProvider.playlistRepository,
@@ -83,7 +82,7 @@ fun PlaylistDetails(
                 topBar = {
                     TopBar(
                         title = state.playlistName,
-                        onBackButtonClicked = { handle(PlaylistDetailsUserAction.BackClicked) },
+                        onBackButtonClick = { handle(PlaylistDetailsUserAction.BackClicked) },
                     )
                 },
             ) {
@@ -117,7 +116,7 @@ fun PlaylistDetails(
         topBar = {
             TopBar(
                 title = state.playlistName,
-                onBackButtonClicked = { handle(PlaylistDetailsUserAction.BackClicked) },
+                onBackButtonClick = { handle(PlaylistDetailsUserAction.BackClicked) },
             )
         },
     ) { paddingValues ->

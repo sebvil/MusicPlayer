@@ -14,10 +14,3 @@ data class TrackEntity(
     val artists: String,
     val path: String,
 )
-
-data class BasicTrack(
-    val id: Long,
-    val trackName: String,
-    val artists: String,
-    val trackNumber: Long,
-)

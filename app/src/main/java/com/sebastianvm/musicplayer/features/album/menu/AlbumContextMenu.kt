@@ -59,7 +59,7 @@ private fun AlbumContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.play_from_beginning),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = { handle(AlbumContextMenuUserAction.PlayAlbumClicked) },
+                            onItemClick = { handle(AlbumContextMenuUserAction.PlayAlbumClicked) },
                         )
                     }
 
@@ -69,7 +69,7 @@ private fun AlbumContextMenu(
                                 MenuItem(
                                     text = stringResource(id = RString.view_artists),
                                     icon = Icons.Artist.icon(),
-                                    onItemClicked = {
+                                    onItemClick = {
                                         handle(AlbumContextMenuUserAction.ViewArtistsClicked)
                                     },
                                 )
@@ -81,7 +81,7 @@ private fun AlbumContextMenu(
                                 MenuItem(
                                     text = stringResource(id = RString.view_artist),
                                     icon = Icons.Artist.icon(),
-                                    onItemClicked = {
+                                    onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
                                                 state.viewArtistsState.artistId

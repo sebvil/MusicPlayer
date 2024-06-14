@@ -3,13 +3,12 @@ package com.sebastianvm.musicplayer.features.genre.list
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.GenreRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
@@ -34,7 +33,7 @@ data class GenreListState(val genres: List<GenreRow.State>, val sortButtonState:
 sealed interface GenreListUserAction : UserAction {
     data object SortByButtonClicked : GenreListUserAction
 
-    data class GenreClicked(val genreId: Long) : GenreListUserAction
+    data class GenreClicked(val genreId: Long, val genreName: String) : GenreListUserAction
 
     data class GenreMoreIconClicked(val genreId: Long) : GenreListUserAction
 }
@@ -78,9 +77,12 @@ class GenreListStateHolder(
             }
             is GenreListUserAction.GenreClicked -> {
                 navController.push(
-                    TrackListUiComponent(
+                    GenreDetailsUiComponent(
                         arguments =
-                            TrackListArguments(trackListType = MediaGroup.Genre(action.genreId)),
+                            GenreDetailsArguments(
+                                genreId = action.genreId,
+                                genreName = action.genreName,
+                            ),
                         navController = navController,
                     )
                 )

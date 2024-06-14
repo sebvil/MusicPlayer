@@ -11,33 +11,19 @@ import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.Track
-import com.sebastianvm.musicplayer.model.TrackListMetadata
-import com.sebastianvm.musicplayer.model.TrackListWithMetadata
 import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TrackRepositoryImpl(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val trackDao: TrackDao,
-    private val playlistRepository: PlaylistRepository,
-    private val genreRepository: GenreRepository,
-    private val albumRepository: AlbumRepository,
 ) : TrackRepository {
 
     override fun getTrack(trackId: Long): Flow<Track> {
@@ -53,15 +39,6 @@ class TrackRepositoryImpl(
             is MediaGroup.Album -> getTracksForAlbum(mediaGroup.albumId).asExternalModelFlow()
             is MediaGroup.Artist -> getTracksForArtist(mediaGroup.artistId).asExternalModelFlow()
             is MediaGroup.SingleTrack -> getTrack(mediaGroup.trackId).map { listOf(it) }
-        }
-    }
-
-    override fun getTrackListWithMetaData(trackList: TrackList): Flow<TrackListWithMetadata> {
-        return combine(
-            getTrackListMetadata(trackList),
-            getTracksForMedia(mediaGroup = trackList),
-        ) { metadata, tracks ->
-            TrackListWithMetadata(metadata, tracks)
         }
     }
 
@@ -132,28 +109,6 @@ class TrackRepositoryImpl(
                 )
             }
             .distinctUntilChanged()
-    }
-
-    private fun getTrackListMetadata(trackList: TrackList): Flow<TrackListMetadata?> {
-        return when (trackList) {
-            is MediaGroup.AllTracks -> flowOf(null)
-            is MediaGroup.Genre ->
-                genreRepository.getGenreName(trackList.genreId).map {
-                    TrackListMetadata(trackListName = it)
-                }
-            is MediaGroup.Playlist ->
-                playlistRepository.getPlaylistName(trackList.playlistId).map {
-                    TrackListMetadata(trackListName = it)
-                }
-            is MediaGroup.Album ->
-                albumRepository.getBasicAlbum(trackList.albumId).map {
-                    TrackListMetadata(
-                        trackListName = it.title,
-                        mediaArtImageState =
-                            MediaArtImageState(it.imageUri, backupImage = Icons.Album),
-                    )
-                }
-        }
     }
 
     // endregion

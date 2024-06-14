@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.repository.album
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.BasicAlbum
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +18,7 @@ class AlbumRepositoryImpl(
 ) : AlbumRepository {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAlbums(): Flow<List<Album>> {
+    override fun getAlbums(): Flow<List<AlbumWithArtists>> {
         return sortPreferencesRepository.getAlbumListSortPreferences().flatMapLatest {
             sortPreferences ->
             albumDao
@@ -30,14 +31,18 @@ class AlbumRepositoryImpl(
         }
     }
 
-    override fun getAlbum(albumId: Long): Flow<Album> {
+    override fun getAlbumWithArtists(albumId: Long): Flow<AlbumWithArtists> {
         return albumDao
-            .getFullAlbumInfo(albumId = albumId)
+            .getAlbumWithArtists(albumId = albumId)
             .map { it.asExternalModel() }
             .distinctUntilChanged()
     }
 
-    override fun getBasicAlbum(albumId: Long): Flow<BasicAlbum> {
+    override fun getAlbum(albumId: Long): Flow<Album> {
         return albumDao.getAlbum(albumId = albumId).map { it.asExternalModel() }
+    }
+
+    override fun getBasicAlbum(albumId: Long): Flow<BasicAlbum> {
+        return albumDao.getBasicAlbum(albumId = albumId).map { it.asExternalModel() }
     }
 }

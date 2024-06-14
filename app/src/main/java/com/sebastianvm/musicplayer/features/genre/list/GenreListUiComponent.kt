@@ -82,7 +82,10 @@ fun GenreList(
         items(state.genres, key = { item -> item.id }) { item ->
             GenreRow(
                 state = item,
-                modifier = Modifier.clickable { handle(GenreListUserAction.GenreClicked(item.id)) },
+                modifier =
+                    Modifier.clickable {
+                        handle(GenreListUserAction.GenreClicked(item.id, item.genreName))
+                    },
                 trailingContent = {
                     OverflowIconButton(
                         onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) }

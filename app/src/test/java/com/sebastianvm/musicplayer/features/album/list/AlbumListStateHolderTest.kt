@@ -2,6 +2,8 @@ package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -10,9 +12,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
@@ -23,6 +22,7 @@ import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.util.toAlbumWithArtists
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -64,7 +64,8 @@ class AlbumListStateHolderTest :
                 val albums = FixtureProvider.albums()
                 albumRepositoryDep.albums.value = albums
                 val item = awaitItem().shouldBeInstanceOf<Data<AlbumListState>>()
-                item.state.albums shouldBe albums.map { AlbumRow.State.fromAlbum(it) }
+                item.state.albums shouldBe
+                    albums.map { AlbumRow.State.fromAlbum(it.toAlbumWithArtists()) }
             }
         }
 
@@ -138,15 +139,26 @@ class AlbumListStateHolderTest :
                         )
                 }
 
-                "AlbumClicked navigates to TrackList" {
+                "AlbumClicked navigates to album details" {
                     val subject = getSubject()
-                    subject.handle(AlbumListUserAction.AlbumClicked(ALBUM_ID))
+                    subject.handle(
+                        AlbumListUserAction.AlbumClicked(
+                            albumId = ALBUM_ID,
+                            albumName = ALBUM_NAME,
+                            imageUri = IMAGE_URI,
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =
-                                TrackListUiComponent(
-                                    arguments = TrackListArguments(MediaGroup.Album(ALBUM_ID)),
+                                AlbumDetailsUiComponent(
+                                    arguments =
+                                        AlbumDetailsArguments(
+                                            albumId = ALBUM_ID,
+                                            albumName = ALBUM_NAME,
+                                            imageUri = IMAGE_URI,
+                                        ),
                                     navController = navControllerDep,
                                 ),
                             presentationMode = NavOptions.PresentationMode.Screen,
@@ -156,5 +168,7 @@ class AlbumListStateHolderTest :
     }) {
     companion object {
         private const val ALBUM_ID = 1L
+        private const val ALBUM_NAME = "Album 1"
+        private const val IMAGE_URI = "imageUri"
     }
 }

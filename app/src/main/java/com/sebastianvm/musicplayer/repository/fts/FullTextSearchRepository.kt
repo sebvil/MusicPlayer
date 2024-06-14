@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository.fts
 
-import com.sebastianvm.musicplayer.database.entities.BasicTrack
-import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
+import com.sebastianvm.musicplayer.model.BasicGenre
+import com.sebastianvm.musicplayer.model.BasicPlaylist
+import com.sebastianvm.musicplayer.model.BasicTrack
 import kotlinx.coroutines.flow.Flow
 
 interface FullTextSearchRepository {
@@ -12,9 +12,9 @@ interface FullTextSearchRepository {
 
     fun searchArtists(text: String): Flow<List<BasicArtist>>
 
-    fun searchAlbums(text: String): Flow<List<Album>>
+    fun searchAlbums(text: String): Flow<List<AlbumWithArtists>>
 
-    fun searchGenres(text: String): Flow<List<Genre>>
+    fun searchGenres(text: String): Flow<List<BasicGenre>>
 
-    fun searchPlaylists(text: String): Flow<List<Playlist>>
+    fun searchPlaylists(text: String): Flow<List<BasicPlaylist>>
 }

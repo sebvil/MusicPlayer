@@ -5,8 +5,9 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import com.sebastianvm.musicplayer.database.entities.AlbumEntity
-import com.sebastianvm.musicplayer.database.entities.AlbumWithArtists
+import com.sebastianvm.musicplayer.database.entities.AlbumWithArtistsEntity
 import com.sebastianvm.musicplayer.database.entities.BasicAlbumQuery
+import com.sebastianvm.musicplayer.database.entities.FullAlbumEntity
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
@@ -22,12 +23,17 @@ interface AlbumDao {
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from AlbumEntity WHERE AlbumEntity.id=:albumId")
-    fun getFullAlbumInfo(albumId: Long): Flow<AlbumWithArtists>
+    fun getAlbumWithArtists(albumId: Long): Flow<AlbumWithArtistsEntity>
 
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from AlbumEntity WHERE AlbumEntity.id=:albumId")
-    fun getAlbum(albumId: Long): Flow<BasicAlbumQuery>
+    fun getAlbum(albumId: Long): Flow<FullAlbumEntity>
+
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * from AlbumEntity WHERE AlbumEntity.id=:albumId")
+    fun getBasicAlbum(albumId: Long): Flow<BasicAlbumQuery>
 
     @Transaction
     @Query(
@@ -42,5 +48,5 @@ interface AlbumDao {
     fun getAllAlbums(
         sortOption: SortOptions.AlbumListSortOptions,
         sortOrder: MediaSortOrder,
-    ): Flow<List<AlbumWithArtists>>
+    ): Flow<List<AlbumWithArtistsEntity>>
 }

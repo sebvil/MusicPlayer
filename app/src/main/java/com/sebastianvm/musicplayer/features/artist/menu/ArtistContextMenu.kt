@@ -49,9 +49,7 @@ private fun ArtistContextMenu(
                         MenuItem(
                             text = stringResource(id = RString.play_all_songs),
                             icon = Icons.PlayArrow.icon(),
-                            onItemClicked = {
-                                handle(ArtistContextMenuUserAction.PlayArtistClicked)
-                            },
+                            onItemClick = { handle(ArtistContextMenuUserAction.PlayArtistClicked) },
                         )
                     }
                 }

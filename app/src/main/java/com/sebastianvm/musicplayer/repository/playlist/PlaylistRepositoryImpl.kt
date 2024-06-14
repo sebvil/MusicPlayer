@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.di.DispatcherProvider.ioDispatcher
+import com.sebastianvm.musicplayer.model.BasicPlaylist
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.extensions.mapValues
@@ -25,7 +26,7 @@ class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
 ) : PlaylistRepository {
 
-    override fun getPlaylists(): Flow<List<Playlist>> {
+    override fun getPlaylists(): Flow<List<BasicPlaylist>> {
         return sortPreferencesRepository
             .getPlaylistsListSortOrder()
             .flatMapLatest { sortOrder -> playlistDao.getPlaylists(sortOrder = sortOrder) }
@@ -35,6 +36,10 @@ class PlaylistRepositoryImpl(
 
     override fun getPlaylistName(playlistId: Long): Flow<String> {
         return playlistDao.getPlaylistName(playlistId)
+    }
+
+    override fun getPlaylist(playlistId: Long): Flow<Playlist> {
+        return playlistDao.getPlaylist(playlistId).map { it.asExternalModel() }
     }
 
     override fun createPlaylist(playlistName: String): Flow<Long?> {

@@ -2,13 +2,12 @@ package com.sebastianvm.musicplayer.features.artist.screen
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
@@ -39,7 +38,8 @@ data class ArtistArguments(val artistId: Long) : Arguments
 sealed interface ArtistUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
 
-    data class AlbumClicked(val albumId: Long) : ArtistUserAction
+    data class AlbumClicked(val albumId: Long, val albumName: String, val imageUri: String) :
+        ArtistUserAction
 
     data object BackClicked : ArtistUserAction
 }
@@ -98,8 +98,13 @@ class ArtistStateHolder(
             }
             is ArtistUserAction.AlbumClicked -> {
                 navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(MediaGroup.Album(albumId = action.albumId)),
+                    AlbumDetailsUiComponent(
+                        arguments =
+                            AlbumDetailsArguments(
+                                albumId = action.albumId,
+                                action.albumName,
+                                action.imageUri,
+                            ),
                         navController = navController,
                     )
                 )

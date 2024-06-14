@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
@@ -18,7 +18,7 @@ object AlbumRow {
         val mediaArtImageState: MediaArtImageState,
     ) {
         companion object {
-            fun fromAlbum(album: Album): State {
+            fun fromAlbum(album: AlbumWithArtists): State {
                 return State(
                     id = album.id,
                     albumName = album.title,

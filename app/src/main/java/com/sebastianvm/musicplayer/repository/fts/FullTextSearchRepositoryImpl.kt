@@ -5,12 +5,12 @@ import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
-import com.sebastianvm.musicplayer.database.entities.BasicTrack
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.Album
+import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
+import com.sebastianvm.musicplayer.model.BasicGenre
+import com.sebastianvm.musicplayer.model.BasicPlaylist
+import com.sebastianvm.musicplayer.model.BasicTrack
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.flow.Flow
 
@@ -25,22 +25,22 @@ class FullTextSearchRepositoryImpl(
     private fun searchString(text: String) = "\"$text*\""
 
     override fun searchTracks(text: String): Flow<List<BasicTrack>> {
-        return trackFtsDao.tracksWithText(searchString(text))
+        return trackFtsDao.tracksWithText(searchString(text)).mapValues { it.asExternalModel() }
     }
 
     override fun searchArtists(text: String): Flow<List<BasicArtist>> {
         return artistFtsDao.artistsWithText(searchString(text)).mapValues { it.asExternalModel() }
     }
 
-    override fun searchAlbums(text: String): Flow<List<Album>> {
+    override fun searchAlbums(text: String): Flow<List<AlbumWithArtists>> {
         return albumFtsDao.albumsWithText(searchString(text)).mapValues { it.asExternalModel() }
     }
 
-    override fun searchGenres(text: String): Flow<List<Genre>> {
+    override fun searchGenres(text: String): Flow<List<BasicGenre>> {
         return genreFtsDao.genresWithText(searchString(text)).mapValues { it.asExternalModel() }
     }
 
-    override fun searchPlaylists(text: String): Flow<List<Playlist>> {
+    override fun searchPlaylists(text: String): Flow<List<BasicPlaylist>> {
         return playlistFtsDao.playlistsWithText(searchString(text)).mapValues {
             it.asExternalModel()
         }

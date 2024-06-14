@@ -152,7 +152,7 @@ fun SearchScreen(
                                     permission = Permission.ReadAudio,
                                     dialogTitle = RString.storage_permission_needed,
                                     message = RString.grant_storage_permissions,
-                                    onPermissionGranted = {
+                                    onGrantPermission = {
                                         startForegroundService(
                                             context,
                                             Intent(context, LibraryScanService::class.java),
@@ -212,21 +212,14 @@ fun SearchLayout(
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = 16.dp),
             getDisplayName = { option -> stringResource(id = option.res) },
-            onNewOptionSelected = { newOption ->
+            onSelectNewOption = { newOption ->
                 handle(SearchUserAction.SearchModeChanged(newOption))
             },
         )
         LazyColumn(contentPadding = LocalPaddingValues.current) {
             items(state.searchResults) { item ->
                 val itemModifier =
-                    Modifier.clickable {
-                        handle(
-                            SearchUserAction.SearchResultClicked(
-                                id = item.id,
-                                mediaType = state.selectedOption,
-                            )
-                        )
-                    }
+                    Modifier.clickable { handle(SearchUserAction.SearchResultClicked(item)) }
                 when (item) {
                     is SearchResult.Album -> {
                         AlbumRow(state = item.state, modifier = itemModifier)

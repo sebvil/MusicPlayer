@@ -1,8 +1,10 @@
 package com.sebastianvm.musicplayer.repository.playlist
 
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.model.BasicPlaylist
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.util.FixtureProvider
+import com.sebastianvm.musicplayer.util.extensions.mapValues
+import com.sebastianvm.musicplayer.util.toBasicPlaylist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -12,17 +14,19 @@ import kotlinx.coroutines.flow.update
 class FakePlaylistRepository : PlaylistRepository {
 
     val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(FixtureProvider.playlists())
-    val playlistTrackCrossRef: MutableStateFlow<List<PlaylistTrackCrossRef>> =
-        MutableStateFlow(emptyList())
 
     var shouldPlaylistCreationFail: Boolean = false
 
-    override fun getPlaylists(): Flow<List<Playlist>> {
-        return playlists
+    override fun getPlaylists(): Flow<List<BasicPlaylist>> {
+        return playlists.mapValues { it.toBasicPlaylist() }
     }
 
     override fun getPlaylistName(playlistId: Long): Flow<String> {
         return playlists.map { playlists -> playlists.first { it.id == playlistId }.name }
+    }
+
+    override fun getPlaylist(playlistId: Long): Flow<Playlist> {
+        return playlists.map { playlists -> playlists.first { it.id == playlistId } }
     }
 
     override fun createPlaylist(playlistName: String): Flow<Long?> {
@@ -42,18 +46,24 @@ class FakePlaylistRepository : PlaylistRepository {
     }
 
     override suspend fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
-        TODO("Not yet implemented")
+        playlists.update { playlists ->
+            val index = playlists.indexOfFirst { it.id == playlistId }
+            val playlist = playlists[index]
+            val newTracks = playlist.tracks + FixtureProvider.track(id = trackId)
+            playlists.toMutableList().apply { set(index, playlist.copy(tracks = newTracks)) }
+        }
     }
 
     override fun getTrackIdsInPlaylist(playlistId: Long): Flow<Set<Long>> {
-        TODO("Not yet implemented")
+        return getPlaylist(playlistId).map { playlist -> playlist.tracks.map { it.id }.toSet() }
     }
 
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
-        playlistTrackCrossRef.update { playlistTrackCrossRefs ->
-            playlistTrackCrossRefs.toMutableList().apply {
-                removeIf { it.playlistId == playlistId && it.position == position }
-            }
+        playlists.update { playlists ->
+            val index = playlists.indexOfFirst { it.id == playlistId }
+            val playlist = playlists[index]
+            val newTracks = playlist.tracks.toMutableList().apply { removeAt(position.toInt()) }
+            playlists.toMutableList().apply { set(index, playlist.copy(tracks = newTracks)) }
         }
     }
 }

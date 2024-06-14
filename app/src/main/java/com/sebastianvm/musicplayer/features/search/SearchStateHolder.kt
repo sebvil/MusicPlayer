@@ -7,11 +7,15 @@ import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
@@ -65,7 +69,7 @@ data class SearchState(val selectedOption: SearchMode, val searchResults: List<S
     State
 
 sealed interface SearchUserAction : UserAction {
-    data class SearchResultClicked(val id: Long, val mediaType: SearchMode) : SearchUserAction
+    data class SearchResultClicked(val result: SearchResult<*>) : SearchUserAction
 
     data class TextChanged(val newText: String) : SearchUserAction
 
@@ -80,12 +84,12 @@ class SearchStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SearchState, SearchUserAction> {
 
-    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.SONGS))
+    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.TRACKS))
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
-                SearchMode.SONGS ->
+                SearchMode.TRACKS ->
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
                         tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
@@ -116,7 +120,7 @@ class SearchStateHolder(
                 scope = stateHolderScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                    SearchState(selectedOption = SearchMode.SONGS, searchResults = emptyList()),
+                    SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
             )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
@@ -127,33 +131,50 @@ class SearchStateHolder(
         navController.push(ArtistUiComponent(ArtistArguments(artistId), navController))
     }
 
-    private fun onAlbumSearchResultClicked(albumId: Long) {
+    private fun onAlbumSearchResultClicked(albumId: Long, albumName: String, imageUri: String) {
         navController.push(
-            TrackListUiComponent(TrackListArguments(MediaGroup.Album(albumId)), navController)
+            AlbumDetailsUiComponent(
+                AlbumDetailsArguments(
+                    albumId = albumId,
+                    albumName = albumName,
+                    imageUri = imageUri,
+                ),
+                navController,
+            )
         )
     }
 
-    private fun onGenreSearchResultClicked(genreId: Long) {
+    private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
         navController.push(
-            TrackListUiComponent(TrackListArguments(MediaGroup.Genre(genreId)), navController)
+            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController)
         )
     }
 
-    private fun onPlaylistSearchResultClicked(playlistId: Long) {
+    private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
         navController.push(
-            TrackListUiComponent(TrackListArguments(MediaGroup.Playlist(playlistId)), navController)
+            PlaylistDetailsUiComponent(
+                PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
+                navController,
+            )
         )
     }
 
     override fun handle(action: SearchUserAction) {
         when (action) {
             is SearchUserAction.SearchResultClicked -> {
-                when (action.mediaType) {
-                    SearchMode.SONGS -> onTrackSearchResultClicked(action.id)
-                    SearchMode.ARTISTS -> onArtistSearchResultClicked(action.id)
-                    SearchMode.ALBUMS -> onAlbumSearchResultClicked(action.id)
-                    SearchMode.GENRES -> onGenreSearchResultClicked(action.id)
-                    SearchMode.PLAYLISTS -> onPlaylistSearchResultClicked(action.id)
+                when (val result = action.result) {
+                    is SearchResult.Track -> onTrackSearchResultClicked(result.id)
+                    is SearchResult.Artist -> onArtistSearchResultClicked(result.id)
+                    is SearchResult.Album ->
+                        onAlbumSearchResultClicked(
+                            albumId = result.id,
+                            albumName = result.state.albumName,
+                            imageUri = result.state.mediaArtImageState.imageUri,
+                        )
+                    is SearchResult.Genre ->
+                        onGenreSearchResultClicked(result.id, result.state.genreName)
+                    is SearchResult.Playlist ->
+                        onPlaylistSearchResultClicked(result.id, result.state.playlistName)
                 }
             }
             is SearchUserAction.SearchModeChanged -> {

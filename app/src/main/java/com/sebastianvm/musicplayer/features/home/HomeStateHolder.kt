@@ -6,9 +6,7 @@ import com.sebastianvm.musicplayer.features.genre.list.GenreListUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListUiComponent
 import com.sebastianvm.musicplayer.features.search.SearchUiComponent
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -57,11 +55,7 @@ class HomeStateHolder(
 }
 
 fun getHomeStateHolder(navController: NavController): HomeStateHolder {
-    val trackListUiComponent =
-        TrackListUiComponent(
-            arguments = TrackListArguments(trackListType = MediaGroup.AllTracks),
-            navController = navController,
-        )
+    val trackListUiComponent = TrackListUiComponent(navController)
     val artistListUiComponent = ArtistListUiComponent(navController)
     val albumListUiComponent = AlbumListUiComponent(navController)
     val genreListUiComponent = GenreListUiComponent(navController)

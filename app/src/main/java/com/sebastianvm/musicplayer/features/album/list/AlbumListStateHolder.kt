@@ -2,7 +2,8 @@ package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -10,9 +11,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.features.track.list.TrackListArguments
-import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
@@ -39,7 +37,8 @@ sealed interface AlbumListUserAction : UserAction {
 
     data object SortButtonClicked : AlbumListUserAction
 
-    data class AlbumClicked(val albumId: Long) : AlbumListUserAction
+    data class AlbumClicked(val albumId: Long, val albumName: String, val imageUri: String) :
+        AlbumListUserAction
 }
 
 class AlbumListStateHolder(
@@ -94,23 +93,17 @@ class AlbumListStateHolder(
             }
             is AlbumListUserAction.AlbumClicked -> {
                 navController.push(
-                    TrackListUiComponent(
-                        arguments = TrackListArguments(MediaGroup.Album(action.albumId)),
+                    AlbumDetailsUiComponent(
+                        arguments =
+                            AlbumDetailsArguments(
+                                albumId = action.albumId,
+                                albumName = action.albumName,
+                                imageUri = action.imageUri,
+                            ),
                         navController = navController,
                     )
                 )
             }
         }
     }
-}
-
-fun getAlbumListStateHolder(
-    dependencies: Dependencies,
-    navController: NavController,
-): AlbumListStateHolder {
-    return AlbumListStateHolder(
-        albumRepository = dependencies.repositoryProvider.albumRepository,
-        navController = navController,
-        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-    )
 }

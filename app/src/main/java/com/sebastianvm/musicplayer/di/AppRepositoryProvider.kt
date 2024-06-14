@@ -69,9 +69,6 @@ class AppRepositoryProvider(
             TrackRepositoryImpl(
                 sortPreferencesRepository = sortPreferencesRepository,
                 trackDao = database.getTrackDao(),
-                playlistRepository = playlistRepository,
-                genreRepository = genreRepository,
-                albumRepository = albumRepository,
             )
 
     override val playlistRepository: PlaylistRepository

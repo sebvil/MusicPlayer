@@ -14,12 +14,12 @@ import com.sebastianvm.musicplayer.designsystem.components.Text
 fun MenuItem(
     text: String,
     icon: ImageVector,
-    onItemClicked: () -> Unit,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
         headlineContent = { Text(text = text) },
-        modifier = modifier.clickable { onItemClicked() },
+        modifier = modifier.clickable { onItemClick() },
         leadingContent = {
             Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
         },

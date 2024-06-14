@@ -1,33 +1,73 @@
 package com.sebastianvm.musicplayer.util
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
+import com.navercorp.fixturemonkey.kotest.KotestJavaArbitraryGeneratorSet
+import com.navercorp.fixturemonkey.kotest.KotestPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMe
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.Album
 import com.sebastianvm.musicplayer.model.Artist
 import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.model.QueuedTrack
 import com.sebastianvm.musicplayer.model.Track
-import com.sebastianvm.musicplayer.model.TrackListMetadata
-import com.sebastianvm.musicplayer.model.TrackListWithMetadata
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.sort.SortOptions
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.Codepoint
+import io.kotest.property.arbitrary.az
+import io.kotest.property.arbitrary.single
+import io.kotest.property.arbitrary.string
 import kotlin.time.Duration.Companion.seconds
 
 object FixtureProvider {
 
-    private val fixtureMonkey = FixtureMonkey.builder().plugin(KotlinPlugin()).build()
+    private val fixtureMonkey =
+        FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(KotestPlugin())
+            .plugin { optionsBuilder ->
+                optionsBuilder?.javaTypeArbitraryGeneratorSet {
+                    object : JavaTypeArbitraryGeneratorSet by KotestJavaArbitraryGeneratorSet(it) {
+                        override fun strings(
+                            context: ArbitraryGeneratorContext
+                        ): CombinableArbitrary<String> {
+                            val stringConstraint = it.generateStringConstraint(context)
+
+                            return CombinableArbitrary.from {
+                                if (stringConstraint != null) {
+                                    val minSize = stringConstraint.minSize?.toInt() ?: 3
+                                    val maxSize = stringConstraint.maxSize?.toInt() ?: 10
+                                    Arb.string(
+                                            minSize = minSize,
+                                            maxSize = maxSize,
+                                            codepoints = Codepoint.az(),
+                                        )
+                                        .single()
+                                } else {
+                                    Arb.string(
+                                            minSize = 3,
+                                            maxSize = 10,
+                                            codepoints = Codepoint.az(),
+                                        )
+                                        .single()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .build()
 
     fun album(id: Long = fixtureMonkey.giveMeOne<Long>(), artistCount: Int = 1): Album {
         return fixtureMonkey
@@ -60,8 +100,16 @@ object FixtureProvider {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun genre(id: Long = fixtureMonkey.giveMeOne<Long>()): Genre {
-        return fixtureMonkey.giveMeBuilder<Genre>().set(Genre::id, id).build().sample()
+    fun genre(
+        id: Long = fixtureMonkey.giveMeOne<Long>(),
+        name: String = fixtureMonkey.giveMeOne(),
+    ): Genre {
+        return fixtureMonkey
+            .giveMeBuilder<Genre>()
+            .set(Genre::id, id)
+            .set(Genre::name, name)
+            .build()
+            .sample()
     }
 
     fun genres(size: Int = DEFAULT_LIST_SIZE): List<Genre> {
@@ -94,24 +142,26 @@ object FixtureProvider {
             .ofSize(size)
             .uniqueElements { it.id }
             .sample()
+            .also {
+                val ids = it.map { track -> track.id }
+                check(ids.size == ids.toSet().size)
+            }
     }
 
     fun playlists(size: Int = DEFAULT_LIST_SIZE): List<Playlist> {
         return fixtureMonkey.giveMe(size)
     }
 
-    fun playlist(name: String): Playlist {
-        return fixtureMonkey.giveMeBuilder<Playlist>().set(Playlist::name, name).build().sample()
-    }
-
     fun playlist(
         id: Long = fixtureMonkey.giveMeOne<Long>(),
         name: String = fixtureMonkey.giveMeOne<String>(),
+        trackCount: Int = fixtureMonkey.giveMeOne<Int>().coerceAtMost(5),
     ): Playlist {
         return fixtureMonkey
             .giveMeBuilder<Playlist>()
             .set(Playlist::id, id)
             .set(Playlist::name, name)
+            .size(Playlist::tracks, trackCount)
             .build()
             .sample()
     }
@@ -136,24 +186,6 @@ object FixtureProvider {
                 currentTrackProgress = 125.seconds,
             ),
         )
-    }
-
-    fun trackListWithMetadataFixtures(): List<TrackListWithMetadata> {
-        val metadataList =
-            listOf(
-                TrackListMetadata(trackListName = "Track list", mediaArtImageState = null),
-                TrackListMetadata(
-                    trackListName = "Track list",
-                    mediaArtImageState = MediaArtImageState("", Icons.Album),
-                ),
-                null,
-            )
-        return metadataList.flatMap {
-            listOf(
-                TrackListWithMetadata(metaData = it, trackList = tracks().toList()),
-                TrackListWithMetadata(metaData = it, trackList = listOf()),
-            )
-        }
     }
 
     fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
