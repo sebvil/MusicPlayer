@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.util.FixtureProvider.queueItemsFixtures
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 
 class FakeQueueRepository : QueueRepository {
@@ -18,20 +19,21 @@ class FakeQueueRepository : QueueRepository {
     val nowPlayingInfo: MutableStateFlow<NowPlayingInfo> =
         MutableStateFlow(NowPlayingInfo(nowPlayingPositionInQueue = 0, lastRecordedPosition = 0))
 
-    override fun getQueue(): Flow<NextUpQueue?> {
+    override fun getQueue(): Flow<NextUpQueue> {
         return combine(nowPlayingInfo, queuedTracks) { nowPlayingInfo, queuedTracks ->
-            val nowPlayingTrackIndex =
-                nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
-                    ?: return@combine null
-            NextUpQueue(
-                nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
-                nextUp =
-                    queuedTracks.subList(
-                        fromIndex = nowPlayingTrackIndex + 1,
-                        toIndex = queuedTracks.size,
-                    ),
-            )
-        }
+                val nowPlayingTrackIndex =
+                    nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
+                        ?: return@combine null
+                NextUpQueue(
+                    nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
+                    nextUp =
+                        queuedTracks.subList(
+                            fromIndex = nowPlayingTrackIndex + 1,
+                            toIndex = queuedTracks.size,
+                        ),
+                )
+            }
+            .filterNotNull()
     }
 
     override fun getFullQueue(): Flow<FullQueue?> {

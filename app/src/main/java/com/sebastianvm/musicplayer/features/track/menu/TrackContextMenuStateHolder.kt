@@ -117,7 +117,6 @@ class TrackContextMenuStateHolder(
                     .invokeOnCompletion { navController.pop() }
             }
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
-                // TODO maybe read album
                 navController.push(
                     AlbumDetailsUiComponent(
                         arguments =

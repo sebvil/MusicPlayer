@@ -67,5 +67,9 @@
     <string name="new_playlist">New playlist</string>
     <string name="playlist_is_empty">Playlist is empty.</string>
     <string name="search_tracks">Search tracks</string>
+    <string name="scanning_library">Scanning library</string>
+    <string name="starting_sync">Starting sync</string>
+    <string name="library_scan_progress">Library scan progress</string>
+    <string name="shows_progress_when_scanning_the_library">Shows progress when scanning the library</string>
 
 </resources>

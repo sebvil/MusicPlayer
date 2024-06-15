@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.search
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -39,7 +38,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startForegroundService
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -50,8 +50,8 @@ import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.fts.SearchMode
+import com.sebastianvm.musicplayer.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
@@ -153,10 +153,9 @@ fun SearchScreen(
                                     dialogTitle = RString.storage_permission_needed,
                                     message = RString.grant_storage_permissions,
                                     onGrantPermission = {
-                                        startForegroundService(
-                                            context,
-                                            Intent(context, LibraryScanService::class.java),
-                                        )
+                                        val syncRequest =
+                                            OneTimeWorkRequestBuilder<LibrarySyncWorker>().build()
+                                        WorkManager.getInstance(context).enqueue(syncRequest)
                                         isDropdownManuExpanded = false
                                     },
                                 ) { onClick ->

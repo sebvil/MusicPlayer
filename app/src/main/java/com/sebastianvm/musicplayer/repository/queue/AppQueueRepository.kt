@@ -15,6 +15,7 @@ import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -25,22 +26,23 @@ class AppQueueRepository(
     private val mediaPlaybackClient: MediaPlaybackClient,
 ) : QueueRepository {
 
-    override fun getQueue(): Flow<NextUpQueue?> {
+    override fun getQueue(): Flow<NextUpQueue> {
         return combine(nowPlayingInfoDataSource.getNowPlayingInfo(), getQueuedTracks()) {
-            nowPlayingInfo,
-            queuedTracks ->
-            val nowPlayingTrackIndex =
-                nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
-                    ?: return@combine null
-            NextUpQueue(
-                nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
-                nextUp =
-                    queuedTracks.subList(
-                        fromIndex = nowPlayingTrackIndex + 1,
-                        toIndex = queuedTracks.size,
-                    ),
-            )
-        }
+                nowPlayingInfo,
+                queuedTracks ->
+                val nowPlayingTrackIndex =
+                    nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
+                        ?: return@combine null
+                NextUpQueue(
+                    nowPlayingTrack = queuedTracks[nowPlayingTrackIndex],
+                    nextUp =
+                        queuedTracks.subList(
+                            fromIndex = nowPlayingTrackIndex + 1,
+                            toIndex = queuedTracks.size,
+                        ),
+                )
+            }
+            .filterNotNull()
     }
 
     override fun getFullQueue(): Flow<FullQueue?> {

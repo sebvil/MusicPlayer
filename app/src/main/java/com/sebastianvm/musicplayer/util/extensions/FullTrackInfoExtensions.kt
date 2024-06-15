@@ -22,7 +22,7 @@ fun Track.getMediaMetadata(): MediaMetadata {
         .apply {
             title = name
             artist = artists.joinToString { it.name }
-            uri = UriUtils.getTrackUri(trackId = id)
+            uri = UriUtils.getAlbumUri(albumId = albumId)
             extras =
                 Bundle().apply {
                     //                    duration = trackDurationMs

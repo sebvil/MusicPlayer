@@ -40,17 +40,10 @@
         </service>
 
         <service
-            android:name=".repository.LibraryScanService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
 
-        <receiver
-            android:name=".repository.LibraryBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.sebastianvm.musicplayer.repository.STOP_SCAN_SERVICE" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".features.main.MainActivity"
