@@ -266,7 +266,7 @@ private fun FloatingPlayerCard(
                     },
                     leadingContent = {
                         MediaArtImage(
-                            mediaArtImageState = state.mediaArtImageState,
+                            artworkUri = state.artworkUri,
                             modifier =
                                 Modifier.size(48.dp)
                                     .sharedElement(
@@ -356,7 +356,7 @@ private fun FullScreenPlayer(
 
             val imageMaxSize = 350.dp
             MediaArtImage(
-                mediaArtImageState = state.mediaArtImageState,
+                artworkUri = state.artworkUri,
                 modifier =
                     Modifier.sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
                         .fillMaxWidth()

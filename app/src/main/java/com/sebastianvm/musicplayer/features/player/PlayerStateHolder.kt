@@ -1,18 +1,14 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,20 +17,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration
 
 sealed interface PlayerState : State {
 
     sealed interface Playing : PlayerState
 
     data class FloatingState(
-        val mediaArtImageState: MediaArtImageState,
+        val artworkUri: String,
         val trackInfoState: TrackInfoState,
         val trackProgressState: TrackProgressState,
         val playbackIcon: PlaybackIcon,
     ) : Playing
 
     data class FullScreenState(
-        val mediaArtImageState: MediaArtImageState,
+        val artworkUri: String,
         val trackInfoState: TrackInfoState,
         val trackProgressState: TrackProgressState,
         val playbackIcon: PlaybackIcon,
@@ -90,11 +87,7 @@ class PlayerStateHolder(
                 showQueue ->
                 when (playbackState) {
                     is TrackPlayingState -> {
-                        val mediaArtImageState =
-                            MediaArtImageState(
-                                imageUri = playbackState.trackInfo.artworkUri,
-                                backupImage = Icons.Album,
-                            )
+                        val artworkUri = playbackState.trackInfo.artworkUri
                         val trackInfoState =
                             TrackInfoState(
                                 trackName = playbackState.trackInfo.title,
@@ -117,14 +110,14 @@ class PlayerStateHolder(
                                 )
                             props.isFullscreen ->
                                 PlayerState.FullScreenState(
-                                    mediaArtImageState = mediaArtImageState,
+                                    artworkUri = artworkUri,
                                     trackInfoState = trackInfoState,
                                     trackProgressState = trackProgressState,
                                     playbackIcon = playbackIcon,
                                 )
                             else ->
                                 PlayerState.FloatingState(
-                                    mediaArtImageState = mediaArtImageState,
+                                    artworkUri = artworkUri,
                                     trackInfoState = trackInfoState,
                                     trackProgressState = trackProgressState,
                                     playbackIcon = playbackIcon,

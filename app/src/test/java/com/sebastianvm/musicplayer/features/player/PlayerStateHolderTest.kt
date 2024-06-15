@@ -1,10 +1,7 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
@@ -13,9 +10,9 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 class PlayerStateHolderTest :
     FreeSpec({
@@ -55,10 +52,9 @@ class PlayerStateHolderTest :
                                 playbackManagerDep.getPlaybackStateValue.value = playbackState
                                 awaitItem() shouldBe
                                     PlayerState.FloatingState(
-                                        mediaArtImageState =
+                                        artworkUri =
                                             MediaArtImageState(
                                                 imageUri = playbackState.trackInfo.artworkUri,
-                                                backupImage = Icons.Album,
                                             ),
                                         trackInfoState =
                                             TrackInfoState(

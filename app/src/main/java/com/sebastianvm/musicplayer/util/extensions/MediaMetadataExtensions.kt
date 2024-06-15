@@ -22,7 +22,7 @@ inline var MediaMetadata.Builder.genre: String
         setGenre(value)
     }
 
-inline var MediaMetadata.Builder.uri: Uri
+inline var MediaMetadata.Builder.artworkUri: Uri
     get() = throw IllegalAccessException("Cannot get from MediaItem.Builder")
     set(value) {
         setArtworkUri(value)

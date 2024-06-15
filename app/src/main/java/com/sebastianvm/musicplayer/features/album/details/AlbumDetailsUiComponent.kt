@@ -47,14 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.designsystem.icons.Album
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.track.list.TopBar
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.util.resources.RString
@@ -100,11 +98,7 @@ fun AlbumDetails(
     val listState = rememberLazyListState()
     HeaderWithImageModelList(
         title = state.albumName,
-        imageState =
-            MediaArtImageState(
-                imageUri = state.imageUri,
-                backupImage = com.sebastianvm.musicplayer.designsystem.icons.Icons.Album,
-            ),
+        artworkUri = state.imageUri,
         modifier = modifier,
         listState = listState,
         onBackButtonClick = { handle(AlbumDetailsUserAction.BackClicked) },
@@ -176,7 +170,7 @@ fun AlbumDetails(
 @Composable
 fun HeaderWithImageModelList(
     title: String,
-    imageState: MediaArtImageState,
+    artworkUri: String,
     listState: LazyListState,
     onBackButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -270,7 +264,7 @@ fun HeaderWithImageModelList(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MediaArtImage(
-                mediaArtImageState = imageState,
+                artworkUri = artworkUri,
                 modifier = Modifier.size(animatedSize).alpha(imageAlpha),
             )
             Text(
