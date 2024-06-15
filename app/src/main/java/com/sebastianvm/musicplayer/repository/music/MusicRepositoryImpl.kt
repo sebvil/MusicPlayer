@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.TrackEntity
-import com.sebastianvm.musicplayer.repository.LibraryScanService
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -130,7 +129,7 @@ class MusicRepositoryImpl(
     // TODO makes this work for API 29
     @WorkerThread
     @RequiresApi(Build.VERSION_CODES.R)
-    override suspend fun getMusic(messageCallback: LibraryScanService.MessageCallback) {
+    override suspend fun getMusic() {
         withContext(ioDispatcher) {
             context.let {
                 val musicResolver = context.contentResolver
@@ -157,10 +156,12 @@ class MusicRepositoryImpl(
                     val trackNumber = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
                     val duration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
                     val albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
-                    val relativePathColumn =
-                        musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
-                    val fileNameColumn =
-                        musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
+                    //                    val relativePathColumn =
+                    //
+                    // musicCursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)
+                    //                    val fileNameColumn =
+                    //
+                    // musicCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)
                     val dataColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA)
                     // add songs to list
                     var count = 0
@@ -177,15 +178,17 @@ class MusicRepositoryImpl(
                         val thisTrackNumber = musicCursor.getLong(trackNumber)
                         val thisDuration = musicCursor.getLong(duration)
                         val albumId = musicCursor.getLong(albumIdColumn)
-                        val relativePath = musicCursor.getString(relativePathColumn)
-                        val fileName = musicCursor.getString(fileNameColumn)
+                        //                        val relativePath =
+                        // musicCursor.getString(relativePathColumn)
+                        //                        val fileName =
+                        // musicCursor.getString(fileNameColumn)
 
                         count++
-                        messageCallback.updateProgress(
-                            musicCursor.count,
-                            count,
-                            relativePath + fileName,
-                        )
+                        //                        messageCallback.updateProgress(
+                        //                            musicCursor.count,
+                        //                            count,
+                        //                            relativePath + fileName,
+                        //                        )
 
                         insertTrack(
                             thisId,
@@ -214,7 +217,6 @@ class MusicRepositoryImpl(
                     appearsOnForArtists = appearsOnForArtistSet,
                 )
             }
-            messageCallback.onFinished()
         }
     }
 }

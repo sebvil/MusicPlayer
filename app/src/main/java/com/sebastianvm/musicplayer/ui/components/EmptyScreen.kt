@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.ui.components
 
-import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,9 +14,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.repository.LibraryScanService
+import com.sebastianvm.musicplayer.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.util.resources.RString
 
 @Composable
@@ -48,10 +48,8 @@ fun StoragePermissionNeededEmptyScreen(@StringRes message: Int, modifier: Modifi
                 dialogTitle = RString.storage_permission_needed,
                 message = RString.grant_storage_permissions,
                 onGrantPermission = {
-                    ContextCompat.startForegroundService(
-                        context,
-                        Intent(context, LibraryScanService::class.java),
-                    )
+                    val syncRequest = OneTimeWorkRequestBuilder<LibrarySyncWorker>().build()
+                    WorkManager.getInstance(context).enqueue(syncRequest)
                 },
             ) { onClick ->
                 Button(onClick = onClick) {

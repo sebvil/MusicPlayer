@@ -18,8 +18,6 @@ data class QueueItem(val trackRow: TrackRow.State, val position: Int, val queueI
 sealed interface QueueState : State {
     data class Data(val nowPlayingItem: QueueItem, val queueItems: List<QueueItem>) : QueueState
 
-    data object Empty : QueueState
-
     data object Loading : QueueState
 }
 
@@ -40,7 +38,6 @@ class QueueStateHolder(
         queueRepository
             .getQueue()
             .map { queue ->
-                queue ?: return@map QueueState.Empty
                 QueueState.Data(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
                     nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),

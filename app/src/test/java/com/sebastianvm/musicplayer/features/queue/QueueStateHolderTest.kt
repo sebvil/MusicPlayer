@@ -29,7 +29,6 @@ class QueueStateHolderTest :
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe QueueState.Loading
-                awaitItem() shouldBe QueueState.Empty
 
                 queueRepositoryDep.queuedTracks.value = FixtureProvider.queueItemsFixtures()
                 queueRepositoryDep.nowPlayingInfo.value =
@@ -52,9 +51,6 @@ class QueueStateHolderTest :
                         queueItems =
                             queuedTracks.subList(2, queuedTracks.size).map { it.toQueueItem() },
                     )
-
-                queueRepositoryDep.nowPlayingInfo.value = NowPlayingInfo()
-                awaitItem() shouldBe QueueState.Empty
             }
         }
 

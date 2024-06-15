@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.model.NowPlayingInfo
 import kotlinx.coroutines.flow.Flow
 
 interface QueueRepository {
-    fun getQueue(): Flow<NextUpQueue?>
+    fun getQueue(): Flow<NextUpQueue>
 
     fun getFullQueue(): Flow<FullQueue?>
 

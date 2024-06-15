@@ -67,9 +67,6 @@ object QueueUiComponent :
 @Composable
 fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifier = Modifier) {
     when (state) {
-        is QueueState.Empty -> {
-            TODO()
-        }
         is QueueState.Data -> Queue(state, handle, modifier)
         is QueueState.Loading ->
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
