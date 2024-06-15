@@ -20,7 +20,7 @@ sealed interface QueueState : State {
     data class Data(
         val nowPlayingItem: QueueItem,
         val nowPlayingItemArtworkUri: String,
-        val queueItems: List<QueueItem>
+        val queueItems: List<QueueItem>,
     ) : QueueState
 
     data object Loading : QueueState
@@ -47,7 +47,7 @@ class QueueStateHolder(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
                     nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
                     nowPlayingItemArtworkUri =
-                        UriUtils.getAlbumUriString(queue.nowPlayingTrack.track.albumId)
+                        UriUtils.getAlbumUriString(queue.nowPlayingTrack.track.albumId),
                 )
             }
             .stateIn(

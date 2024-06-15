@@ -125,7 +125,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                             modifier = Modifier.size(56.dp),
                         )
                     },
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier.animateItem(),
                 )
             }
 

@@ -10,9 +10,9 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.time.Duration.Companion.seconds
 
 class PlayerStateHolderTest :
     FreeSpec({
@@ -54,7 +54,7 @@ class PlayerStateHolderTest :
                                     PlayerState.FloatingState(
                                         artworkUri =
                                             MediaArtImageState(
-                                                imageUri = playbackState.trackInfo.artworkUri,
+                                                imageUri = playbackState.trackInfo.artworkUri
                                             ),
                                         trackInfoState =
                                             TrackInfoState(

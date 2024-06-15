@@ -38,10 +38,7 @@ fun AlbumRow(
         supportingContent = state.artists?.let { artists -> { Text(text = artists) } },
         modifier = modifier,
         leadingContent = {
-            MediaArtImage(
-                artworkUri = state.artworkUri,
-                modifier = Modifier.size(56.dp),
-            )
+            MediaArtImage(artworkUri = state.artworkUri, modifier = Modifier.size(56.dp))
         },
         trailingContent = trailingContent,
     )
