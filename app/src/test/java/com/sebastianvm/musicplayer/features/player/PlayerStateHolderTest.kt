@@ -1,10 +1,7 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
@@ -55,11 +52,7 @@ class PlayerStateHolderTest :
                                 playbackManagerDep.getPlaybackStateValue.value = playbackState
                                 awaitItem() shouldBe
                                     PlayerState.FloatingState(
-                                        mediaArtImageState =
-                                            MediaArtImageState(
-                                                imageUri = playbackState.trackInfo.artworkUri,
-                                                backupImage = Icons.Album,
-                                            ),
+                                        artworkUri = playbackState.trackInfo.artworkUri,
                                         trackInfoState =
                                             TrackInfoState(
                                                 trackName = playbackState.trackInfo.title,

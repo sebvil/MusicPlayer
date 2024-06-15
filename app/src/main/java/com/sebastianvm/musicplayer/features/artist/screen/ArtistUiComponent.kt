@@ -149,7 +149,7 @@ fun LazyListScope.artistScreenSection(
                         ArtistUserAction.AlbumClicked(
                             albumId = album.id,
                             albumName = album.albumName,
-                            imageUri = album.mediaArtImageState.imageUri,
+                            imageUri = album.artworkUri,
                         )
                     )
                 },

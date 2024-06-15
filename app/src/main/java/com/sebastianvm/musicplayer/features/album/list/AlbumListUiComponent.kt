@@ -90,9 +90,9 @@ fun AlbumList(
                     Modifier.clickable {
                         handle(
                             AlbumListUserAction.AlbumClicked(
-                                item.id,
-                                item.albumName,
-                                item.mediaArtImageState.imageUri,
+                                albumId = item.id,
+                                albumName = item.albumName,
+                                imageUri = item.artworkUri,
                             )
                         )
                     },

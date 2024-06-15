@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,11 @@ import kotlinx.coroutines.flow.stateIn
 data class QueueItem(val trackRow: TrackRow.State, val position: Int, val queueItemId: Long)
 
 sealed interface QueueState : State {
-    data class Data(val nowPlayingItem: QueueItem, val queueItems: List<QueueItem>) : QueueState
+    data class Data(
+        val nowPlayingItem: QueueItem,
+        val nowPlayingItemArtworkUri: String,
+        val queueItems: List<QueueItem>,
+    ) : QueueState
 
     data object Loading : QueueState
 }
@@ -41,6 +46,8 @@ class QueueStateHolder(
                 QueueState.Data(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
                     nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
+                    nowPlayingItemArtworkUri =
+                        UriUtils.getAlbumUriString(queue.nowPlayingTrack.track.albumId),
                 )
             }
             .stateIn(

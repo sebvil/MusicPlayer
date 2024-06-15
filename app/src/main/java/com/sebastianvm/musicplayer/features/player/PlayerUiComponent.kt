@@ -11,7 +11,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,8 +30,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -66,12 +64,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
@@ -84,6 +84,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 import com.sebastianvm.musicplayer.util.resources.RString
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.Flow
 
 class PlayerUiComponent(
@@ -266,7 +267,7 @@ private fun FloatingPlayerCard(
                     },
                     leadingContent = {
                         MediaArtImage(
-                            mediaArtImageState = state.mediaArtImageState,
+                            artworkUri = state.artworkUri,
                             modifier =
                                 Modifier.size(48.dp)
                                     .sharedElement(
@@ -356,7 +357,7 @@ private fun FullScreenPlayer(
 
             val imageMaxSize = 350.dp
             MediaArtImage(
-                mediaArtImageState = state.mediaArtImageState,
+                artworkUri = state.artworkUri,
                 modifier =
                     Modifier.sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
                         .fillMaxWidth()
@@ -442,7 +443,7 @@ private fun FullScreenPlayer(
             }
 
             ProgressSlider(
-                progress = state.trackProgressState.progress.percent,
+                trackProgressState = state.trackProgressState,
                 onProgressBarValueChange = { position ->
                     handle(
                         PlayerUserAction.ProgressBarClicked(
@@ -452,18 +453,12 @@ private fun FullScreenPlayer(
                     )
                 },
                 modifier =
-                    Modifier.sharedElement(
-                        rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
+                    Modifier.fillMaxWidth()
+                        .sharedElement(
+                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(text = state.trackProgressState.currentPlaybackTime.toDisplayableString())
-                Text(text = state.trackProgressState.trackLength.toDisplayableString())
-            }
 
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -560,7 +555,7 @@ private fun PlayerWithQueue(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProgressSlider(
-    progress: Float,
+    trackProgressState: TrackProgressState,
     onProgressBarValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -579,6 +574,8 @@ private fun ProgressSlider(
             }
         }
     }
+
+    val progress = trackProgressState.progress.percent
     var manualSliderPosition by remember { mutableFloatStateOf(progress) }
     val sliderPosition by
         remember(progress, interactions) {
@@ -591,61 +588,73 @@ private fun ProgressSlider(
             }
         }
 
-    Slider(
-        value = sliderPosition,
-        onValueChange = { manualSliderPosition = it },
-        valueRange = 0f..1f,
-        onValueChangeFinished = {
-            onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
-        },
-        modifier = modifier,
-        colors = colors,
-        thumb = {
-            val size by
-                animateIntAsState(
-                    if (interactions.isNotEmpty()) {
-                        PROGRESS_BAR_THUMB_SIZE_LARGE
-                    } else {
-                        PROGRESS_BAR_THUMB_SIZE_SMALL
-                    },
-                    label = "size",
+    Column(modifier = modifier) {
+        Slider(
+            value = sliderPosition,
+            onValueChange = { manualSliderPosition = it },
+            valueRange = 0f..1f,
+            onValueChangeFinished = {
+                onProgressBarValueChange((manualSliderPosition * Percentage.MAX).toInt())
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = colors,
+            thumb = {
+                val size by
+                    animateDpAsState(
+                        if (interactions.isNotEmpty()) {
+                            PROGRESS_BAR_THUMB_SIZE_LARGE
+                        } else {
+                            PROGRESS_BAR_THUMB_SIZE_SMALL
+                        },
+                        label = "size",
+                    )
+                val offset = (-4 * size / 8 + 8.dp).coerceAtLeast(0.dp)
+
+                Icon(
+                    imageVector = Icons.Filled.Circle,
+                    contentDescription = null,
+                    modifier =
+                        Modifier.layout { measurable, _ ->
+                            val placeable =
+                                measurable.measure(
+                                    Constraints.fixed(
+                                        width = size.roundToPx(),
+                                        height = size.roundToPx(),
+                                    )
+                                )
+                            layout(placeable.width, placeable.height) {
+                                placeable.place(x = 0, y = offset.roundToPx())
+                            }
+                        },
+                    tint = colors.thumbColor,
                 )
-            val offset = (-4 * size / 8 + 8).coerceAtLeast(0).dp
+            },
+            track = {
+                LinearProgressIndicator(
+                    progress = { sliderPosition },
+                    gapSize = 0.dp,
+                    modifier = Modifier.fillMaxWidth(),
+                    drawStopIndicator = {},
+                )
+            },
+            interactionSource = interactionSource,
+        )
 
-            Icon(
-                imageVector = Icons.Filled.Circle,
-                contentDescription = null,
-                modifier =
-                    Modifier.size(size.dp).offset { IntOffset(x = 0, y = offset.roundToPx()) },
-                tint = colors.thumbColor,
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text =
+                    (sliderPosition * trackProgressState.trackLength.inWholeMilliseconds)
+                        .toLong()
+                        .milliseconds
+                        .toDisplayableString()
             )
-        },
-        track = {
-            SliderDefaults.Track(
-                sliderState = it,
-                modifier = Modifier.height(4.dp),
-                drawStopIndicator = null,
-                thumbTrackGapSize = 0.000000000.dp,
-            )
-        },
-        interactionSource = interactionSource,
-    )
-}
-
-private const val PROGRESS_BAR_THUMB_SIZE_LARGE = 16
-private const val PROGRESS_BAR_THUMB_SIZE_SMALL = 8
-
-@PreviewComponents
-@Composable
-private fun ProgressbarPreview() {
-    ThemedPreview {
-        Column {
-            ProgressSlider(progress = 0f, onProgressBarValueChange = {})
-            ProgressSlider(progress = 0.5f, onProgressBarValueChange = {})
-            ProgressSlider(progress = 1f, onProgressBarValueChange = {})
+            Text(text = trackProgressState.trackLength.toDisplayableString())
         }
     }
 }
+
+private val PROGRESS_BAR_THUMB_SIZE_LARGE = 16.dp
+private val PROGRESS_BAR_THUMB_SIZE_SMALL = 10.dp
 
 @PreviewComponents
 @Composable

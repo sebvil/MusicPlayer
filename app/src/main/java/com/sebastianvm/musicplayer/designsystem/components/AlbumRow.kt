@@ -4,18 +4,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
 import com.sebastianvm.musicplayer.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.ui.components.MediaArtImage
-import com.sebastianvm.musicplayer.ui.components.MediaArtImageState
 
 object AlbumRow {
     data class State(
         val id: Long,
         val albumName: String,
         val artists: String? = null,
-        val mediaArtImageState: MediaArtImageState,
+        val artworkUri: String,
     ) {
         companion object {
             fun fromAlbum(album: AlbumWithArtists): State {
@@ -23,8 +20,7 @@ object AlbumRow {
                     id = album.id,
                     albumName = album.title,
                     artists = album.artists.joinToString { it.name },
-                    mediaArtImageState =
-                        MediaArtImageState(imageUri = album.imageUri, backupImage = Icons.Album),
+                    artworkUri = album.imageUri,
                 )
             }
         }
@@ -42,10 +38,7 @@ fun AlbumRow(
         supportingContent = state.artists?.let { artists -> { Text(text = artists) } },
         modifier = modifier,
         leadingContent = {
-            MediaArtImage(
-                mediaArtImageState = state.mediaArtImageState,
-                modifier = Modifier.size(56.dp),
-            )
+            MediaArtImage(artworkUri = state.artworkUri, modifier = Modifier.size(56.dp))
         },
         trailingContent = trailingContent,
     )

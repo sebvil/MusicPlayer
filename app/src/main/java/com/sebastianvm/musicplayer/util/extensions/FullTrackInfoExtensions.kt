@@ -22,12 +22,8 @@ fun Track.getMediaMetadata(): MediaMetadata {
         .apply {
             title = name
             artist = artists.joinToString { it.name }
-            uri = UriUtils.getAlbumUri(albumId = albumId)
-            extras =
-                Bundle().apply {
-                    //                    duration = trackDurationMs
-                    uniqueId = UUID.randomUUID().mostSignificantBits
-                }
+            artworkUri = UriUtils.getAlbumUri(albumId = albumId)
+            extras = Bundle().apply { uniqueId = UUID.randomUUID().mostSignificantBits }
             isPlayable = true
             setIsBrowsable(false)
         }

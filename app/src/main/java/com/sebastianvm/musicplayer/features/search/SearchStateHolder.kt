@@ -169,7 +169,7 @@ class SearchStateHolder(
                         onAlbumSearchResultClicked(
                             albumId = result.id,
                             albumName = result.state.albumName,
-                            imageUri = result.state.mediaArtImageState.imageUri,
+                            imageUri = result.state.artworkUri,
                         )
                     is SearchResult.Genre ->
                         onGenreSearchResultClicked(result.id, result.state.genreName)

@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.util.uri.UriUtils
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -40,6 +41,8 @@ class QueueStateHolderTest :
                         nowPlayingItem = queuedTracks.first().toQueueItem(),
                         queueItems =
                             queuedTracks.subList(1, queuedTracks.size).map { it.toQueueItem() },
+                        nowPlayingItemArtworkUri =
+                            UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
                     )
 
                 queueRepositoryDep.nowPlayingInfo.value =
@@ -50,6 +53,8 @@ class QueueStateHolderTest :
                         nowPlayingItem = queuedTracks[1].toQueueItem(),
                         queueItems =
                             queuedTracks.subList(2, queuedTracks.size).map { it.toQueueItem() },
+                        nowPlayingItemArtworkUri =
+                            UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
                     )
             }
         }
@@ -87,6 +92,8 @@ class QueueStateHolderTest :
                                     queuedTracks.subList(1, queuedTracks.size).map {
                                         it.toQueueItem()
                                     },
+                                nowPlayingItemArtworkUri =
+                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
                             )
 
                         subject.handle(QueueUserAction.TrackClicked(trackIndex = 1))
@@ -97,6 +104,8 @@ class QueueStateHolderTest :
                                     queuedTracks.subList(2, queuedTracks.size).map {
                                         it.toQueueItem()
                                     },
+                                nowPlayingItemArtworkUri =
+                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
                             )
                     }
                 }
@@ -114,6 +123,8 @@ class QueueStateHolderTest :
                                     queuedTracks.subList(3, queuedTracks.size).map {
                                         it.toQueueItem().copy(position = it.queuePosition - 2)
                                     },
+                                nowPlayingItemArtworkUri =
+                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
                             )
                     }
                 }

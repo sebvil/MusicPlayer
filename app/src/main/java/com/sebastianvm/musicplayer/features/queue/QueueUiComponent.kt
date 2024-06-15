@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -44,6 +45,7 @@ import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.util.resources.RString
@@ -115,7 +117,16 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                 )
             }
             item(key = state.nowPlayingItem.queueItemId) {
-                TrackRow(state = state.nowPlayingItem.trackRow)
+                TrackRow(
+                    state = state.nowPlayingItem.trackRow,
+                    leadingContent = {
+                        MediaArtImage(
+                            artworkUri = state.nowPlayingItemArtworkUri,
+                            modifier = Modifier.size(56.dp),
+                        )
+                    },
+                    modifier = Modifier.animateItem(),
+                )
             }
 
             item {
