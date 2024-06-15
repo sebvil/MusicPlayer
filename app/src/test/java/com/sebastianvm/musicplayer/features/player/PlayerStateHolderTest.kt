@@ -52,10 +52,7 @@ class PlayerStateHolderTest :
                                 playbackManagerDep.getPlaybackStateValue.value = playbackState
                                 awaitItem() shouldBe
                                     PlayerState.FloatingState(
-                                        artworkUri =
-                                            MediaArtImageState(
-                                                imageUri = playbackState.trackInfo.artworkUri
-                                            ),
+                                        artworkUri = playbackState.trackInfo.artworkUri,
                                         trackInfoState =
                                             TrackInfoState(
                                                 trackName = playbackState.trackInfo.title,
