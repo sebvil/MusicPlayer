@@ -2,7 +2,11 @@ package com.sebastianvm.musicplayer.features.track.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -18,14 +22,6 @@ import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.util.resources.RString
 
-object Header {
-    sealed interface State {
-        data object None : State
-
-        data class Simple(val title: String) : State
-    }
-}
-
 @Composable
 fun TopBar(
     title: String,
@@ -40,7 +36,8 @@ fun TopBar(
                 .fillMaxWidth()
                 .zIndex(1f)
                 .background(MaterialTheme.colorScheme.background.copy(alpha = alpha))
-                .onSizeChanged { onSizeChange(it.height) },
+                .onSizeChanged { onSizeChange(it.height) }
+                .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onBackButtonClick) {

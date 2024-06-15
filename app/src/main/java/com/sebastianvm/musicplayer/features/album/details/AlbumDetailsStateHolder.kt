@@ -20,20 +20,29 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class AlbumDetailsArguments(val albumId: Long, val albumName: String, val imageUri: String) :
-    Arguments
+data class AlbumDetailsArguments(
+    val albumId: Long,
+    val albumName: String,
+    val imageUri: String,
+    val artists: String?
+) : Arguments
 
 sealed interface AlbumDetailsState : State {
     val albumName: String
     val imageUri: String
+    val artists: String?
 
-    data class Loading(override val albumName: String, override val imageUri: String) :
-        AlbumDetailsState
+    data class Loading(
+        override val albumName: String,
+        override val imageUri: String,
+        override val artists: String?
+    ) : AlbumDetailsState
 
     data class Data(
         val tracks: List<TrackRow.State>,
         override val albumName: String,
         override val imageUri: String,
+        override val artists: String?,
     ) : AlbumDetailsState
 }
 
@@ -62,12 +71,17 @@ class AlbumDetailsStateHolder(
                     tracks = album.tracks.map { track -> TrackRow.State.fromTrack(track) },
                     albumName = album.title,
                     imageUri = album.imageUri,
+                    artists = album.artists.takeIf { it.isNotEmpty() }?.joinToString { it.name },
                 )
             }
             .stateIn(
                 stateHolderScope,
                 SharingStarted.Lazily,
-                AlbumDetailsState.Loading(albumName = args.albumName, imageUri = args.imageUri),
+                AlbumDetailsState.Loading(
+                    albumName = args.albumName,
+                    imageUri = args.imageUri,
+                    artists = args.artists
+                ),
             )
 
     override fun handle(action: AlbumDetailsUserAction) {

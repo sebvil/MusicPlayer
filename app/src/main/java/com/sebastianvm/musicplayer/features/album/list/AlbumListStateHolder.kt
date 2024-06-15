@@ -37,8 +37,7 @@ sealed interface AlbumListUserAction : UserAction {
 
     data object SortButtonClicked : AlbumListUserAction
 
-    data class AlbumClicked(val albumId: Long, val albumName: String, val imageUri: String) :
-        AlbumListUserAction
+    data class AlbumClicked(val albumItem: AlbumRow.State) : AlbumListUserAction
 }
 
 class AlbumListStateHolder(
@@ -96,9 +95,10 @@ class AlbumListStateHolder(
                     AlbumDetailsUiComponent(
                         arguments =
                             AlbumDetailsArguments(
-                                albumId = action.albumId,
-                                albumName = action.albumName,
-                                imageUri = action.imageUri,
+                                albumId = action.albumItem.id,
+                                albumName = action.albumItem.albumName,
+                                imageUri = action.albumItem.artworkUri,
+                                artists = action.albumItem.artists,
                             ),
                         navController = navController,
                     )

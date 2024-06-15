@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -88,11 +87,7 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
             LocalPaddingValues provides
                 PaddingValues(bottom = paddingValues.calculateBottomPadding())
         ) {
-            state.appNavigationHostUiComponent.Content(
-                modifier =
-                    Modifier.padding(top = paddingValues.calculateTopPadding())
-                        .consumeWindowInsets(WindowInsets.systemBars)
-            )
+            state.appNavigationHostUiComponent.Content(modifier = Modifier)
         }
     }
 }

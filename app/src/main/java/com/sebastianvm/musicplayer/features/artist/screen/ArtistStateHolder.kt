@@ -38,8 +38,7 @@ data class ArtistArguments(val artistId: Long) : Arguments
 sealed interface ArtistUserAction : UserAction {
     data class AlbumMoreIconClicked(val albumId: Long) : ArtistUserAction
 
-    data class AlbumClicked(val albumId: Long, val albumName: String, val imageUri: String) :
-        ArtistUserAction
+    data class AlbumClicked(val albumItem: AlbumRow.State) : ArtistUserAction
 
     data object BackClicked : ArtistUserAction
 }
@@ -101,9 +100,10 @@ class ArtistStateHolder(
                     AlbumDetailsUiComponent(
                         arguments =
                             AlbumDetailsArguments(
-                                albumId = action.albumId,
-                                action.albumName,
-                                action.imageUri,
+                                albumId = action.albumItem.id,
+                                albumName = action.albumItem.albumName,
+                                imageUri = action.albumItem.artworkUri,
+                                artists = action.albumItem.artists,
                             ),
                         navController = navController,
                     )
