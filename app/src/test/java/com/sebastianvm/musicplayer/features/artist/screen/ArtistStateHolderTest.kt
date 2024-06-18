@@ -101,9 +101,13 @@ class ArtistStateHolderTest :
                     val subject = getSubject()
                     subject.handle(
                         ArtistUserAction.AlbumClicked(
-                            albumId = ALBUM_ID,
-                            albumName = ALBUM_NAME,
-                            imageUri = IMAGE_URI,
+                            albumItem =
+                                AlbumRow.State(
+                                    id = ALBUM_ID,
+                                    albumName = ALBUM_NAME,
+                                    artworkUri = IMAGE_URI,
+                                    artists = ARTIST_NAME,
+                                )
                         )
                     )
 
@@ -116,6 +120,7 @@ class ArtistStateHolderTest :
                                             albumId = ALBUM_ID,
                                             albumName = ALBUM_NAME,
                                             imageUri = IMAGE_URI,
+                                            artists = ARTIST_NAME,
                                         ),
                                     navController = navControllerDep,
                                 ),
@@ -138,5 +143,6 @@ class ArtistStateHolderTest :
         private const val ARTIST_ID = 0L
         private const val ALBUM_NAME = "Album 1"
         private const val IMAGE_URI = "imageUri"
+        private const val ARTIST_NAME = "Artist 1"
     }
 }

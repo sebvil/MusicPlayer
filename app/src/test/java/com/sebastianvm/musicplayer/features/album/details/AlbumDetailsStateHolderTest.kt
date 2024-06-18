@@ -34,26 +34,20 @@ class AlbumDetailsStateHolderTest :
             album: Album = FixtureProvider.album(id = ALBUM_ID)
         ): AlbumDetailsStateHolder {
             albumRepositoryDep.albums.value = listOf(album)
+            val arguments =
+                AlbumDetailsArguments(
+                    albumId = album.id,
+                    albumName = album.title,
+                    imageUri = album.imageUri,
+                    artists = album.artists.joinToString { it.name },
+                )
             navControllerDep.push(
                 uiComponent =
-                    AlbumDetailsUiComponent(
-                        arguments =
-                            AlbumDetailsArguments(
-                                albumId = album.id,
-                                albumName = album.title,
-                                imageUri = album.imageUri,
-                            ),
-                        navController = navControllerDep,
-                    )
+                    AlbumDetailsUiComponent(arguments = arguments, navController = navControllerDep)
             )
             return AlbumDetailsStateHolder(
                 stateHolderScope = this,
-                args =
-                    AlbumDetailsArguments(
-                        albumId = album.id,
-                        albumName = album.title,
-                        imageUri = album.imageUri,
-                    ),
+                args = arguments,
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,
@@ -66,13 +60,18 @@ class AlbumDetailsStateHolderTest :
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe
-                    AlbumDetailsState.Loading(albumName = album.title, imageUri = album.imageUri)
+                    AlbumDetailsState.Loading(
+                        albumName = album.title,
+                        imageUri = album.imageUri,
+                        artists = album.artists.joinToString { it.name },
+                    )
 
                 awaitItem() shouldBe
                     AlbumDetailsState.Data(
                         albumName = album.title,
                         imageUri = album.imageUri,
                         tracks = album.tracks.map { TrackRow.State.fromTrack(it) },
+                        artists = album.artists.joinToString { it.name },
                     )
 
                 val updatedAlbum = FixtureProvider.album(id = album.id)
@@ -83,6 +82,7 @@ class AlbumDetailsStateHolderTest :
                         albumName = updatedAlbum.title,
                         imageUri = updatedAlbum.imageUri,
                         tracks = updatedAlbum.tracks.map { TrackRow.State.fromTrack(it) },
+                        artists = updatedAlbum.artists.joinToString { it.name },
                     )
             }
         }

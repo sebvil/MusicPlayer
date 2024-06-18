@@ -287,6 +287,7 @@ class SearchStateHolderTest :
                                                     albumId = album.id,
                                                     albumName = album.title,
                                                     imageUri = album.imageUri,
+                                                    artists = album.artists.joinToString { it.name },
                                                 ),
                                             navController = navControllerDep,
                                         ),

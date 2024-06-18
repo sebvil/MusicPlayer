@@ -131,13 +131,14 @@ class SearchStateHolder(
         navController.push(ArtistUiComponent(ArtistArguments(artistId), navController))
     }
 
-    private fun onAlbumSearchResultClicked(albumId: Long, albumName: String, imageUri: String) {
+    private fun onAlbumSearchResultClicked(albumItem: AlbumRow.State) {
         navController.push(
             AlbumDetailsUiComponent(
                 AlbumDetailsArguments(
-                    albumId = albumId,
-                    albumName = albumName,
-                    imageUri = imageUri,
+                    albumId = albumItem.id,
+                    albumName = albumItem.albumName,
+                    imageUri = albumItem.artworkUri,
+                    artists = albumItem.artists,
                 ),
                 navController,
             )
@@ -165,12 +166,7 @@ class SearchStateHolder(
                 when (val result = action.result) {
                     is SearchResult.Track -> onTrackSearchResultClicked(result.id)
                     is SearchResult.Artist -> onArtistSearchResultClicked(result.id)
-                    is SearchResult.Album ->
-                        onAlbumSearchResultClicked(
-                            albumId = result.id,
-                            albumName = result.state.albumName,
-                            imageUri = result.state.artworkUri,
-                        )
+                    is SearchResult.Album -> onAlbumSearchResultClicked(result.state)
                     is SearchResult.Genre ->
                         onGenreSearchResultClicked(result.id, result.state.genreName)
                     is SearchResult.Playlist ->

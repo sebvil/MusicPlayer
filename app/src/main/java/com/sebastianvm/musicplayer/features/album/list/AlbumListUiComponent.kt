@@ -86,16 +86,7 @@ fun AlbumList(
         items(state.albums, key = { item -> item.id }) { item ->
             AlbumRow(
                 state = item,
-                modifier =
-                    Modifier.clickable {
-                        handle(
-                            AlbumListUserAction.AlbumClicked(
-                                albumId = item.id,
-                                albumName = item.albumName,
-                                imageUri = item.artworkUri,
-                            )
-                        )
-                    },
+                modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
                         onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
