@@ -143,9 +143,13 @@ class AlbumListStateHolderTest :
                     val subject = getSubject()
                     subject.handle(
                         AlbumListUserAction.AlbumClicked(
-                            albumId = ALBUM_ID,
-                            albumName = ALBUM_NAME,
-                            imageUri = IMAGE_URI,
+                            albumItem =
+                                AlbumRow.State(
+                                    id = ALBUM_ID,
+                                    albumName = ALBUM_NAME,
+                                    artists = ARTIST_NAME,
+                                    artworkUri = IMAGE_URI,
+                                )
                         )
                     )
 
@@ -158,6 +162,7 @@ class AlbumListStateHolderTest :
                                             albumId = ALBUM_ID,
                                             albumName = ALBUM_NAME,
                                             imageUri = IMAGE_URI,
+                                            artists = ARTIST_NAME,
                                         ),
                                     navController = navControllerDep,
                                 ),
@@ -170,5 +175,6 @@ class AlbumListStateHolderTest :
         private const val ALBUM_ID = 1L
         private const val ALBUM_NAME = "Album 1"
         private const val IMAGE_URI = "imageUri"
+        private const val ARTIST_NAME = "Artist 1"
     }
 }

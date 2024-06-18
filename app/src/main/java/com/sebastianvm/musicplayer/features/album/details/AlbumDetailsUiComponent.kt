@@ -154,7 +154,7 @@ fun AlbumDetails(
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
-                source: NestedScrollSource
+                source: NestedScrollSource,
             ): Offset {
                 if (!listState.canScrollForward) return Offset.Zero
                 return if (offset == 0f) {
@@ -263,7 +263,7 @@ fun AlbumDetails(
                                             (LocalPaddingValues.current.calculateBottomPadding() +
                                                     animatedOffset.value.toDp())
                                                 .coerceAtLeast(0.dp),
-                                        top = fullHeaderHeight.toDp()
+                                        top = fullHeaderHeight.toDp(),
                                     ),
                                 listState = listState,
                             )
@@ -335,7 +335,7 @@ private fun Modifier.stateSize(size: State<Float>) =
                         minWidth = sizeValue,
                         minHeight = sizeValue,
                         maxWidth = sizeValue,
-                        maxHeight = sizeValue
+                        maxHeight = sizeValue,
                     )
                 )
             layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }

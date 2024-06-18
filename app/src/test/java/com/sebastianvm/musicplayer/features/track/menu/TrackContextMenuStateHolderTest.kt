@@ -188,6 +188,7 @@ class TrackContextMenuStateHolderTest :
                                                 albumId = ALBUM_ID,
                                                 albumName = "",
                                                 imageUri = "",
+                                                artists = "",
                                             ),
                                         navController = navControllerDep,
                                     ),

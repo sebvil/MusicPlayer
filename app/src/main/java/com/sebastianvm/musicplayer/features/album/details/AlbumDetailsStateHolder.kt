@@ -24,7 +24,7 @@ data class AlbumDetailsArguments(
     val albumId: Long,
     val albumName: String,
     val imageUri: String,
-    val artists: String?
+    val artists: String?,
 ) : Arguments
 
 sealed interface AlbumDetailsState : State {
@@ -35,7 +35,7 @@ sealed interface AlbumDetailsState : State {
     data class Loading(
         override val albumName: String,
         override val imageUri: String,
-        override val artists: String?
+        override val artists: String?,
     ) : AlbumDetailsState
 
     data class Data(
@@ -80,7 +80,7 @@ class AlbumDetailsStateHolder(
                 AlbumDetailsState.Loading(
                     albumName = args.albumName,
                     imageUri = args.imageUri,
-                    artists = args.artists
+                    artists = args.artists,
                 ),
             )
 

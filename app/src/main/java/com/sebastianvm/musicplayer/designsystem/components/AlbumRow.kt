@@ -11,7 +11,7 @@ object AlbumRow {
     data class State(
         val id: Long,
         val albumName: String,
-        val artists: String? = null,
+        val artists: String?,
         val artworkUri: String,
     ) {
         companion object {
