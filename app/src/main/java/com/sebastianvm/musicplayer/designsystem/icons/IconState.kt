@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util.compose
+package com.sebastianvm.musicplayer.designsystem.icons
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable

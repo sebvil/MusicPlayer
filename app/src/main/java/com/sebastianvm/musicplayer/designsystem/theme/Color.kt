@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.theme
+package com.sebastianvm.musicplayer.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

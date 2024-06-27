@@ -4,7 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
+import com.sebastianvm.musicplayer.designsystem.theme.M3AppTheme
 
 object PreviewUtil {
     private val strings =

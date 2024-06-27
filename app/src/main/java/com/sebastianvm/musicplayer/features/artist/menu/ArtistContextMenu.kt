@@ -4,8 +4,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
+import com.sebastianvm.musicplayer.designsystem.icons.AppIcons
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
@@ -48,7 +47,7 @@ private fun ArtistContextMenu(
                     item {
                         MenuItem(
                             text = stringResource(id = RString.play_all_songs),
-                            icon = Icons.PlayArrow.icon(),
+                            icon = AppIcons.PlayArrow.icon(),
                             onItemClick = { handle(ArtistContextMenuUserAction.PlayArtistClicked) },
                         )
                     }

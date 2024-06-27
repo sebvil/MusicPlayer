@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.album.details
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import app.cash.molecule.RecompositionMode
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -9,15 +12,10 @@ import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
+import com.sebastianvm.musicplayer.ui.util.mvvm.BaseStateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class AlbumDetailsArguments(
@@ -58,31 +56,35 @@ sealed interface AlbumDetailsUserAction : UserAction {
 class AlbumDetailsStateHolder(
     private val args: AlbumDetailsArguments,
     private val navController: NavController,
-    override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    albumRepository: AlbumRepository,
+    private val albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-) : StateHolder<AlbumDetailsState, AlbumDetailsUserAction> {
+    stateHolderScope: CoroutineScope,
+    recompositionMode: RecompositionMode = RecompositionMode.ContextClock,
+) :
+    BaseStateHolder<AlbumDetailsState, AlbumDetailsUserAction>(
+        stateHolderScope = stateHolderScope,
+        recompositionMode = recompositionMode,
+    ) {
 
-    override val state: StateFlow<AlbumDetailsState> =
-        albumRepository
-            .getAlbum(args.albumId)
-            .map { album ->
-                AlbumDetailsState.Data(
-                    tracks = album.tracks.map { track -> TrackRow.State.fromTrack(track) },
-                    albumName = album.title,
-                    imageUri = album.imageUri,
-                    artists = album.artists.takeIf { it.isNotEmpty() }?.joinToString { it.name },
-                )
-            }
-            .stateIn(
-                stateHolderScope,
-                SharingStarted.Lazily,
-                AlbumDetailsState.Loading(
-                    albumName = args.albumName,
-                    imageUri = args.imageUri,
-                    artists = args.artists,
-                ),
+    @Composable
+    override fun presenter(): AlbumDetailsState {
+        val albumState = albumRepository.getAlbum(args.albumId).collectAsState(initial = null)
+        val album = albumState.value
+        return if (album == null) {
+            AlbumDetailsState.Loading(
+                albumName = args.albumName,
+                imageUri = args.imageUri,
+                artists = args.artists,
             )
+        } else {
+            AlbumDetailsState.Data(
+                tracks = album.tracks.map { track -> TrackRow.State.fromTrack(track) },
+                albumName = album.title,
+                imageUri = album.imageUri,
+                artists = album.artists.takeIf { it.isNotEmpty() }?.joinToString { it.name },
+            )
+        }
+    }
 
     override fun handle(action: AlbumDetailsUserAction) {
         when (action) {

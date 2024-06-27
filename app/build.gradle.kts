@@ -29,9 +29,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -52,6 +50,7 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             all { it.useJUnitPlatform() }
+            isReturnDefaultValues = true
         }
     }
 
@@ -114,6 +113,8 @@ dependencies {
     implementation(libs.kotlinx.collections.immutable)
 
     implementation(libs.kotlinx.coroutines.guava)
+
+    implementation(libs.molecule.runtime)
 
     // Testing
     testImplementation(libs.bundles.testing)
