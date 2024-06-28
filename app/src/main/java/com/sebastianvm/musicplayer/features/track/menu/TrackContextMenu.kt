@@ -6,11 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Artist
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.designsystem.icons.PlaylistRemove
-import com.sebastianvm.musicplayer.designsystem.icons.QueueAdd
+import com.sebastianvm.musicplayer.designsystem.icons.AppIcons
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -65,7 +61,7 @@ private fun TrackContextMenu(
                     item {
                         MenuItem(
                             text = stringResource(id = RString.add_to_queue),
-                            icon = Icons.QueueAdd.icon(),
+                            icon = AppIcons.QueueAdd.icon(),
                             onItemClick = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
                                 Toast.makeText(
@@ -81,7 +77,7 @@ private fun TrackContextMenu(
                     item {
                         MenuItem(
                             text = stringResource(id = RString.add_to_playlist),
-                            icon = Icons.QueueAdd.icon(),
+                            icon = AppIcons.QueueAdd.icon(),
                             onItemClick = { TODO() },
                         )
                     }
@@ -91,7 +87,7 @@ private fun TrackContextMenu(
                             item {
                                 MenuItem(
                                     text = stringResource(id = RString.view_artists),
-                                    icon = Icons.Artist.icon(),
+                                    icon = AppIcons.Artist.icon(),
                                     onItemClick = {
                                         handle(TrackContextMenuUserAction.ViewArtistsClicked)
                                     },
@@ -103,7 +99,7 @@ private fun TrackContextMenu(
                             item {
                                 MenuItem(
                                     text = stringResource(id = RString.view_artist),
-                                    icon = Icons.Artist.icon(),
+                                    icon = AppIcons.Artist.icon(),
                                     onItemClick = {
                                         handle(
                                             TrackContextMenuUserAction.ViewArtistClicked(
@@ -120,7 +116,7 @@ private fun TrackContextMenu(
                         item {
                             MenuItem(
                                 text = stringResource(id = RString.view_album),
-                                icon = Icons.Album.icon(),
+                                icon = AppIcons.Album.icon(),
                                 onItemClick = {
                                     handle(TrackContextMenuUserAction.ViewAlbumClicked(it.albumId))
                                 },
@@ -132,7 +128,7 @@ private fun TrackContextMenu(
                         item {
                             MenuItem(
                                 text = stringResource(id = RString.remove_from_playlist),
-                                icon = Icons.PlaylistRemove.icon(),
+                                icon = AppIcons.PlaylistRemove.icon(),
                                 onItemClick = {
                                     handle(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(

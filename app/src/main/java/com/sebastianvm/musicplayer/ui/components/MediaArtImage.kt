@@ -16,8 +16,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import com.sebastianvm.musicplayer.designsystem.icons.Album
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
+import com.sebastianvm.musicplayer.designsystem.icons.AppIcons
 import com.sebastianvm.musicplayer.ui.util.compose.painter
 
 @Composable
@@ -47,8 +46,8 @@ fun MediaArtImage(
 
     AsyncImage(
         model = artworkUri,
-        placeholder = Icons.Album.painter(),
-        error = Icons.Album.painter(),
+        placeholder = AppIcons.Album.painter(),
+        error = AppIcons.Album.painter(),
         contentDescription = null,
         contentScale = contentScale,
         alignment = alignment,

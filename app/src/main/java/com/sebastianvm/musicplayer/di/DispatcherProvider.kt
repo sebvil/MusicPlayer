@@ -7,5 +7,4 @@ import kotlinx.coroutines.Dispatchers
 
 object DispatcherProvider {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-    val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 }
