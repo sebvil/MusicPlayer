@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
@@ -7,8 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.designsystem.components.ListItem
-import com.sebastianvm.musicplayer.designsystem.components.Text
 
 @Composable
 fun MenuItem(

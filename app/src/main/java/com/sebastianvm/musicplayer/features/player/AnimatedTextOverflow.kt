@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.components
+package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
@@ -62,8 +62,7 @@ fun AnimatedTextOverflow(
                                 durationMillis = width * 10,
                                 easing = LinearEasing,
                                 delayMillis = 2000,
-                            )
-                    ),
+                            )),
             )
         }
     }
