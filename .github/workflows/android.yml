@@ -19,6 +19,12 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run ktfmt check
@@ -37,6 +43,12 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run lint
@@ -55,6 +67,12 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run detekt on main sources
@@ -73,6 +91,12 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run detekt on test sources
@@ -91,6 +115,12 @@ jobs:
           java-version: '17'
           distribution: "temurin"
           cache: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Run tests
