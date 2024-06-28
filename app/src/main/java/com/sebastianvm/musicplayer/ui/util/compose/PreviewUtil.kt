@@ -64,13 +64,13 @@ internal fun ScreenPreview(screen: @Composable () -> Unit) {
 //
 // }
 
-@Preview(showSystemUi = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+//@Preview(showSystemUi = true)
+//@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 // @Preview(
 //    name = "Landscape",
 //    device = "spec:parent=pixel_6,orientation=landscape", showSystemUi = true
 // )
 // @Preview(device = "spec:width=1280dp,height=800dp,dpi=240")
-annotation class PreviewScreens
+//annotation class PreviewScreens
 
 @Preview @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES) annotation class PreviewComponents

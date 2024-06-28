@@ -95,3 +95,12 @@ jobs:
         run: chmod +x gradlew
       - name: Run tests
         run: ./gradlew test
+
+  qodana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2024.1
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}

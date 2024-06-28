@@ -4,9 +4,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.designsystem.icons.Artist
-import com.sebastianvm.musicplayer.designsystem.icons.Icons
-import com.sebastianvm.musicplayer.designsystem.icons.PlayArrow
+import com.sebastianvm.musicplayer.designsystem.icons.AppIcons
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -58,7 +56,7 @@ private fun AlbumContextMenu(
                     item {
                         MenuItem(
                             text = stringResource(id = RString.play_from_beginning),
-                            icon = Icons.PlayArrow.icon(),
+                            icon = AppIcons.PlayArrow.icon(),
                             onItemClick = { handle(AlbumContextMenuUserAction.PlayAlbumClicked) },
                         )
                     }
@@ -68,7 +66,7 @@ private fun AlbumContextMenu(
                             item {
                                 MenuItem(
                                     text = stringResource(id = RString.view_artists),
-                                    icon = Icons.Artist.icon(),
+                                    icon = AppIcons.Artist.icon(),
                                     onItemClick = {
                                         handle(AlbumContextMenuUserAction.ViewArtistsClicked)
                                     },
@@ -80,13 +78,11 @@ private fun AlbumContextMenu(
                             item {
                                 MenuItem(
                                     text = stringResource(id = RString.view_artist),
-                                    icon = Icons.Artist.icon(),
+                                    icon = AppIcons.Artist.icon(),
                                     onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }
