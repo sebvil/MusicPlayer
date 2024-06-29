@@ -126,7 +126,7 @@ detekt {
     // Turns on all the rules. `false` by default.
     allRules = false
     enableCompilerPlugin.set(true)
-    config.setFrom(file("../config/detekt/detekt.yml"))
+    config.setFrom(file("../config/detekt/detekt.yml"), file("../config/detekt/compose-detekt.yml"))
     autoCorrect = true
 }
 
