@@ -74,7 +74,7 @@ class PlaylistDetailsStateHolder(
                     sortButtonState =
                         sortPrefs.let {
                             SortButton.State(
-                                text = sortPrefs.sortOption.stringId,
+                                option = sortPrefs.sortOption,
                                 sortOrder = sortPrefs.sortOrder,
                             )
                         },
@@ -107,8 +107,8 @@ class PlaylistDetailsStateHolder(
                 navController.push(
                     SortMenuUiComponent(
                         arguments =
-                            SortMenuArguments(listType = SortableListType.Playlist(args.playlistId))
-                    ),
+                            SortMenuArguments(
+                                listType = SortableListType.Playlist(args.playlistId))),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -129,8 +129,7 @@ class PlaylistDetailsStateHolder(
                     TrackSearchUiComponent(
                         arguments = TrackSearchArguments(playlistId = args.playlistId),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

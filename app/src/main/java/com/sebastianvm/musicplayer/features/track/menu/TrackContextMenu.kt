@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class TrackContextMenu(
     override val arguments: TrackContextMenuArguments,
@@ -103,9 +103,7 @@ private fun TrackContextMenu(
                                     onItemClick = {
                                         handle(
                                             TrackContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }
@@ -134,8 +132,7 @@ private fun TrackContextMenu(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                                             it.playlistId,
                                             it.trackPositionInPlaylist,
-                                        )
-                                    )
+                                        ))
                                 },
                             )
                         }

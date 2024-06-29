@@ -60,11 +60,10 @@ class AlbumListStateHolder(
                             albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
                             sortButtonState =
                                 SortButton.State(
-                                    text = sortPrefs.sortOption.stringId,
+                                    option = sortPrefs.sortOption,
                                     sortOrder = sortPrefs.sortOrder,
                                 ),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -84,8 +83,7 @@ class AlbumListStateHolder(
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.Albums)
-                    ),
+                        arguments = SortMenuArguments(listType = SortableListType.Albums)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -101,8 +99,7 @@ class AlbumListStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

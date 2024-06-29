@@ -20,7 +20,7 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class AlbumListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -89,8 +89,7 @@ fun AlbumList(
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) })
                 },
             )
         }

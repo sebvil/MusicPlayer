@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import com.sebastianvm.model.MediaSortOrder
 import com.sebastianvm.model.Playlist
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -14,10 +15,9 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.resources.RString
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import com.sebastianvm.musicplayer.util.toBasicPlaylist
+import com.sebastianvm.resources.RString
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize

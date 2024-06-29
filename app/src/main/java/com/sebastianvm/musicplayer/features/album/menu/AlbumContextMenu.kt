@@ -11,7 +11,7 @@ import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class AlbumContextMenu(
     override val arguments: AlbumContextMenuArguments,
@@ -82,9 +82,7 @@ private fun AlbumContextMenu(
                                     onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }

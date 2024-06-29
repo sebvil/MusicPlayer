@@ -23,6 +23,7 @@ import android.util.Size
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.sebastianvm.resources.RDrawable
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -77,8 +78,8 @@ class ArtworkProvider : ContentProvider() {
         val nonNullContext = context ?: return null
         val backUpResource =
             when (uri.pathSegments[0]) {
-                TRACK_PATH -> R.drawable.ic_genre
-                ALBUM_PATH -> R.drawable.ic_album
+                TRACK_PATH -> RDrawable.ic_genre
+                ALBUM_PATH -> RDrawable.ic_album
                 else -> 0
             }
         val path = getUri(uri)

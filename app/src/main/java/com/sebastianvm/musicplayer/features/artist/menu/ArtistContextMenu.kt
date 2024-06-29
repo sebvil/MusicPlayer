@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class ArtistContextMenu(override val arguments: ArtistContextMenuArguments) :
     BaseUiComponent<

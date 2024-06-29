@@ -33,7 +33,7 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class ArtistUiComponent(
     override val arguments: ArtistArguments,
@@ -136,8 +136,7 @@ fun LazyListScope.artistScreenSection(
                     text = stringResource(id = state.title),
                     style = MaterialTheme.typography.headlineMedium,
                 )
-            }
-        )
+            })
     }
 
     items(items = state.albums, key = { it.id }) { album ->
@@ -146,8 +145,7 @@ fun LazyListScope.artistScreenSection(
             modifier = Modifier.clickable { handle(ArtistUserAction.AlbumClicked(album)) },
             trailingContent = {
                 OverflowIconButton(
-                    onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) }
-                )
+                    onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) })
             },
         )
     }

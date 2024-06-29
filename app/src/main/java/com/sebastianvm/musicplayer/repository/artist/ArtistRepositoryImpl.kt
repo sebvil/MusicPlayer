@@ -1,11 +1,13 @@
 package com.sebastianvm.musicplayer.repository.artist
 
+import com.sebastianvm.database.daos.ArtistDao
+import com.sebastianvm.database.entities.ArtistEntity
+import com.sebastianvm.database.entities.ArtistWithAlbums
 import com.sebastianvm.model.Artist
 import com.sebastianvm.model.BasicArtist
-import com.sebastianvm.musicplayer.database.daos.ArtistDao
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.album.asExternalModel
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +24,7 @@ class ArtistRepositoryImpl(
     override fun getArtists(): Flow<List<BasicArtist>> {
         return sortPreferencesRepository
             .getArtistListSortOrder()
-            .flatMapLatest { sortOrder -> artistDao.getArtists(sortOrder = sortOrder) }
+            .flatMapLatest { sortOrder -> artistDao.getArtists(sortOrder = sortOrder.name) }
             .map { artists -> artists.map { it.asExternalModel() } }
             .distinctUntilChanged()
     }
@@ -44,3 +46,14 @@ class ArtistRepositoryImpl(
             .distinctUntilChanged()
     }
 }
+
+fun ArtistWithAlbums.asExternalModel(): Artist {
+    return Artist(
+        id = artist.id,
+        name = artist.name,
+        albums = artistAlbums.map { it.asExternalModel() },
+        appearsOn = artistAppearsOn.map { it.asExternalModel() },
+    )
+}
+
+fun ArtistEntity.asExternalModel() = BasicArtist(id = id, name = name)

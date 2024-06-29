@@ -59,7 +59,7 @@ class TrackListStateHolder(
                     tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
                     sortButtonState =
                         SortButton.State(
-                            text = sortPrefs.sortOption.stringId,
+                            option = sortPrefs.sortOption,
                             sortOrder = sortPrefs.sortOrder,
                         ),
                 )
@@ -86,8 +86,7 @@ class TrackListStateHolder(
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)
-                    ),
+                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

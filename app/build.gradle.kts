@@ -52,8 +52,6 @@ android {
             all { it.useJUnitPlatform() }
         }
     }
-
-    ksp { arg("room.generateKotlin", "true") }
 }
 
 dependencies {
@@ -63,8 +61,6 @@ dependencies {
 
     // Room
     implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.androidx.room.compiler)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -119,6 +115,8 @@ dependencies {
     detektPlugins(libs.detekt.compose)
 
     implementation(projects.core.model)
+    implementation(projects.core.database)
+    implementation(projects.core.resources)
 }
 
 detekt {

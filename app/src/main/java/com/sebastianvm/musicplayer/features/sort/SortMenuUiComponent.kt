@@ -20,13 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.model.MediaSortOrder
 import com.sebastianvm.musicplayer.designsystem.components.ListItem
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.util.extensions.stringId
+import com.sebastianvm.resources.RString
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
@@ -57,7 +58,7 @@ fun SortMenu(
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth())
         LazyColumn {
-            items(state.sortOptions, key = { it }) { row ->
+            items(state.sortOptions, key = { it.name }) { row ->
                 val clickableModifier =
                     state.selectedSort?.let {
                         Modifier.clickable {
@@ -66,8 +67,7 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                )
-                            )
+                                ))
                         }
                     } ?: Modifier
 

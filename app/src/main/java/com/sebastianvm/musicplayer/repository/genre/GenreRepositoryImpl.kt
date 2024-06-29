@@ -1,10 +1,12 @@
 package com.sebastianvm.musicplayer.repository.genre
 
+import com.sebastianvm.database.daos.GenreDao
+import com.sebastianvm.database.entities.GenreEntity
+import com.sebastianvm.database.entities.GenreWithTracksEntity
 import com.sebastianvm.model.BasicGenre
 import com.sebastianvm.model.Genre
-import com.sebastianvm.musicplayer.database.daos.GenreDao
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.repository.track.asExternalModel
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +23,7 @@ class GenreRepositoryImpl(
     override fun getGenres(): Flow<List<BasicGenre>> {
         return sortPreferencesRepository
             .getGenreListSortOrder()
-            .flatMapLatest { sortOrder -> genreDao.getGenres(sortOrder = sortOrder) }
+            .flatMapLatest { sortOrder -> genreDao.getGenres(sortOrder = sortOrder.name) }
             .mapValues { it.asExternalModel() }
             .distinctUntilChanged()
     }
@@ -33,4 +35,12 @@ class GenreRepositoryImpl(
     override fun getGenreName(genreId: Long): Flow<String> {
         return genreDao.getGenreName(genreId = genreId).distinctUntilChanged()
     }
+}
+
+fun GenreEntity.asExternalModel(): BasicGenre {
+    return BasicGenre(id = id, name = name)
+}
+
+fun GenreWithTracksEntity.asExternalModel(): Genre {
+    return Genre(id = genre.id, name = genre.name, tracks = tracks.map { it.asExternalModel() })
 }

@@ -70,7 +70,7 @@ class GenreDetailsStateHolder(
                     tracks = genre.tracks.map { track -> TrackRow.State.fromTrack(track) },
                     sortButtonState =
                         SortButton.State(
-                            text = sortPrefs.sortOption.stringId,
+                            option = sortPrefs.sortOption,
                             sortOrder = sortPrefs.sortOrder,
                         ),
                     genreName = genre.name,
@@ -103,8 +103,7 @@ class GenreDetailsStateHolder(
                 navController.push(
                     SortMenuUiComponent(
                         arguments =
-                            SortMenuArguments(listType = SortableListType.Genre(args.genreId))
-                    ),
+                            SortMenuArguments(listType = SortableListType.Genre(args.genreId))),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

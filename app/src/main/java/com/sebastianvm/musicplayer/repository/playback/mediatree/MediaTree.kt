@@ -268,7 +268,7 @@ class MediaTree(
     //                context.contentResolver.loadThumbnail(uri, Size(500, 500), null)
     //            } catch (e: FileNotFoundException) {
     //                Log.i("000Image", "Image loading not found")
-    //                val d = ContextCompat.getDrawable(context, R.drawable.ic_album)
+    //                val d = ContextCompat.getDrawable(context, RDrawable.ic_album)
     //                Log.i("000Image", "Image loading drawable done")
     //
     //                val bitmap = (d as VectorDrawable).toBitmap()

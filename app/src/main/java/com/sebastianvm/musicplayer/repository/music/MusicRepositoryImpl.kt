@@ -5,14 +5,14 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import com.sebastianvm.musicplayer.database.entities.AlbumEntity
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
-import com.sebastianvm.musicplayer.database.entities.ArtistEntity
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.GenreEntity
-import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.TrackEntity
+import com.sebastianvm.database.entities.AlbumEntity
+import com.sebastianvm.database.entities.AlbumsForArtist
+import com.sebastianvm.database.entities.AppearsOnForArtist
+import com.sebastianvm.database.entities.ArtistEntity
+import com.sebastianvm.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.database.entities.GenreEntity
+import com.sebastianvm.database.entities.GenreTrackCrossRef
+import com.sebastianvm.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -103,12 +103,10 @@ class MusicRepositoryImpl(
                         artistName = artist.name,
                         albumName = albumName,
                         year = year,
-                    )
-                )
+                    ))
             } else {
                 appearsOnForArtists.add(
-                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year)
-                )
+                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year))
             }
         }
 

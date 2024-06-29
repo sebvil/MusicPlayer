@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":core:model")
+include(":core:resources")
+
 
 pluginManagement {
     repositories {
@@ -23,3 +24,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "musicplayer"
 
 include(":app")
+
+include(":core:database")
+
+include(":core:model")

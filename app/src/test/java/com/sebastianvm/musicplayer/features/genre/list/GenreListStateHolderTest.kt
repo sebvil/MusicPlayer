@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
+import com.sebastianvm.model.MediaSortOrder
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
@@ -16,9 +17,8 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
-import com.sebastianvm.musicplayer.util.resources.RString
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.resources.RString
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe

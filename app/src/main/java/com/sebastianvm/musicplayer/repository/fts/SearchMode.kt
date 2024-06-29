@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.repository.fts
 
 import androidx.annotation.StringRes
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 enum class SearchMode(@StringRes val res: Int) {
     TRACKS(RString.songs),

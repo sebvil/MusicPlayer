@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import com.sebastianvm.model.MediaSortOrder
+import com.sebastianvm.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -17,9 +19,7 @@ import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -52,7 +52,7 @@ class TrackListStateHolderTest :
         }
 
         fun updateSortPreferences(
-            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>
+            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOption>
         ) {
             sortPreferencesRepositoryDep.allTracksSortPreferences.value = sortPreferences
         }
@@ -79,7 +79,7 @@ class TrackListStateHolderTest :
                     sortPreferences ->
                     val initialSortPreferences =
                         MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOptions.TRACK,
+                            sortOption = SortOptions.TrackListSortOption.TRACK,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                     val tracks = FixtureProvider.tracks()
@@ -94,7 +94,7 @@ class TrackListStateHolderTest :
 
                         awaitItemAs<TrackListState.Data>().sortButtonState shouldBe
                             SortButton.State(
-                                text = initialSortPreferences.sortOption.stringId,
+                                option = initialSortPreferences.sortOption,
                                 sortOrder = initialSortPreferences.sortOrder,
                             )
 
@@ -104,7 +104,7 @@ class TrackListStateHolderTest :
                         } else {
                             awaitItemAs<TrackListState.Data>().sortButtonState shouldBe
                                 SortButton.State(
-                                    text = sortPreferences.sortOption.stringId,
+                                    option = sortPreferences.sortOption,
                                     sortOrder = sortPreferences.sortOrder,
                                 )
                         }
@@ -122,8 +122,7 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks)
-                                ),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -137,8 +136,7 @@ class TrackListStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.AllTracks,
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {

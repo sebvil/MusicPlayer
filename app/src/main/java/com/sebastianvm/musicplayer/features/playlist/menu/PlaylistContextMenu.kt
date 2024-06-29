@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,
@@ -96,17 +96,17 @@ fun DeletePlaylistConfirmationDialog(
         onDismissRequest = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) },
         confirmButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
-            ) {
-                Text(text = stringResource(RString.delete))
-            }
+                onClick = {
+                    handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
+                }) {
+                    Text(text = stringResource(RString.delete))
+                }
         },
         dismissButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
-            ) {
-                Text(text = stringResource(RString.cancel))
-            }
+                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }) {
+                    Text(text = stringResource(RString.cancel))
+                }
         },
         title = { Text(text = stringResource(id = RString.delete_this_playlist, playlistName)) },
         text = { Text(text = stringResource(id = RString.sure_you_want_to_delete, playlistName)) },

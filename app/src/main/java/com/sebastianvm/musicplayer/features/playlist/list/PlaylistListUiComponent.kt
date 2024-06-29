@@ -32,7 +32,7 @@ import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 
 data class PlaylistListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -87,8 +87,7 @@ fun PlaylistList(
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) }
-        )
+            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) })
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -108,11 +107,10 @@ fun PlaylistList(
                         Button(
                             onClick = {
                                 handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked)
+                            }) {
+                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                                Text(text = stringResource(id = RString.create_playlist))
                             }
-                        ) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            Text(text = stringResource(id = RString.create_playlist))
-                        }
                     },
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 )
@@ -164,15 +162,13 @@ fun PlaylistListLayout(
                                 PlaylistListUserAction.PlaylistClicked(
                                     playlistId = item.id,
                                     playlistName = item.playlistName,
-                                )
-                            )
+                                ))
                         },
                     trailingContent = {
                         OverflowIconButton(
                             onClick = {
                                 handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-                            }
-                        )
+                            })
                     },
                 )
             }

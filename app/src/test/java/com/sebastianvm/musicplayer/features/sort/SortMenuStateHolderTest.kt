@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import com.sebastianvm.model.MediaSortOrder
+import com.sebastianvm.model.SortOptions
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -30,34 +30,34 @@ class SortMenuStateHolderTest :
                 "for all tracks" {
                     sortPreferencesRepositoryDep.allTracksSortPreferences.value =
                         MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOptions.TRACK,
+                            sortOption = SortOptions.TrackListSortOption.TRACK,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                     val subject = getSubject(listType = SortableListType.AllTracks)
                     testStateHolderState(subject) {
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
                                 selectedSort = null,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
-                                selectedSort = SortOptions.TrackListSortOptions.TRACK,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
+                                selectedSort = SortOptions.TrackListSortOption.TRACK,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
 
                         sortPreferencesRepositoryDep.allTracksSortPreferences.value =
                             MediaSortPreferences(
-                                sortOption = SortOptions.TrackListSortOptions.ARTIST,
+                                sortOption = SortOptions.TrackListSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
 
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
-                                selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
+                                selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
                     }
@@ -68,23 +68,22 @@ class SortMenuStateHolderTest :
                         mapOf(
                             GENRE_ID to
                                 MediaSortPreferences(
-                                    sortOption = SortOptions.TrackListSortOptions.TRACK,
+                                    sortOption = SortOptions.TrackListSortOption.TRACK,
                                     sortOrder = MediaSortOrder.ASCENDING,
-                                )
-                        )
+                                ))
 
                     val subject = getSubject(listType = SortableListType.Genre(GENRE_ID))
                     testStateHolderState(subject) {
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
                                 selectedSort = null,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
-                                selectedSort = SortOptions.TrackListSortOptions.TRACK,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
+                                selectedSort = SortOptions.TrackListSortOption.TRACK,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
 
@@ -92,15 +91,14 @@ class SortMenuStateHolderTest :
                             mapOf(
                                 GENRE_ID to
                                     MediaSortPreferences(
-                                        sortOption = SortOptions.TrackListSortOptions.ARTIST,
+                                        sortOption = SortOptions.TrackListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.DESCENDING,
-                                    )
-                            )
+                                    ))
 
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.TrackListSortOptions.entries,
-                                selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                sortOptions = SortOptions.TrackListSortOption.entries,
+                                selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
                     }
@@ -111,23 +109,22 @@ class SortMenuStateHolderTest :
                         mapOf(
                             PLAYLIST_ID to
                                 MediaSortPreferences(
-                                    sortOption = SortOptions.PlaylistSortOptions.TRACK,
+                                    sortOption = SortOptions.PlaylistSortOption.TRACK,
                                     sortOrder = MediaSortOrder.ASCENDING,
-                                )
-                        )
+                                ))
 
                     val subject = getSubject(listType = SortableListType.Playlist(PLAYLIST_ID))
                     testStateHolderState(subject) {
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.PlaylistSortOptions.entries,
+                                sortOptions = SortOptions.PlaylistSortOption.entries,
                                 selectedSort = null,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.PlaylistSortOptions.entries,
-                                selectedSort = SortOptions.PlaylistSortOptions.TRACK,
+                                sortOptions = SortOptions.PlaylistSortOption.entries,
+                                selectedSort = SortOptions.PlaylistSortOption.TRACK,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
 
@@ -135,15 +132,14 @@ class SortMenuStateHolderTest :
                             mapOf(
                                 PLAYLIST_ID to
                                     MediaSortPreferences(
-                                        sortOption = SortOptions.PlaylistSortOptions.ARTIST,
+                                        sortOption = SortOptions.PlaylistSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.DESCENDING,
-                                    )
-                            )
+                                    ))
 
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.PlaylistSortOptions.entries,
-                                selectedSort = SortOptions.PlaylistSortOptions.ARTIST,
+                                sortOptions = SortOptions.PlaylistSortOption.entries,
+                                selectedSort = SortOptions.PlaylistSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
                     }
@@ -152,7 +148,7 @@ class SortMenuStateHolderTest :
                 "for albums" {
                     sortPreferencesRepositoryDep.albumListSortPreferences.value =
                         MediaSortPreferences(
-                            sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                            sortOption = SortOptions.AlbumListSortOption.ALBUM,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
 
@@ -160,26 +156,26 @@ class SortMenuStateHolderTest :
                     testStateHolderState(subject) {
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.AlbumListSortOptions.entries,
+                                sortOptions = SortOptions.AlbumListSortOption.entries,
                                 selectedSort = null,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.AlbumListSortOptions.entries,
-                                selectedSort = SortOptions.AlbumListSortOptions.ALBUM,
+                                sortOptions = SortOptions.AlbumListSortOption.entries,
+                                selectedSort = SortOptions.AlbumListSortOption.ALBUM,
                                 sortOrder = MediaSortOrder.ASCENDING,
                             )
 
                         sortPreferencesRepositoryDep.albumListSortPreferences.value =
                             MediaSortPreferences(
-                                sortOption = SortOptions.AlbumListSortOptions.ARTIST,
+                                sortOption = SortOptions.AlbumListSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
                         awaitItem() shouldBe
                             SortMenuState(
-                                sortOptions = SortOptions.AlbumListSortOptions.entries,
-                                selectedSort = SortOptions.AlbumListSortOptions.ARTIST,
+                                sortOptions = SortOptions.AlbumListSortOption.entries,
+                                selectedSort = SortOptions.AlbumListSortOption.ARTIST,
                                 sortOrder = MediaSortOrder.DESCENDING,
                             )
                     }
@@ -196,28 +192,26 @@ class SortMenuStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.TrackListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.TrackListSortOptions.TRACK,
+                                        newSortOption = SortOptions.TrackListSortOption.ARTIST,
+                                        selectedSort = SortOptions.TrackListSortOption.TRACK,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.TrackListSortOptions.entries,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        sortOptions = SortOptions.TrackListSortOption.entries,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.ASCENDING,
                                     )
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.TrackListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        newSortOption = SortOptions.TrackListSortOption.ARTIST,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.TrackListSortOptions.entries,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        sortOptions = SortOptions.TrackListSortOption.entries,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.DESCENDING,
                                     )
                             }
@@ -229,28 +223,26 @@ class SortMenuStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.TrackListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.TrackListSortOptions.TRACK,
+                                        newSortOption = SortOptions.TrackListSortOption.ARTIST,
+                                        selectedSort = SortOptions.TrackListSortOption.TRACK,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.TrackListSortOptions.entries,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        sortOptions = SortOptions.TrackListSortOption.entries,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.ASCENDING,
                                     )
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.TrackListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        newSortOption = SortOptions.TrackListSortOption.ARTIST,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.TrackListSortOptions.entries,
-                                        selectedSort = SortOptions.TrackListSortOptions.ARTIST,
+                                        sortOptions = SortOptions.TrackListSortOption.entries,
+                                        selectedSort = SortOptions.TrackListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.DESCENDING,
                                     )
                             }
@@ -263,28 +255,26 @@ class SortMenuStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.PlaylistSortOptions.ARTIST,
-                                        selectedSort = SortOptions.PlaylistSortOptions.TRACK,
+                                        newSortOption = SortOptions.PlaylistSortOption.ARTIST,
+                                        selectedSort = SortOptions.PlaylistSortOption.TRACK,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.PlaylistSortOptions.entries,
-                                        selectedSort = SortOptions.PlaylistSortOptions.ARTIST,
+                                        sortOptions = SortOptions.PlaylistSortOption.entries,
+                                        selectedSort = SortOptions.PlaylistSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.ASCENDING,
                                     )
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.PlaylistSortOptions.ARTIST,
-                                        selectedSort = SortOptions.PlaylistSortOptions.ARTIST,
+                                        newSortOption = SortOptions.PlaylistSortOption.ARTIST,
+                                        selectedSort = SortOptions.PlaylistSortOption.ARTIST,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.PlaylistSortOptions.entries,
-                                        selectedSort = SortOptions.PlaylistSortOptions.ARTIST,
+                                        sortOptions = SortOptions.PlaylistSortOption.entries,
+                                        selectedSort = SortOptions.PlaylistSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.DESCENDING,
                                     )
                             }
@@ -296,24 +286,22 @@ class SortMenuStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.AlbumListSortOptions.ALBUM,
+                                        newSortOption = SortOptions.AlbumListSortOption.ARTIST,
+                                        selectedSort = SortOptions.AlbumListSortOption.ALBUM,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                                 awaitItem() shouldBe
                                     SortMenuState(
-                                        sortOptions = SortOptions.AlbumListSortOptions.entries,
-                                        selectedSort = SortOptions.AlbumListSortOptions.ARTIST,
+                                        sortOptions = SortOptions.AlbumListSortOption.entries,
+                                        selectedSort = SortOptions.AlbumListSortOption.ARTIST,
                                         sortOrder = MediaSortOrder.ASCENDING,
                                     )
                                 subject.handle(
                                     SortMenuUserAction.MediaSortOptionClicked(
-                                        newSortOption = SortOptions.AlbumListSortOptions.ARTIST,
-                                        selectedSort = SortOptions.AlbumListSortOptions.ARTIST,
+                                        newSortOption = SortOptions.AlbumListSortOption.ARTIST,
+                                        selectedSort = SortOptions.AlbumListSortOption.ARTIST,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    )
-                                )
+                                    ))
                             }
                         }
                     }

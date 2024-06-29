@@ -57,7 +57,7 @@ import com.sebastianvm.musicplayer.ui.components.Permission
 import com.sebastianvm.musicplayer.ui.components.PermissionHandler
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.util.resources.RString
+import com.sebastianvm.resources.RString
 import kotlinx.collections.immutable.toImmutableList
 
 data class SearchUiComponent(val navController: NavController) :
@@ -122,13 +122,12 @@ fun SearchScreen(
                                 isSearchActive = false
                                 query = ""
                                 handle(SearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     } else {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
@@ -137,13 +136,12 @@ fun SearchScreen(
                     if (!isSearchActive) {
                         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                             IconButton(
-                                onClick = { isDropdownManuExpanded = !isDropdownManuExpanded }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
-                                )
-                            }
+                                onClick = { isDropdownManuExpanded = !isDropdownManuExpanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = stringResource(id = RString.more),
+                                    )
+                                }
                             DropdownMenu(
                                 expanded = isDropdownManuExpanded,
                                 onDismissRequest = { isDropdownManuExpanded = false },
@@ -176,13 +174,12 @@ fun SearchScreen(
                             onClick = {
                                 query = ""
                                 handle(SearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     }
                 },
             )

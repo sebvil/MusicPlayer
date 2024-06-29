@@ -1,18 +1,19 @@
 package com.sebastianvm.musicplayer.repository.queue
 
+import com.sebastianvm.database.daos.MediaQueueDao
+import com.sebastianvm.database.entities.QueueItemEntity
+import com.sebastianvm.database.entities.QueueItemWithTrack
 import com.sebastianvm.model.BasicQueuedTrack
 import com.sebastianvm.model.FullQueue
 import com.sebastianvm.model.NextUpQueue
 import com.sebastianvm.model.NowPlayingInfo
 import com.sebastianvm.model.QueuedTrack
 import com.sebastianvm.model.Track
-import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
-import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.datastore.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.repository.track.asExternalModel
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -108,5 +109,13 @@ fun NowPlayingInfo.asSavedPlaybackInfo(): SavedPlaybackInfo {
     return SavedPlaybackInfo(
         nowPlayingPositionInQueue = nowPlayingPositionInQueue,
         lastRecordedPosition = lastRecordedPosition,
+    )
+}
+
+fun QueueItemWithTrack.asExternalModel(): QueuedTrack {
+    return QueuedTrack(
+        track = track.asExternalModel(),
+        queuePosition = queueItem.queuePosition,
+        queueItemId = queueItem.queueItemId,
     )
 }

@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
 import com.sebastianvm.model.Genre
+import com.sebastianvm.model.MediaSortOrder
+import com.sebastianvm.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -18,9 +20,7 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -44,9 +44,9 @@ class GenreDetailsStateHolderTest :
 
         fun TestScope.getSubject(
             genre: Genre = FixtureProvider.genre(id = GENRE_ID, name = GENRE_NAME),
-            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> =
+            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOption> =
                 MediaSortPreferences(
-                    SortOptions.TrackListSortOptions.TRACK,
+                    SortOptions.TrackListSortOption.TRACK,
                     MediaSortOrder.ASCENDING,
                 ),
         ): GenreDetailsStateHolder {
@@ -97,7 +97,7 @@ class GenreDetailsStateHolderTest :
                     sortPreferences ->
                     val initialSortPreferences =
                         MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOptions.TRACK,
+                            sortOption = SortOptions.TrackListSortOption.TRACK,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
 
@@ -108,7 +108,7 @@ class GenreDetailsStateHolderTest :
 
                         awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
                             SortButton.State(
-                                text = initialSortPreferences.sortOption.stringId,
+                                option = initialSortPreferences.sortOption,
                                 sortOrder = initialSortPreferences.sortOrder,
                             )
 
@@ -119,7 +119,7 @@ class GenreDetailsStateHolderTest :
                         } else {
                             awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
                                 SortButton.State(
-                                    text = sortPreferences.sortOption.stringId,
+                                    option = sortPreferences.sortOption,
                                     sortOrder = sortPreferences.sortOrder,
                                 )
                         }
