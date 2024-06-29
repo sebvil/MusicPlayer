@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.musicplayer.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.detekt)
