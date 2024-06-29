@@ -12,6 +12,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             apply(plugin = "com.android.application")
             apply(plugin = "org.jetbrains.kotlin.android")
 
+            configureDetekt(includeCompose = true)
+
             extensions.configure<ApplicationExtension> {
                 configureAndroid(this)
                 defaultConfig {

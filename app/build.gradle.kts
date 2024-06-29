@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.musicplayer.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
     alias(libs.plugins.ktfmt)
@@ -100,22 +99,9 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
 
-    detektPlugins(libs.detekt.compose)
-
     implementation(projects.core.model)
     implementation(projects.core.database)
     implementation(projects.core.resources)
-}
-
-detekt {
-    // Applies the config files on top of detekt"s default config file. `false` by default.
-    buildUponDefaultConfig = true
-
-    // Turns on all the rules. `false` by default.
-    allRules = false
-    enableCompilerPlugin.set(true)
-    config.setFrom(file("../config/detekt/detekt.yml"), file("../config/detekt/compose-detekt.yml"))
-    autoCorrect = true
 }
 
 ktfmt {

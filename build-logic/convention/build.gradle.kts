@@ -1,6 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-plugins { `kotlin-dsl` }
+plugins {
+    `kotlin-dsl`
+    alias(libs.plugins.detekt)
+}
 
 group = "com.sebastianvm.musicplayer.buildlogic"
 
@@ -18,6 +21,7 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.room.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin)
 }
 
 tasks {
