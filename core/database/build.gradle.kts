@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.musicplayer.android.library)
     alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.ktfmt)
 }
 
 android {
@@ -17,10 +16,4 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.androidx.room.compiler)
-}
-
-ktfmt {
-    kotlinLangStyle()
-
-    manageTrailingCommas.set(true)
 }

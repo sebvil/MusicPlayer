@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     `kotlin-dsl`
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ktfmt)
 }
 
 group = "com.sebastianvm.musicplayer.buildlogic"
@@ -22,6 +23,7 @@ dependencies {
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.room.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
+    compileOnly(libs.ktfmt.gradlePlugin)
 }
 
 tasks {
@@ -51,4 +53,21 @@ gradlePlugin {
                 "com.sebastianvm.musicplayer.convention.JvmLibraryConventionPlugin"
         }
     }
+}
+
+detekt {
+    // Applies the config files on top of detekt"s default config file. `false` by default.
+    buildUponDefaultConfig = true
+
+    // Turns on all the rules. `false` by default.
+    allRules = false
+    enableCompilerPlugin.set(true)
+    config.setFrom(file("../config/detekt/detekt.yml"))
+    autoCorrect = true
+}
+
+ktfmt {
+    kotlinLangStyle()
+
+    manageTrailingCommas.set(true)
 }

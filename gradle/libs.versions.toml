@@ -70,6 +70,7 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+ktfmt-gradlePlugin = { group = "com.ncorti.ktfmt.gradle", name = "plugin", version.ref = "ktfmt" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

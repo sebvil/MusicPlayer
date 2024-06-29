@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
-    alias(libs.plugins.ktfmt)
 }
 
 android {
@@ -102,12 +101,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.database)
     implementation(projects.core.resources)
-}
-
-ktfmt {
-    kotlinLangStyle()
-
-    manageTrailingCommas.set(true)
 }
 
 kover {

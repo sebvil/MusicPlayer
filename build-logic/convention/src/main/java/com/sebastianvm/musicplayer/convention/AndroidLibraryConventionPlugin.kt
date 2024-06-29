@@ -13,6 +13,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             apply(plugin = "org.jetbrains.kotlin.android")
 
             configureDetekt()
+            configureKtfmt()
 
             extensions.configure<LibraryExtension> { configureAndroid(this) }
         }

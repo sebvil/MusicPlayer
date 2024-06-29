@@ -19,6 +19,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
 
             configureKotlin<KotlinJvmProjectExtension>()
             configureDetekt()
+            configureKtfmt()
         }
     }
 }

@@ -13,7 +13,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             apply(plugin = "org.jetbrains.kotlin.android")
 
             configureDetekt(includeCompose = true)
-
+            configureKtfmt()
             extensions.configure<ApplicationExtension> {
                 configureAndroid(this)
                 defaultConfig {
