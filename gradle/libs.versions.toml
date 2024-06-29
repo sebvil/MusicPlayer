@@ -25,11 +25,6 @@ turbine = "1.1.0"
 vectordrawable = "1.2.0"
 reorderable = "2.1.1"
 work-runtime-ktx = "2.9.0"
-junit = "4.13.2"
-junit-version = "1.1.5"
-espresso-core = "3.5.1"
-appcompat = "1.6.1"
-material = "1.10.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -65,11 +60,6 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 vectordrawable = { module = "androidx.vectordrawable:vectordrawable", version.ref = "vectordrawable" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
