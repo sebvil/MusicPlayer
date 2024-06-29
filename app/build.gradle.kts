@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.com.android.application)
+    alias(libs.plugins.musicplayer.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
@@ -11,13 +11,9 @@ plugins {
 
 android {
     namespace = "com.sebastianvm.musicplayer"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.sebastianvm.musicplayer"
-        minSdk = 25
-        targetSdk = 34
-        targetSdkPreview = "VanillaIceCream"
         versionCode = 1
         versionName = "1.0"
 
@@ -33,15 +29,8 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
+    kotlinOptions { freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn" }
 
     buildFeatures { compose = true }
 

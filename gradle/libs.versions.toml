@@ -82,6 +82,7 @@ com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" 
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
+musicplayer-android-application = { id = "musicplayer.android.application", version = "unspecified" }
 musicplayer-android-library = { id = "musicplayer.android.library", version = "unspecified" }
 musicplayer-jvm-library = { id = "musicplayer.jvm.library", version = "unspecified" }
 

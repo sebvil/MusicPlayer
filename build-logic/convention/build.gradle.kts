@@ -29,6 +29,12 @@ tasks {
 
 gradlePlugin {
     plugins {
+        register("androidApplication") {
+            id = "musicplayer.android.application"
+            implementationClass =
+                "com.sebastianvm.musicplayer.convention.AndroidApplicationConventionPlugin"
+        }
+
         register("androidLibrary") {
             id = "musicplayer.android.library"
             implementationClass =
