@@ -1,4 +1,4 @@
-package com.sebastianvm.resources
+package com.sebastianvm.musicplayer.core.resources
 
 typealias RString = R.string
 

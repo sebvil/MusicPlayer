@@ -23,7 +23,7 @@ import android.util.Size
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import com.sebastianvm.resources.RDrawable
+import com.sebastianvm.musicplayer.core.resources.RDrawable
 import java.io.FileOutputStream
 import java.io.IOException
 

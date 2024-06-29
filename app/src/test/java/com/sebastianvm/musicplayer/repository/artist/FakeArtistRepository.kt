@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.artist
 
-import com.sebastianvm.model.Artist
-import com.sebastianvm.model.BasicArtist
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.model.Artist
+import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.util.FixtureProvider

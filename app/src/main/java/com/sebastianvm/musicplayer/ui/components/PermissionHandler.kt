@@ -21,8 +21,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.resources.RString
 
 @OptIn(ExperimentalPermissionsApi::class)
 data class PermissionHandlerState(
@@ -90,10 +90,8 @@ fun PermissionHandler(
         }
     }
 
-    if (
-        permissionHandlerState.value.showPermissionDeniedDialog &&
-            permissionHandlerState.value.permissionState.status.shouldShowRationale
-    ) {
+    if (permissionHandlerState.value.showPermissionDeniedDialog &&
+        permissionHandlerState.value.permissionState.status.shouldShowRationale) {
         PermissionDialog(
             state = permissionHandlerState.value.permissionExplanationDialogState,
             onDismiss = { showPermissionDeniedDialog = false },

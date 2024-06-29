@@ -12,7 +12,8 @@ interface GenreDao {
     @Query(
         "SELECT * FROM GenreEntity ORDER BY " +
             "CASE WHEN :sortOrder='ASCENDING' THEN name END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN :sortOrder='DESCENDING' THEN name END COLLATE LOCALIZED DESC")
+            "CASE WHEN :sortOrder='DESCENDING' THEN name END COLLATE LOCALIZED DESC"
+    )
     fun getGenres(sortOrder: String): Flow<List<GenreEntity>>
 
     @Transaction

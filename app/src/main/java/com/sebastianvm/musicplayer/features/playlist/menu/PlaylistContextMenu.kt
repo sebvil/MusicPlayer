@@ -6,6 +6,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.icons.AppIcons
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -13,7 +14,6 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.ContextMenu
 import com.sebastianvm.musicplayer.ui.MenuItem
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.resources.RString
 
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,
@@ -96,17 +96,17 @@ fun DeletePlaylistConfirmationDialog(
         onDismissRequest = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) },
         confirmButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
-            ) {
-                Text(text = stringResource(RString.delete))
-            }
+                onClick = {
+                    handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
+                }) {
+                    Text(text = stringResource(RString.delete))
+                }
         },
         dismissButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
-            ) {
-                Text(text = stringResource(RString.cancel))
-            }
+                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }) {
+                    Text(text = stringResource(RString.cancel))
+                }
         },
         title = { Text(text = stringResource(id = RString.delete_this_playlist, playlistName)) },
         text = { Text(text = stringResource(id = RString.sure_you_want_to_delete, playlistName)) },

@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -37,7 +38,6 @@ import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.resources.RString
 
 data class TrackSearchUiComponent(
     override val arguments: TrackSearchArguments,
@@ -117,13 +117,12 @@ fun TrackSearch(
                             onClick = {
                                 query = ""
                                 handle(TrackSearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     }
                 },
                 onExpandedChange = {
@@ -148,28 +147,26 @@ fun TrackSearch(
                     WindowInsets.ime.asPaddingValues()
                 } else {
                     LocalPaddingValues.current
-                }
-        ) {
-            items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
-                TrackRow(
-                    state = item.state,
-                    modifier =
-                        Modifier.clickable(enabled = !item.inPlaylist) {
-                                handle(
-                                    TrackSearchUserAction.TrackClicked(
-                                        trackId = item.state.id,
-                                        trackName = item.state.trackName,
-                                    )
-                                )
+                }) {
+                items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
+                    TrackRow(
+                        state = item.state,
+                        modifier =
+                            Modifier.clickable(enabled = !item.inPlaylist) {
+                                    handle(
+                                        TrackSearchUserAction.TrackClicked(
+                                            trackId = item.state.id,
+                                            trackName = item.state.trackName,
+                                        ))
+                                }
+                                .animateItem(),
+                        trailingContent = {
+                            if (item.inPlaylist) {
+                                Icon(imageVector = Icons.Default.Check, contentDescription = null)
                             }
-                            .animateItem(),
-                    trailingContent = {
-                        if (item.inPlaylist) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
-        }
     }
 }

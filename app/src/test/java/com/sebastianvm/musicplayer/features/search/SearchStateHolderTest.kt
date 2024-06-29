@@ -1,11 +1,11 @@
 package com.sebastianvm.musicplayer.features.search
 
 import android.app.SearchManager.QUERY
-import com.sebastianvm.model.AlbumWithArtists
-import com.sebastianvm.model.BasicArtist
-import com.sebastianvm.model.BasicGenre
-import com.sebastianvm.model.BasicPlaylist
-import com.sebastianvm.model.Track
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.BasicGenre
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -110,8 +110,7 @@ class SearchStateHolderTest :
                                         searchResults = emptyList(),
                                     )
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ARTISTS)
-                                )
+                                    SearchUserAction.SearchModeChanged(SearchMode.ARTISTS))
                                 awaitItem() shouldBe
                                     SearchState(
                                         selectedOption = SearchMode.ARTISTS,
@@ -143,8 +142,7 @@ class SearchStateHolderTest :
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ALBUMS)
-                                )
+                                    SearchUserAction.SearchModeChanged(SearchMode.ALBUMS))
                                 awaitItem() shouldBe
                                     SearchState(
                                         selectedOption = SearchMode.ALBUMS,
@@ -176,8 +174,7 @@ class SearchStateHolderTest :
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.GENRES)
-                                )
+                                    SearchUserAction.SearchModeChanged(SearchMode.GENRES))
                                 awaitItem() shouldBe
                                     SearchState(
                                         selectedOption = SearchMode.GENRES,
@@ -210,8 +207,7 @@ class SearchStateHolderTest :
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.PLAYLISTS)
-                                )
+                                    SearchUserAction.SearchModeChanged(SearchMode.PLAYLISTS))
                                 awaitItem() shouldBe
                                     SearchState(
                                         selectedOption = SearchMode.PLAYLISTS,
@@ -225,8 +221,7 @@ class SearchStateHolderTest :
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Playlist(
-                                                    PlaylistRow.State.fromPlaylist(it)
-                                                )
+                                                    PlaylistRow.State.fromPlaylist(it))
                                             },
                                     )
                             }
@@ -239,17 +234,14 @@ class SearchStateHolderTest :
                             val track = FixtureProvider.track()
                             subject.handle(
                                 SearchUserAction.SearchResultClicked(
-                                    SearchResult.Track(TrackRow.State.fromTrack(track))
-                                )
-                            )
+                                    SearchResult.Track(TrackRow.State.fromTrack(track))))
                             advanceUntilIdle()
                             playbackManagerDep.playMediaInvocations shouldBe
                                 listOf(
                                     FakePlaybackManager.PlayMediaArguments(
                                         mediaGroup = MediaGroup.SingleTrack(track.id),
                                         initialTrackIndex = 0,
-                                    )
-                                )
+                                    ))
                         }
 
                         "for artist navigates to artist details" {
@@ -257,9 +249,7 @@ class SearchStateHolderTest :
                             val artist = FixtureProvider.artist()
                             subject.handle(
                                 SearchUserAction.SearchResultClicked(
-                                    SearchResult.Artist(ArtistRow.State.fromArtist(artist))
-                                )
-                            )
+                                    SearchResult.Artist(ArtistRow.State.fromArtist(artist))))
                             navControllerDep.backStack.last() shouldBe
                                 BackStackEntry(
                                     ArtistUiComponent(
@@ -275,9 +265,7 @@ class SearchStateHolderTest :
                             val album = FixtureProvider.album().toAlbumWithArtists()
                             subject.handle(
                                 SearchUserAction.SearchResultClicked(
-                                    SearchResult.Album(AlbumRow.State.fromAlbum(album))
-                                )
-                            )
+                                    SearchResult.Album(AlbumRow.State.fromAlbum(album))))
                             navControllerDep.backStack.last() shouldBe
                                 BackStackEntry(
                                     uiComponent =
@@ -287,7 +275,8 @@ class SearchStateHolderTest :
                                                     albumId = album.id,
                                                     albumName = album.title,
                                                     imageUri = album.imageUri,
-                                                    artists = album.artists.joinToString { it.name },
+                                                    artists =
+                                                        album.artists.joinToString { it.name },
                                                 ),
                                             navController = navControllerDep,
                                         ),
@@ -300,9 +289,7 @@ class SearchStateHolderTest :
                             val genre = FixtureProvider.genre()
                             subject.handle(
                                 SearchUserAction.SearchResultClicked(
-                                    SearchResult.Genre(GenreRow.State.fromGenre(genre))
-                                )
-                            )
+                                    SearchResult.Genre(GenreRow.State.fromGenre(genre))))
                             navControllerDep.backStack.last() shouldBe
                                 BackStackEntry(
                                     GenreDetailsUiComponent(
@@ -318,9 +305,8 @@ class SearchStateHolderTest :
                             val playlist = FixtureProvider.playlist().toBasicPlaylist()
                             subject.handle(
                                 SearchUserAction.SearchResultClicked(
-                                    SearchResult.Playlist(PlaylistRow.State.fromPlaylist(playlist))
-                                )
-                            )
+                                    SearchResult.Playlist(
+                                        PlaylistRow.State.fromPlaylist(playlist))))
 
                             navControllerDep.backStack.last() shouldBe
                                 BackStackEntry(

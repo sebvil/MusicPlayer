@@ -6,10 +6,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlaylistRemove
+import com.sebastianvm.musicplayer.core.resources.RDrawable
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
 import com.sebastianvm.musicplayer.ui.util.compose.ResourceIcon
 import com.sebastianvm.musicplayer.ui.util.compose.VectorIcon
-import com.sebastianvm.resources.RDrawable
 
 object AppIcons {
     val Album: IconState

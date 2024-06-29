@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sebastianvm.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 
 object PlaylistRow {
     data class State(val id: Long, val playlistName: String) {

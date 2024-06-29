@@ -12,10 +12,10 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.core.resources.RDrawable
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
-import com.sebastianvm.resources.RDrawable
-import com.sebastianvm.resources.RString
 
 class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {

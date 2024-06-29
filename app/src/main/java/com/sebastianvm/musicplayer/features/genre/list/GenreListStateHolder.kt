@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -19,7 +20,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import com.sebastianvm.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -57,8 +57,7 @@ class GenreListStateHolder(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
                             sortButtonState =
                                 SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -84,8 +83,7 @@ class GenreListStateHolder(
                                 genreName = action.genreName,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

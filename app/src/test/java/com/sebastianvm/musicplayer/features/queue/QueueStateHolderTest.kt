@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.queue
 
-import com.sebastianvm.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.awaitItemAs

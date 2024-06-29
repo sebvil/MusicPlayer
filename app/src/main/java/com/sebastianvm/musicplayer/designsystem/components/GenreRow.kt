@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.designsystem.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sebastianvm.model.BasicGenre
-import com.sebastianvm.model.Genre
+import com.sebastianvm.musicplayer.core.model.BasicGenre
+import com.sebastianvm.musicplayer.core.model.Genre
 
 object GenreRow {
     data class State(val id: Long, val genreName: String) {

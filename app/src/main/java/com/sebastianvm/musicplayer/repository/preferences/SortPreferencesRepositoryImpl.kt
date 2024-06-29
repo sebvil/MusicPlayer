@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import androidx.datastore.core.DataStore
-import com.sebastianvm.model.MediaSortOrder
-import com.sebastianvm.model.SortOptions
-import com.sebastianvm.model.not
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.not
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
@@ -33,8 +33,7 @@ class SortPreferencesRepositoryImpl(
                 genreTrackListSortPreferences =
                     oldPreferences.genreTrackListSortPreferences.mutate {
                         it[genreId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 
@@ -51,8 +50,7 @@ class SortPreferencesRepositoryImpl(
             }
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType for modifyTrackListSortPreferences"
-                )
+                    "Invalid trackListType for modifyTrackListSortPreferences")
         }
     }
 
@@ -96,8 +94,7 @@ class SortPreferencesRepositoryImpl(
             is MediaGroup.Playlist -> getPlaylistTrackListSortPreferences(trackList.playlistId)
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType $trackList for getTrackListSortPreferences"
-                )
+                    "Invalid trackListType $trackList for getTrackListSortPreferences")
         }
     }
 
@@ -157,8 +154,7 @@ class SortPreferencesRepositoryImpl(
                 playlistSortPreferences =
                     oldPreferences.playlistSortPreferences.mutate {
                         it[playlistId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 

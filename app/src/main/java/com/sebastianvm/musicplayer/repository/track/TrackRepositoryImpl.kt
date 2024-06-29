@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.repository.track
 
-import com.sebastianvm.model.BasicTrack
-import com.sebastianvm.model.Track
 import com.sebastianvm.musicplayer.core.database.daos.TrackDao
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
@@ -12,6 +10,8 @@ import com.sebastianvm.musicplayer.core.database.entities.DetailedTrack
 import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
+import com.sebastianvm.musicplayer.core.model.BasicTrack
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.asExternalModel
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository

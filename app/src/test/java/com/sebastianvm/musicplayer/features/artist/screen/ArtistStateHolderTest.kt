@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
@@ -11,7 +12,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.testStateHolderState
-import com.sebastianvm.resources.RString
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -107,9 +107,7 @@ class ArtistStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artworkUri = IMAGE_URI,
                                     artists = ARTIST_NAME,
-                                )
-                        )
-                    )
+                                )))
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
@@ -130,8 +128,7 @@ class ArtistStateHolderTest :
 
                 "BackClicked pops backstack" {
                     navControllerDep.push(
-                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep)
-                    )
+                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep))
                     val subject = getSubject()
                     subject.handle(ArtistUserAction.BackClicked)
                     navControllerDep.backStack.shouldBeEmpty()

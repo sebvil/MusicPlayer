@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -20,7 +21,6 @@ import com.sebastianvm.musicplayer.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
-import com.sebastianvm.resources.RString
 
 data class ArtistListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -86,8 +86,7 @@ fun ArtistList(
                     Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) })
                 },
             )
         }

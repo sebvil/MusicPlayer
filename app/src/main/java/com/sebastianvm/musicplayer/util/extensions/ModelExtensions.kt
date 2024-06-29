@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.util.extensions
 
 import androidx.annotation.StringRes
-import com.sebastianvm.model.SortOptions
-import com.sebastianvm.resources.RString
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.resources.RString
 
 @get:StringRes
 val SortOptions.stringId: Int

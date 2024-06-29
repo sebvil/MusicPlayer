@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.sort
 
-import com.sebastianvm.model.MediaSortOrder
-import com.sebastianvm.model.SortOptions
-import com.sebastianvm.model.not
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.not
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -29,21 +29,18 @@ class SortMenuStateHolder(
         when (val listType = arguments.listType) {
             is SortableListType.AllTracks -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.AllTracks
-                )
+                    trackList = MediaGroup.AllTracks)
             }
             is SortableListType.Genre -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.Genre(listType.genreId)
-                )
+                    trackList = MediaGroup.Genre(listType.genreId))
             }
             is SortableListType.Albums -> {
                 sortPreferencesRepository.getAlbumListSortPreferences()
             }
             is SortableListType.Playlist -> {
                 sortPreferencesRepository.getPlaylistSortPreferences(
-                    playlistId = listType.playlistId
-                )
+                    playlistId = listType.playlistId)
             }
         }
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
@@ -116,8 +113,7 @@ class SortMenuStateHolder(
                                     MediaSortPreferences(
                                         sortOption = newSortOption,
                                         sortOrder = newSortOrder,
-                                    )
-                            )
+                                    ))
                         }
                         is SortableListType.Playlist -> {
                             require(newSortOption is SortOptions.PlaylistSortOption) {

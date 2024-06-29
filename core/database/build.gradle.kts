@@ -1,29 +1,14 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.musicplayer.android.library)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktfmt)
 }
 
 android {
-    namespace = "com.sebastianvm.database"
-    compileSdk = 34
+    namespace = "com.sebastianvm.musicplayer.core.database"
 
-    defaultConfig {
-        minSdk = 25
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
+    defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
 
     ksp { arg("room.generateKotlin", "true") }
 }
@@ -44,7 +29,7 @@ detekt {
     // Turns on all the rules. `false` by default.
     allRules = false
     enableCompilerPlugin.set(true)
-    config.setFrom(file("../../config/detekt/detekt.yml"))
+    config.setFrom(file("${rootDir}/config/detekt/detekt.yml"))
     autoCorrect = true
 }
 

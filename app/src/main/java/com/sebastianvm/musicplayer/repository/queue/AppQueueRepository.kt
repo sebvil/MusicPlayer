@@ -1,14 +1,14 @@
 package com.sebastianvm.musicplayer.repository.queue
 
-import com.sebastianvm.model.BasicQueuedTrack
-import com.sebastianvm.model.FullQueue
-import com.sebastianvm.model.NextUpQueue
-import com.sebastianvm.model.NowPlayingInfo
-import com.sebastianvm.model.QueuedTrack
-import com.sebastianvm.model.Track
 import com.sebastianvm.musicplayer.core.database.daos.MediaQueueDao
 import com.sebastianvm.musicplayer.core.database.entities.QueueItemEntity
 import com.sebastianvm.musicplayer.core.database.entities.QueueItemWithTrack
+import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
+import com.sebastianvm.musicplayer.core.model.FullQueue
+import com.sebastianvm.musicplayer.core.model.NextUpQueue
+import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.datastore.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
@@ -69,8 +69,7 @@ class AppQueueRepository(
                     queuePosition = item.queuePosition,
                     queueItemId = item.queueItemId,
                 )
-            }
-        )
+            })
     }
 
     override fun moveQueueItem(from: Int, to: Int) {

@@ -1,27 +1,10 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.musicplayer.android.library)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktfmt)
 }
 
-android {
-    namespace = "com.sebastianvm.resources"
-    compileSdk = 34
-
-    defaultConfig {
-        minSdk = 25
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions { jvmTarget = "17" }
-}
+android { namespace = "com.sebastianvm.musicplayer.core.resources" }
 
 dependencies { implementation(libs.core.ktx) }
 
@@ -32,7 +15,7 @@ detekt {
     // Turns on all the rules. `false` by default.
     allRules = false
     enableCompilerPlugin.set(true)
-    config.setFrom(file("../../config/detekt/detekt.yml"))
+    config.setFrom(file("${rootDir}/config/detekt/detekt.yml"))
     autoCorrect = true
 }
 

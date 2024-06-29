@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.playlist.tracksearch
 
-import com.sebastianvm.model.Playlist
-import com.sebastianvm.model.Track
+import com.sebastianvm.musicplayer.core.model.Playlist
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
@@ -35,8 +35,7 @@ class TrackSearchStateHolderTest :
                 TrackSearchUiComponent(
                     arguments = TrackSearchArguments(playlistId = playlist.id),
                     navController = navControllerDep,
-                )
-            )
+                ))
             return TrackSearchStateHolder(
                 arguments = TrackSearchArguments(playlistId = playlist.id),
                 playlistRepository = playlistRepositoryDep,
@@ -91,8 +90,7 @@ class TrackSearchStateHolderTest :
                                             state = TrackRow.State.fromTrack(it),
                                             inPlaylist = false,
                                         )
-                                    }
-                            )
+                                    })
                     }
                 }
 

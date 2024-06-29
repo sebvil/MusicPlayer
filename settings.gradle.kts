@@ -1,9 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":core:resources")
-
-
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -28,3 +26,5 @@ include(":app")
 include(":core:database")
 
 include(":core:model")
+
+include(":core:resources")

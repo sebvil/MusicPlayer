@@ -4,8 +4,8 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.sebastianvm.model.BasicTrack
-import com.sebastianvm.model.Track
+import com.sebastianvm.musicplayer.core.model.BasicTrack
+import com.sebastianvm.musicplayer.core.model.Track
 
 object TrackRow {
     data class State(val id: Long, val trackName: String, val artists: String?) {

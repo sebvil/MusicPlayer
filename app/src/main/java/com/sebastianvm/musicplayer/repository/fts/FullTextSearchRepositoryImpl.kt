@@ -1,15 +1,15 @@
 package com.sebastianvm.musicplayer.repository.fts
 
-import com.sebastianvm.model.AlbumWithArtists
-import com.sebastianvm.model.BasicArtist
-import com.sebastianvm.model.BasicGenre
-import com.sebastianvm.model.BasicPlaylist
-import com.sebastianvm.model.BasicTrack
 import com.sebastianvm.musicplayer.core.database.daos.AlbumFtsDao
 import com.sebastianvm.musicplayer.core.database.daos.ArtistFtsDao
 import com.sebastianvm.musicplayer.core.database.daos.GenreFtsDao
 import com.sebastianvm.musicplayer.core.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.core.database.daos.TrackFtsDao
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.BasicGenre
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.BasicTrack
 import com.sebastianvm.musicplayer.repository.album.asExternalModel
 import com.sebastianvm.musicplayer.repository.artist.asExternalModel
 import com.sebastianvm.musicplayer.repository.genre.asExternalModel

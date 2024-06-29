@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.repository.track
 
-import com.sebastianvm.model.Track
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
@@ -8,6 +7,7 @@ import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.flow.Flow
 

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -15,7 +16,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import com.sebastianvm.resources.RString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -126,8 +126,7 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                )
-                            )
+                                ))
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -168,8 +167,7 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

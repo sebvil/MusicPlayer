@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.util.sort
 
-import com.sebastianvm.model.MediaSortOrder
-import com.sebastianvm.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.util.serialization.GenreSortPrefsSerializer
 import com.sebastianvm.musicplayer.util.serialization.PlaylistSortPrefsSerializer
 import kotlinx.collections.immutable.PersistentMap
