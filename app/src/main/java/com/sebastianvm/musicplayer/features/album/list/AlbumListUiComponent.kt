@@ -89,7 +89,8 @@ fun AlbumList(
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) })
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
+                    )
                 },
             )
         }

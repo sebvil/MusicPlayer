@@ -1,13 +1,8 @@
 plugins {
-    alias(libs.plugins.org.jetbrains.kotlin.jvm)
+    alias(libs.plugins.musicplayer.jvm.library)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.detekt)
     alias(libs.plugins.ktfmt)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies { implementation(libs.kotlinx.serialization.json) }

@@ -83,6 +83,7 @@ org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kot
 android-library = { id = "com.android.library", version.ref = "agp" }
 
 musicplayer-android-library = { id = "musicplayer.android.library", version = "unspecified" }
+musicplayer-jvm-library = { id = "musicplayer.jvm.library", version = "unspecified" }
 
 [bundles]
 testing = [

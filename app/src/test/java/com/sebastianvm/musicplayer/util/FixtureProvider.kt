@@ -12,7 +12,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.model.Album
+import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.Artist
 import com.sebastianvm.musicplayer.core.model.Genre
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder

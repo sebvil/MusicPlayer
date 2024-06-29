@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.album
 
-import com.sebastianvm.model.Album
+import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicAlbum
 import com.sebastianvm.musicplayer.util.extensions.mapValues

@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.details
 
-import com.sebastianvm.model.Album
+import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController

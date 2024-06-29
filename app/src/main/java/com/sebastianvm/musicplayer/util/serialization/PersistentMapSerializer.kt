@@ -21,7 +21,8 @@ class PlaylistSortPrefsSerializer :
     override val descriptor: SerialDescriptor =
         object :
             SerialDescriptor by serialDescriptor<
-                Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>>>() {}
+                Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>>
+            >() {}
 
     override fun deserialize(
         decoder: Decoder
@@ -47,7 +48,8 @@ class GenreSortPrefsSerializer :
     override val descriptor: SerialDescriptor =
         object :
             SerialDescriptor by serialDescriptor<
-                Map<Long, MediaSortPreferences<SortOptions.TrackListSortOption>>>() {}
+                Map<Long, MediaSortPreferences<SortOptions.TrackListSortOption>>
+            >() {}
 
     override fun deserialize(
         decoder: Decoder

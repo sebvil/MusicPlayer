@@ -82,7 +82,9 @@ private fun AlbumContextMenu(
                                     onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId))
+                                                state.viewArtistsState.artistId
+                                            )
+                                        )
                                     },
                                 )
                             }

@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.util
 
-import com.sebastianvm.model.Album
+import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.Artist
 import com.sebastianvm.musicplayer.core.model.BasicArtist

@@ -34,5 +34,11 @@ gradlePlugin {
             implementationClass =
                 "com.sebastianvm.musicplayer.convention.AndroidLibraryConventionPlugin"
         }
+
+        register("jvmLibrary") {
+            id = "musicplayer.jvm.library"
+            implementationClass =
+                "com.sebastianvm.musicplayer.convention.JvmLibraryConventionPlugin"
+        }
     }
 }

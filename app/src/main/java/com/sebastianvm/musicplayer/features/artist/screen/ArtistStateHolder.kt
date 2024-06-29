@@ -106,7 +106,8 @@ class ArtistStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    ))
+                    )
+                )
             }
         }
     }

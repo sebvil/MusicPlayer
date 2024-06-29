@@ -86,7 +86,8 @@ fun ArtistList(
                     Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) })
+                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }
+                    )
                 },
             )
         }

@@ -96,17 +96,17 @@ fun DeletePlaylistConfirmationDialog(
         onDismissRequest = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) },
         confirmButton = {
             TextButton(
-                onClick = {
-                    handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
-                }) {
-                    Text(text = stringResource(RString.delete))
-                }
+                onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
+            ) {
+                Text(text = stringResource(RString.delete))
+            }
         },
         dismissButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }) {
-                    Text(text = stringResource(RString.cancel))
-                }
+                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
+            ) {
+                Text(text = stringResource(RString.cancel))
+            }
         },
         title = { Text(text = stringResource(id = RString.delete_this_playlist, playlistName)) },
         text = { Text(text = stringResource(id = RString.sure_you_want_to_delete, playlistName)) },
