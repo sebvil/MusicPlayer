@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository.artist
 
-import com.sebastianvm.database.daos.ArtistDao
-import com.sebastianvm.database.entities.ArtistEntity
-import com.sebastianvm.database.entities.ArtistWithAlbums
 import com.sebastianvm.model.Artist
 import com.sebastianvm.model.BasicArtist
+import com.sebastianvm.musicplayer.core.database.daos.ArtistDao
+import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
+import com.sebastianvm.musicplayer.core.database.entities.ArtistWithAlbums
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.asExternalModel

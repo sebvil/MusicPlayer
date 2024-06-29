@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.repository.album
 
-import com.sebastianvm.database.daos.AlbumDao
-import com.sebastianvm.database.entities.AlbumWithArtistsEntity
-import com.sebastianvm.database.entities.BasicAlbumQuery
-import com.sebastianvm.database.entities.FullAlbumEntity
 import com.sebastianvm.model.Album
 import com.sebastianvm.model.AlbumWithArtists
 import com.sebastianvm.model.BasicAlbum
+import com.sebastianvm.musicplayer.core.database.daos.AlbumDao
+import com.sebastianvm.musicplayer.core.database.entities.AlbumWithArtistsEntity
+import com.sebastianvm.musicplayer.core.database.entities.BasicAlbumQuery
+import com.sebastianvm.musicplayer.core.database.entities.FullAlbumEntity
 import com.sebastianvm.musicplayer.repository.artist.asExternalModel
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.asExternalModel

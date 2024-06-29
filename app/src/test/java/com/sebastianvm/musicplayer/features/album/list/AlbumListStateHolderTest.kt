@@ -55,7 +55,7 @@ class AlbumListStateHolderTest :
             albumRepositoryDep.albums.value = emptyList()
             sortPreferencesRepositoryDep.albumListSortPreferences.value =
                 MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOption.ALBUM,
+                    sortOption = SortOptions.Album,
                     sortOrder = MediaSortOrder.ASCENDING,
                 )
             testStateHolderState(subject) {
@@ -74,8 +74,8 @@ class AlbumListStateHolderTest :
                 withData(FixtureProvider.albumSortPreferences().toList()) { sortPreferences ->
                     val subject = getSubject()
                     val initialPrefs =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.AlbumListSortOption.ALBUM,
+                        MediaSortPreferences<SortOptions.AlbumListSortOption>(
+                            sortOption = SortOptions.Album,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                     albumRepositoryDep.albums.value = FixtureProvider.albums().toList()
@@ -133,7 +133,8 @@ class AlbumListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.Albums)),
+                                        SortMenuArguments(listType = SortableListType.Albums)
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -148,7 +149,9 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )))
+                                )
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(

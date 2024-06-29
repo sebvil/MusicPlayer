@@ -45,10 +45,7 @@ class GenreDetailsStateHolderTest :
         fun TestScope.getSubject(
             genre: Genre = FixtureProvider.genre(id = GENRE_ID, name = GENRE_NAME),
             sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOption> =
-                MediaSortPreferences(
-                    SortOptions.TrackListSortOption.TRACK,
-                    MediaSortOrder.ASCENDING,
-                ),
+                MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING),
         ): GenreDetailsStateHolder {
             genreRepositoryDep.genres.value = listOf(genre)
             sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
@@ -59,7 +56,8 @@ class GenreDetailsStateHolderTest :
                         arguments =
                             GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
                         navController = navControllerDep,
-                    ))
+                    )
+            )
 
             return GenreDetailsStateHolder(
                 stateHolderScope = this,
@@ -96,8 +94,8 @@ class GenreDetailsStateHolderTest :
                 withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
                     sortPreferences ->
                     val initialSortPreferences =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOption.TRACK,
+                        MediaSortPreferences<SortOptions.TrackListSortOption>(
+                            sortOption = SortOptions.Track,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
 
@@ -138,7 +136,9 @@ class GenreDetailsStateHolderTest :
                                 SortMenuUiComponent(
                                     arguments =
                                         SortMenuArguments(
-                                            listType = SortableListType.Genre(GENRE_ID))),
+                                            listType = SortableListType.Genre(GENRE_ID)
+                                        )
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -152,13 +152,15 @@ class GenreDetailsStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Genre(GENRE_ID),
                                 initialTrackIndex = TRACK_INDEX,
-                            ))
+                            )
+                        )
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
                     val subject = getSubject()
                     subject.handle(
-                        GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
+                        GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                    )
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =

@@ -203,7 +203,8 @@ fun AlbumDetails(
                                     top =
                                         WindowInsets.systemBars
                                             .asPaddingValues()
-                                            .calculateTopPadding()),
+                                            .calculateTopPadding()
+                                ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         MediaArtImage(
@@ -212,28 +213,30 @@ fun AlbumDetails(
                         )
 
                         Column(
-                            modifier =
-                                Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)) {
-                                Text(
-                                    text = state.albumName,
-                                    style =
-                                        MaterialTheme.typography.headlineMedium.copy(
-                                            fontWeight = FontWeight.Medium),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.alpha(1 - topBarAlpha),
-                                )
+                            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)
+                        ) {
+                            Text(
+                                text = state.albumName,
+                                style =
+                                    MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Medium
+                                    ),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.alpha(1 - topBarAlpha),
+                            )
 
-                                state.artists?.let {
-                                    Text(
-                                        text = it,
-                                        style =
-                                            MaterialTheme.typography.titleLarge.copy(
-                                                fontWeight = FontWeight.Medium),
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.fillMaxWidth().alpha(1 - topBarAlpha),
-                                    )
-                                }
+                            state.artists?.let {
+                                Text(
+                                    text = it,
+                                    style =
+                                        MaterialTheme.typography.titleLarge.copy(
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth().alpha(1 - topBarAlpha),
+                                )
                             }
+                        }
                     }
                 }
                 .fastMap { it.measure(constraints) }
@@ -246,7 +249,8 @@ fun AlbumDetails(
                         is AlbumDetailsState.Loading -> {
                             Box(modifier = Modifier.fillMaxSize()) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.align(Alignment.Center))
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
                             }
                         }
                         is AlbumDetailsState.Data -> {
@@ -305,13 +309,15 @@ fun AlbumDetails(
                                     AlbumDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    ))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
+                                    )
                                 )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = RString.more),
+                            )
+                        }
                     },
                 )
             }
@@ -330,9 +336,11 @@ private fun Modifier.stateSize(size: State<Float>) =
                         minHeight = sizeValue,
                         maxWidth = sizeValue,
                         maxHeight = sizeValue,
-                    ))
+                    )
+                )
             layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
-        })
+        }
+    )
 
 private enum class AlbumDetailsContent {
     TopBar,

@@ -107,7 +107,9 @@ class ArtistStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artworkUri = IMAGE_URI,
                                     artists = ARTIST_NAME,
-                                )))
+                                )
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
@@ -128,7 +130,8 @@ class ArtistStateHolderTest :
 
                 "BackClicked pops backstack" {
                     navControllerDep.push(
-                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep))
+                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep)
+                    )
                     val subject = getSubject()
                     subject.handle(ArtistUserAction.BackClicked)
                     navControllerDep.backStack.shouldBeEmpty()

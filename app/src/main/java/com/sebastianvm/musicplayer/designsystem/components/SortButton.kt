@@ -20,7 +20,7 @@ object SortButton {
     data class State(@StringRes val text: Int, val sortOrder: MediaSortOrder) {
         constructor(
             option: SortOptions,
-            sortOrder: MediaSortOrder
+            sortOrder: MediaSortOrder,
         ) : this(option.stringId, sortOrder)
     }
 }

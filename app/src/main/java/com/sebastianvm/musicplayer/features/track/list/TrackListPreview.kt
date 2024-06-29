@@ -5,7 +5,7 @@ package com.sebastianvm.musicplayer.features.track.list // package
 // import androidx.compose.ui.tooling.preview.PreviewParameter
 // import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 // import com.sebastianvm.musicplayer.R
-// import com.sebastianvm.database.entities.Track
+// import com.sebastianvm.musicplayer.core.database.entities.Track
 // import com.sebastianvm.musicplayer.player.MediaGroup
 // import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
 // import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider

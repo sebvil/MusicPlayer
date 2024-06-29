@@ -5,14 +5,13 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import com.sebastianvm.database.entities.AlbumEntity
-import com.sebastianvm.database.entities.AlbumsForArtist
-import com.sebastianvm.database.entities.AppearsOnForArtist
-import com.sebastianvm.database.entities.ArtistEntity
-import com.sebastianvm.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.database.entities.GenreEntity
-import com.sebastianvm.database.entities.GenreTrackCrossRef
-import com.sebastianvm.database.entities.TrackEntity
+import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
+import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
+import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +27,8 @@ class MusicRepositoryImpl(
     private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
     private val genreTrackCrossRefsSet = mutableSetOf<GenreTrackCrossRef>()
     private val artistsSet = mutableSetOf<ArtistEntity>()
-    private val albumSet = mutableSetOf<AlbumEntity>()
+    private val albumSet =
+        mutableSetOf<com.sebastianvm.musicplayer.core.database.entities.AlbumEntity>()
     private val genresSet = mutableSetOf<GenreEntity>()
     private val albumForArtistsSet = mutableSetOf<AlbumsForArtist>()
     private val appearsOnForArtistSet = mutableSetOf<AppearsOnForArtist>()
@@ -85,7 +85,7 @@ class MusicRepositoryImpl(
                 ArtistEntity(id = artistName.hashCode().toLong(), name = artistName)
             }
         val album =
-            AlbumEntity(
+            com.sebastianvm.musicplayer.core.database.entities.AlbumEntity(
                 id = albumId,
                 title = albumName,
                 year = year,
@@ -103,10 +103,12 @@ class MusicRepositoryImpl(
                         artistName = artist.name,
                         albumName = albumName,
                         year = year,
-                    ))
+                    )
+                )
             } else {
                 appearsOnForArtists.add(
-                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year))
+                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year)
+                )
             }
         }
 

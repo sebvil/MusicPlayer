@@ -2,12 +2,12 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import com.sebastianvm.database.daos.PlaylistDao
-import com.sebastianvm.database.entities.PlaylistEntity
-import com.sebastianvm.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.database.entities.PlaylistWithTracksEntity
 import com.sebastianvm.model.BasicPlaylist
 import com.sebastianvm.model.Playlist
+import com.sebastianvm.musicplayer.core.database.daos.PlaylistDao
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistEntity
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistWithTracksEntity
 import com.sebastianvm.musicplayer.di.DispatcherProvider.ioDispatcher
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.asExternalModel
@@ -51,7 +51,8 @@ class PlaylistRepositoryImpl(
                         PlaylistEntity(
                             id = playlistName.hashCode().toLong(),
                             playlistName = playlistName,
-                        ))
+                        )
+                    )
                 } catch (e: SQLiteConstraintException) {
                     Log.i("Exception", e.message.orEmpty())
                     null
@@ -72,7 +73,8 @@ class PlaylistRepositoryImpl(
                     playlistId = playlistId,
                     trackId = trackId,
                     position = playlistSize,
-                ))
+                )
+            )
         }
     }
 

@@ -86,7 +86,8 @@ class TrackListStateHolder(
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)),
+                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)
+                    ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.di
 
 import android.content.Context
-import com.sebastianvm.database.MusicDatabase
+import com.sebastianvm.musicplayer.core.database.MusicDatabase
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -97,7 +97,8 @@ class AppRepositoryProvider(
     override val sortPreferencesRepository: SortPreferencesRepository
         get() =
             SortPreferencesRepositoryImpl(
-                sortPreferencesDataStore = jetpackDataStoreProvider.sortPreferencesDataStore)
+                sortPreferencesDataStore = jetpackDataStoreProvider.sortPreferencesDataStore
+            )
 
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = context, externalScope = applicationScope)

@@ -78,8 +78,8 @@ class TrackListStateHolderTest :
                 withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
                     sortPreferences ->
                     val initialSortPreferences =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOption.TRACK,
+                        MediaSortPreferences<SortOptions.TrackListSortOption>(
+                            sortOption = SortOptions.Track,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                     val tracks = FixtureProvider.tracks()
@@ -122,7 +122,8 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks)),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -136,7 +137,8 @@ class TrackListStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.AllTracks,
                                 initialTrackIndex = TRACK_INDEX,
-                            ))
+                            )
+                        )
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {

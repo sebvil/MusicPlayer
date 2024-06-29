@@ -189,7 +189,7 @@ object FixtureProvider {
     }
 
     fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOption>> {
-        return SortOptions.TrackListSortOption.entries.flatMap { option ->
+        return SortOptions.forTracks.flatMap { option ->
             MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }
@@ -197,7 +197,7 @@ object FixtureProvider {
     }
 
     fun albumSortPreferences(): List<MediaSortPreferences<SortOptions.AlbumListSortOption>> {
-        return SortOptions.AlbumListSortOption.entries.flatMap { option ->
+        return SortOptions.forAlbums.flatMap { option ->
             MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }

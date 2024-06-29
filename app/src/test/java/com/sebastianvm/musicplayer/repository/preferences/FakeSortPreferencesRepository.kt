@@ -22,9 +22,10 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
         MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOption>> =
         MutableStateFlow(
             MediaSortPreferences(
-                sortOption = SortOptions.AlbumListSortOption.ALBUM,
+                sortOption = SortOptions.Album,
                 sortOrder = MediaSortOrder.ASCENDING,
-            ))
+            )
+        )
 
     val artistListSortOrder: MutableStateFlow<MediaSortOrder> =
         MutableStateFlow(MediaSortOrder.ASCENDING)
@@ -34,8 +35,7 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     val allTracksSortPreferences:
         MutableStateFlow<MediaSortPreferences<SortOptions.TrackListSortOption>> =
-        MutableStateFlow(
-            MediaSortPreferences(SortOptions.TrackListSortOption.TRACK, MediaSortOrder.ASCENDING))
+        MutableStateFlow(MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING))
 
     val genreTracksSortPreferences: MutableStateFlow<TrackListSortPreferencesMap> =
         MutableStateFlow(emptyMap())
@@ -66,10 +66,7 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
             is MediaGroup.Genre ->
                 genreTracksSortPreferences.map {
                     it[trackList.genreId]
-                        ?: MediaSortPreferences(
-                            SortOptions.TrackListSortOption.TRACK,
-                            MediaSortOrder.ASCENDING,
-                        )
+                        ?: MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING)
                 }
             else -> error("Cannot sort $trackList")
         }
@@ -121,11 +118,7 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
         playlistId: Long
     ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOption>> {
         return playlistTracksSortPreferences.map {
-            it[playlistId]
-                ?: MediaSortPreferences(
-                    SortOptions.PlaylistSortOption.TRACK,
-                    MediaSortOrder.ASCENDING,
-                )
+            it[playlistId] ?: MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING)
         }
     }
 }
