@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
+import com.sebastianvm.model.Genre
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -10,7 +11,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
@@ -59,8 +59,7 @@ class GenreDetailsStateHolderTest :
                         arguments =
                             GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
                         navController = navControllerDep,
-                    )
-            )
+                    ))
 
             return GenreDetailsStateHolder(
                 stateHolderScope = this,
@@ -139,9 +138,7 @@ class GenreDetailsStateHolderTest :
                                 SortMenuUiComponent(
                                     arguments =
                                         SortMenuArguments(
-                                            listType = SortableListType.Genre(GENRE_ID)
-                                        )
-                                ),
+                                            listType = SortableListType.Genre(GENRE_ID))),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -155,15 +152,13 @@ class GenreDetailsStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Genre(GENRE_ID),
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
                     val subject = getSubject()
                     subject.handle(
-                        GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
-                    )
+                        GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =

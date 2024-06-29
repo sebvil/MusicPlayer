@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.database.entities
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
+import com.sebastianvm.model.AlbumWithArtists
 
 data class AlbumWithArtistsEntity(
     @Embedded val album: AlbumEntity,

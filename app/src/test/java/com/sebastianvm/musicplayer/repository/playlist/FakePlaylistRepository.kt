@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.repository.playlist
 
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.Playlist
+import com.sebastianvm.model.BasicPlaylist
+import com.sebastianvm.model.Playlist
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import com.sebastianvm.musicplayer.util.toBasicPlaylist

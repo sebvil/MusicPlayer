@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository.album
 
+import com.sebastianvm.model.Album
+import com.sebastianvm.model.AlbumWithArtists
+import com.sebastianvm.model.BasicAlbum
 import com.sebastianvm.musicplayer.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.Album
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicAlbum
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

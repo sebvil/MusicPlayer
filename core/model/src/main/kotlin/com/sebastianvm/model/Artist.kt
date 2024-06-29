@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.model
+package com.sebastianvm.model
 
 data class Artist(
     val id: Long,

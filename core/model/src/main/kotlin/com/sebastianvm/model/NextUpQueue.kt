@@ -1,3 +1,3 @@
-package com.sebastianvm.musicplayer.model
+package com.sebastianvm.model
 
 data class NextUpQueue(val nowPlayingTrack: QueuedTrack, val nextUp: List<QueuedTrack>)

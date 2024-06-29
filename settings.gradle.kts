@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:model")
+
 pluginManagement {
     repositories {
         google()
@@ -16,5 +18,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Music Player"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "musicplayer"
+
 include(":app")

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.sebastianvm.musicplayer.datastore.KotlinSerializationSerializer
-import com.sebastianvm.musicplayer.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.datastore.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.util.sort.SortPreferences
 
 class JetpackDataStoreProvider(private val context: Context) {
@@ -19,14 +19,14 @@ class JetpackDataStoreProvider(private val context: Context) {
     val sortPreferencesDataStore: DataStore<SortPreferences>
         get() = context.sortPreferencesDataStore
 
-    private val Context.nowPlayingInfoDataStore: DataStore<NowPlayingInfo> by
+    private val Context.nowPlayingInfoDataStore: DataStore<SavedPlaybackInfo> by
         dataStore(
             fileName = NOW_PLAYING_INFO_DATA_STORE_FILE_NAME,
             serializer =
-                KotlinSerializationSerializer(NowPlayingInfo(), NowPlayingInfo.serializer()),
+                KotlinSerializationSerializer(SavedPlaybackInfo(), SavedPlaybackInfo.serializer()),
         )
 
-    val nowPlayingInfoDataStore: DataStore<NowPlayingInfo>
+    val nowPlayingInfoDataStore: DataStore<SavedPlaybackInfo>
         get() = context.nowPlayingInfoDataStore
 
     companion object {

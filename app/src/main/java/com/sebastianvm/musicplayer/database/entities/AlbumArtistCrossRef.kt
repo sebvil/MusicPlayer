@@ -6,7 +6,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
-import com.sebastianvm.musicplayer.model.Artist
+import com.sebastianvm.model.Artist
 
 @Entity(primaryKeys = ["albumId", "artistId"])
 data class AlbumsForArtist(

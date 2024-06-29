@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.artist
 
+import com.sebastianvm.model.Artist
+import com.sebastianvm.model.BasicArtist
 import com.sebastianvm.musicplayer.database.daos.ArtistDao
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.Artist
-import com.sebastianvm.musicplayer.model.BasicArtist
 import com.sebastianvm.musicplayer.player.HasArtists
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository

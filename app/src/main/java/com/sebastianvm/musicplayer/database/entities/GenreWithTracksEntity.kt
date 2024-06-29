@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.database.entities
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
-import com.sebastianvm.musicplayer.model.Genre
+import com.sebastianvm.model.Genre
 
 data class GenreWithTracksEntity(
     @Embedded val genre: GenreEntity,

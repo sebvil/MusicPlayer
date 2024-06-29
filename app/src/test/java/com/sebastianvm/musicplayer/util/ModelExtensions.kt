@@ -1,15 +1,15 @@
 package com.sebastianvm.musicplayer.util
 
-import com.sebastianvm.musicplayer.model.Album
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.Artist
-import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.BasicGenre
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.BasicTrack
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.model.Album
+import com.sebastianvm.model.AlbumWithArtists
+import com.sebastianvm.model.Artist
+import com.sebastianvm.model.BasicArtist
+import com.sebastianvm.model.BasicGenre
+import com.sebastianvm.model.BasicPlaylist
+import com.sebastianvm.model.BasicTrack
+import com.sebastianvm.model.Genre
+import com.sebastianvm.model.Playlist
+import com.sebastianvm.model.Track
 
 fun Album.toAlbumWithArtists(): AlbumWithArtists {
     return AlbumWithArtists(

@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.genre
 
+import com.sebastianvm.model.BasicGenre
+import com.sebastianvm.model.Genre
 import com.sebastianvm.musicplayer.database.daos.GenreDao
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.BasicGenre
-import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.repository.queue
 
-import com.sebastianvm.musicplayer.model.BasicQueuedTrack
-import com.sebastianvm.musicplayer.model.FullQueue
-import com.sebastianvm.musicplayer.model.NextUpQueue
-import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.model.QueuedTrack
+import com.sebastianvm.model.BasicQueuedTrack
+import com.sebastianvm.model.FullQueue
+import com.sebastianvm.model.NextUpQueue
+import com.sebastianvm.model.NowPlayingInfo
+import com.sebastianvm.model.QueuedTrack
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.FixtureProvider.queueItemsFixtures
 import kotlinx.coroutines.flow.Flow

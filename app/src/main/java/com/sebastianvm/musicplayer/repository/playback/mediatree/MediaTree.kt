@@ -6,10 +6,10 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
+import com.sebastianvm.model.AlbumWithArtists
+import com.sebastianvm.model.BasicArtist
+import com.sebastianvm.model.Track
 import com.sebastianvm.musicplayer.ArtworkProvider
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository

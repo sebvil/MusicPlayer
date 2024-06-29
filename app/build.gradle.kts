@@ -29,9 +29,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -119,6 +117,8 @@ dependencies {
     testImplementation(libs.bundles.testing)
 
     detektPlugins(libs.detekt.compose)
+
+    implementation(projects.core.model)
 }
 
 detekt {

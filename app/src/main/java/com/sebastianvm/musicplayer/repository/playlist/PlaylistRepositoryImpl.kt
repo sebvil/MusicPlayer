@@ -2,13 +2,13 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
+import com.sebastianvm.model.BasicPlaylist
+import com.sebastianvm.model.Playlist
 import com.sebastianvm.musicplayer.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
 import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.database.entities.asExternalModel
 import com.sebastianvm.musicplayer.di.DispatcherProvider.ioDispatcher
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,8 +50,7 @@ class PlaylistRepositoryImpl(
                         PlaylistEntity(
                             id = playlistName.hashCode().toLong(),
                             playlistName = playlistName,
-                        )
-                    )
+                        ))
                 } catch (e: SQLiteConstraintException) {
                     Log.i("Exception", e.message.orEmpty())
                     null
@@ -72,8 +71,7 @@ class PlaylistRepositoryImpl(
                     playlistId = playlistId,
                     trackId = trackId,
                     position = playlistSize,
-                )
-            )
+                ))
         }
     }
 

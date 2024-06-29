@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.sebastianvm.musicplayer.model.BasicArtist
+import com.sebastianvm.model.BasicArtist
 
 @Entity data class ArtistEntity(@PrimaryKey val id: Long = 0, val name: String)
 

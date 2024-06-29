@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.database.entities
 
-import com.sebastianvm.musicplayer.model.BasicAlbum
+import com.sebastianvm.model.BasicAlbum
 
 data class BasicAlbumQuery(val id: Long, val title: String, val imageUri: String)
 

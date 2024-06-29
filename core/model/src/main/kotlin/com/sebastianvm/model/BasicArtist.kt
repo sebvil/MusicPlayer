@@ -1,3 +1,3 @@
-package com.sebastianvm.musicplayer.model
+package com.sebastianvm.model
 
 data class BasicArtist(val id: Long, val name: String)
