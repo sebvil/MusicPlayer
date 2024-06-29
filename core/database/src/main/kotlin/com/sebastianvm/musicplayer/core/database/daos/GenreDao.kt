@@ -9,13 +9,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GenreDao {
-    @Query("SELECT COUNT(*) FROM GenreEntity") fun getGenresCount(): Flow<Int>
-
     @Query(
         "SELECT * FROM GenreEntity ORDER BY " +
             "CASE WHEN :sortOrder='ASCENDING' THEN name END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN :sortOrder='DESCENDING' THEN name END COLLATE LOCALIZED DESC"
-    )
+            "CASE WHEN :sortOrder='DESCENDING' THEN name END COLLATE LOCALIZED DESC")
     fun getGenres(sortOrder: String): Flow<List<GenreEntity>>
 
     @Transaction

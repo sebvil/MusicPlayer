@@ -11,14 +11,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlbumDao {
-    @Query("SELECT COUNT(*) FROM AlbumEntity") fun getAlbumsCount(): Flow<Int>
-
-    @Transaction
-    @Query("SELECT * from AlbumEntity WHERE AlbumEntity.id IN (:albumIds)")
-    fun getAlbums(
-        albumIds: List<Long>
-    ): Flow<List<com.sebastianvm.musicplayer.core.database.entities.AlbumEntity>>
-
     @Transaction
     @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * from AlbumEntity WHERE AlbumEntity.id=:albumId")
@@ -42,7 +34,6 @@ interface AlbumDao {
             "CASE WHEN:sortOption='ARTIST' AND :sortOrder='ASCENDING' THEN artists END COLLATE LOCALIZED ASC, " +
             "CASE WHEN:sortOption='ARTIST' AND :sortOrder='DESCENDING' THEN artists END COLLATE LOCALIZED DESC, " +
             "CASE WHEN:sortOption='YEAR' AND :sortOrder='ASCENDING' THEN year END COLLATE LOCALIZED ASC, " +
-            "CASE WHEN:sortOption='YEAR' AND :sortOrder='DESCENDING' THEN year END COLLATE LOCALIZED DESC"
-    )
+            "CASE WHEN:sortOption='YEAR' AND :sortOrder='DESCENDING' THEN year END COLLATE LOCALIZED DESC")
     fun getAllAlbums(sortOption: String, sortOrder: String): Flow<List<AlbumWithArtistsEntity>>
 }
