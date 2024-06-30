@@ -40,7 +40,7 @@ data class AppearsOnForArtistByYear(
 data class ArtistWithAlbums(
     @Embedded val artist: ArtistEntity,
     @Relation(
-        entity = com.sebastianvm.musicplayer.core.database.entities.AlbumEntity::class,
+        entity = AlbumEntity::class,
         parentColumn = "id",
         entityColumn = "id",
         associateBy =
@@ -54,7 +54,7 @@ data class ArtistWithAlbums(
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
-        entity = com.sebastianvm.musicplayer.core.database.entities.AlbumEntity::class,
+        entity = AlbumEntity::class,
         associateBy =
             Junction(
                 AppearsOnForArtistByYear::class,

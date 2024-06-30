@@ -18,10 +18,6 @@ data class DetailedTrack(
             ),
     )
     val artists: List<ArtistEntity>,
-    @Relation(
-        parentColumn = "albumId",
-        entityColumn = "id",
-        entity = com.sebastianvm.musicplayer.core.database.entities.AlbumEntity::class,
-    )
-    val album: com.sebastianvm.musicplayer.core.database.entities.AlbumEntity,
+    @Relation(parentColumn = "albumId", entityColumn = "id", entity = AlbumEntity::class)
+    val album: AlbumEntity,
 )

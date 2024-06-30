@@ -5,7 +5,7 @@ import androidx.room.Junction
 import androidx.room.Relation
 
 data class FullAlbumEntity(
-    @Embedded val album: com.sebastianvm.musicplayer.core.database.entities.AlbumEntity,
+    @Embedded val album: AlbumEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "id",
