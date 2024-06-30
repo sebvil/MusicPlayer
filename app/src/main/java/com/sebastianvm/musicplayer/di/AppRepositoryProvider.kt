@@ -97,7 +97,8 @@ class AppRepositoryProvider(
     override val sortPreferencesRepository: SortPreferencesRepository
         get() =
             SortPreferencesRepositoryImpl(
-                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource)
+                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource
+            )
 
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = context, externalScope = applicationScope)

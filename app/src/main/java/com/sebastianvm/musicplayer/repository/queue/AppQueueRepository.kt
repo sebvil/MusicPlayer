@@ -69,7 +69,8 @@ class AppQueueRepository(
                     queuePosition = item.queuePosition,
                     queueItemId = item.queueItemId,
                 )
-            })
+            }
+        )
     }
 
     override fun moveQueueItem(from: Int, to: Int) {

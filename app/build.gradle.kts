@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.musicplayer.android.application)
-    alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
 }
