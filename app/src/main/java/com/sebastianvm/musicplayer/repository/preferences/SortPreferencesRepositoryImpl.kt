@@ -1,19 +1,18 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
-import androidx.datastore.core.DataStore
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.core.datastore.sort.SortPreferencesDataSource
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.not
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortPreferences
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SortPreferencesRepositoryImpl(
-    private val sortPreferencesDataStore: DataStore<SortPreferences>
+    private val sortPreferencesDataStore: SortPreferencesDataSource
 ) : SortPreferencesRepository {
 
     private suspend fun modifyAllTrackListSortPreferences(
@@ -33,8 +32,7 @@ class SortPreferencesRepositoryImpl(
                 genreTrackListSortPreferences =
                     oldPreferences.genreTrackListSortPreferences.mutate {
                         it[genreId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 
@@ -51,8 +49,7 @@ class SortPreferencesRepositoryImpl(
             }
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType for modifyTrackListSortPreferences"
-                )
+                    "Invalid trackListType for modifyTrackListSortPreferences")
         }
     }
 
@@ -96,8 +93,7 @@ class SortPreferencesRepositoryImpl(
             is MediaGroup.Playlist -> getPlaylistTrackListSortPreferences(trackList.playlistId)
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType $trackList for getTrackListSortPreferences"
-                )
+                    "Invalid trackListType $trackList for getTrackListSortPreferences")
         }
     }
 
@@ -157,8 +153,7 @@ class SortPreferencesRepositoryImpl(
                 playlistSortPreferences =
                     oldPreferences.playlistSortPreferences.mutate {
                         it[playlistId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 

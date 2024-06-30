@@ -1,9 +1,7 @@
-package com.sebastianvm.musicplayer.util.sort
+package com.sebastianvm.musicplayer.core.datastore.sort
 
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
-import com.sebastianvm.musicplayer.util.serialization.GenreSortPrefsSerializer
-import com.sebastianvm.musicplayer.util.serialization.PlaylistSortPrefsSerializer
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.Serializable
@@ -29,10 +27,4 @@ data class SortPreferences(
     val playlistSortPreferences:
         PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>> =
         persistentMapOf(),
-)
-
-@Serializable
-data class MediaSortPreferences<T : SortOptions>(
-    val sortOption: T,
-    val sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
 )

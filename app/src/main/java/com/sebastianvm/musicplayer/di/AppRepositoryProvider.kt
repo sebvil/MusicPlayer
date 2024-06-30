@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.di
 
 import android.content.Context
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
-import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
+import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.album.AlbumRepositoryImpl
@@ -30,7 +30,7 @@ class AppRepositoryProvider(
     private val context: Context,
     private val dispatcherProvider: DispatcherProvider,
     private val database: DaoProvider,
-    private val jetpackDataStoreProvider: JetpackDataStoreProvider,
+    private val dataSourcesProvider: DataSourcesProvider,
     private val applicationScope: CoroutineScope,
 ) : RepositoryProvider {
 
@@ -97,8 +97,7 @@ class AppRepositoryProvider(
     override val sortPreferencesRepository: SortPreferencesRepository
         get() =
             SortPreferencesRepositoryImpl(
-                sortPreferencesDataStore = jetpackDataStoreProvider.sortPreferencesDataStore
-            )
+                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource)
 
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = context, externalScope = applicationScope)
@@ -107,8 +106,7 @@ class AppRepositoryProvider(
     override val queueRepository: QueueRepository
         get() =
             AppQueueRepository(
-                nowPlayingInfoDataSource =
-                    NowPlayingInfoDataSource(jetpackDataStoreProvider.nowPlayingInfoDataStore),
+                nowPlayingInfoDataSource = dataSourcesProvider.nowPlayingInfoDataSource,
                 trackRepository = trackRepository,
                 mediaQueueDao = database.getMediaQueueDao(),
                 mediaPlaybackClient = mediaPlaybackClient,

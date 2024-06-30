@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface SortPreferencesRepository {

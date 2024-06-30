@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.details
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.model.SortOptions
@@ -22,7 +23,6 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -63,8 +63,7 @@ class PlaylistDetailsStateHolderTest :
                                 playlistName = playlist.name,
                             ),
                         navController = navControllerDep,
-                    )
-            )
+                    ))
 
             return PlaylistDetailsStateHolder(
                 stateHolderScope = this,
@@ -119,8 +118,7 @@ class PlaylistDetailsStateHolderTest :
                 sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
                     mapOf(
                         PLAYLIST_ID to
-                            initialSortPreferences.copy(sortOrder = MediaSortOrder.DESCENDING)
-                    )
+                            initialSortPreferences.copy(sortOrder = MediaSortOrder.DESCENDING))
                 awaitItemAs<PlaylistDetailsState.Data>().sortButtonState shouldBe
                     SortButton.State(
                         option = initialSortPreferences.sortOption,
@@ -141,9 +139,8 @@ class PlaylistDetailsStateHolderTest :
                                     arguments =
                                         SortMenuArguments(
                                             listType =
-                                                SortableListType.Playlist(playlistId = PLAYLIST_ID)
-                                        )
-                                ),
+                                                SortableListType.Playlist(
+                                                    playlistId = PLAYLIST_ID))),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -157,15 +154,13 @@ class PlaylistDetailsStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Playlist(PLAYLIST_ID),
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
                     val subject = getSubject()
                     subject.handle(
-                        PlaylistDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
-                    )
+                        PlaylistDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -19,7 +20,6 @@ import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -122,8 +122,7 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks)
-                                ),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -137,8 +136,7 @@ class TrackListStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.AllTracks,
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
