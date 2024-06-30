@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.database.getDaoProvider
+import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,9 +19,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
         getDaoProvider(context = appContext, ioDispatcher = dispatcherProvider.ioDispatcher)
     }
 
-    private val jetpackDataStoreProvider: JetpackDataStoreProvider by lazy {
-        JetpackDataStoreProvider(appContext)
-    }
+    private val dataSourcesProvider: DataSourcesProvider by lazy { DataSourcesProvider(appContext) }
 
     private val dispatcherProvider: DispatcherProvider = DispatcherProvider
 
@@ -29,7 +28,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
             context = appContext,
             dispatcherProvider = dispatcherProvider,
             database = database,
-            jetpackDataStoreProvider = jetpackDataStoreProvider,
+            dataSourcesProvider = dataSourcesProvider,
             applicationScope = applicationScope,
         )
     }

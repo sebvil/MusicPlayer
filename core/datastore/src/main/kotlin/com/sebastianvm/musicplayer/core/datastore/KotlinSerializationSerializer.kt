@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.datastore
+package com.sebastianvm.musicplayer.core.datastore
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
@@ -11,7 +11,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-class KotlinSerializationSerializer<T>(
+internal class KotlinSerializationSerializer<T>(
     override val defaultValue: T,
     private val serializer: KSerializer<T>,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,

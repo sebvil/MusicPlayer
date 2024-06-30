@@ -1,18 +1,18 @@
-package com.sebastianvm.musicplayer.datastore
+package com.sebastianvm.musicplayer.core.datastore.playinfo
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 
-class NowPlayingInfoDataSource(
+internal class DefaultNowPlayingInfoDataSource(
     private val savedPlaybackInfoDataStore: DataStore<SavedPlaybackInfo>
-) {
+) : NowPlayingInfoDataSource {
 
-    fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
+    override fun getSavedPlaybackInfo(): Flow<SavedPlaybackInfo> {
         return savedPlaybackInfoDataStore.data
     }
 
-    suspend fun savePlaybackInfo(savedPlaybackInfo: SavedPlaybackInfo) {
+    override suspend fun savePlaybackInfo(savedPlaybackInfo: SavedPlaybackInfo) {
         savedPlaybackInfoDataStore.updateData { savedPlaybackInfo }
     }
 }

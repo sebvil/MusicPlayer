@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope

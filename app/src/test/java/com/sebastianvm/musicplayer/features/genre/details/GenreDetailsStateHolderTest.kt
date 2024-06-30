@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.Genre
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
@@ -20,7 +21,6 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope

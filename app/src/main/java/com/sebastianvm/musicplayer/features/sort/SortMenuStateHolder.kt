@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.not
@@ -11,7 +12,6 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

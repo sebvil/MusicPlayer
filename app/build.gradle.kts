@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.musicplayer.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
-    alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
 }
@@ -41,6 +39,11 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.model)
+    implementation(projects.core.database)
+    implementation(projects.core.resources)
+    implementation(projects.core.datastore)
+
     // Kotlin
     implementation(libs.core.ktx)
     implementation(libs.vectordrawable)
@@ -50,9 +53,6 @@ dependencies {
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
-
-    // DataStore
-    implementation(libs.datastore)
 
     // Coil
     implementation(libs.coil)
@@ -87,17 +87,12 @@ dependencies {
     implementation(libs.media3.session)
 
     // Kotlin serialization
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.collections.immutable)
 
     implementation(libs.kotlinx.coroutines.guava)
 
     // Testing
     testImplementation(libs.bundles.testing)
-
-    implementation(projects.core.model)
-    implementation(projects.core.database)
-    implementation(projects.core.resources)
 }
 
 kover {

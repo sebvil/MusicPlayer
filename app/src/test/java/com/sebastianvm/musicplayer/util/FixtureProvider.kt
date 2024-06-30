@@ -12,6 +12,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
+import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.Artist
 import com.sebastianvm.musicplayer.core.model.Genre
@@ -22,7 +23,6 @@ import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.Codepoint
 import io.kotest.property.arbitrary.az

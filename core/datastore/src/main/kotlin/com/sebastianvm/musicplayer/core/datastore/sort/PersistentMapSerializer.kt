@@ -1,7 +1,6 @@
-package com.sebastianvm.musicplayer.util.serialization
+package com.sebastianvm.musicplayer.core.datastore.sort
 
 import com.sebastianvm.musicplayer.core.model.SortOptions
-import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.serialization.KSerializer
@@ -11,7 +10,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializer
 
-class PlaylistSortPrefsSerializer :
+internal class PlaylistSortPrefsSerializer :
     KSerializer<PersistentMap<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>>> {
 
     private val serializer:
