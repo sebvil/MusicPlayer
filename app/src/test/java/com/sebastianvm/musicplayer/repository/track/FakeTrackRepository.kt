@@ -1,18 +1,17 @@
 package com.sebastianvm.musicplayer.repository.track
 
-import com.sebastianvm.musicplayer.database.entities.AlbumEntity
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
-import com.sebastianvm.musicplayer.database.entities.ArtistEntity
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.GenreEntity
-import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.TrackEntity
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
+import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
+import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.Genre
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -74,7 +73,7 @@ class FakeTrackRepository : TrackRepository {
         genreTrackCrossRefs: Set<GenreTrackCrossRef>,
         artists: Set<ArtistEntity>,
         genres: Set<GenreEntity>,
-        albums: Set<AlbumEntity>,
+        albums: Set<com.sebastianvm.musicplayer.core.database.entities.AlbumEntity>,
         albumsForArtists: Set<AlbumsForArtist>,
         appearsOnForArtists: Set<AppearsOnForArtist>,
     ) {

@@ -12,10 +12,10 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.core.resources.RDrawable
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.repository.music.MusicRepository
-import com.sebastianvm.musicplayer.util.resources.RString
 
 class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
@@ -34,7 +34,7 @@ class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
 
     override suspend fun doWork(): Result {
 
-        val progress = applicationContext.getString(R.string.starting_sync)
+        val progress = applicationContext.getString(RString.starting_sync)
         setForeground(createForegroundInfo(progress))
 
         musicRepository.getMusic()
@@ -58,12 +58,12 @@ class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
         val notification =
             NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setContentTitle(title)
-                .setSmallIcon(R.drawable.ic_album)
+                .setSmallIcon(RDrawable.ic_album)
                 .setTicker(title)
                 .setContentText(progress)
                 .setOngoing(true)
                 .addAction(
-                    R.drawable.ic_close,
+                    RDrawable.ic_close,
                     applicationContext.getString(RString.stop_scanning),
                     intent,
                 )
@@ -85,9 +85,9 @@ class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createChannel() {
-        val name = applicationContext.getString(R.string.library_scan_progress)
+        val name = applicationContext.getString(RString.library_scan_progress)
         val descriptionText =
-            applicationContext.getString(R.string.shows_progress_when_scanning_the_library)
+            applicationContext.getString(RString.shows_progress_when_scanning_the_library)
         val importance = NotificationManager.IMPORTANCE_HIGH
         val channel =
             NotificationChannel(CHANNEL_ID, name, importance).apply {

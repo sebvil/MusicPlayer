@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
+import com.sebastianvm.musicplayer.core.model.Genre
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -10,7 +13,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.model.Genre
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
@@ -18,9 +20,7 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -44,11 +44,8 @@ class GenreDetailsStateHolderTest :
 
         fun TestScope.getSubject(
             genre: Genre = FixtureProvider.genre(id = GENRE_ID, name = GENRE_NAME),
-            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions> =
-                MediaSortPreferences(
-                    SortOptions.TrackListSortOptions.TRACK,
-                    MediaSortOrder.ASCENDING,
-                ),
+            sortPreferences: MediaSortPreferences<SortOptions.TrackListSortOption> =
+                MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING),
         ): GenreDetailsStateHolder {
             genreRepositoryDep.genres.value = listOf(genre)
             sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
@@ -97,8 +94,8 @@ class GenreDetailsStateHolderTest :
                 withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
                     sortPreferences ->
                     val initialSortPreferences =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.TrackListSortOptions.TRACK,
+                        MediaSortPreferences<SortOptions.TrackListSortOption>(
+                            sortOption = SortOptions.Track,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
 
@@ -109,7 +106,7 @@ class GenreDetailsStateHolderTest :
 
                         awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
                             SortButton.State(
-                                text = initialSortPreferences.sortOption.stringId,
+                                option = initialSortPreferences.sortOption,
                                 sortOrder = initialSortPreferences.sortOrder,
                             )
 
@@ -120,7 +117,7 @@ class GenreDetailsStateHolderTest :
                         } else {
                             awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
                                 SortButton.State(
-                                    text = sortPreferences.sortOption.stringId,
+                                    option = sortPreferences.sortOption,
                                     sortOrder = sortPreferences.sortOrder,
                                 )
                         }

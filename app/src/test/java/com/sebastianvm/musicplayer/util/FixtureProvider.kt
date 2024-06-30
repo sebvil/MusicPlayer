@@ -12,17 +12,17 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.size
-import com.sebastianvm.musicplayer.model.Album
-import com.sebastianvm.musicplayer.model.Artist
-import com.sebastianvm.musicplayer.model.Genre
-import com.sebastianvm.musicplayer.model.Playlist
-import com.sebastianvm.musicplayer.model.QueuedTrack
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.core.model.Album
+import com.sebastianvm.musicplayer.core.model.Artist
+import com.sebastianvm.musicplayer.core.model.Genre
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.Playlist
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.repository.playback.TrackInfo
 import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.Codepoint
 import io.kotest.property.arbitrary.az
@@ -188,16 +188,16 @@ object FixtureProvider {
         )
     }
 
-    fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOptions>> {
-        return SortOptions.TrackListSortOptions.entries.flatMap { option ->
+    fun trackListSortPreferences(): List<MediaSortPreferences<SortOptions.TrackListSortOption>> {
+        return SortOptions.forTracks.flatMap { option ->
             MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }
         }
     }
 
-    fun albumSortPreferences(): List<MediaSortPreferences<SortOptions.AlbumListSortOptions>> {
-        return SortOptions.AlbumListSortOptions.entries.flatMap { option ->
+    fun albumSortPreferences(): List<MediaSortPreferences<SortOptions.AlbumListSortOption>> {
+        return SortOptions.forAlbums.flatMap { option ->
             MediaSortOrder.entries.map { order ->
                 MediaSortPreferences(sortOption = option, sortOrder = order)
             }

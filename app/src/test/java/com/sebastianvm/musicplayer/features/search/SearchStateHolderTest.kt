@@ -1,6 +1,11 @@
 package com.sebastianvm.musicplayer.features.search
 
 import android.app.SearchManager.QUERY
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.BasicGenre
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -17,11 +22,6 @@ import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.BasicGenre
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.fts.SearchMode

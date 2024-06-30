@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.not
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
@@ -8,10 +11,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
-import com.sebastianvm.musicplayer.util.sort.not
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -82,7 +82,7 @@ class SortMenuStateHolder(
                 stateHolderScope.launch {
                     when (val listType = arguments.listType) {
                         is SortableListType.AllTracks -> {
-                            require(newSortOption is SortOptions.TrackListSortOptions) {
+                            require(newSortOption is SortOptions.TrackListSortOption) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
@@ -95,7 +95,7 @@ class SortMenuStateHolder(
                             )
                         }
                         is SortableListType.Genre -> {
-                            require(newSortOption is SortOptions.TrackListSortOptions) {
+                            require(newSortOption is SortOptions.TrackListSortOption) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
@@ -108,7 +108,7 @@ class SortMenuStateHolder(
                             )
                         }
                         is SortableListType.Albums -> {
-                            require(newSortOption is SortOptions.AlbumListSortOptions) {
+                            require(newSortOption is SortOptions.AlbumListSortOption) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyAlbumListSortPreferences(
@@ -120,7 +120,7 @@ class SortMenuStateHolder(
                             )
                         }
                         is SortableListType.Playlist -> {
-                            require(newSortOption is SortOptions.PlaylistSortOptions) {
+                            require(newSortOption is SortOptions.PlaylistSortOption) {
                                 "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
                             }
                             sortPreferencesRepository.modifyPlaylistsSortPreferences(
@@ -151,13 +151,13 @@ private fun getSortOptionsForScreen(listType: SortableListType): List<SortOption
     return when (listType) {
         is SortableListType.AllTracks,
         is SortableListType.Genre -> {
-            SortOptions.TrackListSortOptions.entries
+            SortOptions.forTracks
         }
         is SortableListType.Albums -> {
-            SortOptions.AlbumListSortOptions.entries
+            SortOptions.forAlbums
         }
         is SortableListType.Playlist -> {
-            SortOptions.PlaylistSortOptions.entries
+            SortOptions.forPlaylist
         }
     }
 }

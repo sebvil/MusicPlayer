@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent

@@ -74,7 +74,7 @@ class PlaylistDetailsStateHolder(
                     sortButtonState =
                         sortPrefs.let {
                             SortButton.State(
-                                text = sortPrefs.sortOption.stringId,
+                                option = sortPrefs.sortOption,
                                 sortOrder = sortPrefs.sortOrder,
                             )
                         },

@@ -19,10 +19,13 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.model.BasicQueuedTrack
-import com.sebastianvm.musicplayer.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
+import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
 import com.sebastianvm.musicplayer.repository.playback.mediatree.MediaTree
 import com.sebastianvm.musicplayer.repository.queue.QueueRepository
+import com.sebastianvm.musicplayer.util.extensions.toMediaItem
+import com.sebastianvm.musicplayer.util.extensions.uniqueId
 import com.sebastianvm.musicplayer.util.extensions.uri
 import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineDispatcher
@@ -223,11 +226,10 @@ class MediaPlaybackService : MediaLibraryService() {
             withContext(defaultDispatcher) {
                 val newQueue =
                     (0 until timeline.windowCount).map { windowIndex ->
-                        BasicQueuedTrack.fromMediaItem(
-                            mediaItem =
-                                timeline.getWindow(windowIndex, Timeline.Window()).mediaItem,
-                            positionInQueue = windowIndex,
-                        )
+                        timeline
+                            .getWindow(windowIndex, Timeline.Window())
+                            .mediaItem
+                            .toBasicQueuedTrack(positionInQueue = windowIndex)
                     }
                 queueRepository.saveQueue(
                     nowPlayingInfo =
@@ -240,4 +242,17 @@ class MediaPlaybackService : MediaLibraryService() {
             }
         }
     }
+}
+
+private fun MediaItem.toBasicQueuedTrack(positionInQueue: Int): BasicQueuedTrack {
+    return BasicQueuedTrack(
+        trackId = mediaId.toLong(),
+        queuePosition = positionInQueue,
+        queueItemId = uniqueId,
+    )
+}
+
+private fun QueuedTrack.toMediaItem(): MediaItem {
+    val item = track.toMediaItem()
+    return item.buildUpon().setTag(queuePosition).build()
 }

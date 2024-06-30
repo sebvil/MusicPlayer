@@ -54,6 +54,4 @@ object Color {
     val mdThemeDarkOutline = Color(0xFF8d9387)
     val mdThemeDarkInverseOnSurface = Color(0xFF1a1c19)
     val mdThemeDarkInverseSurface = Color(0xFFe2e3dc)
-
-    val error = Color(0xFFba1b1b)
 }

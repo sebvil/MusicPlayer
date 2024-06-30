@@ -6,14 +6,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlaylistRemove
-import com.sebastianvm.musicplayer.R
+import com.sebastianvm.musicplayer.core.resources.RDrawable
 import com.sebastianvm.musicplayer.ui.util.compose.IconState
 import com.sebastianvm.musicplayer.ui.util.compose.ResourceIcon
 import com.sebastianvm.musicplayer.ui.util.compose.VectorIcon
 
 object AppIcons {
     val Album: IconState
-        get() = ResourceIcon(R.drawable.ic_album)
+        get() = ResourceIcon(RDrawable.ic_album)
 
     val Artist: IconState
         get() = VectorIcon(androidx.compose.material.icons.Icons.Default.Person)
@@ -22,7 +22,7 @@ object AppIcons {
         get() = VectorIcon(androidx.compose.material.icons.Icons.Default.Delete)
 
     val Genre: IconState
-        get() = ResourceIcon(resId = R.drawable.ic_genre)
+        get() = ResourceIcon(resId = RDrawable.ic_genre)
 
     val PlayArrow: IconState
         get() = VectorIcon(androidx.compose.material.icons.Icons.Default.PlayArrow)

@@ -1,27 +1,27 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.player.TrackList
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import kotlinx.coroutines.flow.Flow
 
 interface SortPreferencesRepository {
 
     suspend fun modifyTrackListSortPreferences(
-        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOptions>,
+        newPreferences: MediaSortPreferences<SortOptions.TrackListSortOption>,
         trackList: TrackList,
     )
 
     fun getTrackListSortPreferences(
         trackList: TrackList
-    ): Flow<MediaSortPreferences<SortOptions.TrackListSortOptions>>
+    ): Flow<MediaSortPreferences<SortOptions.TrackListSortOption>>
 
     suspend fun modifyAlbumListSortPreferences(
-        newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOptions>
+        newPreferences: MediaSortPreferences<SortOptions.AlbumListSortOption>
     )
 
-    fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOptions>>
+    fun getAlbumListSortPreferences(): Flow<MediaSortPreferences<SortOptions.AlbumListSortOption>>
 
     suspend fun toggleArtistListSortOrder()
 
@@ -37,10 +37,10 @@ interface SortPreferencesRepository {
 
     suspend fun modifyPlaylistsSortPreferences(
         playlistId: Long,
-        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions>,
+        newPreferences: MediaSortPreferences<SortOptions.PlaylistSortOption>,
     )
 
     fun getPlaylistSortPreferences(
         playlistId: Long
-    ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOptions>>
+    ): Flow<MediaSortPreferences<SortOptions.PlaylistSortOption>>
 }

@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.repository.artist
 
-import com.sebastianvm.musicplayer.model.Artist
-import com.sebastianvm.musicplayer.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.Artist
+import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.player.HasArtists
 import kotlinx.coroutines.flow.Flow
 

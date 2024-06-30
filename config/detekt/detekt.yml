@@ -728,7 +728,7 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
-    active: false
+    active: true
   UnusedParameter:
     active: true
     allowedNames: 'ignored|expected'
@@ -785,46 +785,3 @@ style:
     active: true
     excludeImports:
       - 'java.util.*'
-
-Compose:
-  CompositionLocalAllowlist:
-    active: true
-    allowedCompositionLocals:
-      - "LocalPaddingValues"
-      - "LocalListItemContainerColor"
-  ContentEmitterReturningValues:
-    active: true
-  DefaultsVisibility:
-    active: true
-  ModifierComposable:
-    active: true
-  ModifierMissing:
-    active: true
-  ModifierNaming:
-    active: true
-  ModifierNotUsedAtRoot:
-    active: true
-  ModifierReused:
-    active: true
-  ModifierWithoutDefault:
-    active: true
-  MultipleEmitters:
-    active: true
-  MutableParams:
-    active: true
-  ComposableNaming:
-    active: true
-  ComposableParamOrder:
-    active: true
-  PreviewNaming:
-    active: true
-  PreviewPublic:
-    active: true
-  RememberMissing:
-    active: true
-  UnstableCollections:
-    active: true
-  ViewModelForwarding:
-    active: true
-  ViewModelInjection:
-    active: true

@@ -1,16 +1,20 @@
 package com.sebastianvm.musicplayer.repository.fts
 
-import com.sebastianvm.musicplayer.database.daos.AlbumFtsDao
-import com.sebastianvm.musicplayer.database.daos.ArtistFtsDao
-import com.sebastianvm.musicplayer.database.daos.GenreFtsDao
-import com.sebastianvm.musicplayer.database.daos.PlaylistFtsDao
-import com.sebastianvm.musicplayer.database.daos.TrackFtsDao
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.BasicGenre
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.BasicTrack
+import com.sebastianvm.musicplayer.core.database.daos.AlbumFtsDao
+import com.sebastianvm.musicplayer.core.database.daos.ArtistFtsDao
+import com.sebastianvm.musicplayer.core.database.daos.GenreFtsDao
+import com.sebastianvm.musicplayer.core.database.daos.PlaylistFtsDao
+import com.sebastianvm.musicplayer.core.database.daos.TrackFtsDao
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.BasicGenre
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.BasicTrack
+import com.sebastianvm.musicplayer.repository.album.asExternalModel
+import com.sebastianvm.musicplayer.repository.artist.asExternalModel
+import com.sebastianvm.musicplayer.repository.genre.asExternalModel
+import com.sebastianvm.musicplayer.repository.playlist.asExternalModel
+import com.sebastianvm.musicplayer.repository.track.asExternalModel
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.flow.Flow
 

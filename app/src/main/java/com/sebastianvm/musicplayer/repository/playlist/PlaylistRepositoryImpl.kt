@@ -2,14 +2,15 @@ package com.sebastianvm.musicplayer.repository.playlist
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import com.sebastianvm.musicplayer.database.daos.PlaylistDao
-import com.sebastianvm.musicplayer.database.entities.PlaylistEntity
-import com.sebastianvm.musicplayer.database.entities.PlaylistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.core.database.daos.PlaylistDao
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistEntity
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.PlaylistWithTracksEntity
+import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.di.DispatcherProvider.ioDispatcher
-import com.sebastianvm.musicplayer.model.BasicPlaylist
-import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.repository.track.asExternalModel
 import com.sebastianvm.musicplayer.util.extensions.mapValues
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class PlaylistRepositoryImpl(
     override fun getPlaylists(): Flow<List<BasicPlaylist>> {
         return sortPreferencesRepository
             .getPlaylistsListSortOrder()
-            .flatMapLatest { sortOrder -> playlistDao.getPlaylists(sortOrder = sortOrder) }
+            .flatMapLatest { sortOrder -> playlistDao.getPlaylists(sortOrder = sortOrder.name) }
             .mapValues { it.asExternalModel() }
             .distinctUntilChanged()
     }
@@ -87,4 +88,16 @@ class PlaylistRepositoryImpl(
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
         playlistDao.removeItemFromPlaylist(playlistId = playlistId, position = position)
     }
+}
+
+fun PlaylistEntity.asExternalModel(): BasicPlaylist {
+    return BasicPlaylist(id = id, name = playlistName)
+}
+
+fun PlaylistWithTracksEntity.asExternalModel(): Playlist {
+    return Playlist(
+        id = playlist.id,
+        name = playlist.playlistName,
+        tracks = tracks.map { it.asExternalModel() },
+    )
 }

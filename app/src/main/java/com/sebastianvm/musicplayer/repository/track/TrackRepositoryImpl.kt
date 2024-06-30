@@ -1,18 +1,19 @@
 package com.sebastianvm.musicplayer.repository.track
 
-import com.sebastianvm.musicplayer.database.daos.TrackDao
-import com.sebastianvm.musicplayer.database.entities.AlbumEntity
-import com.sebastianvm.musicplayer.database.entities.AlbumsForArtist
-import com.sebastianvm.musicplayer.database.entities.AppearsOnForArtist
-import com.sebastianvm.musicplayer.database.entities.ArtistEntity
-import com.sebastianvm.musicplayer.database.entities.ArtistTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.DetailedTrack
-import com.sebastianvm.musicplayer.database.entities.GenreEntity
-import com.sebastianvm.musicplayer.database.entities.GenreTrackCrossRef
-import com.sebastianvm.musicplayer.database.entities.TrackEntity
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.core.database.daos.TrackDao
+import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
+import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
+import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
+import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.BasicTrackEntity
+import com.sebastianvm.musicplayer.core.database.entities.DetailedTrack
+import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
+import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
+import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
+import com.sebastianvm.musicplayer.core.model.BasicTrack
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.repository.artist.asExternalModel
 import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -48,7 +49,7 @@ class TrackRepositoryImpl(
         genreTrackCrossRefs: Set<GenreTrackCrossRef>,
         artists: Set<ArtistEntity>,
         genres: Set<GenreEntity>,
-        albums: Set<AlbumEntity>,
+        albums: Set<com.sebastianvm.musicplayer.core.database.entities.AlbumEntity>,
         albumsForArtists: Set<AlbumsForArtist>,
         appearsOnForArtists: Set<AppearsOnForArtist>,
     ) {
@@ -70,8 +71,8 @@ class TrackRepositoryImpl(
             .getTrackListSortPreferences(trackList = MediaGroup.AllTracks)
             .flatMapLatest { mediaSortPreferences ->
                 trackDao.getAllTracks(
-                    sortOption = mediaSortPreferences.sortOption,
-                    sortOrder = mediaSortPreferences.sortOrder,
+                    sortOption = mediaSortPreferences.sortOption.name,
+                    sortOrder = mediaSortPreferences.sortOrder.name,
                 )
             }
             .distinctUntilChanged()
@@ -91,8 +92,8 @@ class TrackRepositoryImpl(
             .flatMapLatest { mediaSortPreferences ->
                 trackDao.getTracksForGenre(
                     genreId = genreId,
-                    sortOption = mediaSortPreferences.sortOption,
-                    sortOrder = mediaSortPreferences.sortOrder,
+                    sortOption = mediaSortPreferences.sortOption.name,
+                    sortOrder = mediaSortPreferences.sortOrder.name,
                 )
             }
             .distinctUntilChanged()
@@ -104,8 +105,8 @@ class TrackRepositoryImpl(
             .flatMapLatest { sortPreferences ->
                 trackDao.getTracksForPlaylist(
                     playlistId = playlistId,
-                    sortOption = sortPreferences.sortOption,
-                    sortOrder = sortPreferences.sortOrder,
+                    sortOption = sortPreferences.sortOption.name,
+                    sortOrder = sortPreferences.sortOrder.name,
                 )
             }
             .distinctUntilChanged()
@@ -117,3 +118,13 @@ class TrackRepositoryImpl(
 private fun Flow<List<DetailedTrack>>.asExternalModelFlow(): Flow<List<Track>> {
     return map { tracks -> tracks.map { it.asExternalModel() } }
 }
+
+fun BasicTrackEntity.asExternalModel() = BasicTrack(id, trackName, artists)
+
+fun DetailedTrack.asExternalModel() =
+    Track(
+        id = track.id,
+        name = track.trackName,
+        artists = artists.map { it.asExternalModel() },
+        albumId = album.id,
+    )

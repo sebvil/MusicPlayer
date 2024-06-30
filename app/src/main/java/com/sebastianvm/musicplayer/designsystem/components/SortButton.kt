@@ -11,11 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.util.resources.RString
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.util.extensions.stringId
 
 object SortButton {
-    data class State(@StringRes val text: Int, val sortOrder: MediaSortOrder)
+    data class State(@StringRes val text: Int, val sortOrder: MediaSortOrder) {
+        constructor(
+            option: SortOptions,
+            sortOrder: MediaSortOrder,
+        ) : this(option.stringId, sortOrder)
+    }
 }
 
 @Composable

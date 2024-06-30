@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -16,5 +17,14 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Music Player"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "musicplayer"
+
 include(":app")
+
+include(":core:database")
+
+include(":core:model")
+
+include(":core:resources")

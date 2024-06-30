@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.di
 
 import android.content.Context
-import com.sebastianvm.musicplayer.database.MusicDatabase
+import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
@@ -29,7 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 class AppRepositoryProvider(
     private val context: Context,
     private val dispatcherProvider: DispatcherProvider,
-    private val database: MusicDatabase,
+    private val database: DaoProvider,
     private val jetpackDataStoreProvider: JetpackDataStoreProvider,
     private val applicationScope: CoroutineScope,
 ) : RepositoryProvider {

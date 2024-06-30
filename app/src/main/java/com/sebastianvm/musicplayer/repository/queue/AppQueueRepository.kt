@@ -1,17 +1,19 @@
 package com.sebastianvm.musicplayer.repository.queue
 
-import com.sebastianvm.musicplayer.database.daos.MediaQueueDao
-import com.sebastianvm.musicplayer.database.entities.QueueItemEntity
-import com.sebastianvm.musicplayer.database.entities.asExternalModel
+import com.sebastianvm.musicplayer.core.database.daos.MediaQueueDao
+import com.sebastianvm.musicplayer.core.database.entities.QueueItemEntity
+import com.sebastianvm.musicplayer.core.database.entities.QueueItemWithTrack
+import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
+import com.sebastianvm.musicplayer.core.model.FullQueue
+import com.sebastianvm.musicplayer.core.model.NextUpQueue
+import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.datastore.NowPlayingInfoDataSource
-import com.sebastianvm.musicplayer.model.BasicQueuedTrack
-import com.sebastianvm.musicplayer.model.FullQueue
-import com.sebastianvm.musicplayer.model.NextUpQueue
-import com.sebastianvm.musicplayer.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.model.QueuedTrack
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.datastore.SavedPlaybackInfo
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.repository.track.TrackRepository
+import com.sebastianvm.musicplayer.repository.track.asExternalModel
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -27,7 +29,7 @@ class AppQueueRepository(
 ) : QueueRepository {
 
     override fun getQueue(): Flow<NextUpQueue> {
-        return combine(nowPlayingInfoDataSource.getNowPlayingInfo(), getQueuedTracks()) {
+        return combine(nowPlayingInfoDataSource.getSavedPlaybackInfo(), getQueuedTracks()) {
                 nowPlayingInfo,
                 queuedTracks ->
                 val nowPlayingTrackIndex =
@@ -46,11 +48,12 @@ class AppQueueRepository(
     }
 
     override fun getFullQueue(): Flow<FullQueue?> {
-        return combine(nowPlayingInfoDataSource.getNowPlayingInfo(), getQueuedTracks()) {
-            nowPlayingInfo,
+        return combine(nowPlayingInfoDataSource.getSavedPlaybackInfo(), getQueuedTracks()) {
+            savedPlaybackInfo,
             queuedTracks ->
-            nowPlayingInfo.nowPlayingPositionInQueue.takeUnless { it == -1 } ?: return@combine null
-            FullQueue(nowPlayingInfo = nowPlayingInfo, queue = queuedTracks)
+            savedPlaybackInfo.nowPlayingPositionInQueue.takeUnless { it == -1 }
+                ?: return@combine null
+            FullQueue(nowPlayingInfo = savedPlaybackInfo.asNowPlayingInfo(), queue = queuedTracks)
         }
     }
 
@@ -58,7 +61,7 @@ class AppQueueRepository(
         nowPlayingInfo: NowPlayingInfo,
         queuedTracks: List<BasicQueuedTrack>,
     ) {
-        nowPlayingInfoDataSource.setNowPlayingInfo(nowPlayingInfo)
+        nowPlayingInfoDataSource.savePlaybackInfo(nowPlayingInfo.asSavedPlaybackInfo())
         mediaQueueDao.saveQueue(
             queuedTracks.map { item ->
                 QueueItemEntity(
@@ -94,4 +97,26 @@ class AppQueueRepository(
     private fun getQueuedTracks(): Flow<List<QueuedTrack>> {
         return mediaQueueDao.getQueuedTracks().map { tracks -> tracks.map { it.asExternalModel() } }
     }
+}
+
+fun SavedPlaybackInfo.asNowPlayingInfo(): NowPlayingInfo {
+    return NowPlayingInfo(
+        nowPlayingPositionInQueue = nowPlayingPositionInQueue,
+        lastRecordedPosition = lastRecordedPosition,
+    )
+}
+
+fun NowPlayingInfo.asSavedPlaybackInfo(): SavedPlaybackInfo {
+    return SavedPlaybackInfo(
+        nowPlayingPositionInQueue = nowPlayingPositionInQueue,
+        lastRecordedPosition = lastRecordedPosition,
+    )
+}
+
+fun QueueItemWithTrack.asExternalModel(): QueuedTrack {
+    return QueuedTrack(
+        track = track.asExternalModel(),
+        queuePosition = queueItem.queuePosition,
+        queueItemId = queueItem.queueItemId,
+    )
 }

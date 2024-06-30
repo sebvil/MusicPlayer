@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.playlist.tracksearch
 
+import com.sebastianvm.musicplayer.core.model.Playlist
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.model.Playlist
-import com.sebastianvm.musicplayer.model.Track
 import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider

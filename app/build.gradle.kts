@@ -1,23 +1,16 @@
 plugins {
-    alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.musicplayer.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
-    alias(libs.plugins.detekt)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
-    alias(libs.plugins.ktfmt)
 }
 
 android {
     namespace = "com.sebastianvm.musicplayer"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.sebastianvm.musicplayer"
-        minSdk = 25
-        targetSdk = 34
-        targetSdkPreview = "VanillaIceCream"
         versionCode = 1
         versionName = "1.0"
 
@@ -29,21 +22,12 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
+    kotlinOptions { freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn" }
 
     buildFeatures { compose = true }
 
@@ -54,19 +38,12 @@ android {
             all { it.useJUnitPlatform() }
         }
     }
-
-    ksp { arg("room.generateKotlin", "true") }
 }
 
 dependencies {
     // Kotlin
     implementation(libs.core.ktx)
     implementation(libs.vectordrawable)
-
-    // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.androidx.room.compiler)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -118,24 +95,9 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
 
-    detektPlugins(libs.detekt.compose)
-}
-
-detekt {
-    // Applies the config files on top of detekt"s default config file. `false` by default.
-    buildUponDefaultConfig = true
-
-    // Turns on all the rules. `false` by default.
-    allRules = false
-    enableCompilerPlugin.set(true)
-    config.setFrom(file("../config/detekt/detekt.yml"))
-    autoCorrect = true
-}
-
-ktfmt {
-    kotlinLangStyle()
-
-    manageTrailingCommas.set(true)
+    implementation(projects.core.model)
+    implementation(projects.core.database)
+    implementation(projects.core.resources)
 }
 
 kover {

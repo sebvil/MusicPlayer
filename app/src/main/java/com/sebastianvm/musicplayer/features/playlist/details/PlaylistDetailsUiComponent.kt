@@ -4,14 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,13 +16,14 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
@@ -35,8 +33,6 @@ import com.sebastianvm.musicplayer.features.track.list.TopBar
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.resources.RString
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 
 data class PlaylistDetailsUiComponent(
     override val arguments: PlaylistDetailsArguments,
@@ -160,21 +156,11 @@ fun PlaylistDetailsLayout(
             contentPadding = LocalPaddingValues.current,
         ) {
             item {
-                TextButton(
+                SortButton(
+                    state = state.sortButtonState,
                     onClick = { handle(PlaylistDetailsUserAction.SortButtonClicked) },
                     modifier = Modifier.padding(start = 16.dp),
-                ) {
-                    Text(text = "${stringResource(id = RString.sort_by)}:")
-                    Icon(
-                        imageVector =
-                            if (state.sortButtonState.sortOrder == MediaSortOrder.ASCENDING)
-                                Icons.Default.ArrowUpward
-                            else Icons.Default.ArrowDownward,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Text(text = stringResource(id = state.sortButtonState.text))
-                }
+                )
             }
 
             itemsIndexed(state.tracks, key = { index, item -> index to item.id }) { index, item ->

@@ -7,9 +7,9 @@ import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
 import com.sebastianvm.musicplayer.ArtworkProvider
-import com.sebastianvm.musicplayer.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.model.BasicArtist
-import com.sebastianvm.musicplayer.model.Track
+import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
+import com.sebastianvm.musicplayer.core.model.BasicArtist
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.AlbumRepository
 import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
@@ -268,7 +268,7 @@ class MediaTree(
     //                context.contentResolver.loadThumbnail(uri, Size(500, 500), null)
     //            } catch (e: FileNotFoundException) {
     //                Log.i("000Image", "Image loading not found")
-    //                val d = ContextCompat.getDrawable(context, R.drawable.ic_album)
+    //                val d = ContextCompat.getDrawable(context, RDrawable.ic_album)
     //                Log.i("000Image", "Image loading drawable done")
     //
     //                val bitmap = (d as VectorDrawable).toBitmap()

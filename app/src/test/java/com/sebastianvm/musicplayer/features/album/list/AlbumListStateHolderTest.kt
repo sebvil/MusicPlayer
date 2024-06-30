@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
@@ -18,9 +20,7 @@ import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.FixtureProvider
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import com.sebastianvm.musicplayer.util.toAlbumWithArtists
 import io.kotest.core.spec.style.FreeSpec
@@ -55,7 +55,7 @@ class AlbumListStateHolderTest :
             albumRepositoryDep.albums.value = emptyList()
             sortPreferencesRepositoryDep.albumListSortPreferences.value =
                 MediaSortPreferences(
-                    sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                    sortOption = SortOptions.Album,
                     sortOrder = MediaSortOrder.ASCENDING,
                 )
             testStateHolderState(subject) {
@@ -74,8 +74,8 @@ class AlbumListStateHolderTest :
                 withData(FixtureProvider.albumSortPreferences().toList()) { sortPreferences ->
                     val subject = getSubject()
                     val initialPrefs =
-                        MediaSortPreferences(
-                            sortOption = SortOptions.AlbumListSortOptions.ALBUM,
+                        MediaSortPreferences<SortOptions.AlbumListSortOption>(
+                            sortOption = SortOptions.Album,
                             sortOrder = MediaSortOrder.ASCENDING,
                         )
                     albumRepositoryDep.albums.value = FixtureProvider.albums().toList()
@@ -88,7 +88,7 @@ class AlbumListStateHolderTest :
                             shouldBeInstanceOf<Data<AlbumListState>>()
                             state.sortButtonState shouldBe
                                 SortButton.State(
-                                    text = initialPrefs.sortOption.stringId,
+                                    option = initialPrefs.sortOption,
                                     sortOrder = initialPrefs.sortOrder,
                                 )
                         }
@@ -100,7 +100,7 @@ class AlbumListStateHolderTest :
                                 shouldBeInstanceOf<Data<AlbumListState>>()
                                 state.sortButtonState shouldBe
                                     SortButton.State(
-                                        text = sortPreferences.sortOption.stringId,
+                                        option = sortPreferences.sortOption,
                                         sortOrder = sortPreferences.sortOrder,
                                     )
                             }

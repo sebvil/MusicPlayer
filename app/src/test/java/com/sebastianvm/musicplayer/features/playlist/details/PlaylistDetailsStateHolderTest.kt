@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.details
 
+import com.sebastianvm.musicplayer.core.model.MediaSortOrder
+import com.sebastianvm.musicplayer.core.model.Playlist
+import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -12,7 +15,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.model.Playlist
 import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
@@ -20,9 +22,7 @@ import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRep
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.sort.MediaSortOrder
 import com.sebastianvm.musicplayer.util.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.util.sort.SortOptions
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -46,11 +46,8 @@ class PlaylistDetailsStateHolderTest :
 
         fun TestScope.getSubject(
             playlist: Playlist = FixtureProvider.playlist(id = PLAYLIST_ID),
-            sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOptions> =
-                MediaSortPreferences(
-                    SortOptions.PlaylistSortOptions.TRACK,
-                    MediaSortOrder.ASCENDING,
-                ),
+            sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOption> =
+                MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING),
         ): PlaylistDetailsStateHolder {
             playlistRepositoryDep.playlists.value = listOf(playlist)
 
@@ -104,8 +101,8 @@ class PlaylistDetailsStateHolderTest :
 
         "init subscribes to changes in sort order" {
             val initialSortPreferences =
-                MediaSortPreferences(
-                    sortOption = SortOptions.PlaylistSortOptions.TRACK,
+                MediaSortPreferences<SortOptions.PlaylistSortOption>(
+                    sortOption = SortOptions.Track,
                     sortOrder = MediaSortOrder.ASCENDING,
                 )
 
@@ -115,7 +112,7 @@ class PlaylistDetailsStateHolderTest :
                 val state = awaitItemAs<PlaylistDetailsState.Data>()
                 state.sortButtonState shouldBe
                     SortButton.State(
-                        text = initialSortPreferences.sortOption.stringId,
+                        option = initialSortPreferences.sortOption,
                         sortOrder = initialSortPreferences.sortOrder,
                     )
 
@@ -126,7 +123,7 @@ class PlaylistDetailsStateHolderTest :
                     )
                 awaitItemAs<PlaylistDetailsState.Data>().sortButtonState shouldBe
                     SortButton.State(
-                        text = initialSortPreferences.sortOption.stringId,
+                        option = initialSortPreferences.sortOption,
                         sortOrder = MediaSortOrder.DESCENDING,
                     )
             }

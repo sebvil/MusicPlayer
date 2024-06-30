@@ -60,7 +60,7 @@ class AlbumListStateHolder(
                             albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
                             sortButtonState =
                                 SortButton.State(
-                                    text = sortPrefs.sortOption.stringId,
+                                    option = sortPrefs.sortOption,
                                     sortOrder = sortPrefs.sortOrder,
                                 ),
                         )
