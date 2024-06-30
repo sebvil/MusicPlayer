@@ -45,9 +45,6 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.vectordrawable)
 
-    // Room
-    implementation(libs.room.runtime)
-
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.runtime.ktx)

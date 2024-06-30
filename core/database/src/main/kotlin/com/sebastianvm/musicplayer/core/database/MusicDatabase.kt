@@ -1,18 +1,11 @@
 package com.sebastianvm.musicplayer.core.database
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.sebastianvm.musicplayer.core.database.daos.AlbumDao
-import com.sebastianvm.musicplayer.core.database.daos.AlbumFtsDao
-import com.sebastianvm.musicplayer.core.database.daos.ArtistDao
-import com.sebastianvm.musicplayer.core.database.daos.ArtistFtsDao
-import com.sebastianvm.musicplayer.core.database.daos.GenreDao
-import com.sebastianvm.musicplayer.core.database.daos.GenreFtsDao
-import com.sebastianvm.musicplayer.core.database.daos.MediaQueueDao
-import com.sebastianvm.musicplayer.core.database.daos.PlaylistDao
-import com.sebastianvm.musicplayer.core.database.daos.PlaylistFtsDao
-import com.sebastianvm.musicplayer.core.database.daos.TrackDao
-import com.sebastianvm.musicplayer.core.database.daos.TrackFtsDao
+import com.sebastianvm.musicplayer.core.database.di.DaoProvider
+import com.sebastianvm.musicplayer.core.database.entities.AlbumEntity
 import com.sebastianvm.musicplayer.core.database.entities.AlbumFts
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtistByYear
@@ -33,13 +26,14 @@ import com.sebastianvm.musicplayer.core.database.entities.QueueItemWithTrack
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.core.database.entities.TrackFts
 import com.sebastianvm.musicplayer.core.database.entities.TrackWithPlaylistPositionView
+import kotlinx.coroutines.CoroutineDispatcher
 
 @Database(
     entities =
         [
             TrackEntity::class,
             ArtistEntity::class,
-            com.sebastianvm.musicplayer.core.database.entities.AlbumEntity::class,
+            AlbumEntity::class,
             GenreEntity::class,
             PlaylistEntity::class,
             QueueItemEntity::class,
@@ -65,26 +59,10 @@ import com.sebastianvm.musicplayer.core.database.entities.TrackWithPlaylistPosit
     version = 1,
     exportSchema = false,
 )
-abstract class MusicDatabase : RoomDatabase() {
-    abstract fun getTrackDao(): TrackDao
+internal abstract class MusicDatabase : RoomDatabase(), DaoProvider
 
-    abstract fun getArtistDao(): ArtistDao
-
-    abstract fun getAlbumDao(): AlbumDao
-
-    abstract fun getGenreDao(): GenreDao
-
-    abstract fun getPlaylistDao(): PlaylistDao
-
-    abstract fun getMediaQueueDao(): MediaQueueDao
-
-    abstract fun getTrackFtsDao(): TrackFtsDao
-
-    abstract fun getArtistFtsDao(): ArtistFtsDao
-
-    abstract fun getAlbumFtsDao(): AlbumFtsDao
-
-    abstract fun getGenreFtsDao(): GenreFtsDao
-
-    abstract fun getPlaylistFtsDao(): PlaylistFtsDao
+fun getDaoProvider(context: Context, ioDispatcher: CoroutineDispatcher): DaoProvider {
+    return Room.databaseBuilder(context, MusicDatabase::class.java, "music_database")
+        .setQueryCoroutineContext(context = ioDispatcher)
+        .build()
 }
