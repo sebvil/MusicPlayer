@@ -1,13 +1,13 @@
 package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.core.model.Album
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.util.FixtureProvider

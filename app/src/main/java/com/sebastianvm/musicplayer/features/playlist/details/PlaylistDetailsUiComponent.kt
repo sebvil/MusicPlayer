@@ -50,7 +50,7 @@ data class PlaylistDetailsUiComponent(
             args = arguments,
             navController = navController,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
             playlistRepository = dependencies.repositoryProvider.playlistRepository,
         )
     }

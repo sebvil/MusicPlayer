@@ -5,6 +5,7 @@ import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.core.model.BasicGenre
 import com.sebastianvm.musicplayer.core.model.BasicPlaylist
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
@@ -22,9 +23,7 @@ import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
@@ -82,14 +81,18 @@ class SearchStateHolderTest :
                             testStateHolderState(subject) {
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults = emptyList(),
                                     )
                                 subject.handle(SearchUserAction.TextChanged(QUERY))
 
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Track(TrackRow.State.fromTrack(it))
@@ -106,21 +109,29 @@ class SearchStateHolderTest :
                             testStateHolderState(subject) {
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults = emptyList(),
                                     )
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ARTISTS)
+                                    SearchUserAction.SearchModeChanged(
+                                        com.sebastianvm.musicplayer.core.data.fts.SearchMode.ARTISTS
+                                    )
                                 )
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.ARTISTS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .ARTISTS,
                                         searchResults = emptyList(),
                                     )
                                 subject.handle(SearchUserAction.TextChanged(QUERY))
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.ARTISTS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .ARTISTS,
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Artist(ArtistRow.State.fromArtist(it))
@@ -138,23 +149,31 @@ class SearchStateHolderTest :
                             testStateHolderState(subject) {
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ALBUMS)
+                                    SearchUserAction.SearchModeChanged(
+                                        com.sebastianvm.musicplayer.core.data.fts.SearchMode.ALBUMS
+                                    )
                                 )
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.ALBUMS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .ALBUMS,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(SearchUserAction.TextChanged(QUERY))
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.ALBUMS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .ALBUMS,
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Album(AlbumRow.State.fromAlbum(it))
@@ -171,23 +190,31 @@ class SearchStateHolderTest :
                             testStateHolderState(subject) {
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.GENRES)
+                                    SearchUserAction.SearchModeChanged(
+                                        com.sebastianvm.musicplayer.core.data.fts.SearchMode.GENRES
+                                    )
                                 )
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.GENRES,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .GENRES,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(SearchUserAction.TextChanged(QUERY))
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.GENRES,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .GENRES,
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Genre(GenreRow.State.fromGenre(it))
@@ -205,23 +232,32 @@ class SearchStateHolderTest :
                             testStateHolderState(subject) {
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.TRACKS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .TRACKS,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.PLAYLISTS)
+                                    SearchUserAction.SearchModeChanged(
+                                        com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                            .PLAYLISTS
+                                    )
                                 )
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.PLAYLISTS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .PLAYLISTS,
                                         searchResults = emptyList(),
                                     )
 
                                 subject.handle(SearchUserAction.TextChanged(QUERY))
                                 awaitItem() shouldBe
                                     SearchState(
-                                        selectedOption = SearchMode.PLAYLISTS,
+                                        selectedOption =
+                                            com.sebastianvm.musicplayer.core.data.fts.SearchMode
+                                                .PLAYLISTS,
                                         searchResults =
                                             queryResults.map {
                                                 SearchResult.Playlist(

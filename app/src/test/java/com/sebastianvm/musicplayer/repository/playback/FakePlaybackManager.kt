@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.repository.playback
 
-import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 

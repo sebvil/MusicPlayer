@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
+import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -10,8 +11,6 @@ import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -43,7 +42,8 @@ sealed interface ArtistListUserAction : UserAction {
 class ArtistListStateHolder(
     artistRepository: ArtistRepository,
     private val navController: NavController,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
     override val state: StateFlow<UiState<ArtistListState>> =

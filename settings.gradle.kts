@@ -1,5 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:common")
+
+
+include(":core:data")
+
+
 include(":core:datastore")
 
 

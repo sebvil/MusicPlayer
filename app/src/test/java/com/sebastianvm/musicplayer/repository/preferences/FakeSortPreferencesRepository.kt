@@ -1,11 +1,11 @@
 package com.sebastianvm.musicplayer.repository.preferences
 
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
+import com.sebastianvm.musicplayer.core.model.TrackList
 import com.sebastianvm.musicplayer.core.model.not
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.player.TrackList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -16,7 +16,8 @@ typealias TrackListSortPreferencesMap =
 
 typealias PlaylistPreferencesMap = Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>>
 
-class FakeSortPreferencesRepository : SortPreferencesRepository {
+class FakeSortPreferencesRepository :
+    com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository {
 
     val albumListSortPreferences:
         MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOption>> =

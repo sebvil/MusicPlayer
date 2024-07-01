@@ -1,12 +1,13 @@
 package com.sebastianvm.musicplayer.repository.fts
 
+import com.sebastianvm.musicplayer.core.common.extensions.mapValues
+import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.core.model.BasicGenre
 import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 import com.sebastianvm.musicplayer.core.model.BasicTrack
 import com.sebastianvm.musicplayer.core.model.Track
-import com.sebastianvm.musicplayer.util.extensions.mapValues
 import com.sebastianvm.musicplayer.util.toBasicTrack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

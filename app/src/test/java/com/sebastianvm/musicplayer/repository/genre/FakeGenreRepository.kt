@@ -1,8 +1,9 @@
 package com.sebastianvm.musicplayer.repository.genre
 
+import com.sebastianvm.musicplayer.core.common.extensions.mapValues
+import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
 import com.sebastianvm.musicplayer.core.model.BasicGenre
 import com.sebastianvm.musicplayer.core.model.Genre
-import com.sebastianvm.musicplayer.util.extensions.mapValues
 import com.sebastianvm.musicplayer.util.toBasicGenre
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

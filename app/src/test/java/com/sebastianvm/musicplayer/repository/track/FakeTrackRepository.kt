@@ -11,8 +11,8 @@ import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 import com.sebastianvm.musicplayer.core.model.Genre
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.Track
-import com.sebastianvm.musicplayer.player.MediaGroup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

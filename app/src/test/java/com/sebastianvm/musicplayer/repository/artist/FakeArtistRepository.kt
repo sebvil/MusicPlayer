@@ -4,8 +4,8 @@ import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.core.model.Artist
 import com.sebastianvm.musicplayer.core.model.BasicArtist
-import com.sebastianvm.musicplayer.player.HasArtists
-import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.core.model.HasArtists
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.util.FixtureProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,5 +1,9 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.core.model.HasTracks
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -8,11 +12,6 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.player.HasTracks
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.repository.queue.QueueRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -72,7 +71,7 @@ class TrackContextMenuStateHolder(
     private val arguments: TrackContextMenuArguments,
     trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
-    private val queueRepository: QueueRepository,
+    private val queueRepository: com.sebastianvm.musicplayer.core.data.queue.QueueRepository,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {

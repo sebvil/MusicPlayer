@@ -30,7 +30,7 @@ data class PlaylistContextMenu(
         return PlaylistContextMenuStateHolder(
             arguments = arguments,
             playlistRepository = dependencies.repositoryProvider.playlistRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
             delegate = delegate,
         )
     }

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -9,7 +10,6 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository

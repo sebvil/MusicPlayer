@@ -10,10 +10,10 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
-import com.sebastianvm.musicplayer.repository.playback.PlaybackState
-import com.sebastianvm.musicplayer.repository.playback.TrackInfo
-import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
+import com.sebastianvm.musicplayer.core.data.playback.NotPlayingState
+import com.sebastianvm.musicplayer.core.data.playback.PlaybackState
+import com.sebastianvm.musicplayer.core.data.playback.TrackInfo
+import com.sebastianvm.musicplayer.core.data.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.util.extensions.orZero
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope

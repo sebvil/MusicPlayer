@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
-import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.util.FixtureProvider

@@ -24,7 +24,7 @@ data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
         return GenreContextMenuStateHolder(
             arguments = arguments,
             genreRepository = dependencies.repositoryProvider.genreRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
         )
     }
 

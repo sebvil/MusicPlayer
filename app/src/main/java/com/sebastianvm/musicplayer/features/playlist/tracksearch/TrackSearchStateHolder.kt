@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.playlist.tracksearch
 
+import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder

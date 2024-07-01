@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -13,7 +14,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository

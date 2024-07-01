@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
+import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.core.model.HasArtists
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.player.HasArtists
-import com.sebastianvm.musicplayer.repository.artist.ArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading

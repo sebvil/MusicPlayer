@@ -57,7 +57,7 @@ object QueueUiComponent :
     override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(dependencies: Dependencies): QueueStateHolder {
-        return QueueStateHolder(queueRepository = dependencies.repositoryProvider.queueRepository)
+        return QueueStateHolder(queueRepository = dependencies.queueRepository)
     }
 
     @Composable

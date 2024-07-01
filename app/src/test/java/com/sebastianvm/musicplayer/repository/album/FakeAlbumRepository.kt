@@ -1,9 +1,10 @@
 package com.sebastianvm.musicplayer.repository.album
 
+import com.sebastianvm.musicplayer.core.common.extensions.mapValues
+import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicAlbum
-import com.sebastianvm.musicplayer.util.extensions.mapValues
 import com.sebastianvm.musicplayer.util.toAlbumWithArtists
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

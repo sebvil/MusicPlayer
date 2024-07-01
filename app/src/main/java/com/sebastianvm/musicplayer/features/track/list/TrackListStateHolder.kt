@@ -1,5 +1,8 @@
 package com.sebastianvm.musicplayer.features.track.list
 
+import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -9,10 +12,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.repository.track.TrackRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -44,7 +43,8 @@ class TrackListStateHolder(
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
-    sortPreferencesRepository: SortPreferencesRepository,
+    sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
 ) : StateHolder<TrackListState, TrackListUserAction> {
 

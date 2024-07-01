@@ -46,7 +46,7 @@ data class GenreDetailsUiComponent(
             navController = navController,
             genreRepository = dependencies.repositoryProvider.genreRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
         )
     }
 

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.list
 
+import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
@@ -11,8 +12,6 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.repository.album.AlbumRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -43,7 +42,8 @@ sealed interface AlbumListUserAction : UserAction {
 class AlbumListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     albumRepository: AlbumRepository,
-    sortPreferencesRepository: SortPreferencesRepository,
+    sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     private val navController: NavController,
 ) : StateHolder<UiState<AlbumListState>, AlbumListUserAction> {
 

@@ -2,14 +2,14 @@ package com.sebastianvm.musicplayer.features.artistsmenu
 
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.model.HasArtists
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.player.HasArtists
-import com.sebastianvm.musicplayer.player.MediaGroup
 import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
