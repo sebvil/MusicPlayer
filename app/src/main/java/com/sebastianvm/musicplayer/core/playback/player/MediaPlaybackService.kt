@@ -1,6 +1,6 @@
 @file:Suppress("InjectDispatcher")
 
-package com.sebastianvm.musicplayer.player
+package com.sebastianvm.musicplayer.core.playback.player
 
 import android.util.Log
 import androidx.media3.common.AudioAttributes
@@ -94,8 +94,7 @@ class MediaPlaybackService : MediaLibraryService() {
                     player.prepare()
                     player.play()
                 }
-            }
-        )
+            })
         mediaSession =
             MediaLibrarySession.Builder(
                     this,
@@ -108,8 +107,7 @@ class MediaPlaybackService : MediaLibraryService() {
                         ): ListenableFuture<LibraryResult<MediaItem>> {
                             Log.i("000Player", "get root")
                             return Futures.immediateFuture(
-                                LibraryResult.ofItem(mediaTree.getRoot(), params)
-                            )
+                                LibraryResult.ofItem(mediaTree.getRoot(), params))
                         }
 
                         override fun onGetChildren(

@@ -29,7 +29,7 @@
         tools:targetApi="tiramisu">
 
         <service
-            android:name=".player.MediaPlaybackService"
+            android:name=".core.playback.player.MediaPlaybackService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>

@@ -14,14 +14,15 @@ import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.PlaybackState
 import com.sebastianvm.musicplayer.core.model.TrackInfo
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
+import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackService
 import com.sebastianvm.musicplayer.util.extensions.orZero
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class MediaPlaybackClient(private val context: Context, private val externalScope: CoroutineScope) {
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
@@ -57,8 +58,7 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                             artworkUri = controller.mediaMetadata.artworkUri?.toString().orEmpty(),
                             trackLength =
                                 controller.contentDuration.milliseconds.coerceAtLeast(
-                                    1.milliseconds
-                                ),
+                                    1.milliseconds),
                         ),
                     isPlaying = controller.isPlaying,
                     currentTrackProgress =
@@ -119,8 +119,7 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                         isUpdatingPosition = false
                     }
                 }
-            }
-        )
+            })
         launchCurrentPlayTimeUpdates()
     }
 
