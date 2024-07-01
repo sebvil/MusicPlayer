@@ -28,7 +28,7 @@ data class AlbumContextMenu(
         return AlbumContextMenuStateHolder(
             arguments = arguments,
             albumRepository = dependencies.repositoryProvider.albumRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
             navController = navController,
         )
     }

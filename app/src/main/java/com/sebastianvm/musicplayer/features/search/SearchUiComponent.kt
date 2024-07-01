@@ -51,7 +51,6 @@ import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.repository.fts.SearchMode
 import com.sebastianvm.musicplayer.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.components.Permission
@@ -207,7 +206,8 @@ fun SearchLayout(
 
     Column(modifier = modifier.fillMaxHeight().clearFocusOnTouch(focusManager)) {
         SingleSelectFilterChipGroup(
-            options = SearchMode.entries.toImmutableList(),
+            options =
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = 16.dp),
             getDisplayName = { option -> stringResource(id = option.res) },

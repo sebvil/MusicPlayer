@@ -7,7 +7,7 @@ package com.sebastianvm.musicplayer.features.track.list // package
 // import com.sebastianvm.musicplayer.R
 // import com.sebastianvm.musicplayer.core.database.entities.Track
 // import com.sebastianvm.musicplayer.player.MediaGroup
-// import com.sebastianvm.musicplayer.repository.playback.PlaybackResult
+// import com.sebastianvm.musicplayer.core.data.playback.PlaybackResult
 // import com.sebastianvm.musicplayer.ui.components.MediaArtImageStatePreviewParamsProvider
 // import com.sebastianvm.musicplayer.ui.components.lists.ModelListItem
 // // import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil

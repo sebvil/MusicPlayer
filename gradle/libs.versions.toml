@@ -26,6 +26,7 @@ turbine = "1.1.0"
 vectordrawable = "1.2.0"
 reorderable = "2.1.1"
 work-runtime-ktx = "2.9.0"
+annotationJvm = "1.8.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -46,6 +47,7 @@ kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", ve
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -71,6 +73,7 @@ detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gr
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
 ktfmt-gradlePlugin = { group = "com.ncorti.ktfmt.gradle", name = "plugin", version.ref = "ktfmt" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotationJvm" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
@@ -90,8 +93,6 @@ musicplayer-jvm-library = { id = "musicplayer.jvm.library", version = "unspecifi
 
 [bundles]
 testing = [
-    "fixture-monkey",
-    "fixture-monkey-kotest",
     "kotest-assertions-core",
     "kotest-framework-datatest",
     "kotest-runner-junit5",

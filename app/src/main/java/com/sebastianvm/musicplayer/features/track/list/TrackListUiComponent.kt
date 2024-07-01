@@ -37,7 +37,7 @@ data class TrackListUiComponent(val navController: NavController) :
             navController = navController,
             trackRepository = dependencies.repositoryProvider.trackRepository,
             sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
         )
     }
 

@@ -12,10 +12,10 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.core.data.music.MusicRepository
 import com.sebastianvm.musicplayer.core.resources.RDrawable
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.repository.music.MusicRepository
 
 class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
@@ -98,6 +98,6 @@ class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     companion object {
-        private const val CHANNEL_ID = "com.sebastianvm.musicplayer.repository.SCAN"
+        private const val CHANNEL_ID = "com.sebastianvm.musicplayer.core.data.SCAN"
     }
 }

@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.features.player
 
+import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.model.NotPlayingState
+import com.sebastianvm.musicplayer.core.model.TrackPlayingState
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
-import com.sebastianvm.musicplayer.repository.playback.NotPlayingState
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
-import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -166,7 +166,7 @@ fun getPlayerStateHolder(
     props: Flow<PlayerProps>,
 ): PlayerStateHolder {
     return PlayerStateHolder(
-        playbackManager = dependencies.repositoryProvider.playbackManager,
+        playbackManager = dependencies.playbackManager,
         delegate = delegate,
         props = props,
     )

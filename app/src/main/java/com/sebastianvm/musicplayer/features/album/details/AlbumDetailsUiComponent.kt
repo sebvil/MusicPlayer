@@ -76,7 +76,7 @@ data class AlbumDetailsUiComponent(
             args = arguments,
             navController = navController,
             albumRepository = dependencies.repositoryProvider.albumRepository,
-            playbackManager = dependencies.repositoryProvider.playbackManager,
+            playbackManager = dependencies.playbackManager,
         )
     }
 

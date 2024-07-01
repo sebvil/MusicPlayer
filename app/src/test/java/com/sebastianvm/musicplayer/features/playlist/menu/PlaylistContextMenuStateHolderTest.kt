@@ -1,9 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.menu
 
-import com.sebastianvm.musicplayer.player.MediaGroup
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
@@ -13,12 +12,14 @@ import io.kotest.matchers.shouldBe
 
 class PlaylistContextMenuStateHolderTest :
     FreeSpec({
-        lateinit var playlistRepositoryDep: FakePlaylistRepository
+        lateinit var playlistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
         lateinit var playbackManagerDep: FakePlaybackManager
         var delegateDeletePlaylistInvocationCount = 0
 
         beforeTest {
-            playlistRepositoryDep = FakePlaylistRepository()
+            playlistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository()
             playbackManagerDep = FakePlaybackManager()
             delegateDeletePlaylistInvocationCount = 0
         }

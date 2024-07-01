@@ -1,12 +1,10 @@
 package com.sebastianvm.musicplayer.features.playlist.tracksearch
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -15,13 +13,17 @@ import io.kotest.matchers.shouldBe
 
 class TrackSearchStateHolderTest :
     FreeSpec({
-        lateinit var playlistRepositoryDep: FakePlaylistRepository
-        lateinit var ftsRepositoryDep: FakeFullTextSearchRepository
+        lateinit var playlistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
+        lateinit var ftsRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.fts.FakeFullTextSearchRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
-            playlistRepositoryDep = FakePlaylistRepository()
-            ftsRepositoryDep = FakeFullTextSearchRepository()
+            playlistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository()
+            ftsRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.fts.FakeFullTextSearchRepository()
             navControllerDep = FakeNavController()
         }
 

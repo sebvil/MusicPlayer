@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -10,8 +11,6 @@ import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiCo
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
-import com.sebastianvm.musicplayer.repository.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -70,7 +69,8 @@ sealed interface PlaylistListUserAction : UserAction {
 class PlaylistListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     private val navController: NavController,
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 

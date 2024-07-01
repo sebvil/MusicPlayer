@@ -1,12 +1,11 @@
 package com.sebastianvm.musicplayer.features.sort
 
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.not
 import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
@@ -21,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SortMenuState, SortMenuUserAction> {
 

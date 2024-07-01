@@ -1,5 +1,17 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:common-test")
+
+
+include(":core:data-test")
+
+
+include(":core:common")
+
+
+include(":core:data")
+
+
 include(":core:datastore")
 
 

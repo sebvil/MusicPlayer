@@ -3,8 +3,8 @@ package com.sebastianvm.musicplayer.util.extensions
 import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.model.Track
-import com.sebastianvm.musicplayer.util.uri.UriUtils
 import java.util.UUID
 
 fun Track.toMediaItem(): MediaItem {

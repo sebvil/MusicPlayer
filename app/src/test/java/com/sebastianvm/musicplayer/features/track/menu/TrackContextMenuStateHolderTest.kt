@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -9,11 +11,7 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
-import com.sebastianvm.musicplayer.repository.track.FakeTrackRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
@@ -24,14 +22,18 @@ import io.kotest.matchers.shouldBe
 
 class TrackContextMenuStateHolderTest :
     FreeSpec({
-        lateinit var trackRepositoryDep: FakeTrackRepository
-        lateinit var playlistRepositoryDep: FakePlaylistRepository
+        lateinit var trackRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository
+        lateinit var playlistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
         lateinit var queueRepositoryDep: FakeQueueRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
-            trackRepositoryDep = FakeTrackRepository()
-            playlistRepositoryDep = FakePlaylistRepository()
+            trackRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository()
+            playlistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository()
             queueRepositoryDep = FakeQueueRepository()
             navControllerDep = FakeNavController()
         }

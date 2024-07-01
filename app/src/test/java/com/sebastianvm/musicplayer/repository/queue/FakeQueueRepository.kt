@@ -1,19 +1,19 @@
 package com.sebastianvm.musicplayer.repository.queue
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider.queueItemsFixtures
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.FullQueue
 import com.sebastianvm.musicplayer.core.model.NextUpQueue
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
-import com.sebastianvm.musicplayer.util.FixtureProvider
-import com.sebastianvm.musicplayer.util.FixtureProvider.queueItemsFixtures
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 
-class FakeQueueRepository : QueueRepository {
+class FakeQueueRepository : com.sebastianvm.musicplayer.core.data.queue.QueueRepository {
 
     val queuedTracks = MutableStateFlow(queueItemsFixtures())
     val nowPlayingInfo: MutableStateFlow<NowPlayingInfo> =

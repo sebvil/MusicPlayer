@@ -21,10 +21,7 @@ class MusicPlayerApplication : Application() {
             ): T {
                 when (modelClass) {
                     MainViewModel::class.java -> {
-                        return MainViewModel(
-                            playbackManager = dependencies.repositoryProvider.playbackManager
-                        )
-                            as T
+                        return MainViewModel(playbackManager = dependencies.playbackManager) as T
                     }
                     else -> throw IllegalArgumentException("Unknown ViewModel class")
                 }

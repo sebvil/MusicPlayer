@@ -43,6 +43,8 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.resources)
     implementation(projects.core.datastore)
+    implementation(projects.core.data)
+    implementation(projects.core.common)
 
     // Kotlin
     implementation(libs.core.ktx)
@@ -93,6 +95,8 @@ dependencies {
 
     // Testing
     testImplementation(libs.bundles.testing)
+    testImplementation(projects.core.dataTest)
+    testImplementation(projects.core.commonTest)
 }
 
 kover {

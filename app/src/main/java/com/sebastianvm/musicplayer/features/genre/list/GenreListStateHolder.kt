@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
+import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
@@ -10,8 +11,6 @@ import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.repository.genre.GenreRepository
-import com.sebastianvm.musicplayer.repository.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.Data
 import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
 import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
@@ -41,7 +40,8 @@ sealed interface GenreListUserAction : UserAction {
 class GenreListStateHolder(
     genreRepository: GenreRepository,
     private val navController: NavController,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val sortPreferencesRepository:
+        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
 

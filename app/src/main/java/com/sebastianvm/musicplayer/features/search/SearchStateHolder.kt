@@ -1,6 +1,9 @@
 package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
+import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -16,10 +19,6 @@ import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponen
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.player.MediaGroup
-import com.sebastianvm.musicplayer.repository.fts.FullTextSearchRepository
-import com.sebastianvm.musicplayer.repository.fts.SearchMode
-import com.sebastianvm.musicplayer.repository.playback.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
@@ -38,7 +37,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class SearchQuery(val term: String, val mode: SearchMode)
+data class SearchQuery(
+    val term: String,
+    val mode: com.sebastianvm.musicplayer.core.data.fts.SearchMode,
+)
 
 sealed interface SearchResult<T> {
     val state: T
@@ -65,15 +67,19 @@ sealed interface SearchResult<T> {
     }
 }
 
-data class SearchState(val selectedOption: SearchMode, val searchResults: List<SearchResult<*>>) :
-    State
+data class SearchState(
+    val selectedOption: com.sebastianvm.musicplayer.core.data.fts.SearchMode,
+    val searchResults: List<SearchResult<*>>,
+) : State
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val result: SearchResult<*>) : SearchUserAction
 
     data class TextChanged(val newText: String) : SearchUserAction
 
-    data class SearchModeChanged(val newMode: SearchMode) : SearchUserAction
+    data class SearchModeChanged(
+        val newMode: com.sebastianvm.musicplayer.core.data.fts.SearchMode
+    ) : SearchUserAction
 }
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -84,28 +90,34 @@ class SearchStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SearchState, SearchUserAction> {
 
-    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.TRACKS))
+    private val query =
+        MutableStateFlow(
+            SearchQuery(
+                term = "",
+                mode = com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS,
+            )
+        )
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
-                SearchMode.TRACKS ->
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS ->
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
                         tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
-                SearchMode.ARTISTS ->
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.ARTISTS ->
                     ftsRepository.searchArtists(newQuery.term).map { artists ->
                         artists.map { SearchResult.Artist(ArtistRow.State.fromArtist(it)) }
                     }
-                SearchMode.ALBUMS ->
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.ALBUMS ->
                     ftsRepository.searchAlbums(newQuery.term).map { albums ->
                         albums.map { SearchResult.Album(AlbumRow.State.fromAlbum(it)) }
                     }
-                SearchMode.GENRES ->
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.GENRES ->
                     ftsRepository.searchGenres(newQuery.term).map { genres ->
                         genres.map { SearchResult.Genre(GenreRow.State.fromGenre(it)) }
                     }
-                SearchMode.PLAYLISTS ->
+                com.sebastianvm.musicplayer.core.data.fts.SearchMode.PLAYLISTS ->
                     ftsRepository.searchPlaylists(newQuery.term).map { playlists ->
                         playlists.map { SearchResult.Playlist(PlaylistRow.State.fromPlaylist(it)) }
                     }
@@ -120,7 +132,11 @@ class SearchStateHolder(
                 scope = stateHolderScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                    SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
+                    SearchState(
+                        selectedOption =
+                            com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS,
+                        searchResults = emptyList(),
+                    ),
             )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
@@ -191,7 +207,7 @@ fun getSearchStateHolder(
 ): SearchStateHolder {
     return SearchStateHolder(
         ftsRepository = dependencies.repositoryProvider.searchRepository,
-        playbackManager = dependencies.repositoryProvider.playbackManager,
+        playbackManager = dependencies.playbackManager,
         navController = navController,
     )
 }

@@ -14,7 +14,7 @@ profile:
 #  - name: <SomeDisabledInspectionId>
 #    paths:
 #      - <path/where/not/run/inspection>
-projectJDK: 17 #(Applied in CI/CD pipeline)
+projectJDK: "17" #(Applied in CI/CD pipeline)
 #Execute shell command before Qodana execution (Applied in CI/CD pipeline)
 bootstrap: ./gradlew assemble
 #Install IDE plugins before Qodana execution (Applied in CI/CD pipeline)
@@ -25,3 +25,7 @@ linter: jetbrains/qodana-jvm-android:latest
 include:
   - name: UnusedReceiverParameter
   - name: UnusedSymbol
+  - name: UnnecessaryFullyQualifiedName
+  - name: UnnecessarilyQualifiedStaticallyImportedElement
+  - name: OnDemandImport
+  - name: MISSORTED_IMPORTS

@@ -1,13 +1,12 @@
 package com.sebastianvm.musicplayer.features.queue
 
+import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
-import com.sebastianvm.musicplayer.repository.queue.QueueRepository
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
 import com.sebastianvm.musicplayer.ui.util.stateHolderScope
-import com.sebastianvm.musicplayer.util.uri.UriUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +35,7 @@ sealed interface QueueUserAction : UserAction {
 
 class QueueStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val queueRepository: QueueRepository,
+    private val queueRepository: com.sebastianvm.musicplayer.core.data.queue.QueueRepository,
 ) : StateHolder<QueueState, QueueUserAction> {
 
     override val state: StateFlow<QueueState> =
