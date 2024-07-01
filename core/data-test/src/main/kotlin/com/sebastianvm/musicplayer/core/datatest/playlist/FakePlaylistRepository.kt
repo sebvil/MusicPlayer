@@ -1,11 +1,11 @@
-package com.sebastianvm.musicplayer.repository.playlist
+package com.sebastianvm.musicplayer.core.datatest.playlist
 
 import com.sebastianvm.musicplayer.core.common.extensions.mapValues
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicPlaylist
 import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 import com.sebastianvm.musicplayer.core.model.Playlist
-import com.sebastianvm.musicplayer.util.FixtureProvider
-import com.sebastianvm.musicplayer.util.toBasicPlaylist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 
 class FakePlaylistRepository : PlaylistRepository {
 
-    val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(FixtureProvider.playlists())
+    val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(emptyList())
 
     var shouldPlaylistCreationFail: Boolean = false
 

@@ -1,12 +1,12 @@
-package com.sebastianvm.musicplayer.repository.artist
+package com.sebastianvm.musicplayer.core.datatest.artist
 
+import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.core.model.Artist
 import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.core.model.HasArtists
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.mapNotNull
 
 class FakeArtistRepository : ArtistRepository {
 
-    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(FixtureProvider.artists())
+    val artists: MutableStateFlow<List<Artist>> = MutableStateFlow(emptyList())
     val albumsForArtists: MutableStateFlow<List<AlbumsForArtist>> = MutableStateFlow(emptyList())
     val artistTrackCrossRefs: MutableStateFlow<List<ArtistTrackCrossRef>> =
         MutableStateFlow(emptyList())

@@ -1,6 +1,12 @@
 package com.sebastianvm.musicplayer.features.search
 
 import android.app.SearchManager.QUERY
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.datatest.extensions.toAlbumWithArtists
+import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicArtist
+import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicGenre
+import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicPlaylist
+import com.sebastianvm.musicplayer.core.datatest.fts.FakeFullTextSearchRepository
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.core.model.BasicGenre
@@ -23,15 +29,9 @@ import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.repository.fts.FakeFullTextSearchRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.testStateHolderState
-import com.sebastianvm.musicplayer.util.toAlbumWithArtists
-import com.sebastianvm.musicplayer.util.toBasicArtist
-import com.sebastianvm.musicplayer.util.toBasicGenre
-import com.sebastianvm.musicplayer.util.toBasicPlaylist
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe

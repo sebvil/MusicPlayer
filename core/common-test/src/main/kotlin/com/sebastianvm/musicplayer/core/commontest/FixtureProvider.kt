@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.util
+package com.sebastianvm.musicplayer.core.commontest
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
@@ -21,8 +21,8 @@ import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.Track
-import com.sebastianvm.musicplayer.repository.playback.TrackInfo
-import com.sebastianvm.musicplayer.repository.playback.TrackPlayingState
+import com.sebastianvm.musicplayer.core.model.TrackInfo
+import com.sebastianvm.musicplayer.core.model.TrackPlayingState
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.Codepoint
 import io.kotest.property.arbitrary.az

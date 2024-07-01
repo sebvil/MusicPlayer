@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.util
+package com.sebastianvm.musicplayer.core.datatest.extensions
 
 import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.AlbumWithArtists

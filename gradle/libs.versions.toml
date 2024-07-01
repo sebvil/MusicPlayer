@@ -93,8 +93,6 @@ musicplayer-jvm-library = { id = "musicplayer.jvm.library", version = "unspecifi
 
 [bundles]
 testing = [
-    "fixture-monkey",
-    "fixture-monkey-kotest",
     "kotest-assertions-core",
     "kotest-framework-datatest",
     "kotest-runner-junit5",

@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicPlaylist
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.resources.RString
@@ -11,13 +13,9 @@ import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.repository.playlist.FakePlaylistRepository
-import com.sebastianvm.musicplayer.repository.preferences.FakeSortPreferencesRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
-import com.sebastianvm.musicplayer.util.toBasicPlaylist
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize
@@ -25,13 +23,18 @@ import io.kotest.matchers.shouldBe
 
 class PlaylistListStateHolderTest :
     FreeSpec({
-        lateinit var playlistRepositoryDep: FakePlaylistRepository
-        lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
+        lateinit var playlistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
+        lateinit var sortPreferencesRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.preferences.FakeSortPreferencesRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
-            playlistRepositoryDep = FakePlaylistRepository()
-            sortPreferencesRepositoryDep = FakeSortPreferencesRepository()
+            playlistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository()
+            sortPreferencesRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.preferences
+                    .FakeSortPreferencesRepository()
             navControllerDep = FakeNavController()
         }
 

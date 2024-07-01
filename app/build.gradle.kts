@@ -95,6 +95,8 @@ dependencies {
 
     // Testing
     testImplementation(libs.bundles.testing)
+    testImplementation(projects.core.dataTest)
+    testImplementation(projects.core.commonTest)
 }
 
 kover {

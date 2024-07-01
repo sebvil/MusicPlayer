@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.repository.preferences
+package com.sebastianvm.musicplayer.core.datatest.preferences
 
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaGroup

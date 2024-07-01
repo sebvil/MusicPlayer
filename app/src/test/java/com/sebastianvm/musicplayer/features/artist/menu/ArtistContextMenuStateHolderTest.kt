@@ -1,9 +1,8 @@
 package com.sebastianvm.musicplayer.features.artist.menu
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
@@ -13,11 +12,13 @@ import io.kotest.matchers.shouldBe
 
 class ArtistContextMenuStateHolderTest :
     FreeSpec({
-        lateinit var artistRepositoryDep: FakeArtistRepository
+        lateinit var artistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.artist.FakeArtistRepository
         lateinit var playbackManagerDep: FakePlaybackManager
 
         beforeTest {
-            artistRepositoryDep = FakeArtistRepository()
+            artistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.artist.FakeArtistRepository()
             playbackManagerDep = FakePlaybackManager()
         }
 

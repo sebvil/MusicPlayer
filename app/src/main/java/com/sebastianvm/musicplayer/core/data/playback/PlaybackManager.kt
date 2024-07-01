@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.core.data.playback
 
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import kotlin.time.Duration
+import com.sebastianvm.musicplayer.core.model.PlaybackState
 import kotlinx.coroutines.flow.Flow
 
 interface PlaybackManager {
@@ -22,20 +22,3 @@ interface PlaybackManager {
 
     fun seekToTrackPosition(position: Long)
 }
-
-sealed interface PlaybackState
-
-data class TrackPlayingState(
-    val trackInfo: TrackInfo,
-    val isPlaying: Boolean,
-    val currentTrackProgress: Duration,
-) : PlaybackState
-
-data object NotPlayingState : PlaybackState
-
-data class TrackInfo(
-    val title: String,
-    val artists: String,
-    val artworkUri: String,
-    val trackLength: Duration,
-)

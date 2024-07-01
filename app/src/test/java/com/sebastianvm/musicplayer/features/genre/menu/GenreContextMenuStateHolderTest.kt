@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.datatest.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.repository.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState

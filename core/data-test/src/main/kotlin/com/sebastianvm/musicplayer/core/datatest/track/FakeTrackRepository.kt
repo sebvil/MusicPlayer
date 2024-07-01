@@ -1,5 +1,6 @@
-package com.sebastianvm.musicplayer.repository.track
+package com.sebastianvm.musicplayer.core.datatest.track
 
+import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
@@ -8,9 +9,6 @@ import com.sebastianvm.musicplayer.core.database.entities.GenreEntity
 import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.PlaylistTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
-import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
-import com.sebastianvm.musicplayer.core.model.BasicPlaylist
-import com.sebastianvm.musicplayer.core.model.Genre
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.Track
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,13 +20,10 @@ import kotlinx.coroutines.flow.map
 class FakeTrackRepository : TrackRepository {
 
     val tracks: MutableStateFlow<List<Track>> = MutableStateFlow(emptyList())
-    val albums: MutableStateFlow<List<AlbumWithArtists>> = MutableStateFlow(emptyList())
-    val genres: MutableStateFlow<List<Genre>> = MutableStateFlow(emptyList())
-    val playlists: MutableStateFlow<List<BasicPlaylist>> = MutableStateFlow(emptyList())
 
-    val genreTrackCrossRefs: MutableStateFlow<List<GenreTrackCrossRef>> =
+    private val genreTrackCrossRefs: MutableStateFlow<List<GenreTrackCrossRef>> =
         MutableStateFlow(emptyList())
-    val playlistTrackCrossRefs: MutableStateFlow<List<PlaylistTrackCrossRef>> =
+    private val playlistTrackCrossRefs: MutableStateFlow<List<PlaylistTrackCrossRef>> =
         MutableStateFlow(emptyList())
 
     override fun getTrack(trackId: Long): Flow<Track> {

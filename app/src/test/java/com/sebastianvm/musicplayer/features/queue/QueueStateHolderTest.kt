@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.queue
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec

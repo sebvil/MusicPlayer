@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
@@ -9,8 +10,6 @@ import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.repository.artist.FakeArtistRepository
-import com.sebastianvm.musicplayer.util.FixtureProvider
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -19,11 +18,13 @@ import io.kotest.matchers.shouldBe
 
 class ArtistStateHolderTest :
     FreeSpec({
-        lateinit var artistRepositoryDep: FakeArtistRepository
+        lateinit var artistRepositoryDep:
+            com.sebastianvm.musicplayer.core.datatest.artist.FakeArtistRepository
         lateinit var navControllerDep: FakeNavController
 
         beforeTest {
-            artistRepositoryDep = FakeArtistRepository()
+            artistRepositoryDep =
+                com.sebastianvm.musicplayer.core.datatest.artist.FakeArtistRepository()
             navControllerDep = FakeNavController()
         }
 
