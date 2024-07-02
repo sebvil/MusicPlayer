@@ -1,6 +1,8 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
+import com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
@@ -11,7 +13,7 @@ import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
@@ -22,20 +24,16 @@ import io.kotest.matchers.shouldBe
 
 class TrackContextMenuStateHolderTest :
     FreeSpec({
-        lateinit var trackRepositoryDep:
-            com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository
-        lateinit var playlistRepositoryDep:
-            com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
-        lateinit var queueRepositoryDep: FakeQueueRepository
+        lateinit var trackRepositoryDep: FakeTrackRepository
+        lateinit var playlistRepositoryDep: FakePlaylistRepository
         lateinit var navControllerDep: FakeNavController
+        lateinit var playbackManagerDep: FakePlaybackManager
 
         beforeTest {
-            trackRepositoryDep =
-                com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository()
-            playlistRepositoryDep =
-                com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository()
-            queueRepositoryDep = FakeQueueRepository()
+            trackRepositoryDep = FakeTrackRepository()
+            playlistRepositoryDep = FakePlaylistRepository()
             navControllerDep = FakeNavController()
+            playbackManagerDep = FakePlaybackManager()
         }
 
         fun TestScope.getSubject(
@@ -50,7 +48,7 @@ class TrackContextMenuStateHolderTest :
                 arguments = arguments,
                 trackRepository = trackRepositoryDep,
                 playlistRepository = playlistRepositoryDep,
-                queueRepository = queueRepositoryDep,
+                playbackManager = playbackManagerDep,
                 navController = navControllerDep,
                 stateHolderScope = this,
             )
@@ -170,7 +168,7 @@ class TrackContextMenuStateHolderTest :
                     val subject = getSubject()
                     subject.handle(TrackContextMenuUserAction.AddToQueueClicked)
                     advanceUntilIdle()
-                    queueRepositoryDep.queuedTracks.value.last().track.id shouldBe TRACK_ID
+                    playbackManagerDep.queuedTracks.value.last().track.id shouldBe TRACK_ID
                     navControllerDep.backStack.shouldBeEmpty()
                 }
 

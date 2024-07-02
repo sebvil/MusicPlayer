@@ -3,6 +3,7 @@ package com.sebastianvm.musicplayer.core.data.playback
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.PlaybackState
+import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
 import kotlinx.coroutines.flow.Flow
@@ -46,5 +47,26 @@ class PlaybackManagerImpl(
 
     override fun seekToTrackPosition(position: Long) {
         mediaPlaybackClient.seekToTrackPosition(position)
+    }
+
+    override fun moveQueueItem(from: Int, to: Int) {
+        mediaPlaybackClient.moveQueueItem(from, to)
+    }
+
+    override suspend fun addToQueue(trackId: Long) {
+        val track = trackRepository.getTrack(trackId).first()
+        addToQueue(listOf(track))
+    }
+
+    private fun addToQueue(tracks: List<Track>) {
+        mediaPlaybackClient.addToQueue(tracks.map { it.toMediaItem() })
+    }
+
+    override fun playQueueItem(index: Int) {
+        mediaPlaybackClient.playQueueItem(index)
+    }
+
+    override fun removeItemsFromQueue(queuePositions: List<Int>) {
+        mediaPlaybackClient.removeItemsFromQueue(queuePositions)
     }
 }

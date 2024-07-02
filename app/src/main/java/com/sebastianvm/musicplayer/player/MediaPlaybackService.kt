@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.playback.mediatree.MediaTree
+import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
@@ -41,9 +42,8 @@ class MediaPlaybackService : MediaLibraryService() {
 
     private val dependencies by lazy { (application as MusicPlayerApplication).dependencies }
 
-    private val queueRepository:
-        com.sebastianvm.musicplayer.core.data.queue.QueueRepository by lazy {
-        dependencies.queueRepository
+    private val queueRepository: QueueRepository by lazy {
+        dependencies.repositoryProvider.queueRepository
     }
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
