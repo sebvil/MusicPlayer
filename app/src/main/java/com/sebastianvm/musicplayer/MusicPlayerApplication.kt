@@ -4,10 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.work.Configuration
 import com.sebastianvm.musicplayer.di.AppDependencies
 import com.sebastianvm.musicplayer.features.main.MainViewModel
 
-class MusicPlayerApplication : Application() {
+class MusicPlayerApplication : Application(), Configuration.Provider {
 
     val dependencies by lazy { AppDependencies(this) }
 
@@ -27,4 +28,8 @@ class MusicPlayerApplication : Application() {
                 }
             }
         }
+
+    override val workManagerConfiguration: Configuration
+        get() =
+            Configuration.Builder().setWorkerFactory(MusicPlayerWorkerFactory(dependencies)).build()
 }

@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.sync.LibrarySyncWorker
 
 @Composable
 fun EmptyScreen(

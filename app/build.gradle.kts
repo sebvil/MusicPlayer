@@ -46,6 +46,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.common)
     implementation(projects.core.playback)
+    implementation(projects.core.sync)
 
     // Kotlin
     implementation(libs.core.ktx)
@@ -60,7 +61,7 @@ dependencies {
     // Coil
     implementation(libs.coil)
 
-    // Start Jetpack Compose
+    // region Jetpack Compose
 
     // Integration with activities
     implementation(libs.activity.compose)
@@ -81,7 +82,7 @@ dependencies {
 
     implementation(libs.reorderable)
 
-    // End Jetpack Compose
+    // endregion
 
     implementation(libs.androidx.work.runtime.ktx)
 

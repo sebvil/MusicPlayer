@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.model.Track
 import java.util.UUID
 
-fun Track.toMediaItem(): MediaItem {
+internal fun Track.toMediaItem(): MediaItem {
     return MediaItem.Builder()
         .apply {
             id = this@toMediaItem.id
@@ -17,7 +17,7 @@ fun Track.toMediaItem(): MediaItem {
         .build()
 }
 
-fun Track.getMediaMetadata(): MediaMetadata {
+internal fun Track.getMediaMetadata(): MediaMetadata {
     return MediaMetadata.Builder()
         .apply {
             title = name

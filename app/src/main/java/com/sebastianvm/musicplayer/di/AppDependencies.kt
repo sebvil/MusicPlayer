@@ -11,8 +11,8 @@ import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.database.getDaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
+import com.sebastianvm.musicplayer.core.playback.manager.DefaultPlaybackManager
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManagerImpl
 import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +40,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
     }
 
     override val playbackManager: PlaybackManager by lazy {
-        PlaybackManagerImpl(
+        DefaultPlaybackManager(
             mediaPlaybackClient = mediaPlaybackClient,
             trackRepository = repositoryProvider.trackRepository,
         )
