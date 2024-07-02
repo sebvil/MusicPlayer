@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.core.data.playback
+package com.sebastianvm.musicplayer.core.playback.manager
 
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.PlaybackState

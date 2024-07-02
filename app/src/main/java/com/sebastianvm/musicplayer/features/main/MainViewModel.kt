@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostUiComponent
 import com.sebastianvm.musicplayer.features.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.player.PlayerProps

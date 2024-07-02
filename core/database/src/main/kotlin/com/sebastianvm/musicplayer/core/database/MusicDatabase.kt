@@ -61,8 +61,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 )
 internal abstract class MusicDatabase : RoomDatabase(), DaoProvider
 
+private var database: DaoProvider? = null
+
 fun getDaoProvider(context: Context, ioDispatcher: CoroutineDispatcher): DaoProvider {
-    return Room.databaseBuilder(context, MusicDatabase::class.java, "music_database")
-        .setQueryCoroutineContext(context = ioDispatcher)
-        .build()
+    return database
+        ?: Room.databaseBuilder(context, MusicDatabase::class.java, "music_database")
+            .setQueryCoroutineContext(context = ioDispatcher)
+            .build()
+            .also { database = it }
 }

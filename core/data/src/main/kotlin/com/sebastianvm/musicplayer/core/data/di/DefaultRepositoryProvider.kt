@@ -23,7 +23,7 @@ import com.sebastianvm.musicplayer.core.data.track.TrackRepositoryImpl
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 
-class DefaultAppRepository(
+class DefaultRepositoryProvider(
     private val context: Context,
     private val dispatcherProvider: DispatcherProvider,
     private val database: DaoProvider,

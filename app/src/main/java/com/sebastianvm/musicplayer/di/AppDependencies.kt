@@ -6,14 +6,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.core.common.coroutines.DefaultDispatcherProvider
 import com.sebastianvm.musicplayer.core.common.coroutines.DispatcherProvider
-import com.sebastianvm.musicplayer.core.data.di.DefaultAppRepository
+import com.sebastianvm.musicplayer.core.data.di.DefaultRepositoryProvider
 import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManagerImpl
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.database.getDaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
-import com.sebastianvm.musicplayer.player.MediaPlaybackClient
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManagerImpl
+import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,7 +31,7 @@ class AppDependencies(private val appContext: Context) : Dependencies {
     private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 
     override val repositoryProvider: RepositoryProvider by lazy {
-        DefaultAppRepository(
+        DefaultRepositoryProvider(
             context = appContext,
             dispatcherProvider = dispatcherProvider,
             database = database,

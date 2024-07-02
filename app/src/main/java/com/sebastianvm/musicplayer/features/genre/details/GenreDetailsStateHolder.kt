@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
 import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController

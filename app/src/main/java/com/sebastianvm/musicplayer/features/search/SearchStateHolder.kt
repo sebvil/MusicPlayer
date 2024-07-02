@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow

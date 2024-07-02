@@ -1,6 +1,6 @@
 @file:Suppress("InjectDispatcher")
 
-package com.sebastianvm.musicplayer.player
+package com.sebastianvm.musicplayer.core.playback.player
 
 import android.util.Log
 import androidx.media3.common.AudioAttributes
@@ -18,16 +18,19 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.MusicPlayerApplication
+import com.sebastianvm.musicplayer.core.common.coroutines.DefaultDispatcherProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
-import com.sebastianvm.musicplayer.core.data.playback.mediatree.MediaTree
+import com.sebastianvm.musicplayer.core.data.di.DefaultRepositoryProvider
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
+import com.sebastianvm.musicplayer.core.database.getDaoProvider
+import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
-import com.sebastianvm.musicplayer.util.extensions.uri
+import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
+import com.sebastianvm.musicplayer.core.playback.extensions.uniqueId
+import com.sebastianvm.musicplayer.core.playback.extensions.uri
+import com.sebastianvm.musicplayer.core.playback.mediatree.MediaTree
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,20 +43,25 @@ import kotlinx.coroutines.withContext
 
 class MediaPlaybackService : MediaLibraryService() {
 
-    private val dependencies by lazy { (application as MusicPlayerApplication).dependencies }
-
-    private val queueRepository: QueueRepository by lazy {
-        dependencies.repositoryProvider.queueRepository
+    private val repositoryProvider by lazy {
+        DefaultRepositoryProvider(
+            context = this,
+            dispatcherProvider = DefaultDispatcherProvider(),
+            database = getDaoProvider(context = this, ioDispatcher = Dispatchers.IO),
+            dataSourcesProvider = DataSourcesProvider(context = this),
+        )
     }
+
+    private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val mediaTree: MediaTree by lazy {
         MediaTree(
-            artistRepository = dependencies.repositoryProvider.artistRepository,
-            trackRepository = dependencies.repositoryProvider.trackRepository,
-            albumRepository = dependencies.repositoryProvider.albumRepository,
+            artistRepository = repositoryProvider.artistRepository,
+            trackRepository = repositoryProvider.trackRepository,
+            albumRepository = repositoryProvider.albumRepository,
         )
     }
 
@@ -252,7 +260,7 @@ private fun MediaItem.toBasicQueuedTrack(positionInQueue: Int): BasicQueuedTrack
     )
 }
 
-private fun QueuedTrack.toMediaItem(): MediaItem {
+fun QueuedTrack.toMediaItem(): MediaItem {
     val item = track.toMediaItem()
     return item.buildUpon().setTag(queuePosition).build()
 }

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.player
+package com.sebastianvm.musicplayer.core.playback.player
 
 import android.content.ComponentName
 import android.content.Context
@@ -10,11 +10,11 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.sebastianvm.musicplayer.core.common.extensions.orZero
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.PlaybackState
 import com.sebastianvm.musicplayer.core.model.TrackInfo
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
-import com.sebastianvm.musicplayer.util.extensions.orZero
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

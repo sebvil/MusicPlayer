@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.State

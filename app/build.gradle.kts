@@ -45,6 +45,7 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.data)
     implementation(projects.core.common)
+    implementation(projects.core.playback)
 
     // Kotlin
     implementation(libs.core.ktx)

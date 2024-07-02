@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.core.data.playback.mediatree
+package com.sebastianvm.musicplayer.core.playback.mediatree
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
@@ -6,7 +6,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
 import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-import com.sebastianvm.musicplayer.ArtworkProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
@@ -15,6 +14,7 @@ import com.sebastianvm.musicplayer.core.model.AlbumWithArtists
 import com.sebastianvm.musicplayer.core.model.BasicArtist
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.Track
+import com.sebastianvm.musicplayer.core.playback.provider.ArtworkProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 

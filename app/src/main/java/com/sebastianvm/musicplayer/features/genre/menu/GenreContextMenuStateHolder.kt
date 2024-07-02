@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
 import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
