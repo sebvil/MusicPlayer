@@ -11,14 +11,15 @@ class MusicPlayerWorkerFactory(private val dependencies: Dependencies) : WorkerF
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
-        workerParameters: WorkerParameters
+        workerParameters: WorkerParameters,
     ): ListenableWorker? {
         return when (workerClassName) {
             LibrarySyncWorker::class.java.name -> {
                 LibrarySyncWorker(
                     context = appContext,
                     workerParams = workerParameters,
-                    musicRepository = dependencies.repositoryProvider.musicRepository)
+                    musicRepository = dependencies.repositoryProvider.musicRepository,
+                )
             }
             else -> null
         }

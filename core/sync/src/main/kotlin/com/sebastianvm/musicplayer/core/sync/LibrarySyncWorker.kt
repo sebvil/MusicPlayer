@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.core.resources.RString
 class LibrarySyncWorker(
     context: Context,
     workerParams: WorkerParameters,
-    private val musicRepository: MusicRepository
+    private val musicRepository: MusicRepository,
 ) : CoroutineWorker(context, workerParams) {
 
     private val notificationManager =

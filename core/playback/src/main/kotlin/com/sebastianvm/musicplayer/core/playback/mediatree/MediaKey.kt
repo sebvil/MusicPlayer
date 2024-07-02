@@ -12,11 +12,13 @@ internal data class MediaKey(
             return MediaKey(
                 parentType =
                     MediaTree.KeyType.valueOf(
-                        keyValues.getOrNull(0) ?: MediaTree.KeyType.UNKNOWN.name),
+                        keyValues.getOrNull(0) ?: MediaTree.KeyType.UNKNOWN.name
+                    ),
                 parentId = keyValues.getOrNull(1)?.toLongOrNull() ?: 0,
                 type =
                     MediaTree.KeyType.valueOf(
-                        keyValues.getOrNull(2) ?: MediaTree.KeyType.UNKNOWN.name),
+                        keyValues.getOrNull(2) ?: MediaTree.KeyType.UNKNOWN.name
+                    ),
                 itemIndexOrId = keyValues.getOrNull(3)?.toLongOrNull() ?: 0,
             )
         }
