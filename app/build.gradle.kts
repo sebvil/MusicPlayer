@@ -50,7 +50,6 @@ dependencies {
 
     // Kotlin
     implementation(libs.core.ktx)
-    implementation(libs.vectordrawable)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -86,14 +85,7 @@ dependencies {
 
     implementation(libs.androidx.work.runtime.ktx)
 
-    // Media 3
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.session)
-
-    // Kotlin serialization
     implementation(libs.kotlinx.collections.immutable)
-
-    implementation(libs.kotlinx.coroutines.guava)
 
     // Testing
     testImplementation(libs.bundles.testing)
