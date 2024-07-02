@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.core.playback.queue
+package com.sebastianvm.musicplayer.core.data.queue
 
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.FullQueue
@@ -12,17 +12,4 @@ interface QueueRepository {
     fun getFullQueue(): Flow<FullQueue?>
 
     suspend fun saveQueue(nowPlayingInfo: NowPlayingInfo, queuedTracks: List<BasicQueuedTrack>)
-<<<<<<<< HEAD:core/data/src/main/kotlin/com/sebastianvm/musicplayer/core/data/queue/QueueRepository.kt
-========
-
-    fun moveQueueItem(from: Int, to: Int)
-
-    suspend fun addToQueue(trackId: Long)
-
-    fun playQueueItem(index: Int)
-
-    fun removeItemsFromQueue(queuePositions: List<Int>)
-
-    suspend fun initializeQueue()
->>>>>>>> 7be87a69 (progress):core/playback/src/main/java/com/sebastianvm/musicplayer/core/playback/queue/QueueRepository.kt
 }

@@ -103,7 +103,8 @@ class GenreDetailsStateHolder(
                 navController.push(
                     SortMenuUiComponent(
                         arguments =
-                            SortMenuArguments(listType = SortableListType.Genre(args.genreId))),
+                            SortMenuArguments(listType = SortableListType.Genre(args.genreId))
+                    ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

@@ -20,17 +20,8 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.core.common.coroutines.DefaultDispatcherProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
-<<<<<<< HEAD:app/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackService.kt
-import com.sebastianvm.musicplayer.core.data.playback.mediatree.MediaTree
-import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
-import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
-import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
-import com.sebastianvm.musicplayer.core.model.QueuedTrack
-import com.sebastianvm.musicplayer.util.extensions.toMediaItem
-import com.sebastianvm.musicplayer.util.extensions.uniqueId
-import com.sebastianvm.musicplayer.util.extensions.uri
-=======
 import com.sebastianvm.musicplayer.core.data.di.DefaultRepositoryProvider
+import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.database.getDaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
@@ -40,11 +31,11 @@ import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
 import com.sebastianvm.musicplayer.core.playback.extensions.uniqueId
 import com.sebastianvm.musicplayer.core.playback.extensions.uri
 import com.sebastianvm.musicplayer.core.playback.mediatree.MediaTree
->>>>>>> 7be87a69 (progress):core/playback/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackService.kt
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
@@ -52,12 +43,6 @@ import kotlinx.coroutines.withContext
 
 class MediaPlaybackService : MediaLibraryService() {
 
-<<<<<<< HEAD:app/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackService.kt
-    private val dependencies by lazy { (application as MusicPlayerApplication).dependencies }
-
-    private val queueRepository: QueueRepository by lazy {
-        dependencies.repositoryProvider.queueRepository
-=======
     private val repositoryProvider by lazy {
         DefaultRepositoryProvider(
             context = this,
@@ -65,8 +50,9 @@ class MediaPlaybackService : MediaLibraryService() {
             database = getDaoProvider(context = this, ioDispatcher = Dispatchers.IO),
             dataSourcesProvider = DataSourcesProvider(context = this),
         )
->>>>>>> 7be87a69 (progress):core/playback/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackService.kt
     }
+
+    private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -95,6 +81,8 @@ class MediaPlaybackService : MediaLibraryService() {
                 .setAudioAttributes(audioAttributes, /* handleAudioFocus= */ true)
                 .build()
 
+        CoroutineScope(mainDispatcher).launch { initializeQueue() }
+
         player.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -114,7 +102,8 @@ class MediaPlaybackService : MediaLibraryService() {
                     player.prepare()
                     player.play()
                 }
-            })
+            }
+        )
         mediaSession =
             MediaLibrarySession.Builder(
                     this,
@@ -127,7 +116,8 @@ class MediaPlaybackService : MediaLibraryService() {
                         ): ListenableFuture<LibraryResult<MediaItem>> {
                             Log.i("000Player", "get root")
                             return Futures.immediateFuture(
-                                LibraryResult.ofItem(mediaTree.getRoot(), params))
+                                LibraryResult.ofItem(mediaTree.getRoot(), params)
+                            )
                         }
 
                         override fun onGetChildren(
@@ -199,6 +189,35 @@ class MediaPlaybackService : MediaLibraryService() {
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
         return mediaSession
+    }
+
+    private suspend fun initializeQueue() {
+        withContext(defaultDispatcher) {
+            val queue = queueRepository.getFullQueue().first() ?: return@withContext
+            withContext(mainDispatcher) {
+                preparePlaylist(
+                    initialWindowIndex = queue.nowPlayingInfo.nowPlayingPositionInQueue,
+                    mediaItems = queue.queue.map { it.toMediaItem() },
+                    position = queue.nowPlayingInfo.lastRecordedPosition,
+                )
+            }
+        }
+    }
+
+    private fun preparePlaylist(
+        initialWindowIndex: Int,
+        mediaItems: List<MediaItem>,
+        position: Long,
+    ) {
+        player.apply {
+            player.playWhenReady = false
+            stop()
+            clearMediaItems()
+
+            setMediaItems(mediaItems)
+            prepare()
+            seekTo(initialWindowIndex, position)
+        }
     }
 
     override fun onDestroy() {

@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.repository.queue
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.FullQueue
 import com.sebastianvm.musicplayer.core.model.NextUpQueue
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
-import com.sebastianvm.musicplayer.core.playback.queue.QueueRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
