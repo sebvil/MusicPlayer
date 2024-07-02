@@ -10,8 +10,6 @@ import com.sebastianvm.musicplayer.core.data.di.DefaultAppRepository
 import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.data.playback.PlaybackManagerImpl
-import com.sebastianvm.musicplayer.core.data.queue.AppQueueRepository
-import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.database.getDaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
@@ -51,15 +49,6 @@ class AppDependencies(private val appContext: Context) : Dependencies {
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = appContext, externalScope = applicationScope)
     }
-
-    override val queueRepository: QueueRepository
-        get() =
-            AppQueueRepository(
-                nowPlayingInfoDataSource = dataSourcesProvider.nowPlayingInfoDataSource,
-                trackRepository = repositoryProvider.trackRepository,
-                mediaQueueDao = database.getMediaQueueDao(),
-                mediaPlaybackClient = mediaPlaybackClient,
-            )
 }
 
 @Composable

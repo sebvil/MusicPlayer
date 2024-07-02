@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.repository.queue
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
-import com.sebastianvm.musicplayer.core.commontest.FixtureProvider.queueItemsFixtures
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.FullQueue
 import com.sebastianvm.musicplayer.core.model.NextUpQueue
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.update
 
 class FakeQueueRepository : com.sebastianvm.musicplayer.core.data.queue.QueueRepository {
 
-    val queuedTracks = MutableStateFlow(queueItemsFixtures())
+    val queuedTracks = MutableStateFlow(emptyList<QueuedTrack>())
     val nowPlayingInfo: MutableStateFlow<NowPlayingInfo> =
         MutableStateFlow(NowPlayingInfo(nowPlayingPositionInQueue = 0, lastRecordedPosition = 0))
 
@@ -57,33 +56,6 @@ class FakeQueueRepository : com.sebastianvm.musicplayer.core.data.queue.QueueRep
                     queueItemId = queuedTrack.queueItemId,
                 )
             }
-        }
-    }
-
-    override fun moveQueueItem(from: Int, to: Int) {
-        queuedTracks.update {
-            it.toMutableList()
-                .apply { add(to, removeAt(from)) }
-                .mapIndexed { index, item -> item.copy(queuePosition = index) }
-        }
-    }
-
-    override suspend fun addToQueue(trackId: Long) {
-        val track = FixtureProvider.track(trackId)
-        queuedTracks.update {
-            it + QueuedTrack(track = track, queuePosition = it.size, queueItemId = trackId)
-        }
-    }
-
-    override fun playQueueItem(index: Int) {
-        nowPlayingInfo.value =
-            NowPlayingInfo(nowPlayingPositionInQueue = index, lastRecordedPosition = 0)
-    }
-
-    override fun removeItemsFromQueue(queuePositions: List<Int>) {
-        queuedTracks.update {
-            it.filterIndexed { index, _ -> index !in queuePositions }
-                .mapIndexed { index, queuedTrack -> queuedTrack.copy(queuePosition = index) }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.features.track.menu
 
+import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.model.HasTracks
@@ -71,7 +72,7 @@ class TrackContextMenuStateHolder(
     private val arguments: TrackContextMenuArguments,
     trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
-    private val queueRepository: com.sebastianvm.musicplayer.core.data.queue.QueueRepository,
+    private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
@@ -112,7 +113,7 @@ class TrackContextMenuStateHolder(
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
                 stateHolderScope
-                    .launch { queueRepository.addToQueue(arguments.trackId) }
+                    .launch { playbackManager.addToQueue(arguments.trackId) }
                     .invokeOnCompletion { navController.pop() }
             }
             is TrackContextMenuUserAction.ViewAlbumClicked -> {

@@ -31,7 +31,7 @@ data class TrackContextMenu(
             arguments = arguments,
             trackRepository = dependencies.repositoryProvider.trackRepository,
             playlistRepository = dependencies.repositoryProvider.playlistRepository,
-            queueRepository = dependencies.queueRepository,
+            playbackManager = dependencies.playbackManager,
             navController = navController,
         )
     }

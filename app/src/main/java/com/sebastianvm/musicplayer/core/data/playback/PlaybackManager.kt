@@ -21,4 +21,12 @@ interface PlaybackManager {
     suspend fun playMedia(mediaGroup: MediaGroup, initialTrackIndex: Int = 0)
 
     fun seekToTrackPosition(position: Long)
+
+    fun moveQueueItem(from: Int, to: Int)
+
+    suspend fun addToQueue(trackId: Long)
+
+    fun playQueueItem(index: Int)
+
+    fun removeItemsFromQueue(queuePositions: List<Int>)
 }

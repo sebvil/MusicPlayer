@@ -1,11 +1,15 @@
 package com.sebastianvm.musicplayer.repository.playback
 
+import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
+import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.PlaybackState
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class FakePlaybackManager : PlaybackManager {
 
@@ -106,5 +110,36 @@ class FakePlaybackManager : PlaybackManager {
 
     fun resetTogglePlayInvocations() {
         _togglePlayInvocations.clear()
+    }
+
+    val queuedTracks = MutableStateFlow(emptyList<QueuedTrack>())
+    val nowPlayingInfo: MutableStateFlow<NowPlayingInfo> =
+        MutableStateFlow(NowPlayingInfo(nowPlayingPositionInQueue = 0, lastRecordedPosition = 0))
+
+    override fun moveQueueItem(from: Int, to: Int) {
+        queuedTracks.update {
+            it.toMutableList()
+                .apply { add(to, removeAt(from)) }
+                .mapIndexed { index, item -> item.copy(queuePosition = index) }
+        }
+    }
+
+    override suspend fun addToQueue(trackId: Long) {
+        val track = FixtureProvider.track(trackId)
+        queuedTracks.update {
+            it + QueuedTrack(track = track, queuePosition = it.size, queueItemId = trackId)
+        }
+    }
+
+    override fun playQueueItem(index: Int) {
+        nowPlayingInfo.value =
+            NowPlayingInfo(nowPlayingPositionInQueue = index, lastRecordedPosition = 0)
+    }
+
+    override fun removeItemsFromQueue(queuePositions: List<Int>) {
+        queuedTracks.update {
+            it.filterIndexed { index, _ -> index !in queuePositions }
+                .mapIndexed { index, queuedTrack -> queuedTrack.copy(queuePosition = index) }
+        }
     }
 }

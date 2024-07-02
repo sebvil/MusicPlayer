@@ -3,30 +3,56 @@ package com.sebastianvm.musicplayer.features.queue
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
+import com.sebastianvm.musicplayer.core.model.QueuedTrack
+import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.util.awaitItemAs
 import com.sebastianvm.musicplayer.util.testStateHolderState
+import io.kotest.core.coroutines.backgroundScope
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class QueueStateHolderTest :
     FreeSpec({
         lateinit var queueRepositoryDep: FakeQueueRepository
+        lateinit var playbackManagerDep: FakePlaybackManager
 
-        beforeTest { queueRepositoryDep = FakeQueueRepository() }
+        beforeTest {
+            queueRepositoryDep = FakeQueueRepository()
+            playbackManagerDep = FakePlaybackManager()
+        }
 
-        fun TestScope.getSubject(): QueueStateHolder {
-            return QueueStateHolder(queueRepository = queueRepositoryDep, stateHolderScope = this)
+        fun TestScope.getSubject(
+            tracks: List<QueuedTrack> = FixtureProvider.queueItemsFixtures(),
+            nowPlayingInfo: NowPlayingInfo =
+                NowPlayingInfo(nowPlayingPositionInQueue = 0, lastRecordedPosition = 0),
+        ): QueueStateHolder {
+            // Ensure both sources are in sync
+            playbackManagerDep.queuedTracks
+                .onEach { queueRepositoryDep.queuedTracks.value = it }
+                .launchIn(this.backgroundScope)
+
+            playbackManagerDep.nowPlayingInfo
+                .onEach { queueRepositoryDep.nowPlayingInfo.value = it }
+                .launchIn(this.backgroundScope)
+            playbackManagerDep.queuedTracks.value = tracks
+            playbackManagerDep.nowPlayingInfo.value = nowPlayingInfo
+
+            return QueueStateHolder(
+                queueRepository = queueRepositoryDep,
+                playbackManager = playbackManagerDep,
+                stateHolderScope = this,
+            )
         }
 
         "init subscribes to changes in queue" {
-            val subject = getSubject()
-
-            // Simulate queue not playing
-            queueRepositoryDep.queuedTracks.value = emptyList()
-            queueRepositoryDep.nowPlayingInfo.value = NowPlayingInfo()
+            val subject = getSubject(tracks = emptyList(), nowPlayingInfo = NowPlayingInfo())
 
             testStateHolderState(subject) {
                 awaitItem() shouldBe QueueState.Loading
@@ -62,8 +88,8 @@ class QueueStateHolderTest :
         "handle" -
             {
                 "DragEnded moves item" {
-                    val subject = getSubject()
-                    val tracks = queueRepositoryDep.queuedTracks.value
+                    val tracks = FixtureProvider.queueItemsFixtures()
+                    val subject = getSubject(tracks)
 
                     testStateHolderState(subject) {
                         awaitItem() shouldBe QueueState.Loading
@@ -81,10 +107,10 @@ class QueueStateHolderTest :
                 }
 
                 "TrackClicked plays queue item" {
-                    val subject = getSubject()
+                    val queuedTracks = FixtureProvider.queueItemsFixtures()
+                    val subject = getSubject(queuedTracks)
                     testStateHolderState(subject) {
                         awaitItem() shouldBe QueueState.Loading
-                        val queuedTracks = queueRepositoryDep.queuedTracks.first()
                         awaitItem() shouldBe
                             QueueState.Data(
                                 nowPlayingItem = queuedTracks.first().toQueueItem(),
