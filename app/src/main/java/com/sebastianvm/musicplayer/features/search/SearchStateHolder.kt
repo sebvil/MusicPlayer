@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.features.search
 
 import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
-import com.sebastianvm.musicplayer.core.data.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.designsystem.components.GenreRow
@@ -95,8 +95,7 @@ class SearchStateHolder(
             SearchQuery(
                 term = "",
                 mode = com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS,
-            )
-        )
+            ))
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
@@ -157,14 +156,12 @@ class SearchStateHolder(
                     artists = albumItem.artists,
                 ),
                 navController,
-            )
-        )
+            ))
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
         navController.push(
-            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController)
-        )
+            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController))
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
@@ -172,8 +169,7 @@ class SearchStateHolder(
             PlaylistDetailsUiComponent(
                 PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
                 navController,
-            )
-        )
+            ))
     }
 
     override fun handle(action: SearchUserAction) {

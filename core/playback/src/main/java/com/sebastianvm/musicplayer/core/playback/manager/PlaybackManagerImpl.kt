@@ -1,11 +1,16 @@
-package com.sebastianvm.musicplayer.core.playback
+package com.sebastianvm.musicplayer.core.playback.manager
 
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.PlaybackState
+<<<<<<< HEAD:app/src/main/java/com/sebastianvm/musicplayer/core/playback/manager/PlaybackManagerImpl.kt
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.player.MediaPlaybackClient
 import com.sebastianvm.musicplayer.util.extensions.toMediaItem
+=======
+import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
+import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackClient
+>>>>>>> 7be87a69 (progress):core/playback/src/main/java/com/sebastianvm/musicplayer/core/playback/manager/PlaybackManagerImpl.kt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

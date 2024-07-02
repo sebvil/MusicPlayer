@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:playback")
+
+
 include(":core:common-test")
 
 

@@ -6,13 +6,14 @@ import com.sebastianvm.musicplayer.core.model.FullQueue
 import com.sebastianvm.musicplayer.core.model.NextUpQueue
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
+import com.sebastianvm.musicplayer.core.playback.queue.QueueRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 
-class FakeQueueRepository : com.sebastianvm.musicplayer.core.data.queue.QueueRepository {
+class FakeQueueRepository : QueueRepository {
 
     val queuedTracks = MutableStateFlow(emptyList<QueuedTrack>())
     val nowPlayingInfo: MutableStateFlow<NowPlayingInfo> =

@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.util.extensions
+package com.sebastianvm.musicplayer.core.playback.extensions
 
 import android.os.Bundle
 import androidx.media3.common.MediaItem

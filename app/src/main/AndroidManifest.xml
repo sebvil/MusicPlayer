@@ -63,7 +63,7 @@
             android:resource="@xml/automotive_app_desc" />
 
         <provider
-            android:name=".ArtworkProvider"
+            android:name=".core.playback.provider.ArtworkProvider"
             android:authorities="com.sebastianvm.musicplayer.provider"
             android:exported="false" />
 

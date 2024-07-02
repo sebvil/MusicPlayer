@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer
+package com.sebastianvm.musicplayer.core.playback.provider
 
 import android.content.ContentProvider
 import android.content.ContentResolver

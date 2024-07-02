@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.player
+package com.sebastianvm.musicplayer.core.playback.player
 
 import android.content.ComponentName
 import android.content.Context
@@ -10,12 +10,17 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.sebastianvm.musicplayer.core.common.extensions.orZero
+import com.sebastianvm.musicplayer.core.model.FullQueue
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.PlaybackState
 import com.sebastianvm.musicplayer.core.model.TrackInfo
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
+<<<<<<< HEAD:app/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackClient.kt
 import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackService
 import com.sebastianvm.musicplayer.util.extensions.orZero
+=======
+>>>>>>> 7be87a69 (progress):core/playback/src/main/java/com/sebastianvm/musicplayer/core/playback/player/MediaPlaybackClient.kt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -200,5 +205,14 @@ class MediaPlaybackClient(private val context: Context, private val externalScop
                 ?: NotPlayingState
         }
         controller?.also { controllerNotNull -> controllerNotNull.seekTo(position) }
+    }
+
+    fun initializeQueue(queue: FullQueue) {
+        preparePlaylist(
+            initialWindowIndex = queue.nowPlayingInfo.nowPlayingPositionInQueue,
+            mediaItems = queue.queue.map { it.toMediaItem() },
+            playWhenReady = false,
+            position = queue.nowPlayingInfo.lastRecordedPosition,
+        )
     }
 }

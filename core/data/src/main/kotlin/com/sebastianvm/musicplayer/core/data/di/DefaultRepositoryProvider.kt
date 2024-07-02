@@ -16,14 +16,14 @@ import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepositoryImpl
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepositoryImpl
-import com.sebastianvm.musicplayer.core.data.queue.AppQueueRepository
-import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.data.track.TrackRepositoryImpl
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
+import com.sebastianvm.musicplayer.core.playback.queue.AppQueueRepository
+import com.sebastianvm.musicplayer.core.playback.queue.QueueRepository
 
-class DefaultAppRepository(
+class DefaultRepositoryProvider(
     private val context: Context,
     private val dispatcherProvider: DispatcherProvider,
     private val database: DaoProvider,
@@ -87,8 +87,7 @@ class DefaultAppRepository(
     override val sortPreferencesRepository: SortPreferencesRepository
         get() =
             SortPreferencesRepositoryImpl(
-                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource
-            )
+                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource)
 
     override val queueRepository: QueueRepository
         get() =
