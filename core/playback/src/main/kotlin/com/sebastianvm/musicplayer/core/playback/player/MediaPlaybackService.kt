@@ -41,14 +41,14 @@ import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MediaPlaybackService : MediaLibraryService() {
+internal class MediaPlaybackService : MediaLibraryService() {
 
     private val repositoryProvider by lazy {
         DefaultRepositoryProvider(
             context = this,
             dispatcherProvider = DefaultDispatcherProvider(),
-            database = getDaoProvider(context = this, ioDispatcher = Dispatchers.IO),
-            dataSourcesProvider = DataSourcesProvider(context = this),
+            database = getDaoProvider(context = application, ioDispatcher = Dispatchers.IO),
+            dataSourcesProvider = DataSourcesProvider(context = application),
         )
     }
 

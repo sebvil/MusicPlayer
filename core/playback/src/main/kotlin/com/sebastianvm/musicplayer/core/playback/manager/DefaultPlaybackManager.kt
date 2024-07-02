@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class PlaybackManagerImpl(
+class DefaultPlaybackManager(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val trackRepository: TrackRepository,
 ) : PlaybackManager {

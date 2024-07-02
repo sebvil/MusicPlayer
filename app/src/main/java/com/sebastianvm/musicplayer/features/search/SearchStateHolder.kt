@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.search
 
-import com.google.common.annotations.VisibleForTesting
 import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
@@ -197,7 +196,7 @@ class SearchStateHolder(
     }
 
     companion object {
-        @VisibleForTesting const val DEBOUNCE_TIME = 500L
+        private const val DEBOUNCE_TIME = 500L
     }
 }
 

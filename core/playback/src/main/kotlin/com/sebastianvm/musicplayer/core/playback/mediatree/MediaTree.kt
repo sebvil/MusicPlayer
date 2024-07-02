@@ -18,7 +18,7 @@ import com.sebastianvm.musicplayer.core.playback.provider.ArtworkProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class MediaTree(
+internal class MediaTree(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
     private val albumRepository: AlbumRepository,

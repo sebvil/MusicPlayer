@@ -1,23 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":core:playback")
-
-
-include(":core:common-test")
-
-
-include(":core:data-test")
-
-
-include(":core:common")
-
-
-include(":core:data")
-
-
-include(":core:datastore")
-
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -39,10 +21,24 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "musicplayer"
 
-include(":app")
-
 include(":core:database")
 
 include(":core:model")
 
 include(":core:resources")
+
+include(":core:sync")
+
+include(":core:playback")
+
+include(":core:common-test")
+
+include(":core:data-test")
+
+include(":core:common")
+
+include(":core:data")
+
+include(":core:datastore")
+
+include(":app")

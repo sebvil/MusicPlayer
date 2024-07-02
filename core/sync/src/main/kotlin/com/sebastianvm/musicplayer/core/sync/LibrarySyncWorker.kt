@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.sync
+package com.sebastianvm.musicplayer.core.sync
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -11,23 +11,15 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.sebastianvm.musicplayer.MusicPlayerApplication
 import com.sebastianvm.musicplayer.core.data.music.MusicRepository
 import com.sebastianvm.musicplayer.core.resources.RDrawable
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.di.Dependencies
 
-class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(context, workerParams) {
-
-    private val application: MusicPlayerApplication
-        get() = applicationContext as MusicPlayerApplication
-
-    private val dependencies: Dependencies by lazy { application.dependencies }
-
-    private val musicRepository: MusicRepository by lazy {
-        dependencies.repositoryProvider.musicRepository
-    }
+class LibrarySyncWorker(
+    context: Context,
+    workerParams: WorkerParameters,
+    private val musicRepository: MusicRepository,
+) : CoroutineWorker(context, workerParams) {
 
     private val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -98,6 +90,6 @@ class LibrarySyncWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     companion object {
-        private const val CHANNEL_ID = "com.sebastianvm.musicplayer.core.data.SCAN"
+        private const val CHANNEL_ID = "com.sebastianvm.musicplayer.core.sync.SCAN"
     }
 }
