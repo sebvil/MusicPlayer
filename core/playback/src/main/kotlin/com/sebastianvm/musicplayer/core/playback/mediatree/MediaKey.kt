@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.core.playback.mediatree
 
-data class MediaKey(
+internal data class MediaKey(
     val parentType: MediaTree.KeyType,
     val parentId: Long,
     val type: MediaTree.KeyType,

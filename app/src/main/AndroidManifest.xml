@@ -39,12 +39,6 @@
             </intent-filter>
         </service>
 
-        <service
-            android:name="androidx.work.impl.foreground.SystemForegroundService"
-            android:foregroundServiceType="dataSync"
-            tools:node="merge" />
-
-
         <activity
             android:name=".features.main.MainActivity"
             android:exported="true">
@@ -66,6 +60,12 @@
             android:name=".core.playback.provider.ArtworkProvider"
             android:authorities="com.sebastianvm.musicplayer.provider"
             android:exported="false" />
+
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
 
 
     </application>

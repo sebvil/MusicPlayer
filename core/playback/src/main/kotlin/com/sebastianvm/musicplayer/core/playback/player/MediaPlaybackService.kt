@@ -18,12 +18,9 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.core.common.coroutines.DefaultDispatcherProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
-import com.sebastianvm.musicplayer.core.data.di.DefaultRepositoryProvider
+import com.sebastianvm.musicplayer.core.data.di.HasRepositoryProvider
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
-import com.sebastianvm.musicplayer.core.database.getDaoProvider
-import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
@@ -41,15 +38,10 @@ import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MediaPlaybackService : MediaLibraryService() {
+internal class MediaPlaybackService : MediaLibraryService() {
 
     private val repositoryProvider by lazy {
-        DefaultRepositoryProvider(
-            context = this,
-            dispatcherProvider = DefaultDispatcherProvider(),
-            database = getDaoProvider(context = this, ioDispatcher = Dispatchers.IO),
-            dataSourcesProvider = DataSourcesProvider(context = this),
-        )
+        (applicationContext as HasRepositoryProvider).repositoryProvider
     }
 
     private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }

@@ -21,3 +21,7 @@ interface RepositoryProvider {
     val sortPreferencesRepository: SortPreferencesRepository
     val queueRepository: QueueRepository
 }
+
+interface HasRepositoryProvider {
+    val repositoryProvider: RepositoryProvider
+}

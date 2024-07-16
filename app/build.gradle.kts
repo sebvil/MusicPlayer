@@ -46,10 +46,10 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.common)
     implementation(projects.core.playback)
+    implementation(projects.core.sync)
 
     // Kotlin
     implementation(libs.core.ktx)
-    implementation(libs.vectordrawable)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -60,7 +60,7 @@ dependencies {
     // Coil
     implementation(libs.coil)
 
-    // Start Jetpack Compose
+    // region Jetpack Compose
 
     // Integration with activities
     implementation(libs.activity.compose)
@@ -81,18 +81,11 @@ dependencies {
 
     implementation(libs.reorderable)
 
-    // End Jetpack Compose
+    // endregion
 
     implementation(libs.androidx.work.runtime.ktx)
 
-    // Media 3
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.session)
-
-    // Kotlin serialization
     implementation(libs.kotlinx.collections.immutable)
-
-    implementation(libs.kotlinx.coroutines.guava)
 
     // Testing
     testImplementation(libs.bundles.testing)
