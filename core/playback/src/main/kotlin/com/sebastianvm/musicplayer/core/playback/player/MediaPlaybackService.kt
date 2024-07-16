@@ -18,12 +18,9 @@ import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import com.sebastianvm.musicplayer.core.common.coroutines.DefaultDispatcherProvider
 import com.sebastianvm.musicplayer.core.data.UriUtils
-import com.sebastianvm.musicplayer.core.data.di.DefaultRepositoryProvider
+import com.sebastianvm.musicplayer.core.data.di.HasRepositoryProvider
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
-import com.sebastianvm.musicplayer.core.database.getDaoProvider
-import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
@@ -44,12 +41,7 @@ import kotlinx.coroutines.withContext
 internal class MediaPlaybackService : MediaLibraryService() {
 
     private val repositoryProvider by lazy {
-        DefaultRepositoryProvider(
-            context = this,
-            dispatcherProvider = DefaultDispatcherProvider(),
-            database = getDaoProvider(context = application, ioDispatcher = Dispatchers.IO),
-            dataSourcesProvider = DataSourcesProvider(context = application),
-        )
+        (applicationContext as HasRepositoryProvider).repositoryProvider
     }
 
     private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }
@@ -102,8 +94,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                     player.prepare()
                     player.play()
                 }
-            }
-        )
+            })
         mediaSession =
             MediaLibrarySession.Builder(
                     this,
@@ -116,8 +107,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                         ): ListenableFuture<LibraryResult<MediaItem>> {
                             Log.i("000Player", "get root")
                             return Futures.immediateFuture(
-                                LibraryResult.ofItem(mediaTree.getRoot(), params)
-                            )
+                                LibraryResult.ofItem(mediaTree.getRoot(), params))
                         }
 
                         override fun onGetChildren(
