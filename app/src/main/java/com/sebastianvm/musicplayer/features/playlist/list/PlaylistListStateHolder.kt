@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
@@ -126,8 +126,7 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                )
-                            )
+                                ))
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -168,8 +167,7 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

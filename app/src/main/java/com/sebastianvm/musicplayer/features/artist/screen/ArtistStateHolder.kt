@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.features.artist.screen
 
 import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
@@ -106,8 +106,7 @@ class ArtistStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

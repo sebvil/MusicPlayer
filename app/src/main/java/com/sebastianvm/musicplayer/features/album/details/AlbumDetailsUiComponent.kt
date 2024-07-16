@@ -47,15 +47,15 @@ import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
+import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.track.list.TopBar
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.MediaArtImage
 import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import kotlin.math.roundToInt
@@ -203,8 +203,7 @@ fun AlbumDetails(
                                     top =
                                         WindowInsets.systemBars
                                             .asPaddingValues()
-                                            .calculateTopPadding()
-                                ),
+                                            .calculateTopPadding()),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         MediaArtImage(
@@ -213,30 +212,28 @@ fun AlbumDetails(
                         )
 
                         Column(
-                            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)
-                        ) {
-                            Text(
-                                text = state.albumName,
-                                style =
-                                    MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Medium
-                                    ),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.alpha(1 - topBarAlpha),
-                            )
-
-                            state.artists?.let {
+                            modifier =
+                                Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)) {
                                 Text(
-                                    text = it,
+                                    text = state.albumName,
                                     style =
-                                        MaterialTheme.typography.titleLarge.copy(
-                                            fontWeight = FontWeight.Medium
-                                        ),
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier.fillMaxWidth().alpha(1 - topBarAlpha),
+                                        MaterialTheme.typography.headlineMedium.copy(
+                                            fontWeight = FontWeight.Medium),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.alpha(1 - topBarAlpha),
                                 )
+
+                                state.artists?.let {
+                                    Text(
+                                        text = it,
+                                        style =
+                                            MaterialTheme.typography.titleLarge.copy(
+                                                fontWeight = FontWeight.Medium),
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.fillMaxWidth().alpha(1 - topBarAlpha),
+                                    )
+                                }
                             }
-                        }
                     }
                 }
                 .fastMap { it.measure(constraints) }
@@ -249,8 +246,7 @@ fun AlbumDetails(
                         is AlbumDetailsState.Loading -> {
                             Box(modifier = Modifier.fillMaxSize()) {
                                 CircularProgressIndicator(
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                                    modifier = Modifier.align(Alignment.Center))
                             }
                         }
                         is AlbumDetailsState.Data -> {
@@ -309,15 +305,13 @@ fun AlbumDetails(
                                     AlbumDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }
@@ -336,11 +330,9 @@ private fun Modifier.stateSize(size: State<Float>) =
                         minHeight = sizeValue,
                         maxWidth = sizeValue,
                         maxHeight = sizeValue,
-                    )
-                )
+                    ))
             layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
-        }
-    )
+        })
 
 private enum class AlbumDetailsContent {
     TopBar,

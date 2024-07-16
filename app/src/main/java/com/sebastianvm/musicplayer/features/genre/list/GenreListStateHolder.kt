@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.GenreRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
@@ -57,8 +57,7 @@ class GenreListStateHolder(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
                             sortButtonState =
                                 SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -84,8 +83,7 @@ class GenreListStateHolder(
                                 genreName = action.genreName,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

@@ -20,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
+import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.ListItem
-import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.util.extensions.stringId
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
@@ -67,8 +67,7 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                )
-                            )
+                                ))
                         }
                     } ?: Modifier
 

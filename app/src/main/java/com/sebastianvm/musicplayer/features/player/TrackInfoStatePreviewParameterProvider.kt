@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.player
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.sebastianvm.musicplayer.ui.util.compose.PreviewUtil
+import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewUtil
 
 class TrackInfoStatePreviewParameterProvider : PreviewParameterProvider<TrackInfoState> {
     override val values =

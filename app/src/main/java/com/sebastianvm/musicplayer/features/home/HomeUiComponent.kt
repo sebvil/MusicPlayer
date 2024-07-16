@@ -15,8 +15,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -72,8 +72,7 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
-                    )
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars))
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)

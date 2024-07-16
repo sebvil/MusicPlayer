@@ -2,9 +2,9 @@ package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.ui.util.mvvm.State
 import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction

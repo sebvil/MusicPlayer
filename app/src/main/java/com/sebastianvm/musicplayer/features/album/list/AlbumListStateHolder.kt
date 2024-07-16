@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
-import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
+import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
@@ -63,8 +63,7 @@ class AlbumListStateHolder(
                                     option = sortPrefs.sortOption,
                                     sortOrder = sortPrefs.sortOrder,
                                 ),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -84,8 +83,7 @@ class AlbumListStateHolder(
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.Albums)
-                    ),
+                        arguments = SortMenuArguments(listType = SortableListType.Albums)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -101,8 +99,7 @@ class AlbumListStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

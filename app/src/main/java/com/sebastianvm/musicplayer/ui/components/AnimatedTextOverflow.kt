@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.ui.util.compose.ScreenPreview
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
+import com.sebastianvm.musicplayer.core.designsystems.previews.ScreenPreview
 
 @Composable
 fun AnimatedTextOverflow(
@@ -62,8 +62,7 @@ fun AnimatedTextOverflow(
                                 durationMillis = width * 10,
                                 easing = LinearEasing,
                                 delayMillis = 2000,
-                            )
-                    ),
+                            )),
             )
         }
     }

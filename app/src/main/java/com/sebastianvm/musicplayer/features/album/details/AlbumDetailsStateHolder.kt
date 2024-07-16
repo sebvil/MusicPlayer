@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu

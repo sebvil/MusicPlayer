@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.features.track.list
 
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
@@ -86,8 +86,7 @@ class TrackListStateHolder(
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)
-                    ),
+                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

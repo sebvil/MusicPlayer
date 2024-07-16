@@ -3,10 +3,10 @@ package com.sebastianvm.musicplayer.features.album.list
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.datatest.extensions.toAlbumWithArtists
+import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
-import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
@@ -136,8 +136,7 @@ class AlbumListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.Albums)
-                                ),
+                                        SortMenuArguments(listType = SortableListType.Albums)),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -152,9 +151,7 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )
-                        )
-                    )
+                                )))
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(

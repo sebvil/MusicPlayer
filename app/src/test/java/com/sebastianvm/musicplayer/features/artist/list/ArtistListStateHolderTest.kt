@@ -1,10 +1,10 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -123,8 +123,7 @@ class ArtistListStateHolderTest :
                         BackStackEntry(
                             uiComponent =
                                 ArtistContextMenu(
-                                    arguments = ArtistContextMenuArguments(ARTIST_ID)
-                                ),
+                                    arguments = ArtistContextMenuArguments(ARTIST_ID)),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }

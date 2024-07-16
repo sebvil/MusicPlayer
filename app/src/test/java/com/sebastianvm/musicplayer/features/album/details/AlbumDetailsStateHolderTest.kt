@@ -1,9 +1,9 @@
 package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
@@ -44,8 +44,8 @@ class AlbumDetailsStateHolderTest :
                 )
             navControllerDep.push(
                 uiComponent =
-                    AlbumDetailsUiComponent(arguments = arguments, navController = navControllerDep)
-            )
+                    AlbumDetailsUiComponent(
+                        arguments = arguments, navController = navControllerDep))
             return AlbumDetailsStateHolder(
                 stateHolderScope = this,
                 args = arguments,
@@ -99,15 +99,13 @@ class AlbumDetailsStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Album(albumId = ALBUM_ID),
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
                     val subject = getSubject()
                     subject.handle(
-                        AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
-                    )
+                        AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =

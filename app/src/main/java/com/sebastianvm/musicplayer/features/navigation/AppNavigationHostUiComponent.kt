@@ -25,7 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.sebastianvm.musicplayer.designsystem.components.BottomSheet
+import com.sebastianvm.musicplayer.core.designsystems.components.BottomSheet
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
@@ -134,25 +134,22 @@ fun AppNavigationHost(
                             fadeIn(animationSpec = enterAnimationSpec))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
-                        )
+                                fadeOut(animationSpec = exitAnimationSpec))
                 } else {
                     (fadeIn(animationSpec = enterAnimationSpec) +
                             scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
-                        )
+                                fadeOut(animationSpec = exitAnimationSpec))
                 }
                 .apply { targetContentZIndex = targetState.size.toFloat() }
-        }
-    ) {
-        it.lastOrNull()?.let { screen ->
-            saveableStateHolder.SaveableStateProvider(screen.key) {
-                screen.Content(modifier = modifier)
+        }) {
+            it.lastOrNull()?.let { screen ->
+                saveableStateHolder.SaveableStateProvider(screen.key) {
+                    screen.Content(modifier = modifier)
+                }
             }
         }
-    }
 
     val bottomSheets = backStack.getScreensByMode(NavOptions.PresentationMode.BottomSheet)
     val sheetState = rememberModalBottomSheetState()

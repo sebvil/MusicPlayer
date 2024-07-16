@@ -3,9 +3,9 @@ package com.sebastianvm.musicplayer.features.artistsmenu
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
+import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.model.HasArtists
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -63,8 +63,7 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
                     }
                 }
 
@@ -86,8 +85,7 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
                     }
                 }
             }

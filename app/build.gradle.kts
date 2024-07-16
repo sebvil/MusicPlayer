@@ -47,6 +47,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.playback)
     implementation(projects.core.sync)
+    implementation(projects.core.designsystems)
 
     // Kotlin
     implementation(libs.core.ktx)
@@ -68,10 +69,10 @@ dependencies {
     // Material components
     implementation(libs.compose.material3)
     implementation(libs.material3.window.size)
-    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.compose.material.icons.extended)
     // UI + tooling
-    implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui)
 
     // Accompanist
     implementation(libs.accompanist.permissions)

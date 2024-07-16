@@ -21,16 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.designsystems.components.EmptyScreen
+import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
+import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.designsystem.components.OverflowIconButton
-import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
-import com.sebastianvm.musicplayer.designsystem.components.SortButton
-import com.sebastianvm.musicplayer.designsystem.components.Text
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.EmptyScreen
 import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 
@@ -87,8 +87,7 @@ fun PlaylistList(
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) }
-        )
+            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) })
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -108,11 +107,10 @@ fun PlaylistList(
                         Button(
                             onClick = {
                                 handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked)
+                            }) {
+                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                                Text(text = stringResource(id = RString.create_playlist))
                             }
-                        ) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            Text(text = stringResource(id = RString.create_playlist))
-                        }
                     },
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 )
@@ -164,15 +162,13 @@ fun PlaylistListLayout(
                                 PlaylistListUserAction.PlaylistClicked(
                                     playlistId = item.id,
                                     playlistName = item.playlistName,
-                                )
-                            )
+                                ))
                         },
                     trailingContent = {
                         OverflowIconButton(
                             onClick = {
                                 handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-                            }
-                        )
+                            })
                     },
                 )
             }

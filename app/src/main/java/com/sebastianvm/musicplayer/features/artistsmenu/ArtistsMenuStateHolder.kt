@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.model.HasArtists
-import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
@@ -42,9 +42,7 @@ class ArtistsMenuStateHolder(
             .map { artists ->
                 Data(
                     ArtistsMenuState(
-                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                    )
-                )
+                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }))
             }
             .stateIn(stateHolderScope, Lazily, Loading)
 
