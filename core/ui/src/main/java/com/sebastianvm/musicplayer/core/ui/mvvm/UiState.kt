@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util.mvvm
+package com.sebastianvm.musicplayer.core.ui.mvvm
 
 sealed interface UiState<out T> : State
 

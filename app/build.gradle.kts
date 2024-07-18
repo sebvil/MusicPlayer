@@ -48,6 +48,7 @@ dependencies {
     implementation(projects.core.playback)
     implementation(projects.core.sync)
     implementation(projects.core.designsystems)
+    implementation(projects.core.ui)
 
     // Kotlin
     implementation(libs.core.ktx)

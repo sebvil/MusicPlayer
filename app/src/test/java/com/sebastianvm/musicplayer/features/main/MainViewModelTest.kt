@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.main
 
+import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.ui.util.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope

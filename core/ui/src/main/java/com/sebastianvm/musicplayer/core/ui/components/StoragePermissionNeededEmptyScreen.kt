@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.components
+package com.sebastianvm.musicplayer.core.ui.components
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons

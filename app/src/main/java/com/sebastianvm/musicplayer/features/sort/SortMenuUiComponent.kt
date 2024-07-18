@@ -25,9 +25,9 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {

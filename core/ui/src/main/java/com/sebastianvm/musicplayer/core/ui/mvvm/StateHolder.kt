@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util.mvvm
+package com.sebastianvm.musicplayer.core.ui.mvvm
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle

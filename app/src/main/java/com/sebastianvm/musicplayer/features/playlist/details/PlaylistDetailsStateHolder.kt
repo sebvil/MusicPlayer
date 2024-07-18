@@ -5,6 +5,11 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchArguments
@@ -14,11 +19,6 @@ import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

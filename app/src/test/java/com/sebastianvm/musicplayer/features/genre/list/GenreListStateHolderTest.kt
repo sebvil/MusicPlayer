@@ -7,6 +7,9 @@ import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.Data
+import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
+import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
@@ -14,9 +17,6 @@ import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.ui.util.mvvm.Data
-import com.sebastianvm.musicplayer.ui.util.mvvm.Empty
-import com.sebastianvm.musicplayer.ui.util.mvvm.Loading
 import com.sebastianvm.musicplayer.util.advanceUntilIdle
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec

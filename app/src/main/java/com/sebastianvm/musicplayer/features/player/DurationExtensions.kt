@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.util
+package com.sebastianvm.musicplayer.features.player
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes

@@ -10,10 +10,10 @@ import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.ui.ContextMenu
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
 
 data class PlaylistContextMenu(
     override val arguments: PlaylistContextMenuArguments,

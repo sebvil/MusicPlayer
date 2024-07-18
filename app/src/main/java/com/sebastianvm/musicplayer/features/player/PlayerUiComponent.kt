@@ -79,11 +79,10 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
 import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.toDisplayableString
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration.Companion.milliseconds
 

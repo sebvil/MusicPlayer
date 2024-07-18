@@ -26,10 +26,10 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.designsystems.components.BottomSheet
+import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
 import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 

@@ -3,12 +3,12 @@ package com.sebastianvm.musicplayer.features.playlist.tracksearch
 import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
+import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.ui.util.mvvm.Arguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
-import com.sebastianvm.musicplayer.ui.util.mvvm.UserAction
-import com.sebastianvm.musicplayer.ui.util.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

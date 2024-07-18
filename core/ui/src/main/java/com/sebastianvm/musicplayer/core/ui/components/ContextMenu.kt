@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui
+package com.sebastianvm.musicplayer.core.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

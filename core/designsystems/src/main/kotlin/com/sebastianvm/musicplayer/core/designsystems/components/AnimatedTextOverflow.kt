@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.ui.components
+package com.sebastianvm.musicplayer.core.designsystems.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.previews.ScreenPreview
 
 @Composable

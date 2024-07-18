@@ -2,12 +2,12 @@ package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoState
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoUserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoState
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoUserAction
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
 import com.sebastianvm.musicplayer.util.testStateHolderState
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -55,8 +55,7 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = false,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            )
-                                        )
+                                            ))
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 2
                                         val entry = state.backStack.last()
@@ -83,8 +82,7 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = true,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            )
-                                        )
+                                            ))
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 1
                                         val entry = state.backStack.last()

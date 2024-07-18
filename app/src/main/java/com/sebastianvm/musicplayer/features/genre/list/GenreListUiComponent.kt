@@ -12,15 +12,15 @@ import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
+import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
-import com.sebastianvm.musicplayer.ui.util.mvvm.UiState
 
 data class GenreListUiComponent(val navController: NavController) :
     BaseUiComponent<
