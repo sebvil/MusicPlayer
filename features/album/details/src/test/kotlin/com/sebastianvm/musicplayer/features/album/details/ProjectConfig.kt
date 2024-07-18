@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.featues.album.details
+package com.sebastianvm.musicplayer.features.album.details
 
 import io.kotest.core.config.AbstractProjectConfig
 import io.kotest.core.extensions.Extension

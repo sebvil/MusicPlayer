@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.featues.album.details
+package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsFeature

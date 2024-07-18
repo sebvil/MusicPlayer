@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
+import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.mvvm.State
 import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
 import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-data class AlbumContextMenuArguments(val albumId: Long) : Arguments
 
 sealed interface AlbumContextMenuState : State {
     data class Data(val albumName: String, val albumId: Long, val viewArtistsState: ViewArtistRow) :

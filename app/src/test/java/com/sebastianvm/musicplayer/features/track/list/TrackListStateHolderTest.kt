@@ -13,11 +13,11 @@ import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
-import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.services.features.sort.SortableListType
 import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -125,8 +125,7 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks)
-                                ),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -140,8 +139,7 @@ class TrackListStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.AllTracks,
                                 initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
+                            ))
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {

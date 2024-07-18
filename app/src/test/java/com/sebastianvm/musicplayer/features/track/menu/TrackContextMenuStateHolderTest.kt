@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
@@ -118,8 +118,7 @@ class TrackContextMenuStateHolderTest :
                     val subject =
                         getSubject(
                             arguments =
-                                DEFAULT_ARGS.copy(trackList = MediaGroup.Album(albumId = ALBUM_ID))
-                        )
+                                DEFAULT_ARGS.copy(trackList = MediaGroup.Album(albumId = ALBUM_ID)))
                     testStateHolderState(subject) {
                         awaitItem() shouldBe TrackContextMenuState.Loading
                         awaitItem() shouldBe
@@ -140,8 +139,7 @@ class TrackContextMenuStateHolderTest :
                     val subject =
                         getSubject(
                             arguments =
-                                DEFAULT_ARGS.copy(trackList = MediaGroup.Playlist(PLAYLIST_ID))
-                        )
+                                DEFAULT_ARGS.copy(trackList = MediaGroup.Playlist(PLAYLIST_ID)))
                     testStateHolderState(subject) {
                         awaitItem() shouldBe TrackContextMenuState.Loading
                         awaitItem() shouldBe
@@ -164,8 +162,8 @@ class TrackContextMenuStateHolderTest :
             {
                 "AddToQueueClicked adds track to queue and pops screen" {
                     navControllerDep.push(
-                        TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
-                    )
+                        TrackContextMenu(
+                            arguments = DEFAULT_ARGS, navController = navControllerDep))
                     val subject = getSubject()
                     subject.handle(TrackContextMenuUserAction.AddToQueueClicked)
                     advanceUntilIdle()
@@ -175,8 +173,8 @@ class TrackContextMenuStateHolderTest :
 
                 "ViewAlbumClicked opens album and pops screen" {
                     navControllerDep.push(
-                        TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
-                    )
+                        TrackContextMenu(
+                            arguments = DEFAULT_ARGS, navController = navControllerDep))
                     val subject = getSubject()
                     subject.handle(TrackContextMenuUserAction.ViewAlbumClicked(albumId = ALBUM_ID))
                     navControllerDep.backStack shouldBe
@@ -194,14 +192,13 @@ class TrackContextMenuStateHolderTest :
                                         navController = navControllerDep,
                                     ),
                                 presentationMode = NavOptions.PresentationMode.Screen,
-                            )
-                        )
+                            ))
                 }
 
                 "ViewArtistClicked opens artist and pops screen" {
                     navControllerDep.push(
-                        TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
-                    )
+                        TrackContextMenu(
+                            arguments = DEFAULT_ARGS, navController = navControllerDep))
                     val subject = getSubject()
                     subject.handle(TrackContextMenuUserAction.ViewArtistClicked(artistId = 0))
                     navControllerDep.backStack shouldBe
@@ -213,14 +210,13 @@ class TrackContextMenuStateHolderTest :
                                         navController = navControllerDep,
                                     ),
                                 presentationMode = NavOptions.PresentationMode.Screen,
-                            )
-                        )
+                            ))
                 }
 
                 "ViewArtistsClicked opens artists menu and pops screen" {
                     navControllerDep.push(
-                        TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
-                    )
+                        TrackContextMenu(
+                            arguments = DEFAULT_ARGS, navController = navControllerDep))
                     val subject = getSubject()
                     subject.handle(TrackContextMenuUserAction.ViewArtistsClicked)
                     navControllerDep.backStack shouldBe
@@ -233,14 +229,13 @@ class TrackContextMenuStateHolderTest :
                                         navController = navControllerDep,
                                     ),
                                 presentationMode = NavOptions.PresentationMode.BottomSheet,
-                            )
-                        )
+                            ))
                 }
 
                 "RemoveFromPlaylistClicked removes track from playlist and pops screen" {
                     navControllerDep.push(
-                        TrackContextMenu(arguments = DEFAULT_ARGS, navController = navControllerDep)
-                    )
+                        TrackContextMenu(
+                            arguments = DEFAULT_ARGS, navController = navControllerDep))
                     playlistRepositoryDep.playlists.value =
                         listOf(FixtureProvider.playlist(id = PLAYLIST_ID, trackCount = TRACK_COUNT))
                     val subject = getSubject()
@@ -248,8 +243,7 @@ class TrackContextMenuStateHolderTest :
                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                             playlistId = PLAYLIST_ID,
                             trackPositionInPlaylist = TRACK_POSITION_IN_LIST.toLong(),
-                        )
-                    )
+                        ))
                     advanceUntilIdle()
                     playlistRepositoryDep.playlists.value
                         .first { it.id == PLAYLIST_ID }

@@ -1,19 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":core:services-test")
-
-
-include(":features:album:details")
-
-
-include(":core:services")
-
-
-include(":core:ui")
-
-
-include(":core:designsystems")
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -56,3 +42,15 @@ include(":core:data")
 include(":core:datastore")
 
 include(":app")
+
+include(":core:services-test")
+
+include(":core:services")
+
+include(":core:ui")
+
+include(":core:designsystems")
+
+include(":features:album:details")
+
+include(":features:album:list")

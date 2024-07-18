@@ -9,6 +9,7 @@ import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
 import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.mvvm.Handler
 import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.services.features.navigation.NavController
@@ -82,9 +83,7 @@ private fun AlbumContextMenu(
                                     onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }

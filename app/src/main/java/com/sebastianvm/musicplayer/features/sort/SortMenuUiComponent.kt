@@ -28,6 +28,7 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.services.Services
 import com.sebastianvm.musicplayer.services.features.mvvm.Handler
 import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
@@ -67,8 +68,7 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                )
-                            )
+                                ))
                         }
                     } ?: Modifier
 

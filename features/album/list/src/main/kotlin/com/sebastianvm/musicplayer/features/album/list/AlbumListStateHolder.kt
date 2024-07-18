@@ -4,13 +4,9 @@ import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
-import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
-import com.sebastianvm.musicplayer.features.sort.SortableListType
+import com.sebastianvm.musicplayer.services.features.Features
 import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.mvvm.Data
 import com.sebastianvm.musicplayer.services.features.mvvm.Empty
 import com.sebastianvm.musicplayer.services.features.mvvm.Loading
@@ -21,6 +17,8 @@ import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
 import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.services.features.navigation.NavController
 import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.services.features.sort.SortableListType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,6 +43,7 @@ class AlbumListStateHolder(
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,
+    private val features: Features,
 ) : StateHolder<UiState<AlbumListState>, AlbumListUserAction> {
 
     override val state: StateFlow<UiState<AlbumListState>> =
@@ -63,8 +62,7 @@ class AlbumListStateHolder(
                                     option = sortPrefs.sortOption,
                                     sortOrder = sortPrefs.sortOrder,
                                 ),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -73,7 +71,7 @@ class AlbumListStateHolder(
         when (action) {
             is AlbumListUserAction.AlbumMoreIconClicked -> {
                 navController.push(
-                    AlbumContextMenu(
+                    features.albumContextMenuFeature.albumContextMenuUiComponent(
                         arguments = AlbumContextMenuArguments(action.albumId),
                         navController = navController,
                     ),
@@ -83,16 +81,15 @@ class AlbumListStateHolder(
             }
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
-                    SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.Albums)
-                    ),
+                    features.sortMenuFeature.sortMenuUiComponent(
+                        arguments = SortMenuArguments(listType = SortableListType.Albums)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
             is AlbumListUserAction.AlbumClicked -> {
                 navController.push(
-                    AlbumDetailsUiComponent(
+                    features.albumDetailsFeature.albumDetailsUiComponent(
                         arguments =
                             AlbumDetailsArguments(
                                 albumId = action.albumItem.id,
@@ -101,8 +98,7 @@ class AlbumListStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

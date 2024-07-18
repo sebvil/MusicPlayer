@@ -45,6 +45,7 @@ data class AlbumListUiComponent(val navController: NavController) :
             albumRepository = services.repositoryProvider.albumRepository,
             navController = navController,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
+            features = services.features,
         )
     }
 }
@@ -89,8 +90,7 @@ fun AlbumList(
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) })
                 },
             )
         }

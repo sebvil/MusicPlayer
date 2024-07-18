@@ -10,14 +10,14 @@ import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.mvvm.Data
 import com.sebastianvm.musicplayer.services.features.mvvm.Empty
 import com.sebastianvm.musicplayer.services.features.mvvm.Loading
 import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.services.features.sort.SortableListType
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -141,9 +141,7 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )
-                        )
-                    )
+                                )))
 
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(

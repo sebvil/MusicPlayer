@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
 import com.sebastianvm.musicplayer.services.features.mvvm.State
 import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
@@ -106,8 +106,7 @@ class ArtistStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

@@ -5,9 +5,7 @@ import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
-import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
 import com.sebastianvm.musicplayer.services.features.mvvm.State
 import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
@@ -15,6 +13,8 @@ import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
 import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.services.features.navigation.NavController
 import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.services.features.sort.SortableListType
 import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
@@ -86,8 +86,7 @@ class TrackListStateHolder(
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     SortMenuUiComponent(
-                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)
-                    ),
+                        arguments = SortMenuArguments(listType = SortableListType.AllTracks)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

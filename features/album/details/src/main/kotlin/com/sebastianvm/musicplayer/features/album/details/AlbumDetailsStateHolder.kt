@@ -1,4 +1,4 @@
-package com.sebastianvm.musicplayer.featues.album.details
+package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
