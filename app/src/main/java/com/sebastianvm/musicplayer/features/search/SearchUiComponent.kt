@@ -40,23 +40,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
+import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
+import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
+import com.sebastianvm.musicplayer.core.designsystems.components.Permission
+import com.sebastianvm.musicplayer.core.designsystems.components.PermissionHandler
+import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
+import com.sebastianvm.musicplayer.core.designsystems.components.SingleSelectFilterChipGroup
+import com.sebastianvm.musicplayer.core.designsystems.components.Text
+import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
-import com.sebastianvm.musicplayer.designsystem.components.AlbumRow
-import com.sebastianvm.musicplayer.designsystem.components.ArtistRow
-import com.sebastianvm.musicplayer.designsystem.components.GenreRow
-import com.sebastianvm.musicplayer.designsystem.components.PlaylistRow
-import com.sebastianvm.musicplayer.designsystem.components.SingleSelectFilterChipGroup
-import com.sebastianvm.musicplayer.designsystem.components.Text
-import com.sebastianvm.musicplayer.designsystem.components.TrackRow
+import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
 import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.components.Permission
-import com.sebastianvm.musicplayer.ui.components.PermissionHandler
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
-import com.sebastianvm.musicplayer.ui.util.mvvm.NoArguments
 import kotlinx.collections.immutable.toImmutableList
 
 data class SearchUiComponent(val navController: NavController) :

@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.sebastianvm.musicplayer.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.ui.util.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 
 @Composable
 fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifier = Modifier) {

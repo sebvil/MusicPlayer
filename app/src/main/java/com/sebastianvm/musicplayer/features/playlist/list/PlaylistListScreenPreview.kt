@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import androidx.compose.runtime.Composable
-import com.sebastianvm.musicplayer.ui.util.compose.PreviewComponents
-import com.sebastianvm.musicplayer.ui.util.compose.ThemedPreview
+import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
+import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 
 // class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
 //    private val playlistsList: List<ModelListItem.State>

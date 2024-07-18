@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.util
 
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
-import com.sebastianvm.musicplayer.ui.util.mvvm.State
-import com.sebastianvm.musicplayer.ui.util.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import io.kotest.core.test.TestScope
 import io.kotest.core.test.testCoroutineScheduler
 import kotlin.time.Duration

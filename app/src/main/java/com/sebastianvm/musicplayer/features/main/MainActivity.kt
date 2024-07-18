@@ -14,9 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.MusicPlayerApplication
-import com.sebastianvm.musicplayer.designsystem.components.LocalListItemContainerColor
-import com.sebastianvm.musicplayer.ui.theme.M3AppTheme
-import com.sebastianvm.musicplayer.ui.util.mvvm.currentState
+import com.sebastianvm.musicplayer.core.designsystems.components.LocalListItemContainerColor
+import com.sebastianvm.musicplayer.core.designsystems.theme.M3AppTheme
+import com.sebastianvm.musicplayer.core.ui.mvvm.currentState
 
 class MainActivity : ComponentActivity() {
 
