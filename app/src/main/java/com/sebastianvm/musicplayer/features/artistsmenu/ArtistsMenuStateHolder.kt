@@ -42,7 +42,9 @@ class ArtistsMenuStateHolder(
             .map { artists ->
                 Data(
                     ArtistsMenuState(
-                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }))
+                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }
+                    )
+                )
             }
             .stateIn(stateHolderScope, Lazily, Loading)
 

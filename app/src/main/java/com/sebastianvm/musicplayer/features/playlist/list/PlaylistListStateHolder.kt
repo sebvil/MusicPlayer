@@ -126,7 +126,8 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                ))
+                                )
+                            )
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -167,7 +168,8 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                    ))
+                    )
+                )
             }
         }
     }

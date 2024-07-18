@@ -105,7 +105,8 @@ class PlaylistListStateHolderTest :
                     val subject = getSubject()
 
                     subject.handle(
-                        PlaylistListUserAction.PlaylistMoreIconClicked(playlistId = PLAYLIST_ID))
+                        PlaylistListUserAction.PlaylistMoreIconClicked(playlistId = PLAYLIST_ID)
+                    )
 
                     navControllerDep.backStack shouldHaveSize 2
                     val backStackEntry = navControllerDep.backStack.last()
@@ -145,7 +146,8 @@ class PlaylistListStateHolderTest :
                         PlaylistListUserAction.PlaylistClicked(
                             playlistId = PLAYLIST_ID,
                             playlistName = PLAYLIST_NAME,
-                        ))
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
@@ -166,7 +168,9 @@ class PlaylistListStateHolderTest :
 
                             subject.handle(
                                 PlaylistListUserAction.CreatePlaylistButtonClicked(
-                                    playlistName = PLAYLIST_NAME))
+                                    playlistName = PLAYLIST_NAME
+                                )
+                            )
                             advanceUntilIdle()
                             val playlist = playlistRepositoryDep.playlists.value.last()
                             navControllerDep.backStack shouldHaveSize 2
@@ -193,13 +197,16 @@ class PlaylistListStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     PlaylistListUserAction.CreatePlaylistButtonClicked(
-                                        playlistName = PLAYLIST_NAME))
+                                        playlistName = PLAYLIST_NAME
+                                    )
+                                )
 
                                 awaitItemAs<PlaylistListState.Data>()
                                     .isPlaylistCreationErrorDialogOpen shouldBe true
 
                                 subject.handle(
-                                    PlaylistListUserAction.DismissPlaylistCreationErrorDialog)
+                                    PlaylistListUserAction.DismissPlaylistCreationErrorDialog
+                                )
                                 awaitItemAs<PlaylistListState.Data>()
                                     .isPlaylistCreationErrorDialogOpen shouldBe false
                             }

@@ -33,15 +33,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             M3AppTheme {
                 CompositionLocalProvider(
-                    LocalListItemContainerColor provides MaterialTheme.colorScheme.background) {
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background,
-                        ) {
-                            val state by viewModel.currentState
-                            MainApp(state = state, handle = viewModel::handle)
-                        }
+                    LocalListItemContainerColor provides MaterialTheme.colorScheme.background
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        val state by viewModel.currentState
+                        MainApp(state = state, handle = viewModel::handle)
                     }
+                }
             }
         }
     }

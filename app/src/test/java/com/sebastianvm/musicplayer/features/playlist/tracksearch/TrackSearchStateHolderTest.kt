@@ -37,7 +37,8 @@ class TrackSearchStateHolderTest :
                 TrackSearchUiComponent(
                     arguments = TrackSearchArguments(playlistId = playlist.id),
                     navController = navControllerDep,
-                ))
+                )
+            )
             return TrackSearchStateHolder(
                 arguments = TrackSearchArguments(playlistId = playlist.id),
                 playlistRepository = playlistRepositoryDep,
@@ -92,7 +93,8 @@ class TrackSearchStateHolderTest :
                                             state = TrackRow.State.fromTrack(it),
                                             inPlaylist = false,
                                         )
-                                    })
+                                    }
+                            )
                     }
                 }
 

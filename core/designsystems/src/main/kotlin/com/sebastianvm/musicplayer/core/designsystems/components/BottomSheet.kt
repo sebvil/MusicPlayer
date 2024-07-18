@@ -27,23 +27,24 @@ fun BottomSheet(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalListItemContainerColor provides BottomSheetDefaults.ContainerColor) {
-            ModalBottomSheet(
-                onDismissRequest = onDismissRequest,
-                modifier = modifier,
-                sheetState = sheetState,
-                dragHandle = {
-                    Surface(
-                        modifier = modifier.padding(vertical = 12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        shape = MaterialTheme.shapes.extraLarge,
-                    ) {
-                        Box(Modifier.size(width = 32.dp, height = 4.dp))
-                    }
-                },
-                contentWindowInsets = { WindowInsets.navigationBars },
-            ) {
-                content()
-            }
+        LocalListItemContainerColor provides BottomSheetDefaults.ContainerColor
+    ) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissRequest,
+            modifier = modifier,
+            sheetState = sheetState,
+            dragHandle = {
+                Surface(
+                    modifier = modifier.padding(vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.extraLarge,
+                ) {
+                    Box(Modifier.size(width = 32.dp, height = 4.dp))
+                }
+            },
+            contentWindowInsets = { WindowInsets.navigationBars },
+        ) {
+            content()
         }
+    }
 }

@@ -103,7 +103,9 @@ private fun TrackContextMenu(
                                     onItemClick = {
                                         handle(
                                             TrackContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId))
+                                                state.viewArtistsState.artistId
+                                            )
+                                        )
                                     },
                                 )
                             }
@@ -132,7 +134,8 @@ private fun TrackContextMenu(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                                             it.playlistId,
                                             it.trackPositionInPlaylist,
-                                        ))
+                                        )
+                                    )
                                 },
                             )
                         }

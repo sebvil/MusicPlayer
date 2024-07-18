@@ -136,7 +136,8 @@ class AlbumListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.Albums)),
+                                        SortMenuArguments(listType = SortableListType.Albums)
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -151,7 +152,9 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )))
+                                )
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(

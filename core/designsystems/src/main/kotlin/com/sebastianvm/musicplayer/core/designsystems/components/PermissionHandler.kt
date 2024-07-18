@@ -89,8 +89,10 @@ fun PermissionHandler(
         }
     }
 
-    if (permissionHandlerState.value.showPermissionDeniedDialog &&
-        permissionHandlerState.value.permissionState.status.shouldShowRationale) {
+    if (
+        permissionHandlerState.value.showPermissionDeniedDialog &&
+            permissionHandlerState.value.permissionState.status.shouldShowRationale
+    ) {
         PermissionDialog(
             state = permissionHandlerState.value.permissionExplanationDialogState,
             onDismiss = { showPermissionDeniedDialog = false },

@@ -61,7 +61,8 @@ fun AnimatedTextOverflow(
                                 durationMillis = width * 10,
                                 easing = LinearEasing,
                                 delayMillis = 2000,
-                            )),
+                            )
+                    ),
             )
         }
     }

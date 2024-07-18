@@ -57,7 +57,8 @@ class GenreListStateHolder(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
                             sortButtonState =
                                 SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
-                        ))
+                        )
+                    )
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -83,7 +84,8 @@ class GenreListStateHolder(
                                 genreName = action.genreName,
                             ),
                         navController = navController,
-                    ))
+                    )
+                )
             }
         }
     }
