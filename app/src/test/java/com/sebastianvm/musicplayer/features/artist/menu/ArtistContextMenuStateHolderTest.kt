@@ -53,6 +53,7 @@ class ArtistContextMenuStateHolderTest :
                     FakePlaybackManager.PlayMediaArguments(
                         mediaGroup = MediaGroup.Artist(artistId = artist.id),
                         initialTrackIndex = 0,
-                    ))
+                    )
+                )
         }
     })

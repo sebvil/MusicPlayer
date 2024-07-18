@@ -58,9 +58,9 @@ class ArtistListStateHolder(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                             sortButtonState =
-                                SortButton.State(
-                                    option = SortOptions.Artist, sortOrder = sortOrder),
-                        ))
+                                SortButton.State(option = SortOptions.Artist, sortOrder = sortOrder),
+                        )
+                    )
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -73,7 +73,8 @@ class ArtistListStateHolder(
             is ArtistListUserAction.ArtistMoreIconClicked -> {
                 navController.push(
                     ArtistContextMenu(
-                        arguments = ArtistContextMenuArguments(artistId = action.artistId)),
+                        arguments = ArtistContextMenuArguments(artistId = action.artistId)
+                    ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -83,7 +84,8 @@ class ArtistListStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
                         navController = navController,
-                    ))
+                    )
+                )
             }
         }
     }

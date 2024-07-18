@@ -92,7 +92,8 @@ class PlaylistContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 MediaGroup.Playlist(PLAYLIST_ID),
                                 initialTrackIndex = 0,
-                            ))
+                            )
+                        )
                 }
             }
     }) {

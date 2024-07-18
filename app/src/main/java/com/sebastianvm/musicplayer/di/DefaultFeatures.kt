@@ -14,7 +14,7 @@ class DefaultFeatures : Features {
         object : TrackContextMenuFeature {
             override fun trackContextMenuUiComponent(
                 arguments: TrackContextMenuArguments,
-                navController: NavController
+                navController: NavController,
             ): UiComponent<TrackContextMenuArguments, *> {
                 return TrackContextMenu(arguments, navController)
             }

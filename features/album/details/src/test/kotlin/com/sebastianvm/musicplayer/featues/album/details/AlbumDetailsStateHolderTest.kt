@@ -44,15 +44,16 @@ class AlbumDetailsStateHolderTest :
                 )
             navControllerDep.push(
                 uiComponent =
-                    AlbumDetailsUiComponent(
-                        arguments = arguments, navController = navControllerDep))
+                    AlbumDetailsUiComponent(arguments = arguments, navController = navControllerDep)
+            )
             return AlbumDetailsStateHolder(
                 stateHolderScope = this,
                 args = arguments,
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,
-                trackContextMenuFeature = FakeTrackContextMenuFeature())
+                trackContextMenuFeature = FakeTrackContextMenuFeature(),
+            )
         }
 
         "init subscribes to changes in album" {
@@ -101,13 +102,15 @@ class AlbumDetailsStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Album(albumId = ALBUM_ID),
                                 initialTrackIndex = TRACK_INDEX,
-                            ))
+                            )
+                        )
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {
                     val subject = getSubject()
                     subject.handle(
-                        AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX))
+                        AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                    )
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             arguments =

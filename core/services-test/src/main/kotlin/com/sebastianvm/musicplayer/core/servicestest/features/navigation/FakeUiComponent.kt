@@ -7,10 +7,10 @@ import com.sebastianvm.musicplayer.services.features.mvvm.NoState
 import com.sebastianvm.musicplayer.services.features.mvvm.NoUserAction
 import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
 import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.coroutines.EmptyCoroutineContext
 
 object NoStateHolder : StateHolder<NoState, NoUserAction> {
     override val state: StateFlow<NoState> = MutableStateFlow(NoState)

@@ -94,7 +94,8 @@ class SearchStateHolder(
             SearchQuery(
                 term = "",
                 mode = com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS,
-            ))
+            )
+        )
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
@@ -155,12 +156,14 @@ class SearchStateHolder(
                     artists = albumItem.artists,
                 ),
                 navController,
-            ))
+            )
+        )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
         navController.push(
-            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController))
+            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController)
+        )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
@@ -168,7 +171,8 @@ class SearchStateHolder(
             PlaylistDetailsUiComponent(
                 PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
                 navController,
-            ))
+            )
+        )
     }
 
     override fun handle(action: SearchUserAction) {
@@ -196,10 +200,7 @@ class SearchStateHolder(
     }
 }
 
-fun getSearchStateHolder(
-    services: Services,
-    navController: NavController,
-): SearchStateHolder {
+fun getSearchStateHolder(services: Services, navController: NavController): SearchStateHolder {
     return SearchStateHolder(
         ftsRepository = services.repositoryProvider.searchRepository,
         playbackManager = services.playbackManager,

@@ -72,7 +72,8 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars))
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
+                    )
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)

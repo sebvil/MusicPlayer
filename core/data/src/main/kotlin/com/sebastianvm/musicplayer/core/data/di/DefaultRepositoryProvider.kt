@@ -87,7 +87,8 @@ class DefaultRepositoryProvider(
     override val sortPreferencesRepository: SortPreferencesRepository
         get() =
             SortPreferencesRepositoryImpl(
-                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource)
+                sortPreferencesDataStore = dataSourcesProvider.sortPreferencesDataSource
+            )
 
     override val queueRepository: QueueRepository
         get() =

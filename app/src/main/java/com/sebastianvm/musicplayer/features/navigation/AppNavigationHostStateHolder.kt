@@ -48,7 +48,9 @@ class AppNavigationHostStateHolder(
     private val backStack: MutableStateFlow<List<BackStackEntry>> =
         MutableStateFlow(
             listOf(
-                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)))
+                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
+            )
+        )
 
     override val state: StateFlow<AppNavigationState> =
         backStack

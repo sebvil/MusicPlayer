@@ -62,7 +62,8 @@ class AppQueueRepository(
                     queuePosition = item.queuePosition,
                     queueItemId = item.queueItemId,
                 )
-            })
+            }
+        )
     }
 
     private fun getQueuedTracks(): Flow<List<QueuedTrack>> {

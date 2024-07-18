@@ -117,12 +117,13 @@ fun TrackSearch(
                             onClick = {
                                 query = ""
                                 handle(TrackSearchUserAction.TextChanged(""))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = stringResource(id = RString.back),
-                                )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = stringResource(id = RString.back),
+                            )
+                        }
                     }
                 },
                 onExpandedChange = {
@@ -147,26 +148,28 @@ fun TrackSearch(
                     WindowInsets.ime.asPaddingValues()
                 } else {
                     LocalPaddingValues.current
-                }) {
-                items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
-                    TrackRow(
-                        state = item.state,
-                        modifier =
-                            Modifier.clickable(enabled = !item.inPlaylist) {
-                                    handle(
-                                        TrackSearchUserAction.TrackClicked(
-                                            trackId = item.state.id,
-                                            trackName = item.state.trackName,
-                                        ))
-                                }
-                                .animateItem(),
-                        trailingContent = {
-                            if (item.inPlaylist) {
-                                Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                            }
-                        },
-                    )
                 }
+        ) {
+            items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
+                TrackRow(
+                    state = item.state,
+                    modifier =
+                        Modifier.clickable(enabled = !item.inPlaylist) {
+                                handle(
+                                    TrackSearchUserAction.TrackClicked(
+                                        trackId = item.state.id,
+                                        trackName = item.state.trackName,
+                                    )
+                                )
+                            }
+                            .animateItem(),
+                    trailingContent = {
+                        if (item.inPlaylist) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        }
+                    },
+                )
             }
+        }
     }
 }

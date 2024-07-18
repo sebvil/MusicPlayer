@@ -6,6 +6,6 @@ import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
 interface AlbumDetailsFeature {
     fun albumDetailsUiComponent(
         arguments: AlbumDetailsArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<AlbumDetailsArguments, *>
 }

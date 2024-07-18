@@ -102,7 +102,8 @@ class AlbumContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Album(albumId = album.id),
                                 initialTrackIndex = 0,
-                            ))
+                            )
+                        )
                 }
 
                 "ViewArtistClicked shows artist screen" {

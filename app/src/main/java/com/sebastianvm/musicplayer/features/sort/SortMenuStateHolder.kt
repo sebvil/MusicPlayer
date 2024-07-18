@@ -29,18 +29,21 @@ class SortMenuStateHolder(
         when (val listType = arguments.listType) {
             is SortableListType.AllTracks -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.AllTracks)
+                    trackList = MediaGroup.AllTracks
+                )
             }
             is SortableListType.Genre -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.Genre(listType.genreId))
+                    trackList = MediaGroup.Genre(listType.genreId)
+                )
             }
             is SortableListType.Albums -> {
                 sortPreferencesRepository.getAlbumListSortPreferences()
             }
             is SortableListType.Playlist -> {
                 sortPreferencesRepository.getPlaylistSortPreferences(
-                    playlistId = listType.playlistId)
+                    playlistId = listType.playlistId
+                )
             }
         }
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
@@ -113,7 +116,8 @@ class SortMenuStateHolder(
                                     MediaSortPreferences(
                                         sortOption = newSortOption,
                                         sortOrder = newSortOrder,
-                                    ))
+                                    )
+                            )
                         }
                         is SortableListType.Playlist -> {
                             require(newSortOption is SortOptions.PlaylistSortOption) {
@@ -176,10 +180,7 @@ sealed interface SortMenuUserAction : UserAction {
     ) : SortMenuUserAction
 }
 
-fun getSortMenuStateHolder(
-    services: Services,
-    arguments: SortMenuArguments,
-): SortMenuStateHolder {
+fun getSortMenuStateHolder(services: Services, arguments: SortMenuArguments): SortMenuStateHolder {
     return SortMenuStateHolder(
         arguments = arguments,
         sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,

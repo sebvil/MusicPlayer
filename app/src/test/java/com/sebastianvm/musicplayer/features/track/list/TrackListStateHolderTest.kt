@@ -125,7 +125,8 @@ class TrackListStateHolderTest :
                             uiComponent =
                                 SortMenuUiComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks)),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -139,7 +140,8 @@ class TrackListStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.AllTracks,
                                 initialTrackIndex = TRACK_INDEX,
-                            ))
+                            )
+                        )
                 }
 
                 "TrackMoreIconClicked navigates to TrackContextMenu" {

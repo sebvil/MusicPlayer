@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenu
 class FakeTrackContextMenuFeature : TrackContextMenuFeature {
     override fun trackContextMenuUiComponent(
         arguments: TrackContextMenuArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<TrackContextMenuArguments, *> {
         return FakeUiComponent(arguments)
     }

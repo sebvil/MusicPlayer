@@ -46,7 +46,8 @@ class HomeStateHolder(
                 genreListUiComponent,
                 playlistListUiComponent,
                 searchUiComponent,
-            ))
+            )
+        )
     override val state: StateFlow<HomeState>
         get() = _state.asStateFlow()
 

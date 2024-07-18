@@ -6,6 +6,6 @@ import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
 interface TrackContextMenuFeature {
     fun trackContextMenuUiComponent(
         arguments: TrackContextMenuArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<TrackContextMenuArguments, *>
 }

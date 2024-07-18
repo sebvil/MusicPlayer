@@ -141,7 +141,9 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )))
+                                )
+                        )
+                    )
 
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(

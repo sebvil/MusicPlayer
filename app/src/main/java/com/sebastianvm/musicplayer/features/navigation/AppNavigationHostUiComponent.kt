@@ -137,22 +137,25 @@ fun AppNavigationHost(
                             fadeIn(animationSpec = enterAnimationSpec))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
-                                fadeOut(animationSpec = exitAnimationSpec))
+                                fadeOut(animationSpec = exitAnimationSpec)
+                        )
                 } else {
                     (fadeIn(animationSpec = enterAnimationSpec) +
                             scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
-                                fadeOut(animationSpec = exitAnimationSpec))
+                                fadeOut(animationSpec = exitAnimationSpec)
+                        )
                 }
                 .apply { targetContentZIndex = targetState.size.toFloat() }
-        }) {
-            it.lastOrNull()?.let { screen ->
-                saveableStateHolder.SaveableStateProvider(screen.key) {
-                    screen.Content(modifier = modifier)
-                }
+        }
+    ) {
+        it.lastOrNull()?.let { screen ->
+            saveableStateHolder.SaveableStateProvider(screen.key) {
+                screen.Content(modifier = modifier)
             }
         }
+    }
 
     val bottomSheets = backStack.getScreensByMode(NavOptions.PresentationMode.BottomSheet)
     val sheetState = rememberModalBottomSheetState()

@@ -53,7 +53,8 @@ class GenreContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Genre(genreId = GENRE_ID),
                                 initialTrackIndex = 0,
-                            ))
+                            )
+                        )
                 }
             }
     }) {

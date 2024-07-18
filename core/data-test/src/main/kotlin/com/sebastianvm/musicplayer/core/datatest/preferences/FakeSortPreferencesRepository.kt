@@ -25,7 +25,8 @@ class FakeSortPreferencesRepository : SortPreferencesRepository {
             MediaSortPreferences(
                 sortOption = SortOptions.Album,
                 sortOrder = MediaSortOrder.ASCENDING,
-            ))
+            )
+        )
 
     val artistListSortOrder: MutableStateFlow<MediaSortOrder> =
         MutableStateFlow(MediaSortOrder.ASCENDING)

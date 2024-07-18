@@ -88,7 +88,8 @@ fun GenreList(
                     },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) })
+                        onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) }
+                    )
                 },
             )
         }
