@@ -5,21 +5,13 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.work.Configuration
-import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.di.AppDependencies
-import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.di.AppServices
 import com.sebastianvm.musicplayer.features.main.MainViewModel
+import com.sebastianvm.musicplayer.services.HasServices
 
-class MusicPlayerApplication : Application(), Configuration.Provider, Dependencies {
+class MusicPlayerApplication : Application(), Configuration.Provider, HasServices {
 
-    val dependencies by lazy { AppDependencies(this) }
-
-    override val repositoryProvider: RepositoryProvider
-        get() = dependencies.repositoryProvider
-
-    override val playbackManager: PlaybackManager
-        get() = dependencies.playbackManager
+    override val services by lazy { AppServices(this) }
 
     val viewModelFactory: AbstractSavedStateViewModelFactory =
         object : AbstractSavedStateViewModelFactory() {
@@ -31,7 +23,7 @@ class MusicPlayerApplication : Application(), Configuration.Provider, Dependenci
             ): T {
                 when (modelClass) {
                     MainViewModel::class.java -> {
-                        return MainViewModel(playbackManager = dependencies.playbackManager) as T
+                        return MainViewModel(playbackManager = services.playbackManager) as T
                     }
                     else -> throw IllegalArgumentException("Unknown ViewModel class")
                 }
@@ -39,6 +31,5 @@ class MusicPlayerApplication : Application(), Configuration.Provider, Dependenci
         }
 
     override val workManagerConfiguration: Configuration
-        get() =
-            Configuration.Builder().setWorkerFactory(MusicPlayerWorkerFactory(dependencies)).build()
+        get() = Configuration.Builder().setWorkerFactory(MusicPlayerWorkerFactory(services)).build()
 }

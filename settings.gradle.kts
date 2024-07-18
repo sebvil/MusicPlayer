@@ -1,5 +1,14 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:services-test")
+
+
+include(":features:album:details")
+
+
+include(":core:services")
+
+
 include(":core:ui")
 
 

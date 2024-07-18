@@ -103,12 +103,10 @@ internal class MusicRepositoryImpl(
                         artistName = artist.name,
                         albumName = albumName,
                         year = year,
-                    )
-                )
+                    ))
             } else {
                 appearsOnForArtists.add(
-                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year)
-                )
+                    AppearsOnForArtist(albumId = albumId, artistId = artist.id, year = year))
             }
         }
 

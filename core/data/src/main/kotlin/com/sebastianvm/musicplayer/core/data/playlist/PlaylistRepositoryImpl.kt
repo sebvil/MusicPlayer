@@ -52,8 +52,7 @@ internal class PlaylistRepositoryImpl(
                         PlaylistEntity(
                             id = playlistName.hashCode().toLong(),
                             playlistName = playlistName,
-                        )
-                    )
+                        ))
                 } catch (e: SQLiteConstraintException) {
                     Log.i("Exception", e.message.orEmpty())
                     null
@@ -74,8 +73,7 @@ internal class PlaylistRepositoryImpl(
                     playlistId = playlistId,
                     trackId = trackId,
                     position = playlistSize,
-                )
-            )
+                ))
         }
     }
 

@@ -1,21 +1,21 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
+import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.datatest.extensions.toBasicPlaylist
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.util.advanceUntilIdle
-import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize
@@ -105,13 +105,11 @@ class PlaylistListStateHolderTest :
                     val subject = getSubject()
 
                     subject.handle(
-                        PlaylistListUserAction.PlaylistMoreIconClicked(playlistId = PLAYLIST_ID)
-                    )
+                        PlaylistListUserAction.PlaylistMoreIconClicked(playlistId = PLAYLIST_ID))
 
                     navControllerDep.backStack shouldHaveSize 2
                     val backStackEntry = navControllerDep.backStack.last()
-                    backStackEntry.uiComponent.arguments shouldBe
-                        PlaylistContextMenuArguments(PLAYLIST_ID)
+                    backStackEntry.arguments shouldBe PlaylistContextMenuArguments(PLAYLIST_ID)
                     backStackEntry.presentationMode shouldBe NavOptions.PresentationMode.BottomSheet
                 }
 
@@ -146,8 +144,7 @@ class PlaylistListStateHolderTest :
                         PlaylistListUserAction.PlaylistClicked(
                             playlistId = PLAYLIST_ID,
                             playlistName = PLAYLIST_NAME,
-                        )
-                    )
+                        ))
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
@@ -168,9 +165,7 @@ class PlaylistListStateHolderTest :
 
                             subject.handle(
                                 PlaylistListUserAction.CreatePlaylistButtonClicked(
-                                    playlistName = PLAYLIST_NAME
-                                )
-                            )
+                                    playlistName = PLAYLIST_NAME))
                             advanceUntilIdle()
                             val playlist = playlistRepositoryDep.playlists.value.last()
                             navControllerDep.backStack shouldHaveSize 2
@@ -197,16 +192,13 @@ class PlaylistListStateHolderTest :
                                 skipItems(2)
                                 subject.handle(
                                     PlaylistListUserAction.CreatePlaylistButtonClicked(
-                                        playlistName = PLAYLIST_NAME
-                                    )
-                                )
+                                        playlistName = PLAYLIST_NAME))
 
                                 awaitItemAs<PlaylistListState.Data>()
                                     .isPlaylistCreationErrorDialogOpen shouldBe true
 
                                 subject.handle(
-                                    PlaylistListUserAction.DismissPlaylistCreationErrorDialog
-                                )
+                                    PlaylistListUserAction.DismissPlaylistCreationErrorDialog)
                                 awaitItemAs<PlaylistListState.Data>()
                                     .isPlaylistCreationErrorDialogOpen shouldBe false
                             }

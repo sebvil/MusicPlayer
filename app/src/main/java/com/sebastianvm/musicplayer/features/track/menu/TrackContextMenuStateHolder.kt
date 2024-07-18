@@ -2,34 +2,27 @@ package com.sebastianvm.musicplayer.features.track.menu
 
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
-import com.sebastianvm.musicplayer.core.model.HasTracks
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-data class TrackContextMenuArguments(
-    val trackId: Long,
-    val trackPositionInList: Int,
-    val trackList: HasTracks,
-) : Arguments
 
 sealed interface TrackContextMenuState : State {
     data class Data(

@@ -17,18 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 import kotlinx.coroutines.launch
 
 class HomeUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, HomeState, HomeUserAction, HomeStateHolder>() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: Dependencies): HomeStateHolder {
+    override fun createStateHolder(services: Services): HomeStateHolder {
         return getHomeStateHolder(navController)
     }
 
@@ -72,8 +72,7 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
-                    )
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars))
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)

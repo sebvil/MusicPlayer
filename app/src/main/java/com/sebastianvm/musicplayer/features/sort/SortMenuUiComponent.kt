@@ -25,14 +25,14 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
 
 data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
     BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
-    override fun createStateHolder(dependencies: Dependencies): SortMenuStateHolder {
-        return getSortMenuStateHolder(dependencies, arguments)
+    override fun createStateHolder(services: Services): SortMenuStateHolder {
+        return getSortMenuStateHolder(services, arguments)
     }
 
     @Composable
@@ -67,8 +67,7 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                )
-                            )
+                                ))
                         }
                     } ?: Modifier
 

@@ -15,12 +15,12 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.UiState
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class AlbumListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -40,11 +40,11 @@ data class AlbumListUiComponent(val navController: NavController) :
         AlbumList(uiState = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: Dependencies): AlbumListStateHolder {
+    override fun createStateHolder(services: Services): AlbumListStateHolder {
         return AlbumListStateHolder(
-            albumRepository = dependencies.repositoryProvider.albumRepository,
+            albumRepository = services.repositoryProvider.albumRepository,
             navController = navController,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
         )
     }
 }
@@ -89,8 +89,7 @@ fun AlbumList(
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) })
                 },
             )
         }

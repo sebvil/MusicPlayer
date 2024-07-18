@@ -1,26 +1,23 @@
 package com.sebastianvm.musicplayer.features.album.list
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.datatest.extensions.toAlbumWithArtists
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
-import com.sebastianvm.musicplayer.core.ui.mvvm.Data
-import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
-import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeBackstackEntry
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.Data
+import com.sebastianvm.musicplayer.services.features.mvvm.Empty
+import com.sebastianvm.musicplayer.services.features.mvvm.Loading
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -118,12 +115,8 @@ class AlbumListStateHolderTest :
                     val subject = getSubject()
                     subject.handle(AlbumListUserAction.AlbumMoreIconClicked(ALBUM_ID))
                     navControllerDep.backStack.last() shouldBe
-                        BackStackEntry(
-                            uiComponent =
-                                AlbumContextMenu(
-                                    arguments = AlbumContextMenuArguments(ALBUM_ID),
-                                    navController = navControllerDep,
-                                ),
+                        FakeBackstackEntry(
+                            arguments = AlbumContextMenuArguments(ALBUM_ID),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -132,12 +125,8 @@ class AlbumListStateHolderTest :
                     val subject = getSubject()
                     subject.handle(AlbumListUserAction.SortButtonClicked)
                     navControllerDep.backStack.last() shouldBe
-                        BackStackEntry(
-                            uiComponent =
-                                SortMenuUiComponent(
-                                    arguments =
-                                        SortMenuArguments(listType = SortableListType.Albums)
-                                ),
+                        FakeBackstackEntry(
+                            arguments = SortMenuArguments(listType = SortableListType.Albums),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }
@@ -152,22 +141,16 @@ class AlbumListStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artists = ARTIST_NAME,
                                     artworkUri = IMAGE_URI,
-                                )
-                        )
-                    )
+                                )))
 
                     navControllerDep.backStack.last() shouldBe
-                        BackStackEntry(
-                            uiComponent =
-                                AlbumDetailsUiComponent(
-                                    arguments =
-                                        AlbumDetailsArguments(
-                                            albumId = ALBUM_ID,
-                                            albumName = ALBUM_NAME,
-                                            imageUri = IMAGE_URI,
-                                            artists = ARTIST_NAME,
-                                        ),
-                                    navController = navControllerDep,
+                        FakeBackstackEntry(
+                            arguments =
+                                AlbumDetailsArguments(
+                                    albumId = ALBUM_ID,
+                                    albumName = ALBUM_NAME,
+                                    imageUri = IMAGE_URI,
+                                    artists = ARTIST_NAME,
                                 ),
                             presentationMode = NavOptions.PresentationMode.Screen,
                         )

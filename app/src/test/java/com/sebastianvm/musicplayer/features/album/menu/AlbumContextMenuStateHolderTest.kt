@@ -1,19 +1,19 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
+import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.datatest.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.util.advanceUntilIdle
-import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -102,8 +102,7 @@ class AlbumContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Album(albumId = album.id),
                                 initialTrackIndex = 0,
-                            )
-                        )
+                            ))
                 }
 
                 "ViewArtistClicked shows artist screen" {

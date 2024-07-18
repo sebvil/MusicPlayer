@@ -49,6 +49,8 @@ dependencies {
     implementation(projects.core.sync)
     implementation(projects.core.designsystems)
     implementation(projects.core.ui)
+    implementation(projects.core.services)
+    implementation(projects.features.album.details)
 
     // Kotlin
     implementation(libs.core.ktx)
@@ -93,6 +95,7 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testImplementation(projects.core.dataTest)
     testImplementation(projects.core.commonTest)
+    testImplementation(projects.core.servicesTest)
 }
 
 kover {

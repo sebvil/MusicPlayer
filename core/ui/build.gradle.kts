@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.resources)
     implementation(projects.core.designsystems)
     implementation(projects.core.sync)
+    implementation(projects.core.services)
 
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons.extended)

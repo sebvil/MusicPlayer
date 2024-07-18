@@ -8,10 +8,10 @@ import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class AlbumContextMenu(
     override val arguments: AlbumContextMenuArguments,
@@ -24,11 +24,11 @@ data class AlbumContextMenu(
         AlbumContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: Dependencies): AlbumContextMenuStateHolder {
+    override fun createStateHolder(services: Services): AlbumContextMenuStateHolder {
         return AlbumContextMenuStateHolder(
             arguments = arguments,
-            albumRepository = dependencies.repositoryProvider.albumRepository,
-            playbackManager = dependencies.playbackManager,
+            albumRepository = services.repositoryProvider.albumRepository,
+            playbackManager = services.playbackManager,
             navController = navController,
         )
     }
@@ -82,9 +82,7 @@ private fun AlbumContextMenu(
                                     onItemClick = {
                                         handle(
                                             AlbumContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }

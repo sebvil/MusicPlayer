@@ -19,15 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
+import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.track.list.TopBar
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class GenreDetailsUiComponent(
     override val arguments: GenreDetailsArguments,
@@ -40,13 +40,13 @@ data class GenreDetailsUiComponent(
         GenreDetailsStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: Dependencies): GenreDetailsStateHolder {
+    override fun createStateHolder(services: Services): GenreDetailsStateHolder {
         return GenreDetailsStateHolder(
             args = arguments,
             navController = navController,
-            genreRepository = dependencies.repositoryProvider.genreRepository,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.playbackManager,
+            genreRepository = services.repositoryProvider.genreRepository,
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
+            playbackManager = services.playbackManager,
         )
     }
 
@@ -133,15 +133,13 @@ fun GenreDetails(
                                     GenreDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }

@@ -1,20 +1,21 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,8 +70,7 @@ sealed interface PlaylistListUserAction : UserAction {
 class PlaylistListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
-    private val sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 
@@ -126,8 +126,7 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                )
-                            )
+                                ))
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -168,8 +167,7 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

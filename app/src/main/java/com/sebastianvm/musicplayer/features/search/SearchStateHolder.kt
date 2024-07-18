@@ -7,21 +7,21 @@ import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -94,8 +94,7 @@ class SearchStateHolder(
             SearchQuery(
                 term = "",
                 mode = com.sebastianvm.musicplayer.core.data.fts.SearchMode.TRACKS,
-            )
-        )
+            ))
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
@@ -156,14 +155,12 @@ class SearchStateHolder(
                     artists = albumItem.artists,
                 ),
                 navController,
-            )
-        )
+            ))
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
         navController.push(
-            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController)
-        )
+            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController))
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
@@ -171,8 +168,7 @@ class SearchStateHolder(
             PlaylistDetailsUiComponent(
                 PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
                 navController,
-            )
-        )
+            ))
     }
 
     override fun handle(action: SearchUserAction) {
@@ -201,12 +197,12 @@ class SearchStateHolder(
 }
 
 fun getSearchStateHolder(
-    dependencies: Dependencies,
+    services: Services,
     navController: NavController,
 ): SearchStateHolder {
     return SearchStateHolder(
-        ftsRepository = dependencies.repositoryProvider.searchRepository,
-        playbackManager = dependencies.playbackManager,
+        ftsRepository = services.repositoryProvider.searchRepository,
+        playbackManager = services.playbackManager,
         navController = navController,
     )
 }

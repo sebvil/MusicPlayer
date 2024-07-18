@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.features.genre.menu
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
+import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.datatest.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.util.advanceUntilIdle
-import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -53,8 +53,7 @@ class GenreContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 mediaGroup = MediaGroup.Genre(genreId = GENRE_ID),
                                 initialTrackIndex = 0,
-                            )
-                        )
+                            ))
                 }
             }
     }) {

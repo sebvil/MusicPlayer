@@ -1,24 +1,25 @@
 package com.sebastianvm.musicplayer.features.playlist.details
 
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchArguments
 import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortableListType
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -57,8 +58,7 @@ class PlaylistDetailsStateHolder(
     private val args: PlaylistDetailsArguments,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     playlistRepository: PlaylistRepository,
 ) : StateHolder<PlaylistDetailsState, PlaylistDetailsUserAction> {
@@ -107,8 +107,8 @@ class PlaylistDetailsStateHolder(
                 navController.push(
                     SortMenuUiComponent(
                         arguments =
-                            SortMenuArguments(listType = SortableListType.Playlist(args.playlistId))
-                    ),
+                            SortMenuArguments(
+                                listType = SortableListType.Playlist(args.playlistId))),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -129,8 +129,7 @@ class PlaylistDetailsStateHolder(
                     TrackSearchUiComponent(
                         arguments = TrackSearchArguments(playlistId = args.playlistId),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }

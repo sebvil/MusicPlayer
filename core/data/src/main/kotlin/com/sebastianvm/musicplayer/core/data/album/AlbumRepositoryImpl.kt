@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.core.data.album
 
 import com.sebastianvm.musicplayer.core.data.artist.asExternalModel
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.data.track.asExternalModel
 import com.sebastianvm.musicplayer.core.database.daos.AlbumDao
 import com.sebastianvm.musicplayer.core.database.entities.AlbumWithArtistsEntity
@@ -16,8 +17,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 internal class AlbumRepositoryImpl(
-    private val sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     private val albumDao: AlbumDao,
 ) : AlbumRepository {
 

@@ -2,13 +2,15 @@ package com.sebastianvm.musicplayer.features.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoState
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoUserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.NoState
+import com.sebastianvm.musicplayer.services.features.mvvm.NoUserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -55,8 +57,7 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = false,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            )
-                                        )
+                                            ))
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 2
                                         val entry = state.backStack.last()
@@ -83,8 +84,7 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = true,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            )
-                                        )
+                                            ))
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 1
                                         val entry = state.backStack.last()
@@ -112,9 +112,7 @@ class AppNavigationHostStateHolderTest :
 
         override val key: Any = this
 
-        override fun createStateHolder(
-            dependencies: Dependencies
-        ): StateHolder<NoState, NoUserAction> {
+        override fun createStateHolder(services: Services): StateHolder<NoState, NoUserAction> {
             error("Should not need to create state holder for tests")
         }
 

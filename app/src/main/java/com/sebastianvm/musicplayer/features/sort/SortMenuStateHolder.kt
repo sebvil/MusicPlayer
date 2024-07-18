@@ -1,16 +1,17 @@
 package com.sebastianvm.musicplayer.features.sort
 
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.model.not
-import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.di.Dependencies
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,8 +21,7 @@ import kotlinx.coroutines.launch
 
 class SortMenuStateHolder(
     private val arguments: SortMenuArguments,
-    private val sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<SortMenuState, SortMenuUserAction> {
 
@@ -29,21 +29,18 @@ class SortMenuStateHolder(
         when (val listType = arguments.listType) {
             is SortableListType.AllTracks -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.AllTracks
-                )
+                    trackList = MediaGroup.AllTracks)
             }
             is SortableListType.Genre -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.Genre(listType.genreId)
-                )
+                    trackList = MediaGroup.Genre(listType.genreId))
             }
             is SortableListType.Albums -> {
                 sortPreferencesRepository.getAlbumListSortPreferences()
             }
             is SortableListType.Playlist -> {
                 sortPreferencesRepository.getPlaylistSortPreferences(
-                    playlistId = listType.playlistId
-                )
+                    playlistId = listType.playlistId)
             }
         }
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
@@ -116,8 +113,7 @@ class SortMenuStateHolder(
                                     MediaSortPreferences(
                                         sortOption = newSortOption,
                                         sortOrder = newSortOrder,
-                                    )
-                            )
+                                    ))
                         }
                         is SortableListType.Playlist -> {
                             require(newSortOption is SortOptions.PlaylistSortOption) {
@@ -181,11 +177,11 @@ sealed interface SortMenuUserAction : UserAction {
 }
 
 fun getSortMenuStateHolder(
-    dependencies: Dependencies,
+    services: Services,
     arguments: SortMenuArguments,
 ): SortMenuStateHolder {
     return SortMenuStateHolder(
         arguments = arguments,
-        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+        sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
     )
 }

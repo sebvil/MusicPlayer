@@ -8,9 +8,9 @@ import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
 
 data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
     BaseUiComponent<
@@ -20,11 +20,11 @@ data class GenreContextMenu(override val arguments: GenreContextMenuArguments) :
         GenreContextMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: Dependencies): GenreContextMenuStateHolder {
+    override fun createStateHolder(services: Services): GenreContextMenuStateHolder {
         return GenreContextMenuStateHolder(
             arguments = arguments,
-            genreRepository = dependencies.repositoryProvider.genreRepository,
-            playbackManager = dependencies.playbackManager,
+            genreRepository = services.repositoryProvider.genreRepository,
+            playbackManager = services.playbackManager,
         )
     }
 

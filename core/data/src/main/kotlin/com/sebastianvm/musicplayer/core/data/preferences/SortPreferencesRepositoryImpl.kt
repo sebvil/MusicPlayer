@@ -32,8 +32,7 @@ internal class SortPreferencesRepositoryImpl(
                 genreTrackListSortPreferences =
                     oldPreferences.genreTrackListSortPreferences.mutate {
                         it[genreId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 
@@ -50,8 +49,7 @@ internal class SortPreferencesRepositoryImpl(
             }
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType for modifyTrackListSortPreferences"
-                )
+                    "Invalid trackListType for modifyTrackListSortPreferences")
         }
     }
 
@@ -95,8 +93,7 @@ internal class SortPreferencesRepositoryImpl(
             is MediaGroup.Playlist -> getPlaylistTrackListSortPreferences(trackList.playlistId)
             else ->
                 throw IllegalArgumentException(
-                    "Invalid trackListType $trackList for getTrackListSortPreferences"
-                )
+                    "Invalid trackListType $trackList for getTrackListSortPreferences")
         }
     }
 
@@ -156,8 +153,7 @@ internal class SortPreferencesRepositoryImpl(
                 playlistSortPreferences =
                     oldPreferences.playlistSortPreferences.mutate {
                         it[playlistId] = newPreferences
-                    }
-            )
+                    })
         }
     }
 

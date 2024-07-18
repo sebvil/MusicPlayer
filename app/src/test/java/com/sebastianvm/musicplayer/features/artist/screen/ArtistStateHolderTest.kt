@@ -1,16 +1,16 @@
 package com.sebastianvm.musicplayer.features.artist.screen
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.featues.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -108,9 +108,7 @@ class ArtistStateHolderTest :
                                     albumName = ALBUM_NAME,
                                     artworkUri = IMAGE_URI,
                                     artists = ARTIST_NAME,
-                                )
-                        )
-                    )
+                                )))
 
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
@@ -131,8 +129,7 @@ class ArtistStateHolderTest :
 
                 "BackClicked pops backstack" {
                     navControllerDep.push(
-                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep)
-                    )
+                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep))
                     val subject = getSubject()
                     subject.handle(ArtistUserAction.BackClicked)
                     navControllerDep.backStack.shouldBeEmpty()

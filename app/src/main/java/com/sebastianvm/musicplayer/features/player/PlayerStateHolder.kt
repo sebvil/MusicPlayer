@@ -2,14 +2,13 @@ package com.sebastianvm.musicplayer.features.player
 
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
-import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.queue.QueueUiComponent
-import kotlin.time.Duration
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration
 
 sealed interface PlayerState : State {
 
@@ -161,12 +161,12 @@ class PlayerStateHolder(
 }
 
 fun getPlayerStateHolder(
-    dependencies: Dependencies,
+    services: Services,
     delegate: PlayerDelegate,
     props: Flow<PlayerProps>,
 ): PlayerStateHolder {
     return PlayerStateHolder(
-        playbackManager = dependencies.playbackManager,
+        playbackManager = services.playbackManager,
         delegate = delegate,
         props = props,
     )

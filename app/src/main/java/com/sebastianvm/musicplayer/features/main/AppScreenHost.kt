@@ -24,7 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
 
 @Composable
 fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifier = Modifier) {
@@ -79,16 +79,14 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
                             enabled = !isFullScreen,
                         ) {
                             handle(MainUserAction.ExpandPlayer)
-                        }
-            )
+                        })
         },
     ) { paddingValues ->
         CompositionLocalProvider(
             LocalPaddingValues provides
-                PaddingValues(bottom = paddingValues.calculateBottomPadding())
-        ) {
-            state.appNavigationHostUiComponent.Content(modifier = Modifier)
-        }
+                PaddingValues(bottom = paddingValues.calculateBottomPadding())) {
+                state.appNavigationHostUiComponent.Content(modifier = Modifier)
+            }
     }
 }
 

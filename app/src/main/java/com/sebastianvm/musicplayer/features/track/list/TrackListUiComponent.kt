@@ -21,23 +21,23 @@ import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class TrackListUiComponent(val navController: NavController) :
     BaseUiComponent<NoArguments, TrackListState, TrackListUserAction, TrackListStateHolder>() {
 
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: Dependencies): TrackListStateHolder {
+    override fun createStateHolder(services: Services): TrackListStateHolder {
         return TrackListStateHolder(
             navController = navController,
-            trackRepository = dependencies.repositoryProvider.trackRepository,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
-            playbackManager = dependencies.playbackManager,
+            trackRepository = services.repositoryProvider.trackRepository,
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
+            playbackManager = services.playbackManager,
         )
     }
 
@@ -105,15 +105,13 @@ fun TrackList(
                                     TrackListUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }

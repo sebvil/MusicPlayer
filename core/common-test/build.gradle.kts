@@ -9,7 +9,9 @@ android {
 dependencies {
     implementation(projects.core.model)
     implementation(projects.core.datastore)
+    implementation(projects.core.services)
 
     implementation(libs.fixture.monkey.kotest)
     implementation(libs.fixture.monkey)
+    implementation(libs.bundles.testing)
 }

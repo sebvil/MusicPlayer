@@ -18,11 +18,11 @@ import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.UiState
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class ArtistsMenu(
     override val arguments: ArtistsMenuArguments,
@@ -35,10 +35,10 @@ data class ArtistsMenu(
         ArtistsMenuStateHolder,
     >() {
 
-    override fun createStateHolder(dependencies: Dependencies): ArtistsMenuStateHolder {
+    override fun createStateHolder(services: Services): ArtistsMenuStateHolder {
         return ArtistsMenuStateHolder(
             arguments = arguments,
-            artistRepository = dependencies.repositoryProvider.artistRepository,
+            artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
         )
     }

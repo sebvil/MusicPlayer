@@ -1,10 +1,13 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,9 +48,7 @@ class AppNavigationHostStateHolder(
     private val backStack: MutableStateFlow<List<BackStackEntry>> =
         MutableStateFlow(
             listOf(
-                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
-            )
-        )
+                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)))
 
     override val state: StateFlow<AppNavigationState> =
         backStack

@@ -15,12 +15,12 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.mvvm.UiState
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class ArtistListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -31,8 +31,8 @@ data class ArtistListUiComponent(val navController: NavController) :
     >() {
     override val arguments: NoArguments = NoArguments
 
-    override fun createStateHolder(dependencies: Dependencies): ArtistListStateHolder {
-        return getArtistListStateHolder(dependencies = dependencies, navController = navController)
+    override fun createStateHolder(services: Services): ArtistListStateHolder {
+        return getArtistListStateHolder(services = services, navController = navController)
     }
 
     @Composable
@@ -86,8 +86,7 @@ fun ArtistList(
                     Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) })
                 },
             )
         }

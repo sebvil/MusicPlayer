@@ -1,24 +1,25 @@
 package com.sebastianvm.musicplayer.features.artist.list
 
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.SortOptions
-import com.sebastianvm.musicplayer.core.ui.mvvm.Data
-import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
-import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
-import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.di.Dependencies
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Data
+import com.sebastianvm.musicplayer.services.features.mvvm.Empty
+import com.sebastianvm.musicplayer.services.features.mvvm.Loading
+import com.sebastianvm.musicplayer.services.features.mvvm.State
+import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.services.features.mvvm.UiState
+import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
+import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,8 +43,7 @@ sealed interface ArtistListUserAction : UserAction {
 class ArtistListStateHolder(
     artistRepository: ArtistRepository,
     private val navController: NavController,
-    private val sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
     override val state: StateFlow<UiState<ArtistListState>> =
@@ -58,9 +58,9 @@ class ArtistListStateHolder(
                         ArtistListState(
                             artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
                             sortButtonState =
-                                SortButton.State(option = SortOptions.Artist, sortOrder = sortOrder),
-                        )
-                    )
+                                SortButton.State(
+                                    option = SortOptions.Artist, sortOrder = sortOrder),
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -73,8 +73,7 @@ class ArtistListStateHolder(
             is ArtistListUserAction.ArtistMoreIconClicked -> {
                 navController.push(
                     ArtistContextMenu(
-                        arguments = ArtistContextMenuArguments(artistId = action.artistId)
-                    ),
+                        arguments = ArtistContextMenuArguments(artistId = action.artistId)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -84,20 +83,19 @@ class ArtistListStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
                         navController = navController,
-                    )
-                )
+                    ))
             }
         }
     }
 }
 
 fun getArtistListStateHolder(
-    dependencies: Dependencies,
+    services: Services,
     navController: NavController,
 ): ArtistListStateHolder {
     return ArtistListStateHolder(
-        artistRepository = dependencies.repositoryProvider.artistRepository,
+        artistRepository = services.repositoryProvider.artistRepository,
         navController = navController,
-        sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+        sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
     )
 }

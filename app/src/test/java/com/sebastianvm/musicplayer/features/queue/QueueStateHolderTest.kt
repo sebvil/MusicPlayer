@@ -1,13 +1,13 @@
 package com.sebastianvm.musicplayer.features.queue
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.data.UriUtils
+import com.sebastianvm.musicplayer.core.datatest.queue.FakeQueueRepository
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
 import com.sebastianvm.musicplayer.core.model.QueuedTrack
-import com.sebastianvm.musicplayer.repository.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.repository.queue.FakeQueueRepository
-import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import io.kotest.core.coroutines.backgroundScope
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope

@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.core.datatest.preferences
 
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
@@ -16,8 +17,7 @@ typealias TrackListSortPreferencesMap =
 
 typealias PlaylistPreferencesMap = Map<Long, MediaSortPreferences<SortOptions.PlaylistSortOption>>
 
-class FakeSortPreferencesRepository :
-    com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository {
+class FakeSortPreferencesRepository : SortPreferencesRepository {
 
     val albumListSortPreferences:
         MutableStateFlow<MediaSortPreferences<SortOptions.AlbumListSortOption>> =
@@ -25,8 +25,7 @@ class FakeSortPreferencesRepository :
             MediaSortPreferences(
                 sortOption = SortOptions.Album,
                 sortOrder = MediaSortOrder.ASCENDING,
-            )
-        )
+            ))
 
     val artistListSortOrder: MutableStateFlow<MediaSortOrder> =
         MutableStateFlow(MediaSortOrder.ASCENDING)

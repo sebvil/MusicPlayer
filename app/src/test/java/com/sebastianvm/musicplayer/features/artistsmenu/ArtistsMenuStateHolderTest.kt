@@ -1,20 +1,20 @@
 package com.sebastianvm.musicplayer.features.artistsmenu
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
+import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
+import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.model.HasArtists
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.ui.mvvm.Data
-import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.util.awaitItemAs
-import com.sebastianvm.musicplayer.util.testStateHolderState
+import com.sebastianvm.musicplayer.services.features.mvvm.Data
+import com.sebastianvm.musicplayer.services.features.mvvm.Loading
+import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -63,8 +63,7 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
                     }
                 }
 
@@ -86,8 +85,7 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
                     }
                 }
             }

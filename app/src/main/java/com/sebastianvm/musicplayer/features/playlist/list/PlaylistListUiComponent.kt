@@ -28,11 +28,11 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.NoArguments
-import com.sebastianvm.musicplayer.di.Dependencies
-import com.sebastianvm.musicplayer.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.features.navigation.NavController
+import com.sebastianvm.musicplayer.services.Services
+import com.sebastianvm.musicplayer.services.features.mvvm.Handler
+import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
+import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.services.features.navigation.NavController
 
 data class PlaylistListUiComponent(val navController: NavController) :
     BaseUiComponent<
@@ -52,10 +52,10 @@ data class PlaylistListUiComponent(val navController: NavController) :
         PlaylistList(state = state, handle = handle, modifier = modifier)
     }
 
-    override fun createStateHolder(dependencies: Dependencies): PlaylistListStateHolder {
+    override fun createStateHolder(services: Services): PlaylistListStateHolder {
         return PlaylistListStateHolder(
-            playlistRepository = dependencies.repositoryProvider.playlistRepository,
-            sortPreferencesRepository = dependencies.repositoryProvider.sortPreferencesRepository,
+            playlistRepository = services.repositoryProvider.playlistRepository,
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
             navController = navController,
         )
     }
@@ -87,8 +87,7 @@ fun PlaylistList(
 
     if (state.isPlaylistCreationErrorDialogOpen) {
         PlaylistCreationErrorDialog(
-            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) }
-        )
+            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) })
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -108,11 +107,10 @@ fun PlaylistList(
                         Button(
                             onClick = {
                                 handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked)
+                            }) {
+                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                                Text(text = stringResource(id = RString.create_playlist))
                             }
-                        ) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            Text(text = stringResource(id = RString.create_playlist))
-                        }
                     },
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 )
@@ -164,15 +162,13 @@ fun PlaylistListLayout(
                                 PlaylistListUserAction.PlaylistClicked(
                                     playlistId = item.id,
                                     playlistName = item.playlistName,
-                                )
-                            )
+                                ))
                         },
                     trailingContent = {
                         OverflowIconButton(
                             onClick = {
                                 handle(PlaylistListUserAction.PlaylistMoreIconClicked(item.id))
-                            }
-                        )
+                            })
                     },
                 )
             }
