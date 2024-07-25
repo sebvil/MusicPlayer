@@ -27,7 +27,7 @@ import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
 import com.sebastianvm.musicplayer.core.playback.extensions.uniqueId
 import com.sebastianvm.musicplayer.core.playback.extensions.uri
 import com.sebastianvm.musicplayer.core.playback.mediatree.MediaTree
-import com.sebastianvm.musicplayer.services.HasServices
+import com.sebastianvm.musicplayer.core.services.HasServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,8 +94,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                     player.prepare()
                     player.play()
                 }
-            }
-        )
+            })
         mediaSession =
             MediaLibrarySession.Builder(
                     this,
@@ -108,8 +107,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                         ): ListenableFuture<LibraryResult<MediaItem>> {
                             Log.i("000Player", "get root")
                             return Futures.immediateFuture(
-                                LibraryResult.ofItem(mediaTree.getRoot(), params)
-                            )
+                                LibraryResult.ofItem(mediaTree.getRoot(), params))
                         }
 
                         override fun onGetChildren(

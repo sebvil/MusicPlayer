@@ -2,8 +2,8 @@ package com.sebastianvm.musicplayer.core.commontest.extensions
 
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import io.kotest.core.test.TestScope
 import io.kotest.core.test.testCoroutineScheduler
 import kotlin.time.Duration
@@ -14,8 +14,8 @@ fun TestScope.advanceUntilIdle() {
     this.testCoroutineScheduler.advanceUntilIdle()
 }
 
-suspend fun <S : State> TestScope.testStateHolderState(
-    stateHolder: StateHolder<S, *>,
+suspend fun <S : com.sebastianvm.musicplayer.core.ui.mvvm.State> TestScope.testStateHolderState(
+    stateHolder: com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder<S, *>,
     timeout: Duration? = null,
     name: String? = null,
     validate: suspend TurbineTestContext<S>.() -> Unit,

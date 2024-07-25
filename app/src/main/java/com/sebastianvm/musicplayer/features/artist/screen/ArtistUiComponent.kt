@@ -29,22 +29,25 @@ import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
 data class ArtistUiComponent(
-    override val arguments: ArtistArguments,
+    val arguments: ArtistArguments,
     val navController: NavController,
-) : BaseUiComponent<ArtistArguments, ArtistState, ArtistUserAction, ArtistStateHolder>() {
+    val features: Features,
+) : BaseUiComponent<ArtistState, ArtistUserAction, ArtistStateHolder>() {
 
     override fun createStateHolder(services: Services): ArtistStateHolder {
         return ArtistStateHolder(
             arguments = arguments,
             artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
+            features = features,
         )
     }
 
@@ -136,8 +139,7 @@ fun LazyListScope.artistScreenSection(
                     text = stringResource(id = state.title),
                     style = MaterialTheme.typography.headlineMedium,
                 )
-            }
-        )
+            })
     }
 
     items(items = state.albums, key = { it.id }) { album ->
@@ -146,8 +148,7 @@ fun LazyListScope.artistScreenSection(
             modifier = Modifier.clickable { handle(ArtistUserAction.AlbumClicked(album)) },
             trailingContent = {
                 OverflowIconButton(
-                    onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) }
-                )
+                    onClick = { handle(ArtistUserAction.AlbumMoreIconClicked(albumId = album.id)) })
             },
         )
     }

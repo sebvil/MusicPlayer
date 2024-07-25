@@ -7,19 +7,20 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 
-data class AlbumContextMenu(
-    override val arguments: AlbumContextMenuArguments,
+class AlbumContextMenu(
+    val arguments: AlbumContextMenuArguments,
     val navController: NavController,
+    val features: Features,
 ) :
     BaseUiComponent<
-        AlbumContextMenuArguments,
         AlbumContextMenuState,
         AlbumContextMenuUserAction,
         AlbumContextMenuStateHolder,
@@ -31,6 +32,7 @@ data class AlbumContextMenu(
             albumRepository = services.repositoryProvider.albumRepository,
             playbackManager = services.playbackManager,
             navController = navController,
+            features = features,
         )
     }
 

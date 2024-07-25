@@ -4,21 +4,21 @@ import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
-import com.sebastianvm.musicplayer.services.features.Features
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Data
-import com.sebastianvm.musicplayer.services.features.mvvm.Empty
-import com.sebastianvm.musicplayer.services.features.mvvm.Loading
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.services.features.sort.SortableListType
+import com.sebastianvm.musicplayer.core.ui.mvvm.Data
+import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
+import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -98,6 +98,7 @@ class AlbumListStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
+                        features = features,
                     ))
             }
         }

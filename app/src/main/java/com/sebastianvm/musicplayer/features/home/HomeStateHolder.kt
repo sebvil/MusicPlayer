@@ -1,16 +1,15 @@
 package com.sebastianvm.musicplayer.features.home
 
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.features.album.list.AlbumListUiComponent
 import com.sebastianvm.musicplayer.features.artist.list.ArtistListUiComponent
 import com.sebastianvm.musicplayer.features.genre.list.GenreListUiComponent
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListUiComponent
 import com.sebastianvm.musicplayer.features.search.SearchUiComponent
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,21 +50,4 @@ class HomeStateHolder(
         get() = _state.asStateFlow()
 
     override fun handle(action: HomeUserAction) = Unit
-}
-
-fun getHomeStateHolder(navController: NavController): HomeStateHolder {
-    val trackListUiComponent = TrackListUiComponent(navController)
-    val artistListUiComponent = ArtistListUiComponent(navController)
-    val albumListUiComponent = AlbumListUiComponent(navController)
-    val genreListUiComponent = GenreListUiComponent(navController)
-    val playlistListUiComponent = PlaylistListUiComponent(navController)
-    val searchUiComponent = SearchUiComponent(navController)
-    return HomeStateHolder(
-        trackListUiComponent = trackListUiComponent,
-        artistListUiComponent = artistListUiComponent,
-        albumListUiComponent = albumListUiComponent,
-        genreListUiComponent = genreListUiComponent,
-        playlistListUiComponent = playlistListUiComponent,
-        searchUiComponent = searchUiComponent,
-    )
 }

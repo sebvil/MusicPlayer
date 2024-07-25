@@ -17,19 +17,20 @@ import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
 data class ArtistsMenu(
-    override val arguments: ArtistsMenuArguments,
+    val arguments: ArtistsMenuArguments,
     val navController: NavController,
+    val features: Features,
 ) :
     BaseUiComponent<
-        ArtistsMenuArguments,
         UiState<ArtistsMenuState>,
         ArtistsMenuUserAction,
         ArtistsMenuStateHolder,
@@ -40,6 +41,7 @@ data class ArtistsMenu(
             arguments = arguments,
             artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
+            features = features,
         )
     }
 

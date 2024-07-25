@@ -5,19 +5,20 @@ import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesReposito
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.api.sort.SortableListType
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.services.features.sort.SortableListType
-import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -57,6 +58,7 @@ class GenreDetailsStateHolder(
     genreRepository: GenreRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
+    private val features: Features,
 ) : StateHolder<GenreDetailsState, GenreDetailsUserAction> {
 
     private val sortPreferences =
@@ -94,6 +96,7 @@ class GenreDetailsStateHolder(
                                 trackList = MediaGroup.Genre(args.genreId),
                             ),
                         navController = navController,
+                        features = features,
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

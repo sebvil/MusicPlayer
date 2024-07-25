@@ -3,18 +3,19 @@ package com.sebastianvm.musicplayer.features.artistsmenu
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.model.HasArtists
+import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.Data
+import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
-import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Data
-import com.sebastianvm.musicplayer.services.features.mvvm.Loading
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,7 @@ class ArtistsMenuStateHolder(
     arguments: ArtistsMenuArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,
+    private val features: Features,
 ) : StateHolder<UiState<ArtistsMenuState>, ArtistsMenuUserAction> {
 
     override val state: StateFlow<UiState<ArtistsMenuState>> =
@@ -42,9 +44,7 @@ class ArtistsMenuStateHolder(
             .map { artists ->
                 Data(
                     ArtistsMenuState(
-                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                    )
-                )
+                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) }))
             }
             .stateIn(stateHolderScope, Lazily, Loading)
 
@@ -55,6 +55,7 @@ class ArtistsMenuStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
                         navController = navController,
+                        features = features,
                     ),
                     navOptions = NavOptions(popCurrent = true),
                 )

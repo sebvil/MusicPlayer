@@ -7,14 +7,13 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 
-data class ArtistContextMenu(override val arguments: ArtistContextMenuArguments) :
+data class ArtistContextMenu(val arguments: ArtistContextMenuArguments) :
     BaseUiComponent<
-        ArtistContextMenuArguments,
         ArtistContextMenuState,
         ArtistContextMenuUserAction,
         ArtistContextMenuStateHolder,

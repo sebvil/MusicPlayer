@@ -7,21 +7,21 @@ import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -87,6 +87,7 @@ class SearchStateHolder(
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    private val features: Features,
 ) : StateHolder<SearchState, SearchUserAction> {
 
     private val query =
@@ -142,33 +143,42 @@ class SearchStateHolder(
     }
 
     private fun onArtistSearchResultClicked(artistId: Long) {
-        navController.push(ArtistUiComponent(ArtistArguments(artistId), navController))
+        navController.push(
+            ArtistUiComponent(
+                arguments = ArtistArguments(artistId),
+                navController = navController,
+                features = features))
     }
 
     private fun onAlbumSearchResultClicked(albumItem: AlbumRow.State) {
         navController.push(
             AlbumDetailsUiComponent(
-                AlbumDetailsArguments(
-                    albumId = albumItem.id,
-                    albumName = albumItem.albumName,
-                    imageUri = albumItem.artworkUri,
-                    artists = albumItem.artists,
-                ),
-                navController,
-            ))
+                arguments =
+                    AlbumDetailsArguments(
+                        albumId = albumItem.id,
+                        albumName = albumItem.albumName,
+                        imageUri = albumItem.artworkUri,
+                        artists = albumItem.artists,
+                    ),
+                navController = navController,
+                features = features))
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
         navController.push(
-            GenreDetailsUiComponent(GenreDetailsArguments(genreId, genreName), navController))
+            GenreDetailsUiComponent(
+                GenreDetailsArguments(genreId = genreId, genreName = genreName),
+                navController,
+                features = features))
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
         navController.push(
             PlaylistDetailsUiComponent(
-                PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
-                navController,
-            ))
+                arguments =
+                    PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
+                navController = navController,
+                features = features))
     }
 
     override fun handle(action: SearchUserAction) {
@@ -194,12 +204,4 @@ class SearchStateHolder(
     companion object {
         private const val DEBOUNCE_TIME = 500L
     }
-}
-
-fun getSearchStateHolder(services: Services, navController: NavController): SearchStateHolder {
-    return SearchStateHolder(
-        ftsRepository = services.repositoryProvider.searchRepository,
-        playbackManager = services.playbackManager,
-        navController = navController,
-    )
 }

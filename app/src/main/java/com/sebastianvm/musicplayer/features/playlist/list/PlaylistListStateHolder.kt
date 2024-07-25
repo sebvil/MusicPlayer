@@ -5,17 +5,18 @@ import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesReposito
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuDelegate
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -72,6 +73,7 @@ class PlaylistListStateHolder(
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,
+    private val features: Features,
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
@@ -126,8 +128,8 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                )
-                            )
+                                    features = features,
+                                ))
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -168,8 +170,8 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                    )
-                )
+                        features = features,
+                    ))
             }
         }
     }

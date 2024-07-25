@@ -9,19 +9,20 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 
 data class TrackContextMenu(
-    override val arguments: TrackContextMenuArguments,
+    val arguments: TrackContextMenuArguments,
     val navController: NavController,
+    val features: Features,
 ) :
     BaseUiComponent<
-        TrackContextMenuArguments,
         TrackContextMenuState,
         TrackContextMenuUserAction,
         TrackContextMenuStateHolder,
@@ -34,6 +35,7 @@ data class TrackContextMenu(
             playlistRepository = services.repositoryProvider.playlistRepository,
             playbackManager = services.playbackManager,
             navController = navController,
+            features = features,
         )
     }
 
@@ -104,9 +106,7 @@ private fun TrackContextMenu(
                                     onItemClick = {
                                         handle(
                                             TrackContextMenuUserAction.ViewArtistClicked(
-                                                state.viewArtistsState.artistId
-                                            )
-                                        )
+                                                state.viewArtistsState.artistId))
                                     },
                                 )
                             }
@@ -135,8 +135,7 @@ private fun TrackContextMenu(
                                         TrackContextMenuUserAction.RemoveFromPlaylistClicked(
                                             it.playlistId,
                                             it.trackPositionInPlaylist,
-                                        )
-                                    )
+                                        ))
                                 },
                             )
                         }

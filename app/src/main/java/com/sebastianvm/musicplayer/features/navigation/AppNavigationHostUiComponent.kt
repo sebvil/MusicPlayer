@@ -26,27 +26,25 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.designsystems.components.BottomSheet
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.features.api.Features
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-class AppNavigationHostUiComponent :
+class AppNavigationHostUiComponent(val features: Features) :
     BaseUiComponent<
-        NoArguments,
         AppNavigationState,
         AppNavigationAction,
         AppNavigationHostStateHolder,
     >() {
-    override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(services: Services): AppNavigationHostStateHolder {
-        return AppNavigationHostStateHolder()
+        return AppNavigationHostStateHolder(features = features)
     }
 
     @Composable
@@ -137,25 +135,22 @@ fun AppNavigationHost(
                             fadeIn(animationSpec = enterAnimationSpec))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 1.1f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
-                        )
+                                fadeOut(animationSpec = exitAnimationSpec))
                 } else {
                     (fadeIn(animationSpec = enterAnimationSpec) +
                             scaleIn(animationSpec = enterAnimationSpec, initialScale = 1.1f))
                         .togetherWith(
                             scaleOut(animationSpec = exitAnimationSpec, targetScale = 0.9f) +
-                                fadeOut(animationSpec = exitAnimationSpec)
-                        )
+                                fadeOut(animationSpec = exitAnimationSpec))
                 }
                 .apply { targetContentZIndex = targetState.size.toFloat() }
-        }
-    ) {
-        it.lastOrNull()?.let { screen ->
-            saveableStateHolder.SaveableStateProvider(screen.key) {
-                screen.Content(modifier = modifier)
+        }) {
+            it.lastOrNull()?.let { screen ->
+                saveableStateHolder.SaveableStateProvider(screen.key) {
+                    screen.Content(modifier = modifier)
+                }
             }
         }
-    }
 
     val bottomSheets = backStack.getScreensByMode(NavOptions.PresentationMode.BottomSheet)
     val sheetState = rememberModalBottomSheetState()
@@ -200,9 +195,7 @@ fun AppNavigationHost(
     }
 }
 
-fun List<BackStackEntry>.getScreensByMode(
-    mode: NavOptions.PresentationMode
-): List<UiComponent<*, *>> {
+fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<UiComponent<*>> {
     return this.filter { it.presentationMode == mode }.map { it.uiComponent }
 }
 

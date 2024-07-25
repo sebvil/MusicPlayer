@@ -10,9 +10,8 @@ import com.sebastianvm.musicplayer.core.database.getDaoProvider
 import com.sebastianvm.musicplayer.core.datastore.di.DataSourcesProvider
 import com.sebastianvm.musicplayer.core.playback.manager.DefaultPlaybackManager
 import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackClient
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.Features
-import com.sebastianvm.musicplayer.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.services.Services
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,8 +43,6 @@ class AppServices(private val appContext: Context) : Services {
             trackRepository = repositoryProvider.trackRepository,
         )
     }
-
-    override val features: Features = DefaultFeatures()
 
     private val mediaPlaybackClient: MediaPlaybackClient by lazy {
         MediaPlaybackClient(context = appContext, externalScope = applicationScope)

@@ -12,27 +12,29 @@ import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
-data class ArtistListUiComponent(val navController: NavController) :
+class ArtistListUiComponent(val navController: NavController, val features: Features) :
     BaseUiComponent<
-        NoArguments,
         UiState<ArtistListState>,
         ArtistListUserAction,
         ArtistListStateHolder,
     >() {
-    override val arguments: NoArguments = NoArguments
 
     override fun createStateHolder(services: Services): ArtistListStateHolder {
-        return getArtistListStateHolder(services = services, navController = navController)
+        return ArtistListStateHolder(
+            artistRepository = services.repositoryProvider.artistRepository,
+            navController = navController,
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
+            features = features)
     }
 
     @Composable
@@ -86,8 +88,7 @@ fun ArtistList(
                     Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }
-                    )
+                        onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) })
                 },
             )
         }

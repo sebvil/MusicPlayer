@@ -28,18 +28,19 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
-data class PlaylistDetailsUiComponent(
-    override val arguments: PlaylistDetailsArguments,
+class PlaylistDetailsUiComponent(
+    val arguments: PlaylistDetailsArguments,
     val navController: NavController,
+    val features: Features,
 ) :
     BaseUiComponent<
-        PlaylistDetailsArguments,
         PlaylistDetailsState,
         PlaylistDetailsUserAction,
         PlaylistDetailsStateHolder,
@@ -52,7 +53,7 @@ data class PlaylistDetailsUiComponent(
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
             playbackManager = services.playbackManager,
             playlistRepository = services.repositoryProvider.playlistRepository,
-        )
+            features = features)
     }
 
     @Composable
@@ -177,15 +178,13 @@ fun PlaylistDetailsLayout(
                                     PlaylistDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }

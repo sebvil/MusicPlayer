@@ -12,24 +12,22 @@ import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
-data class AlbumListUiComponent(val navController: NavController) :
+data class AlbumListUiComponent(val navController: NavController, val features: Features) :
     BaseUiComponent<
-        NoArguments,
         UiState<AlbumListState>,
         AlbumListUserAction,
         AlbumListStateHolder,
     >() {
-    override val arguments: NoArguments = NoArguments
 
     @Composable
     override fun Content(
@@ -45,7 +43,7 @@ data class AlbumListUiComponent(val navController: NavController) :
             albumRepository = services.repositoryProvider.albumRepository,
             navController = navController,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
-            features = services.features,
+            features = features,
         )
     }
 }

@@ -17,19 +17,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.services.Services
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.album.list.AlbumListUiComponent
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.artist.list.ArtistListUiComponent
+import com.sebastianvm.musicplayer.features.genre.list.GenreListUiComponent
+import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListUiComponent
+import com.sebastianvm.musicplayer.features.search.SearchUiComponent
+import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import kotlinx.coroutines.launch
 
-class HomeUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, HomeState, HomeUserAction, HomeStateHolder>() {
-    override val arguments: NoArguments = NoArguments
+class HomeUiComponent(val navController: NavController, val features: Features) :
+    BaseUiComponent<HomeState, HomeUserAction, HomeStateHolder>() {
 
     override fun createStateHolder(services: Services): HomeStateHolder {
-        return getHomeStateHolder(navController)
+        val trackListUiComponent =
+            TrackListUiComponent(navController = navController, features = features)
+        val artistListUiComponent =
+            ArtistListUiComponent(navController = navController, features = features)
+        val albumListUiComponent =
+            AlbumListUiComponent(navController = navController, features = features)
+        val genreListUiComponent =
+            GenreListUiComponent(navController = navController, features = features)
+        val playlistListUiComponent =
+            PlaylistListUiComponent(navController = navController, features = features)
+        val searchUiComponent =
+            SearchUiComponent(navController = navController, features = features)
+        return HomeStateHolder(
+            trackListUiComponent = trackListUiComponent,
+            artistListUiComponent = artistListUiComponent,
+            albumListUiComponent = albumListUiComponent,
+            genreListUiComponent = genreListUiComponent,
+            playlistListUiComponent = playlistListUiComponent,
+            searchUiComponent = searchUiComponent,
+        )
     }
 
     @Composable
@@ -72,8 +96,7 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
-                    )
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars))
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)

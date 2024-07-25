@@ -45,16 +45,13 @@ import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.services.Services
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-object QueueUiComponent :
-    BaseUiComponent<NoArguments, QueueState, QueueUserAction, QueueStateHolder>() {
-    override val arguments: NoArguments = NoArguments
+object QueueUiComponent : BaseUiComponent<QueueState, QueueUserAction, QueueStateHolder>() {
 
     override fun createStateHolder(services: Services): QueueStateHolder {
         return QueueStateHolder(
@@ -171,21 +168,17 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                     Modifier.draggableHandle(
                                         onDragStarted = {
                                             draggedItemInitialIndex = item.position
-                                            if (
-                                                Build.VERSION.SDK_INT >=
-                                                    Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                                            ) {
+                                            if (Build.VERSION.SDK_INT >=
+                                                Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.DRAG_START
-                                                )
+                                                    HapticFeedbackConstants.DRAG_START)
                                             }
                                         },
                                         onDragStopped = {
                                             draggedItem = null
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.GESTURE_END
-                                                )
+                                                    HapticFeedbackConstants.GESTURE_END)
                                             }
                                             handle(
                                                 QueueUserAction.DragEnded(
@@ -194,8 +187,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                                         draggedItemFinalIndex +
                                                             state.nowPlayingItem.position +
                                                             1,
-                                                )
-                                            )
+                                                ))
                                         },
                                     ),
                             ) {
@@ -229,10 +221,9 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                     onClick = {
                         handle(QueueUserAction.RemoveItemsFromQueue(selectedItems.toList()))
                         selectedItems = emptySet()
+                    }) {
+                        Text(text = stringResource(RString.remove))
                     }
-                ) {
-                    Text(text = stringResource(RString.remove))
-                }
             }
         }
     }

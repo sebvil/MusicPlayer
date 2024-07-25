@@ -10,17 +10,16 @@ import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 
 data class PlaylistContextMenu(
-    override val arguments: PlaylistContextMenuArguments,
+    val arguments: PlaylistContextMenuArguments,
     val delegate: PlaylistContextMenuDelegate,
 ) :
     BaseUiComponent<
-        PlaylistContextMenuArguments,
         PlaylistContextMenuState,
         PlaylistContextMenuUserAction,
         PlaylistContextMenuStateHolder,
@@ -96,17 +95,17 @@ fun DeletePlaylistConfirmationDialog(
         onDismissRequest = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) },
         confirmButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked) }
-            ) {
-                Text(text = stringResource(RString.delete))
-            }
+                onClick = {
+                    handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
+                }) {
+                    Text(text = stringResource(RString.delete))
+                }
         },
         dismissButton = {
             TextButton(
-                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }
-            ) {
-                Text(text = stringResource(RString.cancel))
-            }
+                onClick = { handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled) }) {
+                    Text(text = stringResource(RString.cancel))
+                }
         },
         title = { Text(text = stringResource(id = RString.delete_this_playlist, playlistName)) },
         text = { Text(text = stringResource(id = RString.sure_you_want_to_delete, playlistName)) },

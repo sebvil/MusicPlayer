@@ -50,21 +50,24 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SingleSelectFil
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.mvvm.NoArguments
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 import kotlinx.collections.immutable.toImmutableList
 
-data class SearchUiComponent(val navController: NavController) :
-    BaseUiComponent<NoArguments, SearchState, SearchUserAction, SearchStateHolder>() {
-    override val arguments: NoArguments = NoArguments
+data class SearchUiComponent(val navController: NavController, val features: Features) :
+    BaseUiComponent<SearchState, SearchUserAction, SearchStateHolder>() {
 
     override fun createStateHolder(services: Services): SearchStateHolder {
-        return getSearchStateHolder(services, navController)
+        return SearchStateHolder(
+            ftsRepository = services.repositoryProvider.searchRepository,
+            playbackManager = services.playbackManager,
+            navController = navController,
+            features = features)
     }
 
     @Composable
@@ -121,13 +124,12 @@ fun SearchScreen(
                                 isSearchActive = false
                                 query = ""
                                 handle(SearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     } else {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
@@ -136,13 +138,12 @@ fun SearchScreen(
                     if (!isSearchActive) {
                         Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
                             IconButton(
-                                onClick = { isDropdownManuExpanded = !isDropdownManuExpanded }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
-                                )
-                            }
+                                onClick = { isDropdownManuExpanded = !isDropdownManuExpanded }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = stringResource(id = RString.more),
+                                    )
+                                }
                             DropdownMenu(
                                 expanded = isDropdownManuExpanded,
                                 onDismissRequest = { isDropdownManuExpanded = false },
@@ -175,13 +176,12 @@ fun SearchScreen(
                             onClick = {
                                 query = ""
                                 handle(SearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     }
                 },
             )

@@ -12,13 +12,13 @@ import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.features.api.sort.SortableListType
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
-import com.sebastianvm.musicplayer.services.features.sort.SortableListType
-import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData

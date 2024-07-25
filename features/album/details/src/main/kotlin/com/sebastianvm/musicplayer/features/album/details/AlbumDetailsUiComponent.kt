@@ -52,21 +52,22 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import kotlin.math.roundToInt
 
 data class AlbumDetailsUiComponent(
-    override val arguments: AlbumDetailsArguments,
+    val arguments: AlbumDetailsArguments,
     val navController: NavController,
+    val features: Features,
 ) :
     BaseUiComponent<
-        AlbumDetailsArguments,
         AlbumDetailsState,
         AlbumDetailsUserAction,
         AlbumDetailsStateHolder,
@@ -78,7 +79,7 @@ data class AlbumDetailsUiComponent(
             navController = navController,
             albumRepository = services.repositoryProvider.albumRepository,
             playbackManager = services.playbackManager,
-            trackContextMenuFeature = services.features.trackContextMenuFeature,
+            features = features,
         )
     }
 

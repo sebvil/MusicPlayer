@@ -33,18 +33,17 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 
 data class TrackSearchUiComponent(
-    override val arguments: TrackSearchArguments,
+    val arguments: TrackSearchArguments,
     val navController: NavController,
 ) :
     BaseUiComponent<
-        TrackSearchArguments,
         TrackSearchState,
         TrackSearchUserAction,
         TrackSearchStateHolder,
@@ -117,13 +116,12 @@ fun TrackSearch(
                             onClick = {
                                 query = ""
                                 handle(TrackSearchUserAction.TextChanged(""))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = RString.back),
-                            )
-                        }
                     }
                 },
                 onExpandedChange = {
@@ -148,28 +146,26 @@ fun TrackSearch(
                     WindowInsets.ime.asPaddingValues()
                 } else {
                     LocalPaddingValues.current
-                }
-        ) {
-            items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
-                TrackRow(
-                    state = item.state,
-                    modifier =
-                        Modifier.clickable(enabled = !item.inPlaylist) {
-                                handle(
-                                    TrackSearchUserAction.TrackClicked(
-                                        trackId = item.state.id,
-                                        trackName = item.state.trackName,
-                                    )
-                                )
+                }) {
+                items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
+                    TrackRow(
+                        state = item.state,
+                        modifier =
+                            Modifier.clickable(enabled = !item.inPlaylist) {
+                                    handle(
+                                        TrackSearchUserAction.TrackClicked(
+                                            trackId = item.state.id,
+                                            trackName = item.state.trackName,
+                                        ))
+                                }
+                                .animateItem(),
+                        trailingContent = {
+                            if (item.inPlaylist) {
+                                Icon(imageVector = Icons.Default.Check, contentDescription = null)
                             }
-                            .animateItem(),
-                    trailingContent = {
-                        if (item.inPlaylist) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
-        }
     }
 }

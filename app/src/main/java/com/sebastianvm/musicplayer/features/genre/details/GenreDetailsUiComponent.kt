@@ -22,19 +22,20 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.Features
 
-data class GenreDetailsUiComponent(
-    override val arguments: GenreDetailsArguments,
+class GenreDetailsUiComponent(
+    val arguments: GenreDetailsArguments,
     val navController: NavController,
+    val features: Features
 ) :
     BaseUiComponent<
-        GenreDetailsArguments,
         GenreDetailsState,
         GenreDetailsUserAction,
         GenreDetailsStateHolder,
@@ -47,6 +48,7 @@ data class GenreDetailsUiComponent(
             genreRepository = services.repositoryProvider.genreRepository,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
             playbackManager = services.playbackManager,
+            features = features,
         )
     }
 
@@ -133,15 +135,13 @@ fun GenreDetails(
                                     GenreDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }

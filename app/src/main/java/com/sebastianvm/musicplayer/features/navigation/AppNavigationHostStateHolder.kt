@@ -1,13 +1,14 @@
 package com.sebastianvm.musicplayer.features.navigation
 
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,26 +18,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 data class BackStackEntry(
-    val uiComponent: UiComponent<*, *>,
+    val uiComponent: UiComponent<*>,
     val presentationMode: NavOptions.PresentationMode,
 )
 
 data class AppNavigationState(val backStack: List<BackStackEntry>) : State
 
 sealed interface AppNavigationAction : UserAction {
-    data class ShowScreen(val uiComponent: UiComponent<*, *>, val navOptions: NavOptions) :
+    data class ShowScreen(val uiComponent: UiComponent<*>, val navOptions: NavOptions) :
         AppNavigationAction
 
     data object PopBackStack : AppNavigationAction
 }
 
 class AppNavigationHostStateHolder(
-    override val stateHolderScope: CoroutineScope = stateHolderScope()
+    override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    features: Features,
 ) : StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController =
         object : NavController {
-            override fun push(uiComponent: UiComponent<*, *>, navOptions: NavOptions) {
+            override fun push(uiComponent: UiComponent<*>, navOptions: NavOptions) {
                 handle(AppNavigationAction.ShowScreen(uiComponent, navOptions))
             }
 
@@ -48,9 +50,9 @@ class AppNavigationHostStateHolder(
     private val backStack: MutableStateFlow<List<BackStackEntry>> =
         MutableStateFlow(
             listOf(
-                BackStackEntry(HomeUiComponent(navController), NavOptions.PresentationMode.Screen)
-            )
-        )
+                BackStackEntry(
+                    HomeUiComponent(navController = navController, features = features),
+                    NavOptions.PresentationMode.Screen)))
 
     override val state: StateFlow<AppNavigationState> =
         backStack

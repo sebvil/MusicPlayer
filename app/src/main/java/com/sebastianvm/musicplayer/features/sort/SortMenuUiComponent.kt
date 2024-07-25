@@ -25,13 +25,13 @@ import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Handler
-import com.sebastianvm.musicplayer.services.features.navigation.BaseUiComponent
-import com.sebastianvm.musicplayer.services.features.sort.SortMenuArguments
+import com.sebastianvm.musicplayer.core.services.Services
+import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
+import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 
-data class SortMenuUiComponent(override val arguments: SortMenuArguments) :
-    BaseUiComponent<SortMenuArguments, SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
+data class SortMenuUiComponent(val arguments: SortMenuArguments) :
+    BaseUiComponent<SortMenuState, SortMenuUserAction, SortMenuStateHolder>() {
     override fun createStateHolder(services: Services): SortMenuStateHolder {
         return getSortMenuStateHolder(services, arguments)
     }

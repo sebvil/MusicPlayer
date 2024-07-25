@@ -2,16 +2,17 @@ package com.sebastianvm.musicplayer.features.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostUiComponent
 import com.sebastianvm.musicplayer.features.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.player.PlayerProps
 import com.sebastianvm.musicplayer.features.player.PlayerUiComponent
-import com.sebastianvm.musicplayer.services.features.mvvm.CloseableCoroutineScope
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.playback.PlaybackManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +23,10 @@ import kotlinx.coroutines.flow.update
 class MainViewModel(
     override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager,
+    features: Features,
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
-    private val appNavigationHostUiComponent = AppNavigationHostUiComponent()
+    private val appNavigationHostUiComponent = AppNavigationHostUiComponent(features = features)
 
     private val playerProps: MutableStateFlow<PlayerProps> =
         MutableStateFlow(PlayerProps(isFullscreen = false))

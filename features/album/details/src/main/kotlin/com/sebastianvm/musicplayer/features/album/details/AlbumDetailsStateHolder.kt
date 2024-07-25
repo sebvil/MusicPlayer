@@ -3,16 +3,16 @@ package com.sebastianvm.musicplayer.features.album.details
 import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.services.features.track.menu.TrackContextMenuFeature
-import com.sebastianvm.musicplayer.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -54,7 +54,7 @@ class AlbumDetailsStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-    private val trackContextMenuFeature: TrackContextMenuFeature,
+    private val features: Features,
 ) : StateHolder<AlbumDetailsState, AlbumDetailsUserAction> {
 
     override val state: StateFlow<AlbumDetailsState> =
@@ -82,7 +82,7 @@ class AlbumDetailsStateHolder(
         when (action) {
             is AlbumDetailsUserAction.TrackMoreIconClicked -> {
                 navController.push(
-                    trackContextMenuFeature.trackContextMenuUiComponent(
+                    features.trackContextMenuFeature.trackContextMenuUiComponent(
                         arguments =
                             TrackContextMenuArguments(
                                 trackId = action.trackId,
@@ -90,6 +90,7 @@ class AlbumDetailsStateHolder(
                                 trackList = MediaGroup.Album(args.albumId),
                             ),
                         navController = navController,
+                        features = features,
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

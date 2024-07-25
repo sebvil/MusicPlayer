@@ -52,6 +52,7 @@ dependencies {
     implementation(projects.core.services)
     implementation(projects.features.album.details)
     implementation(projects.features.album.list)
+    implementation(projects.features.api)
 
     // Kotlin
     implementation(libs.core.ktx)

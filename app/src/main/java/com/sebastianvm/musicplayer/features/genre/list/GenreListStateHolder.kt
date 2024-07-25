@@ -5,21 +5,21 @@ import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesReposito
 import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.Data
+import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
+import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenu
 import com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuArguments
-import com.sebastianvm.musicplayer.services.Services
-import com.sebastianvm.musicplayer.services.features.mvvm.Data
-import com.sebastianvm.musicplayer.services.features.mvvm.Empty
-import com.sebastianvm.musicplayer.services.features.mvvm.Loading
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UiState
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +43,7 @@ class GenreListStateHolder(
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
+    private val features: Features,
 ) : StateHolder<UiState<GenreListState>, GenreListUserAction> {
 
     override val state: StateFlow<UiState<GenreListState>> =
@@ -57,8 +58,7 @@ class GenreListStateHolder(
                             genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
                             sortButtonState =
                                 SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
-                        )
-                    )
+                        ))
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -84,20 +84,9 @@ class GenreListStateHolder(
                                 genreName = action.genreName,
                             ),
                         navController = navController,
-                    )
-                )
+                        features = features,
+                    ))
             }
         }
     }
-}
-
-fun getGenreListStateHolder(
-    services: Services,
-    navController: NavController,
-): GenreListStateHolder {
-    return GenreListStateHolder(
-        genreRepository = services.repositoryProvider.genreRepository,
-        navController = navController,
-        sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
-    )
 }

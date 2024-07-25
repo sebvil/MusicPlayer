@@ -4,17 +4,18 @@ import androidx.annotation.StringRes
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
+import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
+import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
+import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
+import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.services.features.mvvm.Arguments
-import com.sebastianvm.musicplayer.services.features.mvvm.State
-import com.sebastianvm.musicplayer.services.features.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.mvvm.UserAction
-import com.sebastianvm.musicplayer.services.features.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.services.features.navigation.NavController
-import com.sebastianvm.musicplayer.services.features.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.Features
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +49,7 @@ class ArtistStateHolder(
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
     private val navController: NavController,
+    private val features: Features,
 ) : StateHolder<ArtistState, ArtistUserAction> {
 
     private val artistId = arguments.artistId
@@ -87,7 +89,7 @@ class ArtistStateHolder(
                     AlbumContextMenu(
                         arguments = AlbumContextMenuArguments(action.albumId),
                         navController = navController,
-                    ),
+                        features = features),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -106,6 +108,7 @@ class ArtistStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
+                        features = features,
                     ))
             }
         }
