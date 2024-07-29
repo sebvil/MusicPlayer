@@ -121,6 +121,8 @@ dependencies {
     testImplementation(projects.core.dataTest)
     testImplementation(projects.core.commonTest)
     testImplementation(projects.core.servicesTest)
+    testImplementation(projects.core.uiTest)
+    testImplementation(projects.features.test)
 }
 
 kover {

@@ -23,7 +23,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import kotlinx.coroutines.launch
 
-class HomeUiComponent(val navController: NavController) :
+class HomeUiComponent(private val navController: NavController) :
     BaseUiComponent<HomeState, HomeUserAction, HomeStateHolder>() {
 
     override fun createStateHolder(services: Services): HomeStateHolder {
@@ -70,8 +70,7 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
                     state.trackListUiComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
-                    )
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars))
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListUiComponent.Content(modifier = Modifier)

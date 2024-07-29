@@ -16,8 +16,6 @@ import kotlinx.coroutines.cancel
 
 interface UiComponent<SH : StateHolder<*, *>> {
 
-    val key: Any
-
     fun createStateHolder(services: Services): SH
 
     @Composable fun Content(modifier: Modifier)
@@ -34,8 +32,6 @@ abstract class BaseUiComponent<S : State, UA : UserAction, SH : StateHolder<S, U
     }
 
     @Composable abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
-
-    override val key = this.toString()
 
     @Composable
     final override fun Content(modifier: Modifier) {
@@ -54,3 +50,6 @@ abstract class BaseUiComponent<S : State, UA : UserAction, SH : StateHolder<S, U
 
 @Composable
 fun services(): Services = (LocalContext.current.applicationContext as HasServices).services
+
+val UiComponent<*>.key: String
+    get() = this.toString()

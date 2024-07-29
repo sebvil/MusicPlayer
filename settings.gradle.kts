@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":features:artistsmenu")
-
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -100,3 +98,9 @@ include(":features:track:menu")
 include(":features:registry")
 
 include(":features:api")
+
+include(":features:artistsmenu")
+
+include(":features:test")
+
+include(":core:ui-test")

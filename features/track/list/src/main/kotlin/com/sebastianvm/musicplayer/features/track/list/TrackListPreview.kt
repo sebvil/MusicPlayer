@@ -1,5 +1,5 @@
 package com.sebastianvm.musicplayer.features.track.list // package
-                                                        // com.sebastianvm.musicplayer.ui.library.tracklist
+                                                        // tracklist
 //
 // import androidx.compose.runtime.Composable
 // import androidx.compose.ui.tooling.preview.PreviewParameter

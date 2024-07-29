@@ -26,7 +26,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 
-class TrackListUiComponent(val navController: NavController) :
+class TrackListUiComponent(private val navController: NavController) :
     BaseUiComponent<TrackListState, TrackListUserAction, TrackListStateHolder>() {
 
     override fun createStateHolder(services: Services): TrackListStateHolder {
@@ -103,15 +103,13 @@ fun TrackList(
                                     TrackListUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    )
+                                    ))
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = stringResource(id = RString.more),
                                 )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = stringResource(id = RString.more),
-                            )
-                        }
                     },
                 )
             }

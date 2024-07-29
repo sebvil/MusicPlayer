@@ -7,13 +7,14 @@ import com.sebastianvm.musicplayer.core.datatest.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.Album
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeBackstackEntry
-import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
-import com.sebastianvm.musicplayer.core.servicestest.features.track.menu.FakeTrackContextMenuFeature
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
+import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -52,7 +53,7 @@ class AlbumDetailsStateHolderTest :
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,
-                trackContextMenuFeature = FakeTrackContextMenuFeature(),
+                features = initializeFakeFeatures(),
             )
         }
 
@@ -113,13 +114,20 @@ class AlbumDetailsStateHolderTest :
                     )
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
-                            arguments =
-                                TrackContextMenuArguments(
-                                    trackId = TRACK_ID,
-                                    trackPositionInList = TRACK_INDEX,
-                                    trackList = MediaGroup.Album(albumId = ALBUM_ID),
+                            uiComponent =
+                                FakeUiComponent(
+                                    arguments =
+                                        TrackContextMenuArguments(
+                                            trackId = TRACK_ID,
+                                            trackPositionInList = TRACK_INDEX,
+                                            trackList = MediaGroup.Album(albumId = ALBUM_ID),
+                                        ),
+                                    name = "TrackContextMenu",
                                 ),
-                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                            navOptions =
+                                NavOptions(
+                                    presentationMode = NavOptions.PresentationMode.BottomSheet
+                                ),
                         )
                 }
 

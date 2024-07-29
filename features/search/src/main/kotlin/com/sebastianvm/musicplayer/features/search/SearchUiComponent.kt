@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.sebastianvm.musicplayer.core.data.fts.SearchMode
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
@@ -209,8 +210,7 @@ fun SearchLayout(
 
     Column(modifier = modifier.fillMaxHeight().clearFocusOnTouch(focusManager)) {
         SingleSelectFilterChipGroup(
-            options =
-                com.sebastianvm.musicplayer.core.data.fts.SearchMode.entries.toImmutableList(),
+            options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
             modifier = Modifier.padding(vertical = 16.dp),
             getDisplayName = { option -> stringResource(id = option.res) },

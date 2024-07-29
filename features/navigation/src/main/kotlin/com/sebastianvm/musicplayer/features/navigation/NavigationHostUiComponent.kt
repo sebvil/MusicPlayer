@@ -32,6 +32,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.navigation.key
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
