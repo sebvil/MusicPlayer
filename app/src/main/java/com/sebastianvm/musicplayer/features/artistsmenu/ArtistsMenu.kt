@@ -23,12 +23,10 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
 data class ArtistsMenu(
     val arguments: ArtistsMenuArguments,
     val navController: NavController,
-    val features: Features,
 ) :
     BaseUiComponent<
         UiState<ArtistsMenuState>,
@@ -41,7 +39,6 @@ data class ArtistsMenu(
             arguments = arguments,
             artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
-            features = features,
         )
     }
 

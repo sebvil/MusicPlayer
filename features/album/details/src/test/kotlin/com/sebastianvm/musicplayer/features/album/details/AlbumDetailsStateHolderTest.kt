@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.core.servicestest.features.track.menu.FakeTra
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty

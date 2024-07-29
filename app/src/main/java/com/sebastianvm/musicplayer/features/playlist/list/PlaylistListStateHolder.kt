@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenu
@@ -72,8 +71,7 @@ class PlaylistListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val navController: NavController,
-    private val features: Features,
+    private val navController: NavController
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
@@ -128,7 +126,6 @@ class PlaylistListStateHolder(
                                             playlistName = action.playlistName,
                                         ),
                                     navController = navController,
-                                    features = features,
                                 ))
                         }
                     }
@@ -170,7 +167,6 @@ class PlaylistListStateHolder(
                                 playlistName = action.playlistName,
                             ),
                         navController = navController,
-                        features = features,
                     ))
             }
         }

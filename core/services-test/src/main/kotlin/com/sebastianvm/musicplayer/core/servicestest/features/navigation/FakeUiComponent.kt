@@ -6,11 +6,11 @@ import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.mvvm.NoState
 import com.sebastianvm.musicplayer.core.ui.mvvm.NoUserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
-import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
+import com.sebastianvm.musicplayer.services.featureRegistry.navigation.UiComponent
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.coroutines.EmptyCoroutineContext
 
 object NoStateHolder :
     com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder<

@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.services.featureRegistry.album.menu.AlbumContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe

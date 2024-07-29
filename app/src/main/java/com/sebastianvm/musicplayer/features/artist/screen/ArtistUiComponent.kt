@@ -34,12 +34,10 @@ import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
 data class ArtistUiComponent(
     val arguments: ArtistArguments,
     val navController: NavController,
-    val features: Features,
 ) : BaseUiComponent<ArtistState, ArtistUserAction, ArtistStateHolder>() {
 
     override fun createStateHolder(services: Services): ArtistStateHolder {
@@ -47,7 +45,6 @@ data class ArtistUiComponent(
             arguments = arguments,
             artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
-            features = features,
         )
     }
 

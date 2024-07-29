@@ -14,7 +14,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
@@ -86,9 +85,7 @@ class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
-    override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val features: Features,
-) : StateHolder<SearchState, SearchUserAction> {
+    override val stateHolderScope: CoroutineScope = stateHolderScope()) : StateHolder<SearchState, SearchUserAction> {
 
     private val query =
         MutableStateFlow(
@@ -147,7 +144,7 @@ class SearchStateHolder(
             ArtistUiComponent(
                 arguments = ArtistArguments(artistId),
                 navController = navController,
-                features = features))
+            ))
     }
 
     private fun onAlbumSearchResultClicked(albumItem: AlbumRow.State) {
@@ -161,7 +158,7 @@ class SearchStateHolder(
                         artists = albumItem.artists,
                     ),
                 navController = navController,
-                features = features))
+            ))
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
@@ -169,7 +166,7 @@ class SearchStateHolder(
             GenreDetailsUiComponent(
                 GenreDetailsArguments(genreId = genreId, genreName = genreName),
                 navController,
-                features = features))
+            ))
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
@@ -178,7 +175,7 @@ class SearchStateHolder(
                 arguments =
                     PlaylistDetailsArguments(playlistId = playlistId, playlistName = playlistName),
                 navController = navController,
-                features = features))
+            ))
     }
 
     override fun handle(action: SearchUserAction) {

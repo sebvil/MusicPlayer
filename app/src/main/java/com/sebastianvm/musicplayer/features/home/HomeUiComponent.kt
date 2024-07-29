@@ -22,7 +22,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.album.list.AlbumListUiComponent
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.artist.list.ArtistListUiComponent
 import com.sebastianvm.musicplayer.features.genre.list.GenreListUiComponent
 import com.sebastianvm.musicplayer.features.playlist.list.PlaylistListUiComponent
@@ -30,22 +29,34 @@ import com.sebastianvm.musicplayer.features.search.SearchUiComponent
 import com.sebastianvm.musicplayer.features.track.list.TrackListUiComponent
 import kotlinx.coroutines.launch
 
-class HomeUiComponent(val navController: NavController, val features: Features) :
+class HomeUiComponent(val navController: NavController) :
     BaseUiComponent<HomeState, HomeUserAction, HomeStateHolder>() {
 
     override fun createStateHolder(services: Services): HomeStateHolder {
         val trackListUiComponent =
-            TrackListUiComponent(navController = navController, features = features)
+            TrackListUiComponent(
+                navController = navController,
+            )
         val artistListUiComponent =
-            ArtistListUiComponent(navController = navController, features = features)
+            ArtistListUiComponent(
+                navController = navController,
+            )
         val albumListUiComponent =
-            AlbumListUiComponent(navController = navController, features = features)
+            AlbumListUiComponent(
+                navController = navController,
+            )
         val genreListUiComponent =
-            GenreListUiComponent(navController = navController, features = features)
+            GenreListUiComponent(
+                navController = navController,
+            )
         val playlistListUiComponent =
-            PlaylistListUiComponent(navController = navController, features = features)
+            PlaylistListUiComponent(
+                navController = navController,
+            )
         val searchUiComponent =
-            SearchUiComponent(navController = navController, features = features)
+            SearchUiComponent(
+                navController = navController,
+            )
         return HomeStateHolder(
             trackListUiComponent = trackListUiComponent,
             artistListUiComponent = artistListUiComponent,

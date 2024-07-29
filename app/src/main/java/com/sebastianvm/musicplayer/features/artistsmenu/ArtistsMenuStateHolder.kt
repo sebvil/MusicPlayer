@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import kotlinx.coroutines.CoroutineScope
@@ -34,8 +33,7 @@ class ArtistsMenuStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     arguments: ArtistsMenuArguments,
     artistRepository: ArtistRepository,
-    private val navController: NavController,
-    private val features: Features,
+    private val navController: NavController
 ) : StateHolder<UiState<ArtistsMenuState>, ArtistsMenuUserAction> {
 
     override val state: StateFlow<UiState<ArtistsMenuState>> =
@@ -55,7 +53,6 @@ class ArtistsMenuStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions = NavOptions(popCurrent = true),
                 )

@@ -9,8 +9,8 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.services.features.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.featureRegistry.album.menu.AlbumContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty

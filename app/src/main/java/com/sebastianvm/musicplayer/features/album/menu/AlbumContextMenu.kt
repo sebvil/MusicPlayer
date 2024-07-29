@@ -12,13 +12,11 @@ import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 
 class AlbumContextMenu(
     val arguments: AlbumContextMenuArguments,
     val navController: NavController,
-    val features: Features,
 ) :
     BaseUiComponent<
         AlbumContextMenuState,
@@ -32,7 +30,6 @@ class AlbumContextMenu(
             albumRepository = services.repositoryProvider.albumRepository,
             playbackManager = services.playbackManager,
             navController = navController,
-            features = features,
         )
     }
 

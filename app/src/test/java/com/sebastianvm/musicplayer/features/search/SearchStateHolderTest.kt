@@ -31,7 +31,7 @@ import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponen
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.services.features.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe

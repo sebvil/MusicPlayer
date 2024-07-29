@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.core.servicestest.features.navigation
 
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
+import com.sebastianvm.musicplayer.services.featureRegistry.navigation.UiComponent
 
 class FakeNavController : NavController {
     val backStack: MutableList<FakeBackstackEntry> = mutableListOf()

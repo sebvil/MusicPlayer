@@ -9,7 +9,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
@@ -51,7 +50,6 @@ class AlbumContextMenuStateHolder(
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val features: Features,
 ) : StateHolder<AlbumContextMenuState, AlbumContextMenuUserAction> {
 
     private val albumId = arguments.albumId
@@ -85,7 +83,6 @@ class AlbumContextMenuStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -95,7 +92,6 @@ class AlbumContextMenuStateHolder(
                     ArtistsMenu(
                         arguments = ArtistsMenuArguments(MediaGroup.Album(albumId)),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions =
                         NavOptions(

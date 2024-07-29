@@ -32,11 +32,10 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
-import com.sebastianvm.musicplayer.features.api.Features
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-class AppNavigationHostUiComponent(val features: Features) :
+class AppNavigationHostUiComponent :
     BaseUiComponent<
         AppNavigationState,
         AppNavigationAction,
@@ -44,7 +43,7 @@ class AppNavigationHostUiComponent(val features: Features) :
     >() {
 
     override fun createStateHolder(services: Services): AppNavigationHostStateHolder {
-        return AppNavigationHostStateHolder(features = features)
+        return AppNavigationHostStateHolder()
     }
 
     @Composable

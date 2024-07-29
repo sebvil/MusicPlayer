@@ -7,7 +7,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +32,6 @@ sealed interface AppNavigationAction : UserAction {
 
 class AppNavigationHostStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    features: Features,
 ) : StateHolder<AppNavigationState, AppNavigationAction> {
 
     private val navController =
@@ -51,7 +49,9 @@ class AppNavigationHostStateHolder(
         MutableStateFlow(
             listOf(
                 BackStackEntry(
-                    HomeUiComponent(navController = navController, features = features),
+                    HomeUiComponent(
+                        navController = navController,
+                    ),
                     NavOptions.PresentationMode.Screen)))
 
     override val state: StateFlow<AppNavigationState> =

@@ -25,6 +25,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.ui)
     implementation(projects.features.api)
+    implementation(projects.features.registry)
 
     implementation(libs.compose.material3)
     implementation(libs.compose.material.icons.extended)

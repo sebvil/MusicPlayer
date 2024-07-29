@@ -32,9 +32,8 @@ import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
-class PlaylistListUiComponent(val navController: NavController, val features: Features) :
+class PlaylistListUiComponent(val navController: NavController) :
     BaseUiComponent<
         PlaylistListState,
         PlaylistListUserAction,
@@ -55,7 +54,6 @@ class PlaylistListUiComponent(val navController: NavController, val features: Fe
             playlistRepository = services.repositoryProvider.playlistRepository,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
             navController = navController,
-            features = features,
         )
     }
 }

@@ -15,7 +15,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -45,7 +44,6 @@ class ArtistListStateHolder(
     private val navController: NavController,
     private val sortPreferencesRepository: SortPreferencesRepository,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val features: Features,
 ) : StateHolder<UiState<ArtistListState>, ArtistListUserAction> {
     override val state: StateFlow<UiState<ArtistListState>> =
         combine(
@@ -84,7 +82,6 @@ class ArtistListStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(action.artistId),
                         navController = navController,
-                        features = features,
                     ))
             }
         }

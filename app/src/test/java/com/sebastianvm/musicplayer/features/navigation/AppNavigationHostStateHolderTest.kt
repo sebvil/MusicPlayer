@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.NoUserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.home.HomeUiComponent
-import com.sebastianvm.musicplayer.services.features.navigation.UiComponent
+import com.sebastianvm.musicplayer.services.featureRegistry.navigation.UiComponent
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData

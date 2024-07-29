@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import kotlinx.coroutines.CoroutineScope
@@ -48,9 +47,7 @@ class ArtistStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     arguments: ArtistArguments,
     artistRepository: ArtistRepository,
-    private val navController: NavController,
-    private val features: Features,
-) : StateHolder<ArtistState, ArtistUserAction> {
+    private val navController: NavController) : StateHolder<ArtistState, ArtistUserAction> {
 
     private val artistId = arguments.artistId
 
@@ -89,7 +86,7 @@ class ArtistStateHolder(
                     AlbumContextMenu(
                         arguments = AlbumContextMenuArguments(action.albumId),
                         navController = navController,
-                        features = features),
+                        ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -108,7 +105,6 @@ class ArtistStateHolder(
                                 artists = action.albumItem.artists,
                             ),
                         navController = navController,
-                        features = features,
                     ))
             }
         }

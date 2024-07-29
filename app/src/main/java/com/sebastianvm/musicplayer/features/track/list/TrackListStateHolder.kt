@@ -12,7 +12,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
@@ -46,9 +45,7 @@ class TrackListStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: Features,
-) : StateHolder<TrackListState, TrackListUserAction> {
+    private val playbackManager: PlaybackManager) : StateHolder<TrackListState, TrackListUserAction> {
 
     private val sortPreferences =
         sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.AllTracks)
@@ -80,7 +77,6 @@ class TrackListStateHolder(
                                 trackList = MediaGroup.AllTracks,
                             ),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

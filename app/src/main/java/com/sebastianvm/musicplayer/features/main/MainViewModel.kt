@@ -8,7 +8,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.navigation.AppNavigationHostUiComponent
 import com.sebastianvm.musicplayer.features.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.player.PlayerProps
@@ -23,10 +22,9 @@ import kotlinx.coroutines.flow.update
 class MainViewModel(
     override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
     private val playbackManager: PlaybackManager,
-    features: Features,
 ) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
 
-    private val appNavigationHostUiComponent = AppNavigationHostUiComponent(features = features)
+    private val appNavigationHostUiComponent = AppNavigationHostUiComponent()
 
     private val playerProps: MutableStateFlow<PlayerProps> =
         MutableStateFlow(PlayerProps(isFullscreen = false))

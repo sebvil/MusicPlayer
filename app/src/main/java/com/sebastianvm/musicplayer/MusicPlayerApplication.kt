@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.work.Configuration
 import com.sebastianvm.musicplayer.core.services.HasServices
 import com.sebastianvm.musicplayer.di.AppServices
-import com.sebastianvm.musicplayer.di.DefaultFeatures
 import com.sebastianvm.musicplayer.features.main.MainViewModel
 
 class MusicPlayerApplication : Application(), Configuration.Provider, HasServices {
@@ -24,10 +23,7 @@ class MusicPlayerApplication : Application(), Configuration.Provider, HasService
             ): T {
                 when (modelClass) {
                     MainViewModel::class.java -> {
-                        return MainViewModel(
-                            playbackManager = services.playbackManager,
-                            features = DefaultFeatures())
-                            as T
+                        return MainViewModel(playbackManager = services.playbackManager) as T
                     }
                     else -> throw IllegalArgumentException("Unknown ViewModel class")
                 }

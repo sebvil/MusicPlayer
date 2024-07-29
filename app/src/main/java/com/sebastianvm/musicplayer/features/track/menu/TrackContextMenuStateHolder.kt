@@ -11,7 +11,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
@@ -69,7 +68,6 @@ class TrackContextMenuStateHolder(
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
-    private val features: Features,
 ) : StateHolder<TrackContextMenuState, TrackContextMenuUserAction> {
 
     private val trackId = arguments.trackId
@@ -122,7 +120,6 @@ class TrackContextMenuStateHolder(
                                 artists = "",
                             ),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -132,7 +129,6 @@ class TrackContextMenuStateHolder(
                     ArtistUiComponent(
                         arguments = ArtistArguments(artistId = action.artistId),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -142,7 +138,6 @@ class TrackContextMenuStateHolder(
                     ArtistsMenu(
                         arguments = ArtistsMenuArguments(MediaGroup.SingleTrack(trackId)),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions =
                         NavOptions(popCurrent = true, NavOptions.PresentationMode.BottomSheet),

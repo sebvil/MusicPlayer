@@ -20,9 +20,8 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
-class ArtistListUiComponent(val navController: NavController, val features: Features) :
+class ArtistListUiComponent(val navController: NavController) :
     BaseUiComponent<
         UiState<ArtistListState>,
         ArtistListUserAction,
@@ -33,8 +32,7 @@ class ArtistListUiComponent(val navController: NavController, val features: Feat
         return ArtistListStateHolder(
             artistRepository = services.repositoryProvider.artistRepository,
             navController = navController,
-            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
-            features = features)
+            sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository)
     }
 
     @Composable

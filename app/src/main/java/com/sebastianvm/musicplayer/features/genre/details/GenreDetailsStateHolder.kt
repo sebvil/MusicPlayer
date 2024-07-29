@@ -13,7 +13,6 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
@@ -57,9 +56,7 @@ class GenreDetailsStateHolder(
     override val stateHolderScope: CoroutineScope = stateHolderScope(),
     genreRepository: GenreRepository,
     sortPreferencesRepository: SortPreferencesRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: Features,
-) : StateHolder<GenreDetailsState, GenreDetailsUserAction> {
+    private val playbackManager: PlaybackManager) : StateHolder<GenreDetailsState, GenreDetailsUserAction> {
 
     private val sortPreferences =
         sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.Genre(args.genreId))
@@ -96,7 +93,6 @@ class GenreDetailsStateHolder(
                                 trackList = MediaGroup.Genre(args.genreId),
                             ),
                         navController = navController,
-                        features = features,
                     ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

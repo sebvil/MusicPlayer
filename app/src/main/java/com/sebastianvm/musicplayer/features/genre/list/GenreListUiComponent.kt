@@ -20,9 +20,8 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
-class GenreListUiComponent(val navController: NavController, val features: Features) :
+class GenreListUiComponent(val navController: NavController) :
     BaseUiComponent<
         UiState<GenreListState>,
         GenreListUserAction,
@@ -34,7 +33,6 @@ class GenreListUiComponent(val navController: NavController, val features: Featu
             genreRepository = services.repositoryProvider.genreRepository,
             navController = navController,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
-            features = features,
         )
     }
 

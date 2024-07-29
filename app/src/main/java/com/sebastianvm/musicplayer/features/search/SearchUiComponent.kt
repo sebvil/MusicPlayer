@@ -56,10 +56,9 @@ import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 import kotlinx.collections.immutable.toImmutableList
 
-data class SearchUiComponent(val navController: NavController, val features: Features) :
+data class SearchUiComponent(val navController: NavController) :
     BaseUiComponent<SearchState, SearchUserAction, SearchStateHolder>() {
 
     override fun createStateHolder(services: Services): SearchStateHolder {
@@ -67,7 +66,7 @@ data class SearchUiComponent(val navController: NavController, val features: Fea
             ftsRepository = services.repositoryProvider.searchRepository,
             playbackManager = services.playbackManager,
             navController = navController,
-            features = features)
+        )
     }
 
     @Composable

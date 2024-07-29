@@ -58,14 +58,12 @@ import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmp
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import kotlin.math.roundToInt
 
 data class AlbumDetailsUiComponent(
     val arguments: AlbumDetailsArguments,
     val navController: NavController,
-    val features: Features,
 ) :
     BaseUiComponent<
         AlbumDetailsState,
@@ -79,7 +77,7 @@ data class AlbumDetailsUiComponent(
             navController = navController,
             albumRepository = services.repositoryProvider.albumRepository,
             playbackManager = services.playbackManager,
-            features = features,
+            features = services.featureRegistry,
         )
     }
 

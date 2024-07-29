@@ -25,9 +25,8 @@ import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmp
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.Features
 
-class TrackListUiComponent(val navController: NavController, val features: Features) :
+class TrackListUiComponent(val navController: NavController) :
     BaseUiComponent<TrackListState, TrackListUserAction, TrackListStateHolder>() {
 
     override fun createStateHolder(services: Services): TrackListStateHolder {
@@ -36,7 +35,6 @@ class TrackListUiComponent(val navController: NavController, val features: Featu
             trackRepository = services.repositoryProvider.trackRepository,
             sortPreferencesRepository = services.repositoryProvider.sortPreferencesRepository,
             playbackManager = services.playbackManager,
-            features = features,
         )
     }
 

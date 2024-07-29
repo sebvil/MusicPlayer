@@ -15,6 +15,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.datastore)
     implementation(projects.core.data)
+    implementation(projects.features.registry)
 
     implementation(libs.kotlinx.coroutines)
 
