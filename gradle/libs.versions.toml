@@ -2,7 +2,7 @@
 agp = "8.5.1"
 accompanist = "0.34.0"
 activity-compose = "1.9.0"
-androidTools = "31.5.0"
+androidTools = "31.5.1"
 coil = "2.7.0"
 ksp = "2.0.0-1.0.22"
 compose = "1.7.0-beta05"
