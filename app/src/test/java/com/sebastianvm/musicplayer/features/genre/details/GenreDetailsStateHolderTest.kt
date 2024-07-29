@@ -18,6 +18,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.artist.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu

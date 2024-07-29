@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":features:artistsmenu")
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -62,6 +64,38 @@ include(":features:artist:details")
 include(":features:artist:list")
 
 include(":features:artist:menu")
+
+include(":features:genre:details")
+
+include(":features:genre:list")
+
+include(":features:genre:menu")
+
+include(":features:playlist:details")
+
+include(":features:playlist:list")
+
+include(":features:playlist:menu")
+
+include(":features:playlist:tracksearch")
+
+include(":features:home")
+
+include(":features:sort")
+
+include(":features:main")
+
+include(":features:navigation")
+
+include(":features:queue")
+
+include(":features:search")
+
+include(":features:player")
+
+include(":features:track:list")
+
+include(":features:track:menu")
 
 include(":features:registry")
 

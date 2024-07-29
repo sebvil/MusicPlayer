@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.features.api.artistsmenu.artisteMenu
+import com.sebastianvm.musicplayer.features.api.artistsmenu.artistsMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -94,8 +94,8 @@ class AlbumContextMenuStateHolder(
             AlbumContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     features
-                        .artisteMenu()
-                        .artisteMenuUiComponent(
+                        .artistsMenu()
+                        .artistsMenuUiComponent(
                             arguments = ArtistsMenuArguments(MediaGroup.Album(albumId)),
                             navController = navController,
                         ),

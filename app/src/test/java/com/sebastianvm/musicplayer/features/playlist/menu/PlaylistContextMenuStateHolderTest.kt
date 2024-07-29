@@ -6,6 +6,8 @@ import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
 import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -92,8 +94,7 @@ class PlaylistContextMenuStateHolderTest :
                             FakePlaybackManager.PlayMediaArguments(
                                 MediaGroup.Playlist(PLAYLIST_ID),
                                 initialTrackIndex = 0,
-                            )
-                        )
+                            ))
                 }
             }
     }) {

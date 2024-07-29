@@ -12,10 +12,10 @@ import com.sebastianvm.musicplayer.core.model.Playlist
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsUiComponent
-import com.sebastianvm.musicplayer.features.playlist.menu.PlaylistContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize

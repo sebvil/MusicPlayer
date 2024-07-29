@@ -7,6 +7,7 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsSection
 import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsState
@@ -95,7 +96,7 @@ class ArtistStateHolderTest :
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =
-                                com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu(
+                                AlbumContextMenu(
                                     arguments = AlbumContextMenuArguments(ALBUM_ID),
                                     navController = navControllerDep,
                                 ),

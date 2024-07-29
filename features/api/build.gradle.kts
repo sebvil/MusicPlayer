@@ -6,4 +6,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.ui)
     implementation(projects.features.registry)
+
+    implementation(libs.kotlinx.coroutines)
 }

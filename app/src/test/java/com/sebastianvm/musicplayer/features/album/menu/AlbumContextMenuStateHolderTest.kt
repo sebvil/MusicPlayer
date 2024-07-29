@@ -12,7 +12,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.services.featureRegistry.album.menu.AlbumContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
@@ -142,7 +142,7 @@ class AlbumContextMenuStateHolderTest :
                     subject.handle(AlbumContextMenuUserAction.ViewArtistsClicked)
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
-                            ArtistsMenu(
+                            ArtistsMenuUiComponent(
                                 arguments =
                                     ArtistsMenuArguments(MediaGroup.Album(albumId = album.id)),
                                 navController = navControllerDep,

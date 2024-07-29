@@ -14,11 +14,12 @@ import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
-import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchArguments
 import com.sebastianvm.musicplayer.features.playlist.tracksearch.TrackSearchUiComponent
 import com.sebastianvm.musicplayer.features.sort.SortMenuUiComponent
 import com.sebastianvm.musicplayer.features.track.menu.TrackContextMenu

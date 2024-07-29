@@ -95,7 +95,7 @@ class ArtistsMenuStateHolderTest :
             {
                 "ArtistClicked navigates to ArtistScreen" {
                     navControllerDep.push(
-                        ArtistsMenu(
+                        ArtistsMenuUiComponent(
                             arguments = ArtistsMenuArguments(media = MediaGroup.Album(ALBUM_ID)),
                             navController = navControllerDep,
                         ),

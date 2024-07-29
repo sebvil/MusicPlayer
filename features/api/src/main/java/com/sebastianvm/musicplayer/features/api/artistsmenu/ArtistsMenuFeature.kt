@@ -7,7 +7,7 @@ import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface ArtistsMenuFeature : Feature {
 
-    fun artisteMenuUiComponent(
+    fun artistsMenuUiComponent(
         arguments: ArtistsMenuArguments,
         navController: NavController
     ): UiComponent<*>
@@ -15,4 +15,4 @@ interface ArtistsMenuFeature : Feature {
     object Key : Feature.Key
 }
 
-fun FeatureRegistry.artisteMenu(): ArtistsMenuFeature = featureByKey(ArtistsMenuFeature.Key)
+fun FeatureRegistry.artistsMenu(): ArtistsMenuFeature = featureByKey(ArtistsMenuFeature.Key)

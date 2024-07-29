@@ -5,14 +5,16 @@ import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
 import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
+import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
+import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 class PlayerStateHolderTest :
     FreeSpec({

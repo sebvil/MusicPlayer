@@ -14,7 +14,7 @@ import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArgu
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
+import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
 import io.kotest.core.spec.style.FreeSpec
@@ -223,7 +223,7 @@ class TrackContextMenuStateHolderTest :
                         listOf(
                             BackStackEntry(
                                 uiComponent =
-                                    ArtistsMenu(
+                                    ArtistsMenuUiComponent(
                                         arguments =
                                             ArtistsMenuArguments(MediaGroup.SingleTrack(TRACK_ID)),
                                         navController = navControllerDep,
