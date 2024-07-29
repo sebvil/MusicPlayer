@@ -8,9 +8,9 @@ internal fun Project.configureAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
-        compileSdk = 34
+        compileSdk = 35
 
-        defaultConfig { minSdk = 25 }
+        defaultConfig { minSdk = 24 }
 
         compileOptions {
             sourceCompatibility = Constants.JAVA_VERSION

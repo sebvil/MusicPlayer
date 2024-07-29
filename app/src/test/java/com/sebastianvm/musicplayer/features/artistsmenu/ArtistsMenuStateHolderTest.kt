@@ -12,8 +12,9 @@ import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNav
 import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -105,8 +106,8 @@ class ArtistsMenuStateHolderTest :
                     subject.handle(ArtistsMenuUserAction.ArtistClicked(ARTIST_ID))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
-                            ArtistUiComponent(
-                                arguments = ArtistArguments(ARTIST_ID),
+                            ArtistDetailsUiComponent(
+                                arguments = ArtistDetailsArguments(ARTIST_ID),
                                 navController = navControllerDep,
                             ),
                             presentationMode = NavOptions.PresentationMode.Screen,

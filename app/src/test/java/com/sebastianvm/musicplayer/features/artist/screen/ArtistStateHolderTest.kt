@@ -7,7 +7,12 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsSection
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsState
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsStateHolder
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUserAction
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.services.featureRegistry.album.menu.AlbumContextMenuArguments
@@ -28,10 +33,10 @@ class ArtistStateHolderTest :
             navControllerDep = FakeNavController()
         }
 
-        fun TestScope.getSubject(): ArtistStateHolder {
-            return ArtistStateHolder(
+        fun TestScope.getSubject(): ArtistDetailsStateHolder {
+            return ArtistDetailsStateHolder(
                 stateHolderScope = this,
-                arguments = ArtistArguments(ARTIST_ID),
+                arguments = ArtistDetailsArguments(ARTIST_ID),
                 artistRepository = artistRepositoryDep,
                 navController = navControllerDep,
             )
@@ -45,9 +50,9 @@ class ArtistStateHolderTest :
                     artistRepositoryDep.artists.value = listOf(artist)
                     val subject = getSubject()
                     testStateHolderState(subject) {
-                        awaitItem() shouldBe ArtistState.Loading
+                        awaitItem() shouldBe ArtistDetailsState.Loading
                         awaitItem() shouldBe
-                            ArtistState.Data(
+                            ArtistDetailsState.Data(
                                 artistName = artist.name,
                                 artistAlbumsSection = null,
                                 artistAppearsOnSection = null,
@@ -62,17 +67,17 @@ class ArtistStateHolderTest :
                     val subject = getSubject()
 
                     testStateHolderState(subject) {
-                        awaitItem() shouldBe ArtistState.Loading
+                        awaitItem() shouldBe ArtistDetailsState.Loading
                         awaitItem() shouldBe
-                            ArtistState.Data(
+                            ArtistDetailsState.Data(
                                 artistName = artist.name,
                                 artistAlbumsSection =
-                                    ArtistScreenSection(
+                                    ArtistDetailsSection(
                                         title = RString.albums,
                                         albums = artist.albums.map { AlbumRow.State.fromAlbum(it) },
                                     ),
                                 artistAppearsOnSection =
-                                    ArtistScreenSection(
+                                    ArtistDetailsSection(
                                         title = RString.appears_on,
                                         albums =
                                             artist.appearsOn.map { AlbumRow.State.fromAlbum(it) },
@@ -86,11 +91,11 @@ class ArtistStateHolderTest :
             {
                 "AlbumMoreIconClicked navigates to AlbumContextMenu" {
                     val subject = getSubject()
-                    subject.handle(ArtistUserAction.AlbumMoreIconClicked(ALBUM_ID))
+                    subject.handle(ArtistDetailsUserAction.AlbumMoreIconClicked(ALBUM_ID))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =
-                                AlbumContextMenu(
+                                com.sebastianvm.musicplayer.features.album.menu.AlbumContextMenu(
                                     arguments = AlbumContextMenuArguments(ALBUM_ID),
                                     navController = navControllerDep,
                                 ),
@@ -101,7 +106,7 @@ class ArtistStateHolderTest :
                 "AlbumClicked navigates to TrackList" {
                     val subject = getSubject()
                     subject.handle(
-                        ArtistUserAction.AlbumClicked(
+                        ArtistDetailsUserAction.AlbumClicked(
                             albumItem =
                                 AlbumRow.State(
                                     id = ALBUM_ID,
@@ -129,9 +134,10 @@ class ArtistStateHolderTest :
 
                 "BackClicked pops backstack" {
                     navControllerDep.push(
-                        ArtistUiComponent(ArtistArguments(ARTIST_ID), navControllerDep))
+                        ArtistDetailsUiComponent(
+                            ArtistDetailsArguments(ARTIST_ID), navControllerDep))
                     val subject = getSubject()
-                    subject.handle(ArtistUserAction.BackClicked)
+                    subject.handle(ArtistDetailsUserAction.BackClicked)
                     navControllerDep.backStack.shouldBeEmpty()
                 }
             }

@@ -24,8 +24,8 @@ import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNav
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
@@ -287,8 +287,8 @@ class SearchStateHolderTest :
                                     SearchResult.Artist(ArtistRow.State.fromArtist(artist))))
                             navControllerDep.backStack.last() shouldBe
                                 BackStackEntry(
-                                    ArtistUiComponent(
-                                        arguments = ArtistArguments(artist.id),
+                                    ArtistDetailsUiComponent(
+                                        arguments = ArtistDetailsArguments(artist.id),
                                         navController = navControllerDep,
                                     ),
                                     presentationMode = NavOptions.PresentationMode.Screen,

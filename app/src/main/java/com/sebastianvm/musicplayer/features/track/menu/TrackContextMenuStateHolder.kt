@@ -12,11 +12,11 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -126,8 +126,8 @@ class TrackContextMenuStateHolder(
             }
             is TrackContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
-                    ArtistUiComponent(
-                        arguments = ArtistArguments(artistId = action.artistId),
+                    ArtistDetailsUiComponent(
+                        arguments = ArtistDetailsArguments(artistId = action.artistId),
                         navController = navController,
                     ),
                     navOptions = NavOptions(popCurrent = true),

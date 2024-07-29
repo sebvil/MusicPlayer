@@ -57,6 +57,12 @@ include(":features:album:list")
 
 include(":features:album:menu")
 
+include(":features:artist:details")
+
+include(":features:artist:list")
+
+include(":features:artist:menu")
+
 include(":features:registry")
 
 include(":features:api")

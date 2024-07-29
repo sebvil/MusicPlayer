@@ -10,11 +10,11 @@ import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNav
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.services.featureRegistry.album.details.AlbumDetailsArguments
 import io.kotest.core.spec.style.FreeSpec
@@ -205,8 +205,8 @@ class TrackContextMenuStateHolderTest :
                         listOf(
                             BackStackEntry(
                                 uiComponent =
-                                    ArtistUiComponent(
-                                        arguments = ArtistArguments(artistId = 0),
+                                    ArtistDetailsUiComponent(
+                                        arguments = ArtistDetailsArguments(artistId = 0),
                                         navController = navControllerDep,
                                     ),
                                 presentationMode = NavOptions.PresentationMode.Screen,

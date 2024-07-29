@@ -15,8 +15,8 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.album.details.AlbumDetailsUiComponent
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
 import com.sebastianvm.musicplayer.features.playlist.details.PlaylistDetailsArguments
@@ -85,7 +85,8 @@ class SearchStateHolder(
     private val ftsRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
-    override val stateHolderScope: CoroutineScope = stateHolderScope()) : StateHolder<SearchState, SearchUserAction> {
+    override val stateHolderScope: CoroutineScope = stateHolderScope()
+) : StateHolder<SearchState, SearchUserAction> {
 
     private val query =
         MutableStateFlow(
@@ -141,8 +142,8 @@ class SearchStateHolder(
 
     private fun onArtistSearchResultClicked(artistId: Long) {
         navController.push(
-            ArtistUiComponent(
-                arguments = ArtistArguments(artistId),
+            ArtistDetailsUiComponent(
+                arguments = ArtistDetailsArguments(artistId),
                 navController = navController,
             ))
     }

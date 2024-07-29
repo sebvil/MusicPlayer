@@ -8,14 +8,15 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
+import com.sebastianvm.musicplayer.core.servicestest.features.navigation.NoStateHolder.state
 import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenu
 import com.sebastianvm.musicplayer.features.artist.menu.ArtistContextMenuArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -108,8 +109,8 @@ class ArtistListStateHolderTest :
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
                             uiComponent =
-                                ArtistUiComponent(
-                                    arguments = ArtistArguments(ARTIST_ID),
+                                ArtistDetailsUiComponent(
+                                    arguments = ArtistDetailsArguments(ARTIST_ID),
                                     navController = navControllerDep,
                                 ),
                             presentationMode = NavOptions.PresentationMode.Screen,

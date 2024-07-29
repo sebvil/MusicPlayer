@@ -2,8 +2,6 @@ package com.sebastianvm.musicplayer.features.artistsmenu
 
 import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
-import com.sebastianvm.musicplayer.core.model.HasArtists
-import com.sebastianvm.musicplayer.core.ui.mvvm.Arguments
 import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
@@ -13,15 +11,14 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-
-data class ArtistsMenuArguments(val media: HasArtists) : Arguments
 
 data class ArtistsMenuState(val artists: List<ArtistRow.State>) : State
 
@@ -50,8 +47,8 @@ class ArtistsMenuStateHolder(
         when (action) {
             is ArtistsMenuUserAction.ArtistClicked -> {
                 navController.push(
-                    ArtistUiComponent(
-                        arguments = ArtistArguments(artistId = action.artistId),
+                    ArtistDetailsUiComponent(
+                        arguments = ArtistDetailsArguments(artistId = action.artistId),
                         navController = navController,
                     ),
                     navOptions = NavOptions(popCurrent = true),

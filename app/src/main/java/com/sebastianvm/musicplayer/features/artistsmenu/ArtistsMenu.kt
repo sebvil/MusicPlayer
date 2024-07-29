@@ -23,6 +23,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 
 data class ArtistsMenu(
     val arguments: ArtistsMenuArguments,

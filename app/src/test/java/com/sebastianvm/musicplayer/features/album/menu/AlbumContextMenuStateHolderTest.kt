@@ -9,10 +9,10 @@ import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.features.navigation.FakeNavController
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistArguments
-import com.sebastianvm.musicplayer.features.artist.screen.ArtistUiComponent
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.artist.details.ArtistDetailsUiComponent
 import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenu
-import com.sebastianvm.musicplayer.features.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.navigation.BackStackEntry
 import com.sebastianvm.musicplayer.services.featureRegistry.album.menu.AlbumContextMenuArguments
 import io.kotest.core.spec.style.FreeSpec
@@ -120,8 +120,8 @@ class AlbumContextMenuStateHolderTest :
                     subject.handle(AlbumContextMenuUserAction.ViewArtistClicked(ARTIST_ID))
                     navControllerDep.backStack.last() shouldBe
                         BackStackEntry(
-                            ArtistUiComponent(
-                                arguments = ArtistArguments(ARTIST_ID),
+                            ArtistDetailsUiComponent(
+                                arguments = ArtistDetailsArguments(ARTIST_ID),
                                 navController = navControllerDep,
                             ),
                             presentationMode = NavOptions.PresentationMode.Screen,

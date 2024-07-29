@@ -52,6 +52,10 @@ dependencies {
     implementation(projects.core.services)
     implementation(projects.features.album.details)
     implementation(projects.features.album.list)
+    implementation(projects.features.album.menu)
+    implementation(projects.features.artist.details)
+    implementation(projects.features.artist.list)
+    implementation(projects.features.artist.menu)
     implementation(projects.features.api)
     implementation(projects.features.registry)
 
