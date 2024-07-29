@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.sebastianvm.musicplayer.core.data.UriUtils
-import com.sebastianvm.musicplayer.core.data.di.HasRepositoryProvider
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
 import com.sebastianvm.musicplayer.core.model.NowPlayingInfo
@@ -28,6 +27,7 @@ import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
 import com.sebastianvm.musicplayer.core.playback.extensions.uniqueId
 import com.sebastianvm.musicplayer.core.playback.extensions.uri
 import com.sebastianvm.musicplayer.core.playback.mediatree.MediaTree
+import com.sebastianvm.musicplayer.core.services.HasServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +41,7 @@ import kotlinx.coroutines.withContext
 internal class MediaPlaybackService : MediaLibraryService() {
 
     private val repositoryProvider by lazy {
-        (applicationContext as HasRepositoryProvider).repositoryProvider
+        (applicationContext as HasServices).services.repositoryProvider
     }
 
     private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }

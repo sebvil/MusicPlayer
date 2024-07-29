@@ -49,6 +49,33 @@ dependencies {
     implementation(projects.core.sync)
     implementation(projects.core.designsystems)
     implementation(projects.core.ui)
+    implementation(projects.core.services)
+
+    implementation(projects.features.album.details)
+    implementation(projects.features.album.list)
+    implementation(projects.features.album.menu)
+    implementation(projects.features.artist.details)
+    implementation(projects.features.artist.list)
+    implementation(projects.features.artist.menu)
+    implementation(projects.features.artistsmenu)
+    implementation(projects.features.genre.details)
+    implementation(projects.features.genre.list)
+    implementation(projects.features.genre.menu)
+    implementation(projects.features.playlist.details)
+    implementation(projects.features.playlist.list)
+    implementation(projects.features.playlist.menu)
+    implementation(projects.features.playlist.tracksearch)
+    implementation(projects.features.track.list)
+    implementation(projects.features.track.menu)
+    implementation(projects.features.home)
+    implementation(projects.features.sort)
+    implementation(projects.features.main)
+    implementation(projects.features.navigation)
+    implementation(projects.features.queue)
+    implementation(projects.features.player)
+    implementation(projects.features.search)
+    implementation(projects.features.api)
+    implementation(projects.features.registry)
 
     // Kotlin
     implementation(libs.core.ktx)
@@ -93,6 +120,9 @@ dependencies {
     testImplementation(libs.bundles.testing)
     testImplementation(projects.core.dataTest)
     testImplementation(projects.core.commonTest)
+    testImplementation(projects.core.servicesTest)
+    testImplementation(projects.core.uiTest)
+    testImplementation(projects.features.test)
 }
 
 kover {

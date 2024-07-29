@@ -16,10 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             configureKtfmt()
             extensions.configure<ApplicationExtension> {
                 configureAndroid(this)
-                defaultConfig {
-                    targetSdk = 34
-                    targetSdkPreview = "VanillaIceCream"
-                }
+                defaultConfig { targetSdk = 35 }
             }
         }
     }

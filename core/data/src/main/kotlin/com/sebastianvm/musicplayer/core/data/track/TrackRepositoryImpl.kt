@@ -1,6 +1,7 @@
 package com.sebastianvm.musicplayer.core.data.track
 
 import com.sebastianvm.musicplayer.core.data.artist.asExternalModel
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.database.daos.TrackDao
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
@@ -22,8 +23,7 @@ import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class TrackRepositoryImpl(
-    private val sortPreferencesRepository:
-        com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
     private val trackDao: TrackDao,
 ) : TrackRepository {
 

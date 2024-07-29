@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.core.database.entities.AlbumEntity
 import com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist
 import com.sebastianvm.musicplayer.core.database.entities.AppearsOnForArtist
 import com.sebastianvm.musicplayer.core.database.entities.ArtistEntity
@@ -27,8 +28,7 @@ internal class MusicRepositoryImpl(
     private val artistTrackCrossRefsSet = mutableSetOf<ArtistTrackCrossRef>()
     private val genreTrackCrossRefsSet = mutableSetOf<GenreTrackCrossRef>()
     private val artistsSet = mutableSetOf<ArtistEntity>()
-    private val albumSet =
-        mutableSetOf<com.sebastianvm.musicplayer.core.database.entities.AlbumEntity>()
+    private val albumSet = mutableSetOf<AlbumEntity>()
     private val genresSet = mutableSetOf<GenreEntity>()
     private val albumForArtistsSet = mutableSetOf<AlbumsForArtist>()
     private val appearsOnForArtistSet = mutableSetOf<AppearsOnForArtist>()
@@ -85,7 +85,7 @@ internal class MusicRepositoryImpl(
                 ArtistEntity(id = artistName.hashCode().toLong(), name = artistName)
             }
         val album =
-            com.sebastianvm.musicplayer.core.database.entities.AlbumEntity(
+            AlbumEntity(
                 id = albumId,
                 title = albumName,
                 year = year,
