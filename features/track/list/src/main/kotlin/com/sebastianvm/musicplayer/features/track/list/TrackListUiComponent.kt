@@ -103,13 +103,15 @@ fun TrackList(
                                     TrackListUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    ))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
+                                    )
                                 )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = RString.more),
+                            )
+                        }
                     },
                 )
             }
