@@ -72,7 +72,8 @@ class SortMenuStateHolderTest :
                                 MediaSortPreferences(
                                     sortOption = SortOptions.Track,
                                     sortOrder = MediaSortOrder.ASCENDING,
-                                ))
+                                )
+                        )
 
                     val subject = getSubject(listType = SortableListType.Genre(GENRE_ID))
                     testStateHolderState(subject) {
@@ -95,7 +96,8 @@ class SortMenuStateHolderTest :
                                     MediaSortPreferences(
                                         sortOption = SortOptions.Artist,
                                         sortOrder = MediaSortOrder.DESCENDING,
-                                    ))
+                                    )
+                            )
 
                         awaitItem() shouldBe
                             SortMenuState(
@@ -113,7 +115,8 @@ class SortMenuStateHolderTest :
                                 MediaSortPreferences(
                                     sortOption = SortOptions.Track,
                                     sortOrder = MediaSortOrder.ASCENDING,
-                                ))
+                                )
+                        )
 
                     val subject = getSubject(listType = SortableListType.Playlist(PLAYLIST_ID))
                     testStateHolderState(subject) {
@@ -136,7 +139,8 @@ class SortMenuStateHolderTest :
                                     MediaSortPreferences(
                                         sortOption = SortOptions.Artist,
                                         sortOrder = MediaSortOrder.DESCENDING,
-                                    ))
+                                    )
+                            )
 
                         awaitItem() shouldBe
                             SortMenuState(
@@ -197,7 +201,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Track,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forTracks,
@@ -209,7 +214,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Artist,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forTracks,
@@ -228,7 +234,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Track,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forTracks,
@@ -240,7 +247,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Artist,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forTracks,
@@ -260,7 +268,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Track,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forPlaylist,
@@ -272,7 +281,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Artist,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forPlaylist,
@@ -291,7 +301,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Album,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                                 awaitItem() shouldBe
                                     SortMenuState(
                                         sortOptions = SortOptions.forAlbums,
@@ -303,7 +314,8 @@ class SortMenuStateHolderTest :
                                         newSortOption = SortOptions.Artist,
                                         selectedSort = SortOptions.Artist,
                                         currentSortOrder = MediaSortOrder.ASCENDING,
-                                    ))
+                                    )
+                                )
                             }
                         }
                     }

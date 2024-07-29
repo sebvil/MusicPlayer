@@ -22,11 +22,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 
 class GenreListUiComponent(val navController: NavController) :
-    BaseUiComponent<
-        UiState<GenreListState>,
-        GenreListUserAction,
-        GenreListStateHolder,
-    >() {
+    BaseUiComponent<UiState<GenreListState>, GenreListUserAction, GenreListStateHolder>() {
 
     override fun createStateHolder(services: Services): GenreListStateHolder {
         return GenreListStateHolder(
@@ -90,7 +86,8 @@ fun GenreList(
                     },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) })
+                        onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) }
+                    )
                 },
             )
         }

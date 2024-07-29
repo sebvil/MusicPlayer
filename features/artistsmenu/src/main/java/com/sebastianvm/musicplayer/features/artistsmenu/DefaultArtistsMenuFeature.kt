@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuFeature
 class DefaultArtistsMenuFeature : ArtistsMenuFeature {
     override fun artistsMenuUiComponent(
         arguments: ArtistsMenuArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return ArtistsMenuUiComponent(arguments, navController)
     }

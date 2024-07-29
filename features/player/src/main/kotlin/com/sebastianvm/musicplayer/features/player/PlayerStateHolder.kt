@@ -12,6 +12,7 @@ import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import com.sebastianvm.musicplayer.features.api.queue.queue
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlin.time.Duration
 
 sealed interface PlayerState : State {
 
@@ -71,7 +71,7 @@ class PlayerStateHolder(
     private val playbackManager: PlaybackManager,
     private val delegate: PlayerDelegate,
     props: Flow<PlayerProps>,
-    features: FeatureRegistry
+    features: FeatureRegistry,
 ) : StateHolder<PlayerState, PlayerUserAction> {
 
     private val queueUiComponent = features.queue().queueUiComponent()

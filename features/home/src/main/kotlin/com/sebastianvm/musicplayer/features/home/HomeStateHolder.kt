@@ -46,7 +46,8 @@ class HomeStateHolder(
                 playlistListUiComponent =
                     features.playlistList().playlistListUiComponent(navController),
                 searchUiComponent = features.searchFeature().searchUiComponent(navController),
-            ))
+            )
+        )
     override val state: StateFlow<HomeState>
         get() = _state.asStateFlow()
 

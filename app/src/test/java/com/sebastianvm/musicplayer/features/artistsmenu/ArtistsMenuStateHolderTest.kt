@@ -64,7 +64,8 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
+                            )
                     }
                 }
 
@@ -86,7 +87,8 @@ class ArtistsMenuStateHolderTest :
                         awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
                             ArtistsMenuState(
                                 artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) })
+                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
+                            )
                     }
                 }
             }

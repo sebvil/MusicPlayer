@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetails
 class DefaultPlaylistDetailsFeature : PlaylistDetailsFeature {
     override fun playlistDetailsUiComponent(
         arguments: PlaylistDetailsArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return PlaylistDetailsUiComponent(arguments, navController)
     }

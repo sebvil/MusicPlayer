@@ -94,7 +94,8 @@ internal class MediaPlaybackService : MediaLibraryService() {
                     player.prepare()
                     player.play()
                 }
-            })
+            }
+        )
         mediaSession =
             MediaLibrarySession.Builder(
                     this,
@@ -107,7 +108,8 @@ internal class MediaPlaybackService : MediaLibraryService() {
                         ): ListenableFuture<LibraryResult<MediaItem>> {
                             Log.i("000Player", "get root")
                             return Futures.immediateFuture(
-                                LibraryResult.ofItem(mediaTree.getRoot(), params))
+                                LibraryResult.ofItem(mediaTree.getRoot(), params)
+                            )
                         }
 
                         override fun onGetChildren(

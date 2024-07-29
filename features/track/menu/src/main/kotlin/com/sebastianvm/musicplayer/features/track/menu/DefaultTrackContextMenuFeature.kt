@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuFeatu
 class DefaultTrackContextMenuFeature : TrackContextMenuFeature {
     override fun trackContextMenuUiComponent(
         arguments: TrackContextMenuArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return TrackContextMenuUiComponent(arguments, navController)
     }

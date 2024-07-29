@@ -65,7 +65,8 @@ class AlbumListStateHolder(
                                     option = sortPrefs.sortOption,
                                     sortOrder = sortPrefs.sortOrder,
                                 ),
-                        ))
+                        )
+                    )
                 }
             }
             .stateIn(stateHolderScope, SharingStarted.Lazily, Loading)
@@ -89,7 +90,8 @@ class AlbumListStateHolder(
                     features
                         .sortMenu()
                         .sortMenuUiComponent(
-                            arguments = SortMenuArguments(listType = SortableListType.Albums)),
+                            arguments = SortMenuArguments(listType = SortableListType.Albums)
+                        ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -107,7 +109,8 @@ class AlbumListStateHolder(
                                     artists = action.albumItem.artists,
                                 ),
                             navController = navController,
-                        ))
+                        )
+                )
             }
         }
     }

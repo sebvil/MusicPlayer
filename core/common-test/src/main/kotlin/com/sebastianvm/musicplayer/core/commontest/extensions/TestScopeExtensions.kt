@@ -14,8 +14,8 @@ fun TestScope.advanceUntilIdle() {
     this.testCoroutineScheduler.advanceUntilIdle()
 }
 
-suspend fun <S : com.sebastianvm.musicplayer.core.ui.mvvm.State> TestScope.testStateHolderState(
-    stateHolder: com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder<S, *>,
+suspend fun <S : State> TestScope.testStateHolderState(
+    stateHolder: StateHolder<S, *>,
     timeout: Duration? = null,
     name: String? = null,
     validate: suspend TurbineTestContext<S>.() -> Unit,

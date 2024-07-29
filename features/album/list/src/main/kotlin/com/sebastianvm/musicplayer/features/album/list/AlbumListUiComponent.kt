@@ -22,11 +22,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.BaseUiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 
 data class AlbumListUiComponent(val navController: NavController) :
-    BaseUiComponent<
-        UiState<AlbumListState>,
-        AlbumListUserAction,
-        AlbumListStateHolder,
-    >() {
+    BaseUiComponent<UiState<AlbumListState>, AlbumListUserAction, AlbumListStateHolder>() {
 
     @Composable
     override fun Content(
@@ -87,7 +83,8 @@ fun AlbumList(
                 modifier = Modifier.clickable { handle(AlbumListUserAction.AlbumClicked(item)) },
                 trailingContent = {
                     OverflowIconButton(
-                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) })
+                        onClick = { handle(AlbumListUserAction.AlbumMoreIconClicked(item.id)) }
+                    )
                 },
             )
         }

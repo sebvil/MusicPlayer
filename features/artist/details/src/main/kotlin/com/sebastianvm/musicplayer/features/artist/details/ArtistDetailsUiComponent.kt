@@ -138,7 +138,8 @@ fun LazyListScope.artistScreenSection(
                     text = stringResource(id = state.title),
                     style = MaterialTheme.typography.headlineMedium,
                 )
-            })
+            }
+        )
     }
 
     items(items = state.albums, key = { it.id }) { album ->
@@ -149,7 +150,8 @@ fun LazyListScope.artistScreenSection(
                 OverflowIconButton(
                     onClick = {
                         handle(ArtistDetailsUserAction.AlbumMoreIconClicked(albumId = album.id))
-                    })
+                    }
+                )
             },
         )
     }

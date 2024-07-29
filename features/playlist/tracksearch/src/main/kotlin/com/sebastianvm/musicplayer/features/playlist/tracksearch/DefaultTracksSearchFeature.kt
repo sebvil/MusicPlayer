@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearch
 class DefaultTracksSearchFeature : TrackSearchFeature {
     override fun trackSearchUiComponent(
         arguments: TrackSearchArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return TrackSearchUiComponent(arguments, navController)
     }

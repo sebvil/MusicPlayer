@@ -112,7 +112,9 @@ class PlaylistDetailsStateHolder(
                         .sortMenuUiComponent(
                             arguments =
                                 SortMenuArguments(
-                                    listType = SortableListType.Playlist(args.playlistId))),
+                                    listType = SortableListType.Playlist(args.playlistId)
+                                )
+                        ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -135,7 +137,8 @@ class PlaylistDetailsStateHolder(
                         .trackSearchUiComponent(
                             arguments = TrackSearchArguments(playlistId = args.playlistId),
                             navController = navController,
-                        ))
+                        )
+                )
             }
         }
     }

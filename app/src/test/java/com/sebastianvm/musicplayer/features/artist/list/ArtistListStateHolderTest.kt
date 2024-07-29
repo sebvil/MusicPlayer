@@ -124,7 +124,8 @@ class ArtistListStateHolderTest :
                         BackStackEntry(
                             uiComponent =
                                 ArtistContextMenu(
-                                    arguments = ArtistContextMenuArguments(ARTIST_ID)),
+                                    arguments = ArtistContextMenuArguments(ARTIST_ID)
+                                ),
                             presentationMode = NavOptions.PresentationMode.BottomSheet,
                         )
                 }

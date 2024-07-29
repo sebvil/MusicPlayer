@@ -37,10 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class SearchQuery(
-    val term: String,
-    val mode: SearchMode,
-)
+data class SearchQuery(val term: String, val mode: SearchMode)
 
 sealed interface SearchResult<T> {
     val state: T
@@ -67,10 +64,8 @@ sealed interface SearchResult<T> {
     }
 }
 
-data class SearchState(
-    val selectedOption: SearchMode,
-    val searchResults: List<SearchResult<*>>,
-) : State
+data class SearchState(val selectedOption: SearchMode, val searchResults: List<SearchResult<*>>) :
+    State
 
 sealed interface SearchUserAction : UserAction {
     data class SearchResultClicked(val result: SearchResult<*>) : SearchUserAction
@@ -89,12 +84,7 @@ class SearchStateHolder(
     private val features: FeatureRegistry,
 ) : StateHolder<SearchState, SearchUserAction> {
 
-    private val query =
-        MutableStateFlow(
-            SearchQuery(
-                term = "",
-                mode = SearchMode.TRACKS,
-            ))
+    private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.TRACKS))
 
     private val searchResults =
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
@@ -130,10 +120,7 @@ class SearchStateHolder(
                 scope = stateHolderScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                    SearchState(
-                        selectedOption = SearchMode.TRACKS,
-                        searchResults = emptyList(),
-                    ),
+                    SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
             )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
@@ -147,7 +134,8 @@ class SearchStateHolder(
                 .artistDetailsUiComponent(
                     arguments = ArtistDetailsArguments(artistId),
                     navController = navController,
-                ))
+                )
+        )
     }
 
     private fun onAlbumSearchResultClicked(albumItem: AlbumRow.State) {
@@ -163,7 +151,8 @@ class SearchStateHolder(
                             artists = albumItem.artists,
                         ),
                     navController = navController,
-                ))
+                )
+        )
     }
 
     private fun onGenreSearchResultClicked(genreId: Long, genreName: String) {
@@ -173,7 +162,8 @@ class SearchStateHolder(
                 .genreDetailsUiComponent(
                     GenreDetailsArguments(genreId = genreId, genreName = genreName),
                     navController,
-                ))
+                )
+        )
     }
 
     private fun onPlaylistSearchResultClicked(playlistId: Long, playlistName: String) {
@@ -183,9 +173,12 @@ class SearchStateHolder(
                 .playlistDetailsUiComponent(
                     arguments =
                         PlaylistDetailsArguments(
-                            playlistId = playlistId, playlistName = playlistName),
+                            playlistId = playlistId,
+                            playlistName = playlistName,
+                        ),
                     navController = navController,
-                ))
+                )
+        )
     }
 
     override fun handle(action: SearchUserAction) {

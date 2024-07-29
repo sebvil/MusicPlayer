@@ -56,7 +56,8 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = false,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            ))
+                                            )
+                                        )
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 2
                                         val entry = state.backStack.last()
@@ -83,7 +84,8 @@ class AppNavigationHostStateHolderTest :
                                                         popCurrent = true,
                                                         presentationMode = presentationMode,
                                                     ),
-                                            ))
+                                            )
+                                        )
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 1
                                         val entry = state.backStack.last()

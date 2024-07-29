@@ -18,20 +18,15 @@ interface UiComponent<SH : StateHolder<*, *>> {
 
     val key: Any
 
-    fun createStateHolder(
-        services: Services,
-    ): SH
+    fun createStateHolder(services: Services): SH
 
     @Composable fun Content(modifier: Modifier)
 
     fun onCleared() = Unit
 }
 
-abstract class BaseUiComponent<
-    S : State,
-    UA : UserAction,
-    SH : StateHolder<S, UA>,
-> : UiComponent<SH> {
+abstract class BaseUiComponent<S : State, UA : UserAction, SH : StateHolder<S, UA>> :
+    UiComponent<SH> {
     private var stateHolder: SH? = null
 
     private fun getOrCreateStateHolder(services: Services): SH {

@@ -93,7 +93,9 @@ class MainViewModel(
             handle: SavedStateHandle,
         ): T {
             return MainViewModel(
-                playbackManager = services.playbackManager, features = services.featureRegistry)
+                playbackManager = services.playbackManager,
+                features = services.featureRegistry,
+            )
                 as T
         }
     }

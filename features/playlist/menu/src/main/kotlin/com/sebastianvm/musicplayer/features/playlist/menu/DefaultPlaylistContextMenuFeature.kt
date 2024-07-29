@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMen
 class DefaultPlaylistContextMenuFeature : PlaylistContextMenuFeature {
     override fun playlistContextMenuUiComponent(
         arguments: PlaylistContextMenuArguments,
-        delegate: PlaylistContextMenuDelegate
+        delegate: PlaylistContextMenuDelegate,
     ): UiComponent<*> {
         return PlaylistContextMenuUiComponent(arguments, delegate)
     }

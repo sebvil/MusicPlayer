@@ -38,12 +38,7 @@ import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetails
 class PlaylistDetailsUiComponent(
     val arguments: PlaylistDetailsArguments,
     val navController: NavController,
-) :
-    BaseUiComponent<
-        PlaylistDetailsState,
-        PlaylistDetailsUserAction,
-        PlaylistDetailsStateHolder,
-    >() {
+) : BaseUiComponent<PlaylistDetailsState, PlaylistDetailsUserAction, PlaylistDetailsStateHolder>() {
 
     override fun createStateHolder(services: Services): PlaylistDetailsStateHolder {
         return PlaylistDetailsStateHolder(
@@ -178,13 +173,15 @@ fun PlaylistDetailsLayout(
                                     PlaylistDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    ))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
+                                    )
                                 )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = RString.more),
+                            )
+                        }
                     },
                 )
             }

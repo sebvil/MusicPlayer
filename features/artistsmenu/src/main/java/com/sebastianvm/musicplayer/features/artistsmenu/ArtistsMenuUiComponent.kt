@@ -28,12 +28,7 @@ import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 data class ArtistsMenuUiComponent(
     val arguments: ArtistsMenuArguments,
     val navController: NavController,
-) :
-    BaseUiComponent<
-        UiState<ArtistsMenuState>,
-        ArtistsMenuUserAction,
-        ArtistsMenuStateHolder,
-    >() {
+) : BaseUiComponent<UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuStateHolder>() {
 
     override fun createStateHolder(services: Services): ArtistsMenuStateHolder {
         return ArtistsMenuStateHolder(

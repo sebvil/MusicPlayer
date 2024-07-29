@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class DefaultPlayerFeature : PlayerFeature {
     override fun playerUiComponent(
         props: Flow<PlayerProps>,
-        delegate: PlayerDelegate
+        delegate: PlayerDelegate,
     ): UiComponent<*> {
         return PlayerUiComponent(delegate, props)
     }

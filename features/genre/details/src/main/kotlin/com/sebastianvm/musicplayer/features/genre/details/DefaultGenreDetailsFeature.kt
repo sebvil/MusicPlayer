@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsFeatur
 class DefaultGenreDetailsFeature : GenreDetailsFeature {
     override fun genreDetailsUiComponent(
         arguments: GenreDetailsArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return GenreDetailsUiComponent(arguments, navController)
     }

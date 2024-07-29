@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuFeatu
 class DefaultAlbumContextMenuFeature : AlbumContextMenuFeature {
     override fun albumContextMenuUiComponent(
         arguments: AlbumContextMenuArguments,
-        navController: NavController
+        navController: NavController,
     ): UiComponent<*> {
         return AlbumContextMenuUiComponent(arguments = arguments, navController = navController)
     }

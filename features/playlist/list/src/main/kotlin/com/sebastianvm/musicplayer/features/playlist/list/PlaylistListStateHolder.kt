@@ -73,7 +73,7 @@ class PlaylistListStateHolder(
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val navController: NavController,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : StateHolder<PlaylistListState, PlaylistListUserAction> {
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
@@ -130,7 +130,8 @@ class PlaylistListStateHolder(
                                                 playlistName = action.playlistName,
                                             ),
                                         navController = navController,
-                                    ))
+                                    )
+                            )
                         }
                     }
                     .launchIn(stateHolderScope)
@@ -167,14 +168,17 @@ class PlaylistListStateHolder(
             }
             is PlaylistListUserAction.PlaylistClicked -> {
                 navController.push(
-                    features.playlistDetails().playlistDetailsUiComponent(
-                        arguments =
-                            PlaylistDetailsArguments(
-                                playlistId = action.playlistId,
-                                playlistName = action.playlistName,
-                            ),
-                        navController = navController,
-                    ))
+                    features
+                        .playlistDetails()
+                        .playlistDetailsUiComponent(
+                            arguments =
+                                PlaylistDetailsArguments(
+                                    playlistId = action.playlistId,
+                                    playlistName = action.playlistName,
+                                ),
+                            navController = navController,
+                        )
+                )
             }
         }
     }

@@ -79,14 +79,16 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
                             enabled = !isFullScreen,
                         ) {
                             handle(MainUserAction.ExpandPlayer)
-                        })
+                        }
+            )
         },
     ) { paddingValues ->
         CompositionLocalProvider(
             LocalPaddingValues provides
-                PaddingValues(bottom = paddingValues.calculateBottomPadding())) {
-                state.appNavigationHostUiComponent.Content(modifier = Modifier)
-            }
+                PaddingValues(bottom = paddingValues.calculateBottomPadding())
+        ) {
+            state.appNavigationHostUiComponent.Content(modifier = Modifier)
+        }
     }
 }
 

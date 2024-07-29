@@ -33,12 +33,7 @@ import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArgume
 class GenreDetailsUiComponent(
     val arguments: GenreDetailsArguments,
     val navController: NavController,
-) :
-    BaseUiComponent<
-        GenreDetailsState,
-        GenreDetailsUserAction,
-        GenreDetailsStateHolder,
-    >() {
+) : BaseUiComponent<GenreDetailsState, GenreDetailsUserAction, GenreDetailsStateHolder>() {
 
     override fun createStateHolder(services: Services): GenreDetailsStateHolder {
         return GenreDetailsStateHolder(
@@ -134,13 +129,15 @@ fun GenreDetails(
                                     GenreDetailsUserAction.TrackMoreIconClicked(
                                         trackId = item.id,
                                         trackPositionInList = index,
-                                    ))
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(id = RString.more),
+                                    )
                                 )
                             }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(id = RString.more),
+                            )
+                        }
                     },
                 )
             }

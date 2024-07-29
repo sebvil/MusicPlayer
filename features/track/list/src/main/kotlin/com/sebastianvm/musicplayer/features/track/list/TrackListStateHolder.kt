@@ -92,7 +92,8 @@ class TrackListStateHolder(
                     features
                         .sortMenu()
                         .sortMenuUiComponent(
-                            arguments = SortMenuArguments(listType = SortableListType.AllTracks)),
+                            arguments = SortMenuArguments(listType = SortableListType.AllTracks)
+                        ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )

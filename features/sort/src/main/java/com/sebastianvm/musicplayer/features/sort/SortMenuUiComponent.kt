@@ -68,7 +68,8 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                ))
+                                )
+                            )
                         }
                     } ?: Modifier
 

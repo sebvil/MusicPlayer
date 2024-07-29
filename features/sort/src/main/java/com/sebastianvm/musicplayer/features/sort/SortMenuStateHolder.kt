@@ -30,18 +30,21 @@ class SortMenuStateHolder(
         when (val listType = arguments.listType) {
             is SortableListType.AllTracks -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.AllTracks)
+                    trackList = MediaGroup.AllTracks
+                )
             }
             is SortableListType.Genre -> {
                 sortPreferencesRepository.getTrackListSortPreferences(
-                    trackList = MediaGroup.Genre(listType.genreId))
+                    trackList = MediaGroup.Genre(listType.genreId)
+                )
             }
             is SortableListType.Albums -> {
                 sortPreferencesRepository.getAlbumListSortPreferences()
             }
             is SortableListType.Playlist -> {
                 sortPreferencesRepository.getPlaylistSortPreferences(
-                    playlistId = listType.playlistId)
+                    playlistId = listType.playlistId
+                )
             }
         }
     private val sortOptions = getSortOptionsForScreen(arguments.listType)
