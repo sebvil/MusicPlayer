@@ -23,6 +23,7 @@ dependencies {
     implementation(projects.core.designsystems)
     implementation(projects.core.services)
     implementation(projects.core.data)
+    implementation(projects.core.database)
     implementation(projects.core.ui)
     implementation(projects.features.api)
     implementation(projects.features.registry)
