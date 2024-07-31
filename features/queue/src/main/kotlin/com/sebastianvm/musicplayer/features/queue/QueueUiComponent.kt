@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
+import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
@@ -168,21 +167,17 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                     Modifier.draggableHandle(
                                         onDragStarted = {
                                             draggedItemInitialIndex = item.position
-                                            if (
-                                                Build.VERSION.SDK_INT >=
-                                                    Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                                            ) {
+                                            if (Build.VERSION.SDK_INT >=
+                                                Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.DRAG_START
-                                                )
+                                                    HapticFeedbackConstants.DRAG_START)
                                             }
                                         },
                                         onDragStopped = {
                                             draggedItem = null
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.GESTURE_END
-                                                )
+                                                    HapticFeedbackConstants.GESTURE_END)
                                             }
                                             handle(
                                                 QueueUserAction.DragEnded(
@@ -191,13 +186,12 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                                         draggedItemFinalIndex +
                                                             state.nowPlayingItem.position +
                                                             1,
-                                                )
-                                            )
+                                                ))
                                         },
                                     ),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.DragIndicator,
+                                    imageVector = AppIcons.DragIndicator.icon(),
                                     contentDescription = stringResource(RString.drag),
                                 )
                             }
@@ -226,10 +220,9 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                     onClick = {
                         handle(QueueUserAction.RemoveItemsFromQueue(selectedItems.toList()))
                         selectedItems = emptySet()
+                    }) {
+                        Text(text = stringResource(RString.remove))
                     }
-                ) {
-                    Text(text = stringResource(RString.remove))
-                }
             }
         }
     }

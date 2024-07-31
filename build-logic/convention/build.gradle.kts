@@ -47,6 +47,12 @@ gradlePlugin {
                 "com.sebastianvm.musicplayer.convention.AndroidLibraryConventionPlugin"
         }
 
+        register("androidFeature") {
+            id = "musicplayer.android.feature"
+            implementationClass =
+                "com.sebastianvm.musicplayer.convention.AndroidFeatureConventionPlugin"
+        }
+
         register("jvmLibrary") {
             id = "musicplayer.jvm.library"
             implementationClass =

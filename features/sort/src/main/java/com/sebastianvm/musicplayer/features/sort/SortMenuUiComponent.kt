@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
@@ -23,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
+import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.services.Services
@@ -68,8 +66,7 @@ fun SortMenu(
                                     newSortOption = row,
                                     selectedSort = state.selectedSort,
                                     currentSortOrder = state.sortOrder,
-                                )
-                            )
+                                ))
                         }
                     } ?: Modifier
 
@@ -93,9 +90,9 @@ fun SortMenu(
                             Icon(
                                 imageVector =
                                     when (state.sortOrder) {
-                                        MediaSortOrder.ASCENDING -> Icons.Default.ArrowUpward
-                                        MediaSortOrder.DESCENDING -> Icons.Default.ArrowDownward
-                                    },
+                                        MediaSortOrder.ASCENDING -> AppIcons.ArrowUpward
+                                        MediaSortOrder.DESCENDING -> AppIcons.ArrowDownward
+                                    }.icon(),
                                 contentDescription =
                                     if (state.sortOrder == MediaSortOrder.ASCENDING) {
                                         stringResource(RString.up_arrow)

@@ -11,7 +11,7 @@ internal fun Project.configureDetekt(includeCompose: Boolean = false) {
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
     if (includeCompose) {
-        dependencies { "detektPlugins"(libs.findLibrary("detekt.compose").get()) }
+        dependencies { detektPlugins(libs, "detekt.compose") }
     }
 
     configure<DetektExtension> {
