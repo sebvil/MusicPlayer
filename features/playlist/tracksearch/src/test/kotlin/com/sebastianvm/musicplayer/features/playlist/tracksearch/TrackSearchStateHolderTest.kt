@@ -36,8 +36,7 @@ class TrackSearchStateHolderTest :
                 TrackSearchUiComponent(
                     arguments = TrackSearchArguments(playlistId = playlist.id),
                     navController = navControllerDep,
-                )
-            )
+                ))
             return TrackSearchStateHolder(
                 arguments = TrackSearchArguments(playlistId = playlist.id),
                 playlistRepository = playlistRepositoryDep,
@@ -47,7 +46,7 @@ class TrackSearchStateHolderTest :
             )
         }
 
-        "init subscribes to changes in playlist tracks" {
+        "init subscribes to changes in playlistracks" {
             val queryResults = FixtureProvider.tracks(size = 10)
             val results = mapOf("" to queryResults)
             val playlist = FixtureProvider.playlist().copy(tracks = queryResults.subList(0, 5))
@@ -92,8 +91,7 @@ class TrackSearchStateHolderTest :
                                             state = TrackRow.State.fromTrack(it),
                                             inPlaylist = false,
                                         )
-                                    }
-                            )
+                                    })
                     }
                 }
 
