@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.musicplayer.android.application)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kover)
 }
 
@@ -20,14 +19,14 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 
     kotlinOptions { freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn" }
-
-    buildFeatures { compose = true }
 
     @Suppress("UnstableApiUsage")
     testOptions {

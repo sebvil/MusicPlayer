@@ -167,17 +167,21 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                     Modifier.draggableHandle(
                                         onDragStarted = {
                                             draggedItemInitialIndex = item.position
-                                            if (Build.VERSION.SDK_INT >=
-                                                Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                            if (
+                                                Build.VERSION.SDK_INT >=
+                                                    Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                                            ) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.DRAG_START)
+                                                    HapticFeedbackConstants.DRAG_START
+                                                )
                                             }
                                         },
                                         onDragStopped = {
                                             draggedItem = null
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                                 view.performHapticFeedback(
-                                                    HapticFeedbackConstants.GESTURE_END)
+                                                    HapticFeedbackConstants.GESTURE_END
+                                                )
                                             }
                                             handle(
                                                 QueueUserAction.DragEnded(
@@ -186,7 +190,8 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                                         draggedItemFinalIndex +
                                                             state.nowPlayingItem.position +
                                                             1,
-                                                ))
+                                                )
+                                            )
                                         },
                                     ),
                             ) {
@@ -220,9 +225,10 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                     onClick = {
                         handle(QueueUserAction.RemoveItemsFromQueue(selectedItems.toList()))
                         selectedItems = emptySet()
-                    }) {
-                        Text(text = stringResource(RString.remove))
                     }
+                ) {
+                    Text(text = stringResource(RString.remove))
+                }
             }
         }
     }

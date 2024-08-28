@@ -1,14 +1,9 @@
-plugins {
-    alias(libs.plugins.musicplayer.android.library)
-    alias(libs.plugins.compose.compiler)
-}
+plugins { alias(libs.plugins.musicplayer.android.library) }
 
 android {
     namespace = "com.sebastianvm.musicplayer.core.services"
 
     defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-
-    buildFeatures { compose = true }
 }
 
 dependencies {
@@ -18,7 +13,4 @@ dependencies {
     implementation(projects.features.registry)
 
     implementation(libs.kotlinx.coroutines)
-
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui)
 }

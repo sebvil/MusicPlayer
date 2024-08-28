@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.resources)
 
     implementation(libs.compose.material3)
+    implementation(libs.compose.runtime)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui)
