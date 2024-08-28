@@ -12,9 +12,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.LibraryResult
-import androidx.media3.session.LibraryResult.RESULT_ERROR_BAD_VALUE
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
+import androidx.media3.session.SessionError
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -136,7 +136,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                                                 "children: ${it.map { child -> child.mediaId }}",
                                             )
                                             LibraryResult.ofItemList(it, params)
-                                        } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                                        } ?: LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
                                     }
                                     .asListenableFuture()
                         }
@@ -153,7 +153,7 @@ internal class MediaPlaybackService : MediaLibraryService() {
                                 ?: CoroutineScope(mainDispatcher).future {
                                     mediaTree.getItem(mediaId)?.let {
                                         LibraryResult.ofItem(it, null)
-                                    } ?: LibraryResult.ofError(RESULT_ERROR_BAD_VALUE)
+                                    } ?: LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
                                 }
                         }
 

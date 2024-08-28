@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
+import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
@@ -197,7 +196,7 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                                     ),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.DragIndicator,
+                                    imageVector = AppIcons.DragIndicator.icon(),
                                     contentDescription = stringResource(RString.drag),
                                 )
                             }

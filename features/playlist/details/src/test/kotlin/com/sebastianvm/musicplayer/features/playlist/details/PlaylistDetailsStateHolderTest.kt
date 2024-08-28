@@ -81,7 +81,7 @@ class PlaylistDetailsStateHolderTest :
             )
         }
 
-        "init subscribes to changes in playlist track list" {
+        "init subscribes to changes in playlistrack list" {
             val playlist = FixtureProvider.playlist()
             val subject = getSubject(playlist = playlist)
             testStateHolderState(subject) {

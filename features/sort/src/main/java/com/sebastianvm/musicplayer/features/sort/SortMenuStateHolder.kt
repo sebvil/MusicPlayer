@@ -84,7 +84,7 @@ class SortMenuStateHolder(
                     when (val listType = arguments.listType) {
                         is SortableListType.AllTracks -> {
                             require(newSortOption is SortOptions.TrackListSortOption) {
-                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                                "Invalid SortOptions type ${newSortOption.javaClass} for listype $listType"
                             }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
                                 newPreferences =
@@ -97,7 +97,7 @@ class SortMenuStateHolder(
                         }
                         is SortableListType.Genre -> {
                             require(newSortOption is SortOptions.TrackListSortOption) {
-                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                                "Invalid SortOptions type ${newSortOption.javaClass} for listype $listType"
                             }
                             sortPreferencesRepository.modifyTrackListSortPreferences(
                                 newPreferences =
@@ -110,7 +110,7 @@ class SortMenuStateHolder(
                         }
                         is SortableListType.Albums -> {
                             require(newSortOption is SortOptions.AlbumListSortOption) {
-                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                                "Invalid SortOptions type ${newSortOption.javaClass} for listype $listType"
                             }
                             sortPreferencesRepository.modifyAlbumListSortPreferences(
                                 newPreferences =
@@ -122,7 +122,7 @@ class SortMenuStateHolder(
                         }
                         is SortableListType.Playlist -> {
                             require(newSortOption is SortOptions.PlaylistSortOption) {
-                                "Invalid SortOptions type ${newSortOption.javaClass} for list type $listType"
+                                "Invalid SortOptions type ${newSortOption.javaClass} for listype $listType"
                             }
                             sortPreferencesRepository.modifyPlaylistsSortPreferences(
                                 newPreferences =

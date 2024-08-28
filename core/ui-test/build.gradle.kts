@@ -18,5 +18,6 @@ dependencies {
     implementation(projects.core.commonTest)
 
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
 }

@@ -47,7 +47,7 @@ class TrackSearchStateHolderTest :
             )
         }
 
-        "init subscribes to changes in playlist tracks" {
+        "init subscribes to changes in playlistracks" {
             val queryResults = FixtureProvider.tracks(size = 10)
             val results = mapOf("" to queryResults)
             val playlist = FixtureProvider.playlist().copy(tracks = queryResults.subList(0, 5))

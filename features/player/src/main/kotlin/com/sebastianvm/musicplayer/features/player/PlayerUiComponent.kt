@@ -36,10 +36,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.QueueMusic
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ColorScheme
@@ -76,6 +72,7 @@ import androidx.compose.ui.zIndex
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
+import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
 import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 import com.sebastianvm.musicplayer.core.resources.RString
@@ -285,7 +282,7 @@ private fun FloatingPlayerCard(
                     trailingContent = {
                         IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                             Icon(
-                                imageVector = state.playbackIcon.icon,
+                                imageVector = state.playbackIcon.icon.icon(),
                                 contentDescription =
                                     stringResource(state.playbackIcon.contentDescription),
                                 modifier =
@@ -351,7 +348,7 @@ private fun FullScreenPlayer(
                 }
                 IconButton(onClick = { handle(PlayerUserAction.QueueTapped) }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.QueueMusic,
+                        imageVector = AppIcons.QueueMusic.icon(),
                         contentDescription = stringResource(RString.hide_player),
                         modifier = Modifier.size(48.dp),
                     )
@@ -404,7 +401,7 @@ private fun FullScreenPlayer(
             ) {
                 IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                     Icon(
-                        imageVector = Icons.Default.SkipPrevious,
+                        imageVector = AppIcons.SkipPrevious.icon(),
                         contentDescription = stringResource(RString.previous),
                         modifier =
                             Modifier.size(48.dp)
@@ -418,7 +415,7 @@ private fun FullScreenPlayer(
                 }
                 IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                     Icon(
-                        imageVector = state.playbackIcon.icon,
+                        imageVector = state.playbackIcon.icon.icon(),
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
                         modifier =
                             Modifier.size(48.dp)
@@ -432,7 +429,7 @@ private fun FullScreenPlayer(
                 }
                 IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                     Icon(
-                        imageVector = Icons.Default.SkipNext,
+                        imageVector = AppIcons.SkipNext.icon(),
                         contentDescription = stringResource(RString.previous),
                         modifier =
                             Modifier.size(48.dp)
@@ -509,7 +506,7 @@ private fun PlayerWithQueue(
                 ) {
                     IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
-                            imageVector = Icons.Default.SkipPrevious,
+                            imageVector = AppIcons.SkipPrevious.icon(),
                             contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.size(48.dp)
@@ -523,7 +520,7 @@ private fun PlayerWithQueue(
                     }
                     IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                         Icon(
-                            imageVector = state.playbackIcon.icon,
+                            imageVector = state.playbackIcon.icon.icon(),
                             contentDescription =
                                 stringResource(state.playbackIcon.contentDescription),
                             modifier =
@@ -538,7 +535,7 @@ private fun PlayerWithQueue(
                     }
                     IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
                         Icon(
-                            imageVector = Icons.Default.SkipNext,
+                            imageVector = AppIcons.SkipNext.icon(),
                             contentDescription = stringResource(RString.previous),
                             modifier =
                                 Modifier.size(48.dp)
@@ -615,7 +612,7 @@ private fun ProgressSlider(
                 val offset = (-4 * size / 8 + 8.dp).coerceAtLeast(0.dp)
 
                 Icon(
-                    imageVector = Icons.Filled.Circle,
+                    imageVector = AppIcons.Circle.icon(),
                     contentDescription = null,
                     modifier =
                         Modifier.layout { measurable, _ ->
