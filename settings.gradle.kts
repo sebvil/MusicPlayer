@@ -104,3 +104,5 @@ include(":features:artistsmenu")
 include(":features:test")
 
 include(":core:ui-test")
+
+include(":tooling")

@@ -1,0 +1,3 @@
+#! /bin/sh
+./gradlew :tooling:shadowJar
+java -jar tooling/build/libs/tooling-1.0-SNAPSHOT-all.jar "$@"
