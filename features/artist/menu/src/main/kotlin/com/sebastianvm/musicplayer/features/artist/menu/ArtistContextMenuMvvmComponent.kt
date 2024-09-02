@@ -17,9 +17,13 @@ import com.sebastianvm.musicplayer.features.api.artist.menu.ArtistContextMenuArg
 data class ArtistContextMenuMvvmComponent(
     val arguments: ArtistContextMenuArguments,
     private val artistRepository: ArtistRepository,
-    private val playbackManager: PlaybackManager
+    private val playbackManager: PlaybackManager,
 ) :
-    BaseMvvmComponent<ArtistContextMenuState, ArtistContextMenuUserAction, ArtistContextMenuViewModel>() {
+    BaseMvvmComponent<
+        ArtistContextMenuState,
+        ArtistContextMenuUserAction,
+        ArtistContextMenuViewModel,
+    >() {
 
     override val viewModel: ArtistContextMenuViewModel by lazy {
         ArtistContextMenuViewModel(
@@ -59,7 +63,6 @@ private fun ArtistContextMenu(
                 }
             }
         }
-
         is ArtistContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }

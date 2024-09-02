@@ -23,10 +23,7 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.launch
 
-class HomeMvvmComponent(
-    private val navController: NavController,
-    features: FeatureRegistry
-) :
+class HomeMvvmComponent(private val navController: NavController, features: FeatureRegistry) :
     BaseMvvmComponent<HomeState, HomeUserAction, HomeViewModel>() {
 
     override val viewModel: HomeViewModel by lazy {
@@ -76,19 +73,15 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
                         modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
                     )
                 }
-
                 TopLevelScreen.ARTISTS -> {
                     state.artistListMvvmComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.ALBUMS -> {
                     state.albumListMvvmComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.GENRES -> {
                     state.genreListMvvmComponent.Content(modifier = Modifier)
                 }
-
                 TopLevelScreen.PLAYLISTS -> {
                     state.playlistListMvvmComponent.Content(modifier = Modifier)
                 }

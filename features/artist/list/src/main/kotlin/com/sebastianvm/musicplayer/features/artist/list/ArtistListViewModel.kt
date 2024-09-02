@@ -50,21 +50,21 @@ class ArtistListViewModel(
 ) : BaseViewModel<UiState<ArtistListState>, ArtistListUserAction>(viewModelScope = vmScope) {
     override val state: StateFlow<UiState<ArtistListState>> =
         combine(
-            artistRepository.getArtists(),
-            sortPreferencesRepository.getArtistListSortOrder(),
-        ) { artists, sortOrder ->
-            if (artists.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    ArtistListState(
-                        artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
-                        sortButtonState =
-                        SortButton.State(option = SortOptions.Artist, sortOrder = sortOrder),
+                artistRepository.getArtists(),
+                sortPreferencesRepository.getArtistListSortOrder(),
+            ) { artists, sortOrder ->
+                if (artists.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        ArtistListState(
+                            artists = artists.map { artist -> ArtistRow.State.fromArtist(artist) },
+                            sortButtonState =
+                                SortButton.State(option = SortOptions.Artist, sortOrder = sortOrder),
+                        )
                     )
-                )
+                }
             }
-        }
             .stateIn(viewModelScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: ArtistListUserAction) {
@@ -72,7 +72,6 @@ class ArtistListViewModel(
             is ArtistListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch { sortPreferencesRepository.toggleArtistListSortOrder() }
             }
-
             is ArtistListUserAction.ArtistMoreIconClicked -> {
                 navController.push(
                     features
@@ -81,10 +80,9 @@ class ArtistListViewModel(
                             arguments = ArtistContextMenuArguments(artistId = action.artistId)
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is ArtistListUserAction.ArtistClicked -> {
                 navController.push(
                     features

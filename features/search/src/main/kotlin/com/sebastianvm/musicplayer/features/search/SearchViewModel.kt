@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class SearchQuery(val term: String, val mode: SearchMode)
 
@@ -93,22 +94,18 @@ class SearchViewModel(
                     ftsRepository.searchTracks(newQuery.term).map { tracks ->
                         tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
-
                 SearchMode.ARTISTS ->
                     ftsRepository.searchArtists(newQuery.term).map { artists ->
                         artists.map { SearchResult.Artist(ArtistRow.State.fromArtist(it)) }
                     }
-
                 SearchMode.ALBUMS ->
                     ftsRepository.searchAlbums(newQuery.term).map { albums ->
                         albums.map { SearchResult.Album(AlbumRow.State.fromAlbum(it)) }
                     }
-
                 SearchMode.GENRES ->
                     ftsRepository.searchGenres(newQuery.term).map { genres ->
                         genres.map { SearchResult.Genre(GenreRow.State.fromGenre(it)) }
                     }
-
                 SearchMode.PLAYLISTS ->
                     ftsRepository.searchPlaylists(newQuery.term).map { playlists ->
                         playlists.map { SearchResult.Playlist(PlaylistRow.State.fromPlaylist(it)) }
@@ -118,13 +115,13 @@ class SearchViewModel(
 
     override val state: StateFlow<SearchState> =
         combine(query.map { it.mode }, searchResults) { selectedOption, results ->
-            SearchState(selectedOption = selectedOption, searchResults = results)
-        }
+                SearchState(selectedOption = selectedOption, searchResults = results)
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
+                    SearchState(selectedOption = SearchMode.TRACKS, searchResults = emptyList()),
             )
 
     private fun onTrackSearchResultClicked(trackId: Long) {
@@ -148,12 +145,12 @@ class SearchViewModel(
                 .albumDetails()
                 .albumDetailsUiComponent(
                     arguments =
-                    AlbumDetailsArguments(
-                        albumId = albumItem.id,
-                        albumName = albumItem.albumName,
-                        imageUri = albumItem.artworkUri,
-                        artists = albumItem.artists,
-                    ),
+                        AlbumDetailsArguments(
+                            albumId = albumItem.id,
+                            albumName = albumItem.albumName,
+                            imageUri = albumItem.artworkUri,
+                            artists = albumItem.artists,
+                        ),
                     navController = navController,
                 )
         )
@@ -176,10 +173,10 @@ class SearchViewModel(
                 .playlistDetails()
                 .playlistDetailsUiComponent(
                     arguments =
-                    PlaylistDetailsArguments(
-                        playlistId = playlistId,
-                        playlistName = playlistName,
-                    ),
+                        PlaylistDetailsArguments(
+                            playlistId = playlistId,
+                            playlistName = playlistName,
+                        ),
                     navController = navController,
                 )
         )
@@ -194,16 +191,13 @@ class SearchViewModel(
                     is SearchResult.Album -> onAlbumSearchResultClicked(result.state)
                     is SearchResult.Genre ->
                         onGenreSearchResultClicked(result.id, result.state.genreName)
-
                     is SearchResult.Playlist ->
                         onPlaylistSearchResultClicked(result.id, result.state.playlistName)
                 }
             }
-
             is SearchUserAction.SearchModeChanged -> {
                 query.update { it.copy(mode = action.newMode) }
             }
-
             is SearchUserAction.TextChanged -> query.update { it.copy(term = action.newText) }
         }
     }

@@ -76,16 +76,20 @@ import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
 import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
-import kotlinx.coroutines.flow.Flow
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.Flow
 
 class PlayerMvvmComponent(
     private val delegate: PlayerDelegate,
     private val props: Flow<PlayerProps>,
+    private val playbackManager: PlaybackManager,
+    private val features: FeatureRegistry,
 ) : BaseMvvmComponent<PlayerState, PlayerUserAction, PlayerViewModel>() {
 
     override val viewModel: PlayerViewModel by lazy {
@@ -138,7 +142,6 @@ fun AnimatedPlayerCard(
                                         animationSpec = tween(220, delayMillis = 90),
                                     ))
                                 .togetherWith(fadeOut(animationSpec = tween(90)))
-
                         is PlayerState.FullScreenState -> {
                             if (initialState is PlayerState.FloatingState) {
                                 (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
@@ -151,13 +154,12 @@ fun AnimatedPlayerCard(
                                 (EnterTransition.None).togetherWith(
                                     slideOutOfContainer(
                                         towards =
-                                        AnimatedContentTransitionScope.SlideDirection.Down,
+                                            AnimatedContentTransitionScope.SlideDirection.Down,
                                         animationSpec = tween(durationMillis = 220, 90),
                                     )
                                 )
                             }
                         }
-
                         is PlayerState.QueueState -> {
                             (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
                                     slideIntoContainer(
@@ -186,15 +188,14 @@ fun AnimatedPlayerCard(
                             animatedVisibilityScope = this@AnimatedContent,
                             sharedTransitionScope = this@SharedTransitionLayout,
                             modifier =
-                            Modifier.padding(
-                                top =
-                                WindowInsets.statusBars
-                                    .asPaddingValues()
-                                    .calculateTopPadding()
-                            ),
+                                Modifier.padding(
+                                    top =
+                                        WindowInsets.statusBars
+                                            .asPaddingValues()
+                                            .calculateTopPadding()
+                                ),
                         )
                     }
-
                     is PlayerState.FloatingState -> {
                         FloatingPlayerCard(
                             state = playerState,
@@ -203,7 +204,6 @@ fun AnimatedPlayerCard(
                             sharedTransitionScope = this@SharedTransitionLayout,
                         )
                     }
-
                     is PlayerState.QueueState -> {
                         PlayerWithQueue(
                             state = playerState,
@@ -230,13 +230,13 @@ private fun FloatingPlayerCard(
     with(sharedTransitionScope) {
         ElevatedCard(
             modifier =
-            modifier.sharedBounds(
-                rememberSharedContentState(key = SharedContentStateKey.Container),
-                animatedVisibilityScope = animatedVisibilityScope,
-            ),
+                modifier.sharedBounds(
+                    rememberSharedContentState(key = SharedContentStateKey.Container),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ),
             colors =
-            CardDefaults.elevatedCardColors()
-                .copy(containerColor = MaterialTheme.colorScheme.playerContainerColor),
+                CardDefaults.elevatedCardColors()
+                    .copy(containerColor = MaterialTheme.colorScheme.playerContainerColor),
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ListItem(
@@ -244,10 +244,10 @@ private fun FloatingPlayerCard(
                         Text(
                             text = state.trackInfoState.trackName,
                             modifier =
-                            Modifier.sharedBounds(
-                                rememberSharedContentState(key = SharedContentStateKey.Title),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(key = SharedContentStateKey.Title),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                ),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium,
                             fontSize = MaterialTheme.typography.titleSmall.fontSize,
@@ -259,10 +259,10 @@ private fun FloatingPlayerCard(
                         Text(
                             text = state.trackInfoState.artists,
                             modifier =
-                            Modifier.sharedBounds(
-                                rememberSharedContentState(key = SharedContentStateKey.Artist),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
+                                Modifier.sharedBounds(
+                                    rememberSharedContentState(key = SharedContentStateKey.Artist),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                ),
                             style = MaterialTheme.typography.bodyMedium,
                             fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                             overflow = TextOverflow.Ellipsis,
@@ -273,14 +273,13 @@ private fun FloatingPlayerCard(
                         MediaArtImage(
                             artworkUri = state.artworkUri,
                             modifier =
-                            Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.Image
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.Image
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     },
                     trailingContent = {
@@ -288,14 +287,14 @@ private fun FloatingPlayerCard(
                             Icon(
                                 imageVector = state.playbackIcon.icon.icon(),
                                 contentDescription =
-                                stringResource(state.playbackIcon.contentDescription),
+                                    stringResource(state.playbackIcon.contentDescription),
                                 modifier =
-                                Modifier.sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PlayPauseButton
+                                    Modifier.sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PlayPauseButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                             )
                         }
                     },
@@ -305,13 +304,12 @@ private fun FloatingPlayerCard(
                 LinearProgressIndicator(
                     progress = { state.trackProgressState.progress.percent },
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .sharedBounds(
-                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                        Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     gapSize = 0.dp,
                     drawStopIndicator = {},
                 )
@@ -331,14 +329,13 @@ private fun FullScreenPlayer(
     with(sharedTransitionScope) {
         Column(
             modifier =
-            Modifier
-                .background(color = MaterialTheme.colorScheme.playerContainerColor)
-                .then(modifier)
-                .padding(horizontal = 16.dp)
-                .sharedBounds(
-                    rememberSharedContentState(key = SharedContentStateKey.Container),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                ),
+                Modifier.background(color = MaterialTheme.colorScheme.playerContainerColor)
+                    .then(modifier)
+                    .padding(horizontal = 16.dp)
+                    .sharedBounds(
+                        rememberSharedContentState(key = SharedContentStateKey.Container),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -366,13 +363,12 @@ private fun FullScreenPlayer(
             MediaArtImage(
                 artworkUri = state.artworkUri,
                 modifier =
-                Modifier
-                    .sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
-                    .fillMaxWidth()
-                    .sharedElement(
-                        rememberSharedContentState(key = SharedContentStateKey.Image),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
+                    Modifier.sizeIn(maxHeight = imageMaxSize, maxWidth = imageMaxSize)
+                        .fillMaxWidth()
+                        .sharedElement(
+                            rememberSharedContentState(key = SharedContentStateKey.Image),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
                 contentScale = ContentScale.Fit,
             )
 
@@ -381,10 +377,10 @@ private fun FullScreenPlayer(
                     Text(
                         text = state.trackInfoState.trackName,
                         modifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(key = SharedContentStateKey.Title),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                            Modifier.sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.Title),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                     )
@@ -393,10 +389,10 @@ private fun FullScreenPlayer(
                     Text(
                         text = state.trackInfoState.artists,
                         modifier =
-                        Modifier.sharedBounds(
-                            rememberSharedContentState(key = SharedContentStateKey.Artist),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                            Modifier.sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.Artist),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     )
                 },
@@ -411,14 +407,13 @@ private fun FullScreenPlayer(
                         imageVector = AppIcons.SkipPrevious.icon(),
                         contentDescription = stringResource(RString.previous),
                         modifier =
-                        Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PreviousButton
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PreviousButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                     )
                 }
                 IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
@@ -426,14 +421,13 @@ private fun FullScreenPlayer(
                         imageVector = state.playbackIcon.icon.icon(),
                         contentDescription = stringResource(state.playbackIcon.contentDescription),
                         modifier =
-                        Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.PlayPauseButton
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.PlayPauseButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                     )
                 }
                 IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
@@ -441,14 +435,13 @@ private fun FullScreenPlayer(
                         imageVector = AppIcons.SkipNext.icon(),
                         contentDescription = stringResource(RString.previous),
                         modifier =
-                        Modifier
-                            .size(48.dp)
-                            .sharedElement(
-                                rememberSharedContentState(
-                                    key = SharedContentStateKey.NextButton
+                            Modifier.size(48.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(
+                                        key = SharedContentStateKey.NextButton
+                                    ),
+                                    animatedVisibilityScope = animatedVisibilityScope,
                                 ),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
                     )
                 }
             }
@@ -464,12 +457,11 @@ private fun FullScreenPlayer(
                     )
                 },
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .sharedElement(
-                        rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
+                    Modifier.fillMaxWidth()
+                        .sharedElement(
+                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -487,9 +479,7 @@ private fun PlayerWithQueue(
 ) {
     with(sharedTransitionScope) {
         Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surface)
-                .then(modifier)
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surface).then(modifier)
         ) {
             IconButton(onClick = { handle(PlayerUserAction.DismissQueue) }) {
                 Icon(
@@ -499,64 +489,51 @@ private fun PlayerWithQueue(
                 )
             }
 
-            state.queueMvvmComponent.Content(
-                modifier = Modifier
-                    .weight(1f)
-                    .zIndex(0f)
-            )
+            state.queueMvvmComponent.Content(modifier = Modifier.weight(1f).zIndex(0f))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .zIndex(1f)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().zIndex(1f)) {
                 LinearProgressIndicator(
                     progress = { state.trackProgressState.progress.percent },
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .sharedBounds(
-                            rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
+                        Modifier.fillMaxWidth()
+                            .sharedBounds(
+                                rememberSharedContentState(key = SharedContentStateKey.ProgressBar),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     gapSize = 0.dp,
                     drawStopIndicator = {},
                 )
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                 ) {
                     IconButton(onClick = { handle(PlayerUserAction.PreviousButtonClicked) }) {
                         Icon(
                             imageVector = AppIcons.SkipPrevious.icon(),
                             contentDescription = stringResource(RString.previous),
                             modifier =
-                            Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PreviousButton
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PreviousButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     }
                     IconButton(onClick = { handle(PlayerUserAction.PlayToggled) }) {
                         Icon(
                             imageVector = state.playbackIcon.icon.icon(),
                             contentDescription =
-                            stringResource(state.playbackIcon.contentDescription),
+                                stringResource(state.playbackIcon.contentDescription),
                             modifier =
-                            Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.PlayPauseButton
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.PlayPauseButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     }
                     IconButton(onClick = { handle(PlayerUserAction.NextButtonClicked) }) {
@@ -564,14 +541,13 @@ private fun PlayerWithQueue(
                             imageVector = AppIcons.SkipNext.icon(),
                             contentDescription = stringResource(RString.previous),
                             modifier =
-                            Modifier
-                                .size(48.dp)
-                                .sharedElement(
-                                    rememberSharedContentState(
-                                        key = SharedContentStateKey.NextButton
+                                Modifier.size(48.dp)
+                                    .sharedElement(
+                                        rememberSharedContentState(
+                                            key = SharedContentStateKey.NextButton
+                                        ),
+                                        animatedVisibilityScope = animatedVisibilityScope,
                                     ),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                ),
                         )
                     }
                 }
@@ -606,15 +582,15 @@ private fun ProgressSlider(
     val progress = trackProgressState.progress.percent
     var manualSliderPosition by remember { mutableFloatStateOf(progress) }
     val sliderPosition by
-    remember(progress, interactions) {
-        derivedStateOf {
-            if (interactions.isEmpty()) {
-                progress
-            } else {
-                manualSliderPosition
+        remember(progress, interactions) {
+            derivedStateOf {
+                if (interactions.isEmpty()) {
+                    progress
+                } else {
+                    manualSliderPosition
+                }
             }
         }
-    }
 
     Column(modifier = modifier) {
         Slider(
@@ -628,32 +604,32 @@ private fun ProgressSlider(
             colors = colors,
             thumb = {
                 val size by
-                animateDpAsState(
-                    if (interactions.isNotEmpty()) {
-                        PROGRESS_BAR_THUMB_SIZE_LARGE
-                    } else {
-                        PROGRESS_BAR_THUMB_SIZE_SMALL
-                    },
-                    label = "size",
-                )
+                    animateDpAsState(
+                        if (interactions.isNotEmpty()) {
+                            PROGRESS_BAR_THUMB_SIZE_LARGE
+                        } else {
+                            PROGRESS_BAR_THUMB_SIZE_SMALL
+                        },
+                        label = "size",
+                    )
                 val offset = (-4 * size / 8 + 8.dp).coerceAtLeast(0.dp)
 
                 Icon(
                     imageVector = AppIcons.Circle.icon(),
                     contentDescription = null,
                     modifier =
-                    Modifier.layout { measurable, _ ->
-                        val placeable =
-                            measurable.measure(
-                                Constraints.fixed(
-                                    width = size.roundToPx(),
-                                    height = size.roundToPx(),
+                        Modifier.layout { measurable, _ ->
+                            val placeable =
+                                measurable.measure(
+                                    Constraints.fixed(
+                                        width = size.roundToPx(),
+                                        height = size.roundToPx(),
+                                    )
                                 )
-                            )
-                        layout(placeable.width, placeable.height) {
-                            placeable.place(x = 0, y = offset.roundToPx())
-                        }
-                    },
+                            layout(placeable.width, placeable.height) {
+                                placeable.place(x = 0, y = offset.roundToPx())
+                            }
+                        },
                     tint = colors.thumbColor,
                 )
             },
@@ -671,10 +647,10 @@ private fun ProgressSlider(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text =
-                (sliderPosition * trackProgressState.trackLength.inWholeMilliseconds)
-                    .toLong()
-                    .milliseconds
-                    .toDisplayableString()
+                    (sliderPosition * trackProgressState.trackLength.inWholeMilliseconds)
+                        .toLong()
+                        .milliseconds
+                        .toDisplayableString()
             )
             Text(text = trackProgressState.trackLength.toDisplayableString())
         }

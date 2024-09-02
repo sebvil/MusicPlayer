@@ -41,11 +41,11 @@ class MainViewModel(
             .playerUiComponent(
                 props = playerProps,
                 delegate =
-                object : PlayerDelegate {
-                    override fun dismissFullScreenPlayer() {
-                        playerProps.update { it.copy(isFullscreen = false) }
-                    }
-                },
+                    object : PlayerDelegate {
+                        override fun dismissFullScreenPlayer() {
+                            playerProps.update { it.copy(isFullscreen = false) }
+                        }
+                    },
             )
 
     override val state: StateFlow<MainState> =
@@ -61,11 +61,11 @@ class MainViewModel(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                MainState(
-                    playerMvvmComponent = playerUiComponent,
-                    appNavigationHostMvvmComponent = appNavigationHostUiComponent,
-                    isFullscreen = false,
-                ),
+                    MainState(
+                        playerMvvmComponent = playerUiComponent,
+                        appNavigationHostMvvmComponent = appNavigationHostUiComponent,
+                        isFullscreen = false,
+                    ),
             )
 
     override fun handle(action: MainUserAction) {
@@ -73,15 +73,12 @@ class MainViewModel(
             is MainUserAction.ConnectToMusicService -> {
                 playbackManager.connectToService()
             }
-
             is MainUserAction.DisconnectFromMusicService -> {
                 playbackManager.disconnectFromService()
             }
-
             is MainUserAction.ExpandPlayer -> {
                 playerProps.update { it.copy(isFullscreen = true) }
             }
-
             is MainUserAction.CollapsePlayer -> {
                 playerProps.update { it.copy(isFullscreen = false) }
             }
@@ -99,7 +96,7 @@ class MainViewModel(
                 playbackManager = services.playbackManager,
                 features = services.featureRegistry,
             )
-                    as T
+                as T
         }
     }
 }

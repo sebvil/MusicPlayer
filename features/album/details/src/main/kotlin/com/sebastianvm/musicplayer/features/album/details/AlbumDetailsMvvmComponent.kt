@@ -82,7 +82,6 @@ data class AlbumDetailsMvvmComponent(
         )
     }
 
-
     @Composable
     override fun Content(
         state: AlbumDetailsState,
@@ -187,100 +186,92 @@ fun AlbumDetails(
     SubcomposeLayout(modifier = modifier.nestedScroll(nestedScrollConnection)) { constraints ->
         val topBarPlaceables =
             subcompose(AlbumDetailsContent.TopBar) {
-                TopBar(
-                    title = state.albumName,
-                    alpha = topBarAlpha,
-                    onBackButtonClick = { handle(AlbumDetailsUserAction.BackClicked) },
-                )
-            }
+                    TopBar(
+                        title = state.albumName,
+                        alpha = topBarAlpha,
+                        onBackButtonClick = { handle(AlbumDetailsUserAction.BackClicked) },
+                    )
+                }
                 .fastMap { it.measure(constraints) }
 
         topBarHeight = topBarPlaceables.fastMaxBy { it.height }?.height?.toFloat() ?: 0f
 
         val headerPlaceables =
             subcompose(AlbumDetailsContent.Header) {
-                Column(
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top =
-                            WindowInsets.systemBars
-                                .asPaddingValues()
-                                .calculateTopPadding()
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    MediaArtImage(
-                        artworkUri = state.imageUri,
-                        modifier = Modifier
-                            .stateSize(animatedSize)
-                            .alpha(imageAlpha),
-                    )
-
                     Column(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 12.dp)
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(
+                                    top =
+                                        WindowInsets.systemBars
+                                            .asPaddingValues()
+                                            .calculateTopPadding()
+                                ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(
-                            text = state.albumName,
-                            style =
-                            MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.Medium
-                            ),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.alpha(1 - topBarAlpha),
+                        MediaArtImage(
+                            artworkUri = state.imageUri,
+                            modifier = Modifier.stateSize(animatedSize).alpha(imageAlpha),
                         )
 
-                        state.artists?.let {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 12.dp)
+                        ) {
                             Text(
-                                text = it,
+                                text = state.albumName,
                                 style =
-                                MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .alpha(1 - topBarAlpha),
+                                    MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Medium
+                                    ),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.alpha(1 - topBarAlpha),
                             )
+
+                            state.artists?.let {
+                                Text(
+                                    text = it,
+                                    style =
+                                        MaterialTheme.typography.titleLarge.copy(
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth().alpha(1 - topBarAlpha),
+                                )
+                            }
                         }
                     }
                 }
-            }
                 .fastMap { it.measure(constraints) }
 
         fullHeaderHeight = headerPlaceables.fastMaxBy { it.height }?.height?.toFloat() ?: 0f
 
         val contentPlaceables =
             subcompose(AlbumDetailsContent.Content) {
-                when (state) {
-                    is AlbumDetailsState.Loading -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
+                    when (state) {
+                        is AlbumDetailsState.Loading -> {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                        is AlbumDetailsState.Data -> {
+                            AlbumDetails(
+                                state = state,
+                                handle = handle,
+                                contentPadding =
+                                    PaddingValues(
+                                        bottom =
+                                            (LocalPaddingValues.current.calculateBottomPadding() +
+                                                    animatedOffset.value.toDp())
+                                                .coerceAtLeast(0.dp),
+                                        top = fullHeaderHeight.toDp(),
+                                    ),
+                                listState = listState,
                             )
                         }
                     }
-
-                    is AlbumDetailsState.Data -> {
-                        AlbumDetails(
-                            state = state,
-                            handle = handle,
-                            contentPadding =
-                            PaddingValues(
-                                bottom =
-                                (LocalPaddingValues.current.calculateBottomPadding() +
-                                        animatedOffset.value.toDp())
-                                    .coerceAtLeast(0.dp),
-                                top = fullHeaderHeight.toDp(),
-                            ),
-                            listState = listState,
-                        )
-                    }
                 }
-            }
                 .fastMap { it.measure(constraints) }
 
         layout(constraints.maxWidth, constraints.maxHeight) {
@@ -302,9 +293,7 @@ fun AlbumDetails(
     if (state.tracks.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = RString.no_tracks_found,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
         LazyColumn(modifier = modifier, contentPadding = contentPadding, state = listState) {
@@ -312,9 +301,7 @@ fun AlbumDetails(
                 TrackRow(
                     state = item,
                     modifier =
-                    Modifier
-                        .animateItem()
-                        .clickable {
+                        Modifier.animateItem().clickable {
                             handle(AlbumDetailsUserAction.TrackClicked(trackIndex = index))
                         },
                     trailingContent = {

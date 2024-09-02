@@ -8,6 +8,7 @@ class RenameFiles : CliktCommand() {
     private val pattern: String by option().required()
     private val replacement: String by option().required()
     private val dryRun: Boolean by option().flag("--execute", default = false)
+
     override fun run() {
         val regex = Regex(pattern)
         val directory = File("./")

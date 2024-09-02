@@ -41,7 +41,7 @@ data class ArtistDetailsMvvmComponent(
     val arguments: ArtistDetailsArguments,
     val navController: NavController,
     private val artistRepository: ArtistRepository,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : BaseMvvmComponent<ArtistDetailsState, ArtistDetailsUserAction, ArtistDetailsViewModel>() {
 
     override val viewModel: ArtistDetailsViewModel by lazy {
@@ -74,7 +74,6 @@ fun ArtistDetails(
             is ArtistDetailsState.Data -> {
                 ArtistDetails(state = state, handle = handle)
             }
-
             is ArtistDetailsState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }

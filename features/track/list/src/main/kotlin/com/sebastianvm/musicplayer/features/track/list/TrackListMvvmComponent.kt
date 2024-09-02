@@ -16,17 +16,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class TrackListMvvmComponent(private val navController: NavController) :
-    BaseMvvmComponent<TrackListState, TrackListUserAction, TrackListViewModel>() {
+class TrackListMvvmComponent(
+    private val navController: NavController,
+    private val trackRepository: TrackRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val playbackManager: PlaybackManager,
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<TrackListState, TrackListUserAction, TrackListViewModel>() {
 
     override val viewModel: TrackListViewModel by lazy {
         TrackListViewModel(
@@ -60,7 +69,6 @@ fun TrackList(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
-
         is TrackListState.Data -> {
             TrackList(state = state, handle = handle, modifier = modifier)
         }
@@ -77,9 +85,7 @@ fun TrackList(
     if (state.tracks.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = RString.no_tracks_found,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
         LazyColumn(modifier = modifier, contentPadding = LocalPaddingValues.current) {
@@ -95,9 +101,7 @@ fun TrackList(
                 TrackRow(
                     state = item,
                     modifier =
-                    Modifier
-                        .animateItem()
-                        .clickable {
+                        Modifier.animateItem().clickable {
                             handle(TrackListUserAction.TrackClicked(trackIndex = index))
                         },
                     trailingContent = {

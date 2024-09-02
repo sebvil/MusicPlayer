@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class TrackSearchResult(val state: TrackRow.State, val inPlaylist: Boolean)
 
@@ -57,24 +58,24 @@ class TrackSearchViewModel(
 
     override val state: StateFlow<TrackSearchState> =
         combine(
-            searchResults,
-            playlistRepository.getTrackIdsInPlaylist(arguments.playlistId),
-            trackAddedToPlaylist,
-        ) { tracks, playlistTrackIds, trackAddedToPlaylist ->
-            val results =
-                tracks
-                    .map {
-                        TrackSearchResult(
-                            TrackRow.State.fromTrack(it),
-                            inPlaylist = it.id in playlistTrackIds,
-                        )
-                    }
-                    .sortedBy { it.inPlaylist }
-            TrackSearchState(
-                trackSearchResults = results,
-                trackAddedToPlaylist = trackAddedToPlaylist,
-            )
-        }
+                searchResults,
+                playlistRepository.getTrackIdsInPlaylist(arguments.playlistId),
+                trackAddedToPlaylist,
+            ) { tracks, playlistTrackIds, trackAddedToPlaylist ->
+                val results =
+                    tracks
+                        .map {
+                            TrackSearchResult(
+                                TrackRow.State.fromTrack(it),
+                                inPlaylist = it.id in playlistTrackIds,
+                            )
+                        }
+                        .sortedBy { it.inPlaylist }
+                TrackSearchState(
+                    trackSearchResults = results,
+                    trackAddedToPlaylist = trackAddedToPlaylist,
+                )
+            }
             .stateIn(
                 viewModelScope,
                 SharingStarted.Lazily,
@@ -86,7 +87,6 @@ class TrackSearchViewModel(
             is TrackSearchUserAction.TextChanged -> {
                 query.update { action.newText }
             }
-
             is TrackSearchUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playlistRepository.addTrackToPlaylist(
@@ -97,7 +97,6 @@ class TrackSearchViewModel(
                     trackAddedToPlaylist.update { action.trackName }
                 }
             }
-
             is TrackSearchUserAction.ToastShown -> trackAddedToPlaylist.update { null }
             is TrackSearchUserAction.BackClicked -> navController.pop()
         }

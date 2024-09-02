@@ -27,9 +27,8 @@ class GenreListMvvmComponent(
     private val navController: NavController,
     private val genreRepository: GenreRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val features: FeatureRegistry
-) :
-    BaseMvvmComponent<UiState<GenreListState>, GenreListUserAction, GenreListViewModel>() {
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<UiState<GenreListState>, GenreListUserAction, GenreListViewModel>() {
 
     override val viewModel: GenreListViewModel by lazy {
         GenreListViewModel(
@@ -62,9 +61,7 @@ fun GenreList(
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
                 message = RString.no_genres_found,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
     ) { state ->
@@ -90,9 +87,9 @@ fun GenreList(
             GenreRow(
                 state = item,
                 modifier =
-                Modifier.clickable {
-                    handle(GenreListUserAction.GenreClicked(item.id, item.genreName))
-                },
+                    Modifier.clickable {
+                        handle(GenreListUserAction.GenreClicked(item.id, item.genreName))
+                    },
                 trailingContent = {
                     OverflowIconButton(
                         onClick = { handle(GenreListUserAction.GenreMoreIconClicked(item.id)) }

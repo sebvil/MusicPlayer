@@ -50,6 +50,9 @@ class AppServices(private val appContext: Context) : Services {
     }
 
     override val featureRegistry: FeatureRegistry by lazy {
-        initializeFeatures(repositoryProvider = repositoryProvider)
+        initializeFeatures(
+            repositoryProvider = repositoryProvider,
+            playbackManager = playbackManager,
+        )
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
@@ -27,10 +28,15 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 
-data class SortMenuMvvmComponent(val arguments: SortMenuArguments) :
-    BaseMvvmComponent<SortMenuState, SortMenuUserAction, SortMenuViewModel>() {
+data class SortMenuMvvmComponent(
+    val arguments: SortMenuArguments,
+    private val sortPreferencesRepository: SortPreferencesRepository,
+) : BaseMvvmComponent<SortMenuState, SortMenuUserAction, SortMenuViewModel>() {
     override val viewModel: SortMenuViewModel by lazy {
-        SortMenuViewModel(services, arguments)
+        SortMenuViewModel(
+            arguments = arguments,
+            sortPreferencesRepository = sortPreferencesRepository,
+        )
     }
 
     @Composable
@@ -77,9 +83,7 @@ fun SortMenu(
                         Modifier
                     }
                 ListItem(
-                    modifier = Modifier
-                        .then(clickableModifier)
-                        .then(backgroundModifier),
+                    modifier = Modifier.then(clickableModifier).then(backgroundModifier),
                     headlineContent = {
                         Text(
                             text = stringResource(id = row.stringId),
@@ -91,16 +95,16 @@ fun SortMenu(
                         if (state.selectedSort == row) {
                             Icon(
                                 imageVector =
-                                when (state.sortOrder) {
-                                    MediaSortOrder.ASCENDING -> AppIcons.ArrowUpward
-                                    MediaSortOrder.DESCENDING -> AppIcons.ArrowDownward
-                                }.icon(),
+                                    when (state.sortOrder) {
+                                        MediaSortOrder.ASCENDING -> AppIcons.ArrowUpward
+                                        MediaSortOrder.DESCENDING -> AppIcons.ArrowDownward
+                                    }.icon(),
                                 contentDescription =
-                                if (state.sortOrder == MediaSortOrder.ASCENDING) {
-                                    stringResource(RString.up_arrow)
-                                } else {
-                                    stringResource(RString.down_arrow)
-                                },
+                                    if (state.sortOrder == MediaSortOrder.ASCENDING) {
+                                        stringResource(RString.up_arrow)
+                                    } else {
+                                        stringResource(RString.down_arrow)
+                                    },
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         } else {

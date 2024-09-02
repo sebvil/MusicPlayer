@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.artist.menu
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
 import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.datatest.artist.FakeArtistRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
@@ -12,7 +12,7 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 
-class ArtistContextMenuStateHolderTest :
+class ArtistContextMenuViewModelTest :
     FreeSpec({
         lateinit var artistRepositoryDep: FakeArtistRepository
         lateinit var playbackManagerDep: FakePlaybackManager
@@ -22,12 +22,12 @@ class ArtistContextMenuStateHolderTest :
             playbackManagerDep = FakePlaybackManager()
         }
 
-        fun TestScope.getSubject(artistId: Long): ArtistContextMenuStateHolder {
-            return ArtistContextMenuStateHolder(
+        fun TestScope.getSubject(artistId: Long): ArtistContextMenuViewModel {
+            return ArtistContextMenuViewModel(
                 arguments = ArtistContextMenuArguments(artistId = artistId),
                 artistRepository = artistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                viewModelScope = this,
+                vmScope = this,
             )
         }
 
@@ -36,10 +36,10 @@ class ArtistContextMenuStateHolderTest :
             artistRepositoryDep.artists.value = artists
             val artist = artists.first()
             val subject = getSubject(artist.id)
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 awaitItem() shouldBe ArtistContextMenuState.Loading
                 awaitItemAs<ArtistContextMenuState.Data>() shouldBe
-                        ArtistContextMenuState.Data(artistName = artist.name, artistId = artist.id)
+                    ArtistContextMenuState.Data(artistName = artist.name, artistId = artist.id)
             }
         }
 
@@ -49,11 +49,11 @@ class ArtistContextMenuStateHolderTest :
             subject.handle(ArtistContextMenuUserAction.PlayArtistClicked)
             advanceUntilIdle()
             playbackManagerDep.playMediaInvocations shouldBe
-                    listOf(
-                        FakePlaybackManager.PlayMediaArguments(
-                            mediaGroup = MediaGroup.Artist(artistId = artist.id),
-                            initialTrackIndex = 0,
-                        )
+                listOf(
+                    FakePlaybackManager.PlayMediaArguments(
+                        mediaGroup = MediaGroup.Artist(artistId = artist.id),
+                        initialTrackIndex = 0,
                     )
+                )
         }
     })

@@ -39,7 +39,7 @@ class GenreDetailsMvvmComponent(
     private val genreRepository: GenreRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : BaseMvvmComponent<GenreDetailsState, GenreDetailsUserAction, GenreDetailsViewModel>() {
 
     override val viewModel: GenreDetailsViewModel by lazy {
@@ -80,15 +80,10 @@ fun GenreDetails(
     ) { paddingValues ->
         when (state) {
             is GenreDetailsState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
+                Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
-
             is GenreDetailsState.Data -> {
                 GenreDetails(
                     state = state,
@@ -111,9 +106,7 @@ fun GenreDetails(
     if (state.tracks.isEmpty()) {
         StoragePermissionNeededEmptyScreen(
             message = RString.no_tracks_found,
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
+            modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
         )
     } else {
         LazyColumn(
@@ -133,9 +126,7 @@ fun GenreDetails(
                 TrackRow(
                     state = item,
                     modifier =
-                    Modifier
-                        .animateItem()
-                        .clickable {
+                        Modifier.animateItem().clickable {
                             handle(GenreDetailsUserAction.TrackClicked(trackIndex = index))
                         },
                     trailingContent = {

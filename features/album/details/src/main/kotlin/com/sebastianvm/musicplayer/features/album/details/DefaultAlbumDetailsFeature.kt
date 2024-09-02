@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.details
 
-import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
+import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsFeatur
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 class DefaultAlbumDetailsFeature(
-    private val albumRepository: AlbumRepository,
+    private val repositoryProvider: RepositoryProvider,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : AlbumDetailsFeature {
@@ -20,9 +20,9 @@ class DefaultAlbumDetailsFeature(
         return AlbumDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,
-            albumRepository = albumRepository,
+            albumRepository = repositoryProvider.albumRepository,
             playbackManager = playbackManager,
-            features = features
+            features = features,
         )
     }
 }

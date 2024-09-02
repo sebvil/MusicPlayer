@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.genre.list
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.datatest.genre.FakeGenreRepository
 import com.sebastianvm.musicplayer.core.datatest.preferences.FakeSortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
@@ -24,7 +24,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 
-class GenreListStateHolderTest :
+class GenreListViewModelTest :
     FreeSpec({
         lateinit var genreRepositoryDep: FakeGenreRepository
         lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
@@ -36,9 +36,9 @@ class GenreListStateHolderTest :
             navControllerDep = FakeNavController()
         }
 
-        fun TestScope.getSubject(): GenreListStateHolder {
-            return GenreListStateHolder(
-                viewModelScope = this,
+        fun TestScope.getSubject(): GenreListViewModel {
+            return GenreListViewModel(
+                vmScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 navController = navControllerDep,
@@ -49,7 +49,7 @@ class GenreListStateHolderTest :
         "init subscribes to changes in genre list" {
             val subject = getSubject()
             genreRepositoryDep.genres.value = emptyList()
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 awaitItem() shouldBe Loading
                 awaitItem() shouldBe Empty
 
@@ -66,75 +66,75 @@ class GenreListStateHolderTest :
             val subject = getSubject()
             genreRepositoryDep.genres.value = FixtureProvider.genres()
             sortPreferencesRepositoryDep.genreListSortOrder.value = MediaSortOrder.ASCENDING
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 awaitItem() shouldBe Loading
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
-                            SortButton.State(
-                                text = RString.genre_name,
-                                sortOrder = MediaSortOrder.ASCENDING,
-                            )
+                        SortButton.State(
+                            text = RString.genre_name,
+                            sortOrder = MediaSortOrder.ASCENDING,
+                        )
                 }
 
                 sortPreferencesRepositoryDep.genreListSortOrder.value = MediaSortOrder.DESCENDING
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
-                            SortButton.State(
-                                text = RString.genre_name,
-                                sortOrder = MediaSortOrder.DESCENDING,
-                            )
+                        SortButton.State(
+                            text = RString.genre_name,
+                            sortOrder = MediaSortOrder.DESCENDING,
+                        )
                 }
             }
         }
 
         "handle" -
-                {
-                    "SortByButtonClicked toggles sort order" {
-                        val subject = getSubject()
-                        subject.handle(GenreListUserAction.SortByButtonClicked)
-                        advanceUntilIdle()
-                        sortPreferencesRepositoryDep.genreListSortOrder.value shouldBe
-                                MediaSortOrder.DESCENDING
-                    }
+            {
+                "SortByButtonClicked toggles sort order" {
+                    val subject = getSubject()
+                    subject.handle(GenreListUserAction.SortByButtonClicked)
+                    advanceUntilIdle()
+                    sortPreferencesRepositoryDep.genreListSortOrder.value shouldBe
+                        MediaSortOrder.DESCENDING
+                }
 
-                    "GenreClicked navigates to TrackList" {
-                        val subject = getSubject()
-                        subject.handle(GenreListUserAction.GenreClicked(GENRE_ID, GENRE_NAME))
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        name = "GenreDetails",
-                                        arguments =
+                "GenreClicked navigates to TrackList" {
+                    val subject = getSubject()
+                    subject.handle(GenreListUserAction.GenreClicked(GENRE_ID, GENRE_NAME))
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    name = "GenreDetails",
+                                    arguments =
                                         GenreDetailsArguments(
                                             genreId = GENRE_ID,
                                             genreName = GENRE_NAME,
                                         ),
-                                    ),
-                                    navOptions =
-                                    NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
-                                )
-                    }
-
-                    "GenreMoreIconClicked navigates to GenreContextMenu" {
-                        val subject = getSubject()
-                        subject.handle(GenreListUserAction.GenreMoreIconClicked(GENRE_ID))
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        name = "GenreContextMenu",
-                                        arguments = GenreContextMenuArguments(GENRE_ID),
-                                    ),
-                                    navOptions =
-                                    NavOptions(
-                                        presentationMode = NavOptions.PresentationMode.BottomSheet
-                                    ),
-                                )
-                    }
+                                ),
+                            navOptions =
+                                NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
+                        )
                 }
+
+                "GenreMoreIconClicked navigates to GenreContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(GenreListUserAction.GenreMoreIconClicked(GENRE_ID))
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    name = "GenreContextMenu",
+                                    arguments = GenreContextMenuArguments(GENRE_ID),
+                                ),
+                            navOptions =
+                                NavOptions(
+                                    presentationMode = NavOptions.PresentationMode.BottomSheet
+                                ),
+                        )
+                }
+            }
     }) {
 
     companion object {

@@ -39,23 +39,25 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-object QueueMvvmComponent : BaseMvvmComponent<QueueState, QueueUserAction, QueueViewModel>() {
+class QueueMvvmComponent(
+    private val queueRepository: QueueRepository,
+    private val playbackManager: PlaybackManager,
+) : BaseMvvmComponent<QueueState, QueueUserAction, QueueViewModel>() {
 
     override val viewModel: QueueViewModel by lazy {
-        QueueViewModel(
-            queueRepository = queueRepository,
-            playbackManager = playbackManager,
-        )
+        QueueViewModel(queueRepository = queueRepository, playbackManager = playbackManager)
     }
 
     @Composable
@@ -138,14 +140,14 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
             items(queueItems, key = { item -> item.queueItemId }) { item ->
                 ReorderableItem(reorderableLazyListState, key = item.queueItemId) { isDragging ->
                     val elevation by
-                    animateDpAsState(if (isDragging) 4.dp else 0.dp, label = "elevation")
+                        animateDpAsState(if (isDragging) 4.dp else 0.dp, label = "elevation")
 
                     TrackRow(
                         state = item.trackRow,
                         modifier =
-                        Modifier.clickable {
-                            handle(QueueUserAction.TrackClicked(item.position))
-                        },
+                            Modifier.clickable {
+                                handle(QueueUserAction.TrackClicked(item.position))
+                            },
                         leadingContent = {
                             RadioButton(
                                 selected = item.position in selectedItems,
@@ -163,36 +165,36 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
                             IconButton(
                                 onClick = {},
                                 modifier =
-                                Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        draggedItemInitialIndex = item.position
-                                        if (
-                                            Build.VERSION.SDK_INT >=
-                                            Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                                        ) {
-                                            view.performHapticFeedback(
-                                                HapticFeedbackConstants.DRAG_START
+                                    Modifier.draggableHandle(
+                                        onDragStarted = {
+                                            draggedItemInitialIndex = item.position
+                                            if (
+                                                Build.VERSION.SDK_INT >=
+                                                    Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                                            ) {
+                                                view.performHapticFeedback(
+                                                    HapticFeedbackConstants.DRAG_START
+                                                )
+                                            }
+                                        },
+                                        onDragStopped = {
+                                            draggedItem = null
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                                view.performHapticFeedback(
+                                                    HapticFeedbackConstants.GESTURE_END
+                                                )
+                                            }
+                                            handle(
+                                                QueueUserAction.DragEnded(
+                                                    from = draggedItemInitialIndex,
+                                                    to =
+                                                        draggedItemFinalIndex +
+                                                            state.nowPlayingItem.position +
+                                                            1,
+                                                )
                                             )
-                                        }
-                                    },
-                                    onDragStopped = {
-                                        draggedItem = null
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                            view.performHapticFeedback(
-                                                HapticFeedbackConstants.GESTURE_END
-                                            )
-                                        }
-                                        handle(
-                                            QueueUserAction.DragEnded(
-                                                from = draggedItemInitialIndex,
-                                                to =
-                                                draggedItemFinalIndex +
-                                                        state.nowPlayingItem.position +
-                                                        1,
-                                            )
-                                        )
-                                    },
-                                ),
+                                        },
+                                    ),
                             ) {
                                 Icon(
                                     imageVector = AppIcons.DragIndicator.icon(),
@@ -215,10 +217,9 @@ fun Queue(state: QueueState.Data, handle: Handler<QueueUserAction>, modifier: Mo
         ) {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(

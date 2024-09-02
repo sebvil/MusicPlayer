@@ -15,8 +15,7 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders
 
 interface MvvmComponent {
 
-    @Composable
-    fun Content(modifier: Modifier)
+    @Composable fun Content(modifier: Modifier)
 
     fun onCleared() = Unit
 }
@@ -26,17 +25,15 @@ abstract class BaseMvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<
 
     protected abstract val viewModel: VM
 
-
     final override val viewModelStore: ViewModelStore = ViewModelStore()
 
-    @Composable
-    abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
+    @Composable abstract fun Content(state: S, handle: Handler<UA>, modifier: Modifier)
 
     @Composable
     final override fun Content(modifier: Modifier) {
-        val stateHolder = remember { viewModel }
-        val state by stateHolder.currentState
-        Content(state = state, handle = stateHolder::handle, modifier = modifier)
+        val vm = remember { viewModel }
+        val state by vm.currentState
+        Content(state = state, handle = vm::handle, modifier = modifier)
     }
 
     @MustBeInvokedByOverriders
@@ -49,13 +46,11 @@ abstract class BaseMvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<
 val MvvmComponent.key: String
     get() = this.toString()
 
-
 @MainThread
 inline fun <reified VM : ViewModel> ViewModelStoreOwner.viewModels(
     noinline factory: (() -> VM)
 ): Lazy<VM> {
     val factoryPromise = {
-
         object : ViewModelProvider.Factory {
             @Suppress("unchecked_cast")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -64,10 +59,5 @@ inline fun <reified VM : ViewModel> ViewModelStoreOwner.viewModels(
         }
     }
 
-    return ViewModelLazy(
-        VM::class,
-        { viewModelStore },
-        factoryPromise,
-        { CreationExtras.Empty }
-    )
+    return ViewModelLazy(VM::class, { viewModelStore }, factoryPromise, { CreationExtras.Empty })
 }

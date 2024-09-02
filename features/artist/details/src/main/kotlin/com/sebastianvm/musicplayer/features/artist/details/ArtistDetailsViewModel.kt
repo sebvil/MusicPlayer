@@ -60,23 +60,23 @@ class ArtistDetailsViewModel(
                 ArtistDetailsState.Data(
                     artistName = artistWithAlbums.name,
                     artistAlbumsSection =
-                    artistWithAlbums.albums
-                        .takeIf { it.isNotEmpty() }
-                        ?.let { albums ->
-                            ArtistDetailsSection(
-                                title = RString.albums,
-                                albums = albums.map { AlbumRow.State.fromAlbum(it) },
-                            )
-                        },
+                        artistWithAlbums.albums
+                            .takeIf { it.isNotEmpty() }
+                            ?.let { albums ->
+                                ArtistDetailsSection(
+                                    title = RString.albums,
+                                    albums = albums.map { AlbumRow.State.fromAlbum(it) },
+                                )
+                            },
                     artistAppearsOnSection =
-                    artistWithAlbums.appearsOn
-                        .takeIf { it.isNotEmpty() }
-                        ?.let { albums ->
-                            ArtistDetailsSection(
-                                title = RString.appears_on,
-                                albums = albums.map { AlbumRow.State.fromAlbum(it) },
-                            )
-                        },
+                        artistWithAlbums.appearsOn
+                            .takeIf { it.isNotEmpty() }
+                            ?.let { albums ->
+                                ArtistDetailsSection(
+                                    title = RString.appears_on,
+                                    albums = albums.map { AlbumRow.State.fromAlbum(it) },
+                                )
+                            },
                 )
             }
             .stateIn(viewModelScope, SharingStarted.Lazily, ArtistDetailsState.Loading)
@@ -92,26 +92,24 @@ class ArtistDetailsViewModel(
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is ArtistDetailsUserAction.BackClicked -> {
                 navController.pop()
             }
-
             is ArtistDetailsUserAction.AlbumClicked -> {
                 navController.push(
                     features
                         .albumDetails()
                         .albumDetailsUiComponent(
                             arguments =
-                            AlbumDetailsArguments(
-                                albumId = action.albumItem.id,
-                                albumName = action.albumItem.albumName,
-                                imageUri = action.albumItem.artworkUri,
-                                artists = action.albumItem.artists,
-                            ),
+                                AlbumDetailsArguments(
+                                    albumId = action.albumItem.id,
+                                    albumName = action.albumItem.albumName,
+                                    imageUri = action.albumItem.artworkUri,
+                                    artists = action.albumItem.artists,
+                                ),
                             navController = navController,
                         )
                 )

@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.features.genre.details
 
-import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
@@ -10,10 +9,9 @@ import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsFeatur
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 class DefaultGenreDetailsFeature(
-    private val genreRepository: GenreRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val repositoryProvider: RepositoryProvider,
     private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : GenreDetailsFeature {
     override fun genreDetailsUiComponent(
         arguments: GenreDetailsArguments,
@@ -22,10 +20,10 @@ class DefaultGenreDetailsFeature(
         return GenreDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,
-            genreRepository = genreRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
+            genreRepository = repositoryProvider.genreRepository,
+            sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
             playbackManager = playbackManager,
-            features = features
+            features = features,
         )
     }
 }

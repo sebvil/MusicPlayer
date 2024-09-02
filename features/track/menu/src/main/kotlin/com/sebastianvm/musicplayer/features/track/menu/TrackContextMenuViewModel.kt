@@ -83,24 +83,24 @@ class TrackContextMenuViewModel(
                     trackName = track.name,
                     trackId = trackId,
                     viewArtistsState =
-                    when (track.artists.size) {
-                        0 -> ViewArtistRow.NoArtists
-                        1 -> ViewArtistRow.SingleArtist(track.artists[0].id)
-                        else -> ViewArtistRow.MultipleArtists
-                    },
+                        when (track.artists.size) {
+                            0 -> ViewArtistRow.NoArtists
+                            1 -> ViewArtistRow.SingleArtist(track.artists[0].id)
+                            else -> ViewArtistRow.MultipleArtists
+                        },
                     viewAlbumState =
-                    if (arguments.trackList is MediaGroup.Album) {
-                        null
-                    } else {
-                        ViewAlbumRow(track.albumId)
-                    },
+                        if (arguments.trackList is MediaGroup.Album) {
+                            null
+                        } else {
+                            ViewAlbumRow(track.albumId)
+                        },
                     removeFromPlaylistRow =
-                    (arguments.trackList as? MediaGroup.Playlist)?.let {
-                        RemoveFromPlaylistRow(
-                            playlistId = it.playlistId,
-                            trackPositionInPlaylist = arguments.trackPositionInList.toLong(),
-                        )
-                    },
+                        (arguments.trackList as? MediaGroup.Playlist)?.let {
+                            RemoveFromPlaylistRow(
+                                playlistId = it.playlistId,
+                                trackPositionInPlaylist = arguments.trackPositionInList.toLong(),
+                            )
+                        },
                 )
             }
             .stateIn(viewModelScope, SharingStarted.Lazily, TrackContextMenuState.Loading)
@@ -108,29 +108,27 @@ class TrackContextMenuViewModel(
     override fun handle(action: TrackContextMenuUserAction) {
         when (action) {
             is TrackContextMenuUserAction.AddToQueueClicked -> {
-                getViewModelScope
+                viewModelScope
                     .launch { playbackManager.addToQueue(arguments.trackId) }
                     .invokeOnCompletion { navController.pop() }
             }
-
             is TrackContextMenuUserAction.ViewAlbumClicked -> {
                 navController.push(
                     features
                         .albumDetails()
                         .albumDetailsUiComponent(
                             arguments =
-                            AlbumDetailsArguments(
-                                albumId = action.albumId,
-                                albumName = "",
-                                imageUri = "",
-                                artists = "",
-                            ),
+                                AlbumDetailsArguments(
+                                    albumId = action.albumId,
+                                    albumName = "",
+                                    imageUri = "",
+                                    artists = "",
+                                ),
                             navController = navController,
                         ),
                     navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             is TrackContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
                     features
@@ -142,7 +140,6 @@ class TrackContextMenuViewModel(
                     navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             TrackContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     features
@@ -152,12 +149,11 @@ class TrackContextMenuViewModel(
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(popCurrent = true, NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(popCurrent = true, NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackContextMenuUserAction.RemoveFromPlaylistClicked -> {
-                getViewModelScope
+                viewModelScope
                     .launch {
                         playlistRepository.removeItemFromPlaylist(
                             playlistId = action.playlistId,

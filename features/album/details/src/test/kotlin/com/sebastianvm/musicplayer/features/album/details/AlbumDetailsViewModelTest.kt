@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.album.details
 
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.datatest.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.Album
@@ -20,7 +20,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 
-class AlbumDetailsStateHolderTest :
+class AlbumDetailsViewModelTest :
     FreeSpec({
         lateinit var albumRepositoryDep: FakeAlbumRepository
         lateinit var playbackManagerDep: FakePlaybackManager
@@ -43,12 +43,9 @@ class AlbumDetailsStateHolderTest :
                     imageUri = album.imageUri,
                     artists = album.artists.joinToString { it.name },
                 )
-            navControllerDep.push(
-                mvvmComponent =
-                AlbumDetailsMvvmComponent(arguments = arguments, navController = navControllerDep)
-            )
+            navControllerDep.push(FakeMvvmComponent())
             return AlbumDetailsViewModel(
-                viewModelScope = this,
+                vmScope = this,
                 args = arguments,
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
@@ -61,82 +58,82 @@ class AlbumDetailsStateHolderTest :
             val album = FixtureProvider.album()
             val subject = getSubject(album = album)
 
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 awaitItem() shouldBe
-                        AlbumDetailsState.Loading(
-                            albumName = album.title,
-                            imageUri = album.imageUri,
-                            artists = album.artists.joinToString { it.name },
-                        )
+                    AlbumDetailsState.Loading(
+                        albumName = album.title,
+                        imageUri = album.imageUri,
+                        artists = album.artists.joinToString { it.name },
+                    )
 
                 println(1)
 
                 awaitItem() shouldBe
-                        AlbumDetailsState.Data(
-                            albumName = album.title,
-                            imageUri = album.imageUri,
-                            tracks = album.tracks.map { TrackRow.State.Companion.fromTrack(it) },
-                            artists = album.artists.joinToString { it.name },
-                        )
+                    AlbumDetailsState.Data(
+                        albumName = album.title,
+                        imageUri = album.imageUri,
+                        tracks = album.tracks.map { TrackRow.State.Companion.fromTrack(it) },
+                        artists = album.artists.joinToString { it.name },
+                    )
 
                 val updatedAlbum = FixtureProvider.album(id = album.id)
                 albumRepositoryDep.albums.value = listOf(updatedAlbum)
 
                 awaitItem() shouldBe
-                        AlbumDetailsState.Data(
-                            albumName = updatedAlbum.title,
-                            imageUri = updatedAlbum.imageUri,
-                            tracks = updatedAlbum.tracks.map { TrackRow.State.Companion.fromTrack(it) },
-                            artists = updatedAlbum.artists.joinToString { it.name },
-                        )
+                    AlbumDetailsState.Data(
+                        albumName = updatedAlbum.title,
+                        imageUri = updatedAlbum.imageUri,
+                        tracks = updatedAlbum.tracks.map { TrackRow.State.Companion.fromTrack(it) },
+                        artists = updatedAlbum.artists.joinToString { it.name },
+                    )
             }
         }
 
         "handle" -
-                {
-                    "TrackClicked plays media" {
-                        val subject = getSubject()
-                        subject.handle(AlbumDetailsUserAction.TrackClicked(TRACK_INDEX))
-                        advanceUntilIdle()
-                        playbackManagerDep.playMediaInvocations shouldBe
-                                listOf(
-                                    FakePlaybackManager.PlayMediaArguments(
-                                        mediaGroup = MediaGroup.Album(albumId = ALBUM_ID),
-                                        initialTrackIndex = TRACK_INDEX,
-                                    )
-                                )
-                    }
-
-                    "TrackMoreIconClicked navigates to TrackContextMenu" {
-                        val subject = getSubject()
-                        subject.handle(
-                            AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+            {
+                "TrackClicked plays media" {
+                    val subject = getSubject()
+                    subject.handle(AlbumDetailsUserAction.TrackClicked(TRACK_INDEX))
+                    advanceUntilIdle()
+                    playbackManagerDep.playMediaInvocations shouldBe
+                        listOf(
+                            FakePlaybackManager.PlayMediaArguments(
+                                mediaGroup = MediaGroup.Album(albumId = ALBUM_ID),
+                                initialTrackIndex = TRACK_INDEX,
+                            )
                         )
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        arguments =
+                }
+
+                "TrackMoreIconClicked navigates to TrackContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(
+                        AlbumDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                    )
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Album(albumId = ALBUM_ID),
                                         ),
-                                        name = "TrackContextMenu",
-                                    ),
-                                    navOptions =
-                                    NavOptions(
-                                        presentationMode = NavOptions.PresentationMode.BottomSheet
-                                    ),
-                                )
-                    }
-
-                    "BackClicked navigates back" {
-                        val subject = getSubject()
-                        subject.handle(AlbumDetailsUserAction.BackClicked)
-                        navControllerDep.backStack.shouldBeEmpty()
-                    }
+                                    name = "TrackContextMenu",
+                                ),
+                            navOptions =
+                                NavOptions(
+                                    presentationMode = NavOptions.PresentationMode.BottomSheet
+                                ),
+                        )
                 }
+
+                "BackClicked navigates back" {
+                    val subject = getSubject()
+                    subject.handle(AlbumDetailsUserAction.BackClicked)
+                    navControllerDep.backStack.shouldBeEmpty()
+                }
+            }
     }) {
     companion object {
         private const val TRACK_ID = 1L

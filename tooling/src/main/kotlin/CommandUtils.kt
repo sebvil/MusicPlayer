@@ -10,6 +10,7 @@ fun CliktCommand.exec(command: String, workingDir: File = File("./")) {
         ProcessBuilder(*command.split(" ").toTypedArray())
             .directory(workingDir)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start()
     process.waitFor(60, TimeUnit.MINUTES)
     if (process.exitValue() != 0) {

@@ -48,23 +48,21 @@ class GenreListViewModel(
 ) : BaseViewModel<UiState<GenreListState>, GenreListUserAction>(viewModelScope = vmScope) {
 
     override val state: StateFlow<UiState<GenreListState>> =
-        combine(
-            genreRepository.getGenres(),
-            sortPreferencesRepository.getGenreListSortOrder()
-        ) { genres,
-            sortOrder ->
-            if (genres.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    GenreListState(
-                        genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
-                        sortButtonState =
-                        SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
+        combine(genreRepository.getGenres(), sortPreferencesRepository.getGenreListSortOrder()) {
+                genres,
+                sortOrder ->
+                if (genres.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        GenreListState(
+                            genres = genres.map { genre -> GenreRow.State.fromGenre(genre) },
+                            sortButtonState =
+                                SortButton.State(text = RString.genre_name, sortOrder = sortOrder),
+                        )
                     )
-                )
+                }
             }
-        }
             .stateIn(viewModelScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: GenreListUserAction) {
@@ -72,7 +70,6 @@ class GenreListViewModel(
             is GenreListUserAction.SortByButtonClicked -> {
                 viewModelScope.launch { sortPreferencesRepository.toggleGenreListSortOrder() }
             }
-
             is GenreListUserAction.GenreMoreIconClicked -> {
                 navController.push(
                     features
@@ -81,20 +78,19 @@ class GenreListViewModel(
                             arguments = GenreContextMenuArguments(action.genreId)
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is GenreListUserAction.GenreClicked -> {
                 navController.push(
                     features
                         .genreDetails()
                         .genreDetailsUiComponent(
                             arguments =
-                            GenreDetailsArguments(
-                                genreId = action.genreId,
-                                genreName = action.genreName,
-                            ),
+                                GenreDetailsArguments(
+                                    genreId = action.genreId,
+                                    genreName = action.genreName,
+                                ),
                             navController = navController,
                         )
                 )

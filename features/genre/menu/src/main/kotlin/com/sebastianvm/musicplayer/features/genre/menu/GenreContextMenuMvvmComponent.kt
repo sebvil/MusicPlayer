@@ -17,9 +17,13 @@ import com.sebastianvm.musicplayer.features.api.genre.menu.GenreContextMenuArgum
 data class GenreContextMenuMvvmComponent(
     val arguments: GenreContextMenuArguments,
     private val genreRepository: GenreRepository,
-    private val playbackManager: PlaybackManager
+    private val playbackManager: PlaybackManager,
 ) :
-    BaseMvvmComponent<GenreContextMenuState, GenreContextMenuUserAction, GenreContextMenuViewModel>() {
+    BaseMvvmComponent<
+        GenreContextMenuState,
+        GenreContextMenuUserAction,
+        GenreContextMenuViewModel,
+    >() {
 
     override val viewModel: GenreContextMenuViewModel by lazy {
         GenreContextMenuViewModel(
@@ -59,7 +63,6 @@ private fun GenreContextMenu(
                 }
             }
         }
-
         is GenreContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }

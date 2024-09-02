@@ -50,7 +50,7 @@ class QueueViewModel(
                     queueItems = queue.nextUp.map { track -> track.toQueueItem() },
                     nowPlayingItem = queue.nowPlayingTrack.toQueueItem(),
                     nowPlayingItemArtworkUri =
-                    UriUtils.getAlbumUriString(queue.nowPlayingTrack.track.albumId),
+                        UriUtils.getAlbumUriString(queue.nowPlayingTrack.track.albumId),
                 )
             }
             .stateIn(
@@ -64,11 +64,9 @@ class QueueViewModel(
             is QueueUserAction.DragEnded -> {
                 playbackManager.moveQueueItem(action.from, action.to)
             }
-
             is QueueUserAction.TrackClicked -> {
                 playbackManager.playQueueItem(action.trackIndex)
             }
-
             is QueueUserAction.RemoveItemsFromQueue -> {
                 playbackManager.removeItemsFromQueue(action.queuePositions)
             }
@@ -79,11 +77,11 @@ class QueueViewModel(
 fun QueuedTrack.toQueueItem(): QueueItem {
     return QueueItem(
         trackRow =
-        TrackRow.State(
-            id = track.id,
-            trackName = track.name,
-            artists = track.artists.joinToString { it.name }.ifEmpty { null },
-        ),
+            TrackRow.State(
+                id = track.id,
+                trackName = track.name,
+                artists = track.artists.joinToString { it.name }.ifEmpty { null },
+            ),
         position = queuePosition,
         queueItemId = queueItemId,
     )

@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.playlist.details
 import com.sebastianvm.musicplayer.core.commontest.FixtureProvider
 import com.sebastianvm.musicplayer.core.commontest.extensions.advanceUntilIdle
 import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
 import com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.core.datatest.preferences.FakeSortPreferencesRepository
@@ -30,7 +30,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 
-class PlaylistDetailsStateHolderTest :
+class PlaylistDetailsViewModelTest :
     FreeSpec({
         lateinit var sortPreferencesRepositoryDep: FakeSortPreferencesRepository
         lateinit var playbackManagerDep: FakePlaybackManager
@@ -48,32 +48,21 @@ class PlaylistDetailsStateHolderTest :
             playlist: Playlist = FixtureProvider.playlist(id = PLAYLIST_ID),
             sortPreferences: MediaSortPreferences<SortOptions.PlaylistSortOption> =
                 MediaSortPreferences(SortOptions.Track, MediaSortOrder.ASCENDING),
-        ): PlaylistDetailsStateHolder {
+        ): PlaylistDetailsViewModel {
             playlistRepositoryDep.playlists.value = listOf(playlist)
 
             sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
                 mapOf(playlist.id to sortPreferences)
 
-            navControllerDep.push(
-                mvvmComponent =
-                PlaylistDetailsMvvmComponent(
-                    arguments =
+            navControllerDep.push(FakeMvvmComponent())
+            return PlaylistDetailsViewModel(
+                vmScope = this,
+                sortPreferencesRepository = sortPreferencesRepositoryDep,
+                args =
                     PlaylistDetailsArguments(
                         playlistId = playlist.id,
                         playlistName = playlist.name,
                     ),
-                    navController = navControllerDep,
-                )
-            )
-
-            return PlaylistDetailsStateHolder(
-                viewModelScope = this,
-                sortPreferencesRepository = sortPreferencesRepositoryDep,
-                args =
-                PlaylistDetailsArguments(
-                    playlistId = playlist.id,
-                    playlistName = playlist.name,
-                ),
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 playlistRepository = playlistRepositoryDep,
@@ -84,7 +73,7 @@ class PlaylistDetailsStateHolderTest :
         "init subscribes to changes in playlistrack list" {
             val playlist = FixtureProvider.playlist()
             val subject = getSubject(playlist = playlist)
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 awaitItem() shouldBe PlaylistDetailsState.Loading(playlistName = playlist.name)
                 with(awaitItemAs<PlaylistDetailsState.Data>()) {
                     tracks shouldBe playlist.tracks.map { TrackRow.State.fromTrack(it) }
@@ -108,110 +97,110 @@ class PlaylistDetailsStateHolderTest :
                 )
 
             val subject = getSubject(sortPreferences = initialSortPreferences)
-            testStateHolderState(subject) {
+            testViewModelState(subject) {
                 skipItems(1)
                 val state = awaitItemAs<PlaylistDetailsState.Data>()
                 state.sortButtonState shouldBe
-                        SortButton.State(
-                            option = initialSortPreferences.sortOption,
-                            sortOrder = initialSortPreferences.sortOrder,
-                        )
+                    SortButton.State(
+                        option = initialSortPreferences.sortOption,
+                        sortOrder = initialSortPreferences.sortOrder,
+                    )
 
                 sortPreferencesRepositoryDep.playlistTracksSortPreferences.value =
                     mapOf(
                         PLAYLIST_ID to
-                                initialSortPreferences.copy(sortOrder = MediaSortOrder.DESCENDING)
+                            initialSortPreferences.copy(sortOrder = MediaSortOrder.DESCENDING)
                     )
                 awaitItemAs<PlaylistDetailsState.Data>().sortButtonState shouldBe
-                        SortButton.State(
-                            option = initialSortPreferences.sortOption,
-                            sortOrder = MediaSortOrder.DESCENDING,
-                        )
+                    SortButton.State(
+                        option = initialSortPreferences.sortOption,
+                        sortOrder = MediaSortOrder.DESCENDING,
+                    )
             }
         }
 
         "handle" -
-                {
-                    "SortButtonClicked navigates to SortMenu" {
-                        val subject = getSubject()
-                        subject.handle(PlaylistDetailsUserAction.SortButtonClicked)
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        name = "SortMenu",
-                                        arguments =
+            {
+                "SortButtonClicked navigates to SortMenu" {
+                    val subject = getSubject()
+                    subject.handle(PlaylistDetailsUserAction.SortButtonClicked)
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    name = "SortMenu",
+                                    arguments =
                                         SortMenuArguments(
                                             listType =
-                                            SortableListType.Playlist(playlistId = PLAYLIST_ID)
+                                                SortableListType.Playlist(playlistId = PLAYLIST_ID)
                                         ),
-                                    ),
-                                    navOptions =
-                                    NavOptions(
-                                        presentationMode = NavOptions.PresentationMode.BottomSheet
-                                    ),
-                                )
-                    }
-
-                    "TrackClicked plays media" {
-                        val subject = getSubject()
-                        subject.handle(PlaylistDetailsUserAction.TrackClicked(TRACK_INDEX))
-                        advanceUntilIdle()
-                        playbackManagerDep.playMediaInvocations shouldBe
-                                listOf(
-                                    FakePlaybackManager.PlayMediaArguments(
-                                        mediaGroup = MediaGroup.Playlist(PLAYLIST_ID),
-                                        initialTrackIndex = TRACK_INDEX,
-                                    )
-                                )
-                    }
-
-                    "TrackMoreIconClicked navigates to TrackContextMenu" {
-                        val subject = getSubject()
-                        subject.handle(
-                            PlaylistDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                                ),
+                            navOptions =
+                                NavOptions(
+                                    presentationMode = NavOptions.PresentationMode.BottomSheet
+                                ),
                         )
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        name = "TrackContextMenu",
-                                        arguments =
+                }
+
+                "TrackClicked plays media" {
+                    val subject = getSubject()
+                    subject.handle(PlaylistDetailsUserAction.TrackClicked(TRACK_INDEX))
+                    advanceUntilIdle()
+                    playbackManagerDep.playMediaInvocations shouldBe
+                        listOf(
+                            FakePlaybackManager.PlayMediaArguments(
+                                mediaGroup = MediaGroup.Playlist(PLAYLIST_ID),
+                                initialTrackIndex = TRACK_INDEX,
+                            )
+                        )
+                }
+
+                "TrackMoreIconClicked navigates to TrackContextMenu" {
+                    val subject = getSubject()
+                    subject.handle(
+                        PlaylistDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                    )
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    name = "TrackContextMenu",
+                                    arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Playlist(PLAYLIST_ID),
                                         ),
-                                    ),
-                                    navOptions =
-                                    NavOptions(
-                                        presentationMode = NavOptions.PresentationMode.BottomSheet
-                                    ),
-                                )
-                    }
-
-                    "BackClicked navigates back" {
-                        val subject = getSubject()
-                        subject.handle(PlaylistDetailsUserAction.BackClicked)
-                        navControllerDep.backStack.shouldBeEmpty()
-                    }
-
-                    "AddTracksButtonClicked navigates to TrackSearch" {
-                        val subject = getSubject()
-                        subject.handle(PlaylistDetailsUserAction.AddTracksButtonClicked)
-                        navControllerDep.backStack shouldHaveSize 2
-                        navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    mvvmComponent =
-                                    FakeMvvmComponent(
-                                        name = "TrackSearch",
-                                        arguments = TrackSearchArguments(playlistId = PLAYLIST_ID),
-                                    ),
-                                    navOptions =
-                                    NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
-                                )
-                    }
+                                ),
+                            navOptions =
+                                NavOptions(
+                                    presentationMode = NavOptions.PresentationMode.BottomSheet
+                                ),
+                        )
                 }
+
+                "BackClicked navigates back" {
+                    val subject = getSubject()
+                    subject.handle(PlaylistDetailsUserAction.BackClicked)
+                    navControllerDep.backStack.shouldBeEmpty()
+                }
+
+                "AddTracksButtonClicked navigates to TrackSearch" {
+                    val subject = getSubject()
+                    subject.handle(PlaylistDetailsUserAction.AddTracksButtonClicked)
+                    navControllerDep.backStack shouldHaveSize 2
+                    navControllerDep.backStack.last() shouldBe
+                        FakeBackstackEntry(
+                            mvvmComponent =
+                                FakeMvvmComponent(
+                                    name = "TrackSearch",
+                                    arguments = TrackSearchArguments(playlistId = PLAYLIST_ID),
+                                ),
+                            navOptions =
+                                NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
+                        )
+                }
+            }
     }) {
     companion object {
         private const val TRACK_ID = 1L

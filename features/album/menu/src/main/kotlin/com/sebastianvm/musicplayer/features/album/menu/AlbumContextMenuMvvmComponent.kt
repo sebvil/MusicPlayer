@@ -21,9 +21,13 @@ class AlbumContextMenuMvvmComponent(
     private val navController: NavController,
     private val albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) :
-    BaseMvvmComponent<AlbumContextMenuState, AlbumContextMenuUserAction, AlbumContextMenuViewModel>() {
+    BaseMvvmComponent<
+        AlbumContextMenuState,
+        AlbumContextMenuUserAction,
+        AlbumContextMenuViewModel,
+    >() {
 
     override val viewModel: AlbumContextMenuViewModel by lazy {
         AlbumContextMenuViewModel(
@@ -75,7 +79,6 @@ private fun AlbumContextMenu(
                                 )
                             }
                         }
-
                         is ViewArtistRow.NoArtists -> Unit
                         is ViewArtistRow.SingleArtist -> {
                             item {
@@ -96,7 +99,6 @@ private fun AlbumContextMenu(
                 }
             }
         }
-
         is AlbumContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }

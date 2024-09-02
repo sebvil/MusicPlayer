@@ -27,9 +27,8 @@ class ArtistListMvvmComponent(
     private val navController: NavController,
     private val artistRepository: ArtistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val features: FeatureRegistry
-) :
-    BaseMvvmComponent<UiState<ArtistListState>, ArtistListUserAction, ArtistListViewModel>() {
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<UiState<ArtistListState>, ArtistListUserAction, ArtistListViewModel>() {
 
     override val viewModel: ArtistListViewModel by lazy {
         ArtistListViewModel(
@@ -62,9 +61,7 @@ fun ArtistList(
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
                 message = RString.no_artists_found,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
     ) { state ->
@@ -90,7 +87,7 @@ fun ArtistList(
             ArtistRow(
                 state = item,
                 modifier =
-                Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
+                    Modifier.clickable { handle(ArtistListUserAction.ArtistClicked(item.id)) },
                 trailingContent = {
                     OverflowIconButton(
                         onClick = { handle(ArtistListUserAction.ArtistMoreIconClicked(item.id)) }

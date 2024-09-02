@@ -13,6 +13,7 @@ import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import com.sebastianvm.musicplayer.features.api.queue.queue
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlin.time.Duration
 
 sealed interface PlayerState : State {
 
@@ -80,56 +80,54 @@ class PlayerViewModel(
     private val showQueue: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val state: StateFlow<PlayerState> =
-        combine(playbackManager.getPlaybackState(), props, showQueue) { playbackState,
-                                                                        props,
-                                                                        showQueue ->
-            when (playbackState) {
-                is TrackPlayingState -> {
-                    val artworkUri = playbackState.trackInfo.artworkUri
-                    val trackInfoState =
-                        TrackInfoState(
-                            trackName = playbackState.trackInfo.title,
-                            artists = playbackState.trackInfo.artists,
-                        )
-                    val trackProgressState =
-                        TrackProgressState(
-                            currentPlaybackTime = playbackState.currentTrackProgress,
-                            trackLength = playbackState.trackInfo.trackLength,
-                        )
-                    val playbackIcon =
-                        if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
-                    when {
-                        props.isFullscreen && showQueue ->
-                            PlayerState.QueueState(
-                                trackInfoState = trackInfoState,
-                                trackProgressState = trackProgressState,
-                                playbackIcon = playbackIcon,
-                                queueMvvmComponent = queueUiComponent,
+        combine(playbackManager.getPlaybackState(), props, showQueue) {
+                playbackState,
+                props,
+                showQueue ->
+                when (playbackState) {
+                    is TrackPlayingState -> {
+                        val artworkUri = playbackState.trackInfo.artworkUri
+                        val trackInfoState =
+                            TrackInfoState(
+                                trackName = playbackState.trackInfo.title,
+                                artists = playbackState.trackInfo.artists,
                             )
-
-                        props.isFullscreen ->
-                            PlayerState.FullScreenState(
-                                artworkUri = artworkUri,
-                                trackInfoState = trackInfoState,
-                                trackProgressState = trackProgressState,
-                                playbackIcon = playbackIcon,
+                        val trackProgressState =
+                            TrackProgressState(
+                                currentPlaybackTime = playbackState.currentTrackProgress,
+                                trackLength = playbackState.trackInfo.trackLength,
                             )
-
-                        else ->
-                            PlayerState.FloatingState(
-                                artworkUri = artworkUri,
-                                trackInfoState = trackInfoState,
-                                trackProgressState = trackProgressState,
-                                playbackIcon = playbackIcon,
-                            )
+                        val playbackIcon =
+                            if (playbackState.isPlaying) PlaybackIcon.PAUSE else PlaybackIcon.PLAY
+                        when {
+                            props.isFullscreen && showQueue ->
+                                PlayerState.QueueState(
+                                    trackInfoState = trackInfoState,
+                                    trackProgressState = trackProgressState,
+                                    playbackIcon = playbackIcon,
+                                    queueMvvmComponent = queueUiComponent,
+                                )
+                            props.isFullscreen ->
+                                PlayerState.FullScreenState(
+                                    artworkUri = artworkUri,
+                                    trackInfoState = trackInfoState,
+                                    trackProgressState = trackProgressState,
+                                    playbackIcon = playbackIcon,
+                                )
+                            else ->
+                                PlayerState.FloatingState(
+                                    artworkUri = artworkUri,
+                                    trackInfoState = trackInfoState,
+                                    trackProgressState = trackProgressState,
+                                    playbackIcon = playbackIcon,
+                                )
+                        }
+                    }
+                    is NotPlayingState -> {
+                        PlayerState.NotPlaying
                     }
                 }
-
-                is NotPlayingState -> {
-                    PlayerState.NotPlaying
-                }
             }
-        }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -141,7 +139,6 @@ class PlayerViewModel(
             is PlayerUserAction.PlayToggled -> {
                 playbackManager.togglePlay()
             }
-
             is PlayerUserAction.NextButtonClicked -> playbackManager.next()
             is PlayerUserAction.PreviousButtonClicked -> playbackManager.prev()
             is PlayerUserAction.ProgressBarClicked -> {
@@ -149,15 +146,12 @@ class PlayerViewModel(
                 val time: Long = (trackLengthMs * action.position / Percentage.MAX).toLong()
                 playbackManager.seekToTrackPosition(time)
             }
-
             is PlayerUserAction.DismissFullScreenPlayer -> {
                 delegate.dismissFullScreenPlayer()
             }
-
             is PlayerUserAction.QueueTapped -> {
                 showQueue.update { true }
             }
-
             is PlayerUserAction.DismissQueue -> {
                 showQueue.update { false }
             }

@@ -77,7 +77,6 @@ class NavigationHostViewModel(
                     }
                 }
             }
-
             NavigationAction.PopBackStack -> {
                 backStack.update {
                     val last = it.last()

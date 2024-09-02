@@ -30,7 +30,7 @@ data class ArtistsMenuMvvmComponent(
     val arguments: ArtistsMenuArguments,
     val navController: NavController,
     private val artistRepository: ArtistRepository,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : BaseMvvmComponent<UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuViewModel>() {
 
     override val viewModel: ArtistsMenuViewModel by lazy {
@@ -69,11 +69,7 @@ fun ArtistsMenu(
     handle: Handler<ArtistsMenuUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-    ) {
+    Column(modifier = modifier.fillMaxWidth().navigationBarsPadding()) {
         ListItem(
             headlineContent = {
                 Text(
@@ -90,7 +86,7 @@ fun ArtistsMenu(
                 ArtistRow(
                     state = item,
                     modifier =
-                    Modifier.clickable { handle(ArtistsMenuUserAction.ArtistClicked(item.id)) },
+                        Modifier.clickable { handle(ArtistsMenuUserAction.ArtistClicked(item.id)) },
                 )
             }
         }

@@ -52,24 +52,24 @@ class AlbumListViewModel(
 
     override val state: StateFlow<UiState<AlbumListState>> =
         combine(
-            albumRepository.getAlbums(),
-            sortPreferencesRepository.getAlbumListSortPreferences(),
-        ) { albums, sortPrefs ->
-            if (albums.isEmpty()) {
-                Empty
-            } else {
-                Data(
-                    AlbumListState(
-                        albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
-                        sortButtonState =
-                        SortButton.State(
-                            option = sortPrefs.sortOption,
-                            sortOrder = sortPrefs.sortOrder,
-                        ),
+                albumRepository.getAlbums(),
+                sortPreferencesRepository.getAlbumListSortPreferences(),
+            ) { albums, sortPrefs ->
+                if (albums.isEmpty()) {
+                    Empty
+                } else {
+                    Data(
+                        AlbumListState(
+                            albums = albums.map { album -> AlbumRow.State.fromAlbum(album) },
+                            sortButtonState =
+                                SortButton.State(
+                                    option = sortPrefs.sortOption,
+                                    sortOrder = sortPrefs.sortOrder,
+                                ),
+                        )
                     )
-                )
+                }
             }
-        }
             .stateIn(viewModelScope, SharingStarted.Lazily, Loading)
 
     override fun handle(action: AlbumListUserAction) {
@@ -83,10 +83,9 @@ class AlbumListViewModel(
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is AlbumListUserAction.SortButtonClicked -> {
                 navController.push(
                     features
@@ -95,22 +94,21 @@ class AlbumListViewModel(
                             arguments = SortMenuArguments(listType = SortableListType.Albums)
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is AlbumListUserAction.AlbumClicked -> {
                 navController.push(
                     features
                         .albumDetails()
                         .albumDetailsUiComponent(
                             arguments =
-                            AlbumDetailsArguments(
-                                albumId = action.albumItem.id,
-                                albumName = action.albumItem.albumName,
-                                imageUri = action.albumItem.artworkUri,
-                                artists = action.albumItem.artists,
-                            ),
+                                AlbumDetailsArguments(
+                                    albumId = action.albumItem.id,
+                                    albumName = action.albumItem.albumName,
+                                    imageUri = action.albumItem.artworkUri,
+                                    artists = action.albumItem.artists,
+                                ),
                             navController = navController,
                         )
                 )

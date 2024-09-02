@@ -30,6 +30,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
@@ -42,6 +44,8 @@ import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearch
 data class TrackSearchMvvmComponent(
     val arguments: TrackSearchArguments,
     val navController: NavController,
+    val playlistRepository: PlaylistRepository,
+    val searchRepository: FullTextSearchRepository,
 ) : BaseMvvmComponent<TrackSearchState, TrackSearchUserAction, TrackSearchViewModel>() {
 
     override val viewModel: TrackSearchViewModel by lazy {
@@ -76,10 +80,10 @@ fun TrackSearch(
     LaunchedEffect(key1 = state.trackAddedToPlaylist) {
         if (state.trackAddedToPlaylist != null) {
             Toast.makeText(
-                context,
-                context.getString(RString.track_added_to_playlist, state.trackAddedToPlaylist),
-                Toast.LENGTH_SHORT,
-            )
+                    context,
+                    context.getString(RString.track_added_to_playlist, state.trackAddedToPlaylist),
+                    Toast.LENGTH_SHORT,
+                )
                 .show()
             handle(TrackSearchUserAction.ToastShown)
         }
@@ -138,26 +142,25 @@ fun TrackSearch(
     ) {
         LazyColumn(
             contentPadding =
-            if (WindowInsets.isImeVisible) {
-                WindowInsets.ime.asPaddingValues()
-            } else {
-                LocalPaddingValues.current
-            }
+                if (WindowInsets.isImeVisible) {
+                    WindowInsets.ime.asPaddingValues()
+                } else {
+                    LocalPaddingValues.current
+                }
         ) {
             items(state.trackSearchResults, key = { it.state.id to it.inPlaylist }) { item ->
                 TrackRow(
                     state = item.state,
                     modifier =
-                    Modifier
-                        .clickable(enabled = !item.inPlaylist) {
-                            handle(
-                                TrackSearchUserAction.TrackClicked(
-                                    trackId = item.state.id,
-                                    trackName = item.state.trackName,
+                        Modifier.clickable(enabled = !item.inPlaylist) {
+                                handle(
+                                    TrackSearchUserAction.TrackClicked(
+                                        trackId = item.state.id,
+                                        trackName = item.state.trackName,
+                                    )
                                 )
-                            )
-                        }
-                        .animateItem(),
+                            }
+                            .animateItem(),
                     trailingContent = {
                         if (item.inPlaylist) {
                             Icon(imageVector = Icons.Default.Check, contentDescription = null)

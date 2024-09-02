@@ -6,20 +6,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 data class TrackContextMenuMvvmComponent(
     val arguments: TrackContextMenuArguments,
     val navController: NavController,
+    private val trackRepository: TrackRepository,
+    private val playlistRepository: PlaylistRepository,
+    private val playbackManager: PlaybackManager,
+    private val features: FeatureRegistry,
 ) :
-    BaseMvvmComponent<TrackContextMenuState, TrackContextMenuUserAction, TrackContextMenuViewModel>() {
+    BaseMvvmComponent<
+        TrackContextMenuState,
+        TrackContextMenuUserAction,
+        TrackContextMenuViewModel,
+    >() {
 
     override val viewModel: TrackContextMenuViewModel by lazy {
         TrackContextMenuViewModel(
@@ -61,10 +73,10 @@ private fun TrackContextMenu(
                             onItemClick = {
                                 handle(TrackContextMenuUserAction.AddToQueueClicked)
                                 Toast.makeText(
-                                    /* context = */ context,
-                                    /* text = */ addedToQueue,
-                                    /* duration = */ Toast.LENGTH_LONG,
-                                )
+                                        /* context = */ context,
+                                        /* text = */ addedToQueue,
+                                        /* duration = */ Toast.LENGTH_LONG,
+                                    )
                                     .show()
                             },
                         )
@@ -90,7 +102,6 @@ private fun TrackContextMenu(
                                 )
                             }
                         }
-
                         is ViewArtistRow.NoArtists -> Unit
                         is ViewArtistRow.SingleArtist -> {
                             item {
@@ -140,7 +151,6 @@ private fun TrackContextMenu(
                 }
             }
         }
-
         is TrackContextMenuState.Loading -> {
             ContextMenu(menuTitle = stringResource(id = RString.loading), modifier = modifier) {}
         }

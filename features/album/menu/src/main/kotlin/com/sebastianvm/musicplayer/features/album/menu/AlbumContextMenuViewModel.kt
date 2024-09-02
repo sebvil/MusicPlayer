@@ -65,11 +65,11 @@ class AlbumContextMenuViewModel(
                     albumName = album.title,
                     albumId = albumId,
                     viewArtistsState =
-                    when (album.artists.size) {
-                        0 -> ViewArtistRow.NoArtists
-                        1 -> ViewArtistRow.SingleArtist(album.artists[0].id)
-                        else -> ViewArtistRow.MultipleArtists
-                    },
+                        when (album.artists.size) {
+                            0 -> ViewArtistRow.NoArtists
+                            1 -> ViewArtistRow.SingleArtist(album.artists[0].id)
+                            else -> ViewArtistRow.MultipleArtists
+                        },
                 )
             }
             .stateIn(viewModelScope, SharingStarted.Lazily, AlbumContextMenuState.Loading)
@@ -81,7 +81,6 @@ class AlbumContextMenuViewModel(
                     playbackManager.playMedia(mediaGroup = MediaGroup.Album(albumId))
                 }
             }
-
             is AlbumContextMenuUserAction.ViewArtistClicked -> {
                 navController.push(
                     features
@@ -93,7 +92,6 @@ class AlbumContextMenuViewModel(
                     navOptions = NavOptions(popCurrent = true),
                 )
             }
-
             AlbumContextMenuUserAction.ViewArtistsClicked -> {
                 navController.push(
                     features
@@ -103,10 +101,10 @@ class AlbumContextMenuViewModel(
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(
-                        popCurrent = true,
-                        presentationMode = NavOptions.PresentationMode.BottomSheet,
-                    ),
+                        NavOptions(
+                            popCurrent = true,
+                            presentationMode = NavOptions.PresentationMode.BottomSheet,
+                        ),
                 )
             }
         }

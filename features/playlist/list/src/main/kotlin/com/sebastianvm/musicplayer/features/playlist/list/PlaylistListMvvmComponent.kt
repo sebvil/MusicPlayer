@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.EmptyScreen
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
@@ -31,9 +33,14 @@ import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class PlaylistListMvvmComponent(val navController: NavController) :
-    BaseMvvmComponent<PlaylistListState, PlaylistListUserAction, PlaylistListViewModel>() {
+class PlaylistListMvvmComponent(
+    private val navController: NavController,
+    private val playlistRepository: PlaylistRepository,
+    private val sortPreferencesRepository: SortPreferencesRepository,
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<PlaylistListState, PlaylistListUserAction, PlaylistListViewModel>() {
 
     @Composable
     override fun Content(
@@ -89,7 +96,6 @@ fun PlaylistList(
             is PlaylistListState.Data -> {
                 PlaylistListLayout(state = state, handle = handle)
             }
-
             is PlaylistListState.Empty -> {
                 EmptyScreen(
                     message = {
@@ -108,12 +114,9 @@ fun PlaylistList(
                             Text(text = stringResource(id = RString.create_playlist))
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                 )
             }
-
             is PlaylistListState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
@@ -156,14 +159,14 @@ fun PlaylistListLayout(
                 PlaylistRow(
                     state = item,
                     modifier =
-                    Modifier.clickable {
-                        handle(
-                            PlaylistListUserAction.PlaylistClicked(
-                                playlistId = item.id,
-                                playlistName = item.playlistName,
+                        Modifier.clickable {
+                            handle(
+                                PlaylistListUserAction.PlaylistClicked(
+                                    playlistId = item.id,
+                                    playlistName = item.playlistName,
+                                )
                             )
-                        )
-                    },
+                        },
                     trailingContent = {
                         OverflowIconButton(
                             onClick = {

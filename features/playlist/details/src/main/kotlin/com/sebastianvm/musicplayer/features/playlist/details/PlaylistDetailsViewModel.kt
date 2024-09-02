@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 sealed interface PlaylistDetailsState : State {
     val playlistName: String
@@ -65,21 +66,21 @@ class PlaylistDetailsViewModel(
 
     override val state: StateFlow<PlaylistDetailsState> =
         combine(
-            playlistRepository.getPlaylist(args.playlistId),
-            sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
-        ) { playlist, sortPrefs ->
-            PlaylistDetailsState.Data(
-                tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
-                playlistName = playlist.name,
-                sortButtonState =
-                sortPrefs.let {
-                    SortButton.State(
-                        option = sortPrefs.sortOption,
-                        sortOrder = sortPrefs.sortOrder,
-                    )
-                },
-            )
-        }
+                playlistRepository.getPlaylist(args.playlistId),
+                sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
+            ) { playlist, sortPrefs ->
+                PlaylistDetailsState.Data(
+                    tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
+                    playlistName = playlist.name,
+                    sortButtonState =
+                        sortPrefs.let {
+                            SortButton.State(
+                                option = sortPrefs.sortOption,
+                                sortOrder = sortPrefs.sortOrder,
+                            )
+                        },
+                )
+            }
             .stateIn(
                 viewModelScope,
                 SharingStarted.Lazily,
@@ -94,37 +95,34 @@ class PlaylistDetailsViewModel(
                         .trackContextMenu()
                         .trackContextMenuUiComponent(
                             arguments =
-                            TrackContextMenuArguments(
-                                trackId = action.trackId,
-                                trackPositionInList = action.trackPositionInList,
-                                trackList = MediaGroup.Playlist(playlistId = args.playlistId),
-                            ),
+                                TrackContextMenuArguments(
+                                    trackId = action.trackId,
+                                    trackPositionInList = action.trackPositionInList,
+                                    trackList = MediaGroup.Playlist(playlistId = args.playlistId),
+                                ),
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is PlaylistDetailsUserAction.SortButtonClicked -> {
                 navController.push(
                     features
                         .sortMenu()
                         .sortMenuUiComponent(
                             arguments =
-                            SortMenuArguments(
-                                listType = SortableListType.Playlist(args.playlistId)
-                            )
+                                SortMenuArguments(
+                                    listType = SortableListType.Playlist(args.playlistId)
+                                )
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is PlaylistDetailsUserAction.BackClicked -> {
                 navController.pop()
             }
-
             is PlaylistDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(
@@ -133,7 +131,6 @@ class PlaylistDetailsViewModel(
                     )
                 }
             }
-
             is PlaylistDetailsUserAction.AddTracksButtonClicked -> {
                 navController.push(
                     features

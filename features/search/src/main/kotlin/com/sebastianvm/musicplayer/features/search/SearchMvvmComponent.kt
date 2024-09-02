@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
 import com.sebastianvm.musicplayer.core.data.fts.SearchMode
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
@@ -51,15 +52,21 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SingleSelectFil
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.collections.immutable.toImmutableList
 
-data class SearchMvvmComponent(val navController: NavController) :
-    BaseMvvmComponent<SearchState, SearchUserAction, SearchViewModel>() {
+data class SearchMvvmComponent(
+    val navController: NavController,
+    val searchRepository: FullTextSearchRepository,
+    private val playbackManager: PlaybackManager,
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<SearchState, SearchUserAction, SearchViewModel>() {
 
     override val viewModel: SearchViewModel by lazy {
         SearchViewModel(
@@ -207,11 +214,7 @@ fun SearchLayout(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .clearFocusOnTouch(focusManager)
-    ) {
+    Column(modifier = modifier.fillMaxHeight().clearFocusOnTouch(focusManager)) {
         SingleSelectFilterChipGroup(
             options = SearchMode.entries.toImmutableList(),
             selectedOption = state.selectedOption,
@@ -229,19 +232,15 @@ fun SearchLayout(
                     is SearchResult.Album -> {
                         AlbumRow(state = item.state, modifier = itemModifier)
                     }
-
                     is SearchResult.Artist -> {
                         ArtistRow(state = item.state, modifier = itemModifier)
                     }
-
                     is SearchResult.Genre -> {
                         GenreRow(state = item.state, modifier = itemModifier)
                     }
-
                     is SearchResult.Playlist -> {
                         PlaylistRow(state = item.state, modifier = itemModifier)
                     }
-
                     is SearchResult.Track -> {
                         TrackRow(state = item.state, modifier = itemModifier)
                     }

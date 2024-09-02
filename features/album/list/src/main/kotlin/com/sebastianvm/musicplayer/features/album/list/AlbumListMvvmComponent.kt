@@ -28,10 +28,8 @@ data class AlbumListMvvmComponent(
     private val navController: NavController,
     private val albumRepository: AlbumRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val features: FeatureRegistry
-) :
-    BaseMvvmComponent<UiState<AlbumListState>, AlbumListUserAction, AlbumListViewModel>() {
-
+    private val features: FeatureRegistry,
+) : BaseMvvmComponent<UiState<AlbumListState>, AlbumListUserAction, AlbumListViewModel>() {
 
     @Composable
     override fun Content(
@@ -50,8 +48,6 @@ data class AlbumListMvvmComponent(
             features = features,
         )
     }
-
-
 }
 
 @Composable
@@ -66,9 +62,7 @@ fun AlbumList(
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
                 message = RString.no_albums_found,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
     ) { state ->

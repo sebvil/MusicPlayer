@@ -88,22 +88,20 @@ class AlbumDetailsViewModel(
                         .trackContextMenu()
                         .trackContextMenuUiComponent(
                             arguments =
-                            TrackContextMenuArguments(
-                                trackId = action.trackId,
-                                trackPositionInList = action.trackPositionInList,
-                                trackList = MediaGroup.Album(args.albumId),
-                            ),
+                                TrackContextMenuArguments(
+                                    trackId = action.trackId,
+                                    trackPositionInList = action.trackPositionInList,
+                                    trackList = MediaGroup.Album(args.albumId),
+                                ),
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is AlbumDetailsUserAction.BackClicked -> {
                 navController.pop()
             }
-
             is AlbumDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(

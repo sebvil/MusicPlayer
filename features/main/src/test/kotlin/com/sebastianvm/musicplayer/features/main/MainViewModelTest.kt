@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.features.main
 
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -17,37 +16,37 @@ class MainViewModelTest :
 
         fun TestScope.getSubject(): MainViewModel {
             return MainViewModel(
-                viewModelScope = CloseableCoroutineScope(coroutineContext),
+                vmScope = this,
                 playbackManager = playbackManagerDep,
                 features = initializeFakeFeatures(),
             )
         }
 
         "handle" -
-                {
-                    "ConnectToMusicService connects to service" {
-                        val subject = getSubject()
-                        subject.handle(MainUserAction.ConnectToMusicService)
-                        playbackManagerDep.connectToServiceInvocations shouldContainExactly
-                                listOf(FakePlaybackManager.ConnectToServiceInvocations)
-                    }
+            {
+                "ConnectToMusicService connects to service" {
+                    val subject = getSubject()
+                    subject.handle(MainUserAction.ConnectToMusicService)
+                    playbackManagerDep.connectToServiceInvocations shouldContainExactly
+                        listOf(FakePlaybackManager.ConnectToServiceInvocations)
+                }
 
-                    "DisconnectFromMusicService disconnects from service" {
-                        val subject = getSubject()
-                        subject.handle(MainUserAction.DisconnectFromMusicService)
-                        playbackManagerDep.disconnectFromServiceInvocations shouldContainExactly
-                                listOf(FakePlaybackManager.DisconnectFromServiceInvocations)
-                    }
+                "DisconnectFromMusicService disconnects from service" {
+                    val subject = getSubject()
+                    subject.handle(MainUserAction.DisconnectFromMusicService)
+                    playbackManagerDep.disconnectFromServiceInvocations shouldContainExactly
+                        listOf(FakePlaybackManager.DisconnectFromServiceInvocations)
+                }
 
-                    "ExpandPlayer and CollapsePlayer toggle player expanded state" {
-                        val subject = getSubject()
-                        testStateHolderState(subject) {
-                            awaitItem().isFullscreen shouldBe false
-                            subject.handle(MainUserAction.ExpandPlayer)
-                            awaitItem().isFullscreen shouldBe true
-                            subject.handle(MainUserAction.CollapsePlayer)
-                            awaitItem().isFullscreen shouldBe false
-                        }
+                "ExpandPlayer and CollapsePlayer toggle player expanded state" {
+                    val subject = getSubject()
+                    testViewModelState(subject) {
+                        awaitItem().isFullscreen shouldBe false
+                        subject.handle(MainUserAction.ExpandPlayer)
+                        awaitItem().isFullscreen shouldBe true
+                        subject.handle(MainUserAction.CollapsePlayer)
+                        awaitItem().isFullscreen shouldBe false
                     }
                 }
+            }
     })

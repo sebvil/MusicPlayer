@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.album.menu
 
-import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
+import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
@@ -9,9 +9,9 @@ import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuFeatu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 class DefaultAlbumContextMenuFeature(
-    private val albumRepository: AlbumRepository,
+    private val repositoryProvider: RepositoryProvider,
     private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry
+    private val features: FeatureRegistry,
 ) : AlbumContextMenuFeature {
     override fun albumContextMenuUiComponent(
         arguments: AlbumContextMenuArguments,
@@ -20,9 +20,9 @@ class DefaultAlbumContextMenuFeature(
         return AlbumContextMenuMvvmComponent(
             arguments = arguments,
             navController = navController,
-            albumRepository = albumRepository,
+            albumRepository = repositoryProvider.albumRepository,
             playbackManager = playbackManager,
-            features = features
+            features = features,
         )
     }
 }

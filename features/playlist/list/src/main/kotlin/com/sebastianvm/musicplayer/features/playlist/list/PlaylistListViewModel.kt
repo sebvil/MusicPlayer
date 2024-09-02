@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 sealed interface PlaylistListState : State {
 
@@ -82,28 +83,28 @@ class PlaylistListViewModel(
 
     override val state: StateFlow<PlaylistListState> =
         combine(
-            playlistRepository.getPlaylists(),
-            isPlayListCreationErrorDialogOpen,
-            isCreatePlaylistDialogOpen,
-            sortOrder,
-        ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, sortOrder
-            ->
-            if (playlists.isEmpty()) {
-                PlaylistListState.Empty(
-                    isCreatePlaylistDialogOpen,
-                    isPlaylistCreationErrorDialogOpen,
-                )
-            } else {
-                PlaylistListState.Data(
-                    playlists =
-                    playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
-                    sortButtonState =
-                    SortButton.State(text = RString.playlist_name, sortOrder = sortOrder),
-                    isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
-                    isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
-                )
+                playlistRepository.getPlaylists(),
+                isPlayListCreationErrorDialogOpen,
+                isCreatePlaylistDialogOpen,
+                sortOrder,
+            ) { playlists, isPlaylistCreationErrorDialogOpen, isCreatePlaylistDialogOpen, sortOrder
+                ->
+                if (playlists.isEmpty()) {
+                    PlaylistListState.Empty(
+                        isCreatePlaylistDialogOpen,
+                        isPlaylistCreationErrorDialogOpen,
+                    )
+                } else {
+                    PlaylistListState.Data(
+                        playlists =
+                            playlists.map { playlist -> PlaylistRow.State.fromPlaylist(playlist) },
+                        sortButtonState =
+                            SortButton.State(text = RString.playlist_name, sortOrder = sortOrder),
+                        isCreatePlaylistDialogOpen = isCreatePlaylistDialogOpen,
+                        isPlaylistCreationErrorDialogOpen = isPlaylistCreationErrorDialogOpen,
+                    )
+                }
             }
-        }
             .stateIn(viewModelScope, SharingStarted.Lazily, PlaylistListState.Loading)
 
     override fun handle(action: PlaylistListUserAction) {
@@ -111,7 +112,6 @@ class PlaylistListViewModel(
             is PlaylistListUserAction.SortByClicked -> {
                 viewModelScope.launch { sortPreferencesRepository.togglePlaylistListSortOder() }
             }
-
             is PlaylistListUserAction.CreatePlaylistButtonClicked -> {
                 playlistRepository
                     .createPlaylist(action.playlistName)
@@ -126,62 +126,57 @@ class PlaylistListViewModel(
                                     .playlistDetails()
                                     .playlistDetailsUiComponent(
                                         arguments =
-                                        PlaylistDetailsArguments(
-                                            playlistId = playlistId,
-                                            playlistName = action.playlistName,
-                                        ),
+                                            PlaylistDetailsArguments(
+                                                playlistId = playlistId,
+                                                playlistName = action.playlistName,
+                                            ),
                                         navController = navController,
                                     )
                             )
                         }
                     }
-                    .launchIn(getViewModelScope)
+                    .launchIn(viewModelScope)
             }
-
             is PlaylistListUserAction.DismissPlaylistCreationErrorDialog -> {
                 isPlayListCreationErrorDialogOpen.update { false }
             }
-
             is PlaylistListUserAction.PlaylistMoreIconClicked -> {
                 navController.push(
                     features
                         .playlistContextMenu()
                         .playlistContextMenuUiComponent(
                             arguments =
-                            PlaylistContextMenuArguments(playlistId = action.playlistId),
+                                PlaylistContextMenuArguments(playlistId = action.playlistId),
                             delegate =
-                            object : PlaylistContextMenuDelegate {
-                                override fun deletePlaylist() {
-                                    navController.pop()
-                                    viewModelScope.launch {
-                                        playlistRepository.deletePlaylist(action.playlistId)
+                                object : PlaylistContextMenuDelegate {
+                                    override fun deletePlaylist() {
+                                        navController.pop()
+                                        viewModelScope.launch {
+                                            playlistRepository.deletePlaylist(action.playlistId)
+                                        }
                                     }
-                                }
-                            },
+                                },
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is PlaylistListUserAction.CreateNewPlaylistButtonClicked -> {
                 isCreatePlaylistDialogOpen.update { true }
             }
-
             is PlaylistListUserAction.DismissPlaylistCreationDialog -> {
                 isCreatePlaylistDialogOpen.update { false }
             }
-
             is PlaylistListUserAction.PlaylistClicked -> {
                 navController.push(
                     features
                         .playlistDetails()
                         .playlistDetailsUiComponent(
                             arguments =
-                            PlaylistDetailsArguments(
-                                playlistId = action.playlistId,
-                                playlistName = action.playlistName,
-                            ),
+                                PlaylistDetailsArguments(
+                                    playlistId = action.playlistId,
+                                    playlistName = action.playlistName,
+                                ),
                             navController = navController,
                         )
                 )

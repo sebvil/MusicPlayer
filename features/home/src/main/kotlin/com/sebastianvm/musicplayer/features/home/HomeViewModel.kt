@@ -39,13 +39,13 @@ class HomeViewModel(
         MutableStateFlow(
             HomeState(
                 trackListMvvmComponent =
-                features.trackListFeature().trackListUiComponent(navController),
-                artistListMvvmComponent = features.artistList()
-                    .artistListUiComponent(navController),
+                    features.trackListFeature().trackListUiComponent(navController),
+                artistListMvvmComponent =
+                    features.artistList().artistListUiComponent(navController),
                 albumListMvvmComponent = features.albumList().albumListUiComponent(navController),
                 genreListMvvmComponent = features.genreList().genreListUiComponent(navController),
                 playlistListMvvmComponent =
-                features.playlistList().playlistListUiComponent(navController),
+                    features.playlistList().playlistListUiComponent(navController),
                 searchMvvmComponent = features.searchFeature().searchUiComponent(navController),
             )
         )

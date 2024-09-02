@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 sealed interface TrackListState : State {
     data object Loading : TrackListState
@@ -54,17 +55,18 @@ class TrackListViewModel(
         sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.AllTracks)
 
     override val state: StateFlow<TrackListState> =
-        combine(trackRepository.getTracksForMedia(MediaGroup.AllTracks), sortPreferences) { tracks,
-                                                                                            sortPrefs ->
-            TrackListState.Data(
-                tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
-                sortButtonState =
-                SortButton.State(
-                    option = sortPrefs.sortOption,
-                    sortOrder = sortPrefs.sortOrder,
-                ),
-            )
-        }
+        combine(trackRepository.getTracksForMedia(MediaGroup.AllTracks), sortPreferences) {
+                tracks,
+                sortPrefs ->
+                TrackListState.Data(
+                    tracks = tracks.map { track -> TrackRow.State.fromTrack(track) },
+                    sortButtonState =
+                        SortButton.State(
+                            option = sortPrefs.sortOption,
+                            sortOrder = sortPrefs.sortOrder,
+                        ),
+                )
+            }
             .stateIn(viewModelScope, SharingStarted.Lazily, TrackListState.Loading)
 
     override fun handle(action: TrackListUserAction) {
@@ -75,18 +77,17 @@ class TrackListViewModel(
                         .trackContextMenu()
                         .trackContextMenuUiComponent(
                             arguments =
-                            TrackContextMenuArguments(
-                                trackId = action.trackId,
-                                trackPositionInList = action.trackPositionInList,
-                                trackList = MediaGroup.AllTracks,
-                            ),
+                                TrackContextMenuArguments(
+                                    trackId = action.trackId,
+                                    trackPositionInList = action.trackPositionInList,
+                                    trackList = MediaGroup.AllTracks,
+                                ),
                             navController = navController,
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackListUserAction.SortButtonClicked -> {
                 navController.push(
                     features
@@ -95,10 +96,9 @@ class TrackListViewModel(
                             arguments = SortMenuArguments(listType = SortableListType.AllTracks)
                         ),
                     navOptions =
-                    NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
+                        NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
             }
-
             is TrackListUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(

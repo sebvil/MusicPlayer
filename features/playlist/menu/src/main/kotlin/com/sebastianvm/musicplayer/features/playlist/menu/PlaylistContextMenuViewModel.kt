@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 sealed interface PlaylistContextMenuState : State {
     data class Data(
@@ -44,23 +45,24 @@ class PlaylistContextMenuViewModel(
     private val playbackManager: PlaybackManager,
     vmScope: CoroutineScope = getViewModelScope(),
     private val delegate: PlaylistContextMenuDelegate,
-) : BaseViewModel<PlaylistContextMenuState, PlaylistContextMenuUserAction>(viewModelScope = vmScope) {
+) :
+    BaseViewModel<PlaylistContextMenuState, PlaylistContextMenuUserAction>(
+        viewModelScope = vmScope
+    ) {
 
     private val playlistId = arguments.playlistId
     private val showDeleteConfirmationDialog: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val state: StateFlow<PlaylistContextMenuState> =
-        combine(
-            playlistRepository.getPlaylistName(playlistId),
-            showDeleteConfirmationDialog
-        ) { playlistName,
-            showDeleteConfirmationDialog ->
-            PlaylistContextMenuState.Data(
-                playlistName = playlistName,
-                playlistId = playlistId,
-                showDeleteConfirmationDialog = showDeleteConfirmationDialog,
-            )
-        }
+        combine(playlistRepository.getPlaylistName(playlistId), showDeleteConfirmationDialog) {
+                playlistName,
+                showDeleteConfirmationDialog ->
+                PlaylistContextMenuState.Data(
+                    playlistName = playlistName,
+                    playlistId = playlistId,
+                    showDeleteConfirmationDialog = showDeleteConfirmationDialog,
+                )
+            }
             .stateIn(viewModelScope, SharingStarted.Lazily, PlaylistContextMenuState.Loading)
 
     override fun handle(action: PlaylistContextMenuUserAction) {
@@ -70,15 +72,12 @@ class PlaylistContextMenuViewModel(
                     playbackManager.playMedia(mediaGroup = MediaGroup.Playlist(playlistId))
                 }
             }
-
             is PlaylistContextMenuUserAction.DeletePlaylistClicked -> {
                 showDeleteConfirmationDialog.update { true }
             }
-
             is PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked -> {
                 delegate.deletePlaylist()
             }
-
             is PlaylistContextMenuUserAction.PlaylistDeletionCancelled -> {
                 showDeleteConfirmationDialog.update { false }
             }
