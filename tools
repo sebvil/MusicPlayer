@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./gradlew  :tooling:installDist && ./tooling/build/install/tooling/bin/tooling "$@"

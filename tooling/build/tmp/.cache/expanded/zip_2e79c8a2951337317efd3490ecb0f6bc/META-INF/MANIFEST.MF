@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Implementation-Vendor: JetBrains
+Implementation-Title: kotlin-stdlib
+Implementation-Version: 2.0.20-release-360
+Kotlin-Runtime-Component: Main
+Kotlin-Version: 2.0
+Multi-Release: true
+

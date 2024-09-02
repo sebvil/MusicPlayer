@@ -1,11 +1,12 @@
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.mordant.rendering.TextColors
 import java.io.File
 
 class SortLibs : CliktCommand() {
 
     override fun run() {
+        echo(TextColors.cyan("↕️ Sorting libs"))
         val path = "./gradle/libs.versions.toml"
-        println("Sorting libs")
         val file = File(path)
         val libs = file.readLines()
         val sortedLibs = buildList {
