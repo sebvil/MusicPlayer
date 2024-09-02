@@ -8,8 +8,6 @@ import org.gradle.kotlin.dsl.configure
 
 class AndroidApplicationConventionPlugin : Plugin<Project> {
 
-    val a = 2
-
     override fun apply(target: Project) {
         with(target) {
             apply(plugin = "com.android.application")
