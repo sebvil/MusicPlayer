@@ -16,4 +16,4 @@ local.properties
 .idea
 .jqwik-database
 .kotlin
-/build-logic/build/
+**/build/**

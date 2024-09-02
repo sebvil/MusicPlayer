@@ -1,7 +1,6 @@
 package com.sebastianvm.musicplayer.convention
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -14,7 +13,7 @@ internal inline fun <reified T : KotlinTopLevelExtension> Project.configureKotli
             is KotlinJvmProjectExtension -> compilerOptions
             else -> error("Unsupported extension type: ${T::class.java}")
         }.apply {
-            jvmTarget = Constants.JVM_TARGET
-            allWarningsAsErrors = true
+            jvmToolchain(17)
+            allWarningsAsErrors.set(true)
         }
     }
