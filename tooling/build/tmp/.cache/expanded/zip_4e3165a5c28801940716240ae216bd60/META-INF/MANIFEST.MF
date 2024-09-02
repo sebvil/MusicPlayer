@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: kotlin-stdlib-jdk8
-Kotlin-Runtime-Component: Main
-Kotlin-Version: 1.9
-Implementation-Version: 1.9.10-release-459
-Multi-Release: true
-Implementation-Vendor: JetBrains
-
