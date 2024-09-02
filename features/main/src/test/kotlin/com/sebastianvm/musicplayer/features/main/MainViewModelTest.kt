@@ -17,37 +17,37 @@ class MainViewModelTest :
 
         fun TestScope.getSubject(): MainViewModel {
             return MainViewModel(
-                stateHolderScope = CloseableCoroutineScope(coroutineContext),
+                viewModelScope = CloseableCoroutineScope(coroutineContext),
                 playbackManager = playbackManagerDep,
                 features = initializeFakeFeatures(),
             )
         }
 
         "handle" -
-            {
-                "ConnectToMusicService connects to service" {
-                    val subject = getSubject()
-                    subject.handle(MainUserAction.ConnectToMusicService)
-                    playbackManagerDep.connectToServiceInvocations shouldContainExactly
-                        listOf(FakePlaybackManager.ConnectToServiceInvocations)
-                }
+                {
+                    "ConnectToMusicService connects to service" {
+                        val subject = getSubject()
+                        subject.handle(MainUserAction.ConnectToMusicService)
+                        playbackManagerDep.connectToServiceInvocations shouldContainExactly
+                                listOf(FakePlaybackManager.ConnectToServiceInvocations)
+                    }
 
-                "DisconnectFromMusicService disconnects from service" {
-                    val subject = getSubject()
-                    subject.handle(MainUserAction.DisconnectFromMusicService)
-                    playbackManagerDep.disconnectFromServiceInvocations shouldContainExactly
-                        listOf(FakePlaybackManager.DisconnectFromServiceInvocations)
-                }
+                    "DisconnectFromMusicService disconnects from service" {
+                        val subject = getSubject()
+                        subject.handle(MainUserAction.DisconnectFromMusicService)
+                        playbackManagerDep.disconnectFromServiceInvocations shouldContainExactly
+                                listOf(FakePlaybackManager.DisconnectFromServiceInvocations)
+                    }
 
-                "ExpandPlayer and CollapsePlayer toggle player expanded state" {
-                    val subject = getSubject()
-                    testStateHolderState(subject) {
-                        awaitItem().isFullscreen shouldBe false
-                        subject.handle(MainUserAction.ExpandPlayer)
-                        awaitItem().isFullscreen shouldBe true
-                        subject.handle(MainUserAction.CollapsePlayer)
-                        awaitItem().isFullscreen shouldBe false
+                    "ExpandPlayer and CollapsePlayer toggle player expanded state" {
+                        val subject = getSubject()
+                        testStateHolderState(subject) {
+                            awaitItem().isFullscreen shouldBe false
+                            subject.handle(MainUserAction.ExpandPlayer)
+                            awaitItem().isFullscreen shouldBe true
+                            subject.handle(MainUserAction.CollapsePlayer)
+                            awaitItem().isFullscreen shouldBe false
+                        }
                     }
                 }
-            }
     })

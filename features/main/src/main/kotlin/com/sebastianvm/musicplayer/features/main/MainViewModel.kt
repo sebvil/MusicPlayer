@@ -6,17 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
+import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.navigation.navigationFeature
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import com.sebastianvm.musicplayer.features.api.player.playerFeature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class MainViewModel(
-    override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
+    vmScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
+) : BaseViewModel<MainState, MainUserAction>(viewModelScope = vmScope) {
 
     private val appNavigationHostUiComponent = features.navigationFeature().navigationUiComponent()
 
@@ -41,19 +41,19 @@ class MainViewModel(
             .playerUiComponent(
                 props = playerProps,
                 delegate =
-                    object : PlayerDelegate {
-                        override fun dismissFullScreenPlayer() {
-                            playerProps.update { it.copy(isFullscreen = false) }
-                        }
-                    },
+                object : PlayerDelegate {
+                    override fun dismissFullScreenPlayer() {
+                        playerProps.update { it.copy(isFullscreen = false) }
+                    }
+                },
             )
 
     override val state: StateFlow<MainState> =
         playerProps
             .map { props ->
                 MainState(
-                    playerUiComponent = playerUiComponent,
-                    appNavigationHostUiComponent = appNavigationHostUiComponent,
+                    playerMvvmComponent = playerUiComponent,
+                    appNavigationHostMvvmComponent = appNavigationHostUiComponent,
                     isFullscreen = props.isFullscreen,
                 )
             }
@@ -61,11 +61,11 @@ class MainViewModel(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue =
-                    MainState(
-                        playerUiComponent = playerUiComponent,
-                        appNavigationHostUiComponent = appNavigationHostUiComponent,
-                        isFullscreen = false,
-                    ),
+                MainState(
+                    playerMvvmComponent = playerUiComponent,
+                    appNavigationHostMvvmComponent = appNavigationHostUiComponent,
+                    isFullscreen = false,
+                ),
             )
 
     override fun handle(action: MainUserAction) {
@@ -73,12 +73,15 @@ class MainViewModel(
             is MainUserAction.ConnectToMusicService -> {
                 playbackManager.connectToService()
             }
+
             is MainUserAction.DisconnectFromMusicService -> {
                 playbackManager.disconnectFromService()
             }
+
             is MainUserAction.ExpandPlayer -> {
                 playerProps.update { it.copy(isFullscreen = true) }
             }
+
             is MainUserAction.CollapsePlayer -> {
                 playerProps.update { it.copy(isFullscreen = false) }
             }
@@ -96,14 +99,14 @@ class MainViewModel(
                 playbackManager = services.playbackManager,
                 features = services.featureRegistry,
             )
-                as T
+                    as T
         }
     }
 }
 
 data class MainState(
-    val playerUiComponent: UiComponent<*>,
-    val appNavigationHostUiComponent: UiComponent<*>,
+    val playerMvvmComponent: MvvmComponent,
+    val appNavigationHostMvvmComponent: MvvmComponent,
     val isFullscreen: Boolean,
 ) : State
 

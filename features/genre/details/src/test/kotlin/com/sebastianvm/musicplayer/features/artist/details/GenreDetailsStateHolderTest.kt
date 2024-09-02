@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsState
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsStateHolder
-import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUiComponent
+import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsMvvmComponent
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUserAction
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
@@ -56,16 +56,16 @@ class GenreDetailsStateHolderTest :
             sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
                 mapOf(genre.id to sortPreferences)
             navControllerDep.push(
-                uiComponent =
-                    GenreDetailsUiComponent(
-                        arguments =
-                            GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
-                        navController = navControllerDep,
-                    )
+                mvvmComponent =
+                GenreDetailsMvvmComponent(
+                    arguments =
+                    GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
+                    navController = navControllerDep,
+                )
             )
 
             return GenreDetailsStateHolder(
-                stateHolderScope = this,
+                viewModelScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 args = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
@@ -96,106 +96,108 @@ class GenreDetailsStateHolderTest :
         }
 
         "init subscribes to changes in sort order" -
-            {
-                withData(nameFn = { it.toString() }, FixtureProvider.trackListSortPreferences()) {
-                    sortPreferences ->
-                    val initialSortPreferences =
-                        MediaSortPreferences<SortOptions.TrackListSortOption>(
-                            sortOption = SortOptions.Track,
-                            sortOrder = MediaSortOrder.ASCENDING,
-                        )
-
-                    val subject = getSubject(sortPreferences = initialSortPreferences)
-
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe GenreDetailsState.Loading(genreName = GENRE_NAME)
-
-                        awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
-                            SortButton.State(
-                                option = initialSortPreferences.sortOption,
-                                sortOrder = initialSortPreferences.sortOrder,
+                {
+                    withData(
+                        nameFn = { it.toString() },
+                        FixtureProvider.trackListSortPreferences()
+                    ) { sortPreferences ->
+                        val initialSortPreferences =
+                            MediaSortPreferences<SortOptions.TrackListSortOption>(
+                                sortOption = SortOptions.Track,
+                                sortOrder = MediaSortOrder.ASCENDING,
                             )
 
-                        sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
-                            mapOf(GENRE_ID to sortPreferences)
-                        if (sortPreferences == initialSortPreferences) {
-                            expectNoEvents()
-                        } else {
+                        val subject = getSubject(sortPreferences = initialSortPreferences)
+
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe GenreDetailsState.Loading(genreName = GENRE_NAME)
+
                             awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
-                                SortButton.State(
-                                    option = sortPreferences.sortOption,
-                                    sortOrder = sortPreferences.sortOrder,
-                                )
+                                    SortButton.State(
+                                        option = initialSortPreferences.sortOption,
+                                        sortOrder = initialSortPreferences.sortOrder,
+                                    )
+
+                            sortPreferencesRepositoryDep.genreTracksSortPreferences.value =
+                                mapOf(GENRE_ID to sortPreferences)
+                            if (sortPreferences == initialSortPreferences) {
+                                expectNoEvents()
+                            } else {
+                                awaitItemAs<GenreDetailsState.Data>().sortButtonState shouldBe
+                                        SortButton.State(
+                                            option = sortPreferences.sortOption,
+                                            sortOrder = sortPreferences.sortOrder,
+                                        )
+                            }
                         }
                     }
                 }
-            }
 
         "handle" -
-            {
-                "SortButtonClicked navigates to SortMenu" {
-                    val subject = getSubject()
-                    subject.handle(GenreDetailsUserAction.SortButtonClicked)
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "SortMenu",
-                                    arguments =
+                {
+                    "SortButtonClicked navigates to SortMenu" {
+                        val subject = getSubject()
+                        subject.handle(GenreDetailsUserAction.SortButtonClicked)
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "SortMenu",
+                                        arguments =
                                         SortMenuArguments(
                                             listType = SortableListType.Genre(GENRE_ID)
                                         ),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet
-                                ),
-                        )
-                }
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet
+                                    ),
+                                )
+                    }
 
-                "TrackClicked plays media" {
-                    val subject = getSubject()
-                    subject.handle(GenreDetailsUserAction.TrackClicked(TRACK_INDEX))
-                    advanceUntilIdle()
-                    playbackManagerDep.playMediaInvocations shouldBe
-                        listOf(
-                            FakePlaybackManager.PlayMediaArguments(
-                                mediaGroup = MediaGroup.Genre(GENRE_ID),
-                                initialTrackIndex = TRACK_INDEX,
-                            )
-                        )
-                }
+                    "TrackClicked plays media" {
+                        val subject = getSubject()
+                        subject.handle(GenreDetailsUserAction.TrackClicked(TRACK_INDEX))
+                        advanceUntilIdle()
+                        playbackManagerDep.playMediaInvocations shouldBe
+                                listOf(
+                                    FakePlaybackManager.PlayMediaArguments(
+                                        mediaGroup = MediaGroup.Genre(GENRE_ID),
+                                        initialTrackIndex = TRACK_INDEX,
+                                    )
+                                )
+                    }
 
-                "TrackMoreIconClicked navigates to TrackContextMenu" {
-                    val subject = getSubject()
-                    subject.handle(
-                        GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
-                    )
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "TrackContextMenu",
-                                    arguments =
+                    "TrackMoreIconClicked navigates to TrackContextMenu" {
+                        val subject = getSubject()
+                        subject.handle(
+                            GenreDetailsUserAction.TrackMoreIconClicked(TRACK_ID, TRACK_INDEX)
+                        )
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "TrackContextMenu",
+                                        arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Genre(GENRE_ID),
                                         ),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet
-                                ),
-                        )
-                }
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet
+                                    ),
+                                )
+                    }
 
-                "BackClicked navigates back" {
-                    val subject = getSubject()
-                    subject.handle(GenreDetailsUserAction.BackClicked)
-                    navControllerDep.backStack.shouldBeEmpty()
+                    "BackClicked navigates back" {
+                        val subject = getSubject()
+                        subject.handle(GenreDetailsUserAction.BackClicked)
+                        navControllerDep.backStack.shouldBeEmpty()
+                    }
                 }
-            }
     }) {
     companion object {
         private const val TRACK_ID = 1L

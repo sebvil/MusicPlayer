@@ -37,6 +37,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 implementation(libs.lib("compose.ui.tooling"))
                 implementation(libs.lib("compose.ui"))
 
+                implementation(libs.lib("lifecycle.viewmodel.ktx"))
+
                 testImplementation(libs.bundle("testing"))
                 testImplementation(project(":core:common-test"))
                 testImplementation(project(":core:data-test"))

@@ -1,11 +1,11 @@
 package com.sebastianvm.musicplayer.features.api.queue
 
-import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface QueueFeature : Feature {
-    fun queueUiComponent(): UiComponent<*>
+    fun queueUiComponent(): MvvmComponent
 
     object Key : Feature.Key
 }

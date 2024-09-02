@@ -49,5 +49,7 @@ class AppServices(private val appContext: Context) : Services {
         MediaPlaybackClient(context = appContext, externalScope = applicationScope)
     }
 
-    override val featureRegistry: FeatureRegistry = initializeFeatures()
+    override val featureRegistry: FeatureRegistry by lazy {
+        initializeFeatures(repositoryProvider = repositoryProvider)
+    }
 }

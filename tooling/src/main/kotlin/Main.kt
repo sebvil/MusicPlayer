@@ -2,7 +2,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 
 fun main(args: Array<String>) =
-    Main().subcommands(Checks(), Format(), Lint(), SortLibs()).main(args)
+    Main().subcommands(Checks(), Format(), Lint(), SortLibs(), RenameFiles()).main(args)
 
 class Main : CliktCommand() {
 

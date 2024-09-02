@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.core.datatest.track.FakeTrackRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
@@ -45,7 +45,10 @@ class TrackContextMenuStateHolderTest :
                 )
         ): TrackContextMenuStateHolder {
             navControllerDep.push(
-                TrackContextMenuUiComponent(arguments = arguments, navController = navControllerDep)
+                TrackContextMenuMvvmComponent(
+                    arguments = arguments,
+                    navController = navControllerDep
+                )
             )
             return TrackContextMenuStateHolder(
                 arguments = arguments,
@@ -54,203 +57,208 @@ class TrackContextMenuStateHolderTest :
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
                 features = initializeFakeFeatures(),
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
         "init sets state" -
-            {
-                "when track has no artists" {
-                    val track = FixtureProvider.track(id = TRACK_ID, artistCount = 0)
-                    trackRepositoryDep.tracks.value = listOf(track)
+                {
+                    "when track has no artists" {
+                        val track = FixtureProvider.track(id = TRACK_ID, artistCount = 0)
+                        trackRepositoryDep.tracks.value = listOf(track)
 
-                    val subject = getSubject()
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackContextMenuState.Loading
-                        awaitItem() shouldBe
-                            TrackContextMenuState.Data(
-                                trackName = track.name,
-                                trackId = TRACK_ID,
-                                viewArtistsState = ViewArtistRow.NoArtists,
-                                viewAlbumState = ViewAlbumRow(albumId = track.albumId),
-                                removeFromPlaylistRow = null,
-                            )
+                        val subject = getSubject()
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackContextMenuState.Loading
+                            awaitItem() shouldBe
+                                    TrackContextMenuState.Data(
+                                        trackName = track.name,
+                                        trackId = TRACK_ID,
+                                        viewArtistsState = ViewArtistRow.NoArtists,
+                                        viewAlbumState = ViewAlbumRow(albumId = track.albumId),
+                                        removeFromPlaylistRow = null,
+                                    )
+                        }
                     }
-                }
 
-                "when track has one artist" {
-                    val track = FixtureProvider.track(id = TRACK_ID, artistCount = 1)
-                    trackRepositoryDep.tracks.value = listOf(track)
+                    "when track has one artist" {
+                        val track = FixtureProvider.track(id = TRACK_ID, artistCount = 1)
+                        trackRepositoryDep.tracks.value = listOf(track)
 
-                    val subject = getSubject()
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackContextMenuState.Loading
-                        awaitItem() shouldBe
-                            TrackContextMenuState.Data(
-                                trackName = track.name,
-                                trackId = TRACK_ID,
-                                viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
-                                viewAlbumState = ViewAlbumRow(albumId = track.albumId),
-                                removeFromPlaylistRow = null,
-                            )
+                        val subject = getSubject()
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackContextMenuState.Loading
+                            awaitItem() shouldBe
+                                    TrackContextMenuState.Data(
+                                        trackName = track.name,
+                                        trackId = TRACK_ID,
+                                        viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
+                                        viewAlbumState = ViewAlbumRow(albumId = track.albumId),
+                                        removeFromPlaylistRow = null,
+                                    )
+                        }
                     }
-                }
 
-                "when track has multiple artists" {
-                    val track = FixtureProvider.track(id = TRACK_ID, artistCount = 2)
-                    trackRepositoryDep.tracks.value = listOf(track)
+                    "when track has multiple artists" {
+                        val track = FixtureProvider.track(id = TRACK_ID, artistCount = 2)
+                        trackRepositoryDep.tracks.value = listOf(track)
 
-                    val subject = getSubject()
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackContextMenuState.Loading
-                        awaitItem() shouldBe
-                            TrackContextMenuState.Data(
-                                trackName = track.name,
-                                trackId = TRACK_ID,
-                                viewArtistsState = ViewArtistRow.MultipleArtists,
-                                viewAlbumState = ViewAlbumRow(albumId = track.albumId),
-                                removeFromPlaylistRow = null,
-                            )
+                        val subject = getSubject()
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackContextMenuState.Loading
+                            awaitItem() shouldBe
+                                    TrackContextMenuState.Data(
+                                        trackName = track.name,
+                                        trackId = TRACK_ID,
+                                        viewArtistsState = ViewArtistRow.MultipleArtists,
+                                        viewAlbumState = ViewAlbumRow(albumId = track.albumId),
+                                        removeFromPlaylistRow = null,
+                                    )
+                        }
                     }
-                }
 
-                "when trackList is album" {
-                    val track = FixtureProvider.track(id = TRACK_ID, albumId = ALBUM_ID)
-                    trackRepositoryDep.tracks.value = listOf(track)
+                    "when trackList is album" {
+                        val track = FixtureProvider.track(id = TRACK_ID, albumId = ALBUM_ID)
+                        trackRepositoryDep.tracks.value = listOf(track)
 
-                    val subject =
-                        getSubject(
-                            arguments =
+                        val subject =
+                            getSubject(
+                                arguments =
                                 DEFAULT_ARGS.copy(trackList = MediaGroup.Album(albumId = ALBUM_ID))
-                        )
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackContextMenuState.Loading
-                        awaitItem() shouldBe
-                            TrackContextMenuState.Data(
-                                trackName = track.name,
-                                trackId = TRACK_ID,
-                                viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
-                                viewAlbumState = null,
-                                removeFromPlaylistRow = null,
                             )
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackContextMenuState.Loading
+                            awaitItem() shouldBe
+                                    TrackContextMenuState.Data(
+                                        trackName = track.name,
+                                        trackId = TRACK_ID,
+                                        viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
+                                        viewAlbumState = null,
+                                        removeFromPlaylistRow = null,
+                                    )
+                        }
                     }
-                }
 
-                "when trackList is playlist" {
-                    val track = FixtureProvider.track(id = TRACK_ID, albumId = ALBUM_ID)
-                    trackRepositoryDep.tracks.value = listOf(track)
+                    "when trackList is playlist" {
+                        val track = FixtureProvider.track(id = TRACK_ID, albumId = ALBUM_ID)
+                        trackRepositoryDep.tracks.value = listOf(track)
 
-                    val subject =
-                        getSubject(
-                            arguments =
+                        val subject =
+                            getSubject(
+                                arguments =
                                 DEFAULT_ARGS.copy(trackList = MediaGroup.Playlist(PLAYLIST_ID))
-                        )
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackContextMenuState.Loading
-                        awaitItem() shouldBe
-                            TrackContextMenuState.Data(
-                                trackName = track.name,
-                                trackId = TRACK_ID,
-                                viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
-                                viewAlbumState = ViewAlbumRow(albumId = track.albumId),
-                                removeFromPlaylistRow =
-                                    RemoveFromPlaylistRow(
-                                        playlistId = PLAYLIST_ID,
-                                        trackPositionInPlaylist = TRACK_POSITION_IN_LIST.toLong(),
-                                    ),
                             )
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackContextMenuState.Loading
+                            awaitItem() shouldBe
+                                    TrackContextMenuState.Data(
+                                        trackName = track.name,
+                                        trackId = TRACK_ID,
+                                        viewArtistsState = ViewArtistRow.SingleArtist(track.artists[0].id),
+                                        viewAlbumState = ViewAlbumRow(albumId = track.albumId),
+                                        removeFromPlaylistRow =
+                                        RemoveFromPlaylistRow(
+                                            playlistId = PLAYLIST_ID,
+                                            trackPositionInPlaylist = TRACK_POSITION_IN_LIST.toLong(),
+                                        ),
+                                    )
+                        }
                     }
                 }
-            }
 
         "handle" -
-            {
-                "AddToQueueClicked adds track to queue and pops screen" {
-                    val subject = getSubject()
-                    subject.handle(TrackContextMenuUserAction.AddToQueueClicked)
-                    advanceUntilIdle()
-                    playbackManagerDep.queuedTracks.value.last().track.id shouldBe TRACK_ID
-                    navControllerDep.backStack.shouldBeEmpty()
-                }
+                {
+                    "AddToQueueClicked adds track to queue and pops screen" {
+                        val subject = getSubject()
+                        subject.handle(TrackContextMenuUserAction.AddToQueueClicked)
+                        advanceUntilIdle()
+                        playbackManagerDep.queuedTracks.value.last().track.id shouldBe TRACK_ID
+                        navControllerDep.backStack.shouldBeEmpty()
+                    }
 
-                "ViewAlbumClicked opens album and pops screen" {
-                    val subject = getSubject()
-                    subject.handle(TrackContextMenuUserAction.ViewAlbumClicked(albumId = ALBUM_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "AlbumDetails",
-                                    arguments =
+                    "ViewAlbumClicked opens album and pops screen" {
+                        val subject = getSubject()
+                        subject.handle(TrackContextMenuUserAction.ViewAlbumClicked(albumId = ALBUM_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "AlbumDetails",
+                                        arguments =
                                         AlbumDetailsArguments(
                                             albumId = ALBUM_ID,
                                             albumName = "",
                                             imageUri = "",
                                             artists = "",
                                         ),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.Screen,
-                                ),
-                        )
-                }
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.Screen,
+                                    ),
+                                )
+                    }
 
-                "ViewArtistClicked opens artist and pops screen" {
-                    val subject = getSubject()
-                    subject.handle(TrackContextMenuUserAction.ViewArtistClicked(artistId = 0))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "ArtistDetails",
-                                    arguments = ArtistDetailsArguments(artistId = 0),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.Screen,
-                                ),
-                        )
-                }
+                    "ViewArtistClicked opens artist and pops screen" {
+                        val subject = getSubject()
+                        subject.handle(TrackContextMenuUserAction.ViewArtistClicked(artistId = 0))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "ArtistDetails",
+                                        arguments = ArtistDetailsArguments(artistId = 0),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.Screen,
+                                    ),
+                                )
+                    }
 
-                "ViewArtistsClicked opens artists menu and pops screen" {
-                    val subject = getSubject()
-                    subject.handle(TrackContextMenuUserAction.ViewArtistsClicked)
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "ArtistsMenu",
-                                    arguments =
+                    "ViewArtistsClicked opens artists menu and pops screen" {
+                        val subject = getSubject()
+                        subject.handle(TrackContextMenuUserAction.ViewArtistsClicked)
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "ArtistsMenu",
+                                        arguments =
                                         ArtistsMenuArguments(MediaGroup.SingleTrack(TRACK_ID)),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet,
-                                ),
-                        )
-                }
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet,
+                                    ),
+                                )
+                    }
 
-                "RemoveFromPlaylistClicked removes track from playlist and pops screen" {
-                    playlistRepositoryDep.playlists.value =
-                        listOf(FixtureProvider.playlist(id = PLAYLIST_ID, trackCount = TRACK_COUNT))
-                    val subject = getSubject()
-                    subject.handle(
-                        TrackContextMenuUserAction.RemoveFromPlaylistClicked(
-                            playlistId = PLAYLIST_ID,
-                            trackPositionInPlaylist = TRACK_POSITION_IN_LIST.toLong(),
+                    "RemoveFromPlaylistClicked removes track from playlist and pops screen" {
+                        playlistRepositoryDep.playlists.value =
+                            listOf(
+                                FixtureProvider.playlist(
+                                    id = PLAYLIST_ID,
+                                    trackCount = TRACK_COUNT
+                                )
+                            )
+                        val subject = getSubject()
+                        subject.handle(
+                            TrackContextMenuUserAction.RemoveFromPlaylistClicked(
+                                playlistId = PLAYLIST_ID,
+                                trackPositionInPlaylist = TRACK_POSITION_IN_LIST.toLong(),
+                            )
                         )
-                    )
-                    advanceUntilIdle()
-                    playlistRepositoryDep.playlists.value
-                        .first { it.id == PLAYLIST_ID }
-                        .tracks shouldHaveSize TRACK_COUNT - 1
-                    navControllerDep.backStack.shouldBeEmpty()
+                        advanceUntilIdle()
+                        playlistRepositoryDep.playlists.value
+                            .first { it.id == PLAYLIST_ID }
+                            .tracks shouldHaveSize TRACK_COUNT - 1
+                        navControllerDep.backStack.shouldBeEmpty()
+                    }
                 }
-            }
     }) {
     companion object {
         private const val TRACK_ID = 0L

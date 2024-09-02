@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
@@ -38,7 +38,7 @@ class GenreListStateHolderTest :
 
         fun TestScope.getSubject(): GenreListStateHolder {
             return GenreListStateHolder(
-                stateHolderScope = this,
+                viewModelScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 navController = navControllerDep,
@@ -71,70 +71,70 @@ class GenreListStateHolderTest :
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
-                        SortButton.State(
-                            text = RString.genre_name,
-                            sortOrder = MediaSortOrder.ASCENDING,
-                        )
+                            SortButton.State(
+                                text = RString.genre_name,
+                                sortOrder = MediaSortOrder.ASCENDING,
+                            )
                 }
 
                 sortPreferencesRepositoryDep.genreListSortOrder.value = MediaSortOrder.DESCENDING
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<GenreListState>>()
                     state.sortButtonState shouldBe
-                        SortButton.State(
-                            text = RString.genre_name,
-                            sortOrder = MediaSortOrder.DESCENDING,
-                        )
+                            SortButton.State(
+                                text = RString.genre_name,
+                                sortOrder = MediaSortOrder.DESCENDING,
+                            )
                 }
             }
         }
 
         "handle" -
-            {
-                "SortByButtonClicked toggles sort order" {
-                    val subject = getSubject()
-                    subject.handle(GenreListUserAction.SortByButtonClicked)
-                    advanceUntilIdle()
-                    sortPreferencesRepositoryDep.genreListSortOrder.value shouldBe
-                        MediaSortOrder.DESCENDING
-                }
+                {
+                    "SortByButtonClicked toggles sort order" {
+                        val subject = getSubject()
+                        subject.handle(GenreListUserAction.SortByButtonClicked)
+                        advanceUntilIdle()
+                        sortPreferencesRepositoryDep.genreListSortOrder.value shouldBe
+                                MediaSortOrder.DESCENDING
+                    }
 
-                "GenreClicked navigates to TrackList" {
-                    val subject = getSubject()
-                    subject.handle(GenreListUserAction.GenreClicked(GENRE_ID, GENRE_NAME))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "GenreDetails",
-                                    arguments =
+                    "GenreClicked navigates to TrackList" {
+                        val subject = getSubject()
+                        subject.handle(GenreListUserAction.GenreClicked(GENRE_ID, GENRE_NAME))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "GenreDetails",
+                                        arguments =
                                         GenreDetailsArguments(
                                             genreId = GENRE_ID,
                                             genreName = GENRE_NAME,
                                         ),
-                                ),
-                            navOptions =
-                                NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
-                        )
-                }
+                                    ),
+                                    navOptions =
+                                    NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
+                                )
+                    }
 
-                "GenreMoreIconClicked navigates to GenreContextMenu" {
-                    val subject = getSubject()
-                    subject.handle(GenreListUserAction.GenreMoreIconClicked(GENRE_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "GenreContextMenu",
-                                    arguments = GenreContextMenuArguments(GENRE_ID),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet
-                                ),
-                        )
+                    "GenreMoreIconClicked navigates to GenreContextMenu" {
+                        val subject = getSubject()
+                        subject.handle(GenreListUserAction.GenreMoreIconClicked(GENRE_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "GenreContextMenu",
+                                        arguments = GenreContextMenuArguments(GENRE_ID),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet
+                                    ),
+                                )
+                    }
                 }
-            }
     }) {
 
     companion object {

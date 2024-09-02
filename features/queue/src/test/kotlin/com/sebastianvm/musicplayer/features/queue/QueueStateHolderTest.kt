@@ -47,7 +47,7 @@ class QueueStateHolderTest :
             return QueueStateHolder(
                 queueRepository = queueRepositoryDep,
                 playbackManager = playbackManagerDep,
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
@@ -63,96 +63,96 @@ class QueueStateHolderTest :
 
                 val queuedTracks = queueRepositoryDep.queuedTracks.first()
                 awaitItem() shouldBe
-                    QueueState.Data(
-                        nowPlayingItem = queuedTracks.first().toQueueItem(),
-                        queueItems =
+                        QueueState.Data(
+                            nowPlayingItem = queuedTracks.first().toQueueItem(),
+                            queueItems =
                             queuedTracks.subList(1, queuedTracks.size).map { it.toQueueItem() },
-                        nowPlayingItemArtworkUri =
+                            nowPlayingItemArtworkUri =
                             UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
-                    )
+                        )
 
                 queueRepositoryDep.nowPlayingInfo.value =
                     NowPlayingInfo(nowPlayingPositionInQueue = 1, lastRecordedPosition = 0)
 
                 awaitItem() shouldBe
-                    QueueState.Data(
-                        nowPlayingItem = queuedTracks[1].toQueueItem(),
-                        queueItems =
+                        QueueState.Data(
+                            nowPlayingItem = queuedTracks[1].toQueueItem(),
+                            queueItems =
                             queuedTracks.subList(2, queuedTracks.size).map { it.toQueueItem() },
-                        nowPlayingItemArtworkUri =
+                            nowPlayingItemArtworkUri =
                             UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
-                    )
+                        )
             }
         }
 
         "handle" -
-            {
-                "DragEnded moves item" {
-                    val tracks = FixtureProvider.queueItemsFixtures()
-                    val subject = getSubject(tracks)
+                {
+                    "DragEnded moves item" {
+                        val tracks = FixtureProvider.queueItemsFixtures()
+                        val subject = getSubject(tracks)
 
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe QueueState.Loading
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe QueueState.Loading
 
-                        val queueItems = awaitItemAs<QueueState.Data>().queueItems
-                        queueItems[0].trackRow.id shouldBe tracks[1].track.id
-                        queueItems[1].trackRow.id shouldBe tracks[2].track.id
+                            val queueItems = awaitItemAs<QueueState.Data>().queueItems
+                            queueItems[0].trackRow.id shouldBe tracks[1].track.id
+                            queueItems[1].trackRow.id shouldBe tracks[2].track.id
 
-                        subject.handle(QueueUserAction.DragEnded(from = 2, to = 1))
+                            subject.handle(QueueUserAction.DragEnded(from = 2, to = 1))
 
-                        val newQueueItems = awaitItemAs<QueueState.Data>().queueItems
-                        newQueueItems[0].trackRow.id shouldBe tracks[2].track.id
-                        newQueueItems[1].trackRow.id shouldBe tracks[1].track.id
+                            val newQueueItems = awaitItemAs<QueueState.Data>().queueItems
+                            newQueueItems[0].trackRow.id shouldBe tracks[2].track.id
+                            newQueueItems[1].trackRow.id shouldBe tracks[1].track.id
+                        }
+                    }
+
+                    "TrackClicked plays queue item" {
+                        val queuedTracks = FixtureProvider.queueItemsFixtures()
+                        val subject = getSubject(queuedTracks)
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe QueueState.Loading
+                            awaitItem() shouldBe
+                                    QueueState.Data(
+                                        nowPlayingItem = queuedTracks.first().toQueueItem(),
+                                        queueItems =
+                                        queuedTracks.subList(1, queuedTracks.size).map {
+                                            it.toQueueItem()
+                                        },
+                                        nowPlayingItemArtworkUri =
+                                        UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
+                                    )
+
+                            subject.handle(QueueUserAction.TrackClicked(trackIndex = 1))
+                            awaitItem() shouldBe
+                                    QueueState.Data(
+                                        nowPlayingItem = queuedTracks[1].toQueueItem(),
+                                        queueItems =
+                                        queuedTracks.subList(2, queuedTracks.size).map {
+                                            it.toQueueItem()
+                                        },
+                                        nowPlayingItemArtworkUri =
+                                        UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
+                                    )
+                        }
+                    }
+
+                    "RemoveItemsFromQueue removes items from queue" {
+                        val subject = getSubject()
+                        testStateHolderState(subject) {
+                            skipItems(2)
+                            val queuedTracks = queueRepositoryDep.queuedTracks.first()
+                            subject.handle(QueueUserAction.RemoveItemsFromQueue(listOf(1, 2)))
+                            awaitItem() shouldBe
+                                    QueueState.Data(
+                                        nowPlayingItem = queuedTracks[0].toQueueItem(),
+                                        queueItems =
+                                        queuedTracks.subList(3, queuedTracks.size).map {
+                                            it.toQueueItem().copy(position = it.queuePosition - 2)
+                                        },
+                                        nowPlayingItemArtworkUri =
+                                        UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
+                                    )
+                        }
                     }
                 }
-
-                "TrackClicked plays queue item" {
-                    val queuedTracks = FixtureProvider.queueItemsFixtures()
-                    val subject = getSubject(queuedTracks)
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe QueueState.Loading
-                        awaitItem() shouldBe
-                            QueueState.Data(
-                                nowPlayingItem = queuedTracks.first().toQueueItem(),
-                                queueItems =
-                                    queuedTracks.subList(1, queuedTracks.size).map {
-                                        it.toQueueItem()
-                                    },
-                                nowPlayingItemArtworkUri =
-                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
-                            )
-
-                        subject.handle(QueueUserAction.TrackClicked(trackIndex = 1))
-                        awaitItem() shouldBe
-                            QueueState.Data(
-                                nowPlayingItem = queuedTracks[1].toQueueItem(),
-                                queueItems =
-                                    queuedTracks.subList(2, queuedTracks.size).map {
-                                        it.toQueueItem()
-                                    },
-                                nowPlayingItemArtworkUri =
-                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
-                            )
-                    }
-                }
-
-                "RemoveItemsFromQueue removes items from queue" {
-                    val subject = getSubject()
-                    testStateHolderState(subject) {
-                        skipItems(2)
-                        val queuedTracks = queueRepositoryDep.queuedTracks.first()
-                        subject.handle(QueueUserAction.RemoveItemsFromQueue(listOf(1, 2)))
-                        awaitItem() shouldBe
-                            QueueState.Data(
-                                nowPlayingItem = queuedTracks[0].toQueueItem(),
-                                queueItems =
-                                    queuedTracks.subList(3, queuedTracks.size).map {
-                                        it.toQueueItem().copy(position = it.queuePosition - 2)
-                                    },
-                                nowPlayingItemArtworkUri =
-                                    UriUtils.getAlbumUriString(queuedTracks.first().track.albumId),
-                            )
-                    }
-                }
-            }
     })

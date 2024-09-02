@@ -1,6 +1,6 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerFeature
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
@@ -10,7 +10,7 @@ class DefaultPlayerFeature : PlayerFeature {
     override fun playerUiComponent(
         props: Flow<PlayerProps>,
         delegate: PlayerDelegate,
-    ): UiComponent<*> {
-        return PlayerUiComponent(delegate, props)
+    ): MvvmComponent {
+        return PlayerMvvmComponent(delegate, props)
     }
 }

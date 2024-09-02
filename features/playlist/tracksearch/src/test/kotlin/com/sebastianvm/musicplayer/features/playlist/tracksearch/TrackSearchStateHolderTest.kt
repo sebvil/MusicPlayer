@@ -33,7 +33,7 @@ class TrackSearchStateHolderTest :
             ftsRepositoryDep.trackQueryToResultsMap.value = resultsMap
             playlistRepositoryDep.playlists.value = listOf(playlist)
             navControllerDep.push(
-                TrackSearchUiComponent(
+                TrackSearchMvvmComponent(
                     arguments = TrackSearchArguments(playlistId = playlist.id),
                     navController = navControllerDep,
                 )
@@ -43,7 +43,7 @@ class TrackSearchStateHolderTest :
                 playlistRepository = playlistRepositoryDep,
                 ftsRepository = ftsRepositoryDep,
                 navController = navControllerDep,
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
@@ -57,8 +57,8 @@ class TrackSearchStateHolderTest :
                 awaitItem().trackSearchResults.shouldBeEmpty()
 
                 awaitItem() shouldBe
-                    TrackSearchState(
-                        trackSearchResults =
+                        TrackSearchState(
+                            trackSearchResults =
                             (queryResults.subList(5, queryResults.size) +
                                     queryResults.subList(0, 5))
                                 .map { track ->
@@ -67,77 +67,77 @@ class TrackSearchStateHolderTest :
                                         inPlaylist = track.id in playlist.tracks.map { it.id },
                                     )
                                 },
-                        trackAddedToPlaylist = null,
-                    )
+                            trackAddedToPlaylist = null,
+                        )
             }
         }
 
         "handle" -
-            {
-                "TextChanged updates search results" {
-                    val queryResults = FixtureProvider.tracks()
-                    val results = mapOf("" to emptyList(), QUERY to queryResults)
-                    val playlist = FixtureProvider.playlist()
-                    val subject = getSubject(playlist = playlist, resultsMap = results)
+                {
+                    "TextChanged updates search results" {
+                        val queryResults = FixtureProvider.tracks()
+                        val results = mapOf("" to emptyList(), QUERY to queryResults)
+                        val playlist = FixtureProvider.playlist()
+                        val subject = getSubject(playlist = playlist, resultsMap = results)
 
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe TrackSearchState(trackSearchResults = emptyList())
-                        subject.handle(TrackSearchUserAction.TextChanged(QUERY))
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe TrackSearchState(trackSearchResults = emptyList())
+                            subject.handle(TrackSearchUserAction.TextChanged(QUERY))
 
-                        awaitItem() shouldBe
-                            TrackSearchState(
-                                trackSearchResults =
-                                    queryResults.map {
-                                        TrackSearchResult(
-                                            state = TrackRow.State.fromTrack(it),
-                                            inPlaylist = false,
-                                        )
-                                    }
-                            )
-                    }
-                }
-
-                "TrackClicked adds track to playlist and shows toast, and ToastShown dismisses toast" {
-                    val queryResults = FixtureProvider.tracks()
-                    val results = mapOf("" to queryResults)
-                    val track = queryResults.first()
-                    val subject =
-                        getSubject(
-                            playlist = FixtureProvider.playlist(trackCount = 0),
-                            resultsMap = results,
-                        )
-
-                    testStateHolderState(subject) {
-                        skipItems(2)
-                        subject.handle(TrackSearchUserAction.TrackClicked(track.id, track.name))
-                        awaitItem() shouldBe
-                            TrackSearchState(
-                                trackSearchResults =
-                                    queryResults
-                                        .map {
+                            awaitItem() shouldBe
+                                    TrackSearchState(
+                                        trackSearchResults =
+                                        queryResults.map {
                                             TrackSearchResult(
                                                 state = TrackRow.State.fromTrack(it),
-                                                inPlaylist = it.id == track.id,
+                                                inPlaylist = false,
                                             )
                                         }
-                                        .toMutableList()
-                                        .apply { add(removeAt(0)) },
-                                trackAddedToPlaylist = track.name,
+                                    )
+                        }
+                    }
+
+                    "TrackClicked adds track to playlist and shows toast, and ToastShown dismisses toast" {
+                        val queryResults = FixtureProvider.tracks()
+                        val results = mapOf("" to queryResults)
+                        val track = queryResults.first()
+                        val subject =
+                            getSubject(
+                                playlist = FixtureProvider.playlist(trackCount = 0),
+                                resultsMap = results,
                             )
 
-                        subject.handle(TrackSearchUserAction.ToastShown)
-                        awaitItem().trackAddedToPlaylist shouldBe null
+                        testStateHolderState(subject) {
+                            skipItems(2)
+                            subject.handle(TrackSearchUserAction.TrackClicked(track.id, track.name))
+                            awaitItem() shouldBe
+                                    TrackSearchState(
+                                        trackSearchResults =
+                                        queryResults
+                                            .map {
+                                                TrackSearchResult(
+                                                    state = TrackRow.State.fromTrack(it),
+                                                    inPlaylist = it.id == track.id,
+                                                )
+                                            }
+                                            .toMutableList()
+                                            .apply { add(removeAt(0)) },
+                                        trackAddedToPlaylist = track.name,
+                                    )
+
+                            subject.handle(TrackSearchUserAction.ToastShown)
+                            awaitItem().trackAddedToPlaylist shouldBe null
+                        }
+                    }
+
+                    "BackClicked pops back stack" {
+                        val subject = getSubject()
+
+                        subject.handle(TrackSearchUserAction.BackClicked)
+
+                        navControllerDep.backStack.isEmpty() shouldBe true
                     }
                 }
-
-                "BackClicked pops back stack" {
-                    val subject = getSubject()
-
-                    subject.handle(TrackSearchUserAction.BackClicked)
-
-                    navControllerDep.backStack.isEmpty() shouldBe true
-                }
-            }
     }) {
     companion object {
         private const val QUERY = "a"

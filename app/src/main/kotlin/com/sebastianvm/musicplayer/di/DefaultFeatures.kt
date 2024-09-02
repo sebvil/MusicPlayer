@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.di
 
+import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
 import com.sebastianvm.musicplayer.features.album.details.DefaultAlbumDetailsFeature
 import com.sebastianvm.musicplayer.features.album.list.DefaultAlbumListFeature
 import com.sebastianvm.musicplayer.features.album.menu.DefaultAlbumContextMenuFeature
@@ -47,10 +48,18 @@ import com.sebastianvm.musicplayer.features.sort.DefaultSortMenuFeature
 import com.sebastianvm.musicplayer.features.track.list.DefaultTrackListFeature
 import com.sebastianvm.musicplayer.features.track.menu.DefaultTrackContextMenuFeature
 
-fun initializeFeatures(): FeatureRegistry {
+fun initializeFeatures(
+    repositoryProvider: RepositoryProvider,
+): FeatureRegistry {
     return DefaultFeatureRegistry().apply {
         register(AlbumDetailsFeature.Key, DefaultAlbumDetailsFeature())
-        register(AlbumListFeature.Key, DefaultAlbumListFeature())
+        register(
+            AlbumListFeature.Key, DefaultAlbumListFeature(
+                albumRepository = repositoryProvider.albumRepository,
+                sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
+                features = this
+            )
+        )
         register(AlbumContextMenuFeature.Key, DefaultAlbumContextMenuFeature())
 
         register(ArtistDetailsFeature.Key, DefaultArtistDetailsFeature())

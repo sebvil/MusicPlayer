@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Empty
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
@@ -35,7 +35,7 @@ class ArtistListStateHolderTest :
 
         fun TestScope.getSubject(): ArtistListStateHolder {
             return ArtistListStateHolder(
-                stateHolderScope = this,
+                viewModelScope = this,
                 artistRepository = artistRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 navController = navControllerDep,
@@ -55,11 +55,11 @@ class ArtistListStateHolderTest :
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
                     state.artists shouldBe
-                        artists.map {
-                            com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
-                                .State
-                                .fromArtist(it)
-                        }
+                            artists.map {
+                                com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
+                                    .State
+                                    .fromArtist(it)
+                            }
                 }
             }
         }
@@ -74,66 +74,66 @@ class ArtistListStateHolderTest :
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
                     state.sortButtonState shouldBe
-                        com.sebastianvm.musicplayer.core.designsystems.components.SortButton.State(
-                            text = com.sebastianvm.musicplayer.core.resources.RString.artist_name,
-                            sortOrder = MediaSortOrder.ASCENDING,
-                        )
+                            com.sebastianvm.musicplayer.core.designsystems.components.SortButton.State(
+                                text = com.sebastianvm.musicplayer.core.resources.RString.artist_name,
+                                sortOrder = MediaSortOrder.ASCENDING,
+                            )
                 }
 
                 sortPreferencesRepositoryDep.artistListSortOrder.value = MediaSortOrder.DESCENDING
                 with(awaitItem()) {
                     shouldBeInstanceOf<Data<ArtistListState>>()
                     state.sortButtonState shouldBe
-                        com.sebastianvm.musicplayer.core.designsystems.components.SortButton.State(
-                            text = com.sebastianvm.musicplayer.core.resources.RString.artist_name,
-                            sortOrder = MediaSortOrder.DESCENDING,
-                        )
+                            com.sebastianvm.musicplayer.core.designsystems.components.SortButton.State(
+                                text = com.sebastianvm.musicplayer.core.resources.RString.artist_name,
+                                sortOrder = MediaSortOrder.DESCENDING,
+                            )
                 }
             }
         }
 
         "handle" -
-            {
-                "SortByButtonClicked toggles sort order" {
-                    val subject = getSubject()
-                    subject.handle(ArtistListUserAction.SortByButtonClicked)
-                    advanceUntilIdle()
-                    sortPreferencesRepositoryDep.artistListSortOrder.value shouldBe
-                        MediaSortOrder.DESCENDING
-                }
+                {
+                    "SortByButtonClicked toggles sort order" {
+                        val subject = getSubject()
+                        subject.handle(ArtistListUserAction.SortByButtonClicked)
+                        advanceUntilIdle()
+                        sortPreferencesRepositoryDep.artistListSortOrder.value shouldBe
+                                MediaSortOrder.DESCENDING
+                    }
 
-                "ArtistClicked navigates to ArtistScreen" {
-                    val subject = getSubject()
-                    subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "ArtistDetails",
-                                    arguments = ArtistDetailsArguments(ARTIST_ID),
-                                ),
-                            navOptions =
-                                NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
-                        )
-                }
+                    "ArtistClicked navigates to ArtistScreen" {
+                        val subject = getSubject()
+                        subject.handle(ArtistListUserAction.ArtistClicked(ARTIST_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "ArtistDetails",
+                                        arguments = ArtistDetailsArguments(ARTIST_ID),
+                                    ),
+                                    navOptions =
+                                    NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
+                                )
+                    }
 
-                "ArtistMoreIconClicked navigates to ArtistContextMenu" {
-                    val subject = getSubject()
-                    subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "ArtistContextMenu",
-                                    arguments = ArtistContextMenuArguments(ARTIST_ID),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet
-                                ),
-                        )
+                    "ArtistMoreIconClicked navigates to ArtistContextMenu" {
+                        val subject = getSubject()
+                        subject.handle(ArtistListUserAction.ArtistMoreIconClicked(ARTIST_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "ArtistContextMenu",
+                                        arguments = ArtistContextMenuArguments(ARTIST_ID),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet
+                                    ),
+                                )
+                    }
                 }
-            }
     }) {
 
     companion object {

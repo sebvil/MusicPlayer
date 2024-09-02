@@ -10,7 +10,7 @@ import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.ui.mvvm.Data
 import com.sebastianvm.musicplayer.core.ui.mvvm.Loading
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
@@ -34,14 +34,14 @@ class ArtistsMenuStateHolderTest :
             media: HasArtists = MediaGroup.Album(ALBUM_ID)
         ): ArtistsMenuStateHolder {
             navControllerDep.push(
-                ArtistsMenuUiComponent(
+                ArtistsMenuMvvmComponent(
                     arguments = ArtistsMenuArguments(media = MediaGroup.Album(ALBUM_ID)),
                     navController = navControllerDep,
                 ),
                 navOptions = NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
             )
             return ArtistsMenuStateHolder(
-                stateHolderScope = this,
+                viewModelScope = this,
                 arguments = ArtistsMenuArguments(media = media),
                 artistRepository = artistRepositoryDep,
                 navController = navControllerDep,
@@ -50,74 +50,74 @@ class ArtistsMenuStateHolderTest :
         }
 
         "init sets state" -
-            {
-                "for Album" {
-                    val artists = FixtureProvider.artists()
-                    artistRepositoryDep.albumsForArtists.value =
-                        artists.map {
-                            com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist(
-                                albumId = ALBUM_ID,
-                                artistId = it.id,
-                                artistName = it.name,
-                                albumName = "",
-                                year = 0,
-                            )
+                {
+                    "for Album" {
+                        val artists = FixtureProvider.artists()
+                        artistRepositoryDep.albumsForArtists.value =
+                            artists.map {
+                                com.sebastianvm.musicplayer.core.database.entities.AlbumsForArtist(
+                                    albumId = ALBUM_ID,
+                                    artistId = it.id,
+                                    artistName = it.name,
+                                    albumName = "",
+                                    year = 0,
+                                )
+                            }
+                        artistRepositoryDep.artists.value = artists
+                        val subject = getSubject(media = MediaGroup.Album(ALBUM_ID))
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe Loading
+                            awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
+                                    ArtistsMenuState(
+                                        artists =
+                                        artists.map { artist -> ArtistRow.State.fromArtist(artist) }
+                                    )
                         }
-                    artistRepositoryDep.artists.value = artists
-                    val subject = getSubject(media = MediaGroup.Album(ALBUM_ID))
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe Loading
-                        awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
-                            ArtistsMenuState(
-                                artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
                     }
-                }
 
-                "for Track" {
-                    val artists = FixtureProvider.artists()
-                    artistRepositoryDep.artistTrackCrossRefs.value =
-                        artists.map {
-                            com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef(
-                                trackId = TRACK_ID,
-                                artistId = it.id,
-                                artistName = it.name,
-                                trackName = "",
-                            )
+                    "for Track" {
+                        val artists = FixtureProvider.artists()
+                        artistRepositoryDep.artistTrackCrossRefs.value =
+                            artists.map {
+                                com.sebastianvm.musicplayer.core.database.entities.ArtistTrackCrossRef(
+                                    trackId = TRACK_ID,
+                                    artistId = it.id,
+                                    artistName = it.name,
+                                    trackName = "",
+                                )
+                            }
+                        artistRepositoryDep.artists.value = artists
+                        val subject = getSubject(media = MediaGroup.SingleTrack(TRACK_ID))
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe Loading
+                            awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
+                                    ArtistsMenuState(
+                                        artists =
+                                        artists.map { artist -> ArtistRow.State.fromArtist(artist) }
+                                    )
                         }
-                    artistRepositoryDep.artists.value = artists
-                    val subject = getSubject(media = MediaGroup.SingleTrack(TRACK_ID))
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe Loading
-                        awaitItemAs<Data<ArtistsMenuState>>().state shouldBe
-                            ArtistsMenuState(
-                                artists =
-                                    artists.map { artist -> ArtistRow.State.fromArtist(artist) }
-                            )
                     }
                 }
-            }
 
         "handle" -
-            {
-                "ArtistClicked navigates to ArtistScreen" {
-                    val subject = getSubject()
-                    subject.handle(ArtistsMenuUserAction.ArtistClicked(ARTIST_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            FakeUiComponent(
-                                name = "ArtistDetails",
-                                arguments = ArtistDetailsArguments(ARTIST_ID),
-                            ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.Screen,
-                                ),
-                        )
+                {
+                    "ArtistClicked navigates to ArtistScreen" {
+                        val subject = getSubject()
+                        subject.handle(ArtistsMenuUserAction.ArtistClicked(ARTIST_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    FakeMvvmComponent(
+                                        name = "ArtistDetails",
+                                        arguments = ArtistDetailsArguments(ARTIST_ID),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.Screen,
+                                    ),
+                                )
+                    }
                 }
-            }
     }) {
     companion object {
         private const val ALBUM_ID = 1L

@@ -30,13 +30,13 @@ class PlaylistContextMenuStateHolderTest :
                 arguments = PlaylistContextMenuArguments(playlistId = playlistId),
                 playlistRepository = playlistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                stateHolderScope = this,
+                viewModelScope = this,
                 delegate =
-                    object : PlaylistContextMenuDelegate {
-                        override fun deletePlaylist() {
-                            delegateDeletePlaylistInvocationCount++
-                        }
-                    },
+                object : PlaylistContextMenuDelegate {
+                    override fun deletePlaylist() {
+                        delegateDeletePlaylistInvocationCount++
+                    }
+                },
             )
         }
 
@@ -48,55 +48,55 @@ class PlaylistContextMenuStateHolderTest :
             testStateHolderState(subject) {
                 awaitItem() shouldBe PlaylistContextMenuState.Loading
                 awaitItem() shouldBe
-                    PlaylistContextMenuState.Data(
-                        playlistName = playlist.name,
-                        playlistId = playlist.id,
-                        showDeleteConfirmationDialog = false,
-                    )
+                        PlaylistContextMenuState.Data(
+                            playlistName = playlist.name,
+                            playlistId = playlist.id,
+                            showDeleteConfirmationDialog = false,
+                        )
             }
         }
 
         "handle" -
-            {
-                "ConfirmPlaylistDeletionClicked deletes playlist" {
-                    val subject = getSubject()
-                    subject.handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
-                    delegateDeletePlaylistInvocationCount shouldBe 1
-                }
+                {
+                    "ConfirmPlaylistDeletionClicked deletes playlist" {
+                        val subject = getSubject()
+                        subject.handle(PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked)
+                        delegateDeletePlaylistInvocationCount shouldBe 1
+                    }
 
-                "DeletePlaylistClicked and PlaylistDeletionCancelled toggle delete confirmation dialog" {
-                    val playlist = FixtureProvider.playlist()
-                    playlistRepositoryDep.playlists.value = listOf(playlist)
+                    "DeletePlaylistClicked and PlaylistDeletionCancelled toggle delete confirmation dialog" {
+                        val playlist = FixtureProvider.playlist()
+                        playlistRepositoryDep.playlists.value = listOf(playlist)
 
-                    val subject = getSubject(playlistId = playlist.id)
-                    testStateHolderState(subject) {
-                        awaitItemAs<PlaylistContextMenuState.Loading>()
-                        awaitItemAs<PlaylistContextMenuState.Data>()
-                            .showDeleteConfirmationDialog shouldBe false
+                        val subject = getSubject(playlistId = playlist.id)
+                        testStateHolderState(subject) {
+                            awaitItemAs<PlaylistContextMenuState.Loading>()
+                            awaitItemAs<PlaylistContextMenuState.Data>()
+                                .showDeleteConfirmationDialog shouldBe false
 
-                        subject.handle(PlaylistContextMenuUserAction.DeletePlaylistClicked)
-                        awaitItemAs<PlaylistContextMenuState.Data>()
-                            .showDeleteConfirmationDialog shouldBe true
+                            subject.handle(PlaylistContextMenuUserAction.DeletePlaylistClicked)
+                            awaitItemAs<PlaylistContextMenuState.Data>()
+                                .showDeleteConfirmationDialog shouldBe true
 
-                        subject.handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled)
-                        awaitItemAs<PlaylistContextMenuState.Data>()
-                            .showDeleteConfirmationDialog shouldBe false
+                            subject.handle(PlaylistContextMenuUserAction.PlaylistDeletionCancelled)
+                            awaitItemAs<PlaylistContextMenuState.Data>()
+                                .showDeleteConfirmationDialog shouldBe false
+                        }
+                    }
+
+                    "PlayPlaylistClicked plays playlist" {
+                        val subject = getSubject()
+                        subject.handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
+                        advanceUntilIdle()
+                        playbackManagerDep.playMediaInvocations shouldBe
+                                listOf(
+                                    FakePlaybackManager.PlayMediaArguments(
+                                        MediaGroup.Playlist(PLAYLIST_ID),
+                                        initialTrackIndex = 0,
+                                    )
+                                )
                     }
                 }
-
-                "PlayPlaylistClicked plays playlist" {
-                    val subject = getSubject()
-                    subject.handle(PlaylistContextMenuUserAction.PlayPlaylistClicked)
-                    advanceUntilIdle()
-                    playbackManagerDep.playMediaInvocations shouldBe
-                        listOf(
-                            FakePlaybackManager.PlayMediaArguments(
-                                MediaGroup.Playlist(PLAYLIST_ID),
-                                initialTrackIndex = 0,
-                            )
-                        )
-                }
-            }
     }) {
     companion object {
         private const val PLAYLIST_ID = 0L

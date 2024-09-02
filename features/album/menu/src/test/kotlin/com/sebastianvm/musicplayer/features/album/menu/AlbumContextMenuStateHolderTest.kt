@@ -8,7 +8,7 @@ import com.sebastianvm.musicplayer.core.datatest.album.FakeAlbumRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
@@ -34,7 +34,7 @@ class AlbumContextMenuStateHolderTest :
         fun TestScope.getSubject(albumId: Long): AlbumContextMenuStateHolder {
             val arguments = AlbumContextMenuArguments(albumId = albumId)
             navControllerDep.push(
-                AlbumContextMenuUiComponent(
+                AlbumContextMenuMvvmComponent(
                     arguments = arguments,
                     navController = navControllerDep,
                 ),
@@ -42,7 +42,7 @@ class AlbumContextMenuStateHolderTest :
             )
             return AlbumContextMenuStateHolder(
                 arguments = arguments,
-                stateHolderScope = this,
+                viewModelScope = this,
                 albumRepository = albumRepositoryDep,
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
@@ -51,109 +51,109 @@ class AlbumContextMenuStateHolderTest :
         }
 
         "init sets state" -
-            {
-                "when album has no artists" {
-                    val album = FixtureProvider.album(artistCount = 0)
-                    albumRepositoryDep.albums.value = listOf(album)
-                    val subject = getSubject(album.id)
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe AlbumContextMenuState.Loading
-                        awaitItemAs<AlbumContextMenuState.Data>() shouldBe
-                            AlbumContextMenuState.Data(
-                                albumName = album.title,
-                                albumId = album.id,
-                                viewArtistsState = ViewArtistRow.NoArtists,
-                            )
+                {
+                    "when album has no artists" {
+                        val album = FixtureProvider.album(artistCount = 0)
+                        albumRepositoryDep.albums.value = listOf(album)
+                        val subject = getSubject(album.id)
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe AlbumContextMenuState.Loading
+                            awaitItemAs<AlbumContextMenuState.Data>() shouldBe
+                                    AlbumContextMenuState.Data(
+                                        albumName = album.title,
+                                        albumId = album.id,
+                                        viewArtistsState = ViewArtistRow.NoArtists,
+                                    )
+                        }
+                    }
+
+                    "when album has one artist" {
+                        val album = FixtureProvider.album(artistCount = 1)
+                        albumRepositoryDep.albums.value = listOf(album)
+                        val artist = album.artists.first()
+
+                        val subject = getSubject(album.id)
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe AlbumContextMenuState.Loading
+                            awaitItemAs<AlbumContextMenuState.Data>() shouldBe
+                                    AlbumContextMenuState.Data(
+                                        albumName = album.title,
+                                        albumId = album.id,
+                                        viewArtistsState = ViewArtistRow.SingleArtist(artist.id),
+                                    )
+                        }
+                    }
+
+                    "when album has multiple artists" {
+                        val album = FixtureProvider.album(artistCount = 2)
+                        albumRepositoryDep.albums.value = listOf(album)
+                        val subject = getSubject(album.id)
+                        testStateHolderState(subject) {
+                            awaitItem() shouldBe AlbumContextMenuState.Loading
+                            awaitItemAs<AlbumContextMenuState.Data>() shouldBe
+                                    AlbumContextMenuState.Data(
+                                        albumName = album.title,
+                                        albumId = album.id,
+                                        viewArtistsState = ViewArtistRow.MultipleArtists,
+                                    )
+                        }
                     }
                 }
-
-                "when album has one artist" {
-                    val album = FixtureProvider.album(artistCount = 1)
-                    albumRepositoryDep.albums.value = listOf(album)
-                    val artist = album.artists.first()
-
-                    val subject = getSubject(album.id)
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe AlbumContextMenuState.Loading
-                        awaitItemAs<AlbumContextMenuState.Data>() shouldBe
-                            AlbumContextMenuState.Data(
-                                albumName = album.title,
-                                albumId = album.id,
-                                viewArtistsState = ViewArtistRow.SingleArtist(artist.id),
-                            )
-                    }
-                }
-
-                "when album has multiple artists" {
-                    val album = FixtureProvider.album(artistCount = 2)
-                    albumRepositoryDep.albums.value = listOf(album)
-                    val subject = getSubject(album.id)
-                    testStateHolderState(subject) {
-                        awaitItem() shouldBe AlbumContextMenuState.Loading
-                        awaitItemAs<AlbumContextMenuState.Data>() shouldBe
-                            AlbumContextMenuState.Data(
-                                albumName = album.title,
-                                albumId = album.id,
-                                viewArtistsState = ViewArtistRow.MultipleArtists,
-                            )
-                    }
-                }
-            }
 
         "handle" -
-            {
-                "PlayAlbumClicked plays album" {
-                    val album = FixtureProvider.albums().first()
-                    val subject = getSubject(album.id)
-                    subject.handle(AlbumContextMenuUserAction.PlayAlbumClicked)
-                    advanceUntilIdle()
-                    playbackManagerDep.playMediaInvocations shouldBe
-                        listOf(
-                            FakePlaybackManager.PlayMediaArguments(
-                                mediaGroup = MediaGroup.Album(albumId = album.id),
-                                initialTrackIndex = 0,
-                            )
-                        )
-                }
+                {
+                    "PlayAlbumClicked plays album" {
+                        val album = FixtureProvider.albums().first()
+                        val subject = getSubject(album.id)
+                        subject.handle(AlbumContextMenuUserAction.PlayAlbumClicked)
+                        advanceUntilIdle()
+                        playbackManagerDep.playMediaInvocations shouldBe
+                                listOf(
+                                    FakePlaybackManager.PlayMediaArguments(
+                                        mediaGroup = MediaGroup.Album(albumId = album.id),
+                                        initialTrackIndex = 0,
+                                    )
+                                )
+                    }
 
-                "ViewArtistClicked shows artist screen" {
-                    val album = FixtureProvider.albums().first()
-                    val subject = getSubject(album.id)
-                    subject.handle(AlbumContextMenuUserAction.ViewArtistClicked(ARTIST_ID))
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            uiComponent =
-                                FakeUiComponent(
-                                    name = "ArtistDetails",
-                                    arguments = ArtistDetailsArguments(ARTIST_ID),
-                                ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.Screen,
-                                ),
-                        )
-                }
+                    "ViewArtistClicked shows artist screen" {
+                        val album = FixtureProvider.albums().first()
+                        val subject = getSubject(album.id)
+                        subject.handle(AlbumContextMenuUserAction.ViewArtistClicked(ARTIST_ID))
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    mvvmComponent =
+                                    FakeMvvmComponent(
+                                        name = "ArtistDetails",
+                                        arguments = ArtistDetailsArguments(ARTIST_ID),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.Screen,
+                                    ),
+                                )
+                    }
 
-                "ViewArtistsClicked shows artists menu" {
-                    val album = FixtureProvider.albums().first()
-                    val subject = getSubject(album.id)
-                    subject.handle(AlbumContextMenuUserAction.ViewArtistsClicked)
-                    navControllerDep.backStack.last() shouldBe
-                        FakeBackstackEntry(
-                            FakeUiComponent(
-                                name = "ArtistsMenu",
-                                arguments =
-                                    ArtistsMenuArguments(MediaGroup.Album(albumId = album.id)),
-                            ),
-                            navOptions =
-                                NavOptions(
-                                    popCurrent = true,
-                                    presentationMode = NavOptions.PresentationMode.BottomSheet,
-                                ),
-                        )
+                    "ViewArtistsClicked shows artists menu" {
+                        val album = FixtureProvider.albums().first()
+                        val subject = getSubject(album.id)
+                        subject.handle(AlbumContextMenuUserAction.ViewArtistsClicked)
+                        navControllerDep.backStack.last() shouldBe
+                                FakeBackstackEntry(
+                                    FakeMvvmComponent(
+                                        name = "ArtistsMenu",
+                                        arguments =
+                                        ArtistsMenuArguments(MediaGroup.Album(albumId = album.id)),
+                                    ),
+                                    navOptions =
+                                    NavOptions(
+                                        popCurrent = true,
+                                        presentationMode = NavOptions.PresentationMode.BottomSheet,
+                                    ),
+                                )
+                    }
                 }
-            }
     }) {
     companion object {
         private const val ARTIST_ID = 1L

@@ -27,7 +27,7 @@ class ArtistContextMenuStateHolderTest :
                 arguments = ArtistContextMenuArguments(artistId = artistId),
                 artistRepository = artistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
@@ -39,7 +39,7 @@ class ArtistContextMenuStateHolderTest :
             testStateHolderState(subject) {
                 awaitItem() shouldBe ArtistContextMenuState.Loading
                 awaitItemAs<ArtistContextMenuState.Data>() shouldBe
-                    ArtistContextMenuState.Data(artistName = artist.name, artistId = artist.id)
+                        ArtistContextMenuState.Data(artistName = artist.name, artistId = artist.id)
             }
         }
 
@@ -49,11 +49,11 @@ class ArtistContextMenuStateHolderTest :
             subject.handle(ArtistContextMenuUserAction.PlayArtistClicked)
             advanceUntilIdle()
             playbackManagerDep.playMediaInvocations shouldBe
-                listOf(
-                    FakePlaybackManager.PlayMediaArguments(
-                        mediaGroup = MediaGroup.Artist(artistId = artist.id),
-                        initialTrackIndex = 0,
+                    listOf(
+                        FakePlaybackManager.PlayMediaArguments(
+                            mediaGroup = MediaGroup.Artist(artistId = artist.id),
+                            initialTrackIndex = 0,
+                        )
                     )
-                )
         }
     })

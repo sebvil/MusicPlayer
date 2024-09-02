@@ -23,7 +23,7 @@ import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeUiComponent
+import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
@@ -65,284 +65,312 @@ class SearchStateHolderTest :
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
                 features = initializeFakeFeatures(),
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
         "handle" -
-            {
-                "TextChanged updates search results" -
-                    {
-                        "for tracks" {
-                            val queryResults = FixtureProvider.tracks()
-                            val results = mapOf("" to emptyList(), QUERY to queryResults)
-                            val subject = getSubject(trackResultsMap = results)
+                {
+                    "TextChanged updates search results" -
+                            {
+                                "for tracks" {
+                                    val queryResults = FixtureProvider.tracks()
+                                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                                    val subject = getSubject(trackResultsMap = results)
 
-                            testStateHolderState(subject) {
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults = emptyList(),
-                                    )
-                                subject.handle(SearchUserAction.TextChanged(QUERY))
-
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults =
-                                            queryResults.map {
-                                                SearchResult.Track(TrackRow.State.fromTrack(it))
-                                            },
-                                    )
-                            }
-                        }
-
-                        "for artists" {
-                            val queryResults = FixtureProvider.artists().map { it.toBasicArtist() }
-                            val results = mapOf("" to emptyList(), QUERY to queryResults)
-                            val subject = getSubject(artistResultsMap = results)
-
-                            testStateHolderState(subject) {
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults = emptyList(),
-                                    )
-                                subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ARTISTS)
-                                )
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.ARTISTS,
-                                        searchResults = emptyList(),
-                                    )
-                                subject.handle(SearchUserAction.TextChanged(QUERY))
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.ARTISTS,
-                                        searchResults =
-                                            queryResults.map {
-                                                SearchResult.Artist(ArtistRow.State.fromArtist(it))
-                                            },
-                                    )
-                            }
-                        }
-
-                        "for albums" {
-                            val queryResults =
-                                FixtureProvider.albums().map { it.toAlbumWithArtists() }
-                            val results = mapOf("" to emptyList(), QUERY to queryResults)
-                            val subject = getSubject(albumResultsMap = results)
-
-                            testStateHolderState(subject) {
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.ALBUMS)
-                                )
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.ALBUMS,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(SearchUserAction.TextChanged(QUERY))
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.ALBUMS,
-                                        searchResults =
-                                            queryResults.map {
-                                                SearchResult.Album(AlbumRow.State.fromAlbum(it))
-                                            },
-                                    )
-                            }
-                        }
-
-                        "for genres" {
-                            val queryResults = FixtureProvider.genres().map { it.toBasicGenre() }
-                            val results = mapOf("" to emptyList(), QUERY to queryResults)
-                            val subject = getSubject(genreResultsMap = results)
-
-                            testStateHolderState(subject) {
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.GENRES)
-                                )
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.GENRES,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(SearchUserAction.TextChanged(QUERY))
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.GENRES,
-                                        searchResults =
-                                            queryResults.map {
-                                                SearchResult.Genre(GenreRow.State.fromGenre(it))
-                                            },
-                                    )
-                            }
-                        }
-
-                        "for playlists" {
-                            val queryResults =
-                                FixtureProvider.playlists().map { it.toBasicPlaylist() }
-                            val results = mapOf("" to emptyList(), QUERY to queryResults)
-                            val subject = getSubject(playlistResultsMap = results)
-
-                            testStateHolderState(subject) {
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.TRACKS,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(
-                                    SearchUserAction.SearchModeChanged(SearchMode.PLAYLISTS)
-                                )
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.PLAYLISTS,
-                                        searchResults = emptyList(),
-                                    )
-
-                                subject.handle(SearchUserAction.TextChanged(QUERY))
-                                awaitItem() shouldBe
-                                    SearchState(
-                                        selectedOption = SearchMode.PLAYLISTS,
-                                        searchResults =
-                                            queryResults.map {
-                                                SearchResult.Playlist(
-                                                    PlaylistRow.State.fromPlaylist(it)
+                                    testStateHolderState(subject) {
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults = emptyList(),
                                                 )
-                                            },
-                                    )
+                                        subject.handle(SearchUserAction.TextChanged(QUERY))
+
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults =
+                                                    queryResults.map {
+                                                        SearchResult.Track(
+                                                            TrackRow.State.fromTrack(
+                                                                it
+                                                            )
+                                                        )
+                                                    },
+                                                )
+                                    }
+                                }
+
+                                "for artists" {
+                                    val queryResults =
+                                        FixtureProvider.artists().map { it.toBasicArtist() }
+                                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                                    val subject = getSubject(artistResultsMap = results)
+
+                                    testStateHolderState(subject) {
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults = emptyList(),
+                                                )
+                                        subject.handle(
+                                            SearchUserAction.SearchModeChanged(SearchMode.ARTISTS)
+                                        )
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.ARTISTS,
+                                                    searchResults = emptyList(),
+                                                )
+                                        subject.handle(SearchUserAction.TextChanged(QUERY))
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.ARTISTS,
+                                                    searchResults =
+                                                    queryResults.map {
+                                                        SearchResult.Artist(
+                                                            ArtistRow.State.fromArtist(
+                                                                it
+                                                            )
+                                                        )
+                                                    },
+                                                )
+                                    }
+                                }
+
+                                "for albums" {
+                                    val queryResults =
+                                        FixtureProvider.albums().map { it.toAlbumWithArtists() }
+                                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                                    val subject = getSubject(albumResultsMap = results)
+
+                                    testStateHolderState(subject) {
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(
+                                            SearchUserAction.SearchModeChanged(SearchMode.ALBUMS)
+                                        )
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.ALBUMS,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(SearchUserAction.TextChanged(QUERY))
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.ALBUMS,
+                                                    searchResults =
+                                                    queryResults.map {
+                                                        SearchResult.Album(
+                                                            AlbumRow.State.fromAlbum(
+                                                                it
+                                                            )
+                                                        )
+                                                    },
+                                                )
+                                    }
+                                }
+
+                                "for genres" {
+                                    val queryResults =
+                                        FixtureProvider.genres().map { it.toBasicGenre() }
+                                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                                    val subject = getSubject(genreResultsMap = results)
+
+                                    testStateHolderState(subject) {
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(
+                                            SearchUserAction.SearchModeChanged(SearchMode.GENRES)
+                                        )
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.GENRES,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(SearchUserAction.TextChanged(QUERY))
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.GENRES,
+                                                    searchResults =
+                                                    queryResults.map {
+                                                        SearchResult.Genre(
+                                                            GenreRow.State.fromGenre(
+                                                                it
+                                                            )
+                                                        )
+                                                    },
+                                                )
+                                    }
+                                }
+
+                                "for playlists" {
+                                    val queryResults =
+                                        FixtureProvider.playlists().map { it.toBasicPlaylist() }
+                                    val results = mapOf("" to emptyList(), QUERY to queryResults)
+                                    val subject = getSubject(playlistResultsMap = results)
+
+                                    testStateHolderState(subject) {
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.TRACKS,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(
+                                            SearchUserAction.SearchModeChanged(SearchMode.PLAYLISTS)
+                                        )
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.PLAYLISTS,
+                                                    searchResults = emptyList(),
+                                                )
+
+                                        subject.handle(SearchUserAction.TextChanged(QUERY))
+                                        awaitItem() shouldBe
+                                                SearchState(
+                                                    selectedOption = SearchMode.PLAYLISTS,
+                                                    searchResults =
+                                                    queryResults.map {
+                                                        SearchResult.Playlist(
+                                                            PlaylistRow.State.fromPlaylist(it)
+                                                        )
+                                                    },
+                                                )
+                                    }
+                                }
                             }
-                        }
-                    }
-                "SearchResultClicked" -
-                    {
-                        "for track plays track" {
-                            val subject = getSubject()
-                            val track = FixtureProvider.track()
-                            subject.handle(
-                                SearchUserAction.SearchResultClicked(
-                                    SearchResult.Track(TrackRow.State.fromTrack(track))
-                                )
-                            )
-                            advanceUntilIdle()
-                            playbackManagerDep.playMediaInvocations shouldBe
-                                listOf(
-                                    FakePlaybackManager.PlayMediaArguments(
-                                        mediaGroup = MediaGroup.SingleTrack(track.id),
-                                        initialTrackIndex = 0,
+                    "SearchResultClicked" -
+                            {
+                                "for track plays track" {
+                                    val subject = getSubject()
+                                    val track = FixtureProvider.track()
+                                    subject.handle(
+                                        SearchUserAction.SearchResultClicked(
+                                            SearchResult.Track(TrackRow.State.fromTrack(track))
+                                        )
                                     )
-                                )
-                        }
+                                    advanceUntilIdle()
+                                    playbackManagerDep.playMediaInvocations shouldBe
+                                            listOf(
+                                                FakePlaybackManager.PlayMediaArguments(
+                                                    mediaGroup = MediaGroup.SingleTrack(track.id),
+                                                    initialTrackIndex = 0,
+                                                )
+                                            )
+                                }
 
-                        "for artist navigates to artist details" {
-                            val subject = getSubject()
-                            val artist = FixtureProvider.artist()
-                            subject.handle(
-                                SearchUserAction.SearchResultClicked(
-                                    SearchResult.Artist(ArtistRow.State.fromArtist(artist))
-                                )
-                            )
-                            navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    FakeUiComponent(
-                                        name = "ArtistDetails",
-                                        arguments = ArtistDetailsArguments(artist.id),
-                                    ),
-                                    navOptions =
-                                        NavOptions(
-                                            presentationMode = NavOptions.PresentationMode.Screen
-                                        ),
-                                )
-                        }
-
-                        "for album navigates to album details" {
-                            val subject = getSubject()
-                            val album = FixtureProvider.album().toAlbumWithArtists()
-                            subject.handle(
-                                SearchUserAction.SearchResultClicked(
-                                    SearchResult.Album(AlbumRow.State.fromAlbum(album))
-                                )
-                            )
-                            navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    uiComponent =
-                                        FakeUiComponent(
-                                            name = "AlbumDetails",
-                                            arguments =
-                                                AlbumDetailsArguments(
-                                                    albumId = album.id,
-                                                    albumName = album.title,
-                                                    imageUri = album.imageUri,
-                                                    artists = album.artists.joinToString { it.name },
+                                "for artist navigates to artist details" {
+                                    val subject = getSubject()
+                                    val artist = FixtureProvider.artist()
+                                    subject.handle(
+                                        SearchUserAction.SearchResultClicked(
+                                            SearchResult.Artist(ArtistRow.State.fromArtist(artist))
+                                        )
+                                    )
+                                    navControllerDep.backStack.last() shouldBe
+                                            FakeBackstackEntry(
+                                                FakeMvvmComponent(
+                                                    name = "ArtistDetails",
+                                                    arguments = ArtistDetailsArguments(artist.id),
                                                 ),
-                                        ),
-                                    navOptions =
-                                        NavOptions(
-                                            presentationMode = NavOptions.PresentationMode.Screen
-                                        ),
-                                )
-                        }
+                                                navOptions =
+                                                NavOptions(
+                                                    presentationMode = NavOptions.PresentationMode.Screen
+                                                ),
+                                            )
+                                }
 
-                        "for genre navigates to genre details" {
-                            val subject = getSubject()
-                            val genre = FixtureProvider.genre()
-                            subject.handle(
-                                SearchUserAction.SearchResultClicked(
-                                    SearchResult.Genre(GenreRow.State.fromGenre(genre))
-                                )
-                            )
-                            navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    FakeUiComponent(
-                                        name = "GenreDetails",
-                                        arguments = GenreDetailsArguments(genre.id, genre.name),
-                                    ),
-                                    navOptions =
-                                        NavOptions(
-                                            presentationMode = NavOptions.PresentationMode.Screen
-                                        ),
-                                )
-                        }
+                                "for album navigates to album details" {
+                                    val subject = getSubject()
+                                    val album = FixtureProvider.album().toAlbumWithArtists()
+                                    subject.handle(
+                                        SearchUserAction.SearchResultClicked(
+                                            SearchResult.Album(AlbumRow.State.fromAlbum(album))
+                                        )
+                                    )
+                                    navControllerDep.backStack.last() shouldBe
+                                            FakeBackstackEntry(
+                                                mvvmComponent =
+                                                FakeMvvmComponent(
+                                                    name = "AlbumDetails",
+                                                    arguments =
+                                                    AlbumDetailsArguments(
+                                                        albumId = album.id,
+                                                        albumName = album.title,
+                                                        imageUri = album.imageUri,
+                                                        artists = album.artists.joinToString { it.name },
+                                                    ),
+                                                ),
+                                                navOptions =
+                                                NavOptions(
+                                                    presentationMode = NavOptions.PresentationMode.Screen
+                                                ),
+                                            )
+                                }
 
-                        "for playlist navigates to playlist details" {
-                            val subject = getSubject()
-                            val playlist = FixtureProvider.playlist().toBasicPlaylist()
-                            subject.handle(
-                                SearchUserAction.SearchResultClicked(
-                                    SearchResult.Playlist(PlaylistRow.State.fromPlaylist(playlist))
-                                )
-                            )
+                                "for genre navigates to genre details" {
+                                    val subject = getSubject()
+                                    val genre = FixtureProvider.genre()
+                                    subject.handle(
+                                        SearchUserAction.SearchResultClicked(
+                                            SearchResult.Genre(GenreRow.State.fromGenre(genre))
+                                        )
+                                    )
+                                    navControllerDep.backStack.last() shouldBe
+                                            FakeBackstackEntry(
+                                                FakeMvvmComponent(
+                                                    name = "GenreDetails",
+                                                    arguments = GenreDetailsArguments(
+                                                        genre.id,
+                                                        genre.name
+                                                    ),
+                                                ),
+                                                navOptions =
+                                                NavOptions(
+                                                    presentationMode = NavOptions.PresentationMode.Screen
+                                                ),
+                                            )
+                                }
 
-                            navControllerDep.backStack.last() shouldBe
-                                FakeBackstackEntry(
-                                    FakeUiComponent(
-                                        name = "PlaylistDetails",
-                                        arguments =
-                                            PlaylistDetailsArguments(playlist.id, playlist.name),
-                                    ),
-                                    navOptions =
-                                        NavOptions(
-                                            presentationMode = NavOptions.PresentationMode.Screen
-                                        ),
-                                )
-                        }
-                    }
-            }
+                                "for playlist navigates to playlist details" {
+                                    val subject = getSubject()
+                                    val playlist = FixtureProvider.playlist().toBasicPlaylist()
+                                    subject.handle(
+                                        SearchUserAction.SearchResultClicked(
+                                            SearchResult.Playlist(
+                                                PlaylistRow.State.fromPlaylist(
+                                                    playlist
+                                                )
+                                            )
+                                        )
+                                    )
+
+                                    navControllerDep.backStack.last() shouldBe
+                                            FakeBackstackEntry(
+                                                FakeMvvmComponent(
+                                                    name = "PlaylistDetails",
+                                                    arguments =
+                                                    PlaylistDetailsArguments(
+                                                        playlist.id,
+                                                        playlist.name
+                                                    ),
+                                                ),
+                                                navOptions =
+                                                NavOptions(
+                                                    presentationMode = NavOptions.PresentationMode.Screen
+                                                ),
+                                            )
+                                }
+                            }
+                }
     })

@@ -29,7 +29,7 @@ class GenreContextMenuStateHolderTest :
                 arguments = GenreContextMenuArguments(genreId = genreId),
                 genreRepository = genreRepositoryDep,
                 playbackManager = playbackManagerDep,
-                stateHolderScope = this,
+                viewModelScope = this,
             )
         }
 
@@ -40,35 +40,35 @@ class GenreContextMenuStateHolderTest :
             val subject = getSubject(genre.id)
             testStateHolderState(subject) {
                 awaitItem() shouldBe
-                    com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Loading
+                        com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Loading
                 awaitItemAs<
-                    com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Data
-                >() shouldBe
-                    com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Data(
-                        genreName = genre.name,
-                        genreId = genre.id,
-                    )
+                        com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Data
+                        >() shouldBe
+                        com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuState.Data(
+                            genreName = genre.name,
+                            genreId = genre.id,
+                        )
             }
         }
 
         "handle" -
-            {
-                "PlayGenreClicked plays genre" {
-                    val subject = getSubject(GENRE_ID)
-                    subject.handle(
-                        com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuUserAction
-                            .PlayGenreClicked
-                    )
-                    advanceUntilIdle()
-                    playbackManagerDep.playMediaInvocations shouldBe
-                        listOf(
-                            FakePlaybackManager.PlayMediaArguments(
-                                mediaGroup = MediaGroup.Genre(genreId = GENRE_ID),
-                                initialTrackIndex = 0,
-                            )
+                {
+                    "PlayGenreClicked plays genre" {
+                        val subject = getSubject(GENRE_ID)
+                        subject.handle(
+                            com.sebastianvm.musicplayer.features.genre.menu.GenreContextMenuUserAction
+                                .PlayGenreClicked
                         )
+                        advanceUntilIdle()
+                        playbackManagerDep.playMediaInvocations shouldBe
+                                listOf(
+                                    FakePlaybackManager.PlayMediaArguments(
+                                        mediaGroup = MediaGroup.Genre(genreId = GENRE_ID),
+                                        initialTrackIndex = 0,
+                                    )
+                                )
+                    }
                 }
-            }
     }) {
     companion object {
         private const val GENRE_ID = 0L
