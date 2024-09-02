@@ -84,7 +84,7 @@ kover {
         filters {
             includes {
                 // inclusion rules - classes only those that will be present in reports
-                classes("*StateHolder", "*ViewModel")
+                classes("*ViewModel")
             }
         }
     }

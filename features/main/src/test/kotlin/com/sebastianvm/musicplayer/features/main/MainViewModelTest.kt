@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.features.main
 
-import com.sebastianvm.musicplayer.core.commontest.extensions.testStateHolderState
+import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -17,7 +16,7 @@ class MainViewModelTest :
 
         fun TestScope.getSubject(): MainViewModel {
             return MainViewModel(
-                stateHolderScope = CloseableCoroutineScope(coroutineContext),
+                vmScope = this,
                 playbackManager = playbackManagerDep,
                 features = initializeFakeFeatures(),
             )
@@ -41,7 +40,7 @@ class MainViewModelTest :
 
                 "ExpandPlayer and CollapsePlayer toggle player expanded state" {
                     val subject = getSubject()
-                    testStateHolderState(subject) {
+                    testViewModelState(subject) {
                         awaitItem().isFullscreen shouldBe false
                         subject.handle(MainUserAction.ExpandPlayer)
                         awaitItem().isFullscreen shouldBe true

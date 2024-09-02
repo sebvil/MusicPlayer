@@ -68,7 +68,7 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            state.playerUiComponent.Content(
+            state.playerMvvmComponent.Content(
                 modifier =
                     Modifier.fillMaxWidth()
                         .padding(bottom = paddingBottom)
@@ -87,7 +87,7 @@ fun MainApp(state: MainState, handle: Handler<MainUserAction>, modifier: Modifie
             LocalPaddingValues provides
                 PaddingValues(bottom = paddingValues.calculateBottomPadding())
         ) {
-            state.appNavigationHostUiComponent.Content(modifier = Modifier)
+            state.appNavigationHostMvvmComponent.Content(modifier = Modifier)
         }
     }
 }

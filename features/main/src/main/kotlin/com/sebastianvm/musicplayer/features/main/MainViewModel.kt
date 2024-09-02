@@ -6,17 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.CloseableCoroutineScope
+import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
+import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.StateHolder
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
-import com.sebastianvm.musicplayer.core.ui.mvvm.stateHolderScope
-import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.navigation.navigationFeature
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import com.sebastianvm.musicplayer.features.api.player.playerFeature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class MainViewModel(
-    override val stateHolderScope: CloseableCoroutineScope = stateHolderScope(),
+    vmScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : StateHolder<MainState, MainUserAction>, ViewModel(viewModelScope = stateHolderScope) {
+) : BaseViewModel<MainState, MainUserAction>(viewModelScope = vmScope) {
 
     private val appNavigationHostUiComponent = features.navigationFeature().navigationUiComponent()
 
@@ -52,8 +52,8 @@ class MainViewModel(
         playerProps
             .map { props ->
                 MainState(
-                    playerUiComponent = playerUiComponent,
-                    appNavigationHostUiComponent = appNavigationHostUiComponent,
+                    playerMvvmComponent = playerUiComponent,
+                    appNavigationHostMvvmComponent = appNavigationHostUiComponent,
                     isFullscreen = props.isFullscreen,
                 )
             }
@@ -62,8 +62,8 @@ class MainViewModel(
                 started = SharingStarted.Lazily,
                 initialValue =
                     MainState(
-                        playerUiComponent = playerUiComponent,
-                        appNavigationHostUiComponent = appNavigationHostUiComponent,
+                        playerMvvmComponent = playerUiComponent,
+                        appNavigationHostMvvmComponent = appNavigationHostUiComponent,
                         isFullscreen = false,
                     ),
             )
@@ -102,8 +102,8 @@ class MainViewModel(
 }
 
 data class MainState(
-    val playerUiComponent: UiComponent<*>,
-    val appNavigationHostUiComponent: UiComponent<*>,
+    val playerMvvmComponent: MvvmComponent,
+    val appNavigationHostMvvmComponent: MvvmComponent,
     val isFullscreen: Boolean,
 ) : State
 

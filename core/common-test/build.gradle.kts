@@ -12,6 +12,8 @@ dependencies {
     implementation(projects.core.services)
     implementation(projects.core.ui)
 
+    implementation(libs.lifecycle.viewmodel.ktx)
+
     implementation(libs.fixture.monkey.kotest)
     implementation(libs.fixture.monkey)
     implementation(libs.bundles.testing)

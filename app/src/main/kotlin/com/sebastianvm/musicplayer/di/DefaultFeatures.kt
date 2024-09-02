@@ -1,5 +1,7 @@
 package com.sebastianvm.musicplayer.di
 
+import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.features.album.details.DefaultAlbumDetailsFeature
 import com.sebastianvm.musicplayer.features.album.list.DefaultAlbumListFeature
 import com.sebastianvm.musicplayer.features.album.menu.DefaultAlbumContextMenuFeature
@@ -47,40 +49,163 @@ import com.sebastianvm.musicplayer.features.sort.DefaultSortMenuFeature
 import com.sebastianvm.musicplayer.features.track.list.DefaultTrackListFeature
 import com.sebastianvm.musicplayer.features.track.menu.DefaultTrackContextMenuFeature
 
-fun initializeFeatures(): FeatureRegistry {
+fun initializeFeatures(
+    repositoryProvider: RepositoryProvider,
+    playbackManager: PlaybackManager,
+): FeatureRegistry {
     return DefaultFeatureRegistry().apply {
-        register(AlbumDetailsFeature.Key, DefaultAlbumDetailsFeature())
-        register(AlbumListFeature.Key, DefaultAlbumListFeature())
-        register(AlbumContextMenuFeature.Key, DefaultAlbumContextMenuFeature())
+        register(
+            key = AlbumDetailsFeature.Key,
+            feature =
+                DefaultAlbumDetailsFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
+        register(
+            key = AlbumListFeature.Key,
+            feature =
+                DefaultAlbumListFeature(repositoryProvider = repositoryProvider, features = this),
+        )
+        register(
+            key = AlbumContextMenuFeature.Key,
+            feature =
+                DefaultAlbumContextMenuFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
 
-        register(ArtistDetailsFeature.Key, DefaultArtistDetailsFeature())
-        register(ArtistListFeature.Key, DefaultArtistListFeature())
-        register(ArtistContextMenuFeature.Key, DefaultArtistContextMenuFeature())
+        register(
+            key = ArtistDetailsFeature.Key,
+            feature =
+                DefaultArtistDetailsFeature(
+                    repositoryProvider = repositoryProvider,
+                    features = this,
+                ),
+        )
+        register(
+            key = ArtistListFeature.Key,
+            feature =
+                DefaultArtistListFeature(repositoryProvider = repositoryProvider, features = this),
+        )
+        register(
+            key = ArtistContextMenuFeature.Key,
+            feature =
+                DefaultArtistContextMenuFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                ),
+        )
 
-        register(ArtistsMenuFeature.Key, DefaultArtistsMenuFeature())
+        register(
+            key = ArtistsMenuFeature.Key,
+            feature =
+                DefaultArtistsMenuFeature(repositoryProvider = repositoryProvider, features = this),
+        )
 
-        register(GenreDetailsFeature.Key, DefaultGenreDetailsFeature())
-        register(GenreListFeature.Key, DefaultGenreListFeature())
-        register(GenreContextMenuFeature.Key, DefaultGenreContextMenuFeature())
+        register(
+            key = GenreDetailsFeature.Key,
+            feature =
+                DefaultGenreDetailsFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
+        register(
+            key = GenreListFeature.Key,
+            feature =
+                DefaultGenreListFeature(repositoryProvider = repositoryProvider, features = this),
+        )
+        register(
+            key = GenreContextMenuFeature.Key,
+            feature =
+                DefaultGenreContextMenuFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                ),
+        )
 
-        register(HomeFeature.Key, DefaultHomeFeature())
+        register(key = HomeFeature.Key, feature = DefaultHomeFeature(features = this))
 
-        register(NavigationFeature.Key, DefaultNavigationFeature())
+        register(key = NavigationFeature.Key, feature = DefaultNavigationFeature(features = this))
 
-        register(PlayerFeature.Key, DefaultPlayerFeature())
+        register(
+            key = PlayerFeature.Key,
+            feature = DefaultPlayerFeature(playbackManager = playbackManager, features = this),
+        )
 
-        register(PlaylistDetailsFeature.Key, DefaultPlaylistDetailsFeature())
-        register(PlaylistListFeature.Key, DefaultPlaylistListFeature())
-        register(PlaylistContextMenuFeature.Key, DefaultPlaylistContextMenuFeature())
-        register(TrackSearchFeature.Key, DefaultTrackSearchFeature())
+        register(
+            key = PlaylistDetailsFeature.Key,
+            feature =
+                DefaultPlaylistDetailsFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
+        register(
+            key = PlaylistListFeature.Key,
+            feature =
+                DefaultPlaylistListFeature(repositoryProvider = repositoryProvider, features = this),
+        )
+        register(
+            key = PlaylistContextMenuFeature.Key,
+            feature =
+                DefaultPlaylistContextMenuFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                ),
+        )
+        register(
+            key = TrackSearchFeature.Key,
+            feature = DefaultTrackSearchFeature(repositoryProvider = repositoryProvider),
+        )
 
-        register(SearchFeature.Key, DefaultSearchFeature())
+        register(
+            key = SearchFeature.Key,
+            feature =
+                DefaultSearchFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
 
-        register(SortMenuFeature.Key, DefaultSortMenuFeature())
+        register(
+            key = SortMenuFeature.Key,
+            feature = DefaultSortMenuFeature(repositoryProvider = repositoryProvider),
+        )
 
-        register(TrackListFeature.Key, DefaultTrackListFeature())
-        register(TrackContextMenuFeature.Key, DefaultTrackContextMenuFeature())
+        register(
+            key = TrackListFeature.Key,
+            feature =
+                DefaultTrackListFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
+        register(
+            key = TrackContextMenuFeature.Key,
+            feature =
+                DefaultTrackContextMenuFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                    features = this,
+                ),
+        )
 
-        register(QueueFeature.Key, DefaultQueueFeature())
+        register(
+            key = QueueFeature.Key,
+            feature =
+                DefaultQueueFeature(
+                    repositoryProvider = repositoryProvider,
+                    playbackManager = playbackManager,
+                ),
+        )
     }
 }

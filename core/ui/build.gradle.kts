@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui)
 
+    implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.coil)
     implementation(libs.coil.compose)

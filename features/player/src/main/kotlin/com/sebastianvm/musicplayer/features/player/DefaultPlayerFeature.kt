@@ -1,16 +1,26 @@
 package com.sebastianvm.musicplayer.features.player
 
-import com.sebastianvm.musicplayer.core.ui.navigation.UiComponent
+import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerFeature
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
+import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.flow.Flow
 
-class DefaultPlayerFeature : PlayerFeature {
+class DefaultPlayerFeature(
+    private val playbackManager: PlaybackManager,
+    private val features: FeatureRegistry,
+) : PlayerFeature {
     override fun playerUiComponent(
         props: Flow<PlayerProps>,
         delegate: PlayerDelegate,
-    ): UiComponent<*> {
-        return PlayerUiComponent(delegate, props)
+    ): MvvmComponent {
+        return PlayerMvvmComponent(
+            delegate = delegate,
+            props = props,
+            playbackManager = playbackManager,
+            features = features,
+        )
     }
 }
