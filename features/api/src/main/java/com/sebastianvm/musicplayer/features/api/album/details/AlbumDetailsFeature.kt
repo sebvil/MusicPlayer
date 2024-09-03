@@ -9,7 +9,7 @@ interface AlbumDetailsFeature : Feature {
     fun albumDetailsUiComponent(
         arguments: AlbumDetailsArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

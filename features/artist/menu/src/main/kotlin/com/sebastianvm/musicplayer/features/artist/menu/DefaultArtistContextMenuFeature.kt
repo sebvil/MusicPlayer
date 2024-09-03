@@ -12,7 +12,7 @@ class DefaultArtistContextMenuFeature(
 ) : ArtistContextMenuFeature {
     override fun artistContextMenuUiComponent(
         arguments: ArtistContextMenuArguments
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return ArtistContextMenuMvvmComponent(
             arguments = arguments,
             artistRepository = repositoryProvider.artistRepository,

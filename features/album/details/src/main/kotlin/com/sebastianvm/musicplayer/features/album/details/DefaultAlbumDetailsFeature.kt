@@ -16,7 +16,7 @@ class DefaultAlbumDetailsFeature(
     override fun albumDetailsUiComponent(
         arguments: AlbumDetailsArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return AlbumDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,

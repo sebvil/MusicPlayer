@@ -8,7 +8,7 @@ interface PlaylistContextMenuFeature : Feature {
     fun playlistContextMenuUiComponent(
         arguments: PlaylistContextMenuArguments,
         delegate: PlaylistContextMenuDelegate,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

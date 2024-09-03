@@ -24,45 +24,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-data class ArtistDetailsMvvmComponent(
-    val arguments: ArtistDetailsArguments,
-    val navController: NavController,
-    private val artistRepository: ArtistRepository,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<ArtistDetailsState, ArtistDetailsUserAction, ArtistDetailsViewModel>() {
-
-    override val viewModel: ArtistDetailsViewModel by lazy {
-        ArtistDetailsViewModel(
-            arguments = arguments,
-            artistRepository = artistRepository,
-            navController = navController,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: ArtistDetailsState,
-        handle: Handler<ArtistDetailsUserAction>,
-        modifier: Modifier,
-    ) {
-        ArtistDetails(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = ArtistDetailsViewModel::class)
 @Composable
 fun ArtistDetails(
     state: ArtistDetailsState,

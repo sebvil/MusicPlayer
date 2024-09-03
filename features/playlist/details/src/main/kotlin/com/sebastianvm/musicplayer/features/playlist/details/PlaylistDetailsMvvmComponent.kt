@@ -22,52 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.EmptyScreen
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class PlaylistDetailsMvvmComponent(
-    private val arguments: PlaylistDetailsArguments,
-    private val navController: NavController,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-    private val playbackManager: PlaybackManager,
-    private val playlistRepository: PlaylistRepository,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<PlaylistDetailsState, PlaylistDetailsUserAction, PlaylistDetailsViewModel>() {
-
-    override val viewModel: PlaylistDetailsViewModel by lazy {
-        PlaylistDetailsViewModel(
-            args = arguments,
-            navController = navController,
-            sortPreferencesRepository = sortPreferencesRepository,
-            playbackManager = playbackManager,
-            playlistRepository = playlistRepository,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: PlaylistDetailsState,
-        handle: Handler<PlaylistDetailsUserAction>,
-        modifier: Modifier,
-    ) {
-        PlaylistDetails(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = PlaylistDetailsViewModel::class)
 @Composable
 fun PlaylistDetails(
     state: PlaylistDetailsState,

@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface SearchFeature : Feature {
-    fun searchUiComponent(navController: NavController): MvvmComponent
+    fun searchUiComponent(navController: NavController): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

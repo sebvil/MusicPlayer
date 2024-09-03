@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.features.api.home.HomeFeature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 class DefaultHomeFeature(private val features: FeatureRegistry) : HomeFeature {
-    override fun homeUiComponent(navController: NavController): MvvmComponent {
+    override fun homeUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return HomeMvvmComponent(navController = navController, features = features)
     }
 }

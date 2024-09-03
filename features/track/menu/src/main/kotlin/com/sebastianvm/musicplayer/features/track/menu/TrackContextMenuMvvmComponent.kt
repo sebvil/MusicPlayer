@@ -6,56 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-data class TrackContextMenuMvvmComponent(
-    val arguments: TrackContextMenuArguments,
-    val navController: NavController,
-    private val trackRepository: TrackRepository,
-    private val playlistRepository: PlaylistRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) :
-    BaseMvvmComponent<
-        TrackContextMenuState,
-        TrackContextMenuUserAction,
-        TrackContextMenuViewModel,
-    >() {
-
-    override val viewModel: TrackContextMenuViewModel by lazy {
-        TrackContextMenuViewModel(
-            arguments = arguments,
-            trackRepository = trackRepository,
-            playlistRepository = playlistRepository,
-            playbackManager = playbackManager,
-            navController = navController,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: TrackContextMenuState,
-        handle: Handler<TrackContextMenuUserAction>,
-        modifier: Modifier,
-    ) {
-        TrackContextMenu(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = TrackContextMenuViewModel::class)
 @Composable
-private fun TrackContextMenu(
+fun TrackContextMenu(
     state: TrackContextMenuState,
     handle: Handler<TrackContextMenuUserAction>,
     modifier: Modifier = Modifier,

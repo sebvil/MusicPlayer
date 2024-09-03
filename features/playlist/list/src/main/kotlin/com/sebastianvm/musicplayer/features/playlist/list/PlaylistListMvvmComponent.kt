@@ -21,8 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.EmptyScreen
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.PlaylistRow
@@ -30,36 +29,7 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
-
-class PlaylistListMvvmComponent(
-    private val navController: NavController,
-    private val playlistRepository: PlaylistRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<PlaylistListState, PlaylistListUserAction, PlaylistListViewModel>() {
-
-    @Composable
-    override fun Content(
-        state: PlaylistListState,
-        handle: Handler<PlaylistListUserAction>,
-        modifier: Modifier,
-    ) {
-        PlaylistList(state = state, handle = handle, modifier = modifier)
-    }
-
-    override val viewModel: PlaylistListViewModel by lazy {
-        PlaylistListViewModel(
-            playlistRepository = playlistRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
-            navController = navController,
-            features = features,
-        )
-    }
-}
 
 @Composable
 fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
@@ -71,6 +41,7 @@ fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
     )
 }
 
+@MvvmComponent(vmClass = PlaylistListViewModel::class)
 @Composable
 fun PlaylistList(
     state: PlaylistListState,

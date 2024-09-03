@@ -9,7 +9,7 @@ interface TrackContextMenuFeature : Feature {
     fun trackContextMenuUiComponent(
         arguments: TrackContextMenuArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

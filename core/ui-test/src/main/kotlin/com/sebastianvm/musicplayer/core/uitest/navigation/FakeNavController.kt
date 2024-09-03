@@ -1,13 +1,13 @@
 package com.sebastianvm.musicplayer.core.uitest.navigation
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 
 class FakeNavController : NavController {
     val backStack = mutableListOf<FakeBackstackEntry>()
 
-    override fun push(mvvmComponent: MvvmComponent, navOptions: NavOptions) {
+    override fun push(mvvmComponent: UiComponent, navOptions: NavOptions) {
         backStack.add(FakeBackstackEntry(mvvmComponent, navOptions))
     }
 
@@ -16,4 +16,4 @@ class FakeNavController : NavController {
     }
 }
 
-data class FakeBackstackEntry(val mvvmComponent: MvvmComponent, val navOptions: NavOptions)
+data class FakeBackstackEntry(val mvvmComponent: UiComponent, val navOptions: NavOptions)

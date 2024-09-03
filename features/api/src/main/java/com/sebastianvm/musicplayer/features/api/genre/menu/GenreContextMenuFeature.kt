@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface GenreContextMenuFeature : Feature {
-    fun genreContextMenuUiComponent(arguments: GenreContextMenuArguments): MvvmComponent
+    fun genreContextMenuUiComponent(arguments: GenreContextMenuArguments): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

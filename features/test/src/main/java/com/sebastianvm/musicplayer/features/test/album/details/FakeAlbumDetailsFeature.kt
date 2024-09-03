@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.test.album.details
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
@@ -10,7 +9,7 @@ class FakeAlbumDetailsFeature : AlbumDetailsFeature {
     override fun albumDetailsUiComponent(
         arguments: AlbumDetailsArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return FakeMvvmComponent(arguments, "AlbumDetails")
     }
 }

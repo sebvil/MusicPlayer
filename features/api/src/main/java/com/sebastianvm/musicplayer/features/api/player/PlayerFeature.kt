@@ -6,7 +6,10 @@ import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.flow.Flow
 
 interface PlayerFeature : Feature {
-    fun playerUiComponent(props: Flow<PlayerProps>, delegate: PlayerDelegate): MvvmComponent
+    fun playerUiComponent(
+        props: Flow<PlayerProps>,
+        delegate: PlayerDelegate,
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

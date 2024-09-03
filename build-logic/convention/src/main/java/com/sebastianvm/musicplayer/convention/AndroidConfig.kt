@@ -11,7 +11,7 @@ internal fun Project.configureAndroid(commonExtension: CommonExtension<*, *, *, 
     commonExtension.apply {
         compileSdk = 35
 
-        defaultConfig { minSdk = 24 }
+        defaultConfig { minSdk = 26 }
     }
 
     configureKotlin<KotlinAndroidProjectExtension>()

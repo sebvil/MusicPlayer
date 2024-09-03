@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
@@ -76,41 +77,10 @@ import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
 import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
-import com.sebastianvm.musicplayer.features.api.player.PlayerProps
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.flow.Flow
 
-class PlayerMvvmComponent(
-    private val delegate: PlayerDelegate,
-    private val props: Flow<PlayerProps>,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<PlayerState, PlayerUserAction, PlayerViewModel>() {
-
-    override val viewModel: PlayerViewModel by lazy {
-        PlayerViewModel(
-            playbackManager = playbackManager,
-            delegate = delegate,
-            props = props,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: PlayerState,
-        handle: Handler<PlayerUserAction>,
-        modifier: Modifier,
-    ) {
-        Player(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = PlayerViewModel::class)
 @Composable
 fun Player(state: PlayerState, handle: Handler<PlayerUserAction>, modifier: Modifier = Modifier) {
     when (state) {

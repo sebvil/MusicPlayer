@@ -15,7 +15,7 @@ class DefaultPlayerFeature(
     override fun playerUiComponent(
         props: Flow<PlayerProps>,
         delegate: PlayerDelegate,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return PlayerMvvmComponent(
             delegate = delegate,
             props = props,

@@ -78,7 +78,7 @@ sealed interface SearchUserAction : UserAction {
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class SearchViewModel(
-    private val ftsRepository: FullTextSearchRepository,
+    private val searchRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     private val navController: NavController,
     vmScope: CoroutineScope = getViewModelScope(),
@@ -91,23 +91,23 @@ class SearchViewModel(
         query.debounce(DEBOUNCE_TIME).flatMapLatest { newQuery ->
             when (newQuery.mode) {
                 SearchMode.TRACKS ->
-                    ftsRepository.searchTracks(newQuery.term).map { tracks ->
+                    searchRepository.searchTracks(newQuery.term).map { tracks ->
                         tracks.map { SearchResult.Track(TrackRow.State.fromTrack(it)) }
                     }
                 SearchMode.ARTISTS ->
-                    ftsRepository.searchArtists(newQuery.term).map { artists ->
+                    searchRepository.searchArtists(newQuery.term).map { artists ->
                         artists.map { SearchResult.Artist(ArtistRow.State.fromArtist(it)) }
                     }
                 SearchMode.ALBUMS ->
-                    ftsRepository.searchAlbums(newQuery.term).map { albums ->
+                    searchRepository.searchAlbums(newQuery.term).map { albums ->
                         albums.map { SearchResult.Album(AlbumRow.State.fromAlbum(it)) }
                     }
                 SearchMode.GENRES ->
-                    ftsRepository.searchGenres(newQuery.term).map { genres ->
+                    searchRepository.searchGenres(newQuery.term).map { genres ->
                         genres.map { SearchResult.Genre(GenreRow.State.fromGenre(it)) }
                     }
                 SearchMode.PLAYLISTS ->
-                    ftsRepository.searchPlaylists(newQuery.term).map { playlists ->
+                    searchRepository.searchPlaylists(newQuery.term).map { playlists ->
                         playlists.map { SearchResult.Playlist(PlaylistRow.State.fromPlaylist(it)) }
                     }
             }

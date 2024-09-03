@@ -12,7 +12,7 @@ class DefaultTrackListFeature(
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : TrackListFeature {
-    override fun trackListUiComponent(navController: NavController): MvvmComponent {
+    override fun trackListUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return TrackListMvvmComponent(
             navController = navController,
             trackRepository = repositoryProvider.trackRepository,

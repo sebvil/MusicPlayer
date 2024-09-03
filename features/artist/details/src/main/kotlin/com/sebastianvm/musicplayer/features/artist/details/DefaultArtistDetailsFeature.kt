@@ -14,7 +14,7 @@ class DefaultArtistDetailsFeature(
     override fun artistDetailsUiComponent(
         arguments: ArtistDetailsArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return ArtistDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,

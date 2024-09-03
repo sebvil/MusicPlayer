@@ -46,7 +46,7 @@ class AlbumDetailsViewModelTest :
             navControllerDep.push(FakeMvvmComponent())
             return AlbumDetailsViewModel(
                 vmScope = this,
-                args = arguments,
+                arguments = arguments,
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,

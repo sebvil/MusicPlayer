@@ -16,7 +16,7 @@ class DefaultPlaylistDetailsFeature(
     override fun playlistDetailsUiComponent(
         arguments: PlaylistDetailsArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return PlaylistDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,

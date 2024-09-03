@@ -17,38 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.extensions.stringId
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 
-data class SortMenuMvvmComponent(
-    val arguments: SortMenuArguments,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-) : BaseMvvmComponent<SortMenuState, SortMenuUserAction, SortMenuViewModel>() {
-    override val viewModel: SortMenuViewModel by lazy {
-        SortMenuViewModel(
-            arguments = arguments,
-            sortPreferencesRepository = sortPreferencesRepository,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: SortMenuState,
-        handle: Handler<SortMenuUserAction>,
-        modifier: Modifier,
-    ) {
-        SortMenu(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = SortMenuViewModel::class)
 @Composable
 fun SortMenu(
     state: SortMenuState,

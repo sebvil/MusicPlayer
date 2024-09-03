@@ -9,7 +9,7 @@ interface GenreDetailsFeature : Feature {
     fun genreDetailsUiComponent(
         arguments: GenreDetailsArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

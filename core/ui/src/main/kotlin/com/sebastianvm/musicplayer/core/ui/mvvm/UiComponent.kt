@@ -11,17 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
-import org.jetbrains.annotations.MustBeInvokedByOverriders
 
-interface MvvmComponent {
-
+interface UiComponent {
     @Composable fun Content(modifier: Modifier)
-
-    fun onCleared() = Unit
 }
 
-abstract class BaseMvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<S, UA>> :
-    ViewModelStoreOwner, MvvmComponent {
+abstract class MvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<S, UA>> :
+    ViewModelStoreOwner, UiComponent {
 
     protected abstract val viewModel: VM
 
@@ -36,14 +32,12 @@ abstract class BaseMvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<
         Content(state = state, handle = vm::handle, modifier = modifier)
     }
 
-    @MustBeInvokedByOverriders
-    override fun onCleared() {
-        super.onCleared()
+    fun clear() {
         viewModelStore.clear()
     }
 }
 
-val MvvmComponent.key: String
+val UiComponent.key: String
     get() = this.toString()
 
 @MainThread

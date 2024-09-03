@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface NavigationFeature : Feature {
-    fun navigationUiComponent(): MvvmComponent
+    fun navigationUiComponent(): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

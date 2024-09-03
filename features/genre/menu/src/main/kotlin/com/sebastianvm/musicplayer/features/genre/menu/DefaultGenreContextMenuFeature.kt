@@ -10,7 +10,9 @@ class DefaultGenreContextMenuFeature(
     private val repositoryProvider: RepositoryProvider,
     private val playbackManager: PlaybackManager,
 ) : GenreContextMenuFeature {
-    override fun genreContextMenuUiComponent(arguments: GenreContextMenuArguments): MvvmComponent {
+    override fun genreContextMenuUiComponent(
+        arguments: GenreContextMenuArguments
+    ): MvvmComponent<*, *, *> {
         return GenreContextMenuMvvmComponent(
             arguments = arguments,
             genreRepository = repositoryProvider.genreRepository,

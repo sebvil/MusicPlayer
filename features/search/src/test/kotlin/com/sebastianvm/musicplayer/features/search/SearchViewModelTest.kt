@@ -61,7 +61,7 @@ class SearchViewModelTest :
             ftsRepositoryDep.playlistQueryToResultsMap.value = playlistResultsMap
 
             return SearchViewModel(
-                ftsRepository = ftsRepositoryDep,
+                searchRepository = ftsRepositoryDep,
                 playbackManager = playbackManagerDep,
                 navController = navControllerDep,
                 features = initializeFakeFeatures(),

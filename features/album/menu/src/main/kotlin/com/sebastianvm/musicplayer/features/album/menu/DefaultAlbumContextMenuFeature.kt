@@ -16,7 +16,7 @@ class DefaultAlbumContextMenuFeature(
     override fun albumContextMenuUiComponent(
         arguments: AlbumContextMenuArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return AlbumContextMenuMvvmComponent(
             arguments = arguments,
             navController = navController,

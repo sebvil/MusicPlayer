@@ -9,7 +9,7 @@ interface TrackSearchFeature : Feature {
     fun trackSearchUiComponent(
         arguments: TrackSearchArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

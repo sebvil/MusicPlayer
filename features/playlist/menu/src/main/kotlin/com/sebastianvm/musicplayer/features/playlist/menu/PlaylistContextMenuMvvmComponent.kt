@@ -6,51 +6,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
 
-data class PlaylistContextMenuMvvmComponent(
-    val arguments: PlaylistContextMenuArguments,
-    val delegate: PlaylistContextMenuDelegate,
-    val playlistRepository: PlaylistRepository,
-    val playbackManager: PlaybackManager,
-) :
-    BaseMvvmComponent<
-        PlaylistContextMenuState,
-        PlaylistContextMenuUserAction,
-        PlaylistContextMenuViewModel,
-    >() {
-
-    override val viewModel: PlaylistContextMenuViewModel by lazy {
-        PlaylistContextMenuViewModel(
-            arguments = arguments,
-            playlistRepository = playlistRepository,
-            playbackManager = playbackManager,
-            delegate = delegate,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: PlaylistContextMenuState,
-        handle: Handler<PlaylistContextMenuUserAction>,
-        modifier: Modifier,
-    ) {
-        PlaylistContextMenu(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = PlaylistContextMenuViewModel::class)
 @Composable
-private fun PlaylistContextMenu(
+fun PlaylistContextMenu(
     state: PlaylistContextMenuState,
     handle: Handler<PlaylistContextMenuUserAction>,
     modifier: Modifier = Modifier,

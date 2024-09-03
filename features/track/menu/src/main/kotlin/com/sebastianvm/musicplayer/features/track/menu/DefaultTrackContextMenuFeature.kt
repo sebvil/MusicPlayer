@@ -16,7 +16,7 @@ class DefaultTrackContextMenuFeature(
     override fun trackContextMenuUiComponent(
         arguments: TrackContextMenuArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return TrackContextMenuMvvmComponent(
             arguments = arguments,
             navController = navController,

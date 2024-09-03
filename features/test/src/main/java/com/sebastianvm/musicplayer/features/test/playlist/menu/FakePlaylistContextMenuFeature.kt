@@ -1,6 +1,5 @@
 package com.sebastianvm.musicplayer.features.test.playlist.menu
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
@@ -10,7 +9,7 @@ class FakePlaylistContextMenuFeature : PlaylistContextMenuFeature {
     override fun playlistContextMenuUiComponent(
         arguments: PlaylistContextMenuArguments,
         delegate: PlaylistContextMenuDelegate,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return FakeMvvmComponent(arguments, "PlaylistContextMenu")
     }
 }

@@ -10,7 +10,7 @@ class DefaultPlaylistListFeature(
     private val repositoryProvider: RepositoryProvider,
     private val features: FeatureRegistry,
 ) : PlaylistListFeature {
-    override fun playlistListUiComponent(navController: NavController): MvvmComponent {
+    override fun playlistListUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return PlaylistListMvvmComponent(
             navController = navController,
             playlistRepository = repositoryProvider.playlistRepository,

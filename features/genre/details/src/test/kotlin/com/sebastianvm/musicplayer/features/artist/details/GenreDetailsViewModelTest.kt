@@ -60,7 +60,7 @@ class GenreDetailsViewModelTest :
                 vmScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                args = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
+                arguments = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
                 navController = navControllerDep,
                 playbackManager = playbackManagerDep,
                 features = initializeFakeFeatures(),

@@ -55,7 +55,7 @@ sealed interface PlaylistDetailsUserAction : UserAction {
 }
 
 class PlaylistDetailsViewModel(
-    private val args: PlaylistDetailsArguments,
+    private val arguments: PlaylistDetailsArguments,
     private val navController: NavController,
     vmScope: CoroutineScope = getViewModelScope(),
     sortPreferencesRepository: SortPreferencesRepository,
@@ -66,8 +66,8 @@ class PlaylistDetailsViewModel(
 
     override val state: StateFlow<PlaylistDetailsState> =
         combine(
-                playlistRepository.getPlaylist(args.playlistId),
-                sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
+                playlistRepository.getPlaylist(arguments.playlistId),
+                sortPreferencesRepository.getPlaylistSortPreferences(arguments.playlistId),
             ) { playlist, sortPrefs ->
                 PlaylistDetailsState.Data(
                     tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
@@ -84,7 +84,7 @@ class PlaylistDetailsViewModel(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Lazily,
-                PlaylistDetailsState.Loading(args.playlistName),
+                PlaylistDetailsState.Loading(arguments.playlistName),
             )
 
     override fun handle(action: PlaylistDetailsUserAction) {
@@ -98,7 +98,8 @@ class PlaylistDetailsViewModel(
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
-                                    trackList = MediaGroup.Playlist(playlistId = args.playlistId),
+                                    trackList =
+                                        MediaGroup.Playlist(playlistId = arguments.playlistId),
                                 ),
                             navController = navController,
                         ),
@@ -113,7 +114,7 @@ class PlaylistDetailsViewModel(
                         .sortMenuUiComponent(
                             arguments =
                                 SortMenuArguments(
-                                    listType = SortableListType.Playlist(args.playlistId)
+                                    listType = SortableListType.Playlist(arguments.playlistId)
                                 )
                         ),
                     navOptions =
@@ -126,7 +127,7 @@ class PlaylistDetailsViewModel(
             is PlaylistDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(
-                        mediaGroup = MediaGroup.Playlist(args.playlistId),
+                        mediaGroup = MediaGroup.Playlist(arguments.playlistId),
                         initialTrackIndex = action.trackIndex,
                     )
                 }
@@ -136,7 +137,7 @@ class PlaylistDetailsViewModel(
                     features
                         .trackSearch()
                         .trackSearchUiComponent(
-                            arguments = TrackSearchArguments(playlistId = args.playlistId),
+                            arguments = TrackSearchArguments(playlistId = arguments.playlistId),
                             navController = navController,
                         )
                 )

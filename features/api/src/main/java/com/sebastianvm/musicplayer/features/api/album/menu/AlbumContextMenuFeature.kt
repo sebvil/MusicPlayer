@@ -9,7 +9,7 @@ interface AlbumContextMenuFeature : Feature {
     fun albumContextMenuUiComponent(
         arguments: AlbumContextMenuArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

@@ -43,7 +43,7 @@ sealed interface TrackSearchUserAction : UserAction {
 class TrackSearchViewModel(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
-    private val ftsRepository: FullTextSearchRepository,
+    private val searchRepository: FullTextSearchRepository,
     vmScope: CoroutineScope = getViewModelScope(),
     private val navController: NavController,
 ) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(viewModelScope = vmScope) {
@@ -52,7 +52,7 @@ class TrackSearchViewModel(
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val searchResults =
-        query.debounce(SEARCH_DEBOUNCE_TIME_MS).flatMapLatest { ftsRepository.searchTracks(it) }
+        query.debounce(SEARCH_DEBOUNCE_TIME_MS).flatMapLatest { searchRepository.searchTracks(it) }
 
     private val trackAddedToPlaylist = MutableStateFlow<String?>(null)
 

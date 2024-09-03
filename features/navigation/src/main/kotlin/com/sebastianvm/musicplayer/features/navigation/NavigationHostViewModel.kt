@@ -19,14 +19,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 data class BackStackEntry(
-    val mvvmComponent: MvvmComponent,
+    val mvvmComponent: MvvmComponent<*, *, *>,
     val presentationMode: NavOptions.PresentationMode,
 )
 
 data class NavigationState(val backStack: List<BackStackEntry>) : State
 
 sealed interface NavigationAction : UserAction {
-    data class ShowScreen(val mvvmComponent: MvvmComponent, val navOptions: NavOptions) :
+    data class ShowScreen(val mvvmComponent: MvvmComponent<*, *, *>, val navOptions: NavOptions) :
         NavigationAction
 
     data object PopBackStack : NavigationAction
@@ -39,7 +39,7 @@ class NavigationHostViewModel(
 
     private val navController =
         object : NavController {
-            override fun push(mvvmComponent: MvvmComponent, navOptions: NavOptions) {
+            override fun push(mvvmComponent: MvvmComponent<*, *, *>, navOptions: NavOptions) {
                 handle(NavigationAction.ShowScreen(mvvmComponent, navOptions))
             }
 
@@ -80,7 +80,7 @@ class NavigationHostViewModel(
             NavigationAction.PopBackStack -> {
                 backStack.update {
                     val last = it.last()
-                    last.mvvmComponent.onCleared()
+                    last.mvvmComponent.clear()
                     it.dropLast(1)
                 }
             }

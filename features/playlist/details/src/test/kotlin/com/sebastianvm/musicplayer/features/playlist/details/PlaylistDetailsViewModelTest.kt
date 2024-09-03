@@ -58,7 +58,7 @@ class PlaylistDetailsViewModelTest :
             return PlaylistDetailsViewModel(
                 vmScope = this,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                args =
+                arguments =
                     PlaylistDetailsArguments(
                         playlistId = playlist.id,
                         playlistName = playlist.name,

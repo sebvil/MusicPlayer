@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.home
 
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
@@ -19,12 +19,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 data class HomeState(
-    val trackListMvvmComponent: MvvmComponent,
-    val artistListMvvmComponent: MvvmComponent,
-    val albumListMvvmComponent: MvvmComponent,
-    val genreListMvvmComponent: MvvmComponent,
-    val playlistListMvvmComponent: MvvmComponent,
-    val searchMvvmComponent: MvvmComponent,
+    val trackListMvvmComponent: UiComponent,
+    val artistListMvvmComponent: UiComponent,
+    val albumListMvvmComponent: UiComponent,
+    val genreListMvvmComponent: UiComponent,
+    val playlistListMvvmComponent: UiComponent,
+    val searchMvvmComponent: UiComponent,
 ) : State
 
 sealed interface HomeUserAction : UserAction

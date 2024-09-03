@@ -10,7 +10,7 @@ class DefaultAlbumListFeature(
     private val repositoryProvider: RepositoryProvider,
     private val features: FeatureRegistry,
 ) : AlbumListFeature {
-    override fun albumListUiComponent(navController: NavController): MvvmComponent {
+    override fun albumListUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return AlbumListMvvmComponent(
             navController = navController,
             albumRepository = repositoryProvider.albumRepository,

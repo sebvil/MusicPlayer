@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.navigation.navigationFeature
@@ -102,8 +102,8 @@ class MainViewModel(
 }
 
 data class MainState(
-    val playerMvvmComponent: MvvmComponent,
-    val appNavigationHostMvvmComponent: MvvmComponent,
+    val playerMvvmComponent: UiComponent,
+    val appNavigationHostMvvmComponent: UiComponent,
     val isFullscreen: Boolean,
 ) : State
 

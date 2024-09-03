@@ -14,7 +14,7 @@ class DefaultPlaylistContextMenuFeature(
     override fun playlistContextMenuUiComponent(
         arguments: PlaylistContextMenuArguments,
         delegate: PlaylistContextMenuDelegate,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return PlaylistContextMenuMvvmComponent(
             arguments = arguments,
             delegate = delegate,

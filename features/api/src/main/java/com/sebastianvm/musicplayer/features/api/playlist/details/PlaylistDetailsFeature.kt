@@ -9,7 +9,7 @@ interface PlaylistDetailsFeature : Feature {
     fun playlistDetailsUiComponent(
         arguments: PlaylistDetailsArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

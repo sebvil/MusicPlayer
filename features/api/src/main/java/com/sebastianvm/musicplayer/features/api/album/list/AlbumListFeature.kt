@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface AlbumListFeature : Feature {
-    fun albumListUiComponent(navController: NavController): MvvmComponent
+    fun albumListUiComponent(navController: NavController): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

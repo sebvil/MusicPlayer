@@ -51,7 +51,7 @@ sealed interface AlbumDetailsUserAction : UserAction {
 }
 
 class AlbumDetailsViewModel(
-    private val args: AlbumDetailsArguments,
+    private val arguments: AlbumDetailsArguments,
     private val navController: NavController,
     vmScope: CoroutineScope = getViewModelScope(),
     albumRepository: AlbumRepository,
@@ -61,7 +61,7 @@ class AlbumDetailsViewModel(
 
     override val state: StateFlow<AlbumDetailsState> =
         albumRepository
-            .getAlbum(args.albumId)
+            .getAlbum(arguments.albumId)
             .map { album ->
                 AlbumDetailsState.Data(
                     tracks = album.tracks.map { track -> TrackRow.State.fromTrack(track) },
@@ -74,9 +74,9 @@ class AlbumDetailsViewModel(
                 viewModelScope,
                 SharingStarted.Lazily,
                 AlbumDetailsState.Loading(
-                    albumName = args.albumName,
-                    imageUri = args.imageUri,
-                    artists = args.artists,
+                    albumName = arguments.albumName,
+                    imageUri = arguments.imageUri,
+                    artists = arguments.artists,
                 ),
             )
 
@@ -91,7 +91,7 @@ class AlbumDetailsViewModel(
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
-                                    trackList = MediaGroup.Album(args.albumId),
+                                    trackList = MediaGroup.Album(arguments.albumId),
                                 ),
                             navController = navController,
                         ),
@@ -105,7 +105,7 @@ class AlbumDetailsViewModel(
             is AlbumDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(
-                        mediaGroup = MediaGroup.Album(args.albumId),
+                        mediaGroup = MediaGroup.Album(arguments.albumId),
                         initialTrackIndex = action.trackIndex,
                     )
                 }

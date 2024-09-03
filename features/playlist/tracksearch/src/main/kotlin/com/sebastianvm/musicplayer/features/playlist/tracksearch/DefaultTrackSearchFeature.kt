@@ -11,7 +11,7 @@ class DefaultTrackSearchFeature(private val repositoryProvider: RepositoryProvid
     override fun trackSearchUiComponent(
         arguments: TrackSearchArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return TrackSearchMvvmComponent(
             arguments = arguments,
             navController = navController,

@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.api.navigation.NavigationFeature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 class DefaultNavigationFeature(private val features: FeatureRegistry) : NavigationFeature {
-    override fun navigationUiComponent(): MvvmComponent {
+    override fun navigationUiComponent(): MvvmComponent<*, *, *> {
         return NavigationHostMvvmComponent(features = features)
     }
 }

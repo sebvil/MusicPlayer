@@ -18,51 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class GenreDetailsMvvmComponent(
-    val arguments: GenreDetailsArguments,
-    val navController: NavController,
-    private val genreRepository: GenreRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<GenreDetailsState, GenreDetailsUserAction, GenreDetailsViewModel>() {
-
-    override val viewModel: GenreDetailsViewModel by lazy {
-        GenreDetailsViewModel(
-            args = arguments,
-            navController = navController,
-            genreRepository = genreRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
-            playbackManager = playbackManager,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: GenreDetailsState,
-        handle: Handler<GenreDetailsUserAction>,
-        modifier: Modifier,
-    ) {
-        GenreDetails(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = GenreDetailsViewModel::class)
 @Composable
 fun GenreDetails(
     state: GenreDetailsState,

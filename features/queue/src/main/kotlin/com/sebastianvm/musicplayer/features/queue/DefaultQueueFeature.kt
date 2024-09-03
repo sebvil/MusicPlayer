@@ -9,7 +9,7 @@ class DefaultQueueFeature(
     private val repositoryProvider: RepositoryProvider,
     private val playbackManager: PlaybackManager,
 ) : QueueFeature {
-    override fun queueUiComponent(): MvvmComponent {
+    override fun queueUiComponent(): MvvmComponent<*, *, *> {
         return QueueMvvmComponent(
             queueRepository = repositoryProvider.queueRepository,
             playbackManager = playbackManager,

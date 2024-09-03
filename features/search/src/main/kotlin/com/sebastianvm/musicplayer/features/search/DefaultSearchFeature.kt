@@ -12,7 +12,7 @@ class DefaultSearchFeature(
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : SearchFeature {
-    override fun searchUiComponent(navController: NavController): MvvmComponent {
+    override fun searchUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return SearchMvvmComponent(
             navController = navController,
             searchRepository = repositoryProvider.searchRepository,

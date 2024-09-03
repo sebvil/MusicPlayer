@@ -9,7 +9,7 @@ interface ArtistDetailsFeature : Feature {
     fun artistDetailsUiComponent(
         arguments: ArtistDetailsArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

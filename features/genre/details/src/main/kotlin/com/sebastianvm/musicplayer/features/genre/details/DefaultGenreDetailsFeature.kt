@@ -16,7 +16,7 @@ class DefaultGenreDetailsFeature(
     override fun genreDetailsUiComponent(
         arguments: GenreDetailsArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return GenreDetailsMvvmComponent(
             arguments = arguments,
             navController = navController,

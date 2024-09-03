@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface QueueFeature : Feature {
-    fun queueUiComponent(): MvvmComponent
+    fun queueUiComponent(): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

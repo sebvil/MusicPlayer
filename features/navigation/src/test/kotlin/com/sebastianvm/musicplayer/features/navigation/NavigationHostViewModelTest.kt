@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
@@ -105,8 +105,10 @@ class NavigationHostViewModelTest :
             }
     }) {
 
-    private object FakeMvvmComponent : MvvmComponent {
+    private object FakeMvvmComponent : UiComponent {
 
         @Composable override fun Content(modifier: Modifier) = Unit
+
+        fun clear() = Unit
     }
 }

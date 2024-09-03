@@ -10,7 +10,7 @@ class DefaultGenreListFeature(
     private val repositoryProvider: RepositoryProvider,
     private val features: FeatureRegistry,
 ) : GenreListFeature {
-    override fun genreListUiComponent(navController: NavController): MvvmComponent {
+    override fun genreListUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return GenreListMvvmComponent(
             navController = navController,
             genreRepository = repositoryProvider.genreRepository,

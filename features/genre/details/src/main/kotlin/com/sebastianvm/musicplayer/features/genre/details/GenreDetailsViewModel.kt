@@ -51,7 +51,7 @@ sealed interface GenreDetailsUserAction : UserAction {
 }
 
 class GenreDetailsViewModel(
-    private val args: GenreDetailsArguments,
+    private val arguments: GenreDetailsArguments,
     private val navController: NavController,
     vmScope: CoroutineScope = getViewModelScope(),
     genreRepository: GenreRepository,
@@ -61,10 +61,10 @@ class GenreDetailsViewModel(
 ) : BaseViewModel<GenreDetailsState, GenreDetailsUserAction>(viewModelScope = vmScope) {
 
     private val sortPreferences =
-        sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.Genre(args.genreId))
+        sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.Genre(arguments.genreId))
 
     override val state: StateFlow<GenreDetailsState> =
-        combine(genreRepository.getGenre(genreId = args.genreId), sortPreferences) {
+        combine(genreRepository.getGenre(genreId = arguments.genreId), sortPreferences) {
                 genre,
                 sortPrefs ->
                 GenreDetailsState.Data(
@@ -80,7 +80,7 @@ class GenreDetailsViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
-                initialValue = GenreDetailsState.Loading(args.genreName),
+                initialValue = GenreDetailsState.Loading(arguments.genreName),
             )
 
     override fun handle(action: GenreDetailsUserAction) {
@@ -94,7 +94,7 @@ class GenreDetailsViewModel(
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
-                                    trackList = MediaGroup.Genre(args.genreId),
+                                    trackList = MediaGroup.Genre(arguments.genreId),
                                 ),
                             navController = navController,
                         ),
@@ -108,7 +108,9 @@ class GenreDetailsViewModel(
                         .sortMenu()
                         .sortMenuUiComponent(
                             arguments =
-                                SortMenuArguments(listType = SortableListType.Genre(args.genreId))
+                                SortMenuArguments(
+                                    listType = SortableListType.Genre(arguments.genreId)
+                                )
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -120,7 +122,7 @@ class GenreDetailsViewModel(
             is GenreDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(
-                        mediaGroup = MediaGroup.Genre(args.genreId),
+                        mediaGroup = MediaGroup.Genre(arguments.genreId),
                         initialTrackIndex = action.trackIndex,
                     )
                 }

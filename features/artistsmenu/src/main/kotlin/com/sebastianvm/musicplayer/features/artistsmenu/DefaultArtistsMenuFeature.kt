@@ -14,7 +14,7 @@ class DefaultArtistsMenuFeature(
     override fun artistsMenuUiComponent(
         arguments: ArtistsMenuArguments,
         navController: NavController,
-    ): MvvmComponent {
+    ): MvvmComponent<*, *, *> {
         return ArtistsMenuMvvmComponent(
             arguments = arguments,
             navController = navController,

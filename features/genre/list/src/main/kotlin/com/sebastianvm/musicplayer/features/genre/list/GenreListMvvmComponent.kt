@@ -8,8 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
@@ -17,38 +16,10 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class GenreListMvvmComponent(
-    private val navController: NavController,
-    private val genreRepository: GenreRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<UiState<GenreListState>, GenreListUserAction, GenreListViewModel>() {
-
-    override val viewModel: GenreListViewModel by lazy {
-        GenreListViewModel(
-            genreRepository = genreRepository,
-            navController = navController,
-            sortPreferencesRepository = sortPreferencesRepository,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: UiState<GenreListState>,
-        handle: Handler<GenreListUserAction>,
-        modifier: Modifier,
-    ) {
-        GenreList(uiState = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = GenreListViewModel::class)
 @Composable
 fun GenreList(
     uiState: UiState<GenreListState>,

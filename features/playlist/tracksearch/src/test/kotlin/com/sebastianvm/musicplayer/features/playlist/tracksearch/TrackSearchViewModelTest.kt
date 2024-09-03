@@ -37,7 +37,7 @@ class TrackSearchViewModelTest :
             return TrackSearchViewModel(
                 arguments = TrackSearchArguments(playlistId = playlist.id),
                 playlistRepository = playlistRepositoryDep,
-                ftsRepository = ftsRepositoryDep,
+                searchRepository = ftsRepositoryDep,
                 navController = navControllerDep,
                 vmScope = this,
             )

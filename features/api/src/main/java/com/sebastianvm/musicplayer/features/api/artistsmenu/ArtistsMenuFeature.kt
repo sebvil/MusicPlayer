@@ -10,7 +10,7 @@ interface ArtistsMenuFeature : Feature {
     fun artistsMenuUiComponent(
         arguments: ArtistsMenuArguments,
         navController: NavController,
-    ): MvvmComponent
+    ): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }

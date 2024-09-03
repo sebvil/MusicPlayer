@@ -10,7 +10,7 @@ class DefaultArtistListFeature(
     private val repositoryProvider: RepositoryProvider,
     private val features: FeatureRegistry,
 ) : ArtistListFeature {
-    override fun artistListUiComponent(navController: NavController): MvvmComponent {
+    override fun artistListUiComponent(navController: NavController): MvvmComponent<*, *, *> {
         return ArtistListMvvmComponent(
             navController = navController,
             artistRepository = repositoryProvider.artistRepository,

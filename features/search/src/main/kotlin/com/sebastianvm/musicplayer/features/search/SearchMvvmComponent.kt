@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.data.fts.SearchMode
 import com.sebastianvm.musicplayer.core.designsystems.components.AlbumRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
@@ -52,48 +52,15 @@ import com.sebastianvm.musicplayer.core.designsystems.components.SingleSelectFil
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.collections.immutable.toImmutableList
 
-data class SearchMvvmComponent(
-    val navController: NavController,
-    val searchRepository: FullTextSearchRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<SearchState, SearchUserAction, SearchViewModel>() {
-
-    override val viewModel: SearchViewModel by lazy {
-        SearchViewModel(
-            ftsRepository = searchRepository,
-            playbackManager = playbackManager,
-            navController = navController,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: SearchState,
-        handle: Handler<SearchUserAction>,
-        modifier: Modifier,
-    ) {
-        SearchScreen(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = SearchViewModel::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(
-    state: SearchState,
-    handle: Handler<SearchUserAction>,
-    modifier: Modifier = Modifier,
-) {
+fun Search(state: SearchState, handle: Handler<SearchUserAction>, modifier: Modifier = Modifier) {
     var isSearchActive by remember { mutableStateOf(false) }
 
     var query by remember {

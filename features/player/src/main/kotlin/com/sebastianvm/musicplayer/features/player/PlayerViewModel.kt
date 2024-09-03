@@ -5,8 +5,8 @@ import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
@@ -45,7 +45,7 @@ sealed interface PlayerState : State {
         val trackInfoState: TrackInfoState,
         val trackProgressState: TrackProgressState,
         val playbackIcon: PlaybackIcon,
-        val queueMvvmComponent: MvvmComponent,
+        val queueMvvmComponent: UiComponent,
     ) : Playing
 
     data object NotPlaying : PlayerState

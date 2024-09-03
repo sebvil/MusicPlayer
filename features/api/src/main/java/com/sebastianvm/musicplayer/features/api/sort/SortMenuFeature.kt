@@ -5,7 +5,7 @@ import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
 interface SortMenuFeature : Feature {
-    fun sortMenuUiComponent(arguments: SortMenuArguments): MvvmComponent
+    fun sortMenuUiComponent(arguments: SortMenuArguments): MvvmComponent<*, *, *>
 
     object Key : Feature.Key
 }
