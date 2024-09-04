@@ -11,12 +11,17 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuProps
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuProps
 import com.sebastianvm.musicplayer.features.api.artistsmenu.artistsMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -50,10 +55,13 @@ class AlbumContextMenuViewModel(
     arguments: AlbumContextMenuArguments,
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
-    private val navController: NavController,
+    private val props: StateFlow<AlbumContextMenuProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
 ) : BaseViewModel<AlbumContextMenuState, AlbumContextMenuUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val albumId = arguments.albumId
 
@@ -85,9 +93,10 @@ class AlbumContextMenuViewModel(
                 navController.push(
                     features
                         .artistDetails()
-                        .artistDetailsUiComponent(
+                        .create(
                             arguments = ArtistDetailsArguments(action.artistId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistDetailsProps(navController = navController)),
                         ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -96,9 +105,10 @@ class AlbumContextMenuViewModel(
                 navController.push(
                     features
                         .artistsMenu()
-                        .artistsMenuUiComponent(
+                        .create(
                             arguments = ArtistsMenuArguments(MediaGroup.Album(albumId)),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistsMenuProps(navController = navController)),
                         ),
                     navOptions =
                         NavOptions(

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.musicplayer.android.library)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.parcelize)
 }
 
 android {
@@ -14,7 +15,6 @@ dependencies {
     implementation(projects.core.resources)
     implementation(projects.core.designsystems)
     implementation(projects.core.sync)
-    implementation(projects.core.services)
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.material3)

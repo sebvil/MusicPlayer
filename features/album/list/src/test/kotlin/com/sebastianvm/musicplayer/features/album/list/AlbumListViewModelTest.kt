@@ -18,6 +18,7 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.list.AlbumListProps
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
@@ -27,6 +28,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class AlbumListViewModelTest :
     FreeSpec({
@@ -45,7 +47,7 @@ class AlbumListViewModelTest :
                 vmScope = this,
                 albumRepository = albumRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(AlbumListProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
             )
         }
@@ -117,10 +119,7 @@ class AlbumListViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             mvvmComponent =
-                                FakeMvvmComponent(
-                                    arguments = AlbumContextMenuArguments(ALBUM_ID),
-                                    name = "AlbumContextMenu",
-                                ),
+                                FakeMvvmComponent(arguments = AlbumContextMenuArguments(ALBUM_ID)),
                             navOptions =
                                 NavOptions(
                                     presentationMode = NavOptions.PresentationMode.BottomSheet
@@ -136,8 +135,7 @@ class AlbumListViewModelTest :
                             mvvmComponent =
                                 FakeMvvmComponent(
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.Albums),
-                                    name = "SortMenu",
+                                        SortMenuArguments(listType = SortableListType.Albums)
                                 ),
                             navOptions =
                                 NavOptions(
@@ -164,14 +162,13 @@ class AlbumListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "AlbumDetails",
                                     arguments =
                                         AlbumDetailsArguments(
                                             albumId = ALBUM_ID,
                                             albumName = ALBUM_NAME,
                                             imageUri = IMAGE_URI,
                                             artists = ARTIST_NAME,
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),

@@ -17,11 +17,15 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsProps
 import com.sebastianvm.musicplayer.features.api.genre.details.genreDetails
+import com.sebastianvm.musicplayer.features.api.genre.list.GenreListProps
 import com.sebastianvm.musicplayer.features.api.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.genre.menu.genreContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -41,11 +45,13 @@ sealed interface GenreListUserAction : UserAction {
 
 class GenreListViewModel(
     genreRepository: GenreRepository,
-    private val navController: NavController,
+    private val props: StateFlow<GenreListProps>,
     private val sortPreferencesRepository: SortPreferencesRepository,
     vmScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
 ) : BaseViewModel<UiState<GenreListState>, GenreListUserAction>(viewModelScope = vmScope) {
+    private val navController: NavController
+        get() = props.value.navController
 
     override val state: StateFlow<UiState<GenreListState>> =
         combine(genreRepository.getGenres(), sortPreferencesRepository.getGenreListSortOrder()) {
@@ -74,9 +80,7 @@ class GenreListViewModel(
                 navController.push(
                     features
                         .genreContextMenu()
-                        .genreContextMenuUiComponent(
-                            arguments = GenreContextMenuArguments(action.genreId)
-                        ),
+                        .create(arguments = GenreContextMenuArguments(action.genreId)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -85,13 +89,14 @@ class GenreListViewModel(
                 navController.push(
                     features
                         .genreDetails()
-                        .genreDetailsUiComponent(
+                        .create(
                             arguments =
                                 GenreDetailsArguments(
                                     genreId = action.genreId,
                                     genreName = action.genreName,
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(GenreDetailsProps(navController = navController)),
                         )
                 )
             }

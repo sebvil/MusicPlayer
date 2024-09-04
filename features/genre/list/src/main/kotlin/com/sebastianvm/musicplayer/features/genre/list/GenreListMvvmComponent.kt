@@ -22,12 +22,12 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 @MvvmComponent(vmClass = GenreListViewModel::class)
 @Composable
 fun GenreList(
-    uiState: UiState<GenreListState>,
+    state: UiState<GenreListState>,
     handle: Handler<GenreListUserAction>,
     modifier: Modifier = Modifier,
 ) {
     UiStateScreen(
-        uiState = uiState,
+        uiState = state,
         modifier = modifier.fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
@@ -35,8 +35,8 @@ fun GenreList(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
-    ) { state ->
-        GenreList(state = state, handle = handle, modifier = Modifier)
+    ) { dataState ->
+        GenreList(state = dataState, handle = handle, modifier = Modifier)
     }
 }
 

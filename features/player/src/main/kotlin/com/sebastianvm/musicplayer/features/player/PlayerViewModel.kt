@@ -9,13 +9,13 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
-import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
+import com.sebastianvm.musicplayer.features.api.queue.QueueArguments
 import com.sebastianvm.musicplayer.features.api.queue.queue
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -70,12 +70,11 @@ sealed interface PlayerUserAction : UserAction {
 class PlayerViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,
-    private val delegate: PlayerDelegate,
-    props: Flow<PlayerProps>,
+    private val props: StateFlow<PlayerProps>,
     features: FeatureRegistry,
 ) : BaseViewModel<PlayerState, PlayerUserAction>(viewModelScope = vmScope) {
 
-    private val queueUiComponent = features.queue().queueUiComponent()
+    private val queueUiComponent = features.queue().create(QueueArguments)
 
     private val showQueue: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -147,7 +146,7 @@ class PlayerViewModel(
                 playbackManager.seekToTrackPosition(time)
             }
             is PlayerUserAction.DismissFullScreenPlayer -> {
-                delegate.dismissFullScreenPlayer()
+                props.value.dismissFullScreenPlayer()
             }
             is PlayerUserAction.QueueTapped -> {
                 showQueue.update { true }

@@ -30,10 +30,12 @@ import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArgume
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.search.SearchProps
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SearchViewModelTest :
     FreeSpec({
@@ -63,7 +65,7 @@ class SearchViewModelTest :
             return SearchViewModel(
                 searchRepository = ftsRepositoryDep,
                 playbackManager = playbackManagerDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(SearchProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
                 vmScope = this,
             )
@@ -262,8 +264,7 @@ class SearchViewModelTest :
                             navControllerDep.backStack.last() shouldBe
                                 FakeBackstackEntry(
                                     FakeMvvmComponent(
-                                        name = "ArtistDetails",
-                                        arguments = ArtistDetailsArguments(artist.id),
+                                        arguments = ArtistDetailsArguments(artist.id)
                                     ),
                                     navOptions =
                                         NavOptions(
@@ -284,14 +285,13 @@ class SearchViewModelTest :
                                 FakeBackstackEntry(
                                     mvvmComponent =
                                         FakeMvvmComponent(
-                                            name = "AlbumDetails",
                                             arguments =
                                                 AlbumDetailsArguments(
                                                     albumId = album.id,
                                                     albumName = album.title,
                                                     imageUri = album.imageUri,
                                                     artists = album.artists.joinToString { it.name },
-                                                ),
+                                                )
                                         ),
                                     navOptions =
                                         NavOptions(
@@ -311,8 +311,7 @@ class SearchViewModelTest :
                             navControllerDep.backStack.last() shouldBe
                                 FakeBackstackEntry(
                                     FakeMvvmComponent(
-                                        name = "GenreDetails",
-                                        arguments = GenreDetailsArguments(genre.id, genre.name),
+                                        arguments = GenreDetailsArguments(genre.id, genre.name)
                                     ),
                                     navOptions =
                                         NavOptions(
@@ -333,9 +332,8 @@ class SearchViewModelTest :
                             navControllerDep.backStack.last() shouldBe
                                 FakeBackstackEntry(
                                     FakeMvvmComponent(
-                                        name = "PlaylistDetails",
                                         arguments =
-                                            PlaylistDetailsArguments(playlist.id, playlist.name),
+                                            PlaylistDetailsArguments(playlist.id, playlist.name)
                                     ),
                                     navOptions =
                                         NavOptions(

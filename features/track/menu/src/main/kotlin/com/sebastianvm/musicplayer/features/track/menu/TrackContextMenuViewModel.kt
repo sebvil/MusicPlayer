@@ -12,14 +12,20 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.album.details.albumDetails
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuProps
 import com.sebastianvm.musicplayer.features.api.artistsmenu.artistsMenu
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -68,10 +74,13 @@ class TrackContextMenuViewModel(
     trackRepository: TrackRepository,
     private val playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
-    private val navController: NavController,
+    private val props: StateFlow<TrackContextMenuProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
 ) : BaseViewModel<TrackContextMenuState, TrackContextMenuUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val trackId = arguments.trackId
 
@@ -116,7 +125,7 @@ class TrackContextMenuViewModel(
                 navController.push(
                     features
                         .albumDetails()
-                        .albumDetailsUiComponent(
+                        .create(
                             arguments =
                                 AlbumDetailsArguments(
                                     albumId = action.albumId,
@@ -124,7 +133,8 @@ class TrackContextMenuViewModel(
                                     imageUri = "",
                                     artists = "",
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(AlbumDetailsProps(navController = navController)),
                         ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -133,9 +143,10 @@ class TrackContextMenuViewModel(
                 navController.push(
                     features
                         .artistDetails()
-                        .artistDetailsUiComponent(
+                        .create(
                             arguments = ArtistDetailsArguments(artistId = action.artistId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistDetailsProps(navController = navController)),
                         ),
                     navOptions = NavOptions(popCurrent = true),
                 )
@@ -144,9 +155,10 @@ class TrackContextMenuViewModel(
                 navController.push(
                     features
                         .artistsMenu()
-                        .artistsMenuUiComponent(
+                        .create(
                             arguments = ArtistsMenuArguments(MediaGroup.SingleTrack(trackId)),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistsMenuProps(navController = navController)),
                         ),
                     navOptions =
                         NavOptions(popCurrent = true, NavOptions.PresentationMode.BottomSheet),

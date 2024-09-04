@@ -5,7 +5,6 @@ import com.sebastianvm.musicplayer.core.commontest.extensions.awaitItemAs
 import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.features.api.player.PlayerDelegate
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
@@ -21,17 +20,19 @@ class PlayerViewModelTest :
     FreeSpec({
         lateinit var playbackManagerDep: FakePlaybackManager
         lateinit var propsDep: MutableStateFlow<PlayerProps>
-        lateinit var playerDelegateDep: PlayerDelegate
 
         beforeTest {
             playbackManagerDep = FakePlaybackManager()
-            propsDep = MutableStateFlow(PlayerProps(isFullscreen = false))
-            playerDelegateDep =
-                object : PlayerDelegate {
-                    override fun dismissFullScreenPlayer() {
-                        propsDep.update { props -> props.copy(isFullscreen = false) }
-                    }
-                }
+
+            propsDep =
+                MutableStateFlow(
+                    PlayerProps(
+                        isFullscreen = false,
+                        dismissFullScreenPlayer = {
+                            propsDep.update { it.copy(isFullscreen = false) }
+                        },
+                    )
+                )
         }
 
         fun TestScope.getSubject(): PlayerViewModel {
@@ -39,7 +40,6 @@ class PlayerViewModelTest :
                 vmScope = this,
                 playbackManager = playbackManagerDep,
                 props = propsDep,
-                delegate = playerDelegateDep,
                 features = initializeFakeFeatures(),
             )
         }

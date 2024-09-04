@@ -1,11 +1,14 @@
 package com.sebastianvm.musicplayer.features.api.sort
 
-sealed interface SortableListType {
-    data object AllTracks : SortableListType
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-    data class Genre(val genreId: Long) : SortableListType
+sealed interface SortableListType : Parcelable {
+    @Parcelize data object AllTracks : SortableListType
 
-    data object Albums : SortableListType
+    @Parcelize data class Genre(val genreId: Long) : SortableListType
 
-    data class Playlist(val playlistId: Long) : SortableListType
+    @Parcelize data object Albums : SortableListType
+
+    @Parcelize data class Playlist(val playlistId: Long) : SortableListType
 }

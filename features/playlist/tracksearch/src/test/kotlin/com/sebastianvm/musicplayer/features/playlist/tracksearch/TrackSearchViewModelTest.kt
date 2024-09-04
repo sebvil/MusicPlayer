@@ -10,10 +10,12 @@ import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
+import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchProps
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TrackSearchViewModelTest :
     FreeSpec({
@@ -38,7 +40,7 @@ class TrackSearchViewModelTest :
                 arguments = TrackSearchArguments(playlistId = playlist.id),
                 playlistRepository = playlistRepositoryDep,
                 searchRepository = ftsRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(TrackSearchProps(navController = navControllerDep)),
                 vmScope = this,
             )
         }

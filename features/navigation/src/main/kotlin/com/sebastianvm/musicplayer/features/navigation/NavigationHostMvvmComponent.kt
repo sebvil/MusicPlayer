@@ -30,7 +30,6 @@ import com.sebastianvm.musicplayer.core.designsystems.components.BottomSheet
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
-import com.sebastianvm.musicplayer.core.ui.mvvm.key
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -39,8 +38,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationHost(
-    state: NavigationState,
-    handle: Handler<NavigationAction>,
+    state: NavigationHostState,
+    handle: Handler<NavigationHostUserAction>,
     modifier: Modifier = Modifier,
 ) {
     val backStack = state.backStack
@@ -66,7 +65,7 @@ fun NavigationHost(
                 progress = it.progress
             }
             inPredictiveBack = false
-            handle(NavigationAction.PopBackStack)
+            handle(NavigationHostUserAction.PopBackStack)
         } catch (e: CancellationException) {
             inPredictiveBack = false
         }
@@ -162,7 +161,7 @@ fun NavigationHost(
     if (showBottomSheet) {
         CompositionLocalProvider(LocalPaddingValues provides PaddingValues()) {
             BottomSheet(
-                onDismissRequest = { handle(NavigationAction.PopBackStack) },
+                onDismissRequest = { handle(NavigationHostUserAction.PopBackStack) },
                 sheetState = sheetState,
             ) {
                 current?.let { screen ->

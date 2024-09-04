@@ -25,12 +25,12 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 @MvvmComponent(vmClass = ArtistsMenuViewModel::class)
 @Composable
 fun ArtistsMenu(
-    uiState: UiState<ArtistsMenuState>,
+    state: UiState<ArtistsMenuState>,
     handle: Handler<ArtistsMenuUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier, emptyScreen = {}) { state ->
-        ArtistsMenu(state = state, handle = handle, modifier = Modifier)
+    UiStateScreen(uiState = state, modifier = modifier, emptyScreen = {}) { dataState ->
+        ArtistsMenu(state = dataState, handle = handle, modifier = Modifier)
     }
 }
 

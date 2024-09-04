@@ -8,8 +8,10 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
+import com.sebastianvm.musicplayer.features.api.home.HomeProps
 import com.sebastianvm.musicplayer.features.api.home.home
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,28 +25,28 @@ data class BackStackEntry(
     val presentationMode: NavOptions.PresentationMode,
 )
 
-data class NavigationState(val backStack: List<BackStackEntry>) : State
+data class NavigationHostState(val backStack: List<BackStackEntry>) : State
 
-sealed interface NavigationAction : UserAction {
+sealed interface NavigationHostUserAction : UserAction {
     data class ShowScreen(val mvvmComponent: MvvmComponent<*, *, *>, val navOptions: NavOptions) :
-        NavigationAction
+        NavigationHostUserAction
 
-    data object PopBackStack : NavigationAction
+    data object PopBackStack : NavigationHostUserAction
 }
 
 class NavigationHostViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     features: FeatureRegistry,
-) : BaseViewModel<NavigationState, NavigationAction>(viewModelScope = vmScope) {
+) : BaseViewModel<NavigationHostState, NavigationHostUserAction>(viewModelScope = vmScope) {
 
     private val navController =
         object : NavController {
             override fun push(mvvmComponent: MvvmComponent<*, *, *>, navOptions: NavOptions) {
-                handle(NavigationAction.ShowScreen(mvvmComponent, navOptions))
+                handle(NavigationHostUserAction.ShowScreen(mvvmComponent, navOptions))
             }
 
             override fun pop() {
-                handle(NavigationAction.PopBackStack)
+                handle(NavigationHostUserAction.PopBackStack)
             }
         }
 
@@ -52,20 +54,25 @@ class NavigationHostViewModel(
         MutableStateFlow(
             listOf(
                 BackStackEntry(
-                    features.home().homeUiComponent(navController = navController),
+                    features
+                        .home()
+                        .create(
+                            arguments = com.sebastianvm.musicplayer.features.api.home.HomeArguments,
+                            props = MutableStateFlow(HomeProps(navController)),
+                        ),
                     NavOptions.PresentationMode.Screen,
                 )
             )
         )
 
-    override val state: StateFlow<NavigationState> =
+    override val state: StateFlow<NavigationHostState> =
         backStack
-            .map { NavigationState(it) }
-            .stateIn(viewModelScope, SharingStarted.Lazily, NavigationState(backStack.value))
+            .map { NavigationHostState(it) }
+            .stateIn(viewModelScope, SharingStarted.Lazily, NavigationHostState(backStack.value))
 
-    override fun handle(action: NavigationAction) {
+    override fun handle(action: NavigationHostUserAction) {
         when (action) {
-            is NavigationAction.ShowScreen -> {
+            is NavigationHostUserAction.ShowScreen -> {
                 backStack.update {
                     val entry =
                         BackStackEntry(action.mvvmComponent, action.navOptions.presentationMode)
@@ -77,7 +84,7 @@ class NavigationHostViewModel(
                     }
                 }
             }
-            NavigationAction.PopBackStack -> {
+            NavigationHostUserAction.PopBackStack -> {
                 backStack.update {
                     val last = it.last()
                     last.mvvmComponent.clear()

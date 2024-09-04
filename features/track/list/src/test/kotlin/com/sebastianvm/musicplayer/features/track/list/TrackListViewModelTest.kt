@@ -19,6 +19,7 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
+import com.sebastianvm.musicplayer.features.api.track.list.TrackListProps
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
@@ -26,6 +27,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TrackListViewModelTest :
     FreeSpec({
@@ -46,7 +48,7 @@ class TrackListViewModelTest :
                 vmScope = this,
                 trackRepository = trackRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(TrackListProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
                 playbackManager = playbackManagerDep,
             )
@@ -122,9 +124,8 @@ class TrackListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "SortMenu",
                                     arguments =
-                                        SortMenuArguments(listType = SortableListType.AllTracks),
+                                        SortMenuArguments(listType = SortableListType.AllTracks)
                                 ),
                             navOptions =
                                 NavOptions(
@@ -153,13 +154,12 @@ class TrackListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "TrackContextMenu",
                                     arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.AllTracks,
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(

@@ -22,12 +22,12 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
 @MvvmComponent(vmClass = ArtistListViewModel::class)
 @Composable
 fun ArtistList(
-    uiState: UiState<ArtistListState>,
+    state: UiState<ArtistListState>,
     handle: Handler<ArtistListUserAction>,
     modifier: Modifier = Modifier,
 ) {
     UiStateScreen(
-        uiState = uiState,
+        uiState = state,
         modifier = modifier.fillMaxSize(),
         emptyScreen = {
             StoragePermissionNeededEmptyScreen(
@@ -35,8 +35,8 @@ fun ArtistList(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             )
         },
-    ) { state ->
-        ArtistList(state = state, handle = handle, modifier = Modifier)
+    ) { dataState ->
+        ArtistList(state = dataState, handle = handle, modifier = Modifier)
     }
 }
 

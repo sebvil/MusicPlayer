@@ -1,11 +1,9 @@
 package com.sebastianvm.musicplayer.features.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
+import com.sebastianvm.musicplayer.features.api.home.HomeArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
@@ -27,7 +25,7 @@ class NavigationHostViewModelTest :
                 state.backStack shouldHaveSize 1
                 val entry = state.backStack.last()
 
-                entry.mvvmComponent shouldBe FakeMvvmComponent(name = "Home", arguments = null)
+                entry.mvvmComponent shouldBe FakeMvvmComponent(arguments = HomeArguments)
                 entry.presentationMode shouldBe NavOptions.PresentationMode.Screen
             }
         }
@@ -46,8 +44,8 @@ class NavigationHostViewModelTest :
                                     testViewModelState(subject) {
                                         awaitItem()
                                         subject.handle(
-                                            NavigationAction.ShowScreen(
-                                                mvvmComponent = FakeMvvmComponent,
+                                            NavigationHostUserAction.ShowScreen(
+                                                mvvmComponent = FakeMvvmComponent(),
                                                 navOptions =
                                                     NavOptions(
                                                         popCurrent = false,
@@ -58,7 +56,7 @@ class NavigationHostViewModelTest :
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 2
                                         val entry = state.backStack.last()
-                                        entry.mvvmComponent shouldBe FakeMvvmComponent
+                                        entry.mvvmComponent shouldBe FakeMvvmComponent()
                                         entry.presentationMode shouldBe presentationMode
                                     }
                                 }
@@ -74,8 +72,8 @@ class NavigationHostViewModelTest :
                                     testViewModelState(subject) {
                                         awaitItem()
                                         subject.handle(
-                                            NavigationAction.ShowScreen(
-                                                mvvmComponent = FakeMvvmComponent,
+                                            NavigationHostUserAction.ShowScreen(
+                                                mvvmComponent = FakeMvvmComponent(),
                                                 navOptions =
                                                     NavOptions(
                                                         popCurrent = true,
@@ -86,7 +84,7 @@ class NavigationHostViewModelTest :
                                         val state = awaitItem()
                                         state.backStack shouldHaveSize 1
                                         val entry = state.backStack.last()
-                                        entry.mvvmComponent shouldBe FakeMvvmComponent
+                                        entry.mvvmComponent shouldBe FakeMvvmComponent()
                                         entry.presentationMode shouldBe presentationMode
                                     }
                                 }
@@ -97,18 +95,10 @@ class NavigationHostViewModelTest :
                     val subject = getSubject()
                     testViewModelState(subject) {
                         awaitItem()
-                        subject.handle(NavigationAction.PopBackStack)
+                        subject.handle(NavigationHostUserAction.PopBackStack)
                         val state = awaitItem()
                         state.backStack.shouldBeEmpty()
                     }
                 }
             }
-    }) {
-
-    private object FakeMvvmComponent : UiComponent {
-
-        @Composable override fun Content(modifier: Modifier) = Unit
-
-        fun clear() = Unit
-    }
-}
+    })

@@ -14,13 +14,17 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsProps
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.sort.sortMenu
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.api.track.menu.trackContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -52,13 +56,16 @@ sealed interface GenreDetailsUserAction : UserAction {
 
 class GenreDetailsViewModel(
     private val arguments: GenreDetailsArguments,
-    private val navController: NavController,
+    private val props: StateFlow<GenreDetailsProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     genreRepository: GenreRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : BaseViewModel<GenreDetailsState, GenreDetailsUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val sortPreferences =
         sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.Genre(arguments.genreId))
@@ -89,14 +96,17 @@ class GenreDetailsViewModel(
                 navController.push(
                     features
                         .trackContextMenu()
-                        .trackContextMenuUiComponent(
+                        .create(
                             arguments =
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
                                     trackList = MediaGroup.Genre(arguments.genreId),
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    TrackContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -106,7 +116,7 @@ class GenreDetailsViewModel(
                 navController.push(
                     features
                         .sortMenu()
-                        .sortMenuUiComponent(
+                        .create(
                             arguments =
                                 SortMenuArguments(
                                     listType = SortableListType.Genre(arguments.genreId)

@@ -12,10 +12,14 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.api.track.menu.trackContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -52,12 +56,15 @@ sealed interface AlbumDetailsUserAction : UserAction {
 
 class AlbumDetailsViewModel(
     private val arguments: AlbumDetailsArguments,
-    private val navController: NavController,
+    private val props: StateFlow<AlbumDetailsProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : BaseViewModel<AlbumDetailsState, AlbumDetailsUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     override val state: StateFlow<AlbumDetailsState> =
         albumRepository
@@ -86,14 +93,17 @@ class AlbumDetailsViewModel(
                 navController.push(
                     features
                         .trackContextMenu()
-                        .trackContextMenuUiComponent(
+                        .create(
                             arguments =
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
                                     trackList = MediaGroup.Album(arguments.albumId),
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    TrackContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),

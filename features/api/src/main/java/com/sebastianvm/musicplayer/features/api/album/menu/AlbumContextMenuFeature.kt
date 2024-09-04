@@ -1,18 +1,11 @@
 package com.sebastianvm.musicplayer.features.api.album.menu
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-interface AlbumContextMenuFeature : Feature {
-    fun albumContextMenuUiComponent(
-        arguments: AlbumContextMenuArguments,
-        navController: NavController,
-    ): MvvmComponent<*, *, *>
-
+interface AlbumContextMenuFeature : Feature<AlbumContextMenuArguments, AlbumContextMenuProps> {
     object Key : Feature.Key
 }
 
-fun FeatureRegistry.albumContextMenu(): AlbumContextMenuFeature =
+fun FeatureRegistry.albumContextMenu(): Feature<AlbumContextMenuArguments, AlbumContextMenuProps> =
     featureByKey(AlbumContextMenuFeature.Key)

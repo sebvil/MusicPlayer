@@ -19,6 +19,7 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsProps
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
@@ -31,6 +32,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class GenreDetailsViewModelTest :
     FreeSpec({
@@ -61,7 +63,7 @@ class GenreDetailsViewModelTest :
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 arguments = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
-                navController = navControllerDep,
+                props = MutableStateFlow(GenreDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
                 features = initializeFakeFeatures(),
             )
@@ -132,11 +134,10 @@ class GenreDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "SortMenu",
                                     arguments =
                                         SortMenuArguments(
                                             listType = SortableListType.Genre(GENRE_ID)
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(
@@ -167,13 +168,12 @@ class GenreDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "TrackContextMenu",
                                     arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Genre(GENRE_ID),
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(

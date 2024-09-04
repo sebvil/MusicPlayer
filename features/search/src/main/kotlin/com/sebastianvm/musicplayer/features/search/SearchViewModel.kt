@@ -16,14 +16,20 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.album.details.albumDetails
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsProps
 import com.sebastianvm.musicplayer.features.api.genre.details.genreDetails
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsProps
 import com.sebastianvm.musicplayer.features.api.playlist.details.playlistDetails
+import com.sebastianvm.musicplayer.features.api.search.SearchProps
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -80,10 +86,13 @@ sealed interface SearchUserAction : UserAction {
 class SearchViewModel(
     private val searchRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
-    private val navController: NavController,
+    private val props: StateFlow<SearchProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
 ) : BaseViewModel<SearchState, SearchUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val query = MutableStateFlow(SearchQuery(term = "", mode = SearchMode.TRACKS))
 
@@ -132,9 +141,9 @@ class SearchViewModel(
         navController.push(
             features
                 .artistDetails()
-                .artistDetailsUiComponent(
+                .create(
                     arguments = ArtistDetailsArguments(artistId),
-                    navController = navController,
+                    props = MutableStateFlow(ArtistDetailsProps(navController = navController)),
                 )
         )
     }
@@ -143,7 +152,7 @@ class SearchViewModel(
         navController.push(
             features
                 .albumDetails()
-                .albumDetailsUiComponent(
+                .create(
                     arguments =
                         AlbumDetailsArguments(
                             albumId = albumItem.id,
@@ -151,7 +160,7 @@ class SearchViewModel(
                             imageUri = albumItem.artworkUri,
                             artists = albumItem.artists,
                         ),
-                    navController = navController,
+                    props = MutableStateFlow(AlbumDetailsProps(navController = navController)),
                 )
         )
     }
@@ -160,9 +169,9 @@ class SearchViewModel(
         navController.push(
             features
                 .genreDetails()
-                .genreDetailsUiComponent(
-                    GenreDetailsArguments(genreId = genreId, genreName = genreName),
-                    navController,
+                .create(
+                    arguments = GenreDetailsArguments(genreId = genreId, genreName = genreName),
+                    props = MutableStateFlow(GenreDetailsProps(navController = navController)),
                 )
         )
     }
@@ -171,13 +180,13 @@ class SearchViewModel(
         navController.push(
             features
                 .playlistDetails()
-                .playlistDetailsUiComponent(
+                .create(
                     arguments =
                         PlaylistDetailsArguments(
                             playlistId = playlistId,
                             playlistName = playlistName,
                         ),
-                    navController = navController,
+                    props = MutableStateFlow(PlaylistDetailsProps(navController = navController)),
                 )
         )
     }

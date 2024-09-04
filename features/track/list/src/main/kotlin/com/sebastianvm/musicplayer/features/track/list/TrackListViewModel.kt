@@ -16,10 +16,14 @@ import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.sort.sortMenu
+import com.sebastianvm.musicplayer.features.api.track.list.TrackListProps
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.api.track.menu.trackContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,13 +47,16 @@ sealed interface TrackListUserAction : UserAction {
 }
 
 class TrackListViewModel(
-    private val navController: NavController,
+    private val props: StateFlow<TrackListProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
 ) : BaseViewModel<TrackListState, TrackListUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val sortPreferences =
         sortPreferencesRepository.getTrackListSortPreferences(MediaGroup.AllTracks)
@@ -75,14 +82,17 @@ class TrackListViewModel(
                 navController.push(
                     features
                         .trackContextMenu()
-                        .trackContextMenuUiComponent(
+                        .create(
                             arguments =
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
                                     trackList = MediaGroup.AllTracks,
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    TrackContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -92,7 +102,7 @@ class TrackListViewModel(
                 navController.push(
                     features
                         .sortMenu()
-                        .sortMenuUiComponent(
+                        .create(
                             arguments = SortMenuArguments(listType = SortableListType.AllTracks)
                         ),
                     navOptions =

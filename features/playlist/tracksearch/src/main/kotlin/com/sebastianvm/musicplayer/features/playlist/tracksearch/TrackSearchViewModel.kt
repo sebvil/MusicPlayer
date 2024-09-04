@@ -10,6 +10,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
+import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchProps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -45,8 +46,11 @@ class TrackSearchViewModel(
     private val playlistRepository: PlaylistRepository,
     private val searchRepository: FullTextSearchRepository,
     vmScope: CoroutineScope = getViewModelScope(),
-    private val navController: NavController,
+    private val props: StateFlow<TrackSearchProps>,
 ) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val query = MutableStateFlow("")
 

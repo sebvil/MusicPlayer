@@ -18,12 +18,11 @@ import androidx.compose.ui.res.stringResource
 import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import kotlinx.coroutines.launch
 
 @MvvmComponent(vmClass = HomeViewModel::class)
 @Composable
-fun Home(state: HomeState, handle: Handler<HomeUserAction>, modifier: Modifier = Modifier) {
+fun Home(state: HomeState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         state.searchMvvmComponent.Content(modifier = Modifier)
         HomeScreenPager(state = state)

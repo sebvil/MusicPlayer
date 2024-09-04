@@ -1,5 +1,6 @@
 package com.sebastianvm.musicplayer.core.ui.mvvm
 
+import android.os.Parcelable
 import androidx.annotation.MainThread
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,13 +12,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.flow.StateFlow
 
 interface UiComponent {
     @Composable fun Content(modifier: Modifier)
+
+    val key: Parcelable
 }
 
 abstract class MvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<S, UA>> :
     ViewModelStoreOwner, UiComponent {
+
+    protected abstract val arguments: Arguments
+
+    override val key: Parcelable
+        get() = arguments
 
     protected abstract val viewModel: VM
 
@@ -35,10 +44,11 @@ abstract class MvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<S, U
     fun clear() {
         viewModelStore.clear()
     }
-}
 
-val UiComponent.key: String
-    get() = this.toString()
+    fun interface Initializer<A : Arguments, P : Props> {
+        fun initialize(arguments: A, props: StateFlow<P>): MvvmComponent<*, *, *>
+    }
+}
 
 @MainThread
 inline fun <reified VM : ViewModel> ViewModelStoreOwner.viewModels(
