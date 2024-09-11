@@ -16,8 +16,6 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     testImplementation(kotlin("test"))
     implementation(libs.clikt)
-    implementation(libs.ktoml.core)
-    implementation(libs.ktoml.file)
 }
 
 tasks.test { useJUnitPlatform() }
