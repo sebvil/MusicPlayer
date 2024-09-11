@@ -17,12 +17,14 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.list.PlaylistListProps
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class PlaylistListViewModelTest :
     FreeSpec({
@@ -49,7 +51,7 @@ class PlaylistListViewModelTest :
             return PlaylistListViewModel(
                 playlistRepository = playlistRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(PlaylistListProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
                 vmScope = this,
             )
@@ -111,8 +113,7 @@ class PlaylistListViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             FakeMvvmComponent(
-                                name = "PlaylistContextMenu",
-                                arguments = PlaylistContextMenuArguments(playlistId = PLAYLIST_ID),
+                                arguments = PlaylistContextMenuArguments(playlistId = PLAYLIST_ID)
                             ),
                             navOptions =
                                 NavOptions(
@@ -159,8 +160,7 @@ class PlaylistListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "PlaylistDetails",
-                                    arguments = PlaylistDetailsArguments(PLAYLIST_ID, PLAYLIST_NAME),
+                                    arguments = PlaylistDetailsArguments(PLAYLIST_ID, PLAYLIST_NAME)
                                 ),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
@@ -185,12 +185,11 @@ class PlaylistListViewModelTest :
                                 FakeBackstackEntry(
                                     mvvmComponent =
                                         FakeMvvmComponent(
-                                            name = "PlaylistDetails",
                                             arguments =
                                                 PlaylistDetailsArguments(
                                                     playlistId = playlist.id,
                                                     playlistName = PLAYLIST_NAME,
-                                                ),
+                                                )
                                         ),
                                     navOptions =
                                         NavOptions(

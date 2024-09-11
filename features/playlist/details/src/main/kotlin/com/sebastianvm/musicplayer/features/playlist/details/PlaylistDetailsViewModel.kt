@@ -14,15 +14,20 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsProps
 import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
+import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchProps
 import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.trackSearch
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.sort.sortMenu
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.api.track.menu.trackContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -55,8 +60,8 @@ sealed interface PlaylistDetailsUserAction : UserAction {
 }
 
 class PlaylistDetailsViewModel(
-    private val args: PlaylistDetailsArguments,
-    private val navController: NavController,
+    private val arguments: PlaylistDetailsArguments,
+    private val props: StateFlow<PlaylistDetailsProps>,
     vmScope: CoroutineScope = getViewModelScope(),
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
@@ -64,10 +69,13 @@ class PlaylistDetailsViewModel(
     private val features: FeatureRegistry,
 ) : BaseViewModel<PlaylistDetailsState, PlaylistDetailsUserAction>(viewModelScope = vmScope) {
 
+    private val navController: NavController
+        get() = props.value.navController
+
     override val state: StateFlow<PlaylistDetailsState> =
         combine(
-                playlistRepository.getPlaylist(args.playlistId),
-                sortPreferencesRepository.getPlaylistSortPreferences(args.playlistId),
+                playlistRepository.getPlaylist(arguments.playlistId),
+                sortPreferencesRepository.getPlaylistSortPreferences(arguments.playlistId),
             ) { playlist, sortPrefs ->
                 PlaylistDetailsState.Data(
                     tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
@@ -84,7 +92,7 @@ class PlaylistDetailsViewModel(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Lazily,
-                PlaylistDetailsState.Loading(args.playlistName),
+                PlaylistDetailsState.Loading(arguments.playlistName),
             )
 
     override fun handle(action: PlaylistDetailsUserAction) {
@@ -93,14 +101,18 @@ class PlaylistDetailsViewModel(
                 navController.push(
                     features
                         .trackContextMenu()
-                        .trackContextMenuUiComponent(
+                        .create(
                             arguments =
                                 TrackContextMenuArguments(
                                     trackId = action.trackId,
                                     trackPositionInList = action.trackPositionInList,
-                                    trackList = MediaGroup.Playlist(playlistId = args.playlistId),
+                                    trackList =
+                                        MediaGroup.Playlist(playlistId = arguments.playlistId),
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    TrackContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -110,10 +122,10 @@ class PlaylistDetailsViewModel(
                 navController.push(
                     features
                         .sortMenu()
-                        .sortMenuUiComponent(
+                        .create(
                             arguments =
                                 SortMenuArguments(
-                                    listType = SortableListType.Playlist(args.playlistId)
+                                    listType = SortableListType.Playlist(arguments.playlistId)
                                 )
                         ),
                     navOptions =
@@ -126,7 +138,7 @@ class PlaylistDetailsViewModel(
             is PlaylistDetailsUserAction.TrackClicked -> {
                 viewModelScope.launch {
                     playbackManager.playMedia(
-                        mediaGroup = MediaGroup.Playlist(args.playlistId),
+                        mediaGroup = MediaGroup.Playlist(arguments.playlistId),
                         initialTrackIndex = action.trackIndex,
                     )
                 }
@@ -135,9 +147,10 @@ class PlaylistDetailsViewModel(
                 navController.push(
                     features
                         .trackSearch()
-                        .trackSearchUiComponent(
-                            arguments = TrackSearchArguments(playlistId = args.playlistId),
-                            navController = navController,
+                        .create(
+                            arguments = TrackSearchArguments(playlistId = arguments.playlistId),
+                            props =
+                                MutableStateFlow(TrackSearchProps(navController = navController)),
                         )
                 )
             }

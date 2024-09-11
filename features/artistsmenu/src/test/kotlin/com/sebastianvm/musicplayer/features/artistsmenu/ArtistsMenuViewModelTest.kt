@@ -15,10 +15,12 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuProps
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class ArtistsMenuViewModelTest :
     FreeSpec({
@@ -38,7 +40,7 @@ class ArtistsMenuViewModelTest :
                 vmScope = this,
                 arguments = ArtistsMenuArguments(media = media),
                 artistRepository = artistRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(ArtistsMenuProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
             )
         }
@@ -100,10 +102,7 @@ class ArtistsMenuViewModelTest :
                     subject.handle(ArtistsMenuUserAction.ArtistClicked(ARTIST_ID))
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
-                            FakeMvvmComponent(
-                                name = "ArtistDetails",
-                                arguments = ArtistDetailsArguments(ARTIST_ID),
-                            ),
+                            FakeMvvmComponent(arguments = ArtistDetailsArguments(ARTIST_ID)),
                             navOptions =
                                 NavOptions(
                                     popCurrent = true,

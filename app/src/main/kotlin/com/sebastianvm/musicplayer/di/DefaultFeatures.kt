@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsFeatur
 import com.sebastianvm.musicplayer.features.api.genre.list.GenreListFeature
 import com.sebastianvm.musicplayer.features.api.genre.menu.GenreContextMenuFeature
 import com.sebastianvm.musicplayer.features.api.home.HomeFeature
-import com.sebastianvm.musicplayer.features.api.navigation.NavigationFeature
+import com.sebastianvm.musicplayer.features.api.navigation.NavigationHostFeature
 import com.sebastianvm.musicplayer.features.api.player.PlayerFeature
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsFeature
 import com.sebastianvm.musicplayer.features.api.playlist.list.PlaylistListFeature
@@ -35,7 +35,7 @@ import com.sebastianvm.musicplayer.features.genre.details.DefaultGenreDetailsFea
 import com.sebastianvm.musicplayer.features.genre.list.DefaultGenreListFeature
 import com.sebastianvm.musicplayer.features.genre.menu.DefaultGenreContextMenuFeature
 import com.sebastianvm.musicplayer.features.home.DefaultHomeFeature
-import com.sebastianvm.musicplayer.features.navigation.DefaultNavigationFeature
+import com.sebastianvm.musicplayer.features.navigation.DefaultNavigationHostFeature
 import com.sebastianvm.musicplayer.features.player.DefaultPlayerFeature
 import com.sebastianvm.musicplayer.features.playlist.details.DefaultPlaylistDetailsFeature
 import com.sebastianvm.musicplayer.features.playlist.list.DefaultPlaylistListFeature
@@ -58,7 +58,7 @@ fun initializeFeatures(
             key = AlbumDetailsFeature.Key,
             feature =
                 DefaultAlbumDetailsFeature(
-                    repositoryProvider = repositoryProvider,
+                    albumRepository = repositoryProvider.albumRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -66,13 +66,17 @@ fun initializeFeatures(
         register(
             key = AlbumListFeature.Key,
             feature =
-                DefaultAlbumListFeature(repositoryProvider = repositoryProvider, features = this),
+                DefaultAlbumListFeature(
+                    albumRepository = repositoryProvider.albumRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
+                    features = this,
+                ),
         )
         register(
             key = AlbumContextMenuFeature.Key,
             feature =
                 DefaultAlbumContextMenuFeature(
-                    repositoryProvider = repositoryProvider,
+                    albumRepository = repositoryProvider.albumRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -82,20 +86,24 @@ fun initializeFeatures(
             key = ArtistDetailsFeature.Key,
             feature =
                 DefaultArtistDetailsFeature(
-                    repositoryProvider = repositoryProvider,
+                    artistRepository = repositoryProvider.artistRepository,
                     features = this,
                 ),
         )
         register(
             key = ArtistListFeature.Key,
             feature =
-                DefaultArtistListFeature(repositoryProvider = repositoryProvider, features = this),
+                DefaultArtistListFeature(
+                    artistRepository = repositoryProvider.artistRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
+                    features = this,
+                ),
         )
         register(
             key = ArtistContextMenuFeature.Key,
             feature =
                 DefaultArtistContextMenuFeature(
-                    repositoryProvider = repositoryProvider,
+                    artistRepository = repositoryProvider.artistRepository,
                     playbackManager = playbackManager,
                 ),
         )
@@ -103,14 +111,18 @@ fun initializeFeatures(
         register(
             key = ArtistsMenuFeature.Key,
             feature =
-                DefaultArtistsMenuFeature(repositoryProvider = repositoryProvider, features = this),
+                DefaultArtistsMenuFeature(
+                    artistRepository = repositoryProvider.artistRepository,
+                    features = this,
+                ),
         )
 
         register(
             key = GenreDetailsFeature.Key,
             feature =
                 DefaultGenreDetailsFeature(
-                    repositoryProvider = repositoryProvider,
+                    genreRepository = repositoryProvider.genreRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -118,20 +130,27 @@ fun initializeFeatures(
         register(
             key = GenreListFeature.Key,
             feature =
-                DefaultGenreListFeature(repositoryProvider = repositoryProvider, features = this),
+                DefaultGenreListFeature(
+                    genreRepository = repositoryProvider.genreRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
+                    features = this,
+                ),
         )
         register(
             key = GenreContextMenuFeature.Key,
             feature =
                 DefaultGenreContextMenuFeature(
-                    repositoryProvider = repositoryProvider,
+                    genreRepository = repositoryProvider.genreRepository,
                     playbackManager = playbackManager,
                 ),
         )
 
         register(key = HomeFeature.Key, feature = DefaultHomeFeature(features = this))
 
-        register(key = NavigationFeature.Key, feature = DefaultNavigationFeature(features = this))
+        register(
+            key = NavigationHostFeature.Key,
+            feature = DefaultNavigationHostFeature(features = this),
+        )
 
         register(
             key = PlayerFeature.Key,
@@ -142,7 +161,8 @@ fun initializeFeatures(
             key = PlaylistDetailsFeature.Key,
             feature =
                 DefaultPlaylistDetailsFeature(
-                    repositoryProvider = repositoryProvider,
+                    playlistRepository = repositoryProvider.playlistRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -150,26 +170,34 @@ fun initializeFeatures(
         register(
             key = PlaylistListFeature.Key,
             feature =
-                DefaultPlaylistListFeature(repositoryProvider = repositoryProvider, features = this),
+                DefaultPlaylistListFeature(
+                    playlistRepository = repositoryProvider.playlistRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
+                    features = this,
+                ),
         )
         register(
             key = PlaylistContextMenuFeature.Key,
             feature =
                 DefaultPlaylistContextMenuFeature(
-                    repositoryProvider = repositoryProvider,
+                    playlistRepository = repositoryProvider.playlistRepository,
                     playbackManager = playbackManager,
                 ),
         )
         register(
             key = TrackSearchFeature.Key,
-            feature = DefaultTrackSearchFeature(repositoryProvider = repositoryProvider),
+            feature =
+                DefaultTrackSearchFeature(
+                    playlistRepository = repositoryProvider.playlistRepository,
+                    searchRepository = repositoryProvider.searchRepository,
+                ),
         )
 
         register(
             key = SearchFeature.Key,
             feature =
                 DefaultSearchFeature(
-                    repositoryProvider = repositoryProvider,
+                    searchRepository = repositoryProvider.searchRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -177,14 +205,18 @@ fun initializeFeatures(
 
         register(
             key = SortMenuFeature.Key,
-            feature = DefaultSortMenuFeature(repositoryProvider = repositoryProvider),
+            feature =
+                DefaultSortMenuFeature(
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository
+                ),
         )
 
         register(
             key = TrackListFeature.Key,
             feature =
                 DefaultTrackListFeature(
-                    repositoryProvider = repositoryProvider,
+                    trackRepository = repositoryProvider.trackRepository,
+                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -193,7 +225,8 @@ fun initializeFeatures(
             key = TrackContextMenuFeature.Key,
             feature =
                 DefaultTrackContextMenuFeature(
-                    repositoryProvider = repositoryProvider,
+                    trackRepository = repositoryProvider.trackRepository,
+                    playlistRepository = repositoryProvider.playlistRepository,
                     playbackManager = playbackManager,
                     features = this,
                 ),
@@ -203,7 +236,7 @@ fun initializeFeatures(
             key = QueueFeature.Key,
             feature =
                 DefaultQueueFeature(
-                    repositoryProvider = repositoryProvider,
+                    queueRepository = repositoryProvider.queueRepository,
                     playbackManager = playbackManager,
                 ),
         )

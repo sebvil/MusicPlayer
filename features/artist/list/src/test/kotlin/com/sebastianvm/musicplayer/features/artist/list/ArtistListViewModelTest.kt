@@ -14,12 +14,14 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.list.ArtistListProps
 import com.sebastianvm.musicplayer.features.api.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class ArtistListViewModelTest :
     FreeSpec({
@@ -38,7 +40,7 @@ class ArtistListViewModelTest :
                 vmScope = this,
                 artistRepository = artistRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(ArtistListProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
             )
         }
@@ -108,10 +110,7 @@ class ArtistListViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             mvvmComponent =
-                                FakeMvvmComponent(
-                                    name = "ArtistDetails",
-                                    arguments = ArtistDetailsArguments(ARTIST_ID),
-                                ),
+                                FakeMvvmComponent(arguments = ArtistDetailsArguments(ARTIST_ID)),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
                         )
@@ -124,8 +123,7 @@ class ArtistListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "ArtistContextMenu",
-                                    arguments = ArtistContextMenuArguments(ARTIST_ID),
+                                    arguments = ArtistContextMenuArguments(ARTIST_ID)
                                 ),
                             navOptions =
                                 NavOptions(

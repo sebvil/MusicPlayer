@@ -13,11 +13,14 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsProps
 import com.sebastianvm.musicplayer.features.api.playlist.details.playlistDetails
+import com.sebastianvm.musicplayer.features.api.playlist.list.PlaylistListProps
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuProps
 import com.sebastianvm.musicplayer.features.api.playlist.menu.playlistContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -73,9 +76,12 @@ class PlaylistListViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     private val playlistRepository: PlaylistRepository,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    private val navController: NavController,
+    private val props: StateFlow<PlaylistListProps>,
     private val features: FeatureRegistry,
 ) : BaseViewModel<PlaylistListState, PlaylistListUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     private val isPlayListCreationErrorDialogOpen = MutableStateFlow(false)
     private val isCreatePlaylistDialogOpen = MutableStateFlow(false)
@@ -124,13 +130,16 @@ class PlaylistListViewModel(
                             navController.push(
                                 features
                                     .playlistDetails()
-                                    .playlistDetailsUiComponent(
+                                    .create(
                                         arguments =
                                             PlaylistDetailsArguments(
                                                 playlistId = playlistId,
                                                 playlistName = action.playlistName,
                                             ),
-                                        navController = navController,
+                                        props =
+                                            MutableStateFlow(
+                                                PlaylistDetailsProps(navController = navController)
+                                            ),
                                     )
                             )
                         }
@@ -144,18 +153,20 @@ class PlaylistListViewModel(
                 navController.push(
                     features
                         .playlistContextMenu()
-                        .playlistContextMenuUiComponent(
+                        .create(
                             arguments =
                                 PlaylistContextMenuArguments(playlistId = action.playlistId),
-                            delegate =
-                                object : PlaylistContextMenuDelegate {
-                                    override fun deletePlaylist() {
-                                        navController.pop()
-                                        viewModelScope.launch {
-                                            playlistRepository.deletePlaylist(action.playlistId)
+                            props =
+                                MutableStateFlow(
+                                    PlaylistContextMenuProps(
+                                        deletePlaylist = {
+                                            navController.pop()
+                                            viewModelScope.launch {
+                                                playlistRepository.deletePlaylist(action.playlistId)
+                                            }
                                         }
-                                    }
-                                },
+                                    )
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -171,13 +182,16 @@ class PlaylistListViewModel(
                 navController.push(
                     features
                         .playlistDetails()
-                        .playlistDetailsUiComponent(
+                        .create(
                             arguments =
                                 PlaylistDetailsArguments(
                                     playlistId = action.playlistId,
                                     playlistName = action.playlistName,
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    PlaylistDetailsProps(navController = navController)
+                                ),
                         )
                 )
             }

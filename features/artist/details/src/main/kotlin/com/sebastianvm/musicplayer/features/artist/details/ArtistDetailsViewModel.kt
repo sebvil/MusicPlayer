@@ -12,12 +12,17 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.album.details.albumDetails
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuProps
 import com.sebastianvm.musicplayer.features.api.album.menu.albumContextMenu
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -47,11 +52,14 @@ class ArtistDetailsViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     arguments: ArtistDetailsArguments,
     artistRepository: ArtistRepository,
-    private val navController: NavController,
+    private val props: StateFlow<ArtistDetailsProps>,
     private val features: FeatureRegistry,
 ) : BaseViewModel<ArtistDetailsState, ArtistDetailsUserAction>(viewModelScope = vmScope) {
 
     private val artistId = arguments.artistId
+
+    private val navController: NavController
+        get() = props.value.navController
 
     override val state: StateFlow<ArtistDetailsState> =
         artistRepository
@@ -87,9 +95,12 @@ class ArtistDetailsViewModel(
                 navController.push(
                     features
                         .albumContextMenu()
-                        .albumContextMenuUiComponent(
+                        .create(
                             arguments = AlbumContextMenuArguments(action.albumId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    AlbumContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -102,7 +113,7 @@ class ArtistDetailsViewModel(
                 navController.push(
                     features
                         .albumDetails()
-                        .albumDetailsUiComponent(
+                        .create(
                             arguments =
                                 AlbumDetailsArguments(
                                     albumId = action.albumItem.id,
@@ -110,7 +121,8 @@ class ArtistDetailsViewModel(
                                     imageUri = action.albumItem.artworkUri,
                                     artists = action.albumItem.artists,
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(AlbumDetailsProps(navController = navController)),
                         )
                 )
             }

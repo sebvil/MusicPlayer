@@ -13,53 +13,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.artist.ArtistRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.ArtistRow
 import com.sebastianvm.musicplayer.core.designsystems.components.ListItem
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-data class ArtistsMenuMvvmComponent(
-    val arguments: ArtistsMenuArguments,
-    val navController: NavController,
-    private val artistRepository: ArtistRepository,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<UiState<ArtistsMenuState>, ArtistsMenuUserAction, ArtistsMenuViewModel>() {
-
-    override val viewModel: ArtistsMenuViewModel by lazy {
-        ArtistsMenuViewModel(
-            arguments = arguments,
-            artistRepository = artistRepository,
-            navController = navController,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: UiState<ArtistsMenuState>,
-        handle: Handler<ArtistsMenuUserAction>,
-        modifier: Modifier,
-    ) {
-        ArtistsMenu(uiState = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = ArtistsMenuViewModel::class)
 @Composable
 fun ArtistsMenu(
-    uiState: UiState<ArtistsMenuState>,
+    state: UiState<ArtistsMenuState>,
     handle: Handler<ArtistsMenuUserAction>,
     modifier: Modifier = Modifier,
 ) {
-    UiStateScreen(uiState = uiState, modifier = modifier, emptyScreen = {}) { state ->
-        ArtistsMenu(state = state, handle = handle, modifier = Modifier)
+    UiStateScreen(uiState = state, modifier = modifier, emptyScreen = {}) { dataState ->
+        ArtistsMenu(state = dataState, handle = handle, modifier = Modifier)
     }
 }
 

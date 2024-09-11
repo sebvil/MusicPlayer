@@ -106,3 +106,6 @@ include(":features:test")
 include(":core:ui-test")
 
 include(":tooling")
+
+include(":annotations")
+include(":mvvm-component-processor")

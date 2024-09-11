@@ -25,41 +25,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.BottomSheet
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
-import com.sebastianvm.musicplayer.core.ui.mvvm.key
+import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
-class NavigationHostMvvmComponent(private val features: FeatureRegistry) :
-    BaseMvvmComponent<NavigationState, NavigationAction, NavigationHostViewModel>() {
-
-    override val viewModel: NavigationHostViewModel by lazy {
-        NavigationHostViewModel(features = features)
-    }
-
-    @Composable
-    override fun Content(
-        state: NavigationState,
-        handle: Handler<NavigationAction>,
-        modifier: Modifier,
-    ) {
-        rememberSaveableStateHolder().SaveableStateProvider(key = "main") {
-            NavigationHost(state = state, handle = handle, modifier = modifier)
-        }
-    }
-}
-
+@MvvmComponent(vmClass = NavigationHostViewModel::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationHost(
-    state: NavigationState,
-    handle: Handler<NavigationAction>,
+    state: NavigationHostState,
+    handle: Handler<NavigationHostUserAction>,
     modifier: Modifier = Modifier,
 ) {
     val backStack = state.backStack
@@ -85,7 +65,7 @@ fun NavigationHost(
                 progress = it.progress
             }
             inPredictiveBack = false
-            handle(NavigationAction.PopBackStack)
+            handle(NavigationHostUserAction.PopBackStack)
         } catch (e: CancellationException) {
             inPredictiveBack = false
         }
@@ -181,7 +161,7 @@ fun NavigationHost(
     if (showBottomSheet) {
         CompositionLocalProvider(LocalPaddingValues provides PaddingValues()) {
             BottomSheet(
-                onDismissRequest = { handle(NavigationAction.PopBackStack) },
+                onDismissRequest = { handle(NavigationHostUserAction.PopBackStack) },
                 sheetState = sheetState,
             ) {
                 current?.let { screen ->
@@ -194,7 +174,7 @@ fun NavigationHost(
     }
 }
 
-fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<MvvmComponent> {
+fun List<BackStackEntry>.getScreensByMode(mode: NavOptions.PresentationMode): List<UiComponent> {
     return this.filter { it.presentationMode == mode }.map { it.mvvmComponent }
 }
 

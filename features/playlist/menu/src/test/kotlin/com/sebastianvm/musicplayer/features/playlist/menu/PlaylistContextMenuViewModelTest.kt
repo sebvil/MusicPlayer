@@ -8,10 +8,11 @@ import com.sebastianvm.musicplayer.core.datatest.playlist.FakePlaylistRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuProps
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class PlaylistContextMenuViewModelTest :
     FreeSpec({
@@ -31,12 +32,12 @@ class PlaylistContextMenuViewModelTest :
                 playlistRepository = playlistRepositoryDep,
                 playbackManager = playbackManagerDep,
                 vmScope = this,
-                delegate =
-                    object : PlaylistContextMenuDelegate {
-                        override fun deletePlaylist() {
-                            delegateDeletePlaylistInvocationCount++
-                        }
-                    },
+                props =
+                    MutableStateFlow(
+                        PlaylistContextMenuProps(
+                            deletePlaylist = { delegateDeletePlaylistInvocationCount++ }
+                        )
+                    ),
             )
         }
 

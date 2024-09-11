@@ -1,14 +1,11 @@
 package com.sebastianvm.musicplayer.features.api.artist.list
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-interface ArtistListFeature : Feature {
-    fun artistListUiComponent(navController: NavController): MvvmComponent
-
+interface ArtistListFeature : Feature<ArtistListArguments, ArtistListProps> {
     object Key : Feature.Key
 }
 
-fun FeatureRegistry.artistList(): ArtistListFeature = featureByKey(ArtistListFeature.Key)
+fun FeatureRegistry.artistList(): Feature<ArtistListArguments, ArtistListProps> =
+    featureByKey(ArtistListFeature.Key)

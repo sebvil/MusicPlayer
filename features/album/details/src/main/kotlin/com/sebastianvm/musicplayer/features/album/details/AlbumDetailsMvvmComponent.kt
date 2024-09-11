@@ -47,51 +47,18 @@ import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.mvvm.viewModels
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlin.math.roundToInt
 
-data class AlbumDetailsMvvmComponent(
-    private val arguments: AlbumDetailsArguments,
-    private val navController: NavController,
-    private val albumRepository: AlbumRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<AlbumDetailsState, AlbumDetailsUserAction, AlbumDetailsViewModel>() {
-
-    override val viewModel: AlbumDetailsViewModel by viewModels {
-        AlbumDetailsViewModel(
-            args = arguments,
-            navController = navController,
-            albumRepository = albumRepository,
-            playbackManager = playbackManager,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: AlbumDetailsState,
-        handle: Handler<AlbumDetailsUserAction>,
-        modifier: Modifier,
-    ) {
-        AlbumDetails(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = AlbumDetailsViewModel::class)
 @Composable
 fun AlbumDetails(
     state: AlbumDetailsState,

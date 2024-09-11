@@ -30,43 +30,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.fts.FullTextSearchRepository
-import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
 
-data class TrackSearchMvvmComponent(
-    val arguments: TrackSearchArguments,
-    val navController: NavController,
-    val playlistRepository: PlaylistRepository,
-    val searchRepository: FullTextSearchRepository,
-) : BaseMvvmComponent<TrackSearchState, TrackSearchUserAction, TrackSearchViewModel>() {
-
-    override val viewModel: TrackSearchViewModel by lazy {
-        TrackSearchViewModel(
-            arguments = arguments,
-            playlistRepository = playlistRepository,
-            ftsRepository = searchRepository,
-            navController = navController,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: TrackSearchState,
-        handle: Handler<TrackSearchUserAction>,
-        modifier: Modifier,
-    ) {
-        TrackSearch(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = TrackSearchViewModel::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun TrackSearch(

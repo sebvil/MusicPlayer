@@ -16,47 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
-import com.sebastianvm.musicplayer.core.data.track.TrackRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class TrackListMvvmComponent(
-    private val navController: NavController,
-    private val trackRepository: TrackRepository,
-    private val sortPreferencesRepository: SortPreferencesRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) : BaseMvvmComponent<TrackListState, TrackListUserAction, TrackListViewModel>() {
-
-    override val viewModel: TrackListViewModel by lazy {
-        TrackListViewModel(
-            navController = navController,
-            trackRepository = trackRepository,
-            sortPreferencesRepository = sortPreferencesRepository,
-            playbackManager = playbackManager,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: TrackListState,
-        handle: Handler<TrackListUserAction>,
-        modifier: Modifier,
-    ) {
-        TrackList(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = TrackListViewModel::class)
 @Composable
 fun TrackList(
     state: TrackListState,

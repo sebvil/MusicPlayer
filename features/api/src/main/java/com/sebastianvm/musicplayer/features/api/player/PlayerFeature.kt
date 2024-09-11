@@ -1,14 +1,11 @@
 package com.sebastianvm.musicplayer.features.api.player
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
 import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
-import kotlinx.coroutines.flow.Flow
 
-interface PlayerFeature : Feature {
-    fun playerUiComponent(props: Flow<PlayerProps>, delegate: PlayerDelegate): MvvmComponent
-
+interface PlayerFeature : Feature<PlayerArguments, PlayerProps> {
     object Key : Feature.Key
 }
 
-fun FeatureRegistry.playerFeature(): PlayerFeature = featureByKey(PlayerFeature.Key)
+fun FeatureRegistry.playerFeature(): Feature<PlayerArguments, PlayerProps> =
+    featureByKey(PlayerFeature.Key)

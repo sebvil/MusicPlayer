@@ -17,6 +17,7 @@ dependencies {
     implementation(projects.core.services)
     implementation(projects.core.commonTest)
 
+    implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)

@@ -15,29 +15,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
-import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 import kotlinx.coroutines.launch
 
-class HomeMvvmComponent(private val navController: NavController, features: FeatureRegistry) :
-    BaseMvvmComponent<HomeState, HomeUserAction, HomeViewModel>() {
-
-    override val viewModel: HomeViewModel by lazy {
-        HomeViewModel(features = features, navController = navController)
-    }
-
-    @Composable
-    override fun Content(state: HomeState, handle: Handler<HomeUserAction>, modifier: Modifier) {
-        HomeScreen(state = state, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = HomeViewModel::class)
 @Composable
-fun HomeScreen(state: HomeState, modifier: Modifier = Modifier) {
+fun Home(state: HomeState, modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         state.searchMvvmComponent.Content(modifier = Modifier)
         HomeScreenPager(state = state)

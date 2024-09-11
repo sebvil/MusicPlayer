@@ -17,11 +17,15 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
+import com.sebastianvm.musicplayer.features.api.artist.list.ArtistListProps
 import com.sebastianvm.musicplayer.features.api.artist.menu.ArtistContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.artist.menu.artistContextMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,11 +47,15 @@ sealed interface ArtistListUserAction : UserAction {
 
 class ArtistListViewModel(
     artistRepository: ArtistRepository,
-    private val navController: NavController,
+    private val props: StateFlow<ArtistListProps>,
     private val sortPreferencesRepository: SortPreferencesRepository,
     vmScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
 ) : BaseViewModel<UiState<ArtistListState>, ArtistListUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
+
     override val state: StateFlow<UiState<ArtistListState>> =
         combine(
                 artistRepository.getArtists(),
@@ -76,9 +84,7 @@ class ArtistListViewModel(
                 navController.push(
                     features
                         .artistContextMenu()
-                        .artistContextMenuUiComponent(
-                            arguments = ArtistContextMenuArguments(artistId = action.artistId)
-                        ),
+                        .create(arguments = ArtistContextMenuArguments(artistId = action.artistId)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -87,9 +93,10 @@ class ArtistListViewModel(
                 navController.push(
                     features
                         .artistDetails()
-                        .artistDetailsUiComponent(
+                        .create(
                             arguments = ArtistDetailsArguments(action.artistId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistDetailsProps(navController = navController)),
                         )
                 )
             }

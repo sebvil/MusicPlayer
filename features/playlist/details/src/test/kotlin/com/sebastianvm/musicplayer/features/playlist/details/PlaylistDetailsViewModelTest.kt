@@ -19,6 +19,7 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsProps
 import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearchArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
@@ -29,6 +30,7 @@ import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class PlaylistDetailsViewModelTest :
     FreeSpec({
@@ -58,12 +60,12 @@ class PlaylistDetailsViewModelTest :
             return PlaylistDetailsViewModel(
                 vmScope = this,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                args =
+                arguments =
                     PlaylistDetailsArguments(
                         playlistId = playlist.id,
                         playlistName = playlist.name,
                     ),
-                navController = navControllerDep,
+                props = MutableStateFlow(PlaylistDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
                 playlistRepository = playlistRepositoryDep,
                 features = initializeFakeFeatures(),
@@ -128,12 +130,11 @@ class PlaylistDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "SortMenu",
                                     arguments =
                                         SortMenuArguments(
                                             listType =
                                                 SortableListType.Playlist(playlistId = PLAYLIST_ID)
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(
@@ -164,13 +165,12 @@ class PlaylistDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "TrackContextMenu",
                                     arguments =
                                         TrackContextMenuArguments(
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Playlist(PLAYLIST_ID),
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(
@@ -193,8 +193,7 @@ class PlaylistDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "TrackSearch",
-                                    arguments = TrackSearchArguments(playlistId = PLAYLIST_ID),
+                                    arguments = TrackSearchArguments(playlistId = PLAYLIST_ID)
                                 ),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),

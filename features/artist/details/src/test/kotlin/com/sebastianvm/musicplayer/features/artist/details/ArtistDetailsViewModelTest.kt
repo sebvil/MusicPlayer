@@ -12,11 +12,13 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class ArtistDetailsViewModelTest :
     FreeSpec({
@@ -34,7 +36,7 @@ class ArtistDetailsViewModelTest :
                 vmScope = this,
                 arguments = ArtistDetailsArguments(ARTIST_ID),
                 artistRepository = artistRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(ArtistDetailsProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
             )
         }
@@ -92,10 +94,7 @@ class ArtistDetailsViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             mvvmComponent =
-                                FakeMvvmComponent(
-                                    name = "AlbumContextMenu",
-                                    arguments = AlbumContextMenuArguments(ALBUM_ID),
-                                ),
+                                FakeMvvmComponent(arguments = AlbumContextMenuArguments(ALBUM_ID)),
                             navOptions =
                                 NavOptions(
                                     presentationMode = NavOptions.PresentationMode.BottomSheet
@@ -121,14 +120,13 @@ class ArtistDetailsViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "AlbumDetails",
                                     arguments =
                                         AlbumDetailsArguments(
                                             albumId = ALBUM_ID,
                                             albumName = ALBUM_NAME,
                                             imageUri = IMAGE_URI,
                                             artists = ARTIST_NAME,
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),

@@ -16,14 +16,19 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.album.details.albumDetails
+import com.sebastianvm.musicplayer.features.api.album.list.AlbumListProps
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuProps
 import com.sebastianvm.musicplayer.features.api.album.menu.albumContextMenu
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.sort.sortMenu
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -46,9 +51,12 @@ class AlbumListViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
-    private val navController: NavController,
+    private val props: StateFlow<AlbumListProps>,
     private val features: FeatureRegistry,
 ) : BaseViewModel<UiState<AlbumListState>, AlbumListUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     override val state: StateFlow<UiState<AlbumListState>> =
         combine(
@@ -78,9 +86,12 @@ class AlbumListViewModel(
                 navController.push(
                     features
                         .albumContextMenu()
-                        .albumContextMenuUiComponent(
+                        .create(
                             arguments = AlbumContextMenuArguments(action.albumId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(
+                                    AlbumContextMenuProps(navController = navController)
+                                ),
                         ),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
@@ -90,9 +101,7 @@ class AlbumListViewModel(
                 navController.push(
                     features
                         .sortMenu()
-                        .sortMenuUiComponent(
-                            arguments = SortMenuArguments(listType = SortableListType.Albums)
-                        ),
+                        .create(arguments = SortMenuArguments(listType = SortableListType.Albums)),
                     navOptions =
                         NavOptions(presentationMode = NavOptions.PresentationMode.BottomSheet),
                 )
@@ -101,7 +110,7 @@ class AlbumListViewModel(
                 navController.push(
                     features
                         .albumDetails()
-                        .albumDetailsUiComponent(
+                        .create(
                             arguments =
                                 AlbumDetailsArguments(
                                     albumId = action.albumItem.id,
@@ -109,7 +118,8 @@ class AlbumListViewModel(
                                     imageUri = action.albumItem.artworkUri,
                                     artists = action.albumItem.artists,
                                 ),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(AlbumDetailsProps(navController = navController)),
                         )
                 )
             }

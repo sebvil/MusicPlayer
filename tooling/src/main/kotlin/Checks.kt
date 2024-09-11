@@ -4,6 +4,7 @@ class Checks : CliktCommand() {
     override fun run() {
         SortLibs().parse(emptyList())
         Format().parse(emptyList())
+        Tests().parse(emptyList())
         Lint().parse(emptyList())
     }
 }

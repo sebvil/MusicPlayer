@@ -4,53 +4,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.core.data.album.AlbumRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MenuItem
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.components.ContextMenu
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
-import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-class AlbumContextMenuMvvmComponent(
-    private val arguments: AlbumContextMenuArguments,
-    private val navController: NavController,
-    private val albumRepository: AlbumRepository,
-    private val playbackManager: PlaybackManager,
-    private val features: FeatureRegistry,
-) :
-    BaseMvvmComponent<
-        AlbumContextMenuState,
-        AlbumContextMenuUserAction,
-        AlbumContextMenuViewModel,
-    >() {
-
-    override val viewModel: AlbumContextMenuViewModel by lazy {
-        AlbumContextMenuViewModel(
-            arguments = arguments,
-            albumRepository = albumRepository,
-            playbackManager = playbackManager,
-            navController = navController,
-            features = features,
-        )
-    }
-
-    @Composable
-    override fun Content(
-        state: AlbumContextMenuState,
-        handle: Handler<AlbumContextMenuUserAction>,
-        modifier: Modifier,
-    ) {
-        AlbumContextMenu(state = state, handle = handle, modifier = modifier)
-    }
-}
-
+@MvvmComponent(vmClass = AlbumContextMenuViewModel::class)
 @Composable
-private fun AlbumContextMenu(
+fun AlbumContextMenu(
     state: AlbumContextMenuState,
     handle: Handler<AlbumContextMenuUserAction>,
     modifier: Modifier = Modifier,

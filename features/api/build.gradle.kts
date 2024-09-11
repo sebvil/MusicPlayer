@@ -1,4 +1,7 @@
-plugins { alias(libs.plugins.musicplayer.android.library) }
+plugins {
+    alias(libs.plugins.musicplayer.android.library)
+    alias(libs.plugins.parcelize)
+}
 
 android { namespace = "com.sebastianvm.musicplayer.features.api" }
 

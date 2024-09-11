@@ -12,6 +12,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         with(target) {
             configureAndroidLib()
             apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+            apply(plugin = "com.google.devtools.ksp")
 
             extensions.configure<LibraryExtension> {
                 buildFeatures { compose = true }
@@ -45,6 +46,10 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 testImplementation(project(":core:services-test"))
                 testImplementation(project(":core:ui-test"))
                 testImplementation(project(":features:test"))
+
+                implementation(project(":annotations"))
+                implementation(project(":mvvm-component-processor"))
+                ksp(project(":mvvm-component-processor"))
             }
         }
     }

@@ -15,12 +15,14 @@ import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArgume
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
+import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TrackContextMenuViewModelTest :
     FreeSpec({
@@ -50,7 +52,7 @@ class TrackContextMenuViewModelTest :
                 trackRepository = trackRepositoryDep,
                 playlistRepository = playlistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(TrackContextMenuProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
                 vmScope = this,
             )
@@ -178,14 +180,13 @@ class TrackContextMenuViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "AlbumDetails",
                                     arguments =
                                         AlbumDetailsArguments(
                                             albumId = ALBUM_ID,
                                             albumName = "",
                                             imageUri = "",
                                             artists = "",
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(
@@ -201,10 +202,7 @@ class TrackContextMenuViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             mvvmComponent =
-                                FakeMvvmComponent(
-                                    name = "ArtistDetails",
-                                    arguments = ArtistDetailsArguments(artistId = 0),
-                                ),
+                                FakeMvvmComponent(arguments = ArtistDetailsArguments(artistId = 0)),
                             navOptions =
                                 NavOptions(
                                     popCurrent = true,
@@ -220,9 +218,8 @@ class TrackContextMenuViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "ArtistsMenu",
                                     arguments =
-                                        ArtistsMenuArguments(MediaGroup.SingleTrack(TRACK_ID)),
+                                        ArtistsMenuArguments(MediaGroup.SingleTrack(TRACK_ID))
                                 ),
                             navOptions =
                                 NavOptions(

@@ -13,10 +13,14 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
+import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
 import com.sebastianvm.musicplayer.features.api.artist.details.artistDetails
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
+import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuProps
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.create
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -32,9 +36,12 @@ class ArtistsMenuViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     arguments: ArtistsMenuArguments,
     artistRepository: ArtistRepository,
-    private val navController: NavController,
+    private val props: StateFlow<ArtistsMenuProps>,
     private val features: FeatureRegistry,
 ) : BaseViewModel<UiState<ArtistsMenuState>, ArtistsMenuUserAction>(viewModelScope = vmScope) {
+
+    private val navController: NavController
+        get() = props.value.navController
 
     override val state: StateFlow<UiState<ArtistsMenuState>> =
         artistRepository
@@ -54,9 +61,10 @@ class ArtistsMenuViewModel(
                 navController.push(
                     features
                         .artistDetails()
-                        .artistDetailsUiComponent(
+                        .create(
                             arguments = ArtistDetailsArguments(artistId = action.artistId),
-                            navController = navController,
+                            props =
+                                MutableStateFlow(ArtistDetailsProps(navController = navController)),
                         ),
                     navOptions = NavOptions(popCurrent = true),
                 )

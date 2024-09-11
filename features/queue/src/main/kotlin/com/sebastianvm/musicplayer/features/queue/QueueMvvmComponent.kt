@@ -39,33 +39,17 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
+import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.core.ui.mvvm.BaseMvvmComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-class QueueMvvmComponent(
-    private val queueRepository: QueueRepository,
-    private val playbackManager: PlaybackManager,
-) : BaseMvvmComponent<QueueState, QueueUserAction, QueueViewModel>() {
-
-    override val viewModel: QueueViewModel by lazy {
-        QueueViewModel(queueRepository = queueRepository, playbackManager = playbackManager)
-    }
-
-    @Composable
-    override fun Content(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifier) {
-        Queue(state, handle, modifier)
-    }
-}
-
+@MvvmComponent(vmClass = QueueViewModel::class)
 @Composable
 fun Queue(state: QueueState, handle: Handler<QueueUserAction>, modifier: Modifier = Modifier) {
     when (state) {

@@ -13,12 +13,14 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
+import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class AlbumDetailsViewModelTest :
     FreeSpec({
@@ -46,8 +48,8 @@ class AlbumDetailsViewModelTest :
             navControllerDep.push(FakeMvvmComponent())
             return AlbumDetailsViewModel(
                 vmScope = this,
-                args = arguments,
-                navController = navControllerDep,
+                arguments = arguments,
+                props = MutableStateFlow(AlbumDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,
                 features = initializeFakeFeatures(),
@@ -118,8 +120,7 @@ class AlbumDetailsViewModelTest :
                                             trackId = TRACK_ID,
                                             trackPositionInList = TRACK_INDEX,
                                             trackList = MediaGroup.Album(albumId = ALBUM_ID),
-                                        ),
-                                    name = "TrackContextMenu",
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(

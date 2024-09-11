@@ -17,12 +17,14 @@ import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeBackstackEntry
 import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
+import com.sebastianvm.musicplayer.features.api.genre.list.GenreListProps
 import com.sebastianvm.musicplayer.features.api.genre.menu.GenreContextMenuArguments
 import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class GenreListViewModelTest :
     FreeSpec({
@@ -41,7 +43,7 @@ class GenreListViewModelTest :
                 vmScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                navController = navControllerDep,
+                props = MutableStateFlow(GenreListProps(navController = navControllerDep)),
                 features = initializeFakeFeatures(),
             )
         }
@@ -106,12 +108,11 @@ class GenreListViewModelTest :
                         FakeBackstackEntry(
                             mvvmComponent =
                                 FakeMvvmComponent(
-                                    name = "GenreDetails",
                                     arguments =
                                         GenreDetailsArguments(
                                             genreId = GENRE_ID,
                                             genreName = GENRE_NAME,
-                                        ),
+                                        )
                                 ),
                             navOptions =
                                 NavOptions(presentationMode = NavOptions.PresentationMode.Screen),
@@ -124,10 +125,7 @@ class GenreListViewModelTest :
                     navControllerDep.backStack.last() shouldBe
                         FakeBackstackEntry(
                             mvvmComponent =
-                                FakeMvvmComponent(
-                                    name = "GenreContextMenu",
-                                    arguments = GenreContextMenuArguments(GENRE_ID),
-                                ),
+                                FakeMvvmComponent(arguments = GenreContextMenuArguments(GENRE_ID)),
                             navOptions =
                                 NavOptions(
                                     presentationMode = NavOptions.PresentationMode.BottomSheet

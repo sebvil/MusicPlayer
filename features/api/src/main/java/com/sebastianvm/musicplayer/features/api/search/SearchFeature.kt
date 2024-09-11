@@ -1,14 +1,11 @@
 package com.sebastianvm.musicplayer.features.api.search
 
-import com.sebastianvm.musicplayer.core.ui.mvvm.MvvmComponent
-import com.sebastianvm.musicplayer.core.ui.navigation.NavController
 import com.sebastianvm.musicplayer.features.registry.Feature
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-interface SearchFeature : Feature {
-    fun searchUiComponent(navController: NavController): MvvmComponent
-
+interface SearchFeature : Feature<SearchArguments, SearchProps> {
     object Key : Feature.Key
 }
 
-fun FeatureRegistry.searchFeature(): SearchFeature = featureByKey(SearchFeature.Key)
+fun FeatureRegistry.searchFeature(): Feature<SearchArguments, SearchProps> =
+    featureByKey(SearchFeature.Key)

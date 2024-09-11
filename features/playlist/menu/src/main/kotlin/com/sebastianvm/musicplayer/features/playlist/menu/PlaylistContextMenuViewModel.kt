@@ -9,7 +9,7 @@ import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuDelegate
+import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuProps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +44,7 @@ class PlaylistContextMenuViewModel(
     playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
     vmScope: CoroutineScope = getViewModelScope(),
-    private val delegate: PlaylistContextMenuDelegate,
+    private val props: StateFlow<PlaylistContextMenuProps>,
 ) :
     BaseViewModel<PlaylistContextMenuState, PlaylistContextMenuUserAction>(
         viewModelScope = vmScope
@@ -76,7 +76,7 @@ class PlaylistContextMenuViewModel(
                 showDeleteConfirmationDialog.update { true }
             }
             is PlaylistContextMenuUserAction.ConfirmPlaylistDeletionClicked -> {
-                delegate.deletePlaylist()
+                props.value.deletePlaylist()
             }
             is PlaylistContextMenuUserAction.PlaylistDeletionCancelled -> {
                 showDeleteConfirmationDialog.update { false }
