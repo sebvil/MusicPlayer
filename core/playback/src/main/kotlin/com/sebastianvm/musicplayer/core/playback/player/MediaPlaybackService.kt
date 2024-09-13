@@ -40,20 +40,18 @@ import kotlinx.coroutines.withContext
 
 internal class MediaPlaybackService : MediaLibraryService() {
 
-    private val repositoryProvider by lazy {
-        (applicationContext as HasServices).services.repositoryProvider
-    }
+    private val services by lazy { (applicationContext as HasServices).services }
 
-    private val queueRepository: QueueRepository by lazy { repositoryProvider.queueRepository }
+    private val queueRepository: QueueRepository by lazy { services.queueRepository }
 
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private val mediaTree: MediaTree by lazy {
         MediaTree(
-            artistRepository = repositoryProvider.artistRepository,
-            trackRepository = repositoryProvider.trackRepository,
-            albumRepository = repositoryProvider.albumRepository,
+            artistRepository = services.artistRepository,
+            trackRepository = services.trackRepository,
+            albumRepository = services.albumRepository,
         )
     }
 

@@ -4,7 +4,6 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
@@ -97,18 +96,17 @@ class MainViewModel(
         }
     }
 
-    class Factory(private val services: Services) : AbstractSavedStateViewModelFactory() {
+    class Factory(
+        private val playbackManager: PlaybackManager,
+        private val features: FeatureRegistry,
+    ) : AbstractSavedStateViewModelFactory() {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             key: String,
             modelClass: Class<T>,
             handle: SavedStateHandle,
         ): T {
-            return MainViewModel(
-                playbackManager = services.playbackManager,
-                features = services.featureRegistry,
-            )
-                as T
+            return MainViewModel(playbackManager = playbackManager, features = features) as T
         }
     }
 }

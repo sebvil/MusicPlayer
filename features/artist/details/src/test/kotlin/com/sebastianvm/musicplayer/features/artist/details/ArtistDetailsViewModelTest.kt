@@ -13,7 +13,7 @@ import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArgume
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsProps
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -37,7 +37,7 @@ class ArtistDetailsViewModelTest :
                 arguments = ArtistDetailsArguments(ARTIST_ID),
                 artistRepository = artistRepositoryDep,
                 props = MutableStateFlow(ArtistDetailsProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

@@ -10,11 +10,14 @@ import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class DefaultPlaybackManager(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val trackRepository: TrackRepository,
 ) : PlaybackManager {
+
     override fun getPlaybackState(): Flow<PlaybackState> = mediaPlaybackClient.playbackState
 
     override fun connectToService() {

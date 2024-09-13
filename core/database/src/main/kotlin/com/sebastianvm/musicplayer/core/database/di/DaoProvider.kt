@@ -11,27 +11,29 @@ import com.sebastianvm.musicplayer.core.database.daos.PlaylistDao
 import com.sebastianvm.musicplayer.core.database.daos.PlaylistFtsDao
 import com.sebastianvm.musicplayer.core.database.daos.TrackDao
 import com.sebastianvm.musicplayer.core.database.daos.TrackFtsDao
+import me.tatarka.inject.annotations.Provides
 
 interface DaoProvider {
-    fun getTrackDao(): TrackDao
 
-    fun getArtistDao(): ArtistDao
+    @Provides fun getTrackDao(): TrackDao
 
-    fun getAlbumDao(): AlbumDao
+    @Provides fun getArtistDao(): ArtistDao
 
-    fun getGenreDao(): GenreDao
+    @Provides fun getAlbumDao(): AlbumDao
 
-    fun getPlaylistDao(): PlaylistDao
+    @Provides fun getGenreDao(): GenreDao
 
-    fun getMediaQueueDao(): MediaQueueDao
+    @Provides fun getPlaylistDao(): PlaylistDao
 
-    fun getTrackFtsDao(): TrackFtsDao
+    @Provides fun getMediaQueueDao(): MediaQueueDao
 
-    fun getArtistFtsDao(): ArtistFtsDao
+    @Provides fun getTrackFtsDao(): TrackFtsDao
 
-    fun getAlbumFtsDao(): AlbumFtsDao
+    @Provides fun getArtistFtsDao(): ArtistFtsDao
 
-    fun getGenreFtsDao(): GenreFtsDao
+    @Provides fun getAlbumFtsDao(): AlbumFtsDao
 
-    fun getPlaylistFtsDao(): PlaylistFtsDao
+    @Provides fun getGenreFtsDao(): GenreFtsDao
+
+    @Provides fun getPlaylistFtsDao(): PlaylistFtsDao
 }

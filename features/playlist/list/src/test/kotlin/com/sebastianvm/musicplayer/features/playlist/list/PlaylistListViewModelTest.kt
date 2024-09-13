@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.playlist.list.PlaylistListProps
 import com.sebastianvm.musicplayer.features.api.playlist.menu.PlaylistContextMenuArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldHaveSize
@@ -52,7 +52,7 @@ class PlaylistListViewModelTest :
                 playlistRepository = playlistRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(PlaylistListProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
                 vmScope = this,
             )
         }

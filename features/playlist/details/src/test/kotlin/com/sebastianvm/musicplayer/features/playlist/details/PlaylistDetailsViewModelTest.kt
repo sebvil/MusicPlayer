@@ -24,7 +24,7 @@ import com.sebastianvm.musicplayer.features.api.playlist.tracksearch.TrackSearch
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -68,7 +68,7 @@ class PlaylistDetailsViewModelTest :
                 props = MutableStateFlow(PlaylistDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
                 playlistRepository = playlistRepositoryDep,
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

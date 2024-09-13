@@ -47,7 +47,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 testImplementation(project(":core:ui-test"))
                 testImplementation(project(":features:test"))
 
-                implementation(project(":annotations"))
+                implementation(project(":ksp-annotations"))
                 implementation(project(":mvvm-component-processor"))
                 ksp(project(":mvvm-component-processor"))
             }

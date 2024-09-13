@@ -16,14 +16,17 @@ import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.designsystems.components.LocalListItemContainerColor
 import com.sebastianvm.musicplayer.core.designsystems.theme.M3AppTheme
 import com.sebastianvm.musicplayer.core.services.HasServices
-import com.sebastianvm.musicplayer.core.services.Services
 import com.sebastianvm.musicplayer.core.ui.mvvm.currentState
+import com.sebastianvm.musicplayer.features.registry.HasFeatures
 
 class MainActivity : ComponentActivity() {
 
-    private val services: Services by lazy { (application as HasServices).services }
-
-    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory(services) }
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModel.Factory(
+            (application as HasServices).services.playbackManager,
+            (application as HasFeatures).featureRegistry,
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

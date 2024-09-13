@@ -2,7 +2,7 @@ package com.sebastianvm.musicplayer.features.main
 
 import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldContainExactly
@@ -18,7 +18,7 @@ class MainViewModelTest :
             return MainViewModel(
                 vmScope = this,
                 playbackManager = playbackManagerDep,
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

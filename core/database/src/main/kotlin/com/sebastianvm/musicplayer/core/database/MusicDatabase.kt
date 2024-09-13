@@ -1,8 +1,6 @@
 package com.sebastianvm.musicplayer.core.database
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sebastianvm.musicplayer.core.database.di.DaoProvider
 import com.sebastianvm.musicplayer.core.database.entities.AlbumEntity
@@ -26,7 +24,6 @@ import com.sebastianvm.musicplayer.core.database.entities.QueueItemWithTrack
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
 import com.sebastianvm.musicplayer.core.database.entities.TrackFts
 import com.sebastianvm.musicplayer.core.database.entities.TrackWithPlaylistPositionView
-import kotlinx.coroutines.CoroutineDispatcher
 
 @Database(
     entities =
@@ -60,13 +57,3 @@ import kotlinx.coroutines.CoroutineDispatcher
     exportSchema = false,
 )
 internal abstract class MusicDatabase : RoomDatabase(), DaoProvider
-
-private var database: DaoProvider? = null
-
-fun getDaoProvider(context: Context, ioDispatcher: CoroutineDispatcher): DaoProvider {
-    return database
-        ?: Room.databaseBuilder(context, MusicDatabase::class.java, "music_database")
-            .setQueryCoroutineContext(context = ioDispatcher)
-            .build()
-            .also { database = it }
-}

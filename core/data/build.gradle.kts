@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.androidx.annotation)
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.datastore)
 }

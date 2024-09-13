@@ -1,10 +1,5 @@
 package com.sebastianvm.musicplayer.di
 
-import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.features.album.details.DefaultAlbumDetailsFeature
-import com.sebastianvm.musicplayer.features.album.list.DefaultAlbumListFeature
-import com.sebastianvm.musicplayer.features.album.menu.DefaultAlbumContextMenuFeature
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsFeature
 import com.sebastianvm.musicplayer.features.api.album.list.AlbumListFeature
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuFeature
@@ -27,218 +22,70 @@ import com.sebastianvm.musicplayer.features.api.search.SearchFeature
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuFeature
 import com.sebastianvm.musicplayer.features.api.track.list.TrackListFeature
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuFeature
-import com.sebastianvm.musicplayer.features.artist.details.DefaultArtistDetailsFeature
-import com.sebastianvm.musicplayer.features.artist.list.DefaultArtistListFeature
-import com.sebastianvm.musicplayer.features.artist.menu.DefaultArtistContextMenuFeature
-import com.sebastianvm.musicplayer.features.artistsmenu.DefaultArtistsMenuFeature
-import com.sebastianvm.musicplayer.features.genre.details.DefaultGenreDetailsFeature
-import com.sebastianvm.musicplayer.features.genre.list.DefaultGenreListFeature
-import com.sebastianvm.musicplayer.features.genre.menu.DefaultGenreContextMenuFeature
-import com.sebastianvm.musicplayer.features.home.DefaultHomeFeature
-import com.sebastianvm.musicplayer.features.navigation.DefaultNavigationHostFeature
-import com.sebastianvm.musicplayer.features.player.DefaultPlayerFeature
-import com.sebastianvm.musicplayer.features.playlist.details.DefaultPlaylistDetailsFeature
-import com.sebastianvm.musicplayer.features.playlist.list.DefaultPlaylistListFeature
-import com.sebastianvm.musicplayer.features.playlist.menu.DefaultPlaylistContextMenuFeature
-import com.sebastianvm.musicplayer.features.playlist.tracksearch.DefaultTrackSearchFeature
-import com.sebastianvm.musicplayer.features.queue.DefaultQueueFeature
-import com.sebastianvm.musicplayer.features.registry.DefaultFeatureRegistry
+import com.sebastianvm.musicplayer.features.registry.Feature
+import com.sebastianvm.musicplayer.features.registry.FeatureFactory
 import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
-import com.sebastianvm.musicplayer.features.search.DefaultSearchFeature
-import com.sebastianvm.musicplayer.features.sort.DefaultSortMenuFeature
-import com.sebastianvm.musicplayer.features.track.list.DefaultTrackListFeature
-import com.sebastianvm.musicplayer.features.track.menu.DefaultTrackContextMenuFeature
+import me.tatarka.inject.annotations.Inject
 
-fun initializeFeatures(
-    repositoryProvider: RepositoryProvider,
-    playbackManager: PlaybackManager,
-): FeatureRegistry {
-    return DefaultFeatureRegistry().apply {
-        register(
-            key = AlbumDetailsFeature.Key,
-            feature =
-                DefaultAlbumDetailsFeature(
-                    albumRepository = repositoryProvider.albumRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-        register(
-            key = AlbumListFeature.Key,
-            feature =
-                DefaultAlbumListFeature(
-                    albumRepository = repositoryProvider.albumRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    features = this,
-                ),
-        )
-        register(
-            key = AlbumContextMenuFeature.Key,
-            feature =
-                DefaultAlbumContextMenuFeature(
-                    albumRepository = repositoryProvider.albumRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
+@Inject
+class DefaultFeatures(
+    albumDetailsFeature: () -> AlbumDetailsFeature,
+    albumListFeature: () -> AlbumListFeature,
+    albumContextMenuFeature: () -> AlbumContextMenuFeature,
+    artistDetailsFeature: () -> ArtistDetailsFeature,
+    artistListFeature: () -> ArtistListFeature,
+    artistContextMenuFeature: () -> ArtistContextMenuFeature,
+    artistsMenuFeature: () -> ArtistsMenuFeature,
+    genreDetailsFeature: () -> GenreDetailsFeature,
+    genreListFeature: () -> GenreListFeature,
+    genreContextMenuFeature: () -> GenreContextMenuFeature,
+    homeFeature: () -> HomeFeature,
+    navigationHostFeature: () -> NavigationHostFeature,
+    playerFeature: () -> PlayerFeature,
+    playlistDetailsFeature: () -> PlaylistDetailsFeature,
+    playlistListFeature: () -> PlaylistListFeature,
+    playlistContextMenuFeature: () -> PlaylistContextMenuFeature,
+    trackSearchFeature: () -> TrackSearchFeature,
+    searchFeature: () -> SearchFeature,
+    sortMenuFeature: () -> SortMenuFeature,
+    trackListFeature: () -> TrackListFeature,
+    trackContextMenuFeature: () -> TrackContextMenuFeature,
+    queueFeature: () -> QueueFeature,
+) : FeatureRegistry {
 
-        register(
-            key = ArtistDetailsFeature.Key,
-            feature =
-                DefaultArtistDetailsFeature(
-                    artistRepository = repositoryProvider.artistRepository,
-                    features = this,
-                ),
-        )
-        register(
-            key = ArtistListFeature.Key,
-            feature =
-                DefaultArtistListFeature(
-                    artistRepository = repositoryProvider.artistRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    features = this,
-                ),
-        )
-        register(
-            key = ArtistContextMenuFeature.Key,
-            feature =
-                DefaultArtistContextMenuFeature(
-                    artistRepository = repositoryProvider.artistRepository,
-                    playbackManager = playbackManager,
-                ),
-        )
+    private val features = mutableMapOf<Feature.Key, FeatureFactory>()
 
-        register(
-            key = ArtistsMenuFeature.Key,
-            feature =
-                DefaultArtistsMenuFeature(
-                    artistRepository = repositoryProvider.artistRepository,
-                    features = this,
-                ),
-        )
+    private fun register(key: Feature.Key, featureFactory: FeatureFactory) {
+        features[key] = featureFactory
+    }
 
-        register(
-            key = GenreDetailsFeature.Key,
-            feature =
-                DefaultGenreDetailsFeature(
-                    genreRepository = repositoryProvider.genreRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-        register(
-            key = GenreListFeature.Key,
-            feature =
-                DefaultGenreListFeature(
-                    genreRepository = repositoryProvider.genreRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    features = this,
-                ),
-        )
-        register(
-            key = GenreContextMenuFeature.Key,
-            feature =
-                DefaultGenreContextMenuFeature(
-                    genreRepository = repositoryProvider.genreRepository,
-                    playbackManager = playbackManager,
-                ),
-        )
+    @Suppress("UNCHECKED_CAST")
+    override fun <F : Feature<*, *>> featureByKey(key: Feature.Key): F {
+        return features[key]?.invoke() as F
+    }
 
-        register(key = HomeFeature.Key, feature = DefaultHomeFeature(features = this))
-
-        register(
-            key = NavigationHostFeature.Key,
-            feature = DefaultNavigationHostFeature(features = this),
-        )
-
-        register(
-            key = PlayerFeature.Key,
-            feature = DefaultPlayerFeature(playbackManager = playbackManager, features = this),
-        )
-
-        register(
-            key = PlaylistDetailsFeature.Key,
-            feature =
-                DefaultPlaylistDetailsFeature(
-                    playlistRepository = repositoryProvider.playlistRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-        register(
-            key = PlaylistListFeature.Key,
-            feature =
-                DefaultPlaylistListFeature(
-                    playlistRepository = repositoryProvider.playlistRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    features = this,
-                ),
-        )
-        register(
-            key = PlaylistContextMenuFeature.Key,
-            feature =
-                DefaultPlaylistContextMenuFeature(
-                    playlistRepository = repositoryProvider.playlistRepository,
-                    playbackManager = playbackManager,
-                ),
-        )
-        register(
-            key = TrackSearchFeature.Key,
-            feature =
-                DefaultTrackSearchFeature(
-                    playlistRepository = repositoryProvider.playlistRepository,
-                    searchRepository = repositoryProvider.searchRepository,
-                ),
-        )
-
-        register(
-            key = SearchFeature.Key,
-            feature =
-                DefaultSearchFeature(
-                    searchRepository = repositoryProvider.searchRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-
-        register(
-            key = SortMenuFeature.Key,
-            feature =
-                DefaultSortMenuFeature(
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository
-                ),
-        )
-
-        register(
-            key = TrackListFeature.Key,
-            feature =
-                DefaultTrackListFeature(
-                    trackRepository = repositoryProvider.trackRepository,
-                    sortPreferencesRepository = repositoryProvider.sortPreferencesRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-        register(
-            key = TrackContextMenuFeature.Key,
-            feature =
-                DefaultTrackContextMenuFeature(
-                    trackRepository = repositoryProvider.trackRepository,
-                    playlistRepository = repositoryProvider.playlistRepository,
-                    playbackManager = playbackManager,
-                    features = this,
-                ),
-        )
-
-        register(
-            key = QueueFeature.Key,
-            feature =
-                DefaultQueueFeature(
-                    queueRepository = repositoryProvider.queueRepository,
-                    playbackManager = playbackManager,
-                ),
-        )
+    init {
+        register(key = AlbumDetailsFeature.Key, featureFactory = albumDetailsFeature)
+        register(key = AlbumListFeature.Key, featureFactory = albumListFeature)
+        register(key = AlbumContextMenuFeature.Key, featureFactory = albumContextMenuFeature)
+        register(key = ArtistDetailsFeature.Key, featureFactory = artistDetailsFeature)
+        register(key = ArtistListFeature.Key, featureFactory = artistListFeature)
+        register(key = ArtistContextMenuFeature.Key, featureFactory = artistContextMenuFeature)
+        register(key = ArtistsMenuFeature.Key, featureFactory = artistsMenuFeature)
+        register(key = GenreDetailsFeature.Key, featureFactory = genreDetailsFeature)
+        register(key = GenreListFeature.Key, featureFactory = genreListFeature)
+        register(key = GenreContextMenuFeature.Key, featureFactory = genreContextMenuFeature)
+        register(key = HomeFeature.Key, featureFactory = homeFeature)
+        register(key = NavigationHostFeature.Key, featureFactory = navigationHostFeature)
+        register(key = PlayerFeature.Key, featureFactory = playerFeature)
+        register(key = PlaylistDetailsFeature.Key, featureFactory = playlistDetailsFeature)
+        register(key = PlaylistListFeature.Key, featureFactory = playlistListFeature)
+        register(key = PlaylistContextMenuFeature.Key, featureFactory = playlistContextMenuFeature)
+        register(key = TrackSearchFeature.Key, featureFactory = trackSearchFeature)
+        register(key = SearchFeature.Key, featureFactory = searchFeature)
+        register(key = SortMenuFeature.Key, featureFactory = sortMenuFeature)
+        register(key = TrackListFeature.Key, featureFactory = trackListFeature)
+        register(key = TrackContextMenuFeature.Key, featureFactory = trackContextMenuFeature)
+        register(key = QueueFeature.Key, featureFactory = queueFeature)
     }
 }

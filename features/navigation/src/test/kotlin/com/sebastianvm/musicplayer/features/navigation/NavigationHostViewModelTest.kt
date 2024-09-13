@@ -4,7 +4,7 @@ import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.ui.navigation.NavOptions
 import com.sebastianvm.musicplayer.core.uitest.mvvm.FakeMvvmComponent
 import com.sebastianvm.musicplayer.features.api.home.HomeArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -15,7 +15,7 @@ import io.kotest.matchers.shouldBe
 class NavigationHostViewModelTest :
     FreeSpec({
         fun TestScope.getSubject(): NavigationHostViewModel {
-            return NavigationHostViewModel(vmScope = this, features = initializeFakeFeatures())
+            return NavigationHostViewModel(vmScope = this, features = FakeFeatures())
         }
 
         "init sets initial screen to HomeUiComponent" {

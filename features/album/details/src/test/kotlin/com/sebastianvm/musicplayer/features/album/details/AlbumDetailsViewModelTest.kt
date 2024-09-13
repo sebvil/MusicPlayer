@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsArguments
 import com.sebastianvm.musicplayer.features.api.album.details.AlbumDetailsProps
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -52,7 +52,7 @@ class AlbumDetailsViewModelTest :
                 props = MutableStateFlow(AlbumDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
                 albumRepository = albumRepositoryDep,
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

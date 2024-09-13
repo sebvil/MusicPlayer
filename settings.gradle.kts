@@ -107,5 +107,6 @@ include(":core:ui-test")
 
 include(":tooling")
 
-include(":annotations")
+include(":ksp-annotations")
+include(":di-annotations")
 include(":mvvm-component-processor")

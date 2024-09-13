@@ -1,11 +1,8 @@
 package com.sebastianvm.musicplayer.core.services
 
-import com.sebastianvm.musicplayer.core.data.di.RepositoryProvider
+import com.sebastianvm.musicplayer.core.data.di.RepositoryComponent
 import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
-import com.sebastianvm.musicplayer.features.registry.FeatureRegistry
 
-interface Services {
+interface Services : RepositoryComponent {
     val playbackManager: PlaybackManager
-    val repositoryProvider: RepositoryProvider
-    val featureRegistry: FeatureRegistry
 }
