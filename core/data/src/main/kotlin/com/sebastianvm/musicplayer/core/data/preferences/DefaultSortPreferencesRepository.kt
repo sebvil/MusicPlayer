@@ -1,8 +1,7 @@
 package com.sebastianvm.musicplayer.core.data.preferences
 
-import androidx.datastore.core.DataStore
 import com.sebastianvm.musicplayer.core.datastore.sort.MediaSortPreferences
-import com.sebastianvm.musicplayer.core.datastore.sort.SortPreferences
+import com.sebastianvm.musicplayer.core.datastore.sort.SortPreferencesDataStore
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.model.MediaSortOrder
 import com.sebastianvm.musicplayer.core.model.SortOptions
@@ -11,11 +10,11 @@ import com.sebastianvm.musicplayer.core.model.not
 import kotlinx.collections.immutable.mutate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
-@Inject
+@Factory
 class DefaultSortPreferencesRepository(
-    private val sortPreferencesDataStore: DataStore<SortPreferences>
+    private val sortPreferencesDataStore: SortPreferencesDataStore
 ) : SortPreferencesRepository {
 
     private suspend fun modifyAllTrackListSortPreferences(

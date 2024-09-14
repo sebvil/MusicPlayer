@@ -3,7 +3,7 @@ package com.sebastianvm.musicplayer.features.genre.menu
 import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.core.data.genre.GenreRepository
 import com.sebastianvm.musicplayer.core.model.MediaGroup
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction

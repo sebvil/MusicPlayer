@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.core.resources)
     implementation(projects.core.sync)
     implementation(projects.core.data)
+    implementation(projects.core.playback)
 
     implementation(libs.androidx.work.runtime.ktx)
 

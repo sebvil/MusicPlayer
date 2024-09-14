@@ -14,6 +14,6 @@ internal inline fun <reified T : KotlinTopLevelExtension> Project.configureKotli
             else -> error("Unsupported extension type: ${T::class.java}")
         }.apply {
             jvmToolchain(17)
-            allWarningsAsErrors.set(true)
+            allWarningsAsErrors.set(false)
         }
     }

@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.originatingKSFiles
 import com.squareup.kotlinpoet.ksp.writeTo
 
@@ -58,7 +57,7 @@ class FeatureFileSpec(
     private val classSpec =
         TypeSpec.classBuilder(name = className)
             .apply {
-                addAnnotation(ClassName("me.tatarka.inject.annotations", "Inject"))
+                addAnnotation(ClassName("org.koin.core.annotation.", "Factory"))
                 constructor()
                 baseFeatureInterface()
                 mvvmComponentInitializersProperty()
@@ -78,7 +77,6 @@ class FeatureFileSpec(
             }
             .build()
 
-    @OptIn(KotlinPoetKspPreview::class)
     fun writeTo(
         codeGenerator: CodeGenerator,
         aggregating: Boolean,

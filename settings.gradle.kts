@@ -45,8 +45,6 @@ include(":app")
 
 include(":core:services-test")
 
-include(":core:services")
-
 include(":core:ui")
 
 include(":core:designsystems")
@@ -108,5 +106,5 @@ include(":core:ui-test")
 include(":tooling")
 
 include(":ksp-annotations")
-include(":di-annotations")
+
 include(":mvvm-component-processor")

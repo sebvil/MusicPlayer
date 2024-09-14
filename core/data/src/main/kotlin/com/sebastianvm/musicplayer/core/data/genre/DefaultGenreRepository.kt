@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
-@Inject
+@Factory
 class DefaultGenreRepository(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val genreDao: GenreDao,

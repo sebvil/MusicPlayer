@@ -12,8 +12,11 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.common)
+
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+
     ksp(libs.androidx.room.compiler)
 }

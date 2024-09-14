@@ -14,13 +14,11 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.originatingKSFiles
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 
 data class Parameter(val name: String, val type: TypeName) {
-    @OptIn(KotlinPoetKspPreview::class)
     constructor(
         kspParameter: KSValueParameter
     ) : this(name = kspParameter.name?.asString().orEmpty(), type = kspParameter.type.toTypeName())
@@ -64,7 +62,6 @@ class MvvmComponentFileSpec(
             }
             .build()
 
-    @OptIn(KotlinPoetKspPreview::class)
     fun writeTo(
         codeGenerator: CodeGenerator,
         aggregating: Boolean,
