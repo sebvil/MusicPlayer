@@ -28,3 +28,7 @@ fun DependencyHandlerScope.detektPlugins(libs: VersionCatalog, lib: String) {
 fun DependencyHandlerScope.ksp(project: Project) {
     "ksp"(project)
 }
+
+fun DependencyHandlerScope.ksp(dependency: Provider<*>) {
+    "ksp"(dependency)
+}

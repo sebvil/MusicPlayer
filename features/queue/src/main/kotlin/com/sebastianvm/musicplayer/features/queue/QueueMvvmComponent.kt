@@ -39,13 +39,13 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.designsystems.icons.AppIcons
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 

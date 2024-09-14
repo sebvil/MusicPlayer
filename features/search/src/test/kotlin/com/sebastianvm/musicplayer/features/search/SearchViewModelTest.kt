@@ -31,7 +31,7 @@ import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArgu
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.api.playlist.details.PlaylistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.search.SearchProps
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -66,7 +66,7 @@ class SearchViewModelTest :
                 searchRepository = ftsRepositoryDep,
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(SearchProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
                 vmScope = this,
             )
         }

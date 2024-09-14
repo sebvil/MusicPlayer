@@ -19,7 +19,7 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.genre.details.GenreDetailsArguments
 import com.sebastianvm.musicplayer.features.api.genre.list.GenreListProps
 import com.sebastianvm.musicplayer.features.api.genre.menu.GenreContextMenuArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -44,7 +44,7 @@ class GenreListViewModelTest :
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(GenreListProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

@@ -77,6 +77,7 @@ dependencies {
 
     // endregion
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.datastore)
 }
 
 kover {

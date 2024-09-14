@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.GenreRow
 import com.sebastianvm.musicplayer.core.designsystems.components.OverflowIconButton
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
@@ -18,6 +17,7 @@ import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmp
 import com.sebastianvm.musicplayer.core.ui.components.UiStateScreen
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiState
+import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 
 @MvvmComponent(vmClass = GenreListViewModel::class)
 @Composable

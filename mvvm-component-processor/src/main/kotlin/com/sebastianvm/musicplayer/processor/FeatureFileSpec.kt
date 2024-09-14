@@ -58,6 +58,7 @@ class FeatureFileSpec(
     private val classSpec =
         TypeSpec.classBuilder(name = className)
             .apply {
+                addAnnotation(ClassName("me.tatarka.inject.annotations", "Inject"))
                 constructor()
                 baseFeatureInterface()
                 mvvmComponentInitializersProperty()

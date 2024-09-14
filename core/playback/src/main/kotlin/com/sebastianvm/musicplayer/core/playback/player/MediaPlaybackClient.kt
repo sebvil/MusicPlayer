@@ -10,6 +10,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.sebastianvm.musicplayer.annotations.AppScope
 import com.sebastianvm.musicplayer.core.common.extensions.orZero
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.PlaybackState
@@ -22,8 +23,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 
+@AppScope
+@Inject
 class MediaPlaybackClient(private val context: Context, private val externalScope: CoroutineScope) {
+
     private lateinit var mediaControllerFuture: ListenableFuture<MediaController>
     private val controller: MediaController?
         get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null

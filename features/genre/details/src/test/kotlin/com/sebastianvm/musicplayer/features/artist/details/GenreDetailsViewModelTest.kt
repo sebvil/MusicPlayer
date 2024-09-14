@@ -26,7 +26,7 @@ import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArgum
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsState
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsUserAction
 import com.sebastianvm.musicplayer.features.genre.details.GenreDetailsViewModel
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -65,7 +65,7 @@ class GenreDetailsViewModelTest :
                 arguments = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),
                 props = MutableStateFlow(GenreDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

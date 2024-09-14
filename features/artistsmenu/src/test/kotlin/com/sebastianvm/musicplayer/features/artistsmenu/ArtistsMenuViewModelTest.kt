@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.core.uitest.navigation.FakeNavController
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuProps
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -41,7 +41,7 @@ class ArtistsMenuViewModelTest :
                 arguments = ArtistsMenuArguments(media = media),
                 artistRepository = artistRepositoryDep,
                 props = MutableStateFlow(ArtistsMenuProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

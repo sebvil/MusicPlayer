@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.sebastianvm.musicplayer.core.services.Services
+import com.sebastianvm.musicplayer.core.data.music.MusicRepository
 import com.sebastianvm.musicplayer.core.sync.LibrarySyncWorker
 
-class MusicPlayerWorkerFactory(private val services: Services) : WorkerFactory() {
+class MusicPlayerWorkerFactory(private val musicRepository: MusicRepository) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
@@ -18,7 +18,7 @@ class MusicPlayerWorkerFactory(private val services: Services) : WorkerFactory()
                 LibrarySyncWorker(
                     context = appContext,
                     workerParams = workerParameters,
-                    musicRepository = services.repositoryProvider.musicRepository,
+                    musicRepository = musicRepository,
                 )
             }
             else -> null

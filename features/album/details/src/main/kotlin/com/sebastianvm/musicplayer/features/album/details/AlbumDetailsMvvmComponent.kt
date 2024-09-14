@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.MediaArtImage
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
@@ -56,6 +55,7 @@ import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.components.StoragePermissionNeededEmptyScreen
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
+import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 import kotlin.math.roundToInt
 
 @MvvmComponent(vmClass = AlbumDetailsViewModel::class)

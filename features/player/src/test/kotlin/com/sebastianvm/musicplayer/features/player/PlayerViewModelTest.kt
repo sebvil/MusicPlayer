@@ -6,7 +6,7 @@ import com.sebastianvm.musicplayer.core.commontest.extensions.testViewModelState
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.servicestest.playback.FakePlaybackManager
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -40,7 +40,7 @@ class PlayerViewModelTest :
                 vmScope = this,
                 playbackManager = playbackManagerDep,
                 props = propsDep,
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

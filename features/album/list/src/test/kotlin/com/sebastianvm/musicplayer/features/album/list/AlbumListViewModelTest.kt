@@ -22,7 +22,7 @@ import com.sebastianvm.musicplayer.features.api.album.list.AlbumListProps
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortMenuArguments
 import com.sebastianvm.musicplayer.features.api.sort.SortableListType
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.datatest.withData
@@ -48,7 +48,7 @@ class AlbumListViewModelTest :
                 albumRepository = albumRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(AlbumListProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

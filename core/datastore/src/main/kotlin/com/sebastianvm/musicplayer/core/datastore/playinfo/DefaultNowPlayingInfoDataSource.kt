@@ -3,8 +3,10 @@ package com.sebastianvm.musicplayer.core.datastore.playinfo
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
+import me.tatarka.inject.annotations.Inject
 
-internal class DefaultNowPlayingInfoDataSource(
+@Inject
+class DefaultNowPlayingInfoDataSource(
     private val savedPlaybackInfoDataStore: DataStore<SavedPlaybackInfo>
 ) : NowPlayingInfoDataSource {
 

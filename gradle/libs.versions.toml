@@ -15,6 +15,7 @@ detekt-compose = "0.4.11"
 fixture-monkey = "1.0.24"
 kotest = "5.9.1"
 kotlin = "2.0.20"
+kotlinInject = "0.7.1"
 kotlinpoet = "1.14.2"
 kotlinpoetKsp = "1.10.1"
 kotlinx-collections-immutable = "0.3.7"
@@ -56,6 +57,8 @@ fixture-monkey-kotest = { module = "com.navercorp.fixturemonkey:fixture-monkey-k
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
+kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoetKsp" }

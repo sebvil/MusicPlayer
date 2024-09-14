@@ -15,9 +15,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.sebastianvm.musicplayer.annotations.MvvmComponent
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
 import com.sebastianvm.musicplayer.core.resources.RString
+import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 import kotlinx.coroutines.launch
 
 @MvvmComponent(vmClass = HomeViewModel::class)

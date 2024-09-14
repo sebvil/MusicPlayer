@@ -15,7 +15,7 @@ import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuArgum
 import com.sebastianvm.musicplayer.features.api.album.menu.AlbumContextMenuProps
 import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArguments
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.shouldBe
@@ -42,7 +42,7 @@ class AlbumContextMenuViewModelTest :
                 albumRepository = albumRepositoryDep,
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(AlbumContextMenuProps(navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
             )
         }
 

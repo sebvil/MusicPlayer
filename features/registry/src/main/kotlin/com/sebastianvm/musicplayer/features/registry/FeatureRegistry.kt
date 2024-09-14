@@ -1,7 +1,7 @@
 package com.sebastianvm.musicplayer.features.registry
 
-interface FeatureRegistry {
-    fun register(key: Feature.Key, feature: Feature<*, *>)
+typealias FeatureFactory = () -> Feature<*, *>
 
+interface FeatureRegistry {
     fun <F : Feature<*, *>> featureByKey(key: Feature.Key): F
 }

@@ -4,7 +4,7 @@ plugins {
 
 
 dependencies {
-    implementation(projects.annotations)
+    implementation(projects.kspAnnotations)
 
     implementation(libs.kotlinpoet)
     implementation(libs.kotlinpoet.ksp)

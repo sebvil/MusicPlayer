@@ -16,7 +16,7 @@ import com.sebastianvm.musicplayer.features.api.artist.details.ArtistDetailsArgu
 import com.sebastianvm.musicplayer.features.api.artistsmenu.ArtistsMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuArguments
 import com.sebastianvm.musicplayer.features.api.track.menu.TrackContextMenuProps
-import com.sebastianvm.musicplayer.features.test.initializeFakeFeatures
+import com.sebastianvm.musicplayer.features.test.FakeFeatures
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.core.test.TestScope
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -53,7 +53,7 @@ class TrackContextMenuViewModelTest :
                 playlistRepository = playlistRepositoryDep,
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(TrackContextMenuProps(navController = navControllerDep)),
-                features = initializeFakeFeatures(),
+                features = FakeFeatures(),
                 vmScope = this,
             )
         }
