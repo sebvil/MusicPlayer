@@ -6,13 +6,12 @@ import com.sebastianvm.musicplayer.core.model.PlaybackState
 import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
 import com.sebastianvm.musicplayer.core.playback.player.MediaPlaybackClient
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
-@Inject
+@Factory(binds = [PlaybackManager::class])
 class DefaultPlaybackManager(
     private val mediaPlaybackClient: MediaPlaybackClient,
     private val trackRepository: TrackRepository,

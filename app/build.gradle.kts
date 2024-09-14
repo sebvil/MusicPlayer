@@ -44,7 +44,6 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.playback)
     implementation(projects.core.sync)
-    implementation(projects.core.services)
 
     implementation(projects.features.album.details)
     implementation(projects.features.album.list)
@@ -72,12 +71,14 @@ dependencies {
     implementation(projects.features.api)
     implementation(projects.features.registry)
 
-    // Kotlin
     implementation(libs.core.ktx)
 
-    // endregion
+    implementation(libs.koin.androidx.workmanager)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.datastore)
+
+    testImplementation(libs.koin.test)
+    testImplementation(libs.bundles.testing)
 }
 
 kover {

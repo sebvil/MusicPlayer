@@ -17,7 +17,9 @@ import com.sebastianvm.musicplayer.core.model.Track
 import com.sebastianvm.musicplayer.core.playback.provider.ArtworkProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
+@Factory
 internal class MediaTree(
     private val artistRepository: ArtistRepository,
     private val trackRepository: TrackRepository,
@@ -238,7 +240,7 @@ internal class MediaTree(
         ARTIST,
         GENRE,
         PLAYLIST,
-        TRACK
+        TRACK,
     }
 
     //    private suspend fun loadImage(uri: Uri): ByteArray {

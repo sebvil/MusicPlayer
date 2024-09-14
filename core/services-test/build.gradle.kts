@@ -7,9 +7,9 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.services)
     implementation(projects.core.model)
     implementation(projects.core.commonTest)
+    implementation(projects.core.playback)
 
     implementation(libs.kotlinx.coroutines)
 }

@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
-@Inject
+@Factory
 class DefaultQueueRepository(
     private val nowPlayingInfoDataSource: NowPlayingInfoDataSource,
     private val mediaQueueDao: MediaQueueDao,

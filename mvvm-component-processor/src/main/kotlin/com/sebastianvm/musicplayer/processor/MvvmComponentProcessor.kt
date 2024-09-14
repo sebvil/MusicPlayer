@@ -10,7 +10,6 @@ import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 import com.squareup.kotlinpoet.ParameterizedTypeName
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toTypeName
 
 class MvvmComponentProcessor(private val codeGenerator: CodeGenerator) : SymbolProcessor {
@@ -26,7 +25,6 @@ class MvvmComponentProcessor(private val codeGenerator: CodeGenerator) : SymbolP
     }
 
     inner class Visitor : KSVisitorVoid() {
-        @OptIn(KotlinPoetKspPreview::class)
         override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {
             val componentName = function.simpleName.getShortName()
             val viewModel =

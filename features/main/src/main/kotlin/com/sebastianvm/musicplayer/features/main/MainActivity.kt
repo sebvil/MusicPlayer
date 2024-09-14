@@ -6,7 +6,6 @@ import android.os.StrictMode.ThreadPolicy
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,18 +14,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.sebastianvm.musicplayer.core.designsystems.components.LocalListItemContainerColor
 import com.sebastianvm.musicplayer.core.designsystems.theme.M3AppTheme
-import com.sebastianvm.musicplayer.core.services.HasServices
 import com.sebastianvm.musicplayer.core.ui.mvvm.currentState
-import com.sebastianvm.musicplayer.features.registry.HasFeatures
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels {
-        MainViewModel.Factory(
-            (application as HasServices).services.playbackManager,
-            (application as HasFeatures).featureRegistry,
-        )
-    }
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.core.resources)
     implementation(projects.core.data)
     implementation(projects.core.datastore)
+    implementation(projects.core.playback)
 
     implementation(libs.kotlinx.collections.immutable)
 

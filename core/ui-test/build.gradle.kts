@@ -14,7 +14,6 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.model)
-    implementation(projects.core.services)
     implementation(projects.core.commonTest)
 
     implementation(libs.lifecycle.viewmodel.ktx)

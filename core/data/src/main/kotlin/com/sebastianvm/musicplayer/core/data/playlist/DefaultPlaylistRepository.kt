@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Inject
+@Factory
 class DefaultPlaylistRepository(
     private val sortPreferencesRepository: SortPreferencesRepository,
     private val playlistDao: PlaylistDao,

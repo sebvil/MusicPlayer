@@ -11,7 +11,16 @@ internal fun Project.configureAndroid(commonExtension: CommonExtension<*, *, *, 
     commonExtension.apply {
         compileSdk = 35
 
-        defaultConfig { minSdk = 26 }
+        defaultConfig {
+            minSdk = 26
+
+            // TODO remove with koin upgrade
+            externalNativeBuild {
+                cmake {
+                    cppFlags += "-Wall -Wextra" // Adjust this as needed, avoid adding -Werror
+                }
+            }
+        }
     }
     configureDi()
     configureKotlin<KotlinAndroidProjectExtension>()

@@ -1,5 +1,3 @@
-@file:Suppress("InjectDispatcher")
-
 package com.sebastianvm.musicplayer.core.playback.player
 
 import android.util.Log
@@ -18,6 +16,7 @@ import androidx.media3.session.SessionError
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import com.sebastianvm.musicplayer.core.common.DispatcherNames
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.queue.QueueRepository
 import com.sebastianvm.musicplayer.core.model.BasicQueuedTrack
@@ -27,33 +26,27 @@ import com.sebastianvm.musicplayer.core.playback.extensions.toMediaItem
 import com.sebastianvm.musicplayer.core.playback.extensions.uniqueId
 import com.sebastianvm.musicplayer.core.playback.extensions.uri
 import com.sebastianvm.musicplayer.core.playback.mediatree.MediaTree
-import com.sebastianvm.musicplayer.core.services.HasServices
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.asListenableFuture
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 
 internal class MediaPlaybackService : MediaLibraryService() {
 
-    private val services by lazy { (applicationContext as HasServices).services }
+    private val queueRepository: QueueRepository by inject()
 
-    private val queueRepository: QueueRepository by lazy { services.queueRepository }
+    private val mainDispatcher: CoroutineDispatcher by
+        inject(qualifier = named(DispatcherNames.MAIN))
+    private val defaultDispatcher: CoroutineDispatcher by
+        inject(qualifier = named(DispatcherNames.DEFAULT))
 
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
-
-    private val mediaTree: MediaTree by lazy {
-        MediaTree(
-            artistRepository = services.artistRepository,
-            trackRepository = services.trackRepository,
-            albumRepository = services.albumRepository,
-        )
-    }
+    private val mediaTree: MediaTree by inject()
 
     private lateinit var player: Player
     private lateinit var mediaSession: MediaLibrarySession

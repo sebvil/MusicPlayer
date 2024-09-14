@@ -17,9 +17,9 @@ import com.sebastianvm.musicplayer.core.model.BasicGenre
 import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 import com.sebastianvm.musicplayer.core.model.BasicTrack
 import kotlinx.coroutines.flow.Flow
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
 
-@Inject
+@Factory
 class DefaultFullTextSearchRepository(
     private val trackFtsDao: TrackFtsDao,
     private val artistFtsDao: ArtistFtsDao,

@@ -4,7 +4,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sebastianvm.musicplayer.core.services.playback.PlaybackManager
+import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class MainViewModel(
     vmScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,

@@ -6,6 +6,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.resources)
     implementation(projects.core.data)
+    implementation(projects.core.playback)
 
     testImplementation(projects.core.dataTest)
     testImplementation(projects.core.servicesTest)

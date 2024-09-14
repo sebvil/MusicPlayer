@@ -9,7 +9,6 @@ android {
 dependencies {
     implementation(projects.core.model)
     implementation(projects.core.datastore)
-    implementation(projects.core.services)
     implementation(projects.core.ui)
 
     implementation(libs.lifecycle.viewmodel.ktx)

@@ -29,7 +29,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             dependencies {
                 implementation(project(":core:designsystems"))
                 implementation(project(":core:ui"))
-                implementation(project(":core:services"))
                 implementation(project(":features:api"))
                 implementation(project(":features:registry"))
 

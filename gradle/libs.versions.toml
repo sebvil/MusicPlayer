@@ -13,11 +13,12 @@ datastore = "1.1.1"
 detekt = "1.23.6"
 detekt-compose = "0.4.11"
 fixture-monkey = "1.0.24"
+koinAndroid = "4.0.0-RC2"
+koinAnnotations = "1.4.0-RC4"
 kotest = "5.9.1"
 kotlin = "2.0.20"
-kotlinInject = "0.7.1"
-kotlinpoet = "1.14.2"
-kotlinpoetKsp = "1.10.1"
+kotlinpoet = "1.16.0"
+kotlinpoetKsp = "1.16.0"
 kotlinx-collections-immutable = "0.3.7"
 kotlinx-coroutines = "1.9.0-RC.2"
 kotlinx-serialization-json = "1.7.2"
@@ -54,11 +55,14 @@ datastore = { module = "androidx.datastore:datastore", version.ref = "datastore"
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
 fixture-monkey = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin", version.ref = "fixture-monkey" }
 fixture-monkey-kotest = { module = "com.navercorp.fixturemonkey:fixture-monkey-kotest", version.ref = "fixture-monkey" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinAndroid" }
+koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinAndroid" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
-kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version.ref = "kotlinInject" }
-kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version.ref = "kotlinInject" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoetKsp" }

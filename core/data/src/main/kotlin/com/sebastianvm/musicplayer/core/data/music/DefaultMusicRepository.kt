@@ -5,7 +5,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
-import com.sebastianvm.musicplayer.annotations.IoDispatcher
+import com.sebastianvm.musicplayer.core.common.DispatcherNames
 import com.sebastianvm.musicplayer.core.data.UriUtils
 import com.sebastianvm.musicplayer.core.data.track.TrackRepository
 import com.sebastianvm.musicplayer.core.database.entities.AlbumEntity
@@ -18,12 +18,13 @@ import com.sebastianvm.musicplayer.core.database.entities.GenreTrackCrossRef
 import com.sebastianvm.musicplayer.core.database.entities.TrackEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import me.tatarka.inject.annotations.Inject
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Named
 
-@Inject
+@Factory
 class DefaultMusicRepository(
     private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @Named(DispatcherNames.IO) private val ioDispatcher: CoroutineDispatcher,
     private val trackRepository: TrackRepository,
 ) : MusicRepository {
 

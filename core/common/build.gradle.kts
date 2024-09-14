@@ -1,3 +1,15 @@
-plugins { alias(libs.plugins.musicplayer.jvm.library) }
+import com.sebastianvm.musicplayer.convention.configureDi
 
-dependencies { implementation(libs.kotlinx.coroutines) }
+plugins {
+    alias(libs.plugins.musicplayer.android.library)
+    alias(libs.plugins.com.google.devtools.ksp)
+}
+android {
+    namespace = "com.sebastianvm.musicplayer.core.common"
+}
+dependencies {
+    implementation(libs.kotlinx.coroutines)
+}
+
+
+configureDi()
