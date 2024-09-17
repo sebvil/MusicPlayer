@@ -37,7 +37,7 @@ class ArtistListViewModelTest :
 
         fun TestScope.getSubject(): ArtistListViewModel {
             return ArtistListViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 artistRepository = artistRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(ArtistListProps(navController = navControllerDep)),

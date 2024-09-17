@@ -41,7 +41,7 @@ class TrackSearchViewModelTest :
                 playlistRepository = playlistRepositoryDep,
                 searchRepository = ftsRepositoryDep,
                 props = MutableStateFlow(TrackSearchProps(navController = navControllerDep)),
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

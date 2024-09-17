@@ -41,11 +41,9 @@ class PlaylistListViewModelTest :
         fun TestScope.getSubject(
             playlists: List<Playlist> = FixtureProvider.playlists(),
             sortOrder: MediaSortOrder = MediaSortOrder.ASCENDING,
-            shouldPlaylistCreationFail: Boolean = false,
         ): PlaylistListViewModel {
             playlistRepositoryDep.playlists.value = playlists
             sortPreferencesRepositoryDep.playlistListSortOrder.value = sortOrder
-            playlistRepositoryDep.shouldPlaylistCreationFail = shouldPlaylistCreationFail
             navControllerDep.push(FakeMvvmComponent())
 
             return PlaylistListViewModel(
@@ -53,7 +51,7 @@ class PlaylistListViewModelTest :
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(PlaylistListProps(navController = navControllerDep)),
                 features = FakeFeatures(),
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 
@@ -65,10 +63,7 @@ class PlaylistListViewModelTest :
                     testViewModelState(subject) {
                         awaitItem() shouldBe PlaylistListState.Loading
                         awaitItem() shouldBe
-                            PlaylistListState.Empty(
-                                isCreatePlaylistDialogOpen = false,
-                                isPlaylistCreationErrorDialogOpen = false,
-                            )
+                            PlaylistListState.Empty(createPlaylistDialogState = null)
 
                         val playlists = FixtureProvider.playlists()
                         playlistRepositoryDep.playlists.value = playlists
@@ -170,7 +165,7 @@ class PlaylistListViewModelTest :
                 "CreatePlaylistButtonClicked" -
                     {
                         "navigates to PlaylistDetails on success" {
-                            val subject = getSubject(shouldPlaylistCreationFail = false)
+                            val subject = getSubject()
 
                             subject.handle(
                                 PlaylistListUserAction.CreatePlaylistButtonClicked(
@@ -198,25 +193,21 @@ class PlaylistListViewModelTest :
                                 )
                         }
 
-                        "shows error dialog on failure and DismissPlaylistCreationErrorDialog closes the dialog" {
-                            val subject = getSubject(shouldPlaylistCreationFail = true)
+                        "shows error state when playlist name is blank" {
+                            val subject = getSubject()
 
                             testViewModelState(subject) {
                                 skipItems(2)
                                 subject.handle(
-                                    PlaylistListUserAction.CreatePlaylistButtonClicked(
-                                        playlistName = PLAYLIST_NAME
-                                    )
+                                    PlaylistListUserAction.CreateNewPlaylistButtonClicked
                                 )
+                                val playlistCreationDialogState =
+                                    awaitItemAs<PlaylistListState.Data>().createPlaylistDialogState
+                                playlistCreationDialogState?.onSave?.invoke("  ")
 
                                 awaitItemAs<PlaylistListState.Data>()
-                                    .isPlaylistCreationErrorDialogOpen shouldBe true
-
-                                subject.handle(
-                                    PlaylistListUserAction.DismissPlaylistCreationErrorDialog
-                                )
-                                awaitItemAs<PlaylistListState.Data>()
-                                    .isPlaylistCreationErrorDialogOpen shouldBe false
+                                    .createPlaylistDialogState
+                                    ?.errorMessage shouldBe RString.playlist_name_cannot_be_empty
                             }
                         }
                     }
@@ -227,11 +218,15 @@ class PlaylistListViewModelTest :
                     testViewModelState(subject) {
                         skipItems(2)
                         subject.handle(PlaylistListUserAction.CreateNewPlaylistButtonClicked)
-                        awaitItemAs<PlaylistListState.Data>().isCreatePlaylistDialogOpen shouldBe
-                            true
+                        val playlistCreationDialogState =
+                            awaitItemAs<PlaylistListState.Data>().createPlaylistDialogState
+                        playlistCreationDialogState?.title shouldBe RString.playlist_name
+                        playlistCreationDialogState?.confirmButtonText shouldBe RString.create
+                        playlistCreationDialogState?.initialText shouldBe ""
+
                         subject.handle(PlaylistListUserAction.DismissPlaylistCreationDialog)
-                        awaitItemAs<PlaylistListState.Data>().isCreatePlaylistDialogOpen shouldBe
-                            false
+                        awaitItemAs<PlaylistListState.Data>().createPlaylistDialogState shouldBe
+                            null
                     }
                 }
             }

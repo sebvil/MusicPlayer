@@ -8,15 +8,12 @@ import com.sebastianvm.musicplayer.core.model.BasicPlaylist
 import com.sebastianvm.musicplayer.core.model.Playlist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class FakePlaylistRepository : PlaylistRepository {
 
     val playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(emptyList())
-
-    var shouldPlaylistCreationFail: Boolean = false
 
     override fun getPlaylists(): Flow<List<BasicPlaylist>> {
         return playlists.mapValues { it.toBasicPlaylist() }
@@ -30,14 +27,19 @@ class FakePlaylistRepository : PlaylistRepository {
         return playlists.map { playlists -> playlists.first { it.id == playlistId } }
     }
 
-    override fun createPlaylist(playlistName: String): Flow<Long?> {
-        return if (shouldPlaylistCreationFail) {
-            flowOf(null)
-        } else {
-            val newPlaylist = FixtureProvider.playlist(name = playlistName)
-            playlists.update { playlists -> playlists + newPlaylist }
-            flowOf(newPlaylist.id)
+    override suspend fun updatePlaylistName(playlistId: Long, playlistName: String) {
+        playlists.update { playlistList ->
+            playlistList.toMutableList().apply {
+                indexOfFirst { it.id == playlistId }
+                    .let { index -> set(index, get(index).copy(name = playlistName)) }
+            }
         }
+    }
+
+    override suspend fun createPlaylist(playlistName: String): Long {
+        val newPlaylist = FixtureProvider.playlist(name = playlistName)
+        playlists.update { playlists -> playlists + newPlaylist }
+        return newPlaylist.id
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {

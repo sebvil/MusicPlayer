@@ -15,7 +15,7 @@ import io.kotest.matchers.shouldBe
 class NavigationHostViewModelTest :
     FreeSpec({
         fun TestScope.getSubject(): NavigationHostViewModel {
-            return NavigationHostViewModel(vmScope = this, features = FakeFeatures())
+            return NavigationHostViewModel(viewModelScope = this, features = FakeFeatures())
         }
 
         "init sets initial screen to HomeUiComponent" {

@@ -16,7 +16,7 @@ class MainViewModelTest :
 
         fun TestScope.getSubject(): MainViewModel {
             return MainViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 playbackManager = playbackManagerDep,
                 features = FakeFeatures(),
             )

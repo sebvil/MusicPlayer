@@ -31,7 +31,7 @@ class PlaylistContextMenuViewModelTest :
                 arguments = PlaylistContextMenuArguments(playlistId = playlistId),
                 playlistRepository = playlistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                vmScope = this,
+                viewModelScope = this,
                 props =
                     MutableStateFlow(
                         PlaylistContextMenuProps(

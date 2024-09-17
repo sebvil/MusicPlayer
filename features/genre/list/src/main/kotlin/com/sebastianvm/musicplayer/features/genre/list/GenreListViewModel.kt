@@ -47,9 +47,9 @@ class GenreListViewModel(
     genreRepository: GenreRepository,
     private val props: StateFlow<GenreListProps>,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
-) : BaseViewModel<UiState<GenreListState>, GenreListUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<UiState<GenreListState>, GenreListUserAction>(viewModelScope = viewModelScope) {
     private val navController: NavController
         get() = props.value.navController
 

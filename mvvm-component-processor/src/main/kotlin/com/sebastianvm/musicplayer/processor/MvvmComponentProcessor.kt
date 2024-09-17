@@ -40,7 +40,7 @@ class MvvmComponentProcessor(private val codeGenerator: CodeGenerator) : SymbolP
                 viewModelDeclaration.primaryConstructor
                     ?.parameters
                     .orEmpty()
-                    .filter { it.name?.asString() != "vmScope" }
+                    .filter { it.name?.asString() != "viewModelScope" }
                     .map { Parameter(it) }
 
             val className = "${componentName}MvvmComponent"

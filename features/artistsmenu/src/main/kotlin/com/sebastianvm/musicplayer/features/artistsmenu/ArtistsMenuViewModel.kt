@@ -33,12 +33,15 @@ sealed interface ArtistsMenuUserAction : UserAction {
 }
 
 class ArtistsMenuViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     arguments: ArtistsMenuArguments,
     artistRepository: ArtistRepository,
     private val props: StateFlow<ArtistsMenuProps>,
     private val features: FeatureRegistry,
-) : BaseViewModel<UiState<ArtistsMenuState>, ArtistsMenuUserAction>(viewModelScope = vmScope) {
+) :
+    BaseViewModel<UiState<ArtistsMenuState>, ArtistsMenuUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val navController: NavController
         get() = props.value.navController

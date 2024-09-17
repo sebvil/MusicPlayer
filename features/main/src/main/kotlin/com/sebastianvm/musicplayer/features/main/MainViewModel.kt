@@ -1,13 +1,10 @@
 package com.sebastianvm.musicplayer.features.main
 
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.core.designsystems.components.UiComponent
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.navigation.NavigationHostArguments
@@ -27,10 +24,10 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class MainViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : BaseViewModel<MainState, MainUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<MainState, MainUserAction>(viewModelScope = viewModelScope) {
 
     private val appNavigationHostUiComponent =
         features.navigationFeature().create(arguments = NavigationHostArguments)
@@ -51,7 +48,7 @@ class MainViewModel(
                             )
                         }
                         .stateIn(
-                            viewModelScope,
+                            this.viewModelScope,
                             SharingStarted.WhileSubscribed(5_000),
                             PlayerProps(
                                 isFullscreen = false,
@@ -71,7 +68,7 @@ class MainViewModel(
                 )
             }
             .stateIn(
-                scope = viewModelScope,
+                scope = this.viewModelScope,
                 started = SharingStarted.Lazily,
                 initialValue =
                     MainState(
@@ -98,19 +95,7 @@ class MainViewModel(
         }
     }
 
-    class Factory(
-        private val playbackManager: PlaybackManager,
-        private val features: FeatureRegistry,
-    ) : AbstractSavedStateViewModelFactory() {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(
-            key: String,
-            modelClass: Class<T>,
-            handle: SavedStateHandle,
-        ): T {
-            return MainViewModel(playbackManager = playbackManager, features = features) as T
-        }
-    }
+  
 }
 
 data class MainState(

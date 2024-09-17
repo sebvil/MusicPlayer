@@ -1,12 +1,12 @@
 package com.sebastianvm.musicplayer.features.player
 
 import androidx.lifecycle.viewModelScope
+import com.sebastianvm.musicplayer.core.designsystems.components.UiComponent
 import com.sebastianvm.musicplayer.core.model.NotPlayingState
 import com.sebastianvm.musicplayer.core.model.TrackPlayingState
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.player.PlayerProps
@@ -68,11 +68,11 @@ sealed interface PlayerUserAction : UserAction {
 }
 
 class PlayerViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val playbackManager: PlaybackManager,
     private val props: StateFlow<PlayerProps>,
     features: FeatureRegistry,
-) : BaseViewModel<PlayerState, PlayerUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<PlayerState, PlayerUserAction>(viewModelScope = viewModelScope) {
 
     private val queueUiComponent = features.queue().create(QueueArguments)
 

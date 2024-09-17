@@ -49,12 +49,12 @@ sealed interface ArtistDetailsUserAction : UserAction {
 }
 
 class ArtistDetailsViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     arguments: ArtistDetailsArguments,
     artistRepository: ArtistRepository,
     private val props: StateFlow<ArtistDetailsProps>,
     private val features: FeatureRegistry,
-) : BaseViewModel<ArtistDetailsState, ArtistDetailsUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<ArtistDetailsState, ArtistDetailsUserAction>(viewModelScope = viewModelScope) {
 
     private val artistId = arguments.artistId
 

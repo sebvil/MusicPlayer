@@ -56,10 +56,10 @@ detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "det
 fixture-monkey = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin", version.ref = "fixture-monkey" }
 fixture-monkey-kotest = { module = "com.navercorp.fixturemonkey:fixture-monkey-kotest", version.ref = "fixture-monkey" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinAndroid" }
 koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinAndroid" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinAndroid" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
 kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }

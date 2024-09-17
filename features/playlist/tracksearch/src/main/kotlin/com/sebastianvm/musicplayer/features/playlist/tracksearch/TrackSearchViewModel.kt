@@ -45,9 +45,9 @@ class TrackSearchViewModel(
     private val arguments: TrackSearchArguments,
     private val playlistRepository: PlaylistRepository,
     private val searchRepository: FullTextSearchRepository,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val props: StateFlow<TrackSearchProps>,
-) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<TrackSearchState, TrackSearchUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

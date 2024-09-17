@@ -56,9 +56,12 @@ class AlbumContextMenuViewModel(
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
     private val props: StateFlow<AlbumContextMenuProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
-) : BaseViewModel<AlbumContextMenuState, AlbumContextMenuUserAction>(viewModelScope = vmScope) {
+) :
+    BaseViewModel<AlbumContextMenuState, AlbumContextMenuUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val navController: NavController
         get() = props.value.navController
