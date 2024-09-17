@@ -49,9 +49,9 @@ class ArtistListViewModel(
     artistRepository: ArtistRepository,
     private val props: StateFlow<ArtistListProps>,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
-) : BaseViewModel<UiState<ArtistListState>, ArtistListUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<UiState<ArtistListState>, ArtistListUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

@@ -44,7 +44,7 @@ class AlbumListViewModelTest :
 
         fun TestScope.getSubject(): AlbumListViewModel {
             return AlbumListViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 albumRepository = albumRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(AlbumListProps(navController = navControllerDep)),

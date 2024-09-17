@@ -23,7 +23,7 @@ class SortMenuViewModelTest :
             return SortMenuViewModel(
                 arguments = SortMenuArguments(listType),
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

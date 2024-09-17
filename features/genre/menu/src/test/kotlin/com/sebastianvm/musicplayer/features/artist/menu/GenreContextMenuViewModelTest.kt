@@ -29,7 +29,7 @@ class GenreContextMenuViewModelTest :
                 arguments = GenreContextMenuArguments(genreId = genreId),
                 genreRepository = genreRepositoryDep,
                 playbackManager = playbackManagerDep,
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

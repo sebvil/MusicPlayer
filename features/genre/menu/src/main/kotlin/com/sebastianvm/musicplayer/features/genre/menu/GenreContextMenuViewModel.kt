@@ -30,8 +30,11 @@ class GenreContextMenuViewModel(
     arguments: GenreContextMenuArguments,
     genreRepository: GenreRepository,
     private val playbackManager: PlaybackManager,
-    vmScope: CoroutineScope = getViewModelScope(),
-) : BaseViewModel<GenreContextMenuState, GenreContextMenuUserAction>(viewModelScope = vmScope) {
+    viewModelScope: CoroutineScope = getViewModelScope(),
+) :
+    BaseViewModel<GenreContextMenuState, GenreContextMenuUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val genreId = arguments.genreId
 

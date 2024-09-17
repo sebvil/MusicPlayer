@@ -57,12 +57,12 @@ sealed interface GenreDetailsUserAction : UserAction {
 class GenreDetailsViewModel(
     private val arguments: GenreDetailsArguments,
     private val props: StateFlow<GenreDetailsProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     genreRepository: GenreRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : BaseViewModel<GenreDetailsState, GenreDetailsUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<GenreDetailsState, GenreDetailsUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

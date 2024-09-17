@@ -75,9 +75,12 @@ class TrackContextMenuViewModel(
     private val playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
     private val props: StateFlow<TrackContextMenuProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
-) : BaseViewModel<TrackContextMenuState, TrackContextMenuUserAction>(viewModelScope = vmScope) {
+) :
+    BaseViewModel<TrackContextMenuState, TrackContextMenuUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val navController: NavController
         get() = props.value.navController

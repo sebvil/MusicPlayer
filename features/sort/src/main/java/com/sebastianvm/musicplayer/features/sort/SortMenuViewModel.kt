@@ -23,8 +23,8 @@ import kotlinx.coroutines.launch
 class SortMenuViewModel(
     private val arguments: SortMenuArguments,
     private val sortPreferencesRepository: SortPreferencesRepository,
-    vmScope: CoroutineScope = getViewModelScope(),
-) : BaseViewModel<SortMenuState, SortMenuUserAction>(viewModelScope = vmScope) {
+    viewModelScope: CoroutineScope = getViewModelScope(),
+) : BaseViewModel<SortMenuState, SortMenuUserAction>(viewModelScope = viewModelScope) {
 
     private val sortPreferences =
         when (val listType = arguments.listType) {

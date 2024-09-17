@@ -12,6 +12,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.designsystems)
     implementation(projects.core.ui)
     implementation(projects.core.model)
     implementation(projects.core.commonTest)

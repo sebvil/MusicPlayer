@@ -87,9 +87,9 @@ class SearchViewModel(
     private val searchRepository: FullTextSearchRepository,
     private val playbackManager: PlaybackManager,
     private val props: StateFlow<SearchProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val features: FeatureRegistry,
-) : BaseViewModel<SearchState, SearchUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<SearchState, SearchUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

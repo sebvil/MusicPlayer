@@ -54,9 +54,7 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
         ) { pageIndex ->
             when (pages[pageIndex]) {
                 TopLevelScreen.ALL_SONGS -> {
-                    state.trackListMvvmComponent.Content(
-                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
-                    )
+                    state.trackListMvvmComponent.Content(modifier = Modifier)
                 }
                 TopLevelScreen.ARTISTS -> {
                     state.artistListMvvmComponent.Content(modifier = Modifier)
@@ -68,7 +66,9 @@ fun HomeScreenPager(state: HomeState, modifier: Modifier = Modifier) {
                     state.genreListMvvmComponent.Content(modifier = Modifier)
                 }
                 TopLevelScreen.PLAYLISTS -> {
-                    state.playlistListMvvmComponent.Content(modifier = Modifier)
+                    state.playlistListMvvmComponent.Content(
+                        modifier = Modifier.consumeWindowInsets(WindowInsets.systemBars)
+                    )
                 }
             }
         }

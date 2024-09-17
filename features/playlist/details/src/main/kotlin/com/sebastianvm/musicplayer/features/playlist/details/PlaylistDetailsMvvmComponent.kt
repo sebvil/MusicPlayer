@@ -8,14 +8,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,13 +29,13 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.musicplayer.core.designsystems.components.EmptyScreen
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
 import com.sebastianvm.musicplayer.core.designsystems.components.Text
-import com.sebastianvm.musicplayer.core.designsystems.components.TopBar
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @MvvmComponent(vmClass = PlaylistDetailsViewModel::class)
 @Composable
 fun PlaylistDetails(
@@ -44,9 +48,30 @@ fun PlaylistDetails(
             Scaffold(
                 modifier = modifier,
                 topBar = {
-                    TopBar(
-                        title = state.playlistName,
-                        onBackButtonClick = { handle(PlaylistDetailsUserAction.BackClicked) },
+                    TopAppBar(
+                        title = { Text(text = state.playlistName) },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { handle(PlaylistDetailsUserAction.BackClicked) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = {
+                                    handle(PlaylistDetailsUserAction.EditPlaylistNameClicked)
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = stringResource(id = RString.back),
+                                )
+                            }
+                        },
                     )
                 },
             ) {
@@ -61,12 +86,14 @@ fun PlaylistDetails(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistDetails(
     state: PlaylistDetailsState.Data,
     handle: Handler<PlaylistDetailsUserAction>,
     modifier: Modifier = Modifier,
 ) {
+    state.playlistNameDialog?.Content(Modifier)
     Scaffold(
         modifier = modifier,
         floatingActionButton = {
@@ -79,9 +106,26 @@ fun PlaylistDetails(
             )
         },
         topBar = {
-            TopBar(
-                title = state.playlistName,
-                onBackButtonClick = { handle(PlaylistDetailsUserAction.BackClicked) },
+            TopAppBar(
+                title = { Text(text = state.playlistName) },
+                navigationIcon = {
+                    IconButton(onClick = { handle(PlaylistDetailsUserAction.BackClicked) }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = stringResource(id = RString.back),
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { handle(PlaylistDetailsUserAction.EditPlaylistNameClicked) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = RString.back),
+                        )
+                    }
+                },
             )
         },
     ) { paddingValues ->

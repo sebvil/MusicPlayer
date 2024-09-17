@@ -27,7 +27,7 @@ class ArtistContextMenuViewModelTest :
                 arguments = ArtistContextMenuArguments(artistId = artistId),
                 artistRepository = artistRepositoryDep,
                 playbackManager = playbackManagerDep,
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

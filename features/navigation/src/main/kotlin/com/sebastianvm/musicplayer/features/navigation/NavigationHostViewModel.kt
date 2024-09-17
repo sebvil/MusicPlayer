@@ -35,9 +35,9 @@ sealed interface NavigationHostUserAction : UserAction {
 }
 
 class NavigationHostViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     features: FeatureRegistry,
-) : BaseViewModel<NavigationHostState, NavigationHostUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<NavigationHostState, NavigationHostUserAction>(viewModelScope = viewModelScope) {
 
     private val navController =
         object : NavController {

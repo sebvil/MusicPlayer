@@ -4,9 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.sebastianvm.musicplayer.core.data.playlist.PlaylistRepository
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.designsystems.components.SortButton
+import com.sebastianvm.musicplayer.core.designsystems.components.TextFieldDialog
 import com.sebastianvm.musicplayer.core.designsystems.components.TrackRow
 import com.sebastianvm.musicplayer.core.model.MediaGroup
 import com.sebastianvm.musicplayer.core.playback.manager.PlaybackManager
+import com.sebastianvm.musicplayer.core.resources.RString
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
@@ -32,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed interface PlaylistDetailsState : State {
@@ -43,6 +46,7 @@ sealed interface PlaylistDetailsState : State {
         val tracks: List<TrackRow.State>,
         val sortButtonState: SortButton.State,
         override val playlistName: String,
+        val playlistNameDialog: TextFieldDialog.State?,
     ) : PlaylistDetailsState
 }
 
@@ -57,26 +61,35 @@ sealed interface PlaylistDetailsUserAction : UserAction {
     data object BackClicked : PlaylistDetailsUserAction
 
     data object AddTracksButtonClicked : PlaylistDetailsUserAction
+
+    data object EditPlaylistNameClicked : PlaylistDetailsUserAction
 }
 
 class PlaylistDetailsViewModel(
     private val arguments: PlaylistDetailsArguments,
     private val props: StateFlow<PlaylistDetailsProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
-    playlistRepository: PlaylistRepository,
+    private val playlistRepository: PlaylistRepository,
     private val features: FeatureRegistry,
-) : BaseViewModel<PlaylistDetailsState, PlaylistDetailsUserAction>(viewModelScope = vmScope) {
+) :
+    BaseViewModel<PlaylistDetailsState, PlaylistDetailsUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val navController: NavController
         get() = props.value.navController
+
+    private val _playlistNameDialog: MutableStateFlow<TextFieldDialog.State?> =
+        MutableStateFlow(null)
 
     override val state: StateFlow<PlaylistDetailsState> =
         combine(
                 playlistRepository.getPlaylist(arguments.playlistId),
                 sortPreferencesRepository.getPlaylistSortPreferences(arguments.playlistId),
-            ) { playlist, sortPrefs ->
+                _playlistNameDialog,
+            ) { playlist, sortPrefs, playlistNameDialog ->
                 PlaylistDetailsState.Data(
                     tracks = playlist.tracks.map { track -> TrackRow.State.fromTrack(track) },
                     playlistName = playlist.name,
@@ -87,10 +100,11 @@ class PlaylistDetailsViewModel(
                                 sortOrder = sortPrefs.sortOrder,
                             )
                         },
+                    playlistNameDialog = playlistNameDialog,
                 )
             }
             .stateIn(
-                viewModelScope,
+                this.viewModelScope,
                 SharingStarted.Lazily,
                 PlaylistDetailsState.Loading(arguments.playlistName),
             )
@@ -153,6 +167,30 @@ class PlaylistDetailsViewModel(
                                 MutableStateFlow(TrackSearchProps(navController = navController)),
                         )
                 )
+            }
+            is PlaylistDetailsUserAction.EditPlaylistNameClicked -> {
+                _playlistNameDialog.value =
+                    TextFieldDialog.State(
+                        title = RString.edit_playlist_name,
+                        confirmButtonText = RString.save,
+                        initialText = state.value.playlistName,
+                        onSave = { newPlaylistName ->
+                            if (newPlaylistName.isBlank()) {
+                                _playlistNameDialog.update {
+                                    it?.copy(errorMessage = RString.playlist_name_cannot_be_empty)
+                                }
+                                return@State
+                            }
+                            viewModelScope.launch {
+                                playlistRepository.updatePlaylistName(
+                                    arguments.playlistId,
+                                    newPlaylistName,
+                                )
+                            }
+                            _playlistNameDialog.value = null
+                        },
+                        onDismiss = { _playlistNameDialog.value = null },
+                    )
             }
         }
     }

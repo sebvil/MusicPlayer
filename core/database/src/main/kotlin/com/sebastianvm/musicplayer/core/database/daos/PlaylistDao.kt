@@ -34,6 +34,8 @@ abstract class PlaylistDao {
     @Query("SELECT playlistName FROM PlaylistEntity WHERE PlaylistEntity.id=:playlistId")
     abstract fun getPlaylistName(playlistId: Long): Flow<String>
 
+    @Update abstract suspend fun updatePlaylist(playlist: PlaylistEntity)
+
     @Transaction
     @Query("SELECT * FROM PlaylistEntity WHERE PlaylistEntity.id=:playlistId")
     abstract fun getPlaylist(playlistId: Long): Flow<PlaylistWithTracksEntity>

@@ -47,7 +47,7 @@ class QueueViewModelTest :
             return QueueViewModel(
                 queueRepository = queueRepositoryDep,
                 playbackManager = playbackManagerDep,
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

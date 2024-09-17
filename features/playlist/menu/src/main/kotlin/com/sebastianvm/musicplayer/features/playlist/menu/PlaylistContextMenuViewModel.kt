@@ -43,11 +43,11 @@ class PlaylistContextMenuViewModel(
     arguments: PlaylistContextMenuArguments,
     playlistRepository: PlaylistRepository,
     private val playbackManager: PlaybackManager,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     private val props: StateFlow<PlaylistContextMenuProps>,
 ) :
     BaseViewModel<PlaylistContextMenuState, PlaylistContextMenuUserAction>(
-        viewModelScope = vmScope
+        viewModelScope = viewModelScope
     ) {
 
     private val playlistId = arguments.playlistId

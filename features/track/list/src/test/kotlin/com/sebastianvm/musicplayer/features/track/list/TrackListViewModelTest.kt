@@ -45,7 +45,7 @@ class TrackListViewModelTest :
 
         fun TestScope.getSubject(): TrackListViewModel {
             return TrackListViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 trackRepository = trackRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(TrackListProps(navController = navControllerDep)),

@@ -11,7 +11,7 @@ interface PlaylistRepository {
 
     fun getPlaylist(playlistId: Long): Flow<Playlist>
 
-    fun createPlaylist(playlistName: String): Flow<Long?>
+    suspend fun createPlaylist(playlistName: String): Long
 
     suspend fun deletePlaylist(playlistId: Long)
 
@@ -20,4 +20,6 @@ interface PlaylistRepository {
     fun getTrackIdsInPlaylist(playlistId: Long): Flow<Set<Long>>
 
     suspend fun removeItemFromPlaylist(playlistId: Long, position: Long)
+
+    suspend fun updatePlaylistName(playlistId: Long, playlistName: String)
 }

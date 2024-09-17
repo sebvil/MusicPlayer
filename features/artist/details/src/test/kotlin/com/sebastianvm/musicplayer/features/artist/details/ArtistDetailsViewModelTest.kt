@@ -33,7 +33,7 @@ class ArtistDetailsViewModelTest :
         fun TestScope.getSubject(): ArtistDetailsViewModel {
             navControllerDep.push(FakeMvvmComponent())
             return ArtistDetailsViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 arguments = ArtistDetailsArguments(ARTIST_ID),
                 artistRepository = artistRepositoryDep,
                 props = MutableStateFlow(ArtistDetailsProps(navController = navControllerDep)),

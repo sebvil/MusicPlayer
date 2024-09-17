@@ -37,7 +37,7 @@ class ArtistsMenuViewModelTest :
         ): ArtistsMenuViewModel {
             navControllerDep.push(FakeMvvmComponent())
             return ArtistsMenuViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 arguments = ArtistsMenuArguments(media = media),
                 artistRepository = artistRepositoryDep,
                 props = MutableStateFlow(ArtistsMenuProps(navController = navControllerDep)),

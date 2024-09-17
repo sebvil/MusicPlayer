@@ -37,10 +37,10 @@ sealed interface QueueUserAction : UserAction {
 }
 
 class QueueViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     queueRepository: QueueRepository,
     private val playbackManager: PlaybackManager,
-) : BaseViewModel<QueueState, QueueUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<QueueState, QueueUserAction>(viewModelScope = viewModelScope) {
 
     override val state: StateFlow<QueueState> =
         queueRepository

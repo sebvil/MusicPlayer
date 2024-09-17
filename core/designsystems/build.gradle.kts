@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.musicplayer.android.library)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.parcelize)
 }
 
 android {
