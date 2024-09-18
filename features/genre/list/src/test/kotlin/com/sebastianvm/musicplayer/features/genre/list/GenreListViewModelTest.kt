@@ -40,7 +40,7 @@ class GenreListViewModelTest :
 
         fun TestScope.getSubject(): GenreListViewModel {
             return GenreListViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 props = MutableStateFlow(GenreListProps(navController = navControllerDep)),

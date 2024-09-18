@@ -48,12 +48,12 @@ sealed interface AlbumListUserAction : UserAction {
 }
 
 class AlbumListViewModel(
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     albumRepository: AlbumRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val props: StateFlow<AlbumListProps>,
     private val features: FeatureRegistry,
-) : BaseViewModel<UiState<AlbumListState>, AlbumListUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<UiState<AlbumListState>, AlbumListUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

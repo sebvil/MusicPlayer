@@ -30,8 +30,11 @@ class ArtistContextMenuViewModel(
     arguments: ArtistContextMenuArguments,
     artistRepository: ArtistRepository,
     private val playbackManager: PlaybackManager,
-    vmScope: CoroutineScope = getViewModelScope(),
-) : BaseViewModel<ArtistContextMenuState, ArtistContextMenuUserAction>(viewModelScope = vmScope) {
+    viewModelScope: CoroutineScope = getViewModelScope(),
+) :
+    BaseViewModel<ArtistContextMenuState, ArtistContextMenuUserAction>(
+        viewModelScope = viewModelScope
+    ) {
 
     private val artistId = arguments.artistId
 

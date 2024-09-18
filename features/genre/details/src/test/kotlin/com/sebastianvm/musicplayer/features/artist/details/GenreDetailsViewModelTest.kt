@@ -59,7 +59,7 @@ class GenreDetailsViewModelTest :
             navControllerDep.push(FakeMvvmComponent())
 
             return GenreDetailsViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 genreRepository = genreRepositoryDep,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 arguments = GenreDetailsArguments(genreId = genre.id, genreName = genre.name),

@@ -1,8 +1,8 @@
 package com.sebastianvm.musicplayer.features.home
 
+import com.sebastianvm.musicplayer.core.designsystems.components.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.BaseViewModel
 import com.sebastianvm.musicplayer.core.ui.mvvm.State
-import com.sebastianvm.musicplayer.core.ui.mvvm.UiComponent
 import com.sebastianvm.musicplayer.core.ui.mvvm.UserAction
 import com.sebastianvm.musicplayer.core.ui.mvvm.getViewModelScope
 import com.sebastianvm.musicplayer.features.api.album.list.AlbumListArguments
@@ -45,8 +45,8 @@ sealed interface HomeUserAction : UserAction
 class HomeViewModel(
     props: StateFlow<HomeProps>,
     features: FeatureRegistry,
-    vmScope: CoroutineScope = getViewModelScope(),
-) : BaseViewModel<HomeState, HomeUserAction>(viewModelScope = vmScope) {
+    viewModelScope: CoroutineScope = getViewModelScope(),
+) : BaseViewModel<HomeState, HomeUserAction>(viewModelScope = viewModelScope) {
 
     private val navController = props.value.navController
     private val _state =

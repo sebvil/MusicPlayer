@@ -39,7 +39,6 @@
     <string name="add_to_queue">Add to queue</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="remove_from_playlist">Remove from playlist</string>
-    <string name="ok">OK</string>
     <string name="track_added_to_playlist">\'%1$s\' added to playlist</string>
     <string name="add_to_playlist">Add to playlist</string>
     <string name="delete">Delete</string>
@@ -71,5 +70,10 @@
     <string name="starting_sync">Starting sync</string>
     <string name="library_scan_progress">Library scan progress</string>
     <string name="shows_progress_when_scanning_the_library">Shows progress when scanning the library</string>
-
+    <string name="error_creating_playlist">Error creating playlist</string>
+    <string name="a_playlist_with_that_name_already_exists">A playlist with that name already exists.</string>
+    <string name="ok">OK</string>
+    <string name="edit_playlist_name">Edit playlist name</string>"
+    <string name="save">Save</string>
+    <string name="playlist_name_cannot_be_empty">"Playlist name cannot be empty"</string>
 </resources>

@@ -37,7 +37,7 @@ class PlayerViewModelTest :
 
         fun TestScope.getSubject(): PlayerViewModel {
             return PlayerViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 playbackManager = playbackManagerDep,
                 props = propsDep,
                 features = FakeFeatures(),

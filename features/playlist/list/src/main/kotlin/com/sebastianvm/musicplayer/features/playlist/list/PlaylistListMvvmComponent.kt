@@ -8,13 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,16 +29,6 @@ import com.sebastianvm.musicplayer.core.ui.LocalPaddingValues
 import com.sebastianvm.musicplayer.core.ui.mvvm.Handler
 import com.sebastianvm.musicplayer.kspannotations.MvvmComponent
 
-@Composable
-fun PlaylistCreationErrorDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = { TextButton(onClick = { onDismiss() }) { Text(text = "Ok") } },
-        title = { Text(text = "Error creating playlist") },
-        text = { Text(text = "A playlist with that name already exists.") },
-    )
-}
-
 @MvvmComponent(vmClass = PlaylistListViewModel::class)
 @Composable
 fun PlaylistList(
@@ -49,18 +37,7 @@ fun PlaylistList(
     modifier: Modifier = Modifier,
 ) {
 
-    if (state.isCreatePlaylistDialogOpen) {
-        CreatePlaylistDialog(
-            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationDialog) },
-            onConfirm = { handle(PlaylistListUserAction.CreatePlaylistButtonClicked(it)) },
-        )
-    }
-
-    if (state.isPlaylistCreationErrorDialogOpen) {
-        PlaylistCreationErrorDialog(
-            onDismiss = { handle(PlaylistListUserAction.DismissPlaylistCreationErrorDialog) }
-        )
-    }
+    state.createPlaylistDialogState?.Content(modifier = Modifier)
 
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {

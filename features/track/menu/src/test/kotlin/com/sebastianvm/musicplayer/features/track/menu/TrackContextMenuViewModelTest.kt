@@ -54,7 +54,7 @@ class TrackContextMenuViewModelTest :
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(TrackContextMenuProps(navController = navControllerDep)),
                 features = FakeFeatures(),
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

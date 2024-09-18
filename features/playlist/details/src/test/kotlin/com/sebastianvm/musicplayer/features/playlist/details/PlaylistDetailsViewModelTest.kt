@@ -58,7 +58,7 @@ class PlaylistDetailsViewModelTest :
 
             navControllerDep.push(FakeMvvmComponent())
             return PlaylistDetailsViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 sortPreferencesRepository = sortPreferencesRepositoryDep,
                 arguments =
                     PlaylistDetailsArguments(

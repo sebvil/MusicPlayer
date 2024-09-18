@@ -47,7 +47,7 @@ class AlbumDetailsViewModelTest :
                 )
             navControllerDep.push(FakeMvvmComponent())
             return AlbumDetailsViewModel(
-                vmScope = this,
+                viewModelScope = this,
                 arguments = arguments,
                 props = MutableStateFlow(AlbumDetailsProps(navController = navControllerDep)),
                 playbackManager = playbackManagerDep,

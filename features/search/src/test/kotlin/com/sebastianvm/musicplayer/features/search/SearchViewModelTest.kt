@@ -67,7 +67,7 @@ class SearchViewModelTest :
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(SearchProps(navController = navControllerDep)),
                 features = FakeFeatures(),
-                vmScope = this,
+                viewModelScope = this,
             )
         }
 

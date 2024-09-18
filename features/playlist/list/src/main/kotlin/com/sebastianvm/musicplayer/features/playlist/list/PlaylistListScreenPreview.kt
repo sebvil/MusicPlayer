@@ -1,9 +1,5 @@
 package com.sebastianvm.musicplayer.features.playlist.list
 
-import androidx.compose.runtime.Composable
-import com.sebastianvm.musicplayer.core.designsystems.previews.PreviewComponents
-import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
-
 // class PlaylistListStatePreviewParamProvider : PreviewParameterProvider<PlaylistListState> {
 //    private val playlistsList: List<ModelListItem.State>
 //        get() = (1..10).map {
@@ -55,15 +51,3 @@ import com.sebastianvm.musicplayer.core.designsystems.previews.ThemedPreview
 //        )
 //    }
 // }
-
-@PreviewComponents
-@Composable
-private fun PlaylistCreationErrorDialogPreview() {
-    ThemedPreview { PlaylistCreationErrorDialog {} }
-}
-
-@PreviewComponents
-@Composable
-private fun CreatePlaylistDialogPreview() {
-    ThemedPreview { CreatePlaylistDialog(onDismiss = {}, onConfirm = {}) }
-}

@@ -57,11 +57,11 @@ sealed interface AlbumDetailsUserAction : UserAction {
 class AlbumDetailsViewModel(
     private val arguments: AlbumDetailsArguments,
     private val props: StateFlow<AlbumDetailsProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     albumRepository: AlbumRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : BaseViewModel<AlbumDetailsState, AlbumDetailsUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<AlbumDetailsState, AlbumDetailsUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

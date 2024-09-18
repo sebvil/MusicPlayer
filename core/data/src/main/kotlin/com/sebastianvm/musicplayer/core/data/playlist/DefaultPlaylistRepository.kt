@@ -1,7 +1,5 @@
 package com.sebastianvm.musicplayer.core.data.playlist
 
-import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import com.sebastianvm.musicplayer.core.common.extensions.mapValues
 import com.sebastianvm.musicplayer.core.data.preferences.SortPreferencesRepository
 import com.sebastianvm.musicplayer.core.data.track.asExternalModel
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Factory
 
@@ -43,22 +40,8 @@ class DefaultPlaylistRepository(
         return playlistDao.getPlaylist(playlistId).map { it.asExternalModel() }
     }
 
-    override fun createPlaylist(playlistName: String): Flow<Long?> {
-        return flow {
-            val id =
-                try {
-                    playlistDao.createPlaylist(
-                        PlaylistEntity(
-                            id = playlistName.hashCode().toLong(),
-                            playlistName = playlistName,
-                        )
-                    )
-                } catch (e: SQLiteConstraintException) {
-                    Log.i("Exception", e.message.orEmpty())
-                    null
-                }
-            emit(id)
-        }
+    override suspend fun createPlaylist(playlistName: String): Long {
+        return playlistDao.createPlaylist(PlaylistEntity(id = 0, playlistName = playlistName))
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {
@@ -85,6 +68,10 @@ class DefaultPlaylistRepository(
 
     override suspend fun removeItemFromPlaylist(playlistId: Long, position: Long) {
         playlistDao.removeItemFromPlaylist(playlistId = playlistId, position = position)
+    }
+
+    override suspend fun updatePlaylistName(playlistId: Long, playlistName: String) {
+        playlistDao.updatePlaylist(PlaylistEntity(id = playlistId, playlistName = playlistName))
     }
 }
 

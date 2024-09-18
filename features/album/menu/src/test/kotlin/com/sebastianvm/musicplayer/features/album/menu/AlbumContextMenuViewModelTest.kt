@@ -38,7 +38,7 @@ class AlbumContextMenuViewModelTest :
             navControllerDep.push(FakeMvvmComponent())
             return AlbumContextMenuViewModel(
                 arguments = arguments,
-                vmScope = this,
+                viewModelScope = this,
                 albumRepository = albumRepositoryDep,
                 playbackManager = playbackManagerDep,
                 props = MutableStateFlow(AlbumContextMenuProps(navControllerDep)),

@@ -48,12 +48,12 @@ sealed interface TrackListUserAction : UserAction {
 
 class TrackListViewModel(
     private val props: StateFlow<TrackListProps>,
-    vmScope: CoroutineScope = getViewModelScope(),
+    viewModelScope: CoroutineScope = getViewModelScope(),
     trackRepository: TrackRepository,
     sortPreferencesRepository: SortPreferencesRepository,
     private val playbackManager: PlaybackManager,
     private val features: FeatureRegistry,
-) : BaseViewModel<TrackListState, TrackListUserAction>(viewModelScope = vmScope) {
+) : BaseViewModel<TrackListState, TrackListUserAction>(viewModelScope = viewModelScope) {
 
     private val navController: NavController
         get() = props.value.navController

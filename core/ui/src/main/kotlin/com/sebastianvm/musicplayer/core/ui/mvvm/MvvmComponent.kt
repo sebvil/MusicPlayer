@@ -12,13 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.sebastianvm.musicplayer.core.designsystems.components.UiComponent
 import kotlinx.coroutines.flow.StateFlow
-
-interface UiComponent {
-    @Composable fun Content(modifier: Modifier)
-
-    val key: Parcelable
-}
 
 abstract class MvvmComponent<S : State, UA : UserAction, VM : BaseViewModel<S, UA>> :
     ViewModelStoreOwner, UiComponent {
