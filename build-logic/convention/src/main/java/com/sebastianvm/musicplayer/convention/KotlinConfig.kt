@@ -3,10 +3,10 @@ package com.sebastianvm.musicplayer.convention
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
 
-internal inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin() =
+internal inline fun <reified T : KotlinBaseExtension> Project.configureKotlin() =
     configure<T> {
         when (this) {
             is KotlinAndroidProjectExtension -> compilerOptions
